@@ -5,8 +5,13 @@ description = "Classess Learner — Python services workspace (BFF, gateway, ver
 requires-python = ">=3.12"
 dependencies = []
 
+[dependency-groups]
+dev = ["pytest>=8.2", "ruff>=0.6"]
+
 [tool.uv.workspace]
-members = ["services/api", "services/gateway", "services/verifier", "content/plexus"]
+# Members are added as each Python package is created (services/contracts, then api,
+# gateway, verifier; content/plexus later). Globbing avoids editing this on every add.
+members = ["services/*"]
 
 [tool.ruff]
 line-length = 100
@@ -18,4 +23,4 @@ select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
 
 [tool.pytest.ini_options]
 addopts = "-q"
-testpaths = ["services", "content"]
+testpaths = ["services"]
