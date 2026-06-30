@@ -1,0 +1,21 @@
+[project]
+name = "classess-learner-workspace"
+version = "0.0.0"
+description = "Classess Learner — Python services workspace (BFF, gateway, verifier, Plexus)"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.uv.workspace]
+members = ["services/api", "services/gateway", "services/verifier", "content/plexus"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["docs", ".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["services", "content"]

@@ -1,0 +1,51 @@
+# --- Secrets (PUBLIC REPO — never commit any real keys) ---
+.env
+.env.*
+!.env.example
+*.local
+secrets/
+*.pem
+*.key
+
+# --- Node / Bun ---
+node_modules/
+.bun/
+bun.lockb.bak
+dist/
+build/
+.next/
+.expo/
+.turbo/
+coverage/
+*.tsbuildinfo
+
+# --- Python ---
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+.uv/
+
+# --- Editors / OS ---
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.shared.json
+*.swp
+
+# --- Local agent/tooling state ---
+.claude/settings.local.json
+
+# --- Logs / tmp ---
+*.log
+.cache/
+tmp/
+.scratch/
+
+# --- Supabase local (we use hosted MSR Build via MCP; keep local artifacts out) ---
+supabase/.branches/
+supabase/.temp/
