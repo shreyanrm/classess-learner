@@ -1,5 +1,6 @@
 import { InMemoryKgtopg, type KGtoPG } from '@classess/kgtopg-contract-seed';
 import { resolveConfig, type SdkConfig } from './config';
+import { type EventProvider, InMemoryEventProvider } from './events';
 import { DevMockIdentity, type IdentityProvider } from './identity';
 import {
   type ContentProvider,
@@ -22,6 +23,7 @@ export interface Sdk {
   config: SdkConfig;
   identity: IdentityProvider;
   kgtopg: KGtoPG;
+  events: EventProvider;
   llm: LLMProvider;
   content: ContentProvider;
   messaging: MessagingProvider;
@@ -42,6 +44,10 @@ export function createSdk(overrides: Partial<SdkConfig> = {}): Sdk {
   // Mock-first: the in-repo reference. The live Supabase-backed client binds at Phase 1.
   const kgtopg = new InMemoryKgtopg({ consentTier: config.consentTierDefault });
 
+  // Events go through the real contract; evidence-bearing events update mastery via the consumer
+  // (the same reference instance), so attempts flow all the way to bands and ignite on seed data.
+  const events = new InMemoryEventProvider(config, kgtopg);
+
   const llm: LLMProvider =
     config.llmMode === 'live' && config.gatewayUrl
       ? new GatewayLLMProvider(config.gatewayUrl)
@@ -51,5 +57,5 @@ export function createSdk(overrides: Partial<SdkConfig> = {}): Sdk {
   const messaging: MessagingProvider = new MockMessagingProvider();
   const payment: PaymentProvider = new MockPaymentProvider();
 
-  return { config, identity, kgtopg, llm, content, messaging, payment };
+  return { config, identity, kgtopg, events, llm, content, messaging, payment };
 }

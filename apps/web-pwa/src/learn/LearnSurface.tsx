@@ -9,6 +9,7 @@ export interface LearnSurfaceProps {
   nodeId: string;
   nodeName: string;
   onAsk: (text: string) => void;
+  onPractice: () => void;
   onExit: () => void;
 }
 
@@ -24,6 +25,7 @@ export function LearnSurface({
   nodeId,
   nodeName,
   onAsk,
+  onPractice,
   onExit,
 }: LearnSurfaceProps) {
   const bus = useVidyaBus();
@@ -94,22 +96,38 @@ export function LearnSurface({
         onRemove={remove}
       />
 
-      <button
-        type="button"
-        onClick={() => onAsk('Can you check my working so far?')}
-        style={{
-          alignSelf: 'flex-start',
-          border: 0,
-          borderRadius: radius.sm,
-          padding: `${space[1]}px ${space[2]}px`,
-          background: ink[900],
-          color: '#FFFFFF',
-          cursor: 'pointer',
-          fontSize: typeScale.body.size,
-        }}
-      >
-        Check with Vidya
-      </button>
+      <div style={{ display: 'flex', gap: space[2] }}>
+        <button
+          type="button"
+          onClick={() => onAsk('Can you check my working so far?')}
+          style={{
+            border: 0,
+            borderRadius: radius.sm,
+            padding: `${space[1]}px ${space[2]}px`,
+            background: ink[900],
+            color: '#FFFFFF',
+            cursor: 'pointer',
+            fontSize: typeScale.body.size,
+          }}
+        >
+          Check with Vidya
+        </button>
+        <button
+          type="button"
+          onClick={onPractice}
+          style={{
+            border: `1px solid ${ink[100]}`,
+            borderRadius: radius.sm,
+            padding: `${space[1]}px ${space[2]}px`,
+            background: 'transparent',
+            color: ink[900],
+            cursor: 'pointer',
+            fontSize: typeScale.body.size,
+          }}
+        >
+          Practice on your own
+        </button>
+      </div>
     </main>
   );
 }

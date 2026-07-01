@@ -122,9 +122,68 @@ export interface VerifiedItem {
   body: unknown;
 }
 
+/** A practice item: a problem with a verifier-frozen correct answer (unaided evidence). */
+export interface PracticeItem {
+  id: string;
+  node_id: string;
+  equation: string;
+  /** The verifier-established correct value of x (frozen at seed time). */
+  answer: string;
+  /** IRT-ish difficulty in [0, 1]. */
+  difficulty: number;
+}
+
 export interface ContentProvider {
   getVerified(nodeId: string, modality: string): Promise<VerifiedItem | null>;
+  getPracticeItems(nodeId: string): Promise<PracticeItem[]>;
 }
+
+const ATOM_LINEAR_EQ = '00000000-0000-7000-8000-00000000a003';
+
+const ATOM_PRACTICE: PracticeItem[] = [
+  {
+    id: '00000000-0000-7000-8000-000000000101',
+    node_id: ATOM_LINEAR_EQ,
+    equation: 'x + 7 = 12',
+    answer: '5',
+    difficulty: 0.15,
+  },
+  {
+    id: '00000000-0000-7000-8000-000000000102',
+    node_id: ATOM_LINEAR_EQ,
+    equation: '2x + 3 = 7',
+    answer: '2',
+    difficulty: 0.2,
+  },
+  {
+    id: '00000000-0000-7000-8000-000000000103',
+    node_id: ATOM_LINEAR_EQ,
+    equation: '3x = 12',
+    answer: '4',
+    difficulty: 0.25,
+  },
+  {
+    id: '00000000-0000-7000-8000-000000000104',
+    node_id: ATOM_LINEAR_EQ,
+    equation: '5x - 2 = 13',
+    answer: '3',
+    difficulty: 0.4,
+  },
+  {
+    id: '00000000-0000-7000-8000-000000000105',
+    node_id: ATOM_LINEAR_EQ,
+    equation: 'x/2 = 5',
+    answer: '10',
+    difficulty: 0.5,
+  },
+  {
+    id: '00000000-0000-7000-8000-000000000106',
+    node_id: ATOM_LINEAR_EQ,
+    equation: '2(x + 3) = 10',
+    answer: '2',
+    difficulty: 0.6,
+  },
+];
 
 /** Serves the seeded, verifier-passed content for the atom (the tier-1 warm path). */
 export class SeedContentProvider implements ContentProvider {
@@ -146,6 +205,10 @@ export class SeedContentProvider implements ContentProvider {
 
   async getVerified(nodeId: string, modality: string): Promise<VerifiedItem | null> {
     return this.seed.get(`${nodeId}:${modality}`) ?? null;
+  }
+
+  async getPracticeItems(nodeId: string): Promise<PracticeItem[]> {
+    return ATOM_PRACTICE.filter((item) => item.node_id === nodeId);
   }
 }
 
