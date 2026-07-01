@@ -1,0 +1,21 @@
+[project]
+name = "classess-verifier"
+version = "0.0.0"
+description = "Correctness verifier — nothing reaches a learner unverified. Deterministic CAS (SymPy) for linear equations in one variable, a numeric-bounds check, a re-run-simulator hook, a second-model cross-check seam, a confidence gate, and stable verification hashes."
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.110",
+  "sympy>=1.12",
+  "pydantic>=2.6",
+  "classess-contracts",
+]
+
+[tool.uv.sources]
+classess-contracts = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/classess_verifier"]
