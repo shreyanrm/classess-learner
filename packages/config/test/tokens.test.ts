@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'bun:test';
-import { accent, cssVariables, radius, subjectAccents, tokens, vidyaMolten } from '../src/index';
+import {
+  accent,
+  cssVariables,
+  radius,
+  subjectAccents,
+  tokens,
+  ultramarine,
+  vidyaHighlight,
+  vidyaMolten,
+} from '../src/index';
 
 describe('design tokens', () => {
   it('reserves Molten for Vidya and never assigns it to a subject', () => {
@@ -29,5 +38,17 @@ describe('design tokens', () => {
     expect(css).toContain('--clss-ink-900: #0A0A0B;');
     expect(css).toContain('--clss-vidya-molten: #FF4D1A;');
     expect(css).toContain('--clss-radius-sm: 2px;');
+  });
+
+  it("carries Vidya's highlight palette: molten, then acid, then ultramarine", () => {
+    expect(vidyaHighlight.primary).toBe(vidyaMolten); // molten leads (her identity)
+    expect(vidyaHighlight.secondary).toBe(accent.acid); // #C2F000
+    expect(vidyaHighlight.tertiary).toBe(ultramarine);
+    // The highlight palette is her toolkit, never a subject/concept accent.
+    expect(subjectAccents).not.toContain('ultramarine');
+    const css = cssVariables();
+    expect(css).toContain('--clss-vidya-highlight-primary: #FF4D1A;');
+    expect(css).toContain('--clss-vidya-highlight-secondary: #C2F000;');
+    expect(css).toContain(`--clss-vidya-highlight-tertiary: ${ultramarine};`);
   });
 });

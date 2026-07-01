@@ -69,6 +69,20 @@ export const subjectAccents = (Object.keys(accent) as AccentName[]).filter(
   (name): name is Exclude<AccentName, 'molten'> => name !== 'molten',
 );
 
+/** Ultramarine — Vidya's tertiary highlight. Her toolkit only; not a subject/concept accent. */
+export const ultramarine = '#3A2FF5';
+
+/**
+ * Vidya's highlight + annotation palette — the colours she draws WITH when she points at the page.
+ * Distinct from the earned concept-ignite colours. Primary is her own molten, then acid, then
+ * ultramarine, used in that order as she layers emphasis.
+ */
+export const vidyaHighlight = {
+  primary: vidyaMolten, // #FF4D1A — her identity colour leads
+  secondary: accent.acid, // #C2F000
+  tertiary: ultramarine, // #3A2FF5
+} as const;
+
 // --- Shape: subtle corners; larger radii only for Vidya's jelly and panel ------------------------
 export const radius = {
   sm: 2,
@@ -153,6 +167,8 @@ export const tokens = {
   accent,
   vidyaMolten,
   subjectAccents,
+  ultramarine,
+  vidyaHighlight,
   radius,
   frost,
   space,
