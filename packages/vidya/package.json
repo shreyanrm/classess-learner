@@ -13,7 +13,8 @@
   "dependencies": {
     "@classess/config": "workspace:*",
     "@classess/motion": "workspace:*",
-    "framer-motion": "^11.11.0"
+    "framer-motion": "^11.11.0",
+    "zod": "^4.0.5"
   },
   "peerDependencies": {
     "react": ">=18"

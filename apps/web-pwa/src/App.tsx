@@ -7,10 +7,15 @@ import {
   type Session,
 } from '@classess/sdk';
 import { type Band, type ConceptState, ConceptTile, MasteryBand } from '@classess/ui';
-import { VidyaPanel, VidyaPresence, type VidyaTurn } from '@classess/vidya';
+import {
+  useRegisterTarget,
+  useVidyaBus,
+  VidyaLayer,
+  VidyaProvider,
+  type VidyaTurn,
+} from '@classess/vidya';
 import { useEffect, useMemo, useState } from 'react';
 
-/** Map a mastery band onto the ConceptTile's lifecycle state (colour is earned at independent). */
 function tileState(band: Band): ConceptState {
   if (band === 'independent') return 'mastered';
   if (band === 'not_started') return 'not_started';
@@ -18,17 +23,24 @@ function tileState(band: Band): ConceptState {
 }
 
 /**
- * Phase 0 app shell: a calm, monochrome chrome that proves the spine wires together end to end —
- * identity, the KGtoPG governed ontology + mastery band, verified seed content, and Vidya through the
- * LLM seam — all on mock/seed data. No product features yet.
+ * Phase 1 app shell. It boots the SDK, publishes its page + curriculum into the Vidya context bus,
+ * and registers the concept tile as a target Vidya can draw on. When the learner talks to her, she
+ * perceives the page and points at the actual concept — the connected presence, made visible. (The
+ * live grounded turn from the gateway wires in with Vidya's five capabilities; this shell already
+ * drives the whole bus -> dispatch -> overlay pipeline.)
  */
-export function App() {
+function AppInner() {
   const sdk = useMemo(() => createSdk(), []);
+  const bus = useVidyaBus();
   const [session, setSession] = useState<Session | null>(null);
   const [node, setNode] = useState<OntologyNode | null>(null);
   const [band, setBand] = useState<Band>('not_started');
-  const [open, setOpen] = useState(false);
   const [turns, setTurns] = useState<VidyaTurn[]>([]);
+
+  const conceptRef = useRegisterTarget<HTMLDivElement>('concept-linear-eq', {
+    kind: 'concept',
+    label: 'the linear equations concept the learner is on',
+  });
 
   useEffect(() => {
     let live = true;
@@ -54,15 +66,24 @@ export function App() {
     };
   }, [sdk]);
 
-  const send = async (text: string) => {
+  useEffect(() => {
+    bus.publishPage({ route: 'today', state: { greeting: true } });
+  }, [bus]);
+
+  useEffect(() => {
+    if (node) bus.publishCurriculum({ nodeId: node.node_id, nodeName: node.name, band });
+  }, [bus, node, band]);
+
+  const send = (text: string) => {
     setTurns((prev) => [...prev, { id: `u-${prev.length}`, role: 'user', text }]);
-    const result = await sdk.llm.invoke(
-      'vidya.turn',
-      { text },
-      { consentTier: session?.consent_tier ?? 'un_elevated' },
-    );
-    const reply =
-      (result.output as { text?: string }).text ?? 'Let us look at your working together.';
+    // Vidya perceives the page and points at the concept. She replies with a nudge, never the answer.
+    // (Task 20 swaps this for the live, verifier-grounded gateway turn returning say + actions.)
+    bus.dispatch([
+      { type: 'setMood', mood: 'thinking' },
+      { type: 'highlight', targetId: 'concept-linear-eq', level: 'primary' },
+      { type: 'annotate', targetId: 'concept-linear-eq', mark: 'lookHere', level: 'secondary' },
+    ]);
+    const reply = 'That is the topic we are on. Open it and we will pose the first step together.';
     setTurns((prev) => [...prev, { id: `v-${prev.length}`, role: 'vidya', text: reply }]);
   };
 
@@ -102,11 +123,13 @@ export function App() {
 
         <section style={{ display: 'flex', flexDirection: 'column', gap: space[2] }}>
           <span style={{ fontSize: typeScale.caption.size, color: ink[500] }}>Your next step</span>
-          <ConceptTile
-            title={node?.name ?? 'Linear equations in one variable'}
-            state={tileState(band)}
-            accent={node?.accent}
-          />
+          <div ref={conceptRef}>
+            <ConceptTile
+              title={node?.name ?? 'Linear equations in one variable'}
+              state={tileState(band)}
+              accent={node?.accent}
+            />
+          </div>
           <MasteryBand band={band} accent={node?.accent} />
         </section>
 
@@ -115,8 +138,15 @@ export function App() {
         </p>
       </main>
 
-      <VidyaPresence fixed onTap={() => setOpen((o) => !o)} />
-      <VidyaPanel open={open} onClose={() => setOpen(false)} turns={turns} onSend={send} />
+      <VidyaLayer turns={turns} onSend={send} />
     </div>
+  );
+}
+
+export function App() {
+  return (
+    <VidyaProvider>
+      <AppInner />
+    </VidyaProvider>
   );
 }
