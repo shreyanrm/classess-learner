@@ -8,6 +8,7 @@ import {
 } from '@classess/sdk';
 import { type Band, type ConceptState, ConceptTile, MasteryBand } from '@classess/ui';
 import {
+  parseActions,
   useRegisterTarget,
   useVidyaBus,
   VidyaLayer,
@@ -15,6 +16,9 @@ import {
   type VidyaTurn,
 } from '@classess/vidya';
 import { useEffect, useMemo, useState } from 'react';
+
+const LLM_MODE = (import.meta.env.VITE_LLM_MODE as 'mock' | 'live' | undefined) ?? 'mock';
+const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
 
 function tileState(band: Band): ConceptState {
   if (band === 'independent') return 'mastered';
@@ -30,7 +34,7 @@ function tileState(band: Band): ConceptState {
  * drives the whole bus -> dispatch -> overlay pipeline.)
  */
 function AppInner() {
-  const sdk = useMemo(() => createSdk(), []);
+  const sdk = useMemo(() => createSdk({ llmMode: LLM_MODE, gatewayUrl: GATEWAY_URL }), []);
   const bus = useVidyaBus();
   const [session, setSession] = useState<Session | null>(null);
   const [node, setNode] = useState<OntologyNode | null>(null);
@@ -74,17 +78,32 @@ function AppInner() {
     if (node) bus.publishCurriculum({ nodeId: node.node_id, nodeName: node.name, band });
   }, [bus, node, band]);
 
-  const send = (text: string) => {
+  const send = async (text: string) => {
     setTurns((prev) => [...prev, { id: `u-${prev.length}`, role: 'user', text }]);
-    // Vidya perceives the page and points at the concept. She replies with a nudge, never the answer.
-    // (Task 20 swaps this for the live, verifier-grounded gateway turn returning say + actions.)
-    bus.dispatch([
-      { type: 'setMood', mood: 'thinking' },
-      { type: 'highlight', targetId: 'concept-linear-eq', level: 'primary' },
-      { type: 'annotate', targetId: 'concept-linear-eq', mark: 'lookHere', level: 'secondary' },
-    ]);
-    const reply = 'That is the topic we are on. Open it and we will pose the first step together.';
-    setTurns((prev) => [...prev, { id: `v-${prev.length}`, role: 'vidya', text: reply }]);
+    // The turn goes through the SDK: mock deterministically, or the live verifier-grounded gateway
+    // (VITE_LLM_MODE=live). Either way Vidya perceives the assembled context and returns say + actions;
+    // the actions dispatch through the bus and she draws on the page.
+    bus.publishTurn({
+      recentTurns: turns.map((t) => ({ role: t.role, text: String(t.text) })),
+      lastUserInput: text,
+    });
+    const context = bus.assembleContext();
+    try {
+      const result = await sdk.llm.invoke(
+        'vidya.turn',
+        { context },
+        { consentTier: session?.consent_tier ?? 'un_elevated' },
+      );
+      const output = result.output as { say?: string; actions?: unknown[] };
+      const say = output.say ?? 'Let us look at your working together.';
+      setTurns((prev) => [...prev, { id: `v-${prev.length}`, role: 'vidya', text: say }]);
+      bus.dispatch(parseActions(output.actions ?? []));
+    } catch {
+      setTurns((prev) => [
+        ...prev,
+        { id: `v-${prev.length}`, role: 'vidya', text: 'Give me a moment, then ask me again.' },
+      ]);
+    }
   };
 
   return (

@@ -45,8 +45,13 @@ function mockOutputFor(capability: string, _input: CapabilityInput): unknown {
       };
     case 'vidya.turn':
       return {
-        text: 'What happens if you take 3 away from both sides?',
-        hint_level: 1,
+        say: 'That is the topic we are on. Open it and we will pose the first step together.',
+        actions: [
+          { type: 'setMood', mood: 'thinking' },
+          { type: 'highlight', targetId: 'concept-linear-eq', level: 'primary' },
+          { type: 'annotate', targetId: 'concept-linear-eq', mark: 'lookHere', level: 'secondary' },
+        ],
+        grounded: true,
         handed_answer: false,
       };
     case 'grade.attempt':
@@ -89,11 +94,22 @@ export class GatewayLLMProvider implements LLMProvider {
     const res = await fetch(`${this.gatewayUrl}/v1/capability/${capability}`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ input, consent_tier: ctx.consentTier }),
+      body: JSON.stringify({ consent_tier: ctx.consentTier, payload: input }),
     });
     if (res.status === 403) throw new ConsentDeniedError(capability);
     if (!res.ok) throw new Error(`gateway ${capability} failed: ${res.status}`);
-    return (await res.json()) as LLMResult;
+    const data = (await res.json()) as {
+      capability: string;
+      output: unknown;
+      track: 'track_1' | 'track_2';
+      cache_hit: boolean;
+    };
+    return {
+      capability: data.capability,
+      output: data.output,
+      track: data.track,
+      cached: data.cache_hit,
+    };
   }
 }
 

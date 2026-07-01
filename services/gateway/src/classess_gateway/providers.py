@@ -50,7 +50,14 @@ def _seed(capability: str, payload: dict[str, Any]) -> int:
 def _shape(capability: str, seed: int) -> dict[str, Any]:
     """A deterministic, capability-shaped mock payload. Calm copy: no emoji, no hype."""
     flag = seed % 2 == 0
-    if capability in {"tutor.turn", "vidya.turn", "parent.companion.turn"}:
+    if capability == "vidya.turn":
+        return {
+            "say": "Look again at the step where you moved a term across.",
+            "actions": [{"type": "setMood", "mood": "thinking"}],
+            "grounded": True,
+            "handed_answer": False,
+        }
+    if capability in {"tutor.turn", "parent.companion.turn"}:
         return {
             "message": f"mock {capability} response",
             "assistance_level": "hint",
@@ -98,6 +105,15 @@ class LiveProvider:
         payload: dict[str, Any],
         fallbacks: tuple[str, ...] = (),
     ) -> ProviderResponse:
+        # Vidya's turn is capability-specific: grounded by the verifier and returning say + actions.
+        if capability == "vidya.turn":
+            from classess_gateway.vidya import run_vidya_turn
+
+            output, tokens = run_vidya_turn(
+                provider_model=provider_model, payload=payload, fallbacks=fallbacks
+            )
+            return ProviderResponse(output=output, tokens=tokens)
+
         import litellm  # lazy: mock mode and tests never import litellm
 
         messages = payload.get("messages")

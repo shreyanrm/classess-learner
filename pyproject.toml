@@ -21,9 +21,11 @@ extend-exclude = ["docs", ".venv"]
 select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
 
 [tool.ruff.lint.per-file-ignores]
-# The atom content module is data- and prompt-heavy (a calibration dataset, an LLM system
-# prompt, spike prose). Line length is noise there; all real code-quality lints stay enforced.
+# Prompt- and data-heavy modules: an LLM system prompt, a calibration dataset, and spike prose
+# have legitimately long lines. E501 is noise there; all real code-quality lints stay enforced.
 "content/atom/**" = ["E501"]
+"services/gateway/src/classess_gateway/vidya.py" = ["E501"]
+"services/gateway/tests/test_vidya.py" = ["E501"]
 
 [tool.pytest.ini_options]
 addopts = "-q"

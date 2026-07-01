@@ -289,6 +289,7 @@ version = "0.0.0"
 source = { editable = "services/gateway" }
 dependencies = [
     { name = "classess-contracts" },
+    { name = "classess-verifier" },
     { name = "fastapi" },
     { name = "litellm" },
     { name = "pydantic" },
@@ -297,6 +298,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "classess-contracts", editable = "services/contracts" },
+    { name = "classess-verifier", editable = "services/verifier" },
     { name = "fastapi", specifier = ">=0.115" },
     { name = "litellm", specifier = ">=1.50" },
     { name = "pydantic", specifier = ">=2.7" },
