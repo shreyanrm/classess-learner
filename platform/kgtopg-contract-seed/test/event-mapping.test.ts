@@ -1,6 +1,10 @@
-import { type Actor, type Context, makeEvent } from '@classess/contracts';
 import { describe, expect, it } from 'bun:test';
-import { mapEventToPlatform, purposeForEventType, schemaVersionForType } from '../src/event-mapping';
+import { type Actor, type Context, makeEvent } from '@classess/contracts';
+import {
+  mapEventToPlatform,
+  purposeForEventType,
+  schemaVersionForType,
+} from '../src/event-mapping';
 
 const actor: Actor = {
   subject_id: '00000000-0000-7000-8000-000000000001',
@@ -11,7 +15,12 @@ const context: Context = { app: 'learner', env: 'dev', consent_tier: 'un_elevate
 
 describe('purpose taxonomy', () => {
   it('maps teaching namespaces to the learning purpose', () => {
-    for (const t of ['learn.node.entered.v1', 'practice.item.served.v1', 'vidya.opened.v1', 'onboarding.goal.set.v1']) {
+    for (const t of [
+      'learn.node.entered.v1',
+      'practice.item.served.v1',
+      'vidya.opened.v1',
+      'onboarding.goal.set.v1',
+    ]) {
       expect(purposeForEventType(t)).toBe('learning');
     }
   });

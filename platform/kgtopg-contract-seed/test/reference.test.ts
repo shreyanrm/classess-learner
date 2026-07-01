@@ -1,5 +1,5 @@
-import { type Actor, type ClassessEvent, type Context, makeEvent } from '@classess/contracts';
 import { describe, expect, it } from 'bun:test';
+import { type Actor, type ClassessEvent, type Context, makeEvent } from '@classess/contracts';
 import { ATOM_NODE_IDS } from '../src/atom-seed';
 import { InMemoryKgtopg } from '../src/reference/in-memory';
 
@@ -10,7 +10,12 @@ const actor: Actor = {
 };
 const context: Context = { app: 'learner', env: 'dev', consent_tier: 'un_elevated' };
 
-function evidence(nodeId: string, correct: boolean, independence: number, id: string): ClassessEvent {
+function evidence(
+  nodeId: string,
+  correct: boolean,
+  independence: number,
+  id: string,
+): ClassessEvent {
   return makeEvent({
     event_id: id,
     event_type: 'evidence.recorded.v1',
@@ -52,7 +57,14 @@ describe('InMemoryKgtopg — evidence and mastery', () => {
   it('reaches the independent band on repeated unaided correct evidence', async () => {
     const kg = new InMemoryKgtopg();
     for (let i = 0; i < 4; i++) {
-      await kg.consume(evidence(ATOM_NODE_IDS.linearEquations, true, 0.95, `00000000-0000-7000-8000-0000000000f${i}`));
+      await kg.consume(
+        evidence(
+          ATOM_NODE_IDS.linearEquations,
+          true,
+          0.95,
+          `00000000-0000-7000-8000-0000000000f${i}`,
+        ),
+      );
     }
     const bands = await kg.mastery.getBands(actor.subject_id);
     const target = bands.find((b) => b.node_id === ATOM_NODE_IDS.linearEquations);
@@ -64,14 +76,18 @@ describe('InMemoryKgtopg — evidence and mastery', () => {
     let seq = 0;
     const nextId = () => `00000000-0000-7000-8000-${(seq++).toString(16).padStart(12, '0')}`;
     // Nothing mastered yet: the first node with satisfied prereqs is integers (no prereqs).
-    expect((await kg.mastery.getNextBestNode(actor.subject_id))?.node_id).toBe(ATOM_NODE_IDS.integers);
+    expect((await kg.mastery.getNextBestNode(actor.subject_id))?.node_id).toBe(
+      ATOM_NODE_IDS.integers,
+    );
     // Secure integers + variables, then next-best becomes linear equations.
     for (const node of [ATOM_NODE_IDS.integers, ATOM_NODE_IDS.variables]) {
       for (let i = 0; i < 3; i++) {
         await kg.consume(evidence(node, true, 0.85, nextId()));
       }
     }
-    expect((await kg.mastery.getNextBestNode(actor.subject_id))?.node_id).toBe(ATOM_NODE_IDS.linearEquations);
+    expect((await kg.mastery.getNextBestNode(actor.subject_id))?.node_id).toBe(
+      ATOM_NODE_IDS.linearEquations,
+    );
   });
 });
 

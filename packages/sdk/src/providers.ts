@@ -44,7 +44,11 @@ function mockOutputFor(capability: string, _input: CapabilityInput): unknown {
         verification_hash: 'seed-opener-linear-eq-1',
       };
     case 'vidya.turn':
-      return { text: 'What happens if you take 3 away from both sides?', hint_level: 1, handed_answer: false };
+      return {
+        text: 'What happens if you take 3 away from both sides?',
+        hint_level: 1,
+        handed_answer: false,
+      };
     case 'grade.attempt':
       return { correct: true, rationale: 'mock grade' };
     case 'verify.math':
@@ -56,11 +60,20 @@ function mockOutputFor(capability: string, _input: CapabilityInput): unknown {
 
 /** Deterministic, network-free LLM responses. Never contacts a provider. */
 export class MockLLMProvider implements LLMProvider {
-  async invoke(capability: string, input: CapabilityInput, ctx: { consentTier: ConsentTier }): Promise<LLMResult> {
+  async invoke(
+    capability: string,
+    input: CapabilityInput,
+    ctx: { consentTier: ConsentTier },
+  ): Promise<LLMResult> {
     if (ELEVATED_ONLY.has(capability) && ctx.consentTier !== 'elevated') {
       throw new ConsentDeniedError(capability);
     }
-    return { capability, output: mockOutputFor(capability, input), track: 'track_2', cached: false };
+    return {
+      capability,
+      output: mockOutputFor(capability, input),
+      track: 'track_2',
+      cached: false,
+    };
   }
 }
 
@@ -68,7 +81,11 @@ export class MockLLMProvider implements LLMProvider {
 export class GatewayLLMProvider implements LLMProvider {
   constructor(private readonly gatewayUrl: string) {}
 
-  async invoke(capability: string, input: CapabilityInput, ctx: { consentTier: ConsentTier }): Promise<LLMResult> {
+  async invoke(
+    capability: string,
+    input: CapabilityInput,
+    ctx: { consentTier: ConsentTier },
+  ): Promise<LLMResult> {
     const res = await fetch(`${this.gatewayUrl}/v1/capability/${capability}`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -115,7 +132,10 @@ export class SeedContentProvider implements ContentProvider {
 // --- Messaging (parent) -------------------------------------------------------------------------
 
 export interface MessagingProvider {
-  sendParentDigest(msg: { to: string; artifact: unknown }): Promise<{ delivered: boolean; mode: string }>;
+  sendParentDigest(msg: {
+    to: string;
+    artifact: unknown;
+  }): Promise<{ delivered: boolean; mode: string }>;
 }
 
 /** Renders a digest preview; never sends (WhatsApp goes live Phase 2-3). */

@@ -7,9 +7,9 @@
  * prove the atom. The app calls these through the SDK; it never reads platform tables directly.
  */
 
-export * from './dto';
-export * from './interface';
-export * from './event-mapping';
 export * from './atom-seed';
-export * from './relay';
+export * from './dto';
+export * from './event-mapping';
+export * from './interface';
 export { InMemoryKgtopg, type InMemoryKgtopgOptions } from './reference/in-memory';
+export * from './relay';

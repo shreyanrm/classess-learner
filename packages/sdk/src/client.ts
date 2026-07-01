@@ -33,7 +33,9 @@ export function createSdk(overrides: Partial<SdkConfig> = {}): Sdk {
 
   if (!config.devAuth) {
     // The real Supabase identity is built at Phase 4; until then DEV_AUTH must be true.
-    throw new Error('DEV_AUTH=false requires the Phase 4 Supabase identity, which is not built yet.');
+    throw new Error(
+      'DEV_AUTH=false requires the Phase 4 Supabase identity, which is not built yet.',
+    );
   }
   const identity = new DevMockIdentity(config);
 

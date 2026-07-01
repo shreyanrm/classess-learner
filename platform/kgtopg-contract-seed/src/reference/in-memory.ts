@@ -58,7 +58,9 @@ export class InMemoryKgtopg implements KGtoPG, EventConsumer {
       },
       compileCourse: async (spec) => {
         const nodes = spec.seedNodeIds?.length
-          ? spec.seedNodeIds.map((id) => this.nodes.get(id)).filter((n): n is OntologyNode => n != null)
+          ? spec.seedNodeIds
+              .map((id) => this.nodes.get(id))
+              .filter((n): n is OntologyNode => n != null)
           : [...this.nodes.values()].sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0));
         return { course_id: `course-${spec.title.toLowerCase().replace(/\s+/g, '-')}`, nodes };
       },
@@ -103,13 +105,22 @@ export class InMemoryKgtopg implements KGtoPG, EventConsumer {
     let point: { nodeId: string; ev: EvidencePoint } | null = null;
 
     if (event.event_type === 'evidence.recorded.v1') {
-      point = { nodeId: event.payload.node_id, ev: { correct: event.payload.correct, independence: event.payload.independence } };
+      point = {
+        nodeId: event.payload.node_id,
+        ev: { correct: event.payload.correct, independence: event.payload.independence },
+      };
     } else if (event.event_type === 'practice.item.answered.v1') {
-      point = { nodeId: event.payload.node_id, ev: { correct: event.payload.correct, independence: event.payload.independence_signal } };
+      point = {
+        nodeId: event.payload.node_id,
+        ev: { correct: event.payload.correct, independence: event.payload.independence_signal },
+      };
     } else if (event.event_type === 'learn.attempt.submitted.v1') {
       const raw = event.payload.independence_signal;
       // Aided attempts count for less toward the Independence keystone.
-      point = { nodeId: event.payload.node_id, ev: { correct: event.payload.correct, independence: event.payload.aided ? raw * 0.5 : raw } };
+      point = {
+        nodeId: event.payload.node_id,
+        ev: { correct: event.payload.correct, independence: event.payload.aided ? raw * 0.5 : raw },
+      };
     }
 
     if (!point) return;
@@ -166,9 +177,7 @@ export class InMemoryKgtopg implements KGtoPG, EventConsumer {
 
   private answerTwin(subjectId: string, question: string): TwinAnswer {
     const bands = this.bandsFor(subjectId);
-    const weakest = bands
-      .slice()
-      .sort((a, b) => this.bandRank[a.band] - this.bandRank[b.band])[0];
+    const weakest = bands.slice().sort((a, b) => this.bandRank[a.band] - this.bandRank[b.band])[0];
     const node = weakest ? this.nodes.get(weakest.node_id) : undefined;
     const answer = node
       ? `Right now your attention is best spent on ${node.name.toLowerCase()}. It is the next step that unlocks the most.`

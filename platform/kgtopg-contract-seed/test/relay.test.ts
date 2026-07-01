@@ -1,5 +1,5 @@
-import { type Actor, type ClassessEvent, type Context, makeEvent } from '@classess/contracts';
 import { describe, expect, it } from 'bun:test';
+import { type Actor, type ClassessEvent, type Context, makeEvent } from '@classess/contracts';
 import type { EventConsumer } from '../src/interface';
 import { InMemoryKgtopg } from '../src/reference/in-memory';
 import { InMemoryOutboxSource, type OutboxRow, runRelayOnce } from '../src/relay';

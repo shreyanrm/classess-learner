@@ -5,11 +5,6 @@
  * model directly.
  */
 
-export * from './config';
-export * from './identity';
-export * from './providers';
-export * from './client';
-
 // Convenience re-exports so the app has a single import surface for the governed-view types.
 export type {
   ConsentTierView,
@@ -18,3 +13,8 @@ export type {
   OntologyNode,
   TwinAnswer,
 } from '@classess/kgtopg-contract-seed';
+export { ATOM_NODE_IDS, ATOM_TARGET_NODE_ID, MATH_ACCENT } from '@classess/kgtopg-contract-seed';
+export * from './client';
+export * from './config';
+export * from './identity';
+export * from './providers';

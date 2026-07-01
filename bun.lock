@@ -15,6 +15,7 @@
       "dependencies": {
         "@classess/config": "workspace:*",
         "@classess/motion": "workspace:*",
+        "@classess/sdk": "workspace:*",
         "@classess/ui": "workspace:*",
         "@classess/vidya": "workspace:*",
         "react": "^19.0.0",

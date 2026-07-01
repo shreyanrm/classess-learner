@@ -1,5 +1,5 @@
-import { ATOM_NODE_IDS } from '@classess/kgtopg-contract-seed';
 import { describe, expect, it } from 'bun:test';
+import { ATOM_NODE_IDS } from '@classess/kgtopg-contract-seed';
 import { AuthNotEnabledError, ConsentDeniedError, createSdk, DevMockIdentity } from '../src/index';
 
 describe('identity boundary', () => {
@@ -21,8 +21,17 @@ describe('identity boundary', () => {
       llmMode: 'mock',
       contentMode: 'seed',
     });
-    await expect(id.auth.requestPhoneOtp('+910000000000')).rejects.toBeInstanceOf(AuthNotEnabledError);
-    await expect(id.auth.recordParentalConsent({ subject_id: 'x', guardian_ref: 'g', verifier: 'digilocker', purposes: [] })).rejects.toBeInstanceOf(AuthNotEnabledError);
+    await expect(id.auth.requestPhoneOtp('+910000000000')).rejects.toBeInstanceOf(
+      AuthNotEnabledError,
+    );
+    await expect(
+      id.auth.recordParentalConsent({
+        subject_id: 'x',
+        guardian_ref: 'g',
+        verifier: 'digilocker',
+        purposes: [],
+      }),
+    ).rejects.toBeInstanceOf(AuthNotEnabledError);
   });
 
   it('refuses to construct with DEV_AUTH=false (real auth is Phase 4)', () => {
