@@ -135,7 +135,11 @@ export class SeedContentProvider implements ContentProvider {
         node_id: '00000000-0000-7000-8000-00000000a003',
         modality: 'opener',
         verification_hash: 'seed-opener-linear-eq-1',
-        body: { prompt: 'Find the value of x that makes 2x + 3 = 7 true.', interactive: true },
+        body: {
+          prompt: 'Find the value of x that makes this equation true. Show each step.',
+          equation: '2x + 3 = 7',
+          interactive: true,
+        },
       },
     ],
   ]);
