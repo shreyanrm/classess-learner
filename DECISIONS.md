@@ -29,3 +29,5 @@ Where `CONTEXT.md` and `DESIGN.md` are silent on a taste call, the open question
 - **Preventive evaluation (Mode 3).** Snap-a-problem / show-your-work BEFORE submission: graduated hints to fix it themselves — never the final answer, never forced. Queued as the multimodal wave-5 flagship.
 - **Trajectory view for the twin.** Actual path solid, predicted path dotted — "where you're heading" as quiet hero art, recalculated per measurable moment.
 - **Hyperlocalization framing for the engines.** Generated examples use locally familiar money/food/cricket contexts per board and region — relevance, not translation.
+
+- **2026-07-06 (afternoon) · Design system, second cut (owner-directed).** Pure white canvas, black text, cool neutrals, vibrant brand-accent pops; subtle 3px radius on every card/button/chip/input; one button system (solid ink/tonal/ghost, fixed heights, 4px magnetic pull); end-to-end viewport layouts (padding, not boxed max-widths); entrance choreography (cascade/rise staggered springs with de-blur) as the page-load signature; Google Sans + Caveat. Overrides DESIGN.md §2 values where they conflict.
