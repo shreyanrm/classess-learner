@@ -533,35 +533,46 @@ export function You() {
                   />
                 ))}
               </div>
-              {/* the month at a glance — a quiet heat map, never a guilt trip */}
-              <div
-                role="img"
-                aria-label="this month's activity"
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(10, 16px)',
-                  gap: 5,
-                  marginTop: 4,
-                }}
-              >
-                {Array.from({ length: 30 }, (_, i) => {
-                  const d = new Date(Date.now() - (29 - i) * 86400000).toISOString().slice(0, 10);
-                  const on = marks.includes(d);
-                  return (
-                    <span
-                      key={d}
-                      title={d}
-                      style={{
-                        width: 16,
-                        height: 16,
-                        borderRadius: 3,
-                        background: on ? 'var(--clss-ultramarine)' : 'rgba(31,53,224,0.09)',
-                        opacity: on ? 0.9 : 1,
-                      }}
-                    />
-                  );
-                })}
-              </div>
+              {/* the month at a glance — intensity, not just presence */}
+            <div
+              style={{
+                fontSize: '0.7rem',
+                fontWeight: 600,
+                letterSpacing: '0.14em',
+                color: '#989AA4',
+                marginTop: 18,
+                marginBottom: 10,
+              }}
+            >
+              ACTIVITY · 30 DAYS
+            </div>
+            <div
+              role="img"
+              aria-label="this month's activity intensity"
+              style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 1fr)', gap: 6, maxWidth: 380 }}
+            >
+              {Array.from({ length: 30 }, (_, i) => {
+                const d = new Date(Date.now() - (29 - i) * 86400000).toISOString().slice(0, 10);
+                let n = 0;
+                try {
+                  n = (JSON.parse(localStorage.getItem('clss-activity-counts-v1') ?? '{}') as Record<string, number>)[d] ?? 0;
+                } catch {
+                  n = 0;
+                }
+                if (n === 0 && marks.includes(d)) n = 1;
+                const RAMP = ['#EFF1F5', '#D5EDDD', '#A9DCBB', '#6FC28D', '#3FA764'];
+                const fill = RAMP[Math.min(4, n === 0 ? 0 : n <= 1 ? 1 : n <= 3 ? 2 : n <= 6 ? 3 : 4)];
+                return (
+                  <motion.span
+                    key={d}
+                    title={`${d} — ${n} moments`}
+                    whileHover={{ scale: 1.18 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+                    style={{ aspectRatio: '1', borderRadius: 4, background: fill, display: 'block' }}
+                  />
+                );
+              })}
+            </div>
               <div style={whisper}>rest is part of learning — quiet days are allowed</div>
             </div>
           </Section>

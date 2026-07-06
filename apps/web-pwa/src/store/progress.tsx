@@ -78,6 +78,18 @@ function load(): Persisted {
   return { xp: 0, streakDays: 1, lastActiveDay: today(), completedTopics: [], awardedOnce: [] };
 }
 
+function bumpToday() {
+  try {
+    const key = 'clss-activity-counts-v1';
+    const counts = JSON.parse(localStorage.getItem(key) ?? '{}') as Record<string, number>;
+    const t = today();
+    counts[t] = (counts[t] ?? 0) + 1;
+    localStorage.setItem(key, JSON.stringify(counts));
+  } catch {
+    // storage unavailable — heat map just stays cool
+  }
+}
+
 function save(p: Persisted) {
   try {
     localStorage.setItem(KEY, JSON.stringify(p));
