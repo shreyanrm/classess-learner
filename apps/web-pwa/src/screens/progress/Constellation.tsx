@@ -1,10 +1,10 @@
 'use client';
 
 /**
- * The living constellation — the knowledge twin as hero art on the app's one nocturne
- * (DESIGN.md §11). A deep-space sky: a dust field of far suns in the subject hues, the
- * prerequisite graph as faint light-lines, and the learner's concepts as glowing stars.
- * Independent mastery burns with a halo and a cross flare; guided mastery is a lit ring;
+ * The living constellation — the knowledge twin as hero art on a bright daylight field
+ * (DESIGN.md §11). A day sky: a dust field of far suns in the subject hues, the
+ * prerequisite graph as faint hairlines, and the learner's concepts as ultramarine stars.
+ * Independent mastery glows with a halo and a cross flare; guided mastery is an unfilled ring;
  * unlit concepts wait as faint points. Stars breathe, a mote drifts the whole sky, and a
  * newly earned star replays its ignite once — light catching and running down its edges.
  */
@@ -21,18 +21,17 @@ import {
   VIEW_W,
 } from './twin-data';
 
-/** Ultramarine lifted to glow against the dark — mastery light, nocturne register. */
-const GLOW = '#96A4FF';
-const GLOW_CORE = '#CBD4FF';
+/** Ultramarine as mastery light — daylight register, ink-legible against white. */
+const GLOW = '#1F35E0';
 
-/** Far suns in the subject hues — the skies of subjects still to come. */
+/** Far suns in the subject hues — the skies of subjects still to come, light-legible. */
 const DUST_HUES = [
-  'rgba(235,238,255,0.5)',
-  'rgba(235,238,255,0.5)',
-  'rgba(150,164,255,0.45)',
-  'rgba(95,212,224,0.45)',
-  'rgba(240,180,92,0.4)',
-  'rgba(240,123,184,0.35)',
+  'rgba(92,94,102,0.26)',
+  'rgba(92,94,102,0.26)',
+  'rgba(31,53,224,0.3)',
+  'rgba(15,163,177,0.3)',
+  'rgba(240,160,48,0.35)',
+  'rgba(204,30,122,0.26)',
 ];
 
 interface Dust {

@@ -307,15 +307,15 @@ export function ProgressScreen() {
                 border: 'none',
                 outline: 'none',
                 background: 'transparent',
-                color: '#F2F4FF',
+                color: '#121316',
               }}
             />
           </div>
         </form>
-        <style>{'.twin-ask-input::placeholder{color:rgba(233,236,252,0.5)}'}</style>
+        <style>{'.twin-ask-input::placeholder{color:#989AA4}'}</style>
       </motion.div>
 
-      {/* the star card — frost over the nocturne, quiet, to the side */}
+      {/* the star card — light glass over the daylight field, quiet, to the side */}
       <AnimatePresence>
         {selected && (
           <motion.aside
@@ -336,10 +336,10 @@ export function ProgressScreen() {
                     width: 300,
                   }
                 : { left: 28, right: 28, bottom: 128 }),
-              background: 'rgba(12,14,26,0.66)',
-              backdropFilter: 'blur(18px)',
-              WebkitBackdropFilter: 'blur(18px)',
-              border: '1px solid rgba(255,255,255,0.14)',
+              background: 'rgba(255,255,255,0.72)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              border: '1px solid #E9E9EE',
               borderRadius: 3,
               padding: '18px 18px 16px',
               zIndex: 20,
@@ -355,7 +355,7 @@ export function ProgressScreen() {
                 right: 10,
                 border: 'none',
                 background: 'transparent',
-                color: 'rgba(233,236,252,0.55)',
+                color: '#989AA4',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 padding: 4,
@@ -368,7 +368,7 @@ export function ProgressScreen() {
               style={{
                 fontSize: '1rem',
                 fontWeight: 550,
-                color: '#F2F4FF',
+                color: '#121316',
                 letterSpacing: '-0.01em',
                 paddingRight: 18,
               }}
@@ -382,13 +382,13 @@ export function ProgressScreen() {
                 alignItems: 'center',
                 gap: 8,
                 fontSize: '0.9rem',
-                color: '#C7CDEA',
+                color: '#5C5E66',
               }}
             >
               <StateDot state={selectedState} />
               {BAND_LANGUAGE[selectedState]}
             </div>
-            <div style={{ marginTop: 4, fontSize: '0.8rem', color: 'rgba(233,236,252,0.55)' }}>
+            <div style={{ marginTop: 4, fontSize: '0.8rem', color: '#989AA4' }}>
               {evidenceLine}
             </div>
             <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
