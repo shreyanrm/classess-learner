@@ -36,7 +36,7 @@ def req(tier: ConsentTier, **payload: object) -> CapabilityRequest:
 def test_registry_is_complete_and_valid() -> None:
     validate_registry()  # raises on a malformed registry
     assert set(capabilities()) == set(EXPECTED_CAPABILITIES)
-    assert len(capabilities()) == 12
+    assert len(capabilities()) == 16
     for name in capabilities():
         assert policy(name).capability == name
 
@@ -128,7 +128,7 @@ def test_http_surface() -> None:
     assert client.get("/healthz").json()["status"] == "ok"
 
     caps = client.get("/v1/capabilities").json()
-    assert len(caps) == 12
+    assert len(caps) == 16
 
     denied = client.post(
         "/v1/capability/archetype.classify",

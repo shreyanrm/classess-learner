@@ -8,6 +8,7 @@ fragments (``#...``) or inline ``data:image/`` payloads. Anything unusable retur
 
 from __future__ import annotations
 
+import re
 import xml.etree.ElementTree as ET
 
 _SVG_NS = "http://www.w3.org/2000/svg"
@@ -20,9 +21,14 @@ def _local(tag: str) -> str:
     return tag.rsplit("}", 1)[-1]
 
 
+_RASTER_DATA = ("data:image/png;base64,", "data:image/jpeg;base64,", "data:image/webp;base64,")
+
+
 def _href_allowed(value: str) -> bool:
-    v = value.strip()
-    return v.startswith("#") or v.startswith("data:image/")
+    # Fragments and raster data images only. data:image/svg+xml is explicitly out —
+    # a nested SVG payload is a sanitizer bypass, not an image.
+    v = value.strip().lower()
+    return v.startswith("#") or v.startswith(_RASTER_DATA)
 
 
 def _scrub(el: ET.Element) -> None:
@@ -47,9 +53,10 @@ def sanitize_svg(text: str) -> str | None:
     """Return a clean inline SVG string, or ``None`` if the input is unusable."""
     if not text:
         return None
-    # No DTDs, ever: kills XXE and entity-expansion (billion laughs) before parsing.
-    lowered = text.lower()
-    if "<!doctype" in lowered or "<!entity" in lowered:
+    # No markup declarations of any kind (DOCTYPE, ENTITY, CDATA — anything but comments):
+    # kills XXE and entity-expansion (billion laughs) BEFORE the parser ever runs, without
+    # relying on string spellings a crafted payload could dodge.
+    if re.search(r"<!(?!--)", text):
         return None
     start, end = text.find("<svg"), text.rfind("</svg>")
     if start < 0 or end < 0:

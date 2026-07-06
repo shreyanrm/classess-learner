@@ -20,3 +20,12 @@ Where `CONTEXT.md` and `DESIGN.md` are silent on a taste call, the open question
 - **2026-07-06 · Did-you-know.** Served from a curated seed list rotating deterministically by day (fresh daily per the directive); live-generation via the gateway can replace the list without UI change.
 - **2026-07-06 · Catalog verification source.** Khan Academy's NCERT-aligned course trees (e.g. khanacademy.org/math/ncert-math-class-9-new) are the sanctioned cross-check for the generated catalogs (owner directive). Verification pass queued for a Sonnet labor agent; catalogs keep `provenance: model-knowledge` until it runs.
 - **2026-07-06 · Graphics system.** No stock illustration. Generative "concept sigils" (deterministic geometric line-art per topic id, igniting ultramarine on mastery), hand-drawn subject glyphs, chapter filigrees, and empty-state constellations — `apps/web-pwa/src/ui/art.tsx`. Art is identity, not decoration, and scales to every topic with zero assets.
+
+## Picked from the Classess School platform doc (2026-07-06 — owner said take what adds value)
+
+- **Explainable intelligence as product law.** Every Vidya recommendation/proactive chip carries: why it appeared, the evidence behind it, a confidence band, and what ignoring it costs. Nothing she suggests is a black box. (Folded into the wave-4 orchestrator missions.)
+- **The full workflow loop with a measured tail.** Observe → interpret → recommend → approve → execute → **outcome → learn**: her suggestions record whether they were taken and whether they worked (events), so the next recommendation is sharper. 
+- **"I think I'm right" re-grade path** on evaluated answers (boss + practice): the learner can contest, she re-examines with the verifier, and dignity is preserved either way.
+- **Preventive evaluation (Mode 3).** Snap-a-problem / show-your-work BEFORE submission: graduated hints to fix it themselves — never the final answer, never forced. Queued as the multimodal wave-5 flagship.
+- **Trajectory view for the twin.** Actual path solid, predicted path dotted — "where you're heading" as quiet hero art, recalculated per measurable moment.
+- **Hyperlocalization framing for the engines.** Generated examples use locally familiar money/food/cricket contexts per board and region — relevance, not translation.

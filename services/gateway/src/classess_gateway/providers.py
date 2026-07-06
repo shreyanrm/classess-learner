@@ -104,6 +104,12 @@ class MockProvider:
         payload: dict[str, Any],
         fallbacks: tuple[str, ...] = (),
     ) -> ProviderResponse:
+        if capability.startswith("engine."):
+            from classess_gateway.plexus import run_engine
+
+            return run_engine(
+                capability=capability, payload=payload, provider_model=provider_model, live=False
+            )
         seed = _seed(capability, payload)
         return ProviderResponse(output=_shape(capability, seed), tokens=(seed % 500) + 1)
 
@@ -182,6 +188,17 @@ class LiveProvider:
         if capability == "generate.course":
             return _generate_course(
                 provider_model=provider_model, payload=payload, fallbacks=fallbacks
+            )
+
+        if capability.startswith("engine."):
+            from classess_gateway.plexus import run_engine
+
+            return run_engine(
+                capability=capability,
+                payload=payload,
+                provider_model=provider_model,
+                live=True,
+                fallbacks=fallbacks,
             )
 
         import litellm  # lazy: mock mode and tests never import litellm
