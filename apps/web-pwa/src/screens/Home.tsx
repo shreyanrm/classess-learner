@@ -11,7 +11,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { learner } from '../data/catalog';
 import { useRouter } from '../shell/router';
-import { AuroraButton, Kbd, MagneticButton, SparkIcon, WaveformIcon } from '../ui/kit';
+import { AuroraButton, cascade, Kbd, MagneticButton, rise, SparkIcon, WaveformIcon } from '../ui/kit';
 import { ClassessLogo } from '../ui/Logo';
 import { useVidyaChat } from '../vidya/chat';
 import { useVidyaVoice } from '../vidya/voice';
@@ -159,7 +159,10 @@ export function Home() {
       </div>
 
       {/* Vidya, front door */}
-      <div
+      <motion.div
+        variants={cascade}
+        initial="hidden"
+        animate="show"
         style={{
           flex: 1,
           display: 'flex',
@@ -171,11 +174,11 @@ export function Home() {
           gap: 0,
         }}
       >
-        <VidyaBody size={116} mood={busy ? 'thinking' : mood} gaze="pointer" label="Vidya" />
+        <motion.div variants={rise}>
+          <VidyaBody size={116} mood={busy ? 'thinking' : mood} gaze="pointer" label="Vidya" />
+        </motion.div>
         <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.5, ease: [0.2, 0, 0, 1] }}
+          variants={rise}
           style={{
             marginTop: 28,
             fontSize: '1.7rem',
@@ -186,9 +189,9 @@ export function Home() {
         >
           {greeting(learner.name)}
         </motion.div>
-        <div style={{ marginTop: 10, color: '#5C5E66', fontSize: '0.98rem' }}>
+        <motion.div variants={rise} style={{ marginTop: 10, color: '#5C5E66', fontSize: '0.98rem' }}>
           Ask me anything, or take a door
-        </div>
+        </motion.div>
 
         {conversation.length > 0 && (
           <div
@@ -290,7 +293,7 @@ export function Home() {
               ask
             </MagneticButton>
           )}
-        </form>
+        </motion.form>
         {voiceNote && (
           <div style={{ marginTop: 8, color: 'var(--clss-ink-500)', fontSize: '0.8rem' }}>
             voice arrives with a key
@@ -341,10 +344,10 @@ export function Home() {
               <SparkIcon size={11} /> {c.label}
             </button>
           ))}
-        </div>
+        </motion.div>
 
         {/* the two doors — the product's main features carry the aurora */}
-        <div style={{ display: 'flex', gap: 16, marginTop: 48 }}>
+        <motion.div variants={rise} style={{ display: 'flex', gap: 16, marginTop: 56 }}>
           <AuroraButton
             size="lg"
             onClick={() => router.navigate({ name: 'learn' })}
@@ -359,8 +362,8 @@ export function Home() {
           >
             Practice
           </AuroraButton>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       <div
         style={{

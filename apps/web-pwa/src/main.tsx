@@ -18,7 +18,7 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   /* Paper. Emptiness is the premium signal (DESIGN.md §2). */
-  background: #FAFAFB;
+  background: #FFFFFF;
 }
 /* Type as craft: confident, tightly-tracked display; balanced headings; tidy prose. */
 h1, h2, h3, h4 { letter-spacing: -0.022em; text-wrap: balance; margin: 0; }

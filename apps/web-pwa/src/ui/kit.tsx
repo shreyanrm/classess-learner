@@ -13,7 +13,7 @@ import { type CSSProperties, type ReactNode, useCallback, useRef, useState } fro
 
 // --- The surface language (cool neutrals) ----------------------------------------------------------
 export const surface = {
-  page: '#FAFAFB',
+  page: '#FFFFFF',
   card: '#FFFFFF',
   cardBorder: '#E9E9EE',
   cardHover: '#FCFCFE',
@@ -424,5 +424,45 @@ export function SparkIcon({ size = 12, color = '#1F35E0' }: { size?: number; col
         fill={color}
       />
     </svg>
+  );
+}
+
+// --- Entrance choreography ---------------------------------------------------------------------------
+/** Parent variants: children cascade in on staggered springs. */
+export const cascade = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.04 } },
+} as const;
+
+/** Child variants: rise, settle, and come into focus. */
+export const rise = {
+  hidden: { opacity: 0, y: 22, filter: 'blur(6px)' },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: { type: 'spring', stiffness: 230, damping: 26, mass: 0.9 },
+  },
+} as const;
+
+/** One-off reveal for elements outside a cascade. */
+export function Reveal({
+  children,
+  delay = 0,
+  style,
+}: {
+  children: ReactNode;
+  delay?: number;
+  style?: CSSProperties;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 22, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 230, damping: 26, mass: 0.9, delay }}
+      style={style}
+    >
+      {children}
+    </motion.div>
   );
 }
