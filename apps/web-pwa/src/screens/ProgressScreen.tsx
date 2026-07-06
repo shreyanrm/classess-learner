@@ -1,10 +1,10 @@
 'use client';
 
 /**
- * Progress — the knowledge twin as hero (DESIGN.md §8, §11). The app's one nocturne: a deep-space
- * stage panel where nebulae wash in the subject hues and every concept is a star. One line of
- * identity above the sky, one calm question floating on frost at its foot. No dashboards, no
- * number cards. Tap a star for a quiet frost card: plain-language mastery, evidence, two doors.
+ * Progress — the knowledge twin as hero (DESIGN.md §8, §11). A daylight field: a bright white
+ * sky where nebulae wash in the subject hues and every concept is a star. One line of
+ * identity above the sky, one calm question floating on glass at its foot. No dashboards, no
+ * number cards. Tap a star for a quiet glass card: plain-language mastery, evidence, two doors.
  */
 
 import { ATOM_NODE_IDS, type OntologyNode } from '@classess/sdk';
@@ -32,21 +32,21 @@ import {
   writeSeen,
 } from './progress/twin-data';
 
-/** The nocturne — nebulae in the subject hues over deep ink. The one dark surface in the app. */
-const NOCTURNE = [
-  'radial-gradient(58% 46% at 18% 12%, rgba(49,72,255,0.32), transparent 62%)',
-  'radial-gradient(44% 38% at 84% 26%, rgba(15,163,177,0.18), transparent 64%)',
-  'radial-gradient(46% 42% at 62% 88%, rgba(204,30,122,0.14), transparent 66%)',
-  'radial-gradient(30% 26% at 38% 60%, rgba(240,160,48,0.07), transparent 70%)',
-  '#06070D',
+/** The daylight field — nebulae in the subject hues over white. Airy, bright, premium. */
+const DAYLIGHT = [
+  'radial-gradient(58% 46% at 18% 12%, rgba(49,72,255,0.14), transparent 62%)',
+  'radial-gradient(44% 38% at 84% 26%, rgba(15,163,177,0.1), transparent 64%)',
+  'radial-gradient(46% 42% at 62% 88%, rgba(204,30,122,0.08), transparent 66%)',
+  'radial-gradient(30% 26% at 38% 60%, rgba(240,160,48,0.06), transparent 70%)',
+  '#FFFFFF',
 ].join(', ');
 
-/** The card's small echo of the star it describes — nocturne register. */
+/** The card's small echo of the star it describes — daylight register. */
 function StateDot({ state }: { state: StarState }) {
   const base = { width: 9, height: 9, borderRadius: '50%', flexShrink: 0 } as const;
-  if (state === 'independent') return <span style={{ ...base, background: '#96A4FF' }} />;
-  if (state === 'supported') return <span style={{ ...base, border: '1.25px solid #96A4FF' }} />;
-  return <span style={{ ...base, background: 'rgba(233,236,252,0.3)' }} />;
+  if (state === 'independent') return <span style={{ ...base, background: '#1F35E0' }} />;
+  if (state === 'supported') return <span style={{ ...base, border: '1.25px solid #1F35E0' }} />;
+  return <span style={{ ...base, background: '#E3E5EE' }} />;
 }
 
 export function ProgressScreen() {
@@ -217,7 +217,7 @@ export function ProgressScreen() {
         </header>
       </Reveal>
 
-      {/* the nocturne — the twin's deep-space stage, the one dark surface in the app */}
+      {/* the daylight field — the twin's bright sky, white washed with the subject hues */}
       <motion.div
         initial={reduced ? false : { opacity: 0, y: 26, filter: 'blur(8px)' }}
         animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
@@ -229,7 +229,8 @@ export function ProgressScreen() {
           margin: '18px clamp(14px, 3vw, 44px) clamp(14px, 2.5vh, 26px)',
           borderRadius: 3,
           overflow: 'hidden',
-          background: NOCTURNE,
+          background: DAYLIGHT,
+          border: '1px solid #E9E9EE',
         }}
       >
         {/* a slow aurora drifting behind the stars — alive even at rest */}
@@ -242,7 +243,7 @@ export function ProgressScreen() {
               position: 'absolute',
               inset: '-35%',
               background:
-                'conic-gradient(from 0deg at 50% 50%, rgba(49,72,255,0.1), rgba(204,30,122,0.05), rgba(15,163,177,0.08), rgba(240,160,48,0.04), rgba(49,72,255,0.1))',
+                'conic-gradient(from 0deg at 50% 50%, rgba(49,72,255,0.06), rgba(204,30,122,0.03), rgba(15,163,177,0.05), rgba(240,160,48,0.025), rgba(49,72,255,0.06))',
               filter: 'blur(60px)',
               pointerEvents: 'none',
             }}
@@ -258,7 +259,7 @@ export function ProgressScreen() {
           />
         </div>
 
-        {/* ask your twin — one calm question floating on frost at the sky's foot */}
+        {/* ask your twin — one calm question floating on glass at the sky's foot */}
         <form
           onSubmit={submitQuery}
           style={{
@@ -274,7 +275,7 @@ export function ProgressScreen() {
               marginBottom: 6,
               textAlign: 'center',
               fontSize: '0.8rem',
-              color: 'rgba(233,236,252,0.62)',
+              color: '#5C5E66',
               minHeight: 18,
             }}
           >
@@ -282,10 +283,10 @@ export function ProgressScreen() {
           </div>
           <div
             style={{
-              background: 'rgba(12,14,26,0.44)',
+              background: 'rgba(255,255,255,0.72)',
               backdropFilter: 'blur(16px)',
               WebkitBackdropFilter: 'blur(16px)',
-              border: '1px solid rgba(255,255,255,0.16)',
+              border: '1px solid #E9E9EE',
               borderRadius: 3,
               display: 'flex',
             }}
