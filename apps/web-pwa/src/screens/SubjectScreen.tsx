@@ -30,8 +30,11 @@ function topicRoute(topicId: string, intent: Intent) {
 
 function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
   const router = useRouter();
-  const { completed } = useProgress();
+  const { completed, topicProgress } = useProgress();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [hover, setHover] = useState(false);
+  const p = completed.has(topic.id) ? 1 : (topicProgress[topic.id] ?? 0);
+  const fillTint = p >= 0.7 ? 'var(--clss-feedback-correctSoft)' : 'rgba(178,106,0,0.12)';
 
   const mastered = completed.has(topic.id);
   const unmet = mastered ? [] : unmetPrereqs(topic, completed);
@@ -45,15 +48,23 @@ function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
       <motion.button
         type="button"
         onClick={() => (gated ? setConfirmOpen((o) => !o) : open(topic.id))}
-        whileHover={{ x: 3 }}
-        whileTap={{ scale: 0.995 }}
+        onPointerEnter={() => setHover(true)}
+        onPointerLeave={() => setHover(false)}
+        whileHover={{ x: 3, y: -1 }}
+        whileTap={{ scale: 0.99 }}
         transition={{ type: 'spring', stiffness: 380, damping: 26 }}
         style={{
           width: '100%',
           textAlign: 'left',
-          background: 'transparent',
-          border: 'none',
-          padding: '13px 4px',
+          background:
+            p > 0
+              ? `linear-gradient(90deg, ${fillTint} ${p * 100}%, transparent ${p * 100}%)`
+              : hover
+                ? 'var(--clss-ink-100)'
+                : 'transparent',
+          border: hover ? '0.5px solid var(--clss-ink-300)' : '0.5px solid var(--clss-hairline-on-paper)',
+          borderRadius: 'var(--clss-radius-sm)',
+          padding: '13px 12px',
           cursor: 'pointer',
           fontFamily: 'inherit',
           display: 'flex',
@@ -78,9 +89,9 @@ function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              color: 'var(--clss-ultramarine)',
+              color: 'var(--clss-feedback-correct)',
               fontSize: '0.82rem',
-              fontWeight: 500,
+              fontWeight: 600,
             }}
           >
             ✓ mastered

@@ -42,6 +42,7 @@ export interface XpBloom {
 
 interface Persisted {
   xp: number;
+  topicProgress?: Record<string, number>;
   streakDays: number;
   lastActiveDay: string; // YYYY-MM-DD
   completedTopics: string[];
@@ -86,6 +87,10 @@ export interface ProgressStore {
   xp: number;
   streakDays: number;
   completed: ReadonlySet<string>;
+  /** Furthest fraction reached inside each topic's course (0..1). */
+  topicProgress: Record<string, number>;
+  /** Persist the furthest point reached in a course — powers the row progress fills. */
+  reportProgress: (topicId: string, fraction: number) => void;
   blooms: XpBloom[];
   /** Award XP with a bloom. One-time reasons (account, invites, photo) only ever grant once. */
   award: (reason: XpReason, opts?: { amount?: number; onceKey?: string }) => number;
@@ -156,6 +161,20 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     [pushBloom],
   );
 
+  const reportProgress = useCallback((topicId: string, fraction: number) => {
+    setState((prev) => {
+      const cur = prev.topicProgress?.[topicId] ?? 0;
+      const f = Math.max(0, Math.min(1, fraction));
+      if (f <= cur) return prev;
+      const next: Persisted = {
+        ...prev,
+        topicProgress: { ...(prev.topicProgress ?? {}), [topicId]: f },
+      };
+      save(next);
+      return next;
+    });
+  }, []);
+
   const dismissBloom = useCallback((id: number) => {
     setBlooms((b) => b.filter((x) => x.id !== id));
   }, []);
@@ -165,12 +184,14 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       xp: state.xp,
       streakDays: state.streakDays,
       completed: new Set(state.completedTopics),
+      topicProgress: state.topicProgress ?? {},
+      reportProgress,
       blooms,
       award,
       completeTopic,
       dismissBloom,
     }),
-    [state, blooms, award, completeTopic, dismissBloom],
+    [state, blooms, award, completeTopic, dismissBloom, reportProgress],
   );
 
   return <Ctx.Provider value={store}>{children}</Ctx.Provider>;

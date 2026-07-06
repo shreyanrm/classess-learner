@@ -28,9 +28,9 @@ p, li { text-wrap: pretty; }
 ::selection { background: var(--clss-ultramarine-wash); color: var(--clss-ink-900); }
 :focus-visible { outline: 2px solid var(--clss-ultramarine-ring); outline-offset: 2px; }
 /* One scrollbar: the page's own, thin and quiet. Inner scroll areas scroll invisibly. */
-html { scrollbar-width: thin; scrollbar-color: var(--clss-ink-300) transparent; }
-body ::-webkit-scrollbar { display: none; }
-body * { scrollbar-width: none; }
+html { scrollbar-width: none; }
+::-webkit-scrollbar { display: none; width: 0; height: 0; }
+* { scrollbar-width: none; }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
 `;
   document.head.appendChild(style);

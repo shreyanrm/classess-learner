@@ -113,7 +113,14 @@ export function FlyingVidya({
           transition: { duration: 0.7, ease: 'easeOut' },
         }),
       )
-      .then(() => setFlying(false));
+      .then(() => setFlying(false))
+      .catch(() => setFlying(false));
+    // No matter what interrupts the flight, she always lands, visible, on her dock.
+    const safety = window.setTimeout(() => {
+      controls.set({ x: 0, y: 0, rotate: 0, opacity: 1, scaleX: 1, scaleY: 1 });
+      setFlying(false);
+    }, 3000);
+    return () => window.clearTimeout(safety);
   }, [routeKey, reduced, controls]);
 
   return (

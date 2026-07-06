@@ -15,6 +15,7 @@ import { useVidyaBus } from '@classess/vidya';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { chapterById, topicById } from '../data/catalog';
 import { useRouter } from '../shell/router';
+import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { AtomJourney } from './course/AtomJourney';
 import { Composing } from './course/Composing';
@@ -37,6 +38,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
       : 'composing';
 
   const [bar, setBar] = useState<BarState | null>(null);
+  const { reportProgress } = useProgress();
   const [progress, setProgress] = useState<{ f: number; segments: number }>({
     f: 0.08,
     segments: 9,
@@ -48,6 +50,11 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
   useEffect(() => {
     bus.publishPage({ route: sandbox ? 'sandbox' : 'course', state: { topicId, title, mode } });
   }, [bus, sandbox, topicId, title, mode]);
+
+  // the row on the subject page fills as the learner travels — the tab is the progress bar
+  useEffect(() => {
+    if (!sandbox && topic) reportProgress(topic.id, progress.f);
+  }, [sandbox, topic, progress.f, reportProgress]);
 
   // free play on a real node is still an arrival worth recording
   useEffect(() => {
