@@ -61,6 +61,14 @@ export function AppHeader() {
   const router = useRouter();
   const { xp, streakDays, blooms } = useProgress();
   const [factOpen, setFactOpen] = useState(false);
+  // The glass: transparent at rest, frosting in as the world scrolls beneath it.
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 6);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
   const [profile, setProfile] = useState(readProfile);
   const fact = useMemo(() => FACTS[Math.floor(Date.now() / 86400000) % FACTS.length] as string, []);
 
@@ -85,6 +93,11 @@ export function AppHeader() {
         justifyContent: 'space-between',
         zIndex: 'var(--clss-z-toast)' as unknown as number,
         pointerEvents: 'none',
+        background: scrolled ? 'rgba(255,255,255,0.62)' : 'rgba(255,255,255,0)',
+        backdropFilter: scrolled ? 'blur(18px) saturate(1.6)' : 'none',
+        WebkitBackdropFilter: scrolled ? 'blur(18px) saturate(1.6)' : 'none',
+        borderBottom: scrolled ? '1px solid rgba(233,233,238,0.75)' : '1px solid transparent',
+        transition: 'background 0.35s ease, border-color 0.35s ease, backdrop-filter 0.35s ease',
       }}
     >
       <div style={{ pointerEvents: 'auto', display: 'flex', alignItems: 'center' }}>

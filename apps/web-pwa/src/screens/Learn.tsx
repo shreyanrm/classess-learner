@@ -76,12 +76,20 @@ function drift(duration: number, dy = 6) {
 /**
  * The layered scene behind a subject's stage — graph paper and constructions for math,
  * orbits and molecules for science, journeys and latitudes for social science. Drawn in
- * the bold glyph register: chunky shapes, ink outlines, one golden accent.
+ * the bold glyph register: chunky shapes, ink outlines, one golden accent. `wide` widens
+ * the viewBox for poster bands so the scene stays fine-grained instead of blowing up.
  */
-export function SubjectSceneBackdrop({ subjectId }: { subjectId: string }) {
+export function SubjectSceneBackdrop({
+  subjectId,
+  wide = false,
+}: {
+  subjectId: string;
+  wide?: boolean;
+}) {
+  const w = wide ? 760 : 400;
   return (
     <svg
-      viewBox="0 0 400 210"
+      viewBox={`0 0 ${w} 210`}
       preserveAspectRatio="xMidYMid slice"
       role="presentation"
       aria-hidden
@@ -89,9 +97,9 @@ export function SubjectSceneBackdrop({ subjectId }: { subjectId: string }) {
     >
       {subjectId === 'math' && (
         <g>
-          {/* graph paper, whispered */}
+          {/* graph paper, whispered — drawn full-bleed; the card view clips the rest */}
           <path
-            d="M0 52 H400 M0 104 H400 M0 156 H400 M66 0 V210 M133 0 V210 M200 0 V210 M266 0 V210 M333 0 V210"
+            d={`M0 52 H${w} M0 104 H${w} M0 156 H${w} M66 0 V210 M133 0 V210 M200 0 V210 M266 0 V210 M333 0 V210 M400 0 V210 M466 0 V210 M533 0 V210 M600 0 V210 M666 0 V210 M733 0 V210`}
             stroke="#1F35E0"
             strokeOpacity={0.07}
             strokeWidth={1}

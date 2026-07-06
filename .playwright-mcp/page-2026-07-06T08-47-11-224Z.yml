@@ -1,0 +1,47 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e687]:
+    - button "Back — Home" [ref=f3e688] [cursor=pointer]:
+      - img [ref=f3e689]
+      - text: Home
+    - banner [ref=f3e693]:
+      - generic [ref=f3e694]: 2 of 8 concepts are yours
+      - generic [ref=f3e695]: day 1 of being a learner · tap a star to see its story
+    - generic [ref=f3e696]:
+      - img "your knowledge constellation — every star is a concept" [ref=f3e698]:
+        - button "rational numbers — yours, independently" [ref=f3e709] [cursor=pointer]:
+          - generic [ref=f3e716]: rational numbers
+        - button "operations — not started" [ref=f3e717] [cursor=pointer]:
+          - generic [ref=f3e721]: operations
+        - button "the number line — not started" [ref=f3e722] [cursor=pointer]:
+          - generic [ref=f3e726]: the number line
+        - button "integers — not started" [ref=f3e727] [cursor=pointer]:
+          - generic [ref=f3e731]: integers
+        - button "variables — not started" [ref=f3e732] [cursor=pointer]:
+          - generic [ref=f3e736]: variables
+        - button "linear equations — yours, independently" [ref=f3e737] [cursor=pointer]:
+          - generic [ref=f3e744]: linear equations
+        - button "both sides — not started" [ref=f3e745] [cursor=pointer]:
+          - generic [ref=f3e749]: both sides
+        - button "word problems — not started" [ref=f3e750] [cursor=pointer]:
+          - generic [ref=f3e754]: word problems
+      - textbox "Ask your twin" [ref=f3e758]:
+        - /placeholder: "ask your twin: what am I weakest at…"
+  - banner:
+    - img "Classess" [ref=f3e64]
+    - generic [ref=f3e65]:
+      - button "Did you know" [ref=f3e66] [cursor=pointer]:
+        - img [ref=f3e67]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f3e69]:
+        - img [ref=f3e70]
+        - text: "1"
+      - generic [ref=f3e73]: 230 xp
+      - button "You — profile and settings" [ref=f3e74] [cursor=pointer]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img
