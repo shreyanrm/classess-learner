@@ -69,15 +69,43 @@ export const subjectAccents = (Object.keys(accent) as AccentName[]).filter(
   (name): name is Exclude<AccentName, 'molten'> => name !== 'molten',
 );
 
+/** Ultramarine — Vidya's tertiary highlight. Her toolkit only; not a subject/concept accent. */
+export const ultramarine = '#3A2FF5';
+
+/**
+ * Vidya's highlight + annotation palette — the colours she draws WITH when she points at the page.
+ * Distinct from the earned concept-ignite colours. Primary is her own molten, then acid, then
+ * ultramarine, used in that order as she layers emphasis.
+ */
+export const vidyaHighlight = {
+  primary: vidyaMolten, // #FF4D1A — her identity colour leads
+  secondary: accent.acid, // #C2F000
+  tertiary: ultramarine, // #3A2FF5
+} as const;
+
+/**
+ * Molten interaction shades — the freed signature accent. Molten now carries the app's *action*
+ * language (primary buttons, focus, selection, active states); it is no longer Vidya's alone. Vibrancy
+ * arrives here and as earned concept colour, never as gradients or tinted neutrals.
+ */
+export const molten = {
+  base: vidyaMolten, // #FF4D1A
+  hover: '#F23C0E',
+  active: '#D63207',
+  soft: 'rgba(255,77,26,0.10)', // faint wash behind hero moments (depth from light, not shadow)
+  ring: 'rgba(255,77,26,0.38)', // focus ring / selection glow
+} as const;
+
 // --- Shape: subtle corners; larger radii only for Vidya's jelly and panel ------------------------
+// Sharper corners, subtly rounded — never soft. Small, deliberate radii on chrome; pills stay pills.
 export const radius = {
   sm: 2,
-  md: 8,
-  lg: 16,
+  md: 6,
+  lg: 10,
   /** Vidya's round squircle jelly. */
   jelly: 9999,
   /** Vidya's frosted floating panel and other overlays. */
-  panel: 24,
+  panel: 16,
 } as const;
 
 // --- Frost (backdrop blur) — overlays ONLY (Vidya panel, modals, the meter sheet) ----------------
@@ -153,6 +181,8 @@ export const tokens = {
   accent,
   vidyaMolten,
   subjectAccents,
+  ultramarine,
+  vidyaHighlight,
   radius,
   frost,
   space,

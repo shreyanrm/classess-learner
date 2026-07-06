@@ -1,0 +1,50 @@
+- generic [ref=f7e2]:
+  - generic [ref=f7e3]:
+    - navigation "Primary" [ref=f7e4]:
+      - generic [ref=f7e7]: Classess
+      - button "Today" [ref=f7e8] [cursor=pointer]:
+        - img [ref=f7e9]
+        - generic [ref=f7e12]: Today
+      - button "Progress" [ref=f7e14] [cursor=pointer]:
+        - img [ref=f7e15]
+        - generic [ref=f7e21]: Progress
+      - button "Create" [ref=f7e22] [cursor=pointer]:
+        - img [ref=f7e23]
+        - generic [ref=f7e25]: Create
+      - button "You" [ref=f7e26] [cursor=pointer]:
+        - img [ref=f7e27]
+        - generic [ref=f7e31]: You
+    - main [ref=f7e34]:
+      - generic [ref=f7e35]:
+        - heading "Good afternoon, Aarav" [level=1] [ref=f7e36]
+        - paragraph [ref=f7e37]: One concept, done well, is plenty for today.
+      - generic [ref=f7e42]:
+        - generic [ref=f7e43]: Your next concept
+        - heading "Linear equations in one variable" [level=2] [ref=f7e44]
+        - paragraph [ref=f7e45]: "The atom: solve any single-variable linear equation, cleanly."
+        - generic [ref=f7e46]:
+          - button "Start" [ref=f7e49] [cursor=pointer]:
+            - img [ref=f7e50]
+            - generic [ref=f7e52]: Start
+          - generic [ref=f7e53]: About 15 minutes
+      - generic [ref=f7e55]:
+        - generic [ref=f7e56]:
+          - generic [ref=f7e57]:
+            - generic [ref=f7e58]: 2 of 5 concepts today
+            - generic [ref=f7e59]: 3 more whenever you want them.
+          - button "Details" [ref=f7e61] [cursor=pointer]:
+            - generic [ref=f7e62]: Details
+        - progressbar [ref=f7e65]
+      - generic [ref=f7e69]:
+        - img [ref=f7e71]
+        - generic [ref=f7e73]:
+          - generic [ref=f7e74]: You mastered One-step equations today
+          - generic [ref=f7e75]: That one's yours now — it just earned its colour.
+          - generic [ref=f7e76]: so proud of you
+      - button "Open your full learning map — 3 concepts mastered" [ref=f7e77] [cursor=pointer]:
+        - generic [ref=f7e79]:
+          - generic [ref=f7e80]: Your mind, lighting up — 3 mastered
+          - img "Your learning map — 3 concepts mastered" [ref=f7e81]
+          - generic [ref=f7e125]: Open your full map →
+      - paragraph [ref=f7e126]: 6 days learning this week — no need to be perfect.
+  - button "Vidya, your tutor" [ref=f7e129] [cursor=pointer]

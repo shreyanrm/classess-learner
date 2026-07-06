@@ -7,6 +7,7 @@ import {
   fontFamily,
   hairline,
   ink,
+  molten,
   paper,
   radius,
   space,
@@ -32,7 +33,7 @@ export const FOCUSABLE = 'clss-focusable';
 
 export const baseCss = `
 .${FOCUSABLE}:focus-visible {
-  outline: 2px solid ${ink[900]};
+  outline: 2px solid ${molten.base};
   outline-offset: 2px;
 }
 
@@ -58,9 +59,9 @@ export const baseCss = `
 .clss-btn--sm { padding: ${space.half}px ${space[1]}px; font-size: ${typeScale.caption.size}; }
 .clss-btn--md { padding: ${space[1]}px ${space[2]}px; }
 .clss-btn--lg { padding: ${space[1]}px ${space[3]}px; font-size: ${typeScale.bodyLg.size}; }
-.clss-btn--primary { background: ${ink[900]}; color: ${paper}; }
-.clss-btn--primary:hover:not(:disabled):not([aria-disabled="true"]) { background: ${ink[800]}; }
-.clss-btn--primary:active:not(:disabled):not([aria-disabled="true"]) { background: ${ink[700]}; }
+.clss-btn--primary { background: ${molten.base}; color: ${paper}; }
+.clss-btn--primary:hover:not(:disabled):not([aria-disabled="true"]) { background: ${molten.hover}; }
+.clss-btn--primary:active:not(:disabled):not([aria-disabled="true"]) { background: ${molten.active}; }
 .clss-btn--secondary { background: ${paper}; color: ${ink[900]}; border-color: ${ink[100]}; }
 .clss-btn--secondary:hover:not(:disabled):not([aria-disabled="true"]) { background: ${canvas}; border-color: ${ink[300]}; }
 .clss-btn--secondary:active:not(:disabled):not([aria-disabled="true"]) { background: ${ink[100]}; }
@@ -88,7 +89,7 @@ export const baseCss = `
 }
 .clss-field::placeholder { color: ${ink[500]}; }
 .clss-field:hover:not(:disabled):not([aria-invalid="true"]) { border-color: ${ink[300]}; }
-.clss-field:focus { outline: none; border-color: ${ink[900]}; }
+.clss-field:focus { outline: none; border-color: ${molten.base}; box-shadow: 0 0 0 3px ${molten.soft}; }
 .clss-field[aria-invalid="true"] { border-color: ${ink[900]}; border-width: 2px; }
 .clss-field:disabled { background: ${canvas}; color: ${ink[500]}; cursor: not-allowed; }
 textarea.clss-field { resize: vertical; min-height: ${space[8]}px; }
@@ -109,7 +110,7 @@ select.clss-field {
   background: ${ink[300]}; cursor: pointer;
   transition: background ${micro};
 }
-.clss-toggle[aria-checked="true"] { background: ${ink[900]}; }
+.clss-toggle[aria-checked="true"] { background: ${molten.base}; }
 .clss-toggle:disabled { opacity: 0.45; cursor: not-allowed; }
 .clss-toggle__knob {
   position: absolute; top: 3px; left: 3px;
@@ -135,7 +136,7 @@ select.clss-field {
 .clss-tab[aria-selected="true"] { color: ${ink[900]}; }
 .clss-tab__ink {
   position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
-  background: ${ink[900]};
+  background: ${molten.base};
   transform: scaleX(0); transform-origin: left center;
   transition: transform ${standard};
 }

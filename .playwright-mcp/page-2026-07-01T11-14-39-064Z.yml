@@ -1,0 +1,45 @@
+- generic [ref=f18e2]:
+  - generic [ref=f18e3]:
+    - navigation "Primary" [ref=f18e4]:
+      - generic [ref=f18e7]: Classess
+      - button "Today" [ref=f18e8] [cursor=pointer]:
+        - img [ref=f18e9]
+        - generic [ref=f18e12]: Today
+      - button "Progress" [ref=f18e14] [cursor=pointer]:
+        - img [ref=f18e15]
+        - generic [ref=f18e21]: Progress
+      - button "Create" [ref=f18e22] [cursor=pointer]:
+        - img [ref=f18e23]
+        - generic [ref=f18e25]: Create
+      - button "You" [ref=f18e26] [cursor=pointer]:
+        - img [ref=f18e27]
+        - generic [ref=f18e31]: You
+    - main [ref=f18e34]:
+      - generic [ref=f18e35]:
+        - generic [ref=f18e36]: WEDNESDAY 1 JUL
+        - heading "Good afternoon, Aarav." [level=1] [ref=f18e37]
+      - generic [ref=f18e39]:
+        - generic [ref=f18e40]: Your next concept
+        - heading "Linear equations in one variable" [level=2] [ref=f18e41]
+        - paragraph [ref=f18e42]: "The atom: solve any single-variable linear equation, cleanly."
+        - generic [ref=f18e43]:
+          - button "Begin" [ref=f18e46] [cursor=pointer]:
+            - generic [ref=f18e47]: Begin
+          - generic [ref=f18e48]: about 15 minutes
+          - generic [ref=f18e49]: you've got this
+      - generic [ref=f18e52]:
+        - generic [ref=f18e53]: Today's practice
+        - button "3 of 5 left" [ref=f18e54] [cursor=pointer]
+      - generic [ref=f18e58]:
+        - generic [ref=f18e59]:
+          - generic [ref=f18e60]: Today's win
+          - heading "One-step equations" [level=3] [ref=f18e61]
+          - img [ref=f18e62]
+          - paragraph [ref=f18e64]: That one's yours now — it earned its colour.
+          - generic [ref=f18e65]: so proud of you — Vidya
+        - button "Your mind, lighting up Your learning map — 3 concepts mastered 3 mastered · 9 to go →" [ref=f18e66] [cursor=pointer]:
+          - generic [ref=f18e67]: Your mind, lighting up
+          - img "Your learning map — 3 concepts mastered" [ref=f18e68]
+          - generic [ref=f18e113]: 3 mastered · 9 to go →
+      - paragraph [ref=f18e115]: You've shown up 6 days this week. That's the whole game.
+  - button "Vidya, your tutor" [ref=f18e118] [cursor=pointer]

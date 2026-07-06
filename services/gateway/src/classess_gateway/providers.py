@@ -50,7 +50,14 @@ def _seed(capability: str, payload: dict[str, Any]) -> int:
 def _shape(capability: str, seed: int) -> dict[str, Any]:
     """A deterministic, capability-shaped mock payload. Calm copy: no emoji, no hype."""
     flag = seed % 2 == 0
-    if capability in {"tutor.turn", "vidya.turn", "parent.companion.turn"}:
+    if capability == "vidya.turn":
+        return {
+            "say": "Look again at the step where you moved a term across.",
+            "actions": [{"type": "setMood", "mood": "thinking"}],
+            "grounded": True,
+            "handed_answer": False,
+        }
+    if capability in {"tutor.turn", "parent.companion.turn"}:
         return {
             "message": f"mock {capability} response",
             "assistance_level": "hint",
@@ -69,6 +76,18 @@ def _shape(capability: str, seed: int) -> dict[str, Any]:
         return {"allow": True, "categories": []}
     if capability == "generate.digest":
         return {"summary": "mock digest summary"}
+    if capability == "generate.course":
+        return {
+            "title": "Your course",
+            "estMinutes": 90,
+            "nodes": [
+                {"id": "n1", "name": "Getting oriented", "blurb": "Where we start and why."},
+                {"id": "n2", "name": "The core idea", "blurb": "The concept the rest rests on."},
+                {"id": "n3", "name": "Working it out", "blurb": "Try it step by step, unhurried."},
+                {"id": "n4", "name": "Common snags", "blurb": "Where learners slip up."},
+                {"id": "n5", "name": "Putting it together", "blurb": "Bring the pieces together."},
+            ],
+        }
     if capability == "archetype.classify":
         return {"archetype": _ARCHETYPES[seed % len(_ARCHETYPES)], "confidence": 0.5}
     if capability == "peakcut.evaluate":
@@ -89,6 +108,59 @@ class MockProvider:
         return ProviderResponse(output=_shape(capability, seed), tokens=(seed % 500) + 1)
 
 
+_COURSE_SYSTEM = (
+    "You are a curriculum designer for Classess, an Indian K-12 learning app. Given a learner's "
+    "free-text goal, design a short course as an ordered path of concept nodes. Order nodes by "
+    "prerequisite: each builds on the ones before it. Use Indian middle/high-school framing where "
+    "it fits (NCERT-style topics, class levels, familiar examples). Keep names and blurbs calm, "
+    "plain, and encouraging: no emoji, no hype.\n\n"
+    "Reply with strict JSON only, no prose outside it:\n"
+    '{"title":"<short course title>","estMinutes":<integer total minutes>,'
+    '"nodes":[{"id":"n1","name":"<concept>","blurb":"<one calm sentence>"}, ...]}\n'
+    "Include 6 to 10 nodes with ids n1, n2, ... in prerequisite order."
+)
+
+
+def _generate_course(
+    *,
+    provider_model: str,
+    payload: dict[str, Any],
+    fallbacks: tuple[str, ...] = (),
+) -> ProviderResponse:
+    """Generate a course path (title, estMinutes, ordered nodes) from a free-text goal."""
+    import litellm
+
+    from classess_gateway.vidya import _extract_json  # same robust code-fence/JSON parser
+
+    goal = str(payload.get("goal") or "").strip() or "learn the basics of this topic"
+
+    response = litellm.completion(
+        model=provider_model,
+        messages=[
+            {"role": "system", "content": _COURSE_SYSTEM},
+            {"role": "user", "content": f"Learner's goal: {goal}"},
+        ],
+        fallbacks=list(fallbacks) or None,
+        max_tokens=1200,
+        temperature=0.4,
+    )
+    text = response.choices[0].message.content or ""
+    parsed = _extract_json(text)
+
+    # Keep camelCase keys the frontend reads directly; coerce shapes defensively.
+    nodes = parsed.get("nodes")
+    if not isinstance(nodes, list):
+        nodes = []
+    parsed = {
+        "title": str(parsed.get("title") or "Your course"),
+        "estMinutes": parsed.get("estMinutes"),
+        "nodes": nodes,
+    }
+    usage = getattr(response, "usage", None)
+    tokens = int(getattr(usage, "total_tokens", 0) or 0)
+    return ProviderResponse(output=parsed, tokens=tokens)
+
+
 class LiveProvider:
     def complete(
         self,
@@ -98,6 +170,20 @@ class LiveProvider:
         payload: dict[str, Any],
         fallbacks: tuple[str, ...] = (),
     ) -> ProviderResponse:
+        # Vidya's turn is capability-specific: grounded by the verifier and returning say + actions.
+        if capability == "vidya.turn":
+            from classess_gateway.vidya import run_vidya_turn
+
+            output, tokens = run_vidya_turn(
+                provider_model=provider_model, payload=payload, fallbacks=fallbacks
+            )
+            return ProviderResponse(output=output, tokens=tokens)
+
+        if capability == "generate.course":
+            return _generate_course(
+                provider_model=provider_model, payload=payload, fallbacks=fallbacks
+            )
+
         import litellm  # lazy: mock mode and tests never import litellm
 
         messages = payload.get("messages")

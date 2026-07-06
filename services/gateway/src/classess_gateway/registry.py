@@ -126,6 +126,15 @@ _POLICIES: dict[str, RoutingPolicy] = {
             cache_tier=CacheTier.EXACT,
         ),
         RoutingPolicy(
+            capability="generate.course",
+            track=Track.TRACK_1,
+            primary="frontier.fast",
+            fallback=("frontier.reason",),
+            max_latency_ms=8000,
+            cost_ceiling=0.03,
+            cache_tier=CacheTier.EXACT,
+        ),
+        RoutingPolicy(
             capability="archetype.classify",
             track=Track.TRACK_2,
             primary="slm.classify",
@@ -158,6 +167,7 @@ EXPECTED_CAPABILITIES: tuple[str, ...] = (
     "safety.moderate",
     "parent.companion.turn",
     "generate.digest",
+    "generate.course",
     "archetype.classify",
     "peakcut.evaluate",
 )

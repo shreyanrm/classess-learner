@@ -12,6 +12,7 @@ import time
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
@@ -148,6 +149,13 @@ def build_gateway() -> Gateway:
 
 def create_app(gateway: Gateway | None = None) -> FastAPI:
     app = FastAPI(title="Classess model gateway", version="0.0.0")
+    # Dev: the web-pwa (Vite/preview) calls the gateway from the browser.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:5173", "http://localhost:4173"],
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     gw = gateway or build_gateway()
 
     @app.exception_handler(ConsentDenied)

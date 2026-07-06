@@ -5,6 +5,7 @@ description = "Classess model gateway — the single entry for all model calls (
 requires-python = ">=3.12"
 dependencies = [
     "classess-contracts",
+    "classess-verifier",
     "fastapi>=0.115",
     "litellm>=1.50",
     "pydantic>=2.7",
@@ -19,3 +20,4 @@ packages = ["src/classess_gateway"]
 
 [tool.uv.sources]
 classess-contracts = { workspace = true }
+classess-verifier = { workspace = true }

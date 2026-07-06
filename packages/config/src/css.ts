@@ -10,6 +10,8 @@ import {
   radius,
   space,
   surface,
+  ultramarine,
+  vidyaHighlight,
   zIndex,
 } from './tokens';
 
@@ -30,6 +32,10 @@ export function cssVariables(): string {
 
   for (const [name, hex] of Object.entries(accent)) push(`--clss-accent-${name}`, hex);
   push('--clss-vidya-molten', accent.molten);
+  push('--clss-ultramarine', ultramarine);
+  push('--clss-vidya-highlight-primary', vidyaHighlight.primary);
+  push('--clss-vidya-highlight-secondary', vidyaHighlight.secondary);
+  push('--clss-vidya-highlight-tertiary', vidyaHighlight.tertiary);
 
   for (const [name, px] of Object.entries(radius)) push(`--clss-radius-${name}`, `${px}px`);
   push('--clss-frost-blur', frost.blur);
