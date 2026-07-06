@@ -183,6 +183,171 @@ function InviteCard({
   );
 }
 
+/** Tiles land lighter than full sections — a short rise and settle. */
+const tilePop = {
+  hidden: { opacity: 0, y: 10, scale: 0.86 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: 'spring', stiffness: 380, damping: 24 },
+  },
+} as const;
+
+/** The face editor — a light frost popover: the cast as tiles, a photo, or your initial. */
+function AvatarPicker({
+  open,
+  choice,
+  hasPhoto,
+  onPickCast,
+  onUpload,
+  onInitial,
+  onClose,
+}: {
+  open: boolean;
+  choice: AvatarChoice | null;
+  hasPhoto: boolean;
+  onPickCast: (id: CastId) => void;
+  onUpload: () => void;
+  onInitial: () => void;
+  onClose: () => void;
+}) {
+  const panelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: PointerEvent) => {
+      const t = e.target as Element | null;
+      // the anchor button toggles itself — closing here would make its click reopen
+      if (t?.closest('[data-avatar-anchor]')) return;
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) onClose();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('pointerdown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open, onClose]);
+
+  const quietTile: CSSProperties = {
+    flex: 1,
+    height: 34,
+    borderRadius: 3,
+    border: 'none',
+    background: '#F1F1F5',
+    fontFamily: 'inherit',
+    fontSize: '0.8rem',
+    color: 'var(--clss-ink-700)',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+    padding: '0 12px',
+  };
+  const ring = { boxShadow: '0 0 0 2px var(--clss-ultramarine)' } as const;
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          ref={panelRef}
+          role="dialog"
+          aria-label="choose your avatar"
+          initial={{ opacity: 0, y: -8, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -6, scale: 0.98 }}
+          transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+          style={{
+            position: 'absolute',
+            top: 74,
+            left: 0,
+            zIndex: 30,
+            width: 'min(324px, calc(100vw - 48px))',
+            padding: 16,
+            borderRadius: 3,
+            background: 'rgba(255,255,255,0.86)',
+            backdropFilter: 'blur(18px) saturate(1.6)',
+            WebkitBackdropFilter: 'blur(18px) saturate(1.6)',
+            border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+            transformOrigin: 'top left',
+          }}
+        >
+          <motion.div
+            variants={cascade}
+            initial="hidden"
+            animate="show"
+            style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
+          >
+            <motion.div variants={tilePop} style={whisper}>
+              pick your look
+            </motion.div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+              {AVATAR_IDS.map((id) => {
+                const selected = choice?.kind === 'cast' && choice.castId === id;
+                return (
+                  <motion.button
+                    key={id}
+                    type="button"
+                    variants={tilePop}
+                    whileHover={{ scale: 1.09, y: -2 }}
+                    whileTap={{ scale: 0.92 }}
+                    onClick={() => onPickCast(id)}
+                    aria-label={`be ${CAST[id].name}, ${CAST[id].role}`}
+                    aria-pressed={selected}
+                    style={{
+                      border: 'none',
+                      background: 'transparent',
+                      padding: 0,
+                      cursor: 'pointer',
+                      fontFamily: 'inherit',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 5,
+                    }}
+                  >
+                    <CastAvatar id={id} size={58} style={selected ? ring : undefined} />
+                    <span
+                      style={{
+                        fontSize: '0.65rem',
+                        color: selected ? 'var(--clss-ultramarine)' : 'var(--clss-ink-300)',
+                      }}
+                    >
+                      {CAST[id].name.toLowerCase()}
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
+            <Hairline />
+            <motion.div variants={tilePop} style={{ display: 'flex', gap: 8 }}>
+              <button
+                type="button"
+                onClick={onUpload}
+                style={{
+                  ...quietTile,
+                  ...(choice?.kind === 'photo' && hasPhoto ? ring : undefined),
+                }}
+              >
+                upload a picture
+              </button>
+              <button
+                type="button"
+                onClick={onInitial}
+                style={{ ...quietTile, ...(choice?.kind === 'initial' ? ring : undefined) }}
+              >
+                use my initial
+              </button>
+            </motion.div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 /** One strength line for the note home, composed from real data — pride first, always. */
 function strengthLine(name: string, mastered: Topic[], xp: number): string {
   const last = mastered[mastered.length - 1];
@@ -393,6 +558,7 @@ export function You() {
             type="button"
             aria-label="choose your avatar"
             aria-expanded={pickerOpen}
+            data-avatar-anchor
             onClick={() => setPickerOpen((o) => !o)}
             style={{
               width: 64,
