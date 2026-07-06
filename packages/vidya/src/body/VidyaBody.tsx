@@ -318,6 +318,13 @@ export function VidyaBody({
 }: VidyaBodyProps) {
   const reduced = useReducedMotion();
   const pose = POSES[mood] ?? POSES.idle;
+  // Poke: press her back and she springs forward again, face first (the Vidya-cute license).
+  // Only the FACE reads the override — the body springs keep targeting the mood pose, so a
+  // poke never fights the mood choreography effect.
+  const [pokeFace, setPokeFace] = useState<Partial<Pose> | null>(null);
+  const pokePressed = useRef(false);
+  const pokeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const face: Pose = pokeFace ? { ...pose, ...pokeFace } : pose;
   const flameState = flameForMood(mood);
   const time = useTime();
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -405,6 +412,38 @@ export function VidyaBody({
 
   // --- The pose: springs with weight; celebrate is anticipation → pop → settle --------------------
   const controls = useAnimationControls();
+
+  // --- Poke choreography: squash back on press, bouncy comeback on release ------------------------
+  const pokeDown = () => {
+    pokePressed.current = true;
+    clearTimeout(pokeTimer.current);
+    setPokeFace({ eyes: 'open', eyeOpen: 1, mouth: 'o', browLift: 3.2 });
+    if (!reduced) {
+      void controls.start({
+        scaleX: pose.scaleX * 1.12,
+        scaleY: pose.scaleY * 0.78,
+        y: pose.lift + 5,
+        transition: { type: 'spring', stiffness: 640, damping: 30 },
+      });
+    }
+  };
+  const pokeUp = () => {
+    if (!pokePressed.current) return;
+    pokePressed.current = false;
+    setPokeFace({ eyes: 'happy', mouth: 'grin', browLift: 2.2 });
+    if (!reduced) {
+      // low damping on purpose — she overshoots forward and wobbles back, delighted
+      void controls.start({
+        scaleX: pose.scaleX,
+        scaleY: pose.scaleY,
+        y: pose.lift,
+        rotate: pose.lean,
+        transition: { type: 'spring', stiffness: 340, damping: 8, mass: 0.9 },
+      });
+    }
+    pokeTimer.current = setTimeout(() => setPokeFace(null), 950);
+  };
+  useEffect(() => () => clearTimeout(pokeTimer.current), []);
   useEffect(() => {
     if ((mood === 'celebrate' || mood === 'correct') && !reduced) {
       const big = mood === 'celebrate';
@@ -511,8 +550,8 @@ export function VidyaBody({
     return s * (pose.spark >= 2 ? 1.25 : pose.spark);
   });
 
-  const lidScale = blink ? 0.06 : Math.min(1, pose.eyeOpen);
-  const showOpenEyes = pose.eyes === 'open';
+  const lidScale = blink ? 0.06 : Math.min(1, face.eyeOpen);
+  const showOpenEyes = face.eyes === 'open';
 
   return (
     <motion.div
@@ -523,7 +562,10 @@ export function VidyaBody({
       tabIndex={onTap ? 0 : undefined}
       onClick={onTap}
       onKeyDown={onTap ? (e) => (e.key === 'Enter' || e.key === ' ') && onTap() : undefined}
-      whileTap={onTap ? { scale: 0.93 } : undefined}
+      onPointerDown={pokeDown}
+      onPointerUp={pokeUp}
+      onPointerLeave={pokeUp}
+      onPointerCancel={pokeUp}
       whileHover={onTap ? { scale: 1.04 } : undefined}
       style={{
         width: size,
@@ -627,8 +669,8 @@ export function VidyaBody({
                 strokeLinecap="round"
                 initial={false}
                 animate={{
-                  y: -6.5 - pose.browLift - pose.browAsym,
-                  rotate: pose.browAngle,
+                  y: -6.5 - face.browLift - face.browAsym,
+                  rotate: face.browAngle,
                 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 style={{ transformOrigin: '-11.5px 0px' }}
@@ -640,7 +682,7 @@ export function VidyaBody({
                 strokeWidth={2.9}
                 strokeLinecap="round"
                 initial={false}
-                animate={{ y: -6.5 - pose.browLift, rotate: -pose.browAngle }}
+                animate={{ y: -6.5 - face.browLift, rotate: -face.browAngle }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 style={{ transformOrigin: '11.5px 0px' }}
               />
@@ -674,7 +716,7 @@ export function VidyaBody({
                 </g>
               ) : (
                 <g stroke={MOLTEN.face} strokeWidth={4.4} strokeLinecap="round" fill="none">
-                  {pose.eyes === 'happy' ? (
+                  {face.eyes === 'happy' ? (
                     <>
                       <path d="M -17 -3 Q -11.5 -11 -6 -3" />
                       <path d="M 6 -3 Q 11.5 -11 17 -3" />
@@ -689,7 +731,7 @@ export function VidyaBody({
                 </g>
               )}
               {/* The smile. */}
-              {pose.mouth === 'o' ? (
+              {face.mouth === 'o' ? (
                 <path
                   d={MOUTHS.o}
                   fill="none"
@@ -699,13 +741,13 @@ export function VidyaBody({
                 />
               ) : (
                 <motion.path
-                  d={MOUTHS[pose.mouth]}
+                  d={MOUTHS[face.mouth]}
                   fill="none"
                   stroke={MOLTEN.face}
                   strokeWidth={4.4}
                   strokeLinecap="round"
                   initial={false}
-                  animate={{ d: MOUTHS[pose.mouth] }}
+                  animate={{ d: MOUTHS[face.mouth] }}
                   transition={{ type: 'spring', stiffness: 300, damping: 24 }}
                 />
               )}

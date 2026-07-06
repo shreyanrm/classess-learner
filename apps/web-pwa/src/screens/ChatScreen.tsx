@@ -125,11 +125,12 @@ export function ChatScreen() {
       >
         <div
           style={{
-            maxWidth: 720,
+            maxWidth: 680,
             margin: '0 auto',
             display: 'flex',
             flexDirection: 'column',
-            gap: 12,
+            gap: 20,
+            paddingBottom: 8,
           }}
         >
           {!hasOlder && (
@@ -152,14 +153,15 @@ export function ChatScreen() {
                 key={t.id}
                 style={{
                   alignSelf: 'flex-end',
-                  maxWidth: '84%',
-                  padding: '10px 14px',
+                  maxWidth: '78%',
+                  padding: '11px 16px',
                   borderRadius: 'var(--clss-radius-md)',
                   fontSize: fluidType.body,
-                  lineHeight: 1.55,
+                  lineHeight: 1.6,
                   background: '#121316',
                   color: '#FFFFFF',
                   whiteSpace: 'pre-wrap',
+                  overflowWrap: 'anywhere',
                 }}
               >
                 {t.text}
@@ -177,12 +179,13 @@ export function ChatScreen() {
               >
                 <div
                   style={{
-                    maxWidth: '84%',
+                    maxWidth: '94%',
                     padding: '2px 2px',
                     fontSize: fluidType.body,
-                    lineHeight: 1.6,
+                    lineHeight: 1.7,
                     color: '#121316',
                     whiteSpace: 'pre-wrap',
+                    overflowWrap: 'anywhere',
                   }}
                 >
                   {t.text}
