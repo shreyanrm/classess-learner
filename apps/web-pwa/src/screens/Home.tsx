@@ -10,9 +10,10 @@
 
 import { useVidyaBus, VidyaBody } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
-import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { learner } from '../data/catalog';
 import { useRouter } from '../shell/router';
+import { loadMind, loadProactivity, proactiveChip } from '../store/mind';
 import { useProgress } from '../store/progress';
 import { SendIcon, SparkIcon, WaveformIcon } from '../ui/icons';
 import { AuroraButton, cascade, fluidSpace, fluidType, Kbd, MagneticButton, rise } from '../ui/kit';
@@ -63,6 +64,15 @@ export function Home() {
 
   // The day, derived from real state — every stop routes somewhere real.
   const { stops, currentIndex } = useMemo(() => deriveStops(progress), [progress]);
+
+  // The proactivity dial (You settings) gates every suggestion — quiet means she waits to be asked.
+  const [dial] = useState(() => loadProactivity());
+  const chips = useMemo(() => {
+    if (dial === 'quiet') return [];
+    if (dial !== 'proactive') return CHIPS;
+    const extra = proactiveChip(loadMind());
+    return extra ? [...CHIPS, extra] : CHIPS;
+  }, [dial]);
 
   // The opening — once per session, Vidya arrives before anything else exists.
   const [firstVisit] = useState(() => sessionStorage.getItem('clss-home-opened') !== '1');
@@ -121,11 +131,14 @@ export function Home() {
     .replace(/,/g, '')}`;
 
   const currentKind = stops[currentIndex]?.kind;
+  // Under the quiet dial she never volunteers a line — presence without a nudge.
   const vidyaLine = busy
     ? 'thinking…'
-    : currentKind === 'continue'
-      ? 'right where we left it'
-      : 'I marked today’s walk for you';
+    : dial === 'quiet'
+      ? 'here when you need me'
+      : currentKind === 'continue'
+        ? 'right where we left it'
+        : 'I marked today’s walk for you';
 
   // Vidya, on the journey — the Thread seats her beside the current stop.
   const vidyaNode = (
@@ -309,57 +322,59 @@ export function Home() {
           </div>
         )}
 
-        {/* learn-something-cool chips */}
-        <motion.div
-          variants={rise}
-          style={{
-            display: 'flex',
-            gap: 8,
-            marginTop: fluidSpace.sm,
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-          }}
-        >
-          {CHIPS.map((c) => (
-            <button
-              key={c.label}
-              type="button"
-              onClick={() => {
-                if (busy) return;
-                router.navigate({ name: 'chat' });
-                void ask(c.prompt);
-              }}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 7,
-                minHeight: 44,
-                border: 'none',
-                background: '#F1F1F5',
-                color: '#121316',
-                borderRadius: 3,
-                padding: '10px 18px',
-                fontSize: fluidType.small,
-                fontWeight: 550,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                transition: 'border-color 0.25s ease, transform 0.2s ease, color 0.25s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#E8E8EE';
-                e.currentTarget.style.color = '#1F35E0';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#F1F1F5';
-                e.currentTarget.style.color = '#121316';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              <SparkIcon size={11} /> {c.label}
-            </button>
-          ))}
-        </motion.div>
+        {/* learn-something-cool chips — gated by the proactivity dial */}
+        {chips.length > 0 && (
+          <motion.div
+            variants={rise}
+            style={{
+              display: 'flex',
+              gap: 8,
+              marginTop: fluidSpace.sm,
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+            }}
+          >
+            {chips.map((c) => (
+              <button
+                key={c.label}
+                type="button"
+                onClick={() => {
+                  if (busy) return;
+                  router.navigate({ name: 'chat' });
+                  void ask(c.prompt);
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 7,
+                  minHeight: 44,
+                  border: 'none',
+                  background: '#F1F1F5',
+                  color: '#121316',
+                  borderRadius: 3,
+                  padding: '10px 18px',
+                  fontSize: fluidType.small,
+                  fontWeight: 550,
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  transition: 'border-color 0.25s ease, transform 0.2s ease, color 0.25s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#E8E8EE';
+                  e.currentTarget.style.color = '#1F35E0';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = '#F1F1F5';
+                  e.currentTarget.style.color = '#121316';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                <SparkIcon size={11} /> {c.label}
+              </button>
+            ))}
+          </motion.div>
+        )}
 
         {/* the doors, at hand — Learn and Practice reachable before the walk begins */}
         <motion.div

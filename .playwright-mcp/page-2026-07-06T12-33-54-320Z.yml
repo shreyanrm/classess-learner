@@ -1,0 +1,92 @@
+- generic [ref=f15e2]:
+  - generic [ref=f15e4]:
+    - generic [ref=f15e5]:
+      - generic [ref=f15e6]: today · monday 6 july
+      - heading [level=1]
+      - generic [ref=f15e7]: the day is a walk, not a list
+      - generic [ref=f15e9]:
+        - textbox "Talk to Vidya…" [ref=f15e10]
+        - button "Talk by voice" [ref=f15e11] [cursor=pointer]
+      - generic [ref=f15e20]:
+        - button "Learn something cool" [ref=f15e21] [cursor=pointer]:
+          - img [ref=f15e22]
+          - text: Learn something cool
+        - button "Open a rabbit hole" [ref=f15e24] [cursor=pointer]:
+          - img [ref=f15e25]
+          - text: Open a rabbit hole
+        - button "What should I do today" [ref=f15e27] [cursor=pointer]:
+          - img [ref=f15e28]
+          - text: What should I do today
+      - generic [ref=f15e30]:
+        - button "Learn" [ref=f15e31] [cursor=pointer]:
+          - generic [ref=f15e32]: Learn
+        - button "Practice" [ref=f15e33] [cursor=pointer]:
+          - generic [ref=f15e34]: Practice
+    - generic [ref=f15e36]:
+      - generic [ref=f15e37]: +
+      - generic [ref=f15e38]: ·
+      - generic [ref=f15e39]: ·
+      - generic [ref=f15e40]: +
+      - generic [ref=f15e41]: ·
+      - generic [ref=f15e42]: +
+      - generic [ref=f15e43]: ·
+      - generic [ref=f15e44]: +
+      - img [ref=f15e45]
+      - button "Warm-up day 1 of being a learner · done" [ref=f15e69] [cursor=pointer]:
+        - img [ref=f15e70]
+        - generic [ref=f15e80]:
+          - generic [ref=f15e81]: Warm-up
+          - generic [ref=f15e82]: day 1 of being a learner · done
+        - img [ref=f15e84]
+      - button "Solving equations with the variable on one side done · revisit any time" [ref=f15e87] [cursor=pointer]:
+        - img [ref=f15e88]
+        - generic [ref=f15e91]:
+          - generic [ref=f15e92]: Solving equations with the variable on one side
+          - generic [ref=f15e93]: done · revisit any time
+        - img [ref=f15e95]
+      - button "What makes a number rational done · revisit any time" [ref=f15e98] [cursor=pointer]:
+        - img [ref=f15e99]
+        - generic [ref=f15e102]:
+          - generic [ref=f15e103]: What makes a number rational
+          - generic [ref=f15e104]: done · revisit any time
+        - img [ref=f15e106]
+      - button "Operations on rational numbers next up · a fresh idea" [ref=f15e109] [cursor=pointer]:
+        - img [ref=f15e110]
+        - generic [ref=f15e113]:
+          - generic [ref=f15e114]: Operations on rational numbers
+          - generic [ref=f15e115]: next up · a fresh idea
+        - img [ref=f15e117]
+      - button "Review refresh what’s fading" [ref=f15e120] [cursor=pointer]:
+        - img [ref=f15e121]
+        - generic [ref=f15e126]:
+          - generic [ref=f15e127]: Review
+          - generic [ref=f15e128]: refresh what’s fading
+        - img [ref=f15e130]
+      - button "Boss gate locked · finish today’s topic" [ref=f15e133] [cursor=pointer]:
+        - img [ref=f15e134]
+        - generic [ref=f15e137]:
+          - generic [ref=f15e138]: Boss gate
+          - generic [ref=f15e139]: locked · finish today’s topic
+        - img [ref=f15e141]
+      - button "Something is hiding here — open the sandbox" [ref=f15e144] [cursor=pointer]:
+        - img [ref=f15e145]
+      - generic: something is hiding here
+      - generic [ref=f15e149]:
+        - img "Vidya" [ref=f15e150]:
+          - img [ref=f15e154]
+        - generic [ref=f15e178]: I marked today’s walk for you
+    - generic [ref=f15e179]:
+      - generic [ref=f15e180]: ⌘K
+      - text: Anything, anywhere
+  - banner:
+    - img "Classess" [ref=f15e182]
+    - generic [ref=f15e183]:
+      - button "Did you know" [ref=f15e184] [cursor=pointer]:
+        - img [ref=f15e185]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f15e187]:
+        - img [ref=f15e188]
+        - text: "1"
+      - generic [ref=f15e191]: 230 xp
+      - button "You — profile and settings" [ref=f15e192] [cursor=pointer]:
+        - generic [ref=f15e193]: A

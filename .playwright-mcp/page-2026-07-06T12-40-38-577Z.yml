@@ -1,0 +1,39 @@
+- generic [ref=f19e2]:
+  - generic [ref=f19e831]:
+    - banner [ref=f19e832]:
+      - button "Close course" [ref=f19e833] [cursor=pointer]:
+        - img [ref=f19e834]
+    - main [ref=f19e851]:
+      - generic [ref=f19e853]:
+        - img [ref=f19e855]
+        - generic [ref=f19e862]: written and verified
+        - generic [ref=f19e863]: pressure
+        - generic [ref=f19e864]:
+          - generic [ref=f19e865]: 1what is pressure?
+          - generic [ref=f19e866]: 2the pressure formula
+          - generic [ref=f19e867]: 3how area changes pressure
+          - generic [ref=f19e868]: 4pressure in everyday life
+          - generic [ref=f19e869]: 5pressure in liquids and gases
+          - generic [ref=f19e870]: 6atmospheric pressure
+          - generic [ref=f19e871]: 7the workbook
+          - generic [ref=f19e872]: 8the boss
+          - generic [ref=f19e873]: composed and checked, line by line. it starts on the next card.
+    - button "start the course" [ref=f19e876] [cursor=pointer]:
+      - generic [ref=f19e877]: start the course
+  - banner:
+    - img "Classess" [ref=f19e323]
+    - generic [ref=f19e324]:
+      - button "Did you know" [ref=f19e325] [cursor=pointer]:
+        - img [ref=f19e326]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f19e328]:
+        - img [ref=f19e329]
+        - text: "1"
+      - generic [ref=f19e332]: 0 xp
+      - button "You — profile and settings" [ref=f19e333] [cursor=pointer]:
+        - generic [ref=f19e334]: A
+  - generic [ref=f19e795]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f19e796] [cursor=pointer]:
+      - img [ref=f19e800]

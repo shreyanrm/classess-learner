@@ -1,0 +1,40 @@
+- generic [ref=f16e2]:
+  - generic [ref=f16e2679]:
+    - banner [ref=f16e2680]:
+      - button "Close course" [ref=f16e2681] [cursor=pointer]:
+        - img [ref=f16e2682]
+    - main [ref=f16e2695]:
+      - generic [ref=f16e2697]:
+        - img [ref=f16e2699]
+        - generic [ref=f16e2706]: a working course, honestly floored
+        - generic [ref=f16e2707]: pressure
+        - generic [ref=f16e2708]:
+          - generic [ref=f16e2709]: 1meet pressure
+          - generic [ref=f16e2710]: 2feel the rule
+          - generic [ref=f16e2711]: 3predict, then check
+          - generic [ref=f16e2712]: 4where it bends
+          - generic [ref=f16e2713]: 5the workbook
+          - generic [ref=f16e2714]: 6the boss
+          - generic [ref=f16e2715]: the fully generated course is still in verification — this working path is live now and follows the same grammar.
+    - button "start the working course" [ref=f16e2718] [cursor=pointer]:
+      - generic [ref=f16e2719]: start the working course
+  - banner:
+    - img "Classess" [ref=f16e2721]
+    - generic [ref=f16e2722]:
+      - button "Did you know" [ref=f16e2723] [cursor=pointer]:
+        - img [ref=f16e2724]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f16e2726]:
+        - img [ref=f16e2727]
+        - text: "1"
+      - generic [ref=f16e2730]: 230 xp
+      - button "You — profile and settings" [ref=f16e2731] [cursor=pointer]:
+        - generic [ref=f16e2732]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

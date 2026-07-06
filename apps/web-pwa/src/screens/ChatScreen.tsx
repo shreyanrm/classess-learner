@@ -14,6 +14,7 @@ import { useRouter } from '../shell/router';
 import { SendIcon, WaveformIcon } from '../ui/icons';
 import { fluidType, MagneticButton } from '../ui/kit';
 import { useVidyaChat } from '../vidya/chat';
+import { TurnAttachments } from '../vidya/paths';
 import { MuteButton } from '../vidya/speech';
 import { useVidyaVoice } from '../vidya/voice';
 import { Whisper } from './Learn';
@@ -171,15 +172,26 @@ export function ChatScreen() {
                 key={t.id}
                 style={{
                   alignSelf: 'flex-start',
-                  maxWidth: '84%',
-                  padding: '2px 2px',
-                  fontSize: fluidType.body,
-                  lineHeight: 1.6,
-                  color: '#121316',
-                  whiteSpace: 'pre-wrap',
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 10,
                 }}
               >
-                {t.text}
+                <div
+                  style={{
+                    maxWidth: '84%',
+                    padding: '2px 2px',
+                    fontSize: fluidType.body,
+                    lineHeight: 1.6,
+                    color: '#121316',
+                    whiteSpace: 'pre-wrap',
+                  }}
+                >
+                  {t.text}
+                </div>
+                {/* the five paths land in the thread itself — sims, drawings, action cards */}
+                {t.extras && <TurnAttachments turn={t} />}
               </div>
             ),
           )}

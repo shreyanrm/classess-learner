@@ -106,7 +106,9 @@ export function AtomJourney({
   const [card, setCard] = useState<CardId>(() => {
     // Resume where they left off — a course remembers its place (cliffhanger-friendly).
     try {
-      const saved = (JSON.parse(localStorage.getItem('clss-course-pos-v1') ?? '{}') as Record<string, CardId>)[topic.id];
+      const saved = (
+        JSON.parse(localStorage.getItem('clss-course-pos-v1') ?? '{}') as Record<string, CardId>
+      )[topic.id];
       if (saved && saved !== 'greeting' && saved !== 'tease' && saved !== 'mystery') return saved;
     } catch {
       // fresh start below

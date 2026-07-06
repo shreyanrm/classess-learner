@@ -42,6 +42,16 @@ export const VidyaActionSchema = z.discriminatedUnion('type', [
   // Vidya writes a handwritten note (Caveat) beside a target — typed on letter by letter.
   z.object({ type: z.literal('write'), targetId: z.string(), text: z.string(), level, ttl }),
   z.object({ type: z.literal('point'), targetId: z.string(), ttl }),
+  // Demonstrate by doing — drive an interactive's own state through its applyTutorAction seam
+  // (VIDYA.md §4 setState). Only targets that expose scene state accept it.
+  z.object({
+    type: z.literal('setState'),
+    targetId: z.string(),
+    patch: z.record(z.string(), z.unknown()),
+  }),
+  // Voice-locked speech (VIDYA.md §4 speak): plays through the voice path when live, otherwise
+  // rendered as her handwritten line.
+  z.object({ type: z.literal('speak'), text: z.string() }),
   z.object({ type: z.literal('revealHint'), level: z.number().int().nonnegative() }),
   z.object({ type: z.literal('escalateHint') }),
   // Consequential — offered, never forced.
@@ -95,6 +105,12 @@ export interface ActiveNote {
   ttl?: number;
 }
 
+/** A tutor-driven state patch aimed at a registered scene's applyTutorAction seam. */
+export interface TutorStatePatch {
+  targetId: string;
+  patch: Record<string, unknown>;
+}
+
 export interface ActionEffects {
   highlights: ActiveHighlight[];
   annotations: ActiveAnnotation[];
@@ -102,6 +118,10 @@ export interface ActionEffects {
   mood: VidyaMood | null;
   offer: ConsequentialAction | null;
   says: string[];
+  /** Voice-locked lines: spoken when voice is live, otherwise her handwritten line. */
+  speaks: string[];
+  /** setState demonstrations, routed to each target's applyTutorAction seam. */
+  setStates: TutorStatePatch[];
   revealHints: number[];
   escalateHints: number;
 }
@@ -115,6 +135,8 @@ export function reduceActions(actions: VidyaAction[]): ActionEffects {
     mood: null,
     offer: null,
     says: [],
+    speaks: [],
+    setStates: [],
     revealHints: [],
     escalateHints: 0,
   };
@@ -158,6 +180,12 @@ export function reduceActions(actions: VidyaAction[]): ActionEffects {
           ttl: action.ttl,
         });
         break;
+      case 'speak':
+        effects.speaks.push(action.text);
+        break;
+      case 'setState':
+        effects.setStates.push({ targetId: action.targetId, patch: action.patch });
+        break;
       case 'revealHint':
         effects.revealHints.push(action.level);
         break;
@@ -183,6 +211,8 @@ export function describeActionVocabulary(): string {
     '- annotate: {"type":"annotate","targetId":"<id>","mark":"underline|circle|arrow|bracket|check|crossOut|lookHere","level":"...","ttl":<ms>} — draw a hand-drawn mark.',
     '- write: {"type":"write","targetId":"<id>","text":"short note","level":"...","ttl":<ms>} — write a handwritten note beside a target (typed on by hand).',
     '- point: {"type":"point","targetId":"<id>","ttl":<ms>} — draw attention to a target.',
+    '- setState: {"type":"setState","targetId":"<id>","patch":{...}} — demonstrate by doing: drive an interactive by patching its own state. Only for targets whose scene state is listed; the patch keys must match that state.',
+    '- speak: {"type":"speak","text":"..."} — say it in your voice when voice is live; otherwise it appears as your handwritten line. Short, warm, never the final answer.',
     '- setMood: {"type":"setMood","mood":"thinking|hint|correct|celebrate|waiting|idle"}.',
     '- revealHint: {"type":"revealHint","level":<n>} / escalateHint: {"type":"escalateHint"}.',
     '- navigate/startPractice/switchModality — consequential; these are OFFERED to the learner, not forced.',

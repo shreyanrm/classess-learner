@@ -379,7 +379,9 @@ def _seed_diagram(concept: str) -> str:
     label = quoteattr(concept)
     text = concept if len(concept) <= 38 else concept[:37] + "…"
     return (
-        f'<svg viewBox="0 0 320 180" role="img" aria-label={label}>'
+        # xmlns is load-bearing: browsers parse artifacts as image/svg+xml, where a
+        # namespace-less <svg> is not an SVG element and the client refuses it.
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-label={label}>'
         f'<text x="160" y="28" text-anchor="middle" font-size="13" fill="#111">{text}</text>'
         '<circle cx="92" cy="106" r="34" fill="none" stroke="#111" stroke-width="1"/>'
         '<text x="92" y="110" text-anchor="middle" font-size="11" fill="#111">idea</text>'
@@ -523,7 +525,9 @@ def _raster_diagram(concept: str, difficulty: str) -> str | None:
         return None
     href = f"data:{result['mime']};base64,{result['b64']}"
     return (
-        '<svg viewBox="0 0 640 400" role="img" aria-label=' + quoteattr(concept) + ">"
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-label='
+        + quoteattr(concept)
+        + ">"
         f'<image href="{href}" x="0" y="0" width="640" height="400"/>'
         "</svg>"
     )
@@ -608,6 +612,9 @@ def run_engine(
         stale = modality == "compose" and not (
             isinstance(artifact, dict) and "workbook" in artifact and "boss" in artifact
         )
+        # pre-upgrade diagrams without an xmlns never render in the browser — regenerate
+        if modality == "diagram" and not (isinstance(artifact, str) and "xmlns" in artifact):
+            stale = True
         if not stale:
             return ProviderResponse(output=_public(cached), tokens=0)
 

@@ -14,6 +14,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useProgress } from '../../store/progress';
 import { useSdk } from '../../store/sdk';
 import { useVidyaChat } from '../../vidya/chat';
+import { hintFor, maxHintDepth, noteCorrect, noteMiss, regrade, useTutor } from '../../vidya/tutor';
 import { firstMove, fmt, linearize } from './equations';
 import type { BarState } from './shared';
 import { CardBody, cardTitle, lead, ParticlePop, rgba, Stage, whisper } from './shared';
@@ -191,6 +192,7 @@ export function PracticeRun({
   const bus = useVidyaBus();
   const { award } = useProgress();
   const { setMood } = useVidyaChat();
+  const { mode } = useTutor();
 
   const [queue, setQueue] = useState<PracticeItem[]>(items);
   const [pos, setPos] = useState(0);
@@ -199,6 +201,11 @@ export function PracticeRun({
   const [whyOpen, setWhyOpen] = useState(false);
   const [detReady, setDetReady] = useState(false);
   const [wrongValue, setWrongValue] = useState(0);
+  // the assistance ladder at work: hint depth per item, and the "I think I'm right" contest
+  const [hintLevel, setHintLevel] = useState(0);
+  const [hint, setHint] = useState<string | null>(null);
+  const [contest, setContest] = useState<'idle' | 'checking' | 'upheld' | 'stood'>('idle');
+  const [contestNote, setContestNote] = useState('');
 
   const startRef = useRef(Date.now());
   const attemptsByItem = useRef<Record<string, number>>({});
@@ -242,7 +249,7 @@ export function PracticeRun({
     setSub(queue.length === 0 ? 0 : Math.min(1, pos / queue.length));
   }, [setSub, pos, queue.length]);
 
-  // she reads the pad at code level
+  // she reads the pad at code level — including how much support she is currently giving
   useEffect(() => {
     if (!item) return;
     bus.publishCanvas({
@@ -251,6 +258,7 @@ export function PracticeRun({
       steps: [
         `item ${Math.min(pos + 1, queue.length)} of ${queue.length}`,
         `learner's entry so far: ${entry === '' ? '(nothing yet)' : entry.replace('-', '−')}`,
+        `assistance: ${mode}${hintLevel > 0 ? ` · hint depth ${hintLevel}` : ''}`,
         phase === 'correct'
           ? 'answered correctly'
           : phase === 'detonate'
@@ -259,7 +267,7 @@ export function PracticeRun({
       ],
       lastEditedAt: new Date().toISOString(),
     });
-  }, [bus, nodeId, item, pos, queue.length, entry, phase, wrongValue]);
+  }, [bus, nodeId, item, pos, queue.length, entry, phase, wrongValue, mode, hintLevel]);
   useEffect(() => () => bus.publishCanvas(undefined), [bus]);
 
   const advance = useCallback(() => {
@@ -267,8 +275,66 @@ export function PracticeRun({
     setEntry('');
     setWhyOpen(false);
     setDetReady(false);
+    setHintLevel(0);
+    setHint(null);
+    setContest('idle');
+    setContestNote('');
     setPos((p) => p + 1);
   }, []);
+
+  // one clue at a time — depth escalates on request, capped by the ladder, delivered in her ink
+  const giveHint = useCallback(() => {
+    if (!item) return;
+    const next = Math.min(hintLevel + 1, maxHintDepth(mode));
+    if (next === hintLevel) return;
+    const text = hintFor(item, next, mode);
+    setHintLevel(next);
+    setHint(text);
+    sdk.events.record(
+      'vidya.hint.escalated.v1',
+      { node_id: nodeId, from_level: hintLevel, to_level: next, reason: 'explicit_request' },
+      { ontologyNodeId: nodeId },
+    );
+    bus.dispatch([
+      { type: 'setMood', mood: 'hint' },
+      { type: 'write', targetId: 'course-practice-equation', text, ttl: 9000 },
+    ]);
+  }, [item, hintLevel, mode, sdk, nodeId, bus]);
+
+  // the learner contests an evaluated answer — the verifier looks again, gracefully either way
+  const doContest = useCallback(async () => {
+    if (!item) return;
+    setContest('checking');
+    const r = await regrade(sdk, item, wrongValue);
+    setContestNote(r.note);
+    if (r.upheld) {
+      // the grade bends to the proof: corrected evidence, the earned moment, no re-queue
+      sdk.events.record(
+        'practice.item.answered.v1',
+        {
+          node_id: nodeId,
+          item_id: item.id,
+          response: { kind: 'numeric', value: wrongValue },
+          correct: true,
+          latency_ms: 0,
+          independence_signal: 0.95,
+        },
+        { ontologyNodeId: nodeId },
+      );
+      setQueue((q) => {
+        const i = q.lastIndexOf(item);
+        return i > pos ? q.filter((_, j) => j !== i) : q;
+      });
+      noteCorrect();
+      award('item');
+      setContest('upheld');
+      setPhase('correct');
+      setMood('correct');
+      window.setTimeout(() => setMood('idle'), 1400);
+    } else {
+      setContest('stood');
+    }
+  }, [item, wrongValue, sdk, nodeId, pos, award, setMood]);
 
   const check = useCallback(() => {
     if (!item) return;
@@ -280,6 +346,9 @@ export function PracticeRun({
     attemptsByItem.current[item.id] = attemptIndex + 1;
     onAttempt();
 
+    // honesty about independence: a hinted answer is aided evidence, not unaided
+    const aided = hintLevel > 0;
+    const independence = aided ? 0.6 : 0.95;
     sdk.events.record(
       'learn.attempt.submitted.v1',
       {
@@ -287,8 +356,8 @@ export function PracticeRun({
         item_id: item.id,
         response: { kind: 'numeric', value },
         correct,
-        aided: false,
-        independence_signal: 0.95,
+        aided,
+        independence_signal: independence,
         latency_ms: latency,
         attempt_index: attemptIndex,
       },
@@ -302,17 +371,19 @@ export function PracticeRun({
         response: { kind: 'numeric', value },
         correct,
         latency_ms: latency,
-        independence_signal: 0.95,
+        independence_signal: independence,
       },
       { ontologyNodeId: nodeId },
     );
 
     if (correct) {
+      noteCorrect();
       setPhase('correct');
       award('item');
       setMood('correct');
       window.setTimeout(() => setMood('idle'), 1400);
     } else {
+      noteMiss();
       // FSRS framing: a lapse, due again soon — and it literally returns later in this run
       const card = reviewCard(null, false, Date.now());
       sdk.events.record(
@@ -334,7 +405,7 @@ export function PracticeRun({
       window.setTimeout(() => setMood('idle'), 2000);
       window.setTimeout(() => setDetReady(true), 2600);
     }
-  }, [item, entry, sdk, nodeId, award, setMood, onAttempt]);
+  }, [item, entry, sdk, nodeId, award, setMood, onAttempt, hintLevel]);
 
   const checkRef = useRef(check);
   useEffect(() => {
@@ -360,7 +431,7 @@ export function PracticeRun({
     return () => window.removeEventListener('keydown', handler);
   }, [phase, onKey]);
 
-  // the action bar follows the phase
+  // the action bar follows the phase — and carries the ladder's quiet affordances
   useEffect(() => {
     if (!item) {
       setBar(null);
@@ -368,16 +439,40 @@ export function PracticeRun({
     }
     if (phase === 'answer') {
       const invalid = entry === '' || entry === '-' || !Number.isFinite(Number(entry));
-      setBar({ primary: { label: 'check', onClick: () => checkRef.current(), disabled: invalid } });
+      setBar({
+        primary: { label: 'check', onClick: () => checkRef.current(), disabled: invalid },
+        secondary:
+          hintLevel < maxHintDepth(mode)
+            ? { label: hintLevel === 0 ? 'hint' : 'another hint', onClick: giveHint }
+            : undefined,
+      });
     } else if (phase === 'correct') {
       setBar({
         primary: { label: 'continue', onClick: advance },
         secondary: { label: 'why?', onClick: () => setWhyOpen((o) => !o) },
       });
     } else {
-      setBar({ primary: { label: 'continue', onClick: advance, disabled: !detReady } });
+      setBar({
+        primary: { label: 'continue', onClick: advance, disabled: !detReady },
+        secondary:
+          contest === 'idle' && detReady
+            ? { label: 'I think I’m right', onClick: () => void doContest() }
+            : undefined,
+      });
     }
-  }, [setBar, item, phase, entry, detReady, advance]);
+  }, [
+    setBar,
+    item,
+    phase,
+    entry,
+    detReady,
+    advance,
+    hintLevel,
+    mode,
+    giveHint,
+    contest,
+    doContest,
+  ]);
 
   if (!item) return null;
 
@@ -421,6 +516,29 @@ export function PracticeRun({
         {item.equation}
       </div>
 
+      {/* the hint stays while her overlay ink fades — one clue, escalating only on request */}
+      <AnimatePresence initial={false}>
+        {phase === 'answer' && hint && (
+          <motion.div
+            key={hint}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
+            style={{
+              textAlign: 'center',
+              fontSize: '0.92rem',
+              lineHeight: 1.55,
+              color: 'var(--clss-ink-700)',
+              padding: '0 8px 10px',
+            }}
+          >
+            <span style={{ ...whisper, marginRight: 8 }}>hint {hintLevel}</span>
+            {hint}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence mode="wait" initial={false}>
         {phase === 'detonate' ? (
           <motion.div
@@ -433,6 +551,27 @@ export function PracticeRun({
             <Stage hue={RETRY} tint={0.06} minHeight={320} style={{ padding: '28px 18px' }}>
               <Detonation item={item} theirs={wrongValue} />
             </Stage>
+            {/* the re-grade path: contesting is welcome, and the outcome is graceful either way */}
+            <AnimatePresence initial={false}>
+              {contest !== 'idle' && (
+                <motion.div
+                  key={contest}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
+                  style={{
+                    marginTop: 12,
+                    textAlign: 'center',
+                    fontSize: '0.92rem',
+                    lineHeight: 1.55,
+                    color: 'var(--clss-ink-700)',
+                  }}
+                >
+                  {contest === 'checking' ? 'asking the verifier to look again…' : contestNote}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         ) : (
           <motion.div
@@ -483,6 +622,11 @@ export function PracticeRun({
                   <div style={{ color: 'var(--clss-feedback-correct)', fontWeight: 550 }}>
                     that holds.
                   </div>
+                  {contest === 'upheld' && (
+                    <div style={{ marginTop: 6, fontSize: '0.9rem', color: 'var(--clss-ink-700)' }}>
+                      you contested — and the proof took your side.
+                    </div>
+                  )}
                   <AnimatePresence>
                     {whyOpen && lin && (
                       <motion.div

@@ -10,9 +10,10 @@ dev = ["pytest>=8.2", "ruff>=0.6"]
 
 [tool.uv.workspace]
 # Members are added as each Python package is created. Globbing avoids editing this on every add.
-# content/catalogs is data (board catalog JSON), not a Python package — excluded.
+# content/catalogs is data (board catalog JSON) and content/cache is the Plexus artifact
+# cache (written at runtime by the gateway) — neither is a Python package.
 members = ["services/*", "content/*"]
-exclude = ["content/catalogs"]
+exclude = ["content/catalogs", "content/cache"]
 
 [tool.ruff]
 line-length = 100

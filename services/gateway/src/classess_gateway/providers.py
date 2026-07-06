@@ -50,13 +50,7 @@ def _seed(capability: str, payload: dict[str, Any]) -> int:
 def _shape(capability: str, seed: int) -> dict[str, Any]:
     """A deterministic, capability-shaped mock payload. Calm copy: no emoji, no hype."""
     flag = seed % 2 == 0
-    if capability == "vidya.turn":
-        return {
-            "say": "Look again at the step where you moved a term across.",
-            "actions": [{"type": "setMood", "mood": "thinking"}],
-            "grounded": True,
-            "handed_answer": False,
-        }
+    # vidya.turn never reaches here — MockProvider routes it to vidya.mock_vidya_turn
     if capability in {"tutor.turn", "parent.companion.turn"}:
         return {
             "message": f"mock {capability} response",
@@ -111,6 +105,11 @@ class MockProvider:
                 capability=capability, payload=payload, provider_model=provider_model, live=False
             )
         seed = _seed(capability, payload)
+        if capability == "vidya.turn":
+            # her mock brain classifies by keyword into the five paths — works keyless
+            from classess_gateway.vidya import mock_vidya_turn
+
+            return ProviderResponse(output=mock_vidya_turn(payload), tokens=(seed % 500) + 1)
         return ProviderResponse(output=_shape(capability, seed), tokens=(seed % 500) + 1)
 
 

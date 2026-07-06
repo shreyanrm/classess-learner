@@ -137,6 +137,7 @@
     "vidya.turn.assistant.v1",
     "vidya.hint.escalated.v1",
     "vidya.perceived.work.v1",
+    "vidya.offer.outcome.v1",
     "create.request.submitted.v1",
     "create.course.compiled.v1",
     "create.node.mapped.v1",
@@ -1393,6 +1394,42 @@
         "node_id",
         "via",
         "source"
+      ],
+      "additionalProperties": false
+    },
+    "vidya.offer.outcome.v1": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "offer_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "capability": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "taken",
+            "ignored"
+          ]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        }
+      },
+      "required": [
+        "offer_id",
+        "capability",
+        "outcome"
       ],
       "additionalProperties": false
     },
@@ -5586,6 +5623,155 @@
             "node_id",
             "via",
             "source"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "event_id",
+        "event_type",
+        "occurred_at",
+        "actor",
+        "context",
+        "trace",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "vidya.offer.outcome.v1": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "event_type": {
+          "type": "string",
+          "const": "vidya.offer.outcome.v1"
+        },
+        "occurred_at": {
+          "type": "string"
+        },
+        "actor": {
+          "type": "object",
+          "properties": {
+            "subject_id": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "surface": {
+              "type": "string",
+              "enum": [
+                "expo",
+                "pwa"
+              ]
+            },
+            "session_id": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          },
+          "required": [
+            "subject_id",
+            "surface",
+            "session_id"
+          ],
+          "additionalProperties": false
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "app": {
+              "type": "string",
+              "enum": [
+                "learner"
+              ]
+            },
+            "env": {
+              "type": "string",
+              "enum": [
+                "dev",
+                "stg",
+                "prod"
+              ]
+            },
+            "ontology_node_id": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "course_id": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "consent_tier": {
+              "type": "string",
+              "enum": [
+                "un_elevated",
+                "elevated"
+              ]
+            }
+          },
+          "required": [
+            "app",
+            "env",
+            "consent_tier"
+          ],
+          "additionalProperties": false
+        },
+        "trace": {
+          "type": "object",
+          "properties": {
+            "request_id": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "causation_id": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "correlation_id": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          },
+          "required": [
+            "request_id"
+          ],
+          "additionalProperties": false
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "offer_id": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            "capability": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "taken",
+                "ignored"
+              ]
+            },
+            "confidence": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            }
+          },
+          "required": [
+            "offer_id",
+            "capability",
+            "outcome"
           ],
           "additionalProperties": false
         }

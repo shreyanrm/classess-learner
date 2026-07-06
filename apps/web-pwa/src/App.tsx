@@ -31,6 +31,7 @@ import { SubjectScreen } from './screens/SubjectScreen';
 import { You } from './screens/You';
 import { CommandPalette } from './shell/CommandPalette';
 import { type Route, RouterProvider, useRouter } from './shell/router';
+import { MindObserver } from './store/mind';
 import { ProgressProvider } from './store/progress';
 import { SdkProvider } from './store/sdk';
 import { AppHeader } from './ui/AppHeader';
@@ -41,9 +42,12 @@ import {
   CHAT_PAGE,
   type ChatTurn,
   readArchive,
+  updateArchiveTurn,
   VidyaChatProvider,
   writeArchive,
 } from './vidya/chat';
+import { resolveTurnExtras, type TurnExtras } from './vidya/paths';
+import { SpeechNarrator } from './vidya/speech';
 
 const LLM_MODE = (import.meta.env.VITE_LLM_MODE as 'mock' | 'live' | undefined) ?? 'mock';
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
@@ -117,7 +121,8 @@ function Screen() {
 
 function AppInner({ sdk }: { sdk: Sdk }) {
   const bus = useVidyaBus();
-  const { route } = useRouter();
+  const router = useRouter();
+  const { route } = router;
   const [busy, setBusy] = useState(false);
   const [mood, setMood] = useState<VidyaMood>('idle');
   // One conversation for life: the archive is the local source of truth; only its tail loads.
@@ -202,16 +207,58 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     }));
     bus.publishTurn({ recentTurns: recent, lastUserInput: text });
     try {
+      const context = bus.assembleContext();
       const result = await sdk.llm.invoke(
         'vidya.turn',
-        { context: bus.assembleContext() },
+        { context },
         { consentTier: 'un_elevated' },
       );
-      const output = result.output as { say?: string; actions?: unknown[] };
-      say({ role: 'vidya', text: output.say ?? 'let us look at this together.' });
+      const output = result.output as {
+        say?: string;
+        actions?: unknown[];
+        grounded?: boolean;
+        safety?: { flagged?: boolean; category?: string; severity?: string; action?: string };
+      };
+      // The gateway's child-safety pass flagged this turn — record it on the event backbone.
+      if (output.safety?.flagged) {
+        const s = output.safety;
+        sdk.events.record('safety.flag.raised.v1', {
+          surface: 'vidya_chat',
+          category: s.category === 'crisis' ? 'crisis' : 'moderation',
+          severity: s.severity === 'low' || s.severity === 'high' ? s.severity : 'medium',
+          action: s.action === 'escalated' ? 'escalated' : 'blocked',
+          ...(s.category === 'crisis' ? { escalated_to: 'guardian' as const } : {}),
+        });
+      }
+      // The five-path orchestrator (VIDYA.md §6): the gateway's classification wins; unclassified
+      // turns fall to the deterministic keyword classifier so every mode works keyless.
+      const extras = resolveTurnExtras(
+        output as Record<string, unknown>,
+        text,
+        context.curriculum?.nodeName,
+      );
+      say({
+        role: 'vidya',
+        text: output.say ?? 'let us look at this together.',
+        ...(extras.path !== 'inline' ? { extras } : {}),
+      });
+      // her turn on the event backbone — attributed, grounded, accountable
+      sdk.events.record('vidya.turn.assistant.v1', {
+        turn_id: crypto.randomUUID(),
+        assistance_level: 'coach',
+        hint_level: 0,
+        grounded: Boolean(output.grounded),
+        track: result.track,
+        handed_answer: false,
+      });
       const actions = parseActions(output.actions ?? []);
       bus.dispatch(actions);
       setMood(actions.length > 0 ? 'explaining' : 'idle');
+      // the route path: she takes you there herself, docked — after her line lands
+      if (extras.route) {
+        const dest = NAV_ROUTES[extras.route.to];
+        if (dest) window.setTimeout(() => router.navigate(dest), 650);
+      }
     } catch {
       say({ role: 'vidya', text: 'give me a moment, then ask me again.' });
       setMood('idle');
@@ -220,9 +267,18 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     }
   };
 
+  // Approval outcomes and action results patch the turn wherever it is rendered — and the archive,
+  // so a decided card never re-offers after reload.
+  const updateTurn = (id: string, patch: (extras: TurnExtras) => TurnExtras) => {
+    const apply = (t: ChatTurn): ChatTurn =>
+      t.id === id && t.extras ? { ...t, extras: patch(t.extras) } : t;
+    setTurns((prev) => prev.map(apply));
+    updateArchiveTurn(id, apply);
+  };
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: ask is recreated with turns; tracking turns/busy/mood covers it
   const chat = useMemo(
-    () => ({ turns, ask, busy, mood, setMood, hasOlder, loadOlder }),
+    () => ({ turns, ask, busy, mood, setMood, hasOlder, loadOlder, updateTurn }),
     [turns, busy, mood, hasOlder],
   );
 
@@ -257,6 +313,10 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       {!inFlow && !onHome && route.name !== 'chat' && <VidyaCompanion />}
       <CommandPalette />
       <ClickInk />
+      {/* the per-learner mind — folds behavioural signals into her lifetime context */}
+      <MindObserver />
+      {/* she speaks what she writes — sound and ink on the same beat */}
+      <SpeechNarrator />
     </VidyaChatProvider>
   );
 }

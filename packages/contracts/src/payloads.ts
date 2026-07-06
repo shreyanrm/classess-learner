@@ -234,6 +234,17 @@ export const VidyaPerceivedWork = z.object({
   signal_summary: z.string().optional(),
 });
 
+/** The learner's response to an action Vidya offered — every recommendation is accountable. */
+export const VidyaOfferOutcome = z.object({
+  /** Correlates with the offer card shown in the thread. */
+  offer_id: zUuid,
+  /** Capability id from the app-side registry (e.g. open_course, prepare_parent_note). */
+  capability: z.string().min(1).max(120),
+  outcome: z.enum(['taken', 'ignored']),
+  /** The confidence band shown on the card when offered. */
+  confidence: z.enum(['high', 'medium', 'low']).optional(),
+});
+
 // --- Create-anything --------------------------------------------------------
 
 export const CreateRequestSubmitted = z.object({

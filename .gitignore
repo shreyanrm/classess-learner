@@ -49,3 +49,5 @@ tmp/
 # --- Supabase local (we use hosted MSR Build via MCP; keep local artifacts out) ---
 supabase/.branches/
 supabase/.temp/
+.vercel
+.env*

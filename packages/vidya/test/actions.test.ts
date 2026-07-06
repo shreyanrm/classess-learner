@@ -17,6 +17,18 @@ describe('parseActions', () => {
     expect(parseActions(null)).toEqual([]);
     expect(parseActions({ type: 'say', text: 'x' })).toEqual([]);
   });
+
+  it('accepts setState and speak, drops malformed ones', () => {
+    const raw = [
+      { type: 'setState', targetId: 'sim-1', patch: { slider: 0.4, running: true } },
+      { type: 'speak', text: 'watch what happens when I slow it down' },
+      { type: 'setState', targetId: 'sim-1', patch: 'not-an-object' }, // invalid
+      { type: 'setState', patch: {} }, // missing targetId -> invalid
+      { type: 'speak' }, // missing text -> invalid
+    ];
+    const actions = parseActions(raw);
+    expect(actions.map((a) => a.type)).toEqual(['setState', 'speak']);
+  });
 });
 
 describe('isConsequential', () => {
@@ -60,5 +72,22 @@ describe('reduceActions', () => {
   it('defaults highlight level to primary (Molten leads)', () => {
     const e = reduceActions([{ type: 'highlight', targetId: 't' }]);
     expect(e.highlights[0]?.level).toBe('primary');
+  });
+
+  it('folds speak into speaks and setState into setStates — both immediate, never offered', () => {
+    const actions: VidyaAction[] = [
+      { type: 'speak', text: 'here, let me show you' },
+      { type: 'setState', targetId: 'sim-1', patch: { mass: 2 } },
+      { type: 'setState', targetId: 'sim-1', patch: { mass: 10 } },
+    ];
+    const e = reduceActions(actions);
+    expect(e.speaks).toEqual(['here, let me show you']);
+    expect(e.setStates).toEqual([
+      { targetId: 'sim-1', patch: { mass: 2 } },
+      { targetId: 'sim-1', patch: { mass: 10 } },
+    ]);
+    expect(e.offer).toBeNull();
+    expect(e.says).toEqual([]); // speak is the voice-locked channel, not say
+    expect(isConsequential(actions[1] as VidyaAction)).toBe(false);
   });
 });

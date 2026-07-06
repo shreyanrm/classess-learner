@@ -16,16 +16,19 @@ import {
   displaySubjectById,
   learner,
   subjectById,
+  topicById,
   unmetPrereqs,
 } from '../data/catalog';
 import type { Chapter, Topic } from '../data/model';
 import { useRouter } from '../shell/router';
 import { useViewport } from '../shell/useViewport';
 import { useProgress } from '../store/progress';
+import { useSdk } from '../store/sdk';
 import { ChapterFiligree, SubjectGlyph, TopicSigil } from '../ui/art';
 import { hueForTopic, type SubjectTone, toneForSubject } from '../ui/hues';
 import { ChevronIcon } from '../ui/icons';
 import { cascade, MagneticButton, rise } from '../ui/kit';
+import { type BridgePlan, composeBridge, masteredGround } from '../vidya/tutor';
 import { SubjectSceneBackdrop, Whisper } from './Learn';
 
 const EXPAND_SPRING = { type: 'spring', stiffness: 320, damping: 32 } as const;
@@ -41,9 +44,11 @@ function topicRoute(topicId: string, intent: Intent) {
 
 function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone: SubjectTone }) {
   const router = useRouter();
+  const sdk = useSdk();
   const { completed, topicProgress } = useProgress();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [hover, setHover] = useState(false);
+  const [bridge, setBridge] = useState<'idle' | 'composing' | BridgePlan>('idle');
   const p = completed.has(topic.id) ? 1 : (topicProgress[topic.id] ?? 0);
   const fillTint = p >= 0.7 ? 'var(--clss-feedback-correctSoft)' : 'rgba(178,106,0,0.12)';
 
@@ -51,8 +56,22 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
   const unmet = mastered ? [] : unmetPrereqs(topic, completed);
   const gated = unmet.length > 0;
   const unmetNames = unmet.map((u) => u.name).join(' and ');
+  // the concept-graph bridge stands only on ground the learner already owns
+  const ground = gated ? masteredGround(topic, completed, topicById) : [];
 
   const open = (topicId: string) => router.navigate(topicRoute(topicId, intent));
+
+  // bridge me there: she composes a lesson that travels only over mastered ground
+  const requestBridge = async () => {
+    setBridge('composing');
+    sdk.events.record('create.request.submitted.v1', {
+      request_id: crypto.randomUUID(),
+      prompt_text: `bridge to ${topic.name} over ${ground.map((g) => g.name).join(', ')}`,
+      input_mode: 'text',
+      moderation_passed: true,
+    });
+    setBridge(await composeBridge(sdk, topic, ground));
+  };
 
   return (
     <div>
@@ -186,18 +205,73 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
               <span style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', lineHeight: 1.55 }}>
                 this builds on {unmetNames} — take those first, or proceed anyway
               </span>
-              <span style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                <MagneticButton
-                  size="sm"
-                  variant="primary"
-                  onClick={() => unmet[0] && open(unmet[0].id)}
+              {bridge === 'idle' && (
+                <span style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <MagneticButton
+                    size="sm"
+                    variant="primary"
+                    onClick={() => unmet[0] && open(unmet[0].id)}
+                  >
+                    take me there
+                  </MagneticButton>
+                  <MagneticButton size="sm" variant="quiet" onClick={() => open(topic.id)}>
+                    proceed anyway
+                  </MagneticButton>
+                  {/* the bridge door exists only when there is mastered ground to stand on */}
+                  {ground.length > 0 && (
+                    <MagneticButton size="sm" variant="quiet" onClick={() => void requestBridge()}>
+                      bridge me there
+                    </MagneticButton>
+                  )}
+                </span>
+              )}
+              {bridge === 'composing' && (
+                <span style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>
+                  she is composing your bridge — only over ground you already own
+                </span>
+              )}
+              {typeof bridge === 'object' && (
+                <motion.span
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, ease: [0.2, 0, 0, 1] }}
+                  style={{ display: 'flex', flexDirection: 'column', gap: 10 }}
                 >
-                  take me there
-                </MagneticButton>
-                <MagneticButton size="sm" variant="quiet" onClick={() => open(topic.id)}>
-                  proceed anyway
-                </MagneticButton>
-              </span>
+                  <span style={{ fontSize: '0.78rem', color: 'var(--clss-ink-500)' }}>
+                    {bridge.seeded
+                      ? 'the bridge, honestly outlined — every stone is already yours'
+                      : 'the bridge, composed and checked'}
+                  </span>
+                  <span style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {bridge.steps.map((step, i) => (
+                      <span
+                        key={step}
+                        style={{
+                          fontSize: '0.88rem',
+                          color: 'var(--clss-ink-900)',
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontVariantNumeric: 'tabular-nums',
+                            color: 'var(--clss-ink-300)',
+                            marginRight: 8,
+                          }}
+                        >
+                          {i + 1}
+                        </span>
+                        {step}
+                      </span>
+                    ))}
+                  </span>
+                  <span>
+                    <MagneticButton size="sm" variant="primary" onClick={() => open(topic.id)}>
+                      cross the bridge
+                    </MagneticButton>
+                  </span>
+                </motion.span>
+              )}
             </div>
           </motion.div>
         )}

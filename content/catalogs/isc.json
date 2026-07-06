@@ -1,0 +1,1432 @@
+{
+  "board": "ISC",
+  "provenance": "mixed",
+  "note": "ISC (Indian School Certificate) is CISCE's senior-secondary curriculum, covering ONLY Class 11 and Class 12 — unlike the sibling icse.json, which covers Class 6-10 under the same council. Unit/chapter names and order are fetched from official cisce.org syllabus PDFs (downloaded 2026-07-06 with a browser user-agent, since CISCE blocks plain fetches) for Mathematics, Physics, Chemistry, Computer Science and Economics at both grades, and for Biology Class 12. The official cisce.org Class 11 Biology PDF returned 404 at the time of research, so Class 11 Biology unit names and weightage are taken from a byjus.com-hosted mirror of the same official CISCE document (fetched-secondary) and cross-checked against vedantu.com's unit breakdown, which matched exactly. Topic-level blurbs are a faithful plain-English decomposition of each unit's real sub-topics, written from the fetched syllabus text where available and from standard Class 11-12 science/commerce curriculum knowledge where the source only listed a unit title. ISC has no subject called 'Social Science' at this level — CISCE offers separate electives (History, Political Science, Economics, Geography, Commerce, etc.) instead of one combined subject. 'Economics' was chosen as the stand-in for the Social Science bucket because it is one of the most widely taken ISC electives; it is a real, distinct ISC subject, not an approximation of a subject called 'Social Science'.",
+  "grades": [
+    {
+      "grade": "Class 11",
+      "subjects": [
+        {
+          "id": "math",
+          "name": "Mathematics",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2025/04/17.-ISC-Mathematics.pdf (2026-07-06)",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Sets and Functions",
+              "topics": [
+                {
+                  "name": "Sets",
+                  "blurb": "Collections of objects and how to combine them with union, intersection and complement."
+                },
+                {
+                  "name": "Relations and functions",
+                  "blurb": "Pairing up elements from two sets and picking out the special pairings called functions."
+                },
+                {
+                  "name": "Trigonometric functions",
+                  "blurb": "Angles in radians, the unit circle, and identities that connect sine, cosine and tangent."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Algebra",
+              "topics": [
+                {
+                  "name": "Complex numbers",
+                  "blurb": "Numbers with a real and an imaginary part, plotted on the Argand plane."
+                },
+                {
+                  "name": "Quadratic equations and inequalities",
+                  "blurb": "Finding roots, checking their nature, and solving inequalities with a number line."
+                },
+                {
+                  "name": "Permutations and combinations",
+                  "blurb": "Counting the ways to arrange or choose things without listing them all out."
+                },
+                {
+                  "name": "Sequences and series",
+                  "blurb": "Patterns of numbers like arithmetic and geometric progressions, and their sums."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Coordinate Geometry",
+              "topics": [
+                {
+                  "name": "Straight lines",
+                  "blurb": "Writing the equation of a line from its slope, points, or intercepts."
+                },
+                {
+                  "name": "Circles",
+                  "blurb": "Finding a circle's centre and radius from its equation, and building the equation from given facts."
+                },
+                {
+                  "name": "Conic sections",
+                  "blurb": "Parabolas, ellipses and hyperbolas as slices of a cone, each with its own neat equation."
+                },
+                {
+                  "name": "Introduction to three-dimensional geometry",
+                  "blurb": "Extending coordinates from a flat page into space with an extra axis."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Calculus",
+              "topics": [
+                {
+                  "name": "Limits",
+                  "blurb": "What a function is heading towards as its input creeps closer to a value."
+                },
+                {
+                  "name": "Derivatives",
+                  "blurb": "Measuring how fast a quantity changes, straight from the definition of a limit."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Statistics and Probability",
+              "topics": [
+                {
+                  "name": "Measures of dispersion",
+                  "blurb": "Range, mean deviation and standard deviation for judging how spread out data is."
+                },
+                {
+                  "name": "Probability",
+                  "blurb": "Random experiments, events, and working out the chance that something happens."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "physics",
+          "name": "Physics",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2025/04/25.-ISC-Physics-XI-Revised_2025.pdf (2026-07-06)",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Physical World and Measurement",
+              "topics": [
+                {
+                  "name": "Units and measurement",
+                  "blurb": "Why science agrees on SI units, and how to measure length, mass and time carefully."
+                },
+                {
+                  "name": "Errors and significant figures",
+                  "blurb": "Being honest about how precise a measurement really is."
+                },
+                {
+                  "name": "Dimensional analysis",
+                  "blurb": "Using the units of a quantity to check formulas and convert between systems."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Kinematics",
+              "topics": [
+                {
+                  "name": "Motion in a straight line",
+                  "blurb": "Position, velocity and acceleration described with graphs and equations."
+                },
+                {
+                  "name": "Motion in a plane",
+                  "blurb": "Vectors, relative velocity and the arc of a projectile in flight."
+                },
+                {
+                  "name": "Circular motion",
+                  "blurb": "Why moving in a circle always means accelerating towards the centre."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Laws of Motion",
+              "topics": [
+                {
+                  "name": "Newton's laws of motion",
+                  "blurb": "Inertia, force and momentum, and why every push has a pushback."
+                },
+                {
+                  "name": "Friction",
+                  "blurb": "The force that resists sliding, and why it's harder to start moving than to keep moving."
+                },
+                {
+                  "name": "Circular motion and banking",
+                  "blurb": "The centripetal force problems behind a car rounding a curve."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Work, Energy and Power",
+              "topics": [
+                {
+                  "name": "Work and the work-energy theorem",
+                  "blurb": "How a force acting over a distance changes an object's kinetic energy."
+                },
+                {
+                  "name": "Conservation of energy",
+                  "blurb": "Energy swapping between potential and kinetic forms without ever disappearing."
+                },
+                {
+                  "name": "Collisions",
+                  "blurb": "What stays the same, and what's lost, when two objects crash into each other."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Motion of System of Particles and Rigid Body",
+              "topics": [
+                {
+                  "name": "Centre of mass",
+                  "blurb": "The single point where a whole system of particles seems to balance."
+                },
+                {
+                  "name": "Torque and angular momentum",
+                  "blurb": "The rotational cousins of force and momentum."
+                },
+                {
+                  "name": "Moment of inertia",
+                  "blurb": "Why some shapes resist spinning more than others of the same mass."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Gravitation",
+              "topics": [
+                {
+                  "name": "Kepler's laws and universal gravitation",
+                  "blurb": "The rules that govern how planets orbit and why every mass pulls on every other."
+                },
+                {
+                  "name": "Variation of g",
+                  "blurb": "How gravity's pull changes with altitude, depth and latitude."
+                },
+                {
+                  "name": "Escape velocity and satellites",
+                  "blurb": "The speed needed to break free of a planet, and what keeps a satellite in orbit."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Properties of Bulk Matter",
+              "topics": [
+                {
+                  "name": "Elasticity",
+                  "blurb": "Stress, strain and how far a material can stretch before it doesn't spring back."
+                },
+                {
+                  "name": "Fluids in motion",
+                  "blurb": "Pascal's law, buoyancy and Bernoulli's theorem for flowing liquids and gases."
+                },
+                {
+                  "name": "Surface tension and viscosity",
+                  "blurb": "Why droplets form beads and why some liquids flow more sluggishly than others."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Heat and Thermodynamics",
+              "topics": [
+                {
+                  "name": "Thermal expansion and calorimetry",
+                  "blurb": "How materials grow with heat, and how heat exchanged is measured and balanced."
+                },
+                {
+                  "name": "Laws of thermodynamics",
+                  "blurb": "The rules governing heat, work and why some processes never run backwards."
+                },
+                {
+                  "name": "Heat transfer",
+                  "blurb": "Conduction, convection and radiation as three ways heat travels."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Behaviour of Perfect Gases and Kinetic Theory of Gases",
+              "topics": [
+                {
+                  "name": "Gas laws",
+                  "blurb": "How pressure, volume and temperature of a gas relate to one another."
+                },
+                {
+                  "name": "Kinetic theory",
+                  "blurb": "Picturing gas pressure and temperature as the result of countless tiny molecular collisions."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Oscillations and Waves",
+              "topics": [
+                {
+                  "name": "Simple harmonic motion",
+                  "blurb": "The back-and-forth swing of a pendulum or spring, described with one tidy equation."
+                },
+                {
+                  "name": "Wave motion",
+                  "blurb": "How disturbances travel through a medium as transverse or longitudinal waves."
+                },
+                {
+                  "name": "Sound waves",
+                  "blurb": "Speed, superposition and the Doppler effect behind a passing ambulance's changing pitch."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "chemistry",
+          "name": "Chemistry",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2025/04/27.-ISC-Chemistry-XI-Revised_2025.pdf (2026-07-06)",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Some Basic Concepts of Chemistry",
+              "topics": [
+                {
+                  "name": "The mole concept",
+                  "blurb": "Counting atoms and molecules in a chemist's favourite unit, the mole."
+                },
+                {
+                  "name": "Laws of chemical combination",
+                  "blurb": "The simple rules that govern how elements combine in fixed proportions."
+                },
+                {
+                  "name": "Stoichiometry",
+                  "blurb": "Using balanced equations to predict how much product a reaction will make."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Structure of Atom",
+              "topics": [
+                {
+                  "name": "Atomic models",
+                  "blurb": "How our picture of the atom evolved from Thomson to Bohr to the quantum model."
+                },
+                {
+                  "name": "Quantum numbers and orbitals",
+                  "blurb": "The address system that pins down exactly where an electron is likely to be."
+                },
+                {
+                  "name": "Electronic configuration",
+                  "blurb": "The rules that decide which orbital an electron fills next."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Classification of Elements and Periodicity in Properties",
+              "topics": [
+                {
+                  "name": "The modern periodic table",
+                  "blurb": "How elements are arranged by atomic number into rows and columns of shared behaviour."
+                },
+                {
+                  "name": "Periodic trends",
+                  "blurb": "Why atomic size, ionisation energy and electronegativity rise and fall across the table."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Chemical Bonding and Molecular Structure",
+              "topics": [
+                {
+                  "name": "Ionic and covalent bonding",
+                  "blurb": "How atoms either trade or share electrons to become more stable."
+                },
+                {
+                  "name": "VSEPR theory and hybridisation",
+                  "blurb": "Predicting the shape of a molecule from how its electron pairs repel each other."
+                },
+                {
+                  "name": "Molecular orbital theory",
+                  "blurb": "A more detailed picture of bonding built from overlapping electron waves."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Chemical Thermodynamics",
+              "topics": [
+                {
+                  "name": "Enthalpy and Hess's law",
+                  "blurb": "Tracking the heat absorbed or released as a reaction happens."
+                },
+                {
+                  "name": "Entropy and Gibbs energy",
+                  "blurb": "The measures that decide whether a reaction will happen on its own."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Equilibrium",
+              "topics": [
+                {
+                  "name": "Chemical equilibrium",
+                  "blurb": "The balanced state where forward and reverse reactions run at the same rate."
+                },
+                {
+                  "name": "Le Chatelier's principle",
+                  "blurb": "How a system at equilibrium shifts to counteract a change."
+                },
+                {
+                  "name": "Acids, bases and pH",
+                  "blurb": "Measuring how acidic or basic a solution is, and why."
+                },
+                {
+                  "name": "Ionic equilibrium",
+                  "blurb": "Solubility product and the balance of ions in a saturated solution."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Redox Reactions",
+              "topics": [
+                {
+                  "name": "Oxidation numbers",
+                  "blurb": "A bookkeeping trick for tracking electrons gained and lost in a reaction."
+                },
+                {
+                  "name": "Balancing redox equations",
+                  "blurb": "Making sure atoms and charge both add up on both sides."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Organic Chemistry: Some Basic Principles and Techniques",
+              "topics": [
+                {
+                  "name": "IUPAC nomenclature",
+                  "blurb": "The universal naming system that gives every organic compound one clear name."
+                },
+                {
+                  "name": "Isomerism",
+                  "blurb": "How the same atoms can be arranged into molecules with different properties."
+                },
+                {
+                  "name": "Reaction mechanisms",
+                  "blurb": "Inductive effect, resonance and how electrons actually move during a reaction."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Hydrocarbons",
+              "topics": [
+                {
+                  "name": "Alkanes, alkenes and alkynes",
+                  "blurb": "The simplest carbon-and-hydrogen chains, single, double and triple bonded."
+                },
+                {
+                  "name": "Aromatic hydrocarbons",
+                  "blurb": "Benzene's special ring structure and the reactions it prefers."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "biology",
+          "name": "Biology",
+          "provenance": "fetched-secondary:https://cdn1.byjus.com/wp-content/uploads/2020/06/ISC-Class-11-Biology-Syllabus.pdf (2026-07-06)",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Diversity of Living Organisms",
+              "topics": [
+                {
+                  "name": "The living world",
+                  "blurb": "What makes something alive, and why we need a system to classify it."
+                },
+                {
+                  "name": "Biological classification",
+                  "blurb": "Sorting all living things into five broad kingdoms."
+                },
+                {
+                  "name": "Plant and animal kingdom",
+                  "blurb": "The major groups of plants and animals and what sets each apart."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Structural Organisation in Animals and Plants",
+              "topics": [
+                {
+                  "name": "Morphology of flowering plants",
+                  "blurb": "The visible parts of a plant, root to flower, and their jobs."
+                },
+                {
+                  "name": "Anatomy of flowering plants",
+                  "blurb": "The internal tissues that give roots, stems and leaves their structure."
+                },
+                {
+                  "name": "Structural organisation in animals",
+                  "blurb": "Animal tissues and a look inside a cockroach as a representative insect."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Cell: Structure and Function",
+              "topics": [
+                {
+                  "name": "The cell as the unit of life",
+                  "blurb": "Cell theory, and the organelles that keep a cell running."
+                },
+                {
+                  "name": "Biomolecules",
+                  "blurb": "Carbohydrates, proteins, lipids and the enzymes that speed up reactions inside a cell."
+                },
+                {
+                  "name": "Cell cycle and cell division",
+                  "blurb": "How a cell copies itself through mitosis and meiosis."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Plant Physiology",
+              "topics": [
+                {
+                  "name": "Transport in plants",
+                  "blurb": "How water and nutrients move from roots to leaves without a pump."
+                },
+                {
+                  "name": "Mineral nutrition",
+                  "blurb": "The elements a plant needs, and what happens when it doesn't get enough."
+                },
+                {
+                  "name": "Photosynthesis",
+                  "blurb": "How a plant turns sunlight, water and carbon dioxide into food."
+                },
+                {
+                  "name": "Respiration and growth",
+                  "blurb": "How plants release energy from food, and the stages of their growth."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Human Physiology",
+              "topics": [
+                {
+                  "name": "Digestion and breathing",
+                  "blurb": "How food is broken down and oxygen is taken in and used."
+                },
+                {
+                  "name": "Circulation and excretion",
+                  "blurb": "The heart pumping blood, and the kidneys filtering waste."
+                },
+                {
+                  "name": "Locomotion and coordination",
+                  "blurb": "How muscles, nerves and hormones work together to move and respond."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "computer",
+          "name": "Computer Science",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2025/04/35.-ISC-Computer-Science-XI-Revised_2025.pdf (2026-07-06)",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Number Systems, Boolean Logic and Hardware",
+              "topics": [
+                {
+                  "name": "Number systems",
+                  "blurb": "Representing numbers in binary, octal, decimal and hexadecimal, and converting between them."
+                },
+                {
+                  "name": "Propositional logic",
+                  "blurb": "Building and simplifying logical statements with AND, OR and NOT."
+                },
+                {
+                  "name": "Logic gates and arithmetic circuits",
+                  "blurb": "How logic built from simple gates can add and subtract numbers in hardware."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Introduction to Object-Oriented Programming in Java",
+              "topics": [
+                {
+                  "name": "Objects and classes",
+                  "blurb": "Modelling real things as objects with data and behaviour, the Java way."
+                },
+                {
+                  "name": "Primitive types and wrapper classes",
+                  "blurb": "Java's basic data types and the classes that wrap them into objects."
+                },
+                {
+                  "name": "Variables, expressions and statements",
+                  "blurb": "The building blocks of a program: naming values, computing with them, and controlling scope."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Methods, Arrays and Strings",
+              "topics": [
+                {
+                  "name": "Methods and constructors",
+                  "blurb": "Packaging behaviour into reusable blocks, and setting up new objects."
+                },
+                {
+                  "name": "Arrays",
+                  "blurb": "Storing many values of the same type in one indexed structure."
+                },
+                { "name": "Strings", "blurb": "Working with text as a sequence of characters." }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Input/Output and Recursion",
+              "topics": [
+                {
+                  "name": "Basic input and output",
+                  "blurb": "Reading data in and printing results back out in a Java program."
+                },
+                {
+                  "name": "Recursion",
+                  "blurb": "A method that solves a problem by calling a smaller version of itself."
+                },
+                {
+                  "name": "Implementing algorithms",
+                  "blurb": "Turning a plan for solving a problem into working, tested Java code."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Trends in Computing and Ethical Issues",
+              "topics": [
+                {
+                  "name": "Emerging trends in computing",
+                  "blurb": "A look at where computing technology is heading next."
+                },
+                {
+                  "name": "Software licensing and piracy",
+                  "blurb": "What it means to legally own and share software."
+                },
+                {
+                  "name": "Cyber ethics and privacy",
+                  "blurb": "Being a responsible, safe citizen of the digital world."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "economics",
+          "name": "Economics",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2025/04/17.-ISC-Economics-XI-XII_2025.pdf (2026-07-06)",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Understanding Economics",
+              "topics": [
+                {
+                  "name": "What economics studies",
+                  "blurb": "Why economics is the study of scarcity and how people choose to use limited resources."
+                },
+                {
+                  "name": "Micro and macro economics",
+                  "blurb": "The difference between studying one market and studying a whole economy."
+                },
+                {
+                  "name": "The basic economic problem",
+                  "blurb": "What to produce, how to produce it, and for whom, in a world of limited resources."
+                },
+                {
+                  "name": "Types of economic systems",
+                  "blurb": "How capitalism, socialism and mixed economies each try to solve that problem."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Indian Economic Development",
+              "topics": [
+                {
+                  "name": "The post-liberalisation economy",
+                  "blurb": "How opening up trade and industry reshaped India's economy."
+                },
+                {
+                  "name": "Poverty and rural development",
+                  "blurb": "Programmes aimed at lifting incomes and improving life in rural India."
+                },
+                {
+                  "name": "Human capital and unemployment",
+                  "blurb": "How education and skills turn people into a country's most valuable resource."
+                },
+                {
+                  "name": "Growth, development and sustainability",
+                  "blurb": "Why growing an economy also means protecting the environment it depends on."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Statistical Tools in Economics",
+              "topics": [
+                {
+                  "name": "Collecting and presenting data",
+                  "blurb": "Turning raw numbers into tables and charts that tell a clear story."
+                },
+                {
+                  "name": "Measures of central value and dispersion",
+                  "blurb": "Mean, median, mode and how spread out a set of figures really is."
+                },
+                {
+                  "name": "Correlation and index numbers",
+                  "blurb": "Spotting when two variables move together, and tracking change over time with an index."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "Class 12",
+      "subjects": [
+        {
+          "id": "math",
+          "name": "Mathematics",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2025/04/17.-ISC-Mathematics.pdf (2026-07-06)",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Relations and Functions",
+              "topics": [
+                {
+                  "name": "Types of relations and functions",
+                  "blurb": "Reflexive, symmetric and transitive relations, and one-one, onto and composite functions."
+                },
+                {
+                  "name": "Inverse trigonometric functions",
+                  "blurb": "Undoing sine, cosine and tangent, and reading their restricted graphs."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Algebra",
+              "topics": [
+                {
+                  "name": "Matrices",
+                  "blurb": "Grids of numbers that can be added, multiplied and inverted like a new kind of algebra."
+                },
+                {
+                  "name": "Determinants",
+                  "blurb": "A single number computed from a matrix that reveals whether it can be inverted."
+                },
+                {
+                  "name": "Solving linear equations with matrices",
+                  "blurb": "Using a matrix's inverse to solve several equations at once."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Calculus",
+              "topics": [
+                {
+                  "name": "Continuity and differentiability",
+                  "blurb": "When a function has no breaks, and how to differentiate tricky composite functions."
+                },
+                {
+                  "name": "Applications of derivatives",
+                  "blurb": "Using derivatives to find tangents, rates of change, and maximum or minimum values."
+                },
+                {
+                  "name": "Integrals",
+                  "blurb": "Reversing differentiation to find the function a derivative came from."
+                },
+                {
+                  "name": "Applications of integrals",
+                  "blurb": "Using integration to measure the area under and between curves."
+                },
+                {
+                  "name": "Differential equations",
+                  "blurb": "Equations that describe how a quantity changes, and how to solve them."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Vector Algebra",
+              "topics": [
+                {
+                  "name": "Vectors",
+                  "blurb": "Quantities with both size and direction, added and scaled geometrically."
+                },
+                {
+                  "name": "Dot and cross products",
+                  "blurb": "Two ways to multiply vectors, one giving a number and one giving a new vector."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Three-Dimensional Geometry",
+              "topics": [
+                {
+                  "name": "Direction cosines and ratios",
+                  "blurb": "Describing the direction of a line in space with a set of three numbers."
+                },
+                {
+                  "name": "Equations of lines and planes",
+                  "blurb": "Writing lines and planes in space using both Cartesian and vector form."
+                },
+                {
+                  "name": "Angles and distances",
+                  "blurb": "Finding the angle between two lines or planes, and the distance from a point to a plane."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Linear Programming",
+              "topics": [
+                {
+                  "name": "Formulating LP problems",
+                  "blurb": "Turning a real constraint-based problem into an objective function and inequalities."
+                },
+                {
+                  "name": "Graphical solution",
+                  "blurb": "Shading the feasible region on a graph to find the best possible outcome."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Probability",
+              "topics": [
+                {
+                  "name": "Conditional probability",
+                  "blurb": "How the chance of one event changes once you know another has happened."
+                },
+                {
+                  "name": "Bayes' theorem",
+                  "blurb": "Updating a probability estimate once new evidence comes in."
+                },
+                {
+                  "name": "Random variables and distributions",
+                  "blurb": "Assigning numbers to outcomes and finding their average, or expected, value."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "physics",
+          "name": "Physics",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2025/04/18.-ISC-Physics-1.pdf (2026-07-06)",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Electrostatics",
+              "topics": [
+                {
+                  "name": "Electric charges and Coulomb's law",
+                  "blurb": "The force between charges, and the rules that govern how they push and pull."
+                },
+                {
+                  "name": "Electric field and potential",
+                  "blurb": "Mapping the invisible influence a charge has on the space around it."
+                },
+                {
+                  "name": "Gauss's law",
+                  "blurb": "A shortcut for calculating electric fields using symmetry."
+                },
+                {
+                  "name": "Capacitance",
+                  "blurb": "How a capacitor stores electric charge and energy."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Current Electricity",
+              "topics": [
+                {
+                  "name": "Ohm's law and resistivity",
+                  "blurb": "The relationship between voltage, current and resistance in a circuit."
+                },
+                {
+                  "name": "Combining resistors and Kirchhoff's laws",
+                  "blurb": "Working out current and voltage in circuits too complex for Ohm's law alone."
+                },
+                {
+                  "name": "Measuring instruments",
+                  "blurb": "How a Wheatstone bridge and potentiometer measure resistance and voltage precisely."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Magnetic Effects of Current and Magnetism",
+              "topics": [
+                {
+                  "name": "Magnetic field due to a current",
+                  "blurb": "The Biot-Savart law and Ampere's law for the field around a current-carrying wire."
+                },
+                {
+                  "name": "Force on a moving charge",
+                  "blurb": "Why a magnetic field pushes sideways on a moving charge or current."
+                },
+                {
+                  "name": "Magnetism",
+                  "blurb": "Bar magnets, magnetic poles and the Earth's own magnetic field."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Electromagnetic Induction and Alternating Currents",
+              "topics": [
+                {
+                  "name": "Faraday's and Lenz's laws",
+                  "blurb": "How a changing magnetic field induces a current, and which way it flows."
+                },
+                {
+                  "name": "Inductance",
+                  "blurb": "How a changing current in one coil can induce a current in another."
+                },
+                {
+                  "name": "AC circuits",
+                  "blurb": "Reactance, impedance and power in circuits driven by alternating current."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Electromagnetic Waves",
+              "topics": [
+                {
+                  "name": "Displacement current",
+                  "blurb": "The missing piece that let Maxwell predict electromagnetic waves."
+                },
+                {
+                  "name": "The electromagnetic spectrum",
+                  "blurb": "From radio waves to gamma rays, all travelling at the speed of light."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Optics",
+              "topics": [
+                {
+                  "name": "Reflection and refraction",
+                  "blurb": "How mirrors and lenses bend and bounce light to form images."
+                },
+                {
+                  "name": "Optical instruments",
+                  "blurb": "How a microscope and telescope use lenses to magnify what we see."
+                },
+                {
+                  "name": "Wave optics",
+                  "blurb": "Interference, diffraction and polarisation, the effects that reveal light's wave nature."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Dual Nature of Radiation and Matter",
+              "topics": [
+                {
+                  "name": "The photoelectric effect",
+                  "blurb": "How light knocks electrons out of a metal, and why that puzzled classical physics."
+                },
+                {
+                  "name": "Matter waves",
+                  "blurb": "De Broglie's idea that even particles have a wavelength."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Atoms and Nuclei",
+              "topics": [
+                {
+                  "name": "Atomic models",
+                  "blurb": "Rutherford's nuclear atom and Bohr's model of quantised electron orbits."
+                },
+                {
+                  "name": "Nuclear structure and radioactivity",
+                  "blurb": "Protons, neutrons, binding energy and why some nuclei decay over time."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Electronic Devices",
+              "topics": [
+                {
+                  "name": "Semiconductors and the p-n junction diode",
+                  "blurb": "How doped silicon controls current flow in one direction."
+                },
+                {
+                  "name": "Transistors and logic gates",
+                  "blurb": "The switches and logic building blocks behind every digital device."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "chemistry",
+          "name": "Chemistry",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2025/04/Chemistry-XII-Revised.pdf (2026-07-06)",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Solutions",
+              "topics": [
+                {
+                  "name": "Concentration and colligative properties",
+                  "blurb": "How dissolving something changes a solution's boiling point, freezing point and more."
+                },
+                {
+                  "name": "Raoult's law",
+                  "blurb": "How the vapour pressure of a solution depends on what's dissolved in it."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Electrochemistry",
+              "topics": [
+                {
+                  "name": "Electrochemical cells",
+                  "blurb": "How a chemical reaction can generate an electric current."
+                },
+                {
+                  "name": "The Nernst equation",
+                  "blurb": "Working out cell voltage when concentrations aren't at standard conditions."
+                },
+                {
+                  "name": "Conductance and electrolysis",
+                  "blurb": "How ions carry current through a solution, and how electricity can drive a reaction."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Chemical Kinetics",
+              "topics": [
+                {
+                  "name": "Rate of reaction",
+                  "blurb": "How fast a reaction happens, and the factors that speed it up or slow it down."
+                },
+                {
+                  "name": "Order and molecularity",
+                  "blurb": "Describing how rate depends on the concentration of each reactant."
+                },
+                {
+                  "name": "The Arrhenius equation",
+                  "blurb": "Why raising the temperature makes almost every reaction go faster."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "d- and f-Block Elements",
+              "topics": [
+                {
+                  "name": "Transition elements",
+                  "blurb": "Metals known for variable oxidation states and colourful compounds."
+                },
+                {
+                  "name": "Lanthanoids and actinoids",
+                  "blurb": "The two rows usually set apart at the bottom of the periodic table."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Coordination Compounds",
+              "topics": [
+                {
+                  "name": "Naming and structure",
+                  "blurb": "How a central metal atom bonds to surrounding ligands."
+                },
+                {
+                  "name": "Bonding theories",
+                  "blurb": "Werner's theory, valence bond theory and crystal field theory explaining these compounds."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Haloalkanes and Haloarenes",
+              "topics": [
+                {
+                  "name": "Preparation",
+                  "blurb": "Making organic compounds with a halogen attached to carbon."
+                },
+                {
+                  "name": "Substitution reactions",
+                  "blurb": "The SN1 and SN2 mechanisms by which one group swaps for another."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Alcohols, Phenols and Ethers",
+              "topics": [
+                {
+                  "name": "Preparation and properties",
+                  "blurb": "How these oxygen-containing compounds are made and how they behave."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Aldehydes, Ketones and Carboxylic Acids",
+              "topics": [
+                {
+                  "name": "Preparation and reactions",
+                  "blurb": "The carbonyl group's chemistry, from making these compounds to their key reactions."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Organic Compounds Containing Nitrogen",
+              "topics": [
+                {
+                  "name": "Amines",
+                  "blurb": "Nitrogen-containing compounds and how they're prepared."
+                },
+                {
+                  "name": "Diazonium salts",
+                  "blurb": "Reactive compounds used to build a wide range of other organic molecules."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Biomolecules",
+              "topics": [
+                {
+                  "name": "Carbohydrates and proteins",
+                  "blurb": "The chemistry behind sugars, starches and the amino acid chains in proteins."
+                },
+                {
+                  "name": "Enzymes, vitamins and nucleic acids",
+                  "blurb": "The molecules that speed up reactions, support health, and carry genetic information."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "biology",
+          "name": "Biology",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2025/04/18.-ISC-Biology.pdf (2026-07-06)",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Reproduction",
+              "topics": [
+                {
+                  "name": "Sexual reproduction in flowering plants",
+                  "blurb": "How pollen and ovules combine to form seeds and fruit."
+                },
+                {
+                  "name": "Human reproduction",
+                  "blurb": "The organs and processes involved in human reproduction."
+                },
+                {
+                  "name": "Reproductive health",
+                  "blurb": "Family planning, and looking after reproductive wellbeing."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Genetics and Evolution",
+              "topics": [
+                {
+                  "name": "Principles of inheritance and variation",
+                  "blurb": "Mendel's laws and how traits pass from parents to offspring."
+                },
+                {
+                  "name": "Molecular basis of inheritance",
+                  "blurb": "DNA, RNA and the genetic code that spells out how a cell builds proteins."
+                },
+                {
+                  "name": "Evolution",
+                  "blurb": "The evidence and mechanisms, like natural selection, behind how species change over time."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Biology and Human Welfare",
+              "topics": [
+                {
+                  "name": "Human health and diseases",
+                  "blurb": "Common pathogens, immunity, and diseases linked to lifestyle and addiction."
+                },
+                {
+                  "name": "Microbes in human welfare",
+                  "blurb": "How microbes help make food, medicine and biogas, and treat sewage."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Biotechnology and its Applications",
+              "topics": [
+                {
+                  "name": "Principles and processes",
+                  "blurb": "The tools of genetic engineering, from isolating a gene to cloning it."
+                },
+                {
+                  "name": "Applications in health and agriculture",
+                  "blurb": "Insulin production, gene therapy, and crops engineered for better yields."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Ecology and Environment",
+              "topics": [
+                {
+                  "name": "Organisms and populations",
+                  "blurb": "How species interact through competition, predation and mutualism."
+                },
+                {
+                  "name": "Ecosystems and biodiversity",
+                  "blurb": "Energy flow through a food chain, and why protecting biodiversity matters."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "computer",
+          "name": "Computer Science",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2025/04/25.-ISC-Computer-Science.doc.pdf (2026-07-06)",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Boolean Algebra and Computer Hardware",
+              "topics": [
+                {
+                  "name": "Boolean algebra",
+                  "blurb": "The laws and truth tables that simplify logical expressions."
+                },
+                {
+                  "name": "Karnaugh maps",
+                  "blurb": "A visual grid trick for simplifying Boolean expressions quickly."
+                },
+                {
+                  "name": "Logic gates and adders",
+                  "blurb": "How basic gates combine into circuits that add binary numbers."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Java Programming: Review and Extensions",
+              "topics": [
+                {
+                  "name": "Classes, objects and control structures",
+                  "blurb": "Revisiting the building blocks of object-oriented Java from Class 11."
+                },
+                {
+                  "name": "Static members",
+                  "blurb": "Fields and methods that belong to a class itself, not to any one object."
+                },
+                {
+                  "name": "Arrays and strings",
+                  "blurb": "Deeper work with structured data and text processing in Java."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Inheritance, Interfaces and Polymorphism",
+              "topics": [
+                {
+                  "name": "Inheritance",
+                  "blurb": "Building a new class by extending an existing one, rather than starting from scratch."
+                },
+                {
+                  "name": "Interfaces",
+                  "blurb": "Defining a contract of behaviour that different classes can implement their own way."
+                },
+                {
+                  "name": "Polymorphism",
+                  "blurb": "How the same method call can behave differently depending on the object it's acting on."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Data Structures",
+              "topics": [
+                {
+                  "name": "Stacks, queues and deques",
+                  "blurb": "Structures that control the order in which data goes in and comes out."
+                },
+                {
+                  "name": "Linked lists",
+                  "blurb": "Chains of nodes that make inserting and removing elements efficient."
+                },
+                {
+                  "name": "Binary trees",
+                  "blurb": "Branching structures, and the different ways to walk through and visit every node."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Computational Complexity",
+              "topics": [
+                {
+                  "name": "Big O notation",
+                  "blurb": "A shorthand for describing how an algorithm's running time grows with input size."
+                },
+                {
+                  "name": "Best, average and worst case",
+                  "blurb": "Why an algorithm's speed can depend heavily on the exact input it gets."
+                },
+                {
+                  "name": "Analysing searching and sorting",
+                  "blurb": "Comparing common algorithms by how their complexity scales."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "economics",
+          "name": "Economics",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2025/04/17.-ISC-Economics-XI-XII_2025.pdf (2026-07-06)",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Micro Economic Theory",
+              "topics": [
+                {
+                  "name": "Demand and elasticity",
+                  "blurb": "What drives demand for a good, and how sharply it reacts to a price change."
+                },
+                {
+                  "name": "Supply and market equilibrium",
+                  "blurb": "How supply and demand settle on a price where a market clears."
+                },
+                {
+                  "name": "Production, cost and revenue",
+                  "blurb": "How a firm's costs and earnings change as it produces more."
+                },
+                {
+                  "name": "Market forms and equilibrium of a firm",
+                  "blurb": "How competition, or the lack of it, shapes a firm's pricing and output."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Theory of Income and Employment",
+              "topics": [
+                {
+                  "name": "Aggregate demand and supply",
+                  "blurb": "Looking at spending and output for an entire economy, not just one market."
+                },
+                {
+                  "name": "Fiscal policy and employment",
+                  "blurb": "How government spending and taxation can influence jobs and income."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Money and Banking",
+              "topics": [
+                {
+                  "name": "Functions of money",
+                  "blurb": "Why money works as a medium of exchange, a store of value and a unit of account."
+                },
+                {
+                  "name": "Commercial banks and the central bank",
+                  "blurb": "How banks create credit, and how a central bank keeps the system in check."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Balance of Payments and Exchange Rate",
+              "topics": [
+                {
+                  "name": "Balance of payments",
+                  "blurb": "A country's record of all its financial transactions with the rest of the world."
+                },
+                {
+                  "name": "Exchange rate determination",
+                  "blurb": "What decides how much one country's currency is worth against another's."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Public Finance",
+              "topics": [
+                {
+                  "name": "The government budget",
+                  "blurb": "How a government plans its revenue and spending for the year."
+                },
+                {
+                  "name": "Public revenue and expenditure",
+                  "blurb": "Where government money comes from, and where it goes."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "National Income",
+              "topics": [
+                {
+                  "name": "Concepts and measurement",
+                  "blurb": "GDP, GNP and the different ways economists size up a nation's output."
+                },
+                {
+                  "name": "Circular flow of income",
+                  "blurb": "How money flows in a loop between households, firms and the government."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -7,11 +7,14 @@
 
 import type { VidyaMood } from '@classess/vidya';
 import { createContext, useContext } from 'react';
+import type { TurnExtras } from './paths/types';
 
 export interface ChatTurn {
   id: string;
   role: 'user' | 'vidya';
   text: string;
+  /** What the turn carries beyond prose — a path result (component / viz / action / route). */
+  extras?: TurnExtras;
 }
 
 export interface VidyaChat {
@@ -25,6 +28,8 @@ export interface VidyaChat {
   hasOlder: boolean;
   /** WhatsApp-style: pull the previous page of the archive in above the current view. */
   loadOlder: () => void;
+  /** Patch a turn's extras (approval outcomes, action results) — in memory and in the archive. */
+  updateTurn: (id: string, patch: (extras: TurnExtras) => TurnExtras) => void;
 }
 
 // ---- the never-ending archive ----------------------------------------------------------------
@@ -56,6 +61,11 @@ export function appendToArchive(turn: ChatTurn): void {
   const a = readArchive();
   a.push(turn);
   writeArchive(a);
+}
+
+/** Rewrite one archived turn in place (outcome recorded on a card, an action's result line). */
+export function updateArchiveTurn(id: string, patch: (turn: ChatTurn) => ChatTurn): void {
+  writeArchive(readArchive().map((t) => (t.id === id ? patch(t) : t)));
 }
 
 const Ctx = createContext<VidyaChat | null>(null);

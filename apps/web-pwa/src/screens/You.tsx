@@ -20,6 +20,14 @@ import {
 import { chapterById, topicById } from '../data/catalog';
 import type { Topic } from '../data/model';
 import { useRouter } from '../shell/router';
+import {
+  clearMind,
+  loadMind,
+  loadProactivity,
+  mindLines,
+  type Proactivity,
+  saveProactivity,
+} from '../store/mind';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { BossSigil } from '../ui/art';
@@ -141,6 +149,62 @@ function DialRow({
         <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>{line}</div>
       </div>
       <Dial on={on} onChange={onChange} label={title} />
+    </div>
+  );
+}
+
+const PROACTIVITY_LINES: Record<Proactivity, string> = {
+  quiet: 'she waits to be asked — no suggestions, no nudges',
+  balanced: 'gentle suggestion chips at the right moments',
+  proactive: 'she speaks up when she sees something worth your time',
+};
+
+/** Three quiet notches — how forward Vidya is allowed to be. */
+function ProactivityRow({
+  value,
+  onChange,
+}: {
+  value: Proactivity;
+  onChange: (p: Proactivity) => void;
+}) {
+  const options: Proactivity[] = ['quiet', 'balanced', 'proactive'];
+  return (
+    <div style={{ padding: '13px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div>
+        <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>how forward she is</div>
+        <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
+          {PROACTIVITY_LINES[value]}
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 6, maxWidth: 340 }}>
+        {options.map((p) => {
+          const on = p === value;
+          return (
+            <button
+              key={p}
+              type="button"
+              aria-pressed={on}
+              aria-label={`${p} — ${PROACTIVITY_LINES[p]}`}
+              onClick={() => onChange(p)}
+              style={{
+                flex: 1,
+                height: 34,
+                borderRadius: 3,
+                border: on ? '0.5px solid var(--clss-ink-900)' : '0.5px solid transparent',
+                background: on ? 'var(--clss-ink-900)' : '#F1F1F5',
+                color: on ? 'var(--clss-paper)' : 'var(--clss-ink-700)',
+                fontFamily: 'inherit',
+                fontSize: '0.8rem',
+                fontWeight: on ? 550 : 400,
+                cursor: 'pointer',
+                transition: 'background 0.2s ease, color 0.2s ease',
+              }}
+            >
+              {p}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -481,9 +545,22 @@ export function You() {
     });
   };
 
+  // --- her memory of you (steerable) --------------------------------------
+  const [knownLines, setKnownLines] = useState<string[]>(() => mindLines(loadMind()));
+  const [mindCleared, setMindCleared] = useState(false);
+  const forgetMind = () => {
+    clearMind();
+    setKnownLines([]);
+    setMindCleared(true);
+    // the lifetime slot empties immediately — her next call carries nothing about you
+    bus.publishLifetime({});
+    window.setTimeout(() => setMindCleared(false), 2600);
+  };
+
   // --- settings ----------------------------------------------------------
   const [voice, setVoice] = useState(() => getFlag(VOICE_KEY));
   const [sound, setSound] = useState(() => getFlag(SOUND_KEY));
+  const [proactivity, setProactivity] = useState<Proactivity>(() => loadProactivity());
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const signOut = () => {
@@ -519,6 +596,10 @@ export function You() {
   const planRef = useRegisterTarget<HTMLDivElement>('you-plan', {
     kind: 'card',
     label: 'the plan card — free today, superstar when ready',
+  });
+  const mindRef = useRegisterTarget<HTMLDivElement>('you-mind', {
+    kind: 'card',
+    label: 'the card showing what Vidya has learned about this learner, with a clear-memory door',
   });
 
   useEffect(() => {
@@ -1056,6 +1137,43 @@ export function You() {
 
         <Hairline />
 
+        {/* ---- what Vidya knows about you ---- */}
+        <motion.div variants={rise} ref={mindRef}>
+          <Section label="what Vidya knows about you">
+            <Card style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {knownLines.length === 0 ? (
+                <div style={bodyLine}>
+                  {mindCleared
+                    ? 'cleared — she starts fresh from your next answer'
+                    : 'she is still getting to know you — how you answer, where you linger, when you show up. it gathers here as you learn.'}
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {knownLines.map((line) => (
+                    <div key={line} style={{ ...bodyLine, fontSize: '0.9rem' }}>
+                      {line}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <Hairline style={{ margin: '6px 0' }} />
+              <div style={{ ...whisper }}>
+                this stays on your device and shapes how she helps you. you can clear it any time —
+                she will not mind.
+              </div>
+              {knownLines.length > 0 && (
+                <div>
+                  <MagneticButton size="sm" variant="quiet" onClick={forgetMind}>
+                    clear what she knows
+                  </MagneticButton>
+                </div>
+              )}
+            </Card>
+          </Section>
+        </motion.div>
+
+        <Hairline />
+
         {/* ---- settings ---- */}
         <motion.div variants={rise}>
           <Section label="settings">
@@ -1077,6 +1195,14 @@ export function You() {
                 onChange={(v) => {
                   setSound(v);
                   setFlag(SOUND_KEY, v);
+                }}
+              />
+              <Hairline />
+              <ProactivityRow
+                value={proactivity}
+                onChange={(p) => {
+                  setProactivity(p);
+                  saveProactivity(p);
                 }}
               />
               {/* sign out — live mode only; the dev-mock learner has no session to end */}

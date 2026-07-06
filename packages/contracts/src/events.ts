@@ -39,6 +39,7 @@ export const EventPayloads = {
   'vidya.turn.assistant.v1': P.VidyaTurnAssistant,
   'vidya.hint.escalated.v1': P.VidyaHintEscalated,
   'vidya.perceived.work.v1': P.VidyaPerceivedWork,
+  'vidya.offer.outcome.v1': P.VidyaOfferOutcome,
 
   // Create-anything
   'create.request.submitted.v1': P.CreateRequestSubmitted,

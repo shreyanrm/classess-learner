@@ -33,6 +33,13 @@ from classess_gateway.registry import (
     policy,
 )
 from classess_gateway.routing import resolve, resolve_any
+from classess_gateway.safety import (
+    DEFAULT_CLASSIFIER,
+    SafetyClassifier,
+    moderate,
+    screen_vidya_inbound,
+    screen_vidya_outbound,
+)
 from classess_gateway.telemetry import MetricsSink, TelemetryEvent, emit
 from classess_gateway.voice import register_voice
 
@@ -148,10 +155,17 @@ def _policy_view(pol: RoutingPolicy) -> PolicyView:
 
 
 class Gateway:
-    def __init__(self, provider: Provider, cache: CacheBackend, sink: MetricsSink) -> None:
+    def __init__(
+        self,
+        provider: Provider,
+        cache: CacheBackend,
+        sink: MetricsSink,
+        classifier: SafetyClassifier = DEFAULT_CLASSIFIER,
+    ) -> None:
         self.provider = provider
         self.cache = cache
         self.sink = sink
+        self.classifier = classifier
 
     def invoke(self, capability: str, request: CapabilityRequest) -> CapabilityResponse:
         pol = policy(capability)
@@ -159,6 +173,48 @@ class Gateway:
             raise ConsentDenied(capability, request.consent_tier)
 
         spec = resolve(pol.primary, pol.track)
+
+        # safety.moderate runs the deterministic child-safety classifier in every mode — the
+        # keyword screen today, the trained slm.safety model through the same seam tomorrow.
+        if capability == "safety.moderate":
+            output = moderate(str(request.payload.get("text") or ""), self.classifier)
+            emit(
+                self.sink,
+                TelemetryEvent(capability, spec.track.value, "safety.keyword", 0.0, 0, False),
+            )
+            return CapabilityResponse(
+                capability=capability,
+                track=spec.track.value,
+                model="safety.keyword",
+                cache_hit=False,
+                latency_ms=0.0,
+                tokens=0,
+                output=output,
+            )
+
+        # Inbound safety on Vidya's free-text surface (VIDYA.md §11): a crisis or moderation hit
+        # never reaches a model — she answers with the calm supportive line herself.
+        if capability == "vidya.turn":
+            gated = screen_vidya_inbound(request.payload, self.classifier)
+            if gated is not None:
+                logger.warning(
+                    "vidya turn gated by safety",
+                    extra={"fields": {"category": gated["safety"]["category"]}},
+                )
+                emit(
+                    self.sink,
+                    TelemetryEvent(capability, spec.track.value, "safety.gate", 0.0, 0, False),
+                )
+                return CapabilityResponse(
+                    capability=capability,
+                    track=spec.track.value,
+                    model="safety.gate",
+                    cache_hit=False,
+                    latency_ms=0.0,
+                    tokens=0,
+                    output=gated,
+                )
+
         key = cache_key(capability, request.payload)
 
         cached = self.cache.get(key, pol.cache_tier)
@@ -187,9 +243,14 @@ class Gateway:
         )
         latency_ms = (time.perf_counter() - start) * 1000
 
+        output = result.output
+        # Outbound safety: whatever the model wants Vidya to say is screened before serving.
+        if capability == "vidya.turn":
+            output = screen_vidya_outbound(output, self.classifier)
+
         self.cache.set(
             key,
-            CacheEntry(output=result.output, model=spec.provider_model, tokens=result.tokens),
+            CacheEntry(output=output, model=spec.provider_model, tokens=result.tokens),
             pol.cache_tier,
         )
         emit(
@@ -205,7 +266,7 @@ class Gateway:
             cache_hit=False,
             latency_ms=latency_ms,
             tokens=result.tokens,
-            output=result.output,
+            output=output,
         )
 
 
@@ -247,7 +308,11 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
         started = time.perf_counter()
         path = request.url.path
         ip = request.client.host if request.client else "unknown"
-        limited = path.startswith("/v1/capability/") or path == "/v1/voice/session"
+        limited = (
+            path.startswith("/v1/capability/")
+            or path == "/v1/voice/session"
+            or path == "/v1/voice/tts"
+        )
         if limited:
             window = int(time.time() // 60)
             if len(hits) > 4096:

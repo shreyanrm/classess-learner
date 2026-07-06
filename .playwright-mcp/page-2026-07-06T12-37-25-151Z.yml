@@ -1,0 +1,188 @@
+- generic [ref=f16e2]:
+  - generic [ref=f16e2159]:
+    - button "Back — ◦ ,learn" [ref=f16e2160] [cursor=pointer]:
+      - img [ref=f16e2161]
+      - text: ◦ learn
+    - generic [ref=f16e2164]:
+      - img [ref=f16e2165]
+      - generic:
+        - generic:
+          - img
+      - generic [ref=f16e2177]:
+        - heading "Science" [level=1] [ref=f16e2178]
+        - generic [ref=f16e2179]: how the world actually works
+        - generic [ref=f16e2180]:
+          - generic [ref=f16e2181]: CBSE · Class 8
+          - generic [ref=f16e2182]: 13 chapters
+    - generic [ref=f16e2183]:
+      - generic [ref=f16e2184]:
+        - generic [ref=f16e2185]:
+          - img [ref=f16e2187]
+          - generic [ref=f16e2196]: Physics
+          - generic [ref=f16e2197]: 5 chapters
+        - generic [ref=f16e2199]:
+          - button "01 Force and pressure" [expanded] [ref=f16e2200] [cursor=pointer]:
+            - generic [ref=f16e2201]:
+              - img [ref=f16e2202]
+              - generic [ref=f16e2208]: "01"
+            - generic [ref=f16e2209]:
+              - generic [ref=f16e2210]: Force and pressure
+              - img [ref=f16e2211]
+            - img [ref=f16e2217]
+          - generic [ref=f16e2224]:
+            - button "What a force does A push or pull can start, stop, or turn any motion." [ref=f16e2227] [cursor=pointer]:
+              - img [ref=f16e2229]
+              - generic [ref=f16e2236]:
+                - generic [ref=f16e2237]: What a force does
+                - generic [ref=f16e2238]: A push or pull can start, stop, or turn any motion.
+              - img [ref=f16e2240]
+            - button "Contact and non-contact forces Some forces need a touch, others act across a gap. builds on What a force does" [ref=f16e2245] [cursor=pointer]:
+              - img [ref=f16e2247]
+              - generic [ref=f16e2252]:
+                - generic [ref=f16e2253]: Contact and non-contact forces
+                - generic [ref=f16e2254]: Some forces need a touch, others act across a gap.
+              - generic [ref=f16e2255]: builds on What a force does
+            - generic [ref=f16e2257]:
+              - button "Pressure The same force feels different spread over more or less area. builds on What a force does" [ref=f16e2258] [cursor=pointer]:
+                - img [ref=f16e2260]
+                - generic [ref=f16e2267]:
+                  - generic [ref=f16e2268]: Pressure
+                  - generic [ref=f16e2269]: The same force feels different spread over more or less area.
+                - generic [ref=f16e2270]: builds on What a force does
+              - generic [ref=f16e2631]:
+                - generic [ref=f16e2632]: this builds on What a force does — take those first, or proceed anyway
+                - generic [ref=f16e2633]:
+                  - button "take me there" [ref=f16e2634] [cursor=pointer]
+                  - button "proceed anyway" [ref=f16e2635] [cursor=pointer]
+            - button "Atmospheric pressure The weight of the air we barely notice pressing on us. builds on Pressure" [ref=f16e2273] [cursor=pointer]:
+              - img [ref=f16e2275]
+              - generic [ref=f16e2282]:
+                - generic [ref=f16e2283]: Atmospheric pressure
+                - generic [ref=f16e2284]: The weight of the air we barely notice pressing on us.
+              - generic [ref=f16e2285]: builds on Pressure
+        - button "02 Friction" [ref=f16e2288] [cursor=pointer]:
+          - generic [ref=f16e2289]:
+            - img [ref=f16e2290]
+            - generic [ref=f16e2298]: "02"
+          - generic [ref=f16e2299]:
+            - generic [ref=f16e2300]: Friction
+            - img [ref=f16e2301]
+          - img [ref=f16e2307]
+        - button "03 Sound" [ref=f16e2315] [cursor=pointer]:
+          - generic [ref=f16e2316]:
+            - img [ref=f16e2317]
+            - generic [ref=f16e2324]: "03"
+          - generic [ref=f16e2325]:
+            - generic [ref=f16e2326]: Sound
+            - img [ref=f16e2327]
+          - img [ref=f16e2333]
+        - button "04 Some natural phenomena" [ref=f16e2341] [cursor=pointer]:
+          - generic [ref=f16e2342]:
+            - img [ref=f16e2343]
+            - generic [ref=f16e2350]: "04"
+          - generic [ref=f16e2351]:
+            - generic [ref=f16e2352]: Some natural phenomena
+            - img [ref=f16e2353]
+          - img [ref=f16e2361]
+        - button "05 Light" [ref=f16e2369] [cursor=pointer]:
+          - generic [ref=f16e2370]:
+            - img [ref=f16e2371]
+            - generic [ref=f16e2378]: "05"
+          - generic [ref=f16e2379]:
+            - generic [ref=f16e2380]: Light
+            - img [ref=f16e2381]
+          - img [ref=f16e2385]
+      - generic [ref=f16e2391]:
+        - generic [ref=f16e2392]:
+          - img [ref=f16e2394]
+          - generic [ref=f16e2403]: Chemistry
+          - generic [ref=f16e2404]: 3 chapters
+        - button "01 Coal and petroleum" [ref=f16e2407] [cursor=pointer]:
+          - generic [ref=f16e2408]:
+            - img [ref=f16e2409]
+            - generic [ref=f16e2414]: "01"
+          - generic [ref=f16e2415]:
+            - generic [ref=f16e2416]: Coal and petroleum
+            - img [ref=f16e2417]
+          - img [ref=f16e2420]
+        - button "02 Combustion and flame" [ref=f16e2428] [cursor=pointer]:
+          - generic [ref=f16e2429]:
+            - img [ref=f16e2430]
+            - generic [ref=f16e2436]: "02"
+          - generic [ref=f16e2437]:
+            - generic [ref=f16e2438]: Combustion and flame
+            - img [ref=f16e2439]
+          - img [ref=f16e2445]
+        - button "03 Chemical effects of electric current" [ref=f16e2453] [cursor=pointer]:
+          - generic [ref=f16e2454]:
+            - img [ref=f16e2455]
+            - generic [ref=f16e2462]: "03"
+          - generic [ref=f16e2463]:
+            - generic [ref=f16e2464]: Chemical effects of electric current
+            - img [ref=f16e2465]
+          - img [ref=f16e2469]
+      - generic [ref=f16e2475]:
+        - generic [ref=f16e2476]:
+          - img [ref=f16e2478]
+          - generic [ref=f16e2485]: Biology
+          - generic [ref=f16e2486]: 5 chapters
+        - button "01 Crop production and management" [ref=f16e2489] [cursor=pointer]:
+          - generic [ref=f16e2490]:
+            - img [ref=f16e2491]
+            - generic [ref=f16e2499]: "01"
+          - generic [ref=f16e2500]:
+            - generic [ref=f16e2501]: Crop production and management
+            - img [ref=f16e2502]
+          - img [ref=f16e2507]
+        - 'button "02 Microorganisms: friend and foe" [ref=f16e2515] [cursor=pointer]':
+          - generic [ref=f16e2516]:
+            - img [ref=f16e2517]
+            - generic [ref=f16e2522]: "02"
+          - generic [ref=f16e2523]:
+            - generic [ref=f16e2524]: "Microorganisms: friend and foe"
+            - img [ref=f16e2525]
+          - img [ref=f16e2532]
+        - button "03 Conservation of plants and animals" [ref=f16e2540] [cursor=pointer]:
+          - generic [ref=f16e2541]:
+            - img [ref=f16e2542]
+            - generic [ref=f16e2550]: "03"
+          - generic [ref=f16e2551]:
+            - generic [ref=f16e2552]: Conservation of plants and animals
+            - img [ref=f16e2553]
+          - img [ref=f16e2558]
+        - button "04 Reproduction in animals" [ref=f16e2566] [cursor=pointer]:
+          - generic [ref=f16e2567]:
+            - img [ref=f16e2568]
+            - generic [ref=f16e2576]: "04"
+          - generic [ref=f16e2577]:
+            - generic [ref=f16e2578]: Reproduction in animals
+            - img [ref=f16e2579]
+          - img [ref=f16e2586]
+        - button "05 Reaching the age of adolescence" [ref=f16e2594] [cursor=pointer]:
+          - generic [ref=f16e2595]:
+            - img [ref=f16e2596]
+            - generic [ref=f16e2603]: "05"
+          - generic [ref=f16e2604]:
+            - generic [ref=f16e2605]: Reaching the age of adolescence
+            - img [ref=f16e2606]
+          - img [ref=f16e2611]
+  - banner:
+    - img "Classess" [ref=f16e2618]
+    - generic [ref=f16e2619]:
+      - button "Did you know" [ref=f16e2620] [cursor=pointer]:
+        - img [ref=f16e2621]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f16e2623]:
+        - img [ref=f16e2624]
+        - text: "1"
+      - generic [ref=f16e2627]: 230 xp
+      - button "You — profile and settings" [ref=f16e2628] [cursor=pointer]:
+        - generic [ref=f16e2629]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img
