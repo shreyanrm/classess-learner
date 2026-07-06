@@ -14,15 +14,13 @@ COPY services/contracts/pyproject.toml services/contracts/
 COPY services/verifier/pyproject.toml services/verifier/
 COPY services/gateway/pyproject.toml services/gateway/
 COPY content/atom/pyproject.toml content/atom/
-RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev --no-editable --no-install-workspace --package classess-gateway
+RUN uv sync --frozen --no-dev --no-editable --no-install-workspace --package classess-gateway
 
 # Sources second: a code change only rebuilds the small workspace wheels.
 COPY services/contracts/src services/contracts/src
 COPY services/verifier/src services/verifier/src
 COPY services/gateway/src services/gateway/src
-RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev --no-editable --package classess-gateway
+RUN uv sync --frozen --no-dev --no-editable --package classess-gateway
 
 FROM python:3.12-slim-bookworm
 RUN useradd --create-home --uid 10001 gateway
