@@ -12,19 +12,26 @@ export const VIDYA_IDENTITY = Object.freeze({
   form: 'round_squircle_jelly',
   surface: 'matte',
   colorFamily: 'molten',
-  color: vidyaMolten, // #FF4D1A — molten only, reserved for her alone
+  color: vidyaMolten, // #FF5A1F — molten only, reserved for her alone (DESIGN.md §2)
   eyes: 2,
   flame: 'always', // the flame-glow beneath her always exists and flickers
 } as const);
 
-/** The molten palette Vidya is rendered in. Shades of the #FF4D1A family only. */
+/**
+ * The molten palette Vidya is rendered in — her warmth runs from molten orange into a rose-pink
+ * bloom (the owner-approved body gradient), with one small golden spark that is hers alone.
+ */
 export const MOLTEN = Object.freeze({
-  core: '#FF9A5A',
+  core: '#FF9E62',
   base: vidyaMolten,
-  deep: '#D93A10',
-  glowInner: 'rgba(255, 128, 64, 0.92)',
-  glowMid: 'rgba(255, 77, 26, 0.55)',
-  glowOuter: 'rgba(255, 77, 26, 0)',
+  deep: '#D63E07',
+  bloom: '#F0619B',
+  bloomDeep: '#D8437F',
+  spark: '#FFC93C',
+  face: '#2A1510',
+  glowInner: 'rgba(255, 133, 71, 0.92)',
+  glowMid: 'rgba(255, 90, 31, 0.55)',
+  glowOuter: 'rgba(255, 90, 31, 0)',
 } as const);
 
 /**
@@ -38,7 +45,9 @@ export type VidyaMood =
   | 'correct' // a small squish of approval
   | 'celebrate' // a celebratory bob on a mastered node
   | 'waiting' // quietly dimmed to an ember
-  | 'hint'; // flame flickers brighter as a hint escalates
+  | 'hint' // flame flickers brighter as a hint escalates
+  | 'explaining' // gesturing toward what she annotates (DESIGN.md §4)
+  | 'resting'; // a slow calm breath — sanctioned rest, never guilt (DESIGN.md §4)
 
 /**
  * The flame is expressive (per the license): it may lean, trail, flare, calm to an ember, or flicker
@@ -56,9 +65,12 @@ export function flameForMood(mood: VidyaMood): FlameState {
     case 'celebrate':
       return 'flare';
     case 'waiting':
+    case 'resting':
       return 'ember';
     case 'hint':
       return 'brighten';
+    case 'explaining':
+      return 'lean';
     default:
       return 'steady';
   }

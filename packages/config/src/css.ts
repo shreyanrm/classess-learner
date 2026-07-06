@@ -3,14 +3,17 @@ import {
   canvas,
   duration,
   easing,
+  feedback,
   frost,
   hairline,
   ink,
+  molten,
   paper,
   radius,
   space,
   surface,
   ultramarine,
+  ultramarineShades,
   vidyaHighlight,
   zIndex,
 } from './tokens';
@@ -28,11 +31,16 @@ export function cssVariables(): string {
   push('--clss-canvas', canvas);
   for (const [step, hex] of Object.entries(surface)) push(`--clss-surface-${step}`, hex);
   push('--clss-hairline-on-paper', hairline.onPaper);
+  push('--clss-hairline-on-paper-strong', hairline.onPaperStrong);
   push('--clss-hairline-on-dark', hairline.onDark);
 
-  for (const [name, hex] of Object.entries(accent)) push(`--clss-accent-${name}`, hex);
-  push('--clss-vidya-molten', accent.molten);
   push('--clss-ultramarine', ultramarine);
+  for (const [name, value] of Object.entries(ultramarineShades))
+    push(`--clss-ultramarine-${name}`, value);
+  for (const [name, hex] of Object.entries(accent)) push(`--clss-accent-${name}`, hex);
+  for (const [name, value] of Object.entries(molten)) push(`--clss-molten-${name}`, value);
+  for (const [name, value] of Object.entries(feedback)) push(`--clss-feedback-${name}`, value);
+  push('--clss-vidya-molten', accent.molten);
   push('--clss-vidya-highlight-primary', vidyaHighlight.primary);
   push('--clss-vidya-highlight-secondary', vidyaHighlight.secondary);
   push('--clss-vidya-highlight-tertiary', vidyaHighlight.tertiary);

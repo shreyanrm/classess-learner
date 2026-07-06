@@ -7,6 +7,7 @@
  */
 
 export * from './actions';
+export * from './body/VidyaBody';
 export * from './context-bus';
 export * from './highlight-overlay';
 export * from './identity';

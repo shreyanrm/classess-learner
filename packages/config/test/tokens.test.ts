@@ -10,24 +10,29 @@ import {
   vidyaMolten,
 } from '../src/index';
 
-describe('design tokens', () => {
+describe('design tokens (DESIGN.md §2 is law)', () => {
+  it('carries the signature pigment: ultramarine, reserved for brand and mastery', () => {
+    expect(ultramarine).toBe('#1F35E0');
+  });
+
   it('reserves Molten for Vidya and never assigns it to a subject', () => {
-    expect(vidyaMolten).toBe('#FF4D1A');
-    expect(accent.molten).toBe('#FF4D1A');
+    expect(vidyaMolten).toBe('#FF5A1F');
+    expect(accent.molten).toBe('#FF5A1F');
     expect(subjectAccents).not.toContain('molten');
   });
 
-  it('exposes the full assignable palette minus Molten', () => {
-    expect(Object.keys(accent).length).toBe(14);
-    expect(subjectAccents.length).toBe(13);
+  it('keeps the accent family rare and intentional: molten, magenta, acid', () => {
+    expect(Object.keys(accent).sort()).toEqual(['acid', 'magenta', 'molten']);
+    expect(accent.magenta).toBe('#CC1E7A');
+    expect(accent.acid).toBe('#66B300');
   });
 
-  it('uses a 2px default radius and large radii only for Vidya', () => {
-    expect(radius.sm).toBe(2);
+  it('uses sharp corners: 3px default radius; large radii only for Vidya and overlays', () => {
+    expect(radius.sm).toBe(3);
     expect(radius.jelly).toBeGreaterThan(radius.lg);
   });
 
-  it('never defines a drop-shadow token (depth is tone, hairline, frost)', () => {
+  it('never defines a drop-shadow token (depth is hairline, tonal step, frost)', () => {
     const json = JSON.stringify(tokens).toLowerCase();
     expect(json).not.toContain('shadow');
     expect(json).not.toContain('box-shadow');
@@ -35,20 +40,19 @@ describe('design tokens', () => {
 
   it('emits CSS custom properties for the web root', () => {
     const css = cssVariables();
-    expect(css).toContain('--clss-ink-900: #0A0A0B;');
-    expect(css).toContain('--clss-vidya-molten: #FF4D1A;');
-    expect(css).toContain('--clss-radius-sm: 2px;');
+    expect(css).toContain('--clss-ink-900: #0D0D10;');
+    expect(css).toContain('--clss-ultramarine: #1F35E0;');
+    expect(css).toContain('--clss-vidya-molten: #FF5A1F;');
+    expect(css).toContain('--clss-radius-sm: 3px;');
   });
 
-  it("carries Vidya's highlight palette: molten, then acid, then ultramarine", () => {
-    expect(vidyaHighlight.primary).toBe(vidyaMolten); // molten leads (her identity)
-    expect(vidyaHighlight.secondary).toBe(accent.acid); // #C2F000
-    expect(vidyaHighlight.tertiary).toBe(ultramarine);
-    // The highlight palette is her toolkit, never a subject/concept accent.
-    expect(subjectAccents).not.toContain('ultramarine');
+  it("carries Vidya's annotation palette: molten leads, ultramarine seconds, acid third", () => {
+    expect(vidyaHighlight.primary).toBe(vidyaMolten);
+    expect(vidyaHighlight.secondary).toBe(ultramarine);
+    expect(vidyaHighlight.tertiary).toBe(accent.acid);
     const css = cssVariables();
-    expect(css).toContain('--clss-vidya-highlight-primary: #FF4D1A;');
-    expect(css).toContain('--clss-vidya-highlight-secondary: #C2F000;');
-    expect(css).toContain(`--clss-vidya-highlight-tertiary: ${ultramarine};`);
+    expect(css).toContain('--clss-vidya-highlight-primary: #FF5A1F;');
+    expect(css).toContain(`--clss-vidya-highlight-secondary: ${ultramarine};`);
+    expect(css).toContain('--clss-vidya-highlight-tertiary: #66B300;');
   });
 });

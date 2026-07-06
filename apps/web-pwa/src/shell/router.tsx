@@ -1,27 +1,25 @@
 'use client';
 
 /**
- * A dependency-free router for the walkable prototype. Routes are a discriminated union; navigation
- * keeps a stack so `back` is real. ponytail: no react-router — a handful of screens don't need a
- * routing library, and this keeps the whole app one bundle with no URL coupling.
+ * A dependency-free router. Routes are a discriminated union; navigation keeps a stack so `back`
+ * is real. ponytail: no react-router — a handful of intentions don't need a routing library.
+ *
+ * Navigation is intention-first (DESIGN.md §6): the home has two doors (learn, practice), the
+ * command palette reaches everything, and Vidya reaches everything by name.
  */
 
 import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 
-export type OnboardingStep = 'door' | 'age' | 'goal' | 'diagnostic';
-
 export type Route =
-  | { name: 'onboarding'; step: OnboardingStep }
-  | { name: 'today' }
-  | { name: 'learn'; nodeId: string }
-  | { name: 'practice'; nodeId: string }
-  | { name: 'create' }
+  | { name: 'onboarding' }
+  | { name: 'home' }
+  | { name: 'learn' }
+  | { name: 'practice' }
+  | { name: 'subject'; subjectId: string; intent: 'learn' | 'practice' }
+  | { name: 'course'; topicId: string }
+  | { name: 'sandbox'; topicId?: string }
   | { name: 'progress' }
-  | { name: 'settings' }
-  | { name: 'parent' }
-  | { name: 'plans' };
-
-export type TabName = 'today' | 'progress' | 'create';
+  | { name: 'you' };
 
 export interface Router {
   route: Route;

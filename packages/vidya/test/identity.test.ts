@@ -4,10 +4,10 @@ import { flameForMood, MOLTEN, VIDYA_IDENTITY } from '../src/identity';
 
 describe('Vidya identity is locked', () => {
   it('is molten only, and molten is reserved for her', () => {
-    expect(VIDYA_IDENTITY.color).toBe('#FF4D1A');
+    expect(VIDYA_IDENTITY.color).toBe('#FF5A1F');
     expect(VIDYA_IDENTITY.color).toBe(vidyaMolten);
     expect(VIDYA_IDENTITY.colorFamily).toBe('molten');
-    expect(MOLTEN.base).toBe('#FF4D1A');
+    expect(MOLTEN.base).toBe('#FF5A1F');
   });
 
   it('is a single round squircle jelly, matte, with two eyes', () => {

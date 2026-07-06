@@ -1,45 +1,98 @@
 'use client';
 
+/**
+ * The spine. Identity → SDK → Vidya's bus → the router → screens. Vidya is the runtime the app
+ * executes inside (DESIGN.md §4): the home is her front door; everywhere else she is docked,
+ * reading the page at code level through the context bus, one tap from expanding.
+ */
+
 import { createSdk, type Sdk } from '@classess/sdk';
 import {
   parseActions,
   useVidyaBus,
   type VidyaHandlers,
+  type VidyaMood,
+  VidyaOverlay,
   VidyaProvider,
-  type VidyaTurn,
 } from '@classess/vidya';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
-import { AppShell } from './shell/AppShell';
+import { Course } from './screens/Course';
+import { Home } from './screens/Home';
+import { Learn } from './screens/Learn';
+import { Onboarding } from './screens/Onboarding';
+import { Practice } from './screens/Practice';
+import { ProgressScreen } from './screens/ProgressScreen';
+import { SubjectScreen } from './screens/SubjectScreen';
+import { You } from './screens/You';
+import { CommandPalette } from './shell/CommandPalette';
 import { type Route, RouterProvider, useRouter } from './shell/router';
+import { ProgressProvider } from './store/progress';
+import { SdkProvider } from './store/sdk';
+import { ClickInk } from './ui/ClickInk';
+import { XpBloomLayer } from './ui/XpBloomLayer';
+import { type ChatTurn, VidyaChatProvider } from './vidya/chat';
+import { VidyaCompanion } from './vidya/Companion';
 
 const LLM_MODE = (import.meta.env.VITE_LLM_MODE as 'mock' | 'live' | undefined) ?? 'mock';
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
 
 /** Zero-argument destinations Vidya may offer to navigate to. */
 const NAV_ROUTES: Record<string, Route> = {
-  today: { name: 'today' },
+  home: { name: 'home' },
+  learn: { name: 'learn' },
+  practice: { name: 'practice' },
   progress: { name: 'progress' },
-  create: { name: 'create' },
-  settings: { name: 'settings' },
-  parent: { name: 'parent' },
-  plans: { name: 'plans' },
+  you: { name: 'you' },
 };
+
+export const ONBOARDED_KEY = 'clss-onboarded-v1';
+
+function Screen() {
+  const { route } = useRouter();
+  // One intention per screen; transitions ease with physical logic (DESIGN.md §5).
+  const key = JSON.stringify(route);
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={key}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -8 }}
+        transition={{ duration: 0.26, ease: [0.2, 0, 0, 1] }}
+      >
+        {route.name === 'onboarding' && <Onboarding />}
+        {route.name === 'home' && <Home />}
+        {route.name === 'learn' && <Learn />}
+        {route.name === 'practice' && <Practice />}
+        {route.name === 'subject' && (
+          <SubjectScreen subjectId={route.subjectId} intent={route.intent} />
+        )}
+        {route.name === 'course' && <Course topicId={route.topicId} />}
+        {route.name === 'sandbox' && <Course topicId={route.topicId ?? ''} sandbox />}
+        {route.name === 'progress' && <ProgressScreen />}
+        {route.name === 'you' && <You />}
+      </motion.div>
+    </AnimatePresence>
+  );
+}
 
 function AppInner({ sdk }: { sdk: Sdk }) {
   const bus = useVidyaBus();
-  const [turns, setTurns] = useState<VidyaTurn[]>([
-    {
-      id: 'seed',
-      role: 'vidya',
-      text: "Hi, I'm Vidya. Tap me whenever you want to think something through.",
-    },
+  const { route } = useRouter();
+  const [busy, setBusy] = useState(false);
+  const [mood, setMood] = useState<VidyaMood>('idle');
+  const [turns, setTurns] = useState<ChatTurn[]>([
+    { id: 'seed', role: 'vidya', text: 'ask me anything — I can see the page you are on.' },
   ]);
 
-  // A real Vidya turn: she reasons over the page she's plugged into, then speaks and acts on it.
+  // A real Vidya turn: she reasons over the page she is plugged into, then speaks and acts on it.
   const ask = async (text: string) => {
     setTurns((prev) => [...prev, { id: `u-${prev.length}`, role: 'user', text }]);
+    setBusy(true);
+    setMood('thinking');
     bus.publishTurn({
-      recentTurns: turns.map((t) => ({ role: t.role, text: String(t.text) })),
+      recentTurns: turns.map((t) => ({ role: t.role, text: t.text })),
       lastUserInput: text,
     });
     try {
@@ -51,22 +104,38 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       const output = result.output as { say?: string; actions?: unknown[] };
       setTurns((prev) => [
         ...prev,
-        {
-          id: `v-${prev.length}`,
-          role: 'vidya',
-          text: output.say ?? 'Let us look at this together.',
-        },
+        { id: `v-${prev.length}`, role: 'vidya', text: output.say ?? 'let us look at this together.' },
       ]);
-      bus.dispatch(parseActions(output.actions ?? []));
+      const actions = parseActions(output.actions ?? []);
+      bus.dispatch(actions);
+      setMood(actions.length > 0 ? 'explaining' : 'idle');
     } catch {
       setTurns((prev) => [
         ...prev,
-        { id: `v-${prev.length}`, role: 'vidya', text: 'Give me a moment, then ask me again.' },
+        { id: `v-${prev.length}`, role: 'vidya', text: 'give me a moment, then ask me again.' },
       ]);
+      setMood('idle');
+    } finally {
+      setBusy(false);
     }
   };
 
-  return <AppShell sdk={sdk} turns={turns} onAsk={ask} />;
+  const chat = useMemo(() => ({ turns, ask, busy, mood, setMood }), [turns, busy, mood]);
+
+  const inFlow = route.name === 'onboarding';
+  const onHome = route.name === 'home';
+
+  return (
+    <VidyaChatProvider value={chat}>
+      <Screen />
+      {/* Her ink over the current screen — annotations anchored to real elements. */}
+      <VidyaOverlay />
+      {!inFlow && <XpBloomLayer />}
+      {!inFlow && !onHome && <VidyaCompanion />}
+      <CommandPalette />
+      <ClickInk />
+    </VidyaChatProvider>
+  );
 }
 
 function WithVidya({ sdk }: { sdk: Sdk }) {
@@ -77,7 +146,7 @@ function WithVidya({ sdk }: { sdk: Sdk }) {
         const r = NAV_ROUTES[route];
         if (r) router.navigate(r);
       },
-      startPractice: (nodeId: string) => router.navigate({ name: 'practice', nodeId }),
+      startPractice: () => router.navigate({ name: 'practice' }),
       switchModality: () => {},
     }),
     [router],
@@ -91,9 +160,16 @@ function WithVidya({ sdk }: { sdk: Sdk }) {
 
 export function App() {
   const sdk = useMemo(() => createSdk({ llmMode: LLM_MODE, gatewayUrl: GATEWAY_URL }), []);
+  const initial: Route = localStorage.getItem(ONBOARDED_KEY)
+    ? { name: 'home' }
+    : { name: 'onboarding' };
   return (
-    <RouterProvider initial={{ name: 'onboarding', step: 'door' }}>
-      <WithVidya sdk={sdk} />
-    </RouterProvider>
+    <SdkProvider value={sdk}>
+      <ProgressProvider>
+        <RouterProvider initial={initial}>
+          <WithVidya sdk={sdk} />
+        </RouterProvider>
+      </ProgressProvider>
+    </SdkProvider>
   );
 }

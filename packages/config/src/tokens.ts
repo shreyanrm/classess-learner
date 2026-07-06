@@ -1,121 +1,120 @@
 /**
- * Classess Learner design tokens — the locked source of truth (docs/02-DESIGN/00-design-system.md).
+ * Classess Learner design tokens — the locked source of truth (DESIGN.md §2).
  *
- * The governing idea: black and white is the world before you understand something; color is
- * what understanding looks like. Chrome/type/canvas are monochrome; color is earned (ignite) and
- * belongs to concepts, never decoration. There is NO signature brand hue. The one exception:
- * Molten (#FF4D1A) is Vidya's identity color and is reserved for her alone.
+ * Black and white carry the entire interface. Colour appears only where it means something:
+ * ultramarine is the signature pigment, reserved for brand and mastery — "ignite" at rest.
+ * The accent family (molten, magenta, acid) appears rarely and with intent. One hit of
+ * pigment per view; if two things are shouting, one is wrong.
  *
- * Depth is never a drop shadow. It is tone, 0.5px hairlines, and frost (backdrop blur on overlays).
+ * Depth is never a drop shadow. It is 0.5px hairlines, tonal surface steps, and frost on
+ * overlays only. Corners are sharp: 3px default.
  */
 
-// --- Neutrals: true black & white, no warm/clay tint --------------------------------------------
+// --- Ink on paper --------------------------------------------------------------------------------
 export const ink = {
-  900: '#0A0A0B',
-  800: '#161617',
-  700: '#2A2A2C',
-  500: '#6B6B70',
-  300: '#B8B8BD',
-  100: '#E9E9EC',
+  900: '#0D0D10',
+  800: '#1A1A1F',
+  700: '#2E2E35',
+  500: '#6E6E76',
+  300: '#B9B9C0',
+  100: '#ECECEF',
 } as const;
 
 export const paper = '#FFFFFF';
-export const canvas = '#FAFAFA';
+export const canvas = '#FFFFFF';
 
 /** Dark surfaces step tonally (no shadows) as small lightness steps. */
 export const surface = {
-  1: '#161617',
-  2: '#1E1E20',
-  3: '#26262A',
-  4: '#303034',
+  1: '#1A1A1F',
+  2: '#222228',
+  3: '#2A2A31',
+  4: '#33333B',
 } as const;
 
-/** Hairline borders (depth without shadow). */
+/** Hairline borders — 0.5px of depth without shadow. */
 export const hairline = {
-  onPaper: 'rgba(10,10,11,0.08)',
-  onDark: 'rgba(255,255,255,0.10)',
+  onPaper: 'rgba(13,13,16,0.10)',
+  onPaperStrong: 'rgba(13,13,16,0.18)',
+  onDark: 'rgba(255,255,255,0.12)',
 } as const;
 
-// --- Content-color playground: earned, one hue per concept/subject ------------------------------
-/**
- * The 14 named accents plus one open slot for a future subject. Each subject/concept is assigned
- * exactly one accent; that hue is what its nodes ignite into. Molten is RESERVED for Vidya and is
- * never assigned as a subject accent (see `subjectAccents`).
- */
+// --- The signature pigment -----------------------------------------------------------------------
+/** Ultramarine — reserved for brand and mastery. This is "ignite" at rest. */
+export const ultramarine = '#1F35E0';
+
+/** Ultramarine interaction shades — brand-and-mastery moments only, never generic chrome. */
+export const ultramarineShades = {
+  base: ultramarine,
+  hover: '#1A2DC4',
+  active: '#1526A6',
+  soft: 'rgba(31,53,224,0.07)',
+  wash: 'rgba(31,53,224,0.12)',
+  ring: 'rgba(31,53,224,0.35)',
+} as const;
+
+// --- The accent family: rare, earned, with intent -------------------------------------------------
 export const accent = {
-  cobalt: '#1E6BFF',
-  indigo: '#4B41E0',
-  violet: '#7A2FF2',
-  grape: '#A82FE0',
-  magenta: '#DD1E9A',
-  rose: '#F4356E',
-  hotRed: '#EC1C2D',
-  molten: '#FF4D1A',
-  tangerine: '#FF8A00',
-  amber: '#FFB020',
-  acid: '#C2F000',
-  emerald: '#10A37A',
-  tiffany: '#0FC2C0',
-  cyan: '#00B5D8',
+  molten: '#FF5A1F',
+  magenta: '#CC1E7A',
+  acid: '#66B300',
 } as const;
 
 export type AccentName = keyof typeof accent;
 
-/** Molten is Vidya's identity color — reserved, never a subject accent. */
+/** Molten is Vidya's warmth — her glow, her celebratory pop. Reserved for her alone. */
 export const vidyaMolten = accent.molten;
 
-/** Accents assignable to subjects/concepts (Molten excluded — it is Vidya's). */
+/** Accents assignable to earned moments (molten excluded — it is Vidya's). */
 export const subjectAccents = (Object.keys(accent) as AccentName[]).filter(
   (name): name is Exclude<AccentName, 'molten'> => name !== 'molten',
 );
 
-/** Ultramarine — Vidya's tertiary highlight. Her toolkit only; not a subject/concept accent. */
-export const ultramarine = '#3A2FF5';
-
 /**
  * Vidya's highlight + annotation palette — the colours she draws WITH when she points at the page.
- * Distinct from the earned concept-ignite colours. Primary is her own molten, then acid, then
- * ultramarine, used in that order as she layers emphasis.
+ * Molten leads (her warmth), ultramarine seconds (the brand's certainty), acid is the rare third.
  */
 export const vidyaHighlight = {
-  primary: vidyaMolten, // #FF4D1A — her identity colour leads
-  secondary: accent.acid, // #C2F000
-  tertiary: ultramarine, // #3A2FF5
+  primary: accent.molten,
+  secondary: ultramarine,
+  tertiary: accent.acid,
 } as const;
 
-/**
- * Molten interaction shades — the freed signature accent. Molten now carries the app's *action*
- * language (primary buttons, focus, selection, active states); it is no longer Vidya's alone. Vibrancy
- * arrives here and as earned concept colour, never as gradients or tinted neutrals.
- */
+/** Molten interaction shades — Vidya's warmth family; hers, not generic chrome. */
 export const molten = {
-  base: vidyaMolten, // #FF4D1A
-  hover: '#F23C0E',
-  active: '#D63207',
-  soft: 'rgba(255,77,26,0.10)', // faint wash behind hero moments (depth from light, not shadow)
-  ring: 'rgba(255,77,26,0.38)', // focus ring / selection glow
+  base: accent.molten,
+  hover: '#F04A0E',
+  active: '#D63E07',
+  soft: 'rgba(255,90,31,0.08)',
+  ring: 'rgba(255,90,31,0.35)',
 } as const;
 
-// --- Shape: subtle corners; larger radii only for Vidya's jelly and panel ------------------------
-// Sharper corners, subtly rounded — never soft. Small, deliberate radii on chrome; pills stay pills.
+/** Feedback tints — quiet, structural, never shouting. */
+export const feedback = {
+  correct: '#2E7D32',
+  correctSoft: 'rgba(46,125,50,0.08)',
+  retry: '#B26A00',
+  retrySoft: 'rgba(178,106,0,0.08)',
+} as const;
+
+// --- Shape: sharp corners, 3px default ------------------------------------------------------------
 export const radius = {
-  sm: 2,
+  sm: 3,
   md: 6,
   lg: 10,
-  /** Vidya's round squircle jelly. */
+  /** Vidya's round jelly. */
   jelly: 9999,
-  /** Vidya's frosted floating panel and other overlays. */
-  panel: 16,
+  /** Frosted overlays (Vidya's panel, sheets). */
+  panel: 14,
 } as const;
 
-// --- Frost (backdrop blur) — overlays ONLY (Vidya panel, modals, the meter sheet) ----------------
+// --- Frost (backdrop blur) — overlays ONLY --------------------------------------------------------
 export const frost = {
   blur: '20px',
-  onPaper: 'rgba(255,255,255,0.72)',
-  onDark: 'rgba(20,20,22,0.64)',
+  onPaper: 'rgba(255,255,255,0.78)',
+  onDark: 'rgba(18,18,22,0.66)',
 } as const;
 
-// --- Spacing: European-spacey, 8px base grid (4px half-step) -------------------------------------
+// --- Spacing: generous, 8px base grid (4px half-step). The screen breathes. -----------------------
 export const space = {
   0: 0,
   half: 4,
@@ -129,10 +128,10 @@ export const space = {
   16: 128,
 } as const;
 
-// --- Type: Google Sans Flex (web stand-in Plus Jakarta Sans), Caveat for handwritten. No mono. ----
+// --- Type: Google Sans Flex for all product UI. Caveat only as Vidya's sparse hand. ---------------
 export const fontFamily = {
-  display: "'Google Sans Flex', 'Plus Jakarta Sans', system-ui, sans-serif",
-  system: "'Google Sans Flex', 'Plus Jakarta Sans', system-ui, sans-serif",
+  display: "'Google Sans Flex', 'Google Sans Text', 'Plus Jakarta Sans', system-ui, sans-serif",
+  system: "'Google Sans Flex', 'Google Sans Text', 'Plus Jakarta Sans', system-ui, sans-serif",
   handwritten: "'Caveat', cursive",
 } as const;
 
@@ -178,11 +177,14 @@ export const tokens = {
   canvas,
   surface,
   hairline,
+  ultramarine,
+  ultramarineShades,
   accent,
   vidyaMolten,
   subjectAccents,
-  ultramarine,
   vidyaHighlight,
+  molten,
+  feedback,
   radius,
   frost,
   space,
