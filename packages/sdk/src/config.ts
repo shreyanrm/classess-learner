@@ -18,6 +18,16 @@ export interface SdkConfig {
   /** CONTENT_MODE: seed => the verified atom cache; live => generate->verify->cache. */
   contentMode: 'seed' | 'live';
   gatewayUrl?: string;
+  /** PERSIST_MODE: local => localStorage only; live => Supabase state/outbox with a local cache. */
+  persistMode: 'local' | 'live';
+  /** Supabase project URL + publishable key (client-safe), from env only — required for live. */
+  supabaseUrl?: string;
+  supabaseAnonKey?: string;
+  /**
+   * The RLS access token: in dev a pre-minted JWT (sub = mockSubjectId, role authenticated) from
+   * env; at Phase 4 the real Supabase session token. Never hardcoded, never committed.
+   */
+  supabaseAccessToken?: string;
 }
 
 export const DEV_DEFAULTS: SdkConfig = {
@@ -28,6 +38,7 @@ export const DEV_DEFAULTS: SdkConfig = {
   displayName: 'Aanya',
   llmMode: 'mock',
   contentMode: 'seed',
+  persistMode: 'local',
 };
 
 /** Merge partial overrides onto the dev defaults. */

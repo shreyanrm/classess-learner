@@ -74,6 +74,7 @@ const notEnabled: AuthSeams = {
 export class DevMockIdentity implements IdentityProvider {
   readonly auth: AuthSeams = notEnabled;
   private readonly session: Session;
+  private readonly accessToken: string | null;
 
   constructor(config: SdkConfig) {
     this.session = {
@@ -82,6 +83,8 @@ export class DevMockIdentity implements IdentityProvider {
       surface: config.surface,
       display_name: config.displayName,
     };
+    // The Phase-1 dev JWT (sub = mockSubjectId, role authenticated), env-supplied — RLS keys on it.
+    this.accessToken = config.supabaseAccessToken ?? null;
   }
 
   async getSession(): Promise<Session> {
@@ -89,6 +92,6 @@ export class DevMockIdentity implements IdentityProvider {
   }
 
   async getAccessToken(): Promise<string | null> {
-    return null;
+    return this.accessToken;
   }
 }

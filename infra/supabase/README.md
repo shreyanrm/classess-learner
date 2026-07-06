@@ -23,6 +23,7 @@ client query. There are no cross-schema foreign keys; canonical references are o
 | `0002_learner_operational_plane.sql` | the `learner` schema: tables, RLS, the outbox + `outbox_append` / `op_start_session`, grants |
 | `0003_realtime_and_storage.sql` | realtime publication (canvas/meter/mastery) + private storage buckets |
 | `0004_seed_dev.sql` | deterministic dev seed (mock subject "Aanya") |
+| `0005_learner_state_threads_relay.sql` | `learner_state` (XP/streak/topic progress/mind, device-merged) + `learner_threads` (Vidya conversation), RLS, `outbox_append_batch`, PostgREST exposure of `learner` |
 
 ## RLS
 
@@ -40,8 +41,9 @@ service role — the single deliberate departure from per-subject RLS. Flagged f
 
 ## Deferred to later phases
 
-- **PostgREST exposure of `learner`** — deferred to Phase 1 (the first client DB read). In Phase 0 the
-  relay and the contract-seed client use a server-side connection. To expose it later:
-  `alter role authenticator set pgrst.db_schemas = 'public, graphql_public, learner';` then
-  `notify pgrst, 'reload config';`.
+- **PostgREST exposure of `learner`** — done in `0005` (Phase 1, the first client DB access). Clients
+  select the schema per request with `Accept-Profile` / `Content-Profile: learner`. The SDK's live
+  persistence (`PERSIST_MODE=live`) rides it with the publishable key + a dev JWT
+  (`SUPABASE_DEV_JWT`, sub = the mock subject) so RLS attributes every row; at Phase 4 the real
+  session token replaces the dev JWT with no schema change.
 - **Real auth** — Phase 4. `DEV_AUTH=true` today; the identity boundary is wired so nothing else changes.

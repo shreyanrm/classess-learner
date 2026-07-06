@@ -395,6 +395,35 @@ export function Home() {
             </button>
           ))}
         </motion.div>
+
+        {/* the doors, at hand — Learn and Practice reachable before the walk begins */}
+        <motion.div
+          variants={rise}
+          style={{
+            display: 'flex',
+            gap: 12,
+            marginTop: fluidSpace.md,
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+          }}
+        >
+          <AuroraButton
+            size="md"
+            onClick={() => router.navigate({ name: 'learn' })}
+            style={{ minWidth: 132 }}
+            flashDelay={firstVisit ? 1.6 : undefined}
+          >
+            Learn
+          </AuroraButton>
+          <AuroraButton
+            size="md"
+            onClick={() => router.navigate({ name: 'practice' })}
+            style={{ minWidth: 132 }}
+            flashDelay={firstVisit ? 1.75 : undefined}
+          >
+            Practice
+          </AuroraButton>
+        </motion.div>
       </motion.div>
 
       {/* the day, drawn — one thread, stops on it, Vidya walking it */}

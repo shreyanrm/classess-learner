@@ -16,6 +16,7 @@ connection, and concurrent relays are capped. When real learner auth lands (Phas
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import os
 import secrets
@@ -97,34 +98,35 @@ def register_voice(app: FastAPI) -> None:
 
         _active_relays += 1
         try:
-            async with aiohttp.ClientSession() as http:
-                async with http.ws_connect(f"{_GEMINI_LIVE_URL}?key={key}") as gemini:
-                    await gemini.send_str(json.dumps(_setup_message()))
+            async with (
+                aiohttp.ClientSession() as http,
+                http.ws_connect(f"{_GEMINI_LIVE_URL}?key={key}") as gemini,
+            ):
+                await gemini.send_str(json.dumps(_setup_message()))
 
-                    async def pump_up() -> None:
-                        while True:  # ends via WebSocketDisconnect when the client hangs up
-                            await gemini.send_str(await client.receive_text())
+                async def pump_up() -> None:
+                    while True:  # ends via WebSocketDisconnect when the client hangs up
+                        await gemini.send_str(await client.receive_text())
 
-                    async def pump_down() -> None:
-                        async for msg in gemini:
-                            if msg.type == aiohttp.WSMsgType.TEXT:
-                                await client.send_text(msg.data)
-                            elif msg.type == aiohttp.WSMsgType.BINARY:
-                                # Gemini Live frames JSON as binary; the browser wants text.
-                                await client.send_text(msg.data.decode())
-                            else:
-                                break
+                async def pump_down() -> None:
+                    async for msg in gemini:
+                        if msg.type == aiohttp.WSMsgType.TEXT:
+                            await client.send_text(msg.data)
+                        elif msg.type == aiohttp.WSMsgType.BINARY:
+                            # Gemini Live frames JSON as binary; the browser wants text.
+                            await client.send_text(msg.data.decode())
+                        else:
+                            break
 
-                    up = asyncio.create_task(pump_up())
-                    down = asyncio.create_task(pump_down())
-                    try:
-                        await asyncio.wait({up, down}, return_when=asyncio.FIRST_COMPLETED)
-                    finally:
-                        up.cancel()
-                        down.cancel()
+                up = asyncio.create_task(pump_up())
+                down = asyncio.create_task(pump_down())
+                try:
+                    await asyncio.wait({up, down}, return_when=asyncio.FIRST_COMPLETED)
+                finally:
+                    up.cancel()
+                    down.cancel()
         finally:
             _active_relays -= 1
-        try:
+        # suppress RuntimeError: already closed by the disconnect that ended the pumps
+        with contextlib.suppress(RuntimeError):
             await client.close()
-        except RuntimeError:
-            pass  # already closed by the disconnect that ended the pumps

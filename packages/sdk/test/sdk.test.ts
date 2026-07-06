@@ -20,6 +20,7 @@ describe('identity boundary', () => {
       surface: 'pwa',
       llmMode: 'mock',
       contentMode: 'seed',
+      persistMode: 'local',
     });
     await expect(id.auth.requestPhoneOtp('+910000000000')).rejects.toBeInstanceOf(
       AuthNotEnabledError,

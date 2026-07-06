@@ -7,10 +7,23 @@
  * Rewards are few and precious — a bloom fires on genuine earn (completion, boss, account
  * moments), never on routine taps. The streak is an identity streak ("day 7 of being a
  * learner") and rest is sanctioned, never guilted.
+ *
+ * Persistence rides the SDK state seam: localStorage is the always-on cache (same key as ever);
+ * in live mode learner_state hydrates on boot and merges on write, so devices reconcile.
  */
 
-import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from 'react';
+import { type LearnerState, mergeLearnerState } from '@classess/sdk';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { hueForTopic } from '../ui/hues';
+import { useSdk } from './sdk';
 
 export type XpReason =
   | 'item'
@@ -43,39 +56,20 @@ export interface XpBloom {
   hue?: string;
 }
 
-interface Persisted {
-  xp: number;
-  topicProgress?: Record<string, number>;
-  streakDays: number;
-  lastActiveDay: string; // YYYY-MM-DD
-  completedTopics: string[];
-  awardedOnce: string[]; // one-time reasons already granted (account, profile_photo, …)
-}
-
-const KEY = 'clss-progress-v1';
-
 function today(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-function load(): Persisted {
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) {
-      const p = JSON.parse(raw) as Persisted;
-      // Streak roll-forward: yesterday keeps it, today keeps it, older resets honestly (no guilt).
-      const t = today();
-      if (p.lastActiveDay !== t) {
-        const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-        p.streakDays = p.lastActiveDay === yesterday ? p.streakDays + 1 : 1;
-        p.lastActiveDay = t;
-      }
-      return p;
-    }
-  } catch {
-    // fresh start below
-  }
-  return { xp: 0, streakDays: 1, lastActiveDay: today(), completedTopics: [], awardedOnce: [] };
+/** Streak roll-forward: yesterday keeps it, today keeps it, older resets honestly (no guilt). */
+function rollForward(p: LearnerState): LearnerState {
+  const t = today();
+  if (p.lastActiveDay === t) return p;
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  return {
+    ...p,
+    streakDays: p.lastActiveDay === yesterday ? p.streakDays + 1 : 1,
+    lastActiveDay: t,
+  };
 }
 
 function bumpToday() {
@@ -87,14 +81,6 @@ function bumpToday() {
     localStorage.setItem(key, JSON.stringify(counts));
   } catch {
     // storage unavailable — heat map just stays cool
-  }
-}
-
-function save(p: Persisted) {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(p));
-  } catch {
-    // storage unavailable — session-only progress is fine
   }
 }
 
@@ -124,8 +110,36 @@ export function useProgress(): ProgressStore {
 let bloomSeq = 1;
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<Persisted>(load);
+  const sdk = useSdk();
+  const [state, setState] = useState<LearnerState>(() => rollForward(sdk.state.loadCache()));
   const [blooms, setBlooms] = useState<XpBloom[]>([]);
+
+  // Hydrate on boot: reconcile the local cache with learner_state (a no-op in local mode) so a
+  // session on another device carries over — union of topics, max XP, the streak chain intact.
+  useEffect(() => {
+    let cancelled = false;
+    sdk.state.hydrate().then((remote) => {
+      if (cancelled) return;
+      setState((prev) => {
+        const merged = rollForward(mergeLearnerState(prev, remote));
+        sdk.state.save(merged);
+        return merged;
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [sdk]);
+
+  /** Every mutation stamps updatedAt and goes through the seam (cache now, remote debounced). */
+  const persist = useCallback(
+    (next: LearnerState): LearnerState => {
+      const stamped = { ...next, updatedAt: new Date().toISOString() };
+      sdk.state.save(stamped);
+      return stamped;
+    },
+    [sdk],
+  );
 
   const pushBloom = useCallback((amount: number, reason: XpReason, hue?: string) => {
     const id = bloomSeq++;
@@ -142,56 +156,53 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
           opts?.onceKey ?? (['account', 'profile_photo'].includes(reason) ? reason : undefined);
         if (onceKey && prev.awardedOnce.includes(onceKey)) return prev;
         granted = amount;
-        const next: Persisted = {
+        return persist({
           ...prev,
           xp: prev.xp + amount,
           lastActiveDay: today(),
           awardedOnce: onceKey ? [...prev.awardedOnce, onceKey] : prev.awardedOnce,
-        };
-        save(next);
-        return next;
+        });
       });
       bumpToday(); // the You heat map warms with every earned moment
       // The bloom must feel immediate; if the grant was a duplicate one-time award it is silent.
       setTimeout(() => granted > 0 && pushBloom(amount, reason, opts?.hue), 0);
       return amount;
     },
-    [pushBloom],
+    [pushBloom, persist],
   );
 
   const completeTopic = useCallback(
     (topicId: string, xp?: number) => {
       setState((prev) => {
         if (prev.completedTopics.includes(topicId)) return prev;
-        const next: Persisted = {
+        return persist({
           ...prev,
           xp: prev.xp + (xp ?? XP_AWARDS.topic),
           completedTopics: [...prev.completedTopics, topicId],
           lastActiveDay: today(),
-        };
-        save(next);
-        return next;
+        });
       });
       bumpToday();
       // a completion bloom carries the mastered topic's subject hue
       pushBloom(xp ?? XP_AWARDS.topic, 'topic', hueForTopic(topicId));
     },
-    [pushBloom],
+    [pushBloom, persist],
   );
 
-  const reportProgress = useCallback((topicId: string, fraction: number) => {
-    setState((prev) => {
-      const cur = prev.topicProgress?.[topicId] ?? 0;
-      const f = Math.max(0, Math.min(1, fraction));
-      if (f <= cur) return prev;
-      const next: Persisted = {
-        ...prev,
-        topicProgress: { ...(prev.topicProgress ?? {}), [topicId]: f },
-      };
-      save(next);
-      return next;
-    });
-  }, []);
+  const reportProgress = useCallback(
+    (topicId: string, fraction: number) => {
+      setState((prev) => {
+        const cur = prev.topicProgress[topicId] ?? 0;
+        const f = Math.max(0, Math.min(1, fraction));
+        if (f <= cur) return prev;
+        return persist({
+          ...prev,
+          topicProgress: { ...prev.topicProgress, [topicId]: f },
+        });
+      });
+    },
+    [persist],
+  );
 
   const dismissBloom = useCallback((id: number) => {
     setBlooms((b) => b.filter((x) => x.id !== id));
@@ -202,7 +213,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       xp: state.xp,
       streakDays: state.streakDays,
       completed: new Set(state.completedTopics),
-      topicProgress: state.topicProgress ?? {},
+      topicProgress: state.topicProgress,
       reportProgress,
       blooms,
       award,

@@ -16,7 +16,7 @@ import {
   VidyaProvider,
 } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Course } from './screens/Course';
 import { ConceptA } from './screens/concepts/ConceptA';
 import { ConceptB } from './screens/concepts/ConceptB';
@@ -39,6 +39,11 @@ import { type ChatTurn, VidyaChatProvider } from './vidya/chat';
 
 const LLM_MODE = (import.meta.env.VITE_LLM_MODE as 'mock' | 'live' | undefined) ?? 'mock';
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
+// Live persistence (Supabase learner_state / learner_threads / outbox) — env only, keyless => local.
+const PERSIST_MODE = (import.meta.env.VITE_PERSIST_MODE as 'local' | 'live' | undefined) ?? 'local';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+const SUPABASE_DEV_JWT = import.meta.env.VITE_SUPABASE_DEV_JWT as string | undefined;
 
 /** Zero-argument destinations Vidya may offer to navigate to. */
 const NAV_ROUTES: Record<string, Route> = {
@@ -102,24 +107,34 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   const [busy, setBusy] = useState(false);
   const [mood, setMood] = useState<VidyaMood>('idle');
   const [turns, setTurns] = useState<ChatTurn[]>(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('clss-vidya-conversation-v1') ?? 'null');
-      if (Array.isArray(saved) && saved.length > 0) return saved as ChatTurn[];
-    } catch {
-      // fresh conversation below
-    }
+    const cached = sdk.state.loadThreadCache('vidya');
+    if (cached && cached.turns.length > 0) return cached.turns;
     return [
       { id: 'seed', role: 'vidya', text: 'ask me anything — I can see the page you are on.' },
     ];
   });
-  // She never forgets: the conversation survives reloads (last 60 turns).
+  // She never forgets: the conversation survives reloads and devices — the local cache boots the
+  // thread instantly, then learner_threads reconciles in (live mode) if another device said more.
   useEffect(() => {
-    try {
-      localStorage.setItem('clss-vidya-conversation-v1', JSON.stringify(turns.slice(-60)));
-    } catch {
-      // storage unavailable — session-only is fine
+    let cancelled = false;
+    sdk.state.hydrateThread('vidya').then((snapshot) => {
+      if (cancelled || !snapshot) return;
+      setTurns((prev) => (snapshot.turns.length > prev.length ? snapshot.turns : prev));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [sdk]);
+  // Save only after the conversation actually moves — re-stamping the boot snapshot "now" would
+  // out-fresh an older-but-richer transcript from another device during reconciliation.
+  const bootTurns = useRef(true);
+  useEffect(() => {
+    if (bootTurns.current) {
+      bootTurns.current = false;
+      return;
     }
-  }, [turns]);
+    sdk.state.saveThread('vidya', turns.slice(-60));
+  }, [sdk, turns]);
 
   // A real Vidya turn: she reasons over the page she is plugged into, then speaks and acts on it.
   const ask = async (text: string) => {
@@ -200,7 +215,18 @@ function WithVidya({ sdk }: { sdk: Sdk }) {
 }
 
 export function App() {
-  const sdk = useMemo(() => createSdk({ llmMode: LLM_MODE, gatewayUrl: GATEWAY_URL }), []);
+  const sdk = useMemo(
+    () =>
+      createSdk({
+        llmMode: LLM_MODE,
+        gatewayUrl: GATEWAY_URL,
+        persistMode: PERSIST_MODE,
+        supabaseUrl: SUPABASE_URL,
+        supabaseAnonKey: SUPABASE_ANON_KEY,
+        supabaseAccessToken: SUPABASE_DEV_JWT,
+      }),
+    [],
+  );
   const initial: Route = localStorage.getItem(ONBOARDED_KEY)
     ? { name: 'home' }
     : { name: 'onboarding' };
