@@ -142,15 +142,20 @@ export function evaluateExpr(src: string, vars: Record<string, number>): number 
     }
     if (t.kind === 'id') {
       pos += 1;
-      const fn = FUNCTIONS[t.name];
+      // own-property lookups only — inherited names (__proto__, constructor…) are unknown
+      const fn = Object.hasOwn(FUNCTIONS, t.name) ? FUNCTIONS[t.name] : undefined;
       if (fn && takeOp('(')) {
         const args = [parseExpr()];
         while (takeOp(',')) args.push(parseExpr());
         if (!takeOp(')')) throw new Error('missing )');
         return fn(...args);
       }
-      const bound = vars[t.name] ?? CONSTANTS[t.name];
-      if (bound === undefined) throw new Error(`unknown name ${t.name}`);
+      const bound = Object.hasOwn(vars, t.name)
+        ? vars[t.name]
+        : Object.hasOwn(CONSTANTS, t.name)
+          ? CONSTANTS[t.name]
+          : undefined;
+      if (typeof bound !== 'number') throw new Error(`unknown name ${t.name}`);
       return bound;
     }
     if (takeOp('(')) {
@@ -183,10 +188,13 @@ export function formatSimNumber(v: number | null): string {
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
 
+/** Param ids must be plain identifiers (they appear in expressions) — nothing exotic gets through. */
+const IDENT_RE = /^[A-Za-z_][A-Za-z0-9_]*$/;
+
 function parseParam(raw: unknown): SimParam | null {
   if (!isRecord(raw)) return null;
   const { id, label, min, max, initial, unit } = raw;
-  if (typeof id !== 'string' || typeof label !== 'string') return null;
+  if (typeof id !== 'string' || !IDENT_RE.test(id) || typeof label !== 'string') return null;
   if (typeof min !== 'number' || typeof max !== 'number' || min >= max) return null;
   const start = typeof initial === 'number' ? Math.max(min, Math.min(max, initial)) : min;
   return {

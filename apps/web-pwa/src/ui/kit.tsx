@@ -1,26 +1,56 @@
 'use client';
 
 /**
- * The chrome kit — the only building blocks screens may use for chrome (DESIGN.md §2, §3, §5).
- * Ink on paper, 0.5px hairlines, 3px corners, no shadows. One hit of pigment per view: the
- * `pigment` button variant is ultramarine and a view may render at most one.
- *
- * Micro-interaction character lives here once: magnetic buttons, tactile press, butter easing.
+ * The chrome kit — the design system, second cut. Designed, not assembled:
+ * a cool near-white canvas, white surfaces with soft 16px corners and real padding,
+ * one button system (solid ink · tonal · ghost), one type scale, one spacing rhythm.
+ * Every element sits on the same grid and the same baseline. No wireframe borders,
+ * no floating fragments, no arbitrary gaps. Cool neutrals only — never warm.
  */
 
 import { motion, useMotionTemplate, useMotionValue, useSpring } from 'framer-motion';
 import { type CSSProperties, type ReactNode, useCallback, useRef, useState } from 'react';
 
-export const inkText: CSSProperties = { color: 'var(--clss-ink-900)' };
+// --- The surface language (cool neutrals) ----------------------------------------------------------
+export const surface = {
+  page: '#FAFAFB',
+  card: '#FFFFFF',
+  cardBorder: '#E9E9EE',
+  cardHover: '#FCFCFE',
+  tonal: '#F1F1F5',
+  tonalHover: '#E8E8EE',
+  ink: '#121316',
+  inkSoft: '#5C5E66',
+  inkFaint: '#989AA4',
+  radius: { card: 16, control: 12, pill: 999 },
+} as const;
+
+export const inkText: CSSProperties = { color: surface.ink };
+
+/** Page titles: one committed scale. */
+export const titleType: CSSProperties = {
+  margin: 0,
+  fontSize: '1.9rem',
+  fontWeight: 650,
+  letterSpacing: '-0.035em',
+  color: surface.ink,
+  lineHeight: 1.15,
+};
+
+export const subtitleType: CSSProperties = {
+  fontSize: '0.95rem',
+  color: surface.inkSoft,
+  lineHeight: 1.55,
+};
 
 export function SectionLabel({ children, style }: { children: ReactNode; style?: CSSProperties }) {
   return (
     <div
       style={{
-        fontSize: '0.72rem',
-        letterSpacing: '0.14em',
-        color: 'var(--clss-ink-500)',
-        fontWeight: 500,
+        fontSize: '0.78rem',
+        fontWeight: 550,
+        letterSpacing: '0.01em',
+        color: surface.inkFaint,
         ...style,
       }}
     >
@@ -30,18 +60,10 @@ export function SectionLabel({ children, style }: { children: ReactNode; style?:
 }
 
 export function Hairline({ style }: { style?: CSSProperties }) {
-  return (
-    <div
-      style={{
-        height: 1,
-        transform: 'scaleY(0.5)',
-        background: 'var(--clss-hairline-on-paper-strong)',
-        ...style,
-      }}
-    />
-  );
+  return <div style={{ height: 1, background: surface.cardBorder, ...style }} />;
 }
 
+// --- Cards ----------------------------------------------------------------------------------------
 export function Card({
   children,
   style,
@@ -53,17 +75,21 @@ export function Card({
   onClick?: () => void;
   interactive?: boolean;
 }) {
+  const [hover, setHover] = useState(false);
   return (
     <motion.div
       onClick={onClick}
+      onHoverStart={() => setHover(true)}
+      onHoverEnd={() => setHover(false)}
       whileHover={interactive ? { y: -2 } : undefined}
-      whileTap={interactive ? { scale: 0.985 } : undefined}
-      transition={{ type: 'spring', stiffness: 420, damping: 28 }}
+      whileTap={interactive ? { scale: 0.99 } : undefined}
+      transition={{ type: 'spring', stiffness: 420, damping: 30 }}
       style={{
-        background: 'var(--clss-paper)',
-        border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-        borderRadius: 'var(--clss-radius-sm)',
+        background: interactive && hover ? surface.cardHover : surface.card,
+        border: `1px solid ${surface.cardBorder}`,
+        borderRadius: surface.radius.card,
         cursor: interactive ? 'pointer' : 'default',
+        transition: 'background 0.25s ease, border-color 0.25s ease',
         ...style,
       }}
     >
@@ -72,34 +98,19 @@ export function Card({
   );
 }
 
+// --- The one button system -------------------------------------------------------------------------
 export type ButtonVariant = 'primary' | 'quiet' | 'pigment' | 'ghost';
 
-const BUTTON_STYLES: Record<ButtonVariant, CSSProperties> = {
-  primary: {
-    background: 'var(--clss-ink-900)',
-    color: 'var(--clss-paper)',
-    border: '0.5px solid var(--clss-ink-900)',
-  },
-  quiet: {
-    background: 'var(--clss-paper)',
-    color: 'var(--clss-ink-900)',
-    border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-  },
-  pigment: {
-    background: 'var(--clss-ultramarine)',
-    color: 'var(--clss-paper)',
-    border: '0.5px solid var(--clss-ultramarine)',
-  },
-  ghost: {
-    background: 'transparent',
-    color: 'var(--clss-ink-500)',
-    border: '0.5px solid transparent',
-  },
+const BUTTON_LOOK: Record<ButtonVariant, { bg: string; bgHover: string; color: string }> = {
+  primary: { bg: surface.ink, bgHover: '#26272C', color: '#FFFFFF' },
+  quiet: { bg: surface.tonal, bgHover: surface.tonalHover, color: surface.ink },
+  pigment: { bg: '#1F35E0', bgHover: '#1A2DC4', color: '#FFFFFF' },
+  ghost: { bg: 'transparent', bgHover: surface.tonal, color: surface.inkSoft },
 };
 
 /**
- * MagneticButton — cursor-attracted within a small radius, subtle and physical (DESIGN.md §5).
- * The pull is capped at 5px so it reads as weight, never as a gimmick.
+ * MagneticButton — the house button. Solid, tonal, or ghost; a capped 4px magnetic pull on
+ * hover; tonal press. Heights are fixed per size so rows of buttons always align.
  */
 export function MagneticButton({
   children,
@@ -119,54 +130,62 @@ export function MagneticButton({
   ariaLabel?: string;
 }) {
   const ref = useRef<HTMLButtonElement | null>(null);
+  const [hover, setHover] = useState(false);
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const x = useSpring(mx, { stiffness: 320, damping: 22 });
-  const y = useSpring(my, { stiffness: 320, damping: 22 });
+  const x = useSpring(mx, { stiffness: 320, damping: 24 });
+  const y = useSpring(my, { stiffness: 320, damping: 24 });
 
   const onMove = useCallback(
     (e: React.PointerEvent) => {
       const el = ref.current;
       if (!el || disabled) return;
       const r = el.getBoundingClientRect();
-      const dx = e.clientX - (r.left + r.width / 2);
-      const dy = e.clientY - (r.top + r.height / 2);
-      mx.set(Math.max(-5, Math.min(5, dx * 0.12)));
-      my.set(Math.max(-5, Math.min(5, dy * 0.12)));
+      mx.set(Math.max(-4, Math.min(4, (e.clientX - (r.left + r.width / 2)) * 0.08)));
+      my.set(Math.max(-4, Math.min(4, (e.clientY - (r.top + r.height / 2)) * 0.08)));
     },
     [mx, my, disabled],
   );
   const onLeave = useCallback(() => {
     mx.set(0);
     my.set(0);
+    setHover(false);
   }, [mx, my]);
 
-  const pad = size === 'lg' ? '14px 28px' : size === 'sm' ? '7px 14px' : '10px 20px';
-  const font = size === 'lg' ? '1.05rem' : size === 'sm' ? '0.85rem' : '0.95rem';
+  const height = size === 'lg' ? 50 : size === 'sm' ? 34 : 42;
+  const padX = size === 'lg' ? 28 : size === 'sm' ? 14 : 20;
+  const font = size === 'lg' ? '1rem' : size === 'sm' ? '0.85rem' : '0.92rem';
+  const look = BUTTON_LOOK[variant];
 
   return (
     <motion.button
       ref={ref}
       aria-label={ariaLabel}
       onPointerMove={onMove}
+      onPointerEnter={() => setHover(true)}
       onPointerLeave={onLeave}
       onClick={disabled ? undefined : onClick}
-      whileTap={disabled ? undefined : { scale: 0.96 }}
+      whileTap={disabled ? undefined : { scale: 0.97 }}
       style={{
-        ...BUTTON_STYLES[variant],
+        background: hover && !disabled ? look.bgHover : look.bg,
+        color: look.color,
+        border: 'none',
         x,
         y,
-        padding: pad,
+        height,
+        padding: `0 ${padX}px`,
         fontSize: font,
         fontFamily: 'inherit',
-        fontWeight: 500,
-        borderRadius: 'var(--clss-radius-sm)',
+        fontWeight: 550,
+        borderRadius: surface.radius.control,
         cursor: disabled ? 'default' : 'pointer',
-        opacity: disabled ? 0.45 : 1,
+        opacity: disabled ? 0.4 : 1,
         display: 'inline-flex',
         alignItems: 'center',
+        justifyContent: 'center',
         gap: 8,
-        lineHeight: 1.2,
+        lineHeight: 1,
+        transition: 'background 0.2s ease',
         ...style,
       }}
     >
@@ -175,16 +194,17 @@ export function MagneticButton({
   );
 }
 
-/** A quiet keyboard-hint chip (command palette affordance). */
+/** A quiet keyboard-hint chip. */
 export function Kbd({ children }: { children: ReactNode }) {
   return (
     <span
       style={{
         fontSize: '0.7rem',
-        padding: '2px 6px',
-        border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-        borderRadius: 'var(--clss-radius-sm)',
-        color: 'var(--clss-ink-500)',
+        fontWeight: 550,
+        padding: '3px 7px',
+        background: surface.tonal,
+        borderRadius: 6,
+        color: surface.inkSoft,
       }}
     >
       {children}
@@ -192,15 +212,12 @@ export function Kbd({ children }: { children: ReactNode }) {
   );
 }
 
-/**
- * TiltCard — spotlight + tilt, blended and subtle (owner directive). The card leans toward the
- * cursor (capped at 3.5°) while a soft light pool follows it. Premium, never a gimmick.
- */
+// --- TiltCard — spotlight + tilt, subtle -----------------------------------------------------------
 export function TiltCard({
   children,
   onClick,
   style,
-  spotlight = 'rgba(13,13,16,0.05)',
+  spotlight = 'rgba(18,19,22,0.045)',
 }: {
   children: ReactNode;
   onClick?: () => void;
@@ -212,8 +229,8 @@ export function TiltCard({
   const ry = useMotionValue(0);
   const sx = useMotionValue(50);
   const sy = useMotionValue(50);
-  const rotateX = useSpring(rx, { stiffness: 260, damping: 24 });
-  const rotateY = useSpring(ry, { stiffness: 260, damping: 24 });
+  const rotateX = useSpring(rx, { stiffness: 260, damping: 26 });
+  const rotateY = useSpring(ry, { stiffness: 260, damping: 26 });
   const [lit, setLit] = useState(false);
 
   const onMove = useCallback(
@@ -223,36 +240,36 @@ export function TiltCard({
       const r = el.getBoundingClientRect();
       const px = (e.clientX - r.left) / r.width;
       const py = (e.clientY - r.top) / r.height;
-      ry.set((px - 0.5) * 7);
-      rx.set((0.5 - py) * 7);
+      ry.set((px - 0.5) * 5);
+      rx.set((0.5 - py) * 5);
       sx.set(px * 100);
       sy.set(py * 100);
     },
     [rx, ry, sx, sy],
   );
-  const onLeave = useCallback(() => {
+  const onLeaveTilt = useCallback(() => {
     rx.set(0);
     ry.set(0);
     setLit(false);
   }, [rx, ry]);
 
-  const spot = useMotionTemplate`radial-gradient(220px circle at ${sx}% ${sy}%, ${spotlight}, transparent 70%)`;
+  const spot = useMotionTemplate`radial-gradient(240px circle at ${sx}% ${sy}%, ${spotlight}, transparent 70%)`;
 
   return (
     <motion.div
       ref={ref}
       onPointerMove={onMove}
       onPointerEnter={() => setLit(true)}
-      onPointerLeave={onLeave}
+      onPointerLeave={onLeaveTilt}
       onClick={onClick}
       whileTap={onClick ? { scale: 0.985 } : undefined}
       style={{
         rotateX,
         rotateY,
         transformPerspective: 900,
-        background: 'var(--clss-paper)',
-        border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-        borderRadius: 'var(--clss-radius-sm)',
+        background: surface.card,
+        border: `1px solid ${surface.cardBorder}`,
+        borderRadius: surface.radius.card,
         cursor: onClick ? 'pointer' : 'default',
         position: 'relative',
         overflow: 'hidden',
@@ -275,10 +292,7 @@ export function TiltCard({
   );
 }
 
-/**
- * AuroraButton — for the product's hero doors only. A quiet button until the cursor arrives;
- * then a spectral gradient flows around its border and through its label. One per intention.
- */
+// --- AuroraButton — hero doors only ----------------------------------------------------------------
 export function AuroraButton({
   children,
   onClick,
@@ -291,34 +305,36 @@ export function AuroraButton({
   style?: CSSProperties;
 }) {
   const [lit, setLit] = useState(false);
-  const pad = size === 'lg' ? '15px 30px' : '10px 20px';
-  const font = size === 'lg' ? '1.08rem' : '0.95rem';
-  const aurora =
-    'conic-gradient(from var(--clss-aurora-angle, 0deg), #1F35E0, #CC1E7A, #FF5A1F, #66B300, #0FA3B1, #1F35E0)';
+  const height = size === 'lg' ? 54 : 42;
+  const font = size === 'lg' ? '1.05rem' : '0.95rem';
+  const aurora = 'conic-gradient(from 0deg, #1F35E0, #CC1E7A, #FF5A1F, #66B300, #0FA3B1, #1F35E0)';
   return (
     <motion.button
       onPointerEnter={() => setLit(true)}
       onPointerLeave={() => setLit(false)}
       onClick={onClick}
       whileHover={{ y: -2 }}
-      whileTap={{ scale: 0.96 }}
-      transition={{ type: 'spring', stiffness: 380, damping: 24 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: 'spring', stiffness: 380, damping: 26 }}
       style={{
         position: 'relative',
-        padding: pad,
+        height,
+        padding: '0 34px',
         fontSize: font,
-        fontWeight: 550,
+        fontWeight: 600,
         fontFamily: 'inherit',
-        color: 'var(--clss-ink-900)',
-        background: 'var(--clss-paper)',
-        border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-        borderRadius: 'var(--clss-radius-sm)',
+        color: surface.ink,
+        background: surface.card,
+        border: `1px solid ${surface.cardBorder}`,
+        borderRadius: 14,
         cursor: 'pointer',
         overflow: 'hidden',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         ...style,
       }}
     >
-      {/* the flowing border */}
       <motion.span
         aria-hidden
         animate={lit ? { opacity: 1, rotate: 360 } : { opacity: 0, rotate: 0 }}
@@ -332,21 +348,20 @@ export function AuroraButton({
         }
         style={{
           position: 'absolute',
-          inset: -60,
+          inset: -70,
           background: aurora,
-          filter: 'blur(18px)',
+          filter: 'blur(20px)',
           opacity: 0,
           pointerEvents: 'none',
         }}
       />
-      {/* the paper core keeps the button readable — the aurora lives at its rim */}
       <span
         aria-hidden
         style={{
           position: 'absolute',
-          inset: 1.5,
-          background: 'var(--clss-paper)',
-          borderRadius: 2,
+          inset: 2,
+          background: surface.card,
+          borderRadius: 12,
           pointerEvents: 'none',
         }}
       />
@@ -366,7 +381,7 @@ export function AuroraButton({
   );
 }
 
-/** A sound-wave mic — seven rounded bars; they dance while she listens. */
+// --- Icons ------------------------------------------------------------------------------------------
 export function WaveformIcon({ active = false, size = 18 }: { active?: boolean; size?: number }) {
   const bars = [0.3, 0.55, 0.9, 0.5, 0.9, 0.55, 0.3];
   return (
@@ -377,14 +392,15 @@ export function WaveformIcon({ active = false, size = 18 }: { active?: boolean; 
       {bars.map((h, i) => (
         <motion.span
           key={`${i}-${h}`}
-          animate={
-            active
-              ? { scaleY: [h, Math.min(1, h + 0.45), h * 0.7, h] }
-              : { scaleY: h }
-          }
+          animate={active ? { scaleY: [h, Math.min(1, h + 0.45), h * 0.7, h] } : { scaleY: h }}
           transition={
             active
-              ? { duration: 0.7, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut', delay: i * 0.08 }
+              ? {
+                  duration: 0.7,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: 'easeInOut',
+                  delay: i * 0.08,
+                }
               : { type: 'spring', stiffness: 300, damping: 24 }
           }
           style={{
@@ -400,8 +416,7 @@ export function WaveformIcon({ active = false, size = 18 }: { active?: boolean; 
   );
 }
 
-/** Her four-point spark, as an icon. */
-export function SparkIcon({ size = 12, color = 'var(--clss-ultramarine)' }: { size?: number; color?: string }) {
+export function SparkIcon({ size = 12, color = '#1F35E0' }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 14 14" aria-hidden style={{ display: 'block' }}>
       <path

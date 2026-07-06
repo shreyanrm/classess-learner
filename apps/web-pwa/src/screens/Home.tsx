@@ -177,16 +177,16 @@ export function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.5, ease: [0.2, 0, 0, 1] }}
           style={{
-            marginTop: 22,
-            fontSize: '1.35rem',
-            fontWeight: 500,
-            color: 'var(--clss-ink-900)',
-            letterSpacing: '-0.02em',
+            marginTop: 28,
+            fontSize: '1.7rem',
+            fontWeight: 650,
+            color: '#121316',
+            letterSpacing: '-0.035em',
           }}
         >
           {greeting(learner.name)}
         </motion.div>
-        <div style={{ marginTop: 6, color: 'var(--clss-ink-500)', fontSize: '0.95rem' }}>
+        <div style={{ marginTop: 10, color: '#5C5E66', fontSize: '0.98rem' }}>
           Ask me anything, or take a door
         </div>
 
@@ -231,7 +231,17 @@ export function Home() {
         )}
 
         {/* the chat bar */}
-        <form onSubmit={submit} style={{ width: '100%', marginTop: 26, display: 'flex', gap: 10 }}>
+        <form
+          onSubmit={submit}
+          style={{
+            width: '100%',
+            maxWidth: 560,
+            marginTop: 36,
+            display: 'flex',
+            gap: 10,
+            alignItems: 'center',
+          }}
+        >
           <input
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
@@ -240,14 +250,22 @@ export function Home() {
             placeholder="Talk to Vidya…"
             style={{
               flex: 1,
-              padding: '14px 18px',
+              height: 52,
+              padding: '0 18px',
               fontSize: '1rem',
               fontFamily: 'inherit',
-              border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-              borderRadius: 'var(--clss-radius-sm)',
+              border: '1px solid #E9E9EE',
+              borderRadius: 14,
               outline: 'none',
-              background: 'var(--clss-paper)',
-              color: 'var(--clss-ink-900)',
+              background: '#FFFFFF',
+              color: '#121316',
+              transition: 'border-color 0.2s ease',
+            }}
+            onFocusCapture={(e) => {
+              e.currentTarget.style.borderColor = '#B9BBC6';
+            }}
+            onBlurCapture={(e) => {
+              e.currentTarget.style.borderColor = '#E9E9EE';
             }}
           />
           <button
@@ -298,25 +316,25 @@ export function Home() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 7,
-                border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-                background: 'var(--clss-paper)',
-                color: 'var(--clss-ink-700)',
+                border: 'none',
+                background: '#F1F1F5',
+                color: '#121316',
                 borderRadius: 999,
-                padding: '8px 16px',
-                fontSize: '0.86rem',
-                fontWeight: 500,
+                padding: '10px 18px',
+                fontSize: '0.87rem',
+                fontWeight: 550,
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 transition: 'border-color 0.25s ease, transform 0.2s ease, color 0.25s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'var(--clss-ultramarine)';
-                e.currentTarget.style.color = 'var(--clss-ink-900)';
+                e.currentTarget.style.background = '#E8E8EE';
+                e.currentTarget.style.color = '#1F35E0';
                 e.currentTarget.style.transform = 'translateY(-2px)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'var(--clss-hairline-on-paper-strong)';
-                e.currentTarget.style.color = 'var(--clss-ink-700)';
+                e.currentTarget.style.background = '#F1F1F5';
+                e.currentTarget.style.color = '#121316';
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
@@ -330,14 +348,14 @@ export function Home() {
           <AuroraButton
             size="lg"
             onClick={() => router.navigate({ name: 'learn' })}
-            style={{ minWidth: 160 }}
+            style={{ minWidth: 170 }}
           >
             Learn
           </AuroraButton>
           <AuroraButton
             size="lg"
             onClick={() => router.navigate({ name: 'practice' })}
-            style={{ minWidth: 160 }}
+            style={{ minWidth: 170 }}
           >
             Practice
           </AuroraButton>
