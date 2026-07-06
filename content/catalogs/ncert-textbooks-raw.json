@@ -1,0 +1,1375 @@
+{
+  "source": "owner-supplied 2026-07-06, UNVERIFIED — see ncert-textbooks-raw.provenance.md",
+  "classes": {
+    "4": {
+      "Mathematics": [
+        {
+          "title": "Math-Magic",
+          "code": "demh1",
+          "chapter_files": 15,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/demh1dd.zip"
+        },
+        {
+          "title": "Math-Mela",
+          "code": "demm1",
+          "chapter_files": 15,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/demm1dd.zip"
+        }
+      ],
+      "Environmental Studies": [
+        {
+          "title": "Looking Around(EVS)",
+          "code": "deap1",
+          "chapter_files": 28,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/deap1dd.zip"
+        }
+      ],
+      "The World Around Us": [
+        {
+          "title": "Our Wonderous World",
+          "code": "deev1",
+          "chapter_files": 11,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/deev1dd.zip"
+        }
+      ],
+      "English": [
+        {
+          "title": "Marigold",
+          "code": "deen1",
+          "chapter_files": 10,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/deen1dd.zip"
+        },
+        {
+          "title": "Santoor",
+          "code": "desa1",
+          "chapter_files": 13,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/desa1dd.zip"
+        }
+      ],
+      "Arts": [
+        {
+          "title": "Bansuri",
+          "code": "debu1",
+          "chapter_files": 19,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/debu1dd.zip"
+        }
+      ],
+      "Physical Education and Well Being": [
+        {
+          "title": "Khel Yoga",
+          "code": "deky1",
+          "chapter_files": 4,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/deky1dd.zip"
+        }
+      ]
+    },
+    "5": {
+      "Mathematics": [
+        {
+          "title": "Math-Mela",
+          "code": "eemm1",
+          "chapter_files": 16,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/eemm1dd.zip"
+        },
+        {
+          "title": "Math-Magic",
+          "code": "eemh1",
+          "chapter_files": 15,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/eemh1dd.zip"
+        }
+      ],
+      "English": [
+        {
+          "title": "Santoor",
+          "code": "eesa1",
+          "chapter_files": 11,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/eesa1dd.zip"
+        },
+        {
+          "title": "Marigold",
+          "code": "eeen1",
+          "chapter_files": 11,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/eeen1dd.zip"
+        }
+      ],
+      "The World Around Us": [
+        {
+          "title": "Our Wonderous World",
+          "code": "eeev1",
+          "chapter_files": 11,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/eeev1dd.zip"
+        }
+      ],
+      "Arts": [
+        {
+          "title": "Bansuri",
+          "code": "eebu1",
+          "chapter_files": 20,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/eebu1dd.zip"
+        }
+      ],
+      "Physical Education and Well Being": [
+        {
+          "title": "Khel Yoga",
+          "code": "eeky1",
+          "chapter_files": 4,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/eeky1dd.zip"
+        }
+      ],
+      "Environmental Studies": [
+        {
+          "title": "Looking Around",
+          "code": "eeap1",
+          "chapter_files": 23,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/eeap1dd.zip"
+        }
+      ]
+    },
+    "6": {
+      "Vocational Education": [
+        {
+          "title": "Kaushal Bodh",
+          "code": "fekb1",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/fekb1dd.zip"
+        }
+      ],
+      "Physical Education and Well Being": [
+        {
+          "title": "Khel Yatra",
+          "code": "feky1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/feky1dd.zip"
+        }
+      ],
+      "English": [
+        {
+          "title": "Poorvi",
+          "code": "fepr1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/fepr1dd.zip"
+        },
+        {
+          "title": "Honeysuckle",
+          "code": "fehl1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/fehl1dd.zip"
+        },
+        {
+          "title": "A Pact With The Sun",
+          "code": "fepw1",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/fepw1dd.zip"
+        }
+      ],
+      "Mathematics": [
+        {
+          "title": "Ganita Prakash",
+          "code": "fegp1",
+          "chapter_files": 11,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/fegp1dd.zip"
+        },
+        {
+          "title": "Exemplar Problem(English)",
+          "code": "feep1",
+          "chapter_files": 10,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/feep1dd.zip"
+        }
+      ],
+      "Social Science": [
+        {
+          "title": "History - Our Past",
+          "code": "fess1",
+          "chapter_files": 11,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/fess1dd.zip"
+        },
+        {
+          "title": "The Earth Our Habitat",
+          "code": "fess2",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/fess2dd.zip"
+        },
+        {
+          "title": "Social And Political Life",
+          "code": "fess3",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/fess3dd.zip"
+        },
+        {
+          "title": "Exploring Society India and Beyond",
+          "code": "fees1",
+          "chapter_files": 15,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/fees1dd.zip"
+        }
+      ],
+      "Science": [
+        {
+          "title": "Curiosity",
+          "code": "fecu1",
+          "chapter_files": 13,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/fecu1dd.zip"
+        },
+        {
+          "title": "Science",
+          "code": "fesc1",
+          "chapter_files": 12,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/fesc1dd.zip"
+        },
+        {
+          "title": "Exemplar Problem",
+          "code": "feep2",
+          "chapter_files": 17,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/feep2dd.zip"
+        }
+      ],
+      "Arts": [
+        {
+          "title": "Kriti-I",
+          "code": "fekr1",
+          "chapter_files": 23,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/fekr1dd.zip"
+        }
+      ]
+    },
+    "7": {
+      "Mathematics": [
+        {
+          "title": "Ganita Prakash",
+          "code": "gegp1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/gegp1dd.zip"
+        },
+        {
+          "title": "Ganita Prakash-II",
+          "code": "gegp2",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/gegp2dd.zip"
+        },
+        {
+          "title": "Exemplar Problem(English)",
+          "code": "gemp1",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/gemp1dd.zip"
+        }
+      ],
+      "Arts": [
+        {
+          "title": "Kriti",
+          "code": "gekr1",
+          "chapter_files": 21,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/gekr1dd.zip"
+        },
+        {
+          "title": "Exemplar Problem(English)",
+          "code": "gemp1",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/gemp1dd.zip"
+        }
+      ],
+      "Science": [
+        {
+          "title": "Curiosity",
+          "code": "gecu1",
+          "chapter_files": 13,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/gecu1dd.zip"
+        },
+        {
+          "title": "Exemplar Problem(English)",
+          "code": "gemp1",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/gemp1dd.zip"
+        }
+      ],
+      "English": [
+        {
+          "title": "Poorvi",
+          "code": "gepr1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/gepr1dd.zip"
+        },
+        {
+          "title": "Exemplar Problem(English)",
+          "code": "gemp1",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/gemp1dd.zip"
+        }
+      ],
+      "Social Science": [
+        {
+          "title": "Exploring Society India and Beyond Part-I",
+          "code": "gees1",
+          "chapter_files": 13,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/gees1dd.zip"
+        },
+        {
+          "title": "Exploring Society India and Beyond Part-II",
+          "code": "gees2",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/gees2dd.zip"
+        },
+        {
+          "title": "Exemplar Problem(English)",
+          "code": "gemp1",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/gemp1dd.zip"
+        }
+      ],
+      "Physical Education and Well Being": [
+        {
+          "title": "Khel Yatra",
+          "code": "geky1",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/geky1dd.zip"
+        },
+        {
+          "title": "Exemplar Problem(English)",
+          "code": "gemp1",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/gemp1dd.zip"
+        }
+      ],
+      "Vocational Education": [
+        {
+          "title": "Kaushal Bodh",
+          "code": "gekb1",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/gekb1dd.zip"
+        },
+        {
+          "title": "Exemplar Problem(English)",
+          "code": "gemp1",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/gemp1dd.zip"
+        }
+      ]
+    },
+    "8": {
+      "Mathematics": [
+        {
+          "title": "Ganita Prakash Part-I",
+          "code": "hegp1",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/hegp1dd.zip"
+        },
+        {
+          "title": "Ganita Prakash Part-II",
+          "code": "hegp2",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/hegp2dd.zip"
+        },
+        {
+          "title": "Mathematics",
+          "code": "hemh1",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/hemh1dd.zip"
+        },
+        {
+          "title": "Exemplar Problem(English)",
+          "code": "heep2",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/heep2dd.zip"
+        }
+      ],
+      "Arts": [
+        {
+          "title": "Kriti",
+          "code": "hekr1",
+          "chapter_files": 20,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/hekr1dd.zip"
+        }
+      ],
+      "Science": [
+        {
+          "title": "Curiosity",
+          "code": "hecu1",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/hecu1dd.zip"
+        },
+        {
+          "title": "Science",
+          "code": "hesc1",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/hesc1dd.zip"
+        },
+        {
+          "title": "Exemplar Problems",
+          "code": "heep1",
+          "chapter_files": 19,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/heep1dd.zip"
+        }
+      ],
+      "English": [
+        {
+          "title": "Poorvi",
+          "code": "hepr1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/hepr1dd.zip"
+        },
+        {
+          "title": "Honeydew",
+          "code": "hehd1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/hehd1dd.zip"
+        },
+        {
+          "title": "It So Happend",
+          "code": "heih1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/heih1dd.zip"
+        }
+      ],
+      "Social Science": [
+        {
+          "title": "Exploring Society India and Beyond Part-I",
+          "code": "hees1",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/hees1dd.zip"
+        },
+        {
+          "title": "Resource And Development(Geography)",
+          "code": "hess4",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/hess4dd.zip"
+        },
+        {
+          "title": "Social And Political Life",
+          "code": "hess3",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/hess3dd.zip"
+        },
+        {
+          "title": "Our-Pasts-III",
+          "code": "hess2",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/hess2dd.zip"
+        },
+        {
+          "title": "Our-Pasts-III (Part-II)",
+          "code": "hess2",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/hess2dd.zip"
+        }
+      ],
+      "Physical Education and Well Being": [
+        {
+          "title": "Khel Yatra",
+          "code": "heky1",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/heky1dd.zip"
+        }
+      ],
+      "Vocational Education": [
+        {
+          "title": "Kaushal Bodh",
+          "code": "hekb1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/hekb1dd.zip"
+        }
+      ]
+    },
+    "9": {
+      "English": [
+        {
+          "title": "Beehive",
+          "code": "iebe1",
+          "chapter_files": 10,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/iebe1dd.zip"
+        },
+        {
+          "title": "Moments Supplementary Reader",
+          "code": "iemo1",
+          "chapter_files": 10,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/iemo1dd.zip"
+        },
+        {
+          "title": "Words and Expressions  1",
+          "code": "iewe1",
+          "chapter_files": 10,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/iewe1dd.zip"
+        }
+      ],
+      "Mathematics": [
+        {
+          "title": "Mathematics",
+          "code": "iemh1",
+          "chapter_files": 13,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/iemh1dd.zip"
+        },
+        {
+          "title": "Exemplar Problem(English)",
+          "code": "ieep2",
+          "chapter_files": 17,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/ieep2dd.zip"
+        }
+      ],
+      "Science": [
+        {
+          "title": "Science",
+          "code": "iesc1",
+          "chapter_files": 13,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/iesc1dd.zip"
+        },
+        {
+          "title": "Exemplar Problem(English)",
+          "code": "ieep1",
+          "chapter_files": 18,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/ieep1dd.zip"
+        },
+        {
+          "title": "Lab Manual(English))",
+          "code": "ielm1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/ielm1dd.zip"
+        }
+      ],
+      "Social Science": [
+        {
+          "title": "Democratic Politics-I",
+          "code": "iess4",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/iess4dd.zip"
+        },
+        {
+          "title": "Contemporary India-I",
+          "code": "iess1",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/iess1dd.zip"
+        },
+        {
+          "title": "Economics",
+          "code": "iess2",
+          "chapter_files": 5,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/iess2dd.zip"
+        },
+        {
+          "title": "India and the Contemporary World-I",
+          "code": "iess3",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/iess3dd.zip"
+        }
+      ],
+      "Health and Physical Education": [
+        {
+          "title": "Health and Physical Education",
+          "code": "iehp1",
+          "chapter_files": 15,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/iehp1dd.zip"
+        }
+      ],
+      "Vocational": [
+        {
+          "title": "Cashier",
+          "code": "ievc1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/ievc1dd.zip"
+        },
+        {
+          "title": "Store Operations Assistant",
+          "code": "ieva1",
+          "chapter_files": 5,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/ieva1dd.zip"
+        },
+        {
+          "title": "Solanceous Crop Cultivator",
+          "code": "ievs1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/ievs1dd.zip"
+        },
+        {
+          "title": "Assistant Beauty Therapist",
+          "code": "ievt1",
+          "chapter_files": 4,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/ievt1dd.zip"
+        },
+        {
+          "title": "Animal Health Workers (Agriculture)",
+          "code": "ievw1",
+          "chapter_files": 5,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/ievw1dd.zip"
+        },
+        {
+          "title": "Hand Embroiderer (Addawala)",
+          "code": "ieve1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/ieve1dd.zip"
+        },
+        {
+          "title": "Hand Embroiderer",
+          "code": "ievh1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/ievh1dd.zip"
+        },
+        {
+          "title": "Plumber General",
+          "code": "iepg1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/iepg1dd.zip"
+        },
+        {
+          "title": "IT Domestic Data Entry Operator",
+          "code": "ieeo1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/ieeo1dd.zip"
+        },
+        {
+          "title": "Employability Skill",
+          "code": "iees1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/iees1dd.zip"
+        }
+      ]
+    },
+    "10": {
+      "Mathematics": [
+        {
+          "title": "Mathematics",
+          "code": "jemh1",
+          "chapter_files": 15,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/jemh1dd.zip"
+        },
+        {
+          "title": "Exemplars Problem(English)",
+          "code": "jeep2",
+          "chapter_files": 15,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/jeep2dd.zip"
+        }
+      ],
+      "Science": [
+        {
+          "title": "Science",
+          "code": "jesc1",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/jesc1dd.zip"
+        },
+        {
+          "title": "Exemplar Problem(English)",
+          "code": "jeep1",
+          "chapter_files": 19,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/jeep1dd.zip"
+        },
+        {
+          "title": "Lab Manual(English)",
+          "code": "jelm1",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/jelm1dd.zip"
+        }
+      ],
+      "English": [
+        {
+          "title": "First Flight",
+          "code": "jeff1",
+          "chapter_files": 10,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/jeff1dd.zip"
+        },
+        {
+          "title": "Foot Prints Without feet Supp. Reader",
+          "code": "jefp1",
+          "chapter_files": 10,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/jefp1dd.zip"
+        },
+        {
+          "title": "Words and Expressions  2",
+          "code": "jewe2",
+          "chapter_files": 10,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/jewe2dd.zip"
+        }
+      ],
+      "Social Science": [
+        {
+          "title": "Contemporary India",
+          "code": "jess1",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/jess1dd.zip"
+        },
+        {
+          "title": "Understanding Economic Development",
+          "code": "jess2",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/jess2dd.zip"
+        },
+        {
+          "title": "India and the Contemporary World-II",
+          "code": "jess3",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/jess3dd.zip"
+        },
+        {
+          "title": "Democratic Politics",
+          "code": "jess4",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/jess4dd.zip"
+        }
+      ],
+      "Health and Physical Education": [
+        {
+          "title": "Health and Physical Education",
+          "code": "jehp1",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/jehp1dd.zip"
+        }
+      ]
+    },
+    "11": {
+      "Accountancy": [
+        {
+          "title": "Financial Accounting-I",
+          "code": "keac1",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/keac1dd.zip"
+        },
+        {
+          "title": "Accountancy-II",
+          "code": "keac2",
+          "chapter_files": 3,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/keac2dd.zip"
+        }
+      ],
+      "Business Studies": [
+        {
+          "title": "Business Studies",
+          "code": "kebs1",
+          "chapter_files": 12,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kebs1dd.zip"
+        }
+      ],
+      "Chemistry": [
+        {
+          "title": "Chemistry Part-I",
+          "code": "kech1",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kech1dd.zip"
+        },
+        {
+          "title": "Chemistry Part II",
+          "code": "kech2",
+          "chapter_files": 4,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kech2dd.zip"
+        },
+        {
+          "title": "Exemplar Problems(English)",
+          "code": "keep5",
+          "chapter_files": 16,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/keep5dd.zip"
+        },
+        {
+          "title": "Lab Manual(English)",
+          "code": "kelm2",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kelm2dd.zip"
+        }
+      ],
+      "Mathematics": [
+        {
+          "title": "Mathematics",
+          "code": "kemh1",
+          "chapter_files": 15,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kemh1dd.zip"
+        },
+        {
+          "title": "Exemplar Problems(English)",
+          "code": "keep2",
+          "chapter_files": 19,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/keep2dd.zip"
+        }
+      ],
+      "Vocational": [
+        {
+          "title": "Floriculturist- Protected Cultivation",
+          "code": "kepc1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kepc1dd.zip"
+        },
+        {
+          "title": "Vision Technician",
+          "code": "kevt1",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kevt1dd.zip"
+        },
+        {
+          "title": "Floriculturist",
+          "code": "keoc1",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/keoc1dd.zip"
+        },
+        {
+          "title": "General Duty Assistant",
+          "code": "keda1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/keda1dd.zip"
+        },
+        {
+          "title": "Dairy Farmer Enterpreneur",
+          "code": "kedf1",
+          "chapter_files": 5,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kedf1dd.zip"
+        },
+        {
+          "title": "Floriculturist",
+          "code": "kefc1",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kefc1dd.zip"
+        }
+      ],
+      "Biology": [
+        {
+          "title": "Biology",
+          "code": "kebo1",
+          "chapter_files": 20,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kebo1dd.zip"
+        },
+        {
+          "title": "Human Ecology and Family Sciences Part I",
+          "code": "kehe1",
+          "chapter_files": 3,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kehe1dd.zip"
+        },
+        {
+          "title": "Human Ecology and Family Sciences Part II",
+          "code": "kehe2",
+          "chapter_files": 3,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kehe2dd.zip"
+        },
+        {
+          "title": "Exemplar Problems(English)",
+          "code": "keep4",
+          "chapter_files": 26,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/keep4dd.zip"
+        },
+        {
+          "title": "Lab Manual(English)",
+          "code": "kelm3",
+          "chapter_files": 18,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kelm3dd.zip"
+        }
+      ],
+      "Home Science": [
+        {
+          "title": "Human Ecology and Family Sciences Part I",
+          "code": "kehe1",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kehe1dd.zip"
+        },
+        {
+          "title": "Human Ecology and Family Sciences Part II",
+          "code": "kehe2",
+          "chapter_files": 5,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kehe2dd.zip"
+        }
+      ],
+      "Psychology": [
+        {
+          "title": "Introduction to Psychology",
+          "code": "kepy1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kepy1dd.zip"
+        }
+      ],
+      "Economics": [
+        {
+          "title": "Indian Economic Development",
+          "code": "keec1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/keec1dd.zip"
+        },
+        {
+          "title": "Statistics for Economics",
+          "code": "kest1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kest1dd.zip"
+        }
+      ],
+      "Geography": [
+        {
+          "title": "Fundamental of Physical Geography",
+          "code": "kegy2",
+          "chapter_files": 15,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kegy2dd.zip"
+        },
+        {
+          "title": "Pratical Work in Geography",
+          "code": "kegy3",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kegy3dd.zip"
+        },
+        {
+          "title": "India Physical Environment",
+          "code": "kegy1",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kegy1dd.zip"
+        }
+      ],
+      "Physics": [
+        {
+          "title": "Physics Part-I",
+          "code": "keph1",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/keph1dd.zip"
+        },
+        {
+          "title": "Physics Part-II",
+          "code": "keph2",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/keph2dd.zip"
+        },
+        {
+          "title": "Exemplar Problems(English)",
+          "code": "keep3",
+          "chapter_files": 18,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/keep3dd.zip"
+        },
+        {
+          "title": "Lab Manual(English)",
+          "code": "kelm1",
+          "chapter_files": 15,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kelm1dd.zip"
+        }
+      ],
+      "Sociology": [
+        {
+          "title": "Introducing Sociology",
+          "code": "kesy1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kesy1dd.zip"
+        },
+        {
+          "title": "Understanding Society",
+          "code": "kesy2",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kesy2dd.zip"
+        }
+      ],
+      "English": [
+        {
+          "title": "Woven Words",
+          "code": "keww1",
+          "chapter_files": 28,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/keww1dd.zip"
+        },
+        {
+          "title": "Hornbill",
+          "code": "kehb1",
+          "chapter_files": 15,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kehb1dd.zip"
+        },
+        {
+          "title": "Snapshots Suppl.Reader English",
+          "code": "kesp1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kesp1dd.zip"
+        }
+      ],
+      "Political Science": [
+        {
+          "title": "Political Theory",
+          "code": "keps1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/keps1dd.zip"
+        },
+        {
+          "title": "India Constitution at Work",
+          "code": "keps2",
+          "chapter_files": 11,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/keps2dd.zip"
+        }
+      ],
+      "History": [
+        {
+          "title": "Themes in World History",
+          "code": "kehs1",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kehs1dd.zip"
+        }
+      ],
+      "Heritage Crafts": [
+        {
+          "title": "Living Craft Traditions of India",
+          "code": "kehc1",
+          "chapter_files": 11,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kehc1dd.zip"
+        }
+      ],
+      "Graphics design": [
+        {
+          "title": "The story of graphic design",
+          "code": "kegd1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kegd1dd.zip"
+        }
+      ],
+      "Computers and Communication Technology": [
+        {
+          "title": "CCT Part-I",
+          "code": "kect1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kect1dd.zip"
+        },
+        {
+          "title": "CCT Part-II",
+          "code": "kect2",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kect2dd.zip"
+        }
+      ],
+      "Fine Art": [
+        {
+          "title": "An Introduction to Indian Art Part-I",
+          "code": "kefa1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kefa1dd.zip"
+        }
+      ],
+      "Informatics Practices": [
+        {
+          "title": "Informatics Practices",
+          "code": "keip1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/keip1dd.zip"
+        }
+      ],
+      "Biotechnology": [
+        {
+          "title": "Biotechnology",
+          "code": "kebt1",
+          "chapter_files": 13,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kebt1dd.zip"
+        }
+      ],
+      "Computer Science": [
+        {
+          "title": "Computer Science",
+          "code": "kecs1",
+          "chapter_files": 12,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kecs1dd.zip"
+        }
+      ],
+      "Health and Physical Education": [
+        {
+          "title": "Health and Physical Education",
+          "code": "kehp1",
+          "chapter_files": 12,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/kehp1dd.zip"
+        }
+      ],
+      "Knowledge Traditions Practices of India": [
+        {
+          "title": "Knowledge Traditions Practices of India",
+          "code": "keks1",
+          "chapter_files": 10,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/keks1dd.zip"
+        }
+      ]
+    },
+    "12": {
+      "Accountancy": [
+        {
+          "title": "Accountancy-I",
+          "code": "leac1",
+          "chapter_files": 5,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/leac1dd.zip"
+        },
+        {
+          "title": "Accountancy Part-II",
+          "code": "leac2",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/leac2dd.zip"
+        },
+        {
+          "title": "Computerised Accounting System",
+          "code": "leca1",
+          "chapter_files": 5,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/leca1dd.zip"
+        }
+      ],
+      "Mathematics": [
+        {
+          "title": "Mathematics Part-I",
+          "code": "lemh1",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lemh1dd.zip"
+        },
+        {
+          "title": "Mathematics Part-II",
+          "code": "lemh2",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lemh2dd.zip"
+        },
+        {
+          "title": "Exemplar Problems(English)",
+          "code": "leep2",
+          "chapter_files": 17,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/leep2dd.zip"
+        }
+      ],
+      "Physics": [
+        {
+          "title": "Physics Part-I",
+          "code": "leph1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/leph1dd.zip"
+        },
+        {
+          "title": "Physics Part-II",
+          "code": "leph2",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/leph2dd.zip"
+        },
+        {
+          "title": "Examplar Prolems(English)",
+          "code": "leep6",
+          "chapter_files": 18,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/leep6dd.zip"
+        },
+        {
+          "title": "Lab Manual(English)",
+          "code": "lelm3",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lelm3dd.zip"
+        }
+      ],
+      "English": [
+        {
+          "title": "Kaliedoscope",
+          "code": "lekl1",
+          "chapter_files": 22,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lekl1dd.zip"
+        },
+        {
+          "title": "Flamingo",
+          "code": "lefl1",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lefl1dd.zip"
+        },
+        {
+          "title": "Vistas",
+          "code": "levt1",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/levt1dd.zip"
+        }
+      ],
+      "Biotechnology": [
+        {
+          "title": "Biotechnology",
+          "code": "lebt1",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lebt1dd.zip"
+        }
+      ],
+      "Biology": [
+        {
+          "title": "Biology",
+          "code": "lebo1",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lebo1dd.zip"
+        },
+        {
+          "title": "Human Ecology and Family Sciences Part I",
+          "code": "lehe1",
+          "chapter_files": 11,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lehe1dd.zip"
+        },
+        {
+          "title": "Exemplar Problems",
+          "code": "leep4",
+          "chapter_files": 20,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/leep4dd.zip"
+        },
+        {
+          "title": "Lab Manual(English)",
+          "code": "lelm2",
+          "chapter_files": 17,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lelm2dd.zip"
+        }
+      ],
+      "History": [
+        {
+          "title": "Themes in Indian History-I",
+          "code": "lehs1",
+          "chapter_files": 5,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lehs1dd.zip"
+        },
+        {
+          "title": "Themes in Indian History-II",
+          "code": "lehs2",
+          "chapter_files": 5,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lehs2dd.zip"
+        },
+        {
+          "title": "Themes in Indian History-III",
+          "code": "lehs3",
+          "chapter_files": 5,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lehs3dd.zip"
+        }
+      ],
+      "Geography": [
+        {
+          "title": "Fundamentals of Human Geography",
+          "code": "legy1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/legy1dd.zip"
+        },
+        {
+          "title": "Practical Work in Geography Part II",
+          "code": "legy3",
+          "chapter_files": 5,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/legy3dd.zip"
+        },
+        {
+          "title": "India -People And Economy",
+          "code": "legy2",
+          "chapter_files": 10,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/legy2dd.zip"
+        }
+      ],
+      "Psychology": [
+        {
+          "title": "Psychology",
+          "code": "lepy1",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lepy1dd.zip"
+        }
+      ],
+      "Sociology": [
+        {
+          "title": "Indian Society",
+          "code": "lesy1",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lesy1dd.zip"
+        },
+        {
+          "title": "Social Change and Development in India",
+          "code": "lesy2",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lesy2dd.zip"
+        }
+      ],
+      "Chemistry": [
+        {
+          "title": "Chemistry-I",
+          "code": "lech1",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lech1dd.zip"
+        },
+        {
+          "title": "Chemistry-II",
+          "code": "lech2",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lech2dd.zip"
+        },
+        {
+          "title": "Exemplar Problems",
+          "code": "leep5",
+          "chapter_files": 19,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/leep5dd.zip"
+        },
+        {
+          "title": "Lab Manual(English)",
+          "code": "lelm1",
+          "chapter_files": 12,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lelm1dd.zip"
+        }
+      ],
+      "Political Science": [
+        {
+          "title": "Contemporary World Politics",
+          "code": "leps1",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/leps1dd.zip"
+        },
+        {
+          "title": "Politics in India Since Independence",
+          "code": "leps2",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/leps2dd.zip"
+        }
+      ],
+      "Home Science": [
+        {
+          "title": "Human Ecology and Family Sciences Part I",
+          "code": "lehe1",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lehe1dd.zip"
+        },
+        {
+          "title": "Human Ecology and Family Sciences Part II",
+          "code": "lehe2",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lehe2dd.zip"
+        }
+      ],
+      "Economics": [
+        {
+          "title": "Introductory Microeconomics",
+          "code": "leec2",
+          "chapter_files": 6,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/leec2dd.zip"
+        },
+        {
+          "title": "Introductory Macroeconomics",
+          "code": "leec1",
+          "chapter_files": 7,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/leec1dd.zip"
+        }
+      ],
+      "Business Studies": [
+        {
+          "title": "Business Studies-I",
+          "code": "lebs1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lebs1dd.zip"
+        },
+        {
+          "title": "Business Studies-II",
+          "code": "lebs2",
+          "chapter_files": 4,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lebs2dd.zip"
+        }
+      ],
+      "Heritage Crafts": [
+        {
+          "title": "Craft Tradition Of India",
+          "code": "lehc1",
+          "chapter_files": 10,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lehc1dd.zip"
+        },
+        {
+          "title": "Craft Tradition of India",
+          "code": "lehc1",
+          "chapter_files": 10,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lehc1dd.zip"
+        }
+      ],
+      "New Age Graphics Design": [
+        {
+          "title": "New Age Graphics Design",
+          "code": "legd1",
+          "chapter_files": 13,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/legd1dd.zip"
+        }
+      ],
+      "Fine Art": [
+        {
+          "title": "An Introduction to Indian Art Part-II",
+          "code": "lefa1",
+          "chapter_files": 9,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lefa1dd.zip"
+        }
+      ],
+      "Computer Science": [
+        {
+          "title": "Computer Science",
+          "code": "lecs1",
+          "chapter_files": 14,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/lecs1dd.zip"
+        }
+      ],
+      "Informatics Practices": [
+        {
+          "title": "Informatics Practices",
+          "code": "leip1",
+          "chapter_files": 8,
+          "book_zip": "https://ncert.nic.in/textbook/pdf/leip1dd.zip"
+        }
+      ]
+    }
+  }
+}
