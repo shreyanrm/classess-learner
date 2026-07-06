@@ -1,0 +1,67 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e813]:
+    - button "Back — Home" [ref=f3e814] [cursor=pointer]:
+      - img [ref=f3e815]
+      - text: Home
+    - generic [ref=f3e818]:
+      - heading "Learn" [level=1] [ref=f3e819]
+      - generic [ref=f3e820]: pick a subject — a topic is a course, composed for you
+    - generic [ref=f3e822]:
+      - generic [ref=f3e823]: Where to today?
+      - generic [ref=f3e824]: three worlds, one tap each
+    - generic [ref=f3e826]:
+      - button "Mathematics — open the subject" [ref=f3e828] [cursor=pointer]:
+        - generic [ref=f3e829]:
+          - generic [ref=f3e830]:
+            - img [ref=f3e831]
+            - img [ref=f3e842]
+          - generic [ref=f3e849]:
+            - generic [ref=f3e850]: Mathematics
+            - generic [ref=f3e851]: patterns, structure, and certainty
+            - generic [ref=f3e852]: 13 chapters
+      - button "Science — open the subject" [ref=f3e854] [cursor=pointer]:
+        - generic [ref=f3e855]:
+          - generic [ref=f3e856]:
+            - img [ref=f3e857]
+            - img [ref=f3e870]
+          - generic [ref=f3e879]:
+            - generic [ref=f3e880]: Science
+            - generic [ref=f3e881]: how the world actually works
+            - generic [ref=f3e882]: 13 chapters
+      - button "Social science — open the subject" [ref=f3e884] [cursor=pointer]:
+        - generic [ref=f3e885]:
+          - generic [ref=f3e886]:
+            - img [ref=f3e887]
+            - img [ref=f3e897]
+          - generic [ref=f3e904]:
+            - generic [ref=f3e905]: Social science
+            - generic [ref=f3e906]: people, places, and power
+            - generic [ref=f3e907]: 14 chapters
+    - generic [ref=f3e909]:
+      - generic [ref=f3e910]: Courses of your own
+      - generic [ref=f3e911]: composed the moment you ask
+    - button "Ask Vidya for a course on anything black holes, cricket physics, the history of zero — your custom courses will live here" [ref=f3e912] [cursor=pointer]:
+      - img [ref=f3e915]
+      - generic [ref=f3e922]:
+        - generic [ref=f3e923]: Ask Vidya for a course on anything
+        - generic [ref=f3e924]: black holes, cricket physics, the history of zero — your custom courses will live here
+    - button "past courses ›" [ref=f3e926] [cursor=pointer]
+  - banner:
+    - img "Classess" [ref=f3e773]
+    - generic [ref=f3e774]:
+      - button "Did you know" [ref=f3e775] [cursor=pointer]:
+        - img [ref=f3e776]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f3e778]:
+        - img [ref=f3e779]
+        - text: "1"
+      - generic [ref=f3e782]: 230 xp
+      - button "You — profile and settings" [ref=f3e783] [cursor=pointer]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

@@ -1,0 +1,142 @@
+- generic [ref=f4e2]:
+  - generic [ref=f4e749]:
+    - button "Back — ◦ ,learn" [ref=f4e750] [cursor=pointer]:
+      - img [ref=f4e751]
+      - text: ◦ learn
+    - generic [ref=f4e754]:
+      - img [ref=f4e755]
+      - generic:
+        - generic:
+          - img
+      - generic [ref=f4e765]:
+        - heading "Mathematics" [level=1] [ref=f4e766]
+        - generic [ref=f4e767]: patterns, structure, and certainty
+        - generic [ref=f4e768]:
+          - generic [ref=f4e769]: CBSE · Class 8
+          - generic [ref=f4e770]: 13 chapters
+    - generic [ref=f4e771]:
+      - button "01 Rational numbers 1 of 3" [ref=f4e774] [cursor=pointer]:
+        - generic [ref=f4e775]:
+          - img [ref=f4e776]
+          - generic [ref=f4e784]: "01"
+        - generic [ref=f4e785]:
+          - generic [ref=f4e786]: Rational numbers
+          - img [ref=f4e787]
+        - generic [ref=f4e793]: 1 of 3
+        - img [ref=f4e795]
+      - button "02 Linear equations in one variable 1 of 3" [ref=f4e803] [cursor=pointer]:
+        - generic [ref=f4e804]:
+          - img [ref=f4e805]
+          - generic [ref=f4e811]: "02"
+        - generic [ref=f4e812]:
+          - generic [ref=f4e813]: Linear equations in one variable
+          - img [ref=f4e814]
+        - generic [ref=f4e818]: 1 of 3
+        - img [ref=f4e820]
+      - button "03 Understanding quadrilaterals" [ref=f4e828] [cursor=pointer]:
+        - generic [ref=f4e829]:
+          - img [ref=f4e830]
+          - generic [ref=f4e836]: "03"
+        - generic [ref=f4e837]:
+          - generic [ref=f4e838]: Understanding quadrilaterals
+          - img [ref=f4e839]
+        - img [ref=f4e845]
+      - button "04 Data handling" [ref=f4e853] [cursor=pointer]:
+        - generic [ref=f4e854]:
+          - img [ref=f4e855]
+          - generic [ref=f4e863]: "04"
+        - generic [ref=f4e864]:
+          - generic [ref=f4e865]: Data handling
+          - img [ref=f4e866]
+        - img [ref=f4e872]
+      - button "05 Squares and square roots" [ref=f4e880] [cursor=pointer]:
+        - generic [ref=f4e881]:
+          - img [ref=f4e882]
+          - generic [ref=f4e888]: "05"
+        - generic [ref=f4e889]:
+          - generic [ref=f4e890]: Squares and square roots
+          - img [ref=f4e891]
+        - img [ref=f4e897]
+      - button "06 Cubes and cube roots" [ref=f4e905] [cursor=pointer]:
+        - generic [ref=f4e906]:
+          - img [ref=f4e907]
+          - generic [ref=f4e915]: "06"
+        - generic [ref=f4e916]:
+          - generic [ref=f4e917]: Cubes and cube roots
+          - img [ref=f4e918]
+        - img [ref=f4e924]
+      - button "07 Comparing quantities" [ref=f4e932] [cursor=pointer]:
+        - generic [ref=f4e933]:
+          - img [ref=f4e934]
+          - generic [ref=f4e940]: "07"
+        - generic [ref=f4e941]:
+          - generic [ref=f4e942]: Comparing quantities
+          - img [ref=f4e943]
+        - img [ref=f4e949]
+      - button "08 Algebraic expressions and identities" [ref=f4e957] [cursor=pointer]:
+        - generic [ref=f4e958]:
+          - img [ref=f4e959]
+          - generic [ref=f4e964]: "08"
+        - generic [ref=f4e965]:
+          - generic [ref=f4e966]: Algebraic expressions and identities
+          - img [ref=f4e967]
+        - img [ref=f4e975]
+      - button "09 Mensuration" [ref=f4e983] [cursor=pointer]:
+        - generic [ref=f4e984]:
+          - img [ref=f4e985]
+          - generic [ref=f4e993]: "09"
+        - generic [ref=f4e994]:
+          - generic [ref=f4e995]: Mensuration
+          - img [ref=f4e996]
+        - img [ref=f4e1001]
+      - button "10 Exponents and powers" [ref=f4e1009] [cursor=pointer]:
+        - generic [ref=f4e1010]:
+          - img [ref=f4e1011]
+          - generic [ref=f4e1017]: "10"
+        - generic [ref=f4e1018]:
+          - generic [ref=f4e1019]: Exponents and powers
+          - img [ref=f4e1020]
+        - img [ref=f4e1027]
+      - button "11 Direct and inverse proportions" [ref=f4e1035] [cursor=pointer]:
+        - generic [ref=f4e1036]:
+          - img [ref=f4e1037]
+          - generic [ref=f4e1042]: "11"
+        - generic [ref=f4e1043]:
+          - generic [ref=f4e1044]: Direct and inverse proportions
+          - img [ref=f4e1045]
+        - img [ref=f4e1052]
+      - button "12 Factorisation" [ref=f4e1060] [cursor=pointer]:
+        - generic [ref=f4e1061]:
+          - img [ref=f4e1062]
+          - generic [ref=f4e1069]: "12"
+        - generic [ref=f4e1070]:
+          - generic [ref=f4e1071]: Factorisation
+          - img [ref=f4e1072]
+        - img [ref=f4e1078]
+      - button "13 Introduction to graphs" [ref=f4e1086] [cursor=pointer]:
+        - generic [ref=f4e1087]:
+          - img [ref=f4e1088]
+          - generic [ref=f4e1095]: "13"
+        - generic [ref=f4e1096]:
+          - generic [ref=f4e1097]: Introduction to graphs
+          - img [ref=f4e1098]
+        - img [ref=f4e1102]
+  - banner:
+    - img "Classess" [ref=f4e64]
+    - generic [ref=f4e65]:
+      - button "Did you know" [ref=f4e66] [cursor=pointer]:
+        - img [ref=f4e67]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f4e69]:
+        - img [ref=f4e70]
+        - text: "1"
+      - generic [ref=f4e73]: 230 xp
+      - button "You — profile and settings" [ref=f4e74] [cursor=pointer]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

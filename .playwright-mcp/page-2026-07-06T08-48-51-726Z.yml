@@ -1,0 +1,143 @@
+- generic [ref=f4e2]:
+  - generic [ref=f4e551]:
+    - button "← home" [ref=f4e552] [cursor=pointer]
+    - generic [ref=f4e553]:
+      - banner [ref=f4e554]:
+        - button "add a profile photo" [ref=f4e555] [cursor=pointer]:
+          - generic [ref=f4e556]: A
+        - generic [ref=f4e557]:
+          - textbox "your name" [ref=f4e558]: Aanya
+          - button "Class 8 · CBSE · change" [ref=f4e559] [cursor=pointer]:
+            - text: Class 8 · CBSE
+            - generic [ref=f4e560]: · change
+      - generic [ref=f4e562]:
+        - generic [ref=f4e563]: the ledger
+        - generic [ref=f4e564]:
+          - generic [ref=f4e565]:
+            - generic [ref=f4e566]: "230"
+            - generic [ref=f4e567]: xp
+          - generic [ref=f4e568]: day 1 of being a learner
+          - img "active on 1 of the last 7 days" [ref=f4e569]
+          - img "this month's activity" [ref=f4e577]:
+            - generic "2026-06-07" [ref=f4e578]
+            - generic "2026-06-08" [ref=f4e579]
+            - generic "2026-06-09" [ref=f4e580]
+            - generic "2026-06-10" [ref=f4e581]
+            - generic "2026-06-11" [ref=f4e582]
+            - generic "2026-06-12" [ref=f4e583]
+            - generic "2026-06-13" [ref=f4e584]
+            - generic "2026-06-14" [ref=f4e585]
+            - generic "2026-06-15" [ref=f4e586]
+            - generic "2026-06-16" [ref=f4e587]
+            - generic "2026-06-17" [ref=f4e588]
+            - generic "2026-06-18" [ref=f4e589]
+            - generic "2026-06-19" [ref=f4e590]
+            - generic "2026-06-20" [ref=f4e591]
+            - generic "2026-06-21" [ref=f4e592]
+            - generic "2026-06-22" [ref=f4e593]
+            - generic "2026-06-23" [ref=f4e594]
+            - generic "2026-06-24" [ref=f4e595]
+            - generic "2026-06-25" [ref=f4e596]
+            - generic "2026-06-26" [ref=f4e597]
+            - generic "2026-06-27" [ref=f4e598]
+            - generic "2026-06-28" [ref=f4e599]
+            - generic "2026-06-29" [ref=f4e600]
+            - generic "2026-06-30" [ref=f4e601]
+            - generic "2026-07-01" [ref=f4e602]
+            - generic "2026-07-02" [ref=f4e603]
+            - generic "2026-07-03" [ref=f4e604]
+            - generic "2026-07-04" [ref=f4e605]
+            - generic "2026-07-05" [ref=f4e606]
+            - generic "2026-07-06" [ref=f4e607]
+          - generic [ref=f4e608]: rest is part of learning — quiet days are allowed
+      - generic [ref=f4e611]:
+        - generic [ref=f4e612]: learning is better shared
+        - generic [ref=f4e613]:
+          - generic [ref=f4e614]:
+            - generic [ref=f4e615]: invite a friend
+            - generic [ref=f4e616]: when your friend finishes their first topic, you both unlock a bonus lesson.
+            - button "copy link" [ref=f4e618] [cursor=pointer]
+          - generic [ref=f4e619]:
+            - generic [ref=f4e620]: invite a parent
+            - generic [ref=f4e621]: give them a window into your learning — the weekly note shows them what you can now do.
+            - button "copy link" [ref=f4e623] [cursor=pointer]
+      - generic [ref=f4e626]:
+        - generic [ref=f4e627]: past courses
+        - generic [ref=f4e628]:
+          - generic [ref=f4e629]:
+            - generic [ref=f4e631]:
+              - img [ref=f4e632]
+              - img [ref=f4e635]
+            - generic [ref=f4e641]:
+              - generic [ref=f4e642]: Solving equations with the variable on one side
+              - generic [ref=f4e643]: Linear equations in one variable
+              - generic [ref=f4e644]:
+                - img [ref=f4e645]
+                - text: mastered
+          - generic [ref=f4e647]:
+            - generic [ref=f4e649]:
+              - img [ref=f4e650]
+              - img [ref=f4e653]
+            - generic [ref=f4e661]:
+              - generic [ref=f4e662]: What makes a number rational
+              - generic [ref=f4e663]: Rational numbers
+              - generic [ref=f4e664]:
+                - img [ref=f4e665]
+                - text: mastered
+      - generic [ref=f4e669]:
+        - generic [ref=f4e670]: the note home
+        - generic [ref=f4e671]:
+          - generic [ref=f4e672]:
+            - generic [ref=f4e673]: the weekly note
+            - generic [ref=f4e674]: preview
+          - generic [ref=f4e675]: Aanya showed up 1 of 7 days this week
+          - generic [ref=f4e676]: 2 topics mastered · 230 xp earned
+          - generic [ref=f4e677]: Aanya can now solve What makes a number rational on their own
+          - generic [ref=f4e678]: arrives on WhatsApp, in your language — pride first, always
+        - generic [ref=f4e680]:
+          - textbox "a parent's phone number" [ref=f4e681]
+          - button "link a parent" [ref=f4e682] [cursor=pointer]
+      - generic [ref=f4e685]:
+        - generic [ref=f4e686]: your plan
+        - generic [ref=f4e687]:
+          - generic [ref=f4e688]:
+            - generic [ref=f4e689]: free
+            - generic [ref=f4e690]: your plan today
+          - generic [ref=f4e691]: everything you need to learn well, every single day.
+          - generic [ref=f4e693]: superstar — ₹999/mo · ₹8,999/yr
+          - generic [ref=f4e694]: for when you're ready to push your limits. we never discount — learners who show up get gifted superstar weeks instead.
+      - generic [ref=f4e697]:
+        - generic [ref=f4e698]: settings
+        - generic [ref=f4e699]:
+          - generic [ref=f4e700]:
+            - generic [ref=f4e701]:
+              - generic [ref=f4e702]: Vidya's voice
+              - generic [ref=f4e703]: she speaks her replies out loud
+            - switch "Vidya's voice" [checked] [ref=f4e704] [cursor=pointer]
+          - generic [ref=f4e707]:
+            - generic [ref=f4e708]:
+              - generic [ref=f4e709]: the ignite sound
+              - generic [ref=f4e710]: a sub-second note when something is genuinely mastered
+            - switch "the ignite sound" [checked] [ref=f4e711] [cursor=pointer]
+          - button "start over erase everything on this device and begin again" [ref=f4e715] [cursor=pointer]:
+            - generic [ref=f4e716]: start over
+            - generic [ref=f4e717]: erase everything on this device and begin again
+  - banner:
+    - img "Classess" [ref=f4e64]
+    - generic [ref=f4e65]:
+      - button "Did you know" [ref=f4e66] [cursor=pointer]:
+        - img [ref=f4e67]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f4e69]:
+        - img [ref=f4e70]
+        - text: "1"
+      - generic [ref=f4e73]: 230 xp
+      - button "You — profile and settings" [active] [ref=f4e74] [cursor=pointer]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

@@ -11,7 +11,7 @@ import { VidyaBody } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { useRouter } from '../shell/router';
-import { CloseIcon, MicBloomIcon, SendIcon } from '../ui/icons';
+import { CloseIcon, WaveformIcon, SendIcon } from '../ui/icons';
 import { useVidyaChat } from './chat';
 import { FlyingVidya } from './Flight';
 import { useVidyaVoice } from './voice';
@@ -246,7 +246,7 @@ export function VidyaCompanion() {
                   whiteSpace: 'nowrap',
                 }}
               >
-                <MicBloomIcon active={voiceOn} size={17} />
+                <WaveformIcon active={voiceOn} size={17} />
               </button>
               {/* the ask affordance exists only once there is something to ask */}
               <AnimatePresence initial={false}>

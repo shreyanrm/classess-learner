@@ -128,12 +128,12 @@ export function SubjectSceneBackdrop({
           {/* the chunky triangle, ink-outlined */}
           <motion.g {...drift(7)}>
             <polygon
-              points="52,58 78,14 104,58"
+              points="52,66 78,24 104,66"
               fill="#FFFFFF"
               stroke={INK}
               strokeWidth={2.6}
               strokeLinejoin="round"
-              transform="rotate(-7 78 40)"
+              transform="rotate(-7 78 48)"
             />
           </motion.g>
           {/* the golden point */}
@@ -180,9 +180,9 @@ export function SubjectSceneBackdrop({
             <circle cx={112} cy={64} r={4} fill={INK} />
             <circle cx={88} cy={78} r={4.6} fill={GOLD} stroke={INK} strokeWidth={1.6} />
           </motion.g>
-          {/* a standing wave along the floor */}
+          {/* a standing wave along the floor — full-bleed; the card view clips the rest */}
           <path
-            d="M0 180 q 25 -14 50 0 t 50 0 t 50 0 t 50 0 t 50 0 t 50 0 t 50 0 t 50 0"
+            d={`M0 180 q 25 -14 50 0 ${'t 50 0 '.repeat(15)}`}
             fill="none"
             stroke="#0FA3B1"
             strokeOpacity={0.18}
@@ -192,9 +192,9 @@ export function SubjectSceneBackdrop({
       )}
       {subjectId === 'social' && (
         <g>
-          {/* latitudes, whispered */}
+          {/* latitudes, whispered — drawn to the live width so they never stop mid-band */}
           <path
-            d="M-20 60 Q 200 12 420 60 M-20 112 Q 200 62 420 112 M-20 164 Q 200 114 420 164"
+            d={`M-20 60 Q ${w / 2} 12 ${w + 20} 60 M-20 112 Q ${w / 2} 62 ${w + 20} 112 M-20 164 Q ${w / 2} 114 ${w + 20} 164`}
             fill="none"
             stroke="#B26A00"
             strokeOpacity={0.13}

@@ -455,7 +455,7 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
           alignItems: 'flex-end',
         }}
       >
-        <SubjectSceneBackdrop subjectId={subjectId} />
+        <SubjectSceneBackdrop subjectId={subjectId} wide={isDesktop} />
         <div
           style={{
             position: 'absolute',

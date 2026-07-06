@@ -11,7 +11,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { learner } from '../data/catalog';
 import { useRouter } from '../shell/router';
-import { MicBloomIcon, SendIcon, SparkIcon } from '../ui/icons';
+import { WaveformIcon, SendIcon, SparkIcon } from '../ui/icons';
 import { AuroraButton, cascade, Kbd, MagneticButton, rise } from '../ui/kit';
 import { useVidyaChat } from '../vidya/chat';
 import { useVidyaVoice } from '../vidya/voice';
@@ -266,7 +266,7 @@ export function Home() {
                 if (!voiceOn) e.currentTarget.style.color = '#989AA4';
               }}
             >
-              <MicBloomIcon active={voiceOn} size={19} />
+              <WaveformIcon active={voiceOn} size={19} />
             </button>
           </div>
           {/* the ask affordance exists only once there is something to ask */}

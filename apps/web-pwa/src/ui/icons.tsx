@@ -190,3 +190,39 @@ export function SparkIcon({ size = 12, color = '#1F35E0' }: { size?: number; col
     </svg>
   );
 }
+
+
+/** The mic — a sound wave, seven rounded bars; they dance while she listens. Never a wifi arc. */
+export function WaveformIcon({ active = false, size = 18 }: { active?: boolean; size?: number }) {
+  const bars = [0.3, 0.55, 0.9, 0.5, 0.9, 0.55, 0.3];
+  return (
+    <span
+      aria-hidden
+      style={{ display: 'inline-flex', alignItems: 'center', gap: size * 0.12, height: size }}
+    >
+      {bars.map((h, i) => (
+        <motion.span
+          key={`${i}-${h}`}
+          animate={active ? { scaleY: [h, Math.min(1, h + 0.45), h * 0.7, h] } : { scaleY: h }}
+          transition={
+            active
+              ? {
+                  duration: 0.7,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: 'easeInOut',
+                  delay: i * 0.08,
+                }
+              : { type: 'spring', stiffness: 300, damping: 24 }
+          }
+          style={{
+            width: Math.max(2, size * 0.13),
+            height: size,
+            borderRadius: 999,
+            background: 'currentColor',
+            transformOrigin: '50% 50%',
+          }}
+        />
+      ))}
+    </span>
+  );
+}
