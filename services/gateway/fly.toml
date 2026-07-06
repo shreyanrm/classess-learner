@@ -1,0 +1,41 @@
+# Classess model gateway on Fly.io. WebSockets pass through natively, so the
+# /v1/voice/relay proxy to Gemini Live works without extra config.
+#
+# Deploy from the REPO ROOT (the Docker build needs the uv workspace as context):
+#   fly deploy -c services/gateway/fly.toml .
+#
+# Secrets never live in this file:
+#   fly secrets set ANTHROPIC_API_KEY=... OPENAI_API_KEY=... GOOGLE_AI_API_KEY=...
+
+app = "classess-gateway"
+primary_region = "bom"
+
+[build]
+  dockerfile = "services/gateway/Dockerfile"
+
+[env]
+  ENV = "prod"
+  # Flip to "live" only after the secrets above are set — boot fails fast otherwise.
+  LLM_MODE = "mock"
+  RATE_LIMIT_PER_MINUTE = "60"
+  LOG_LEVEL = "INFO"
+
+[http_service]
+  internal_port = 8081
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  # ponytail: single machine keeps the in-memory rate limiter and voice-token store
+  # correct; move both to Redis before scaling past one.
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    interval = "15s"
+    timeout = "3s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/healthz"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"
