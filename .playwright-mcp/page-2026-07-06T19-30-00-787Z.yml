@@ -1,0 +1,81 @@
+- generic [ref=f17e2]:
+  - generic [ref=f17e4]:
+    - generic [ref=f17e5]:
+      - generic [ref=f17e6]: today · tuesday 7 july
+      - heading "Good night, Aanya" [level=1] [ref=f17e7]
+      - generic [ref=f17e8]: the day is a walk, not a list
+      - generic [ref=f17e10]:
+        - textbox "Talk to Vidya…" [ref=f17e11]
+        - button "Talk by voice" [ref=f17e12] [cursor=pointer]
+      - generic [ref=f17e21]:
+        - button "Learn something cool" [ref=f17e22] [cursor=pointer]:
+          - img [ref=f17e23]
+          - text: Learn something cool
+        - button "Open a rabbit hole" [ref=f17e25] [cursor=pointer]:
+          - img [ref=f17e26]
+          - text: Open a rabbit hole
+        - button "What should I do today" [ref=f17e28] [cursor=pointer]:
+          - img [ref=f17e29]
+          - text: What should I do today
+      - generic [ref=f17e31]:
+        - button "Learn" [ref=f17e32] [cursor=pointer]:
+          - generic [ref=f17e33]: Learn
+        - button "Practice" [ref=f17e34] [cursor=pointer]:
+          - generic [ref=f17e35]: Practice
+    - generic [ref=f17e37]:
+      - generic [ref=f17e38]: +
+      - generic [ref=f17e39]: ·
+      - generic [ref=f17e40]: ·
+      - generic [ref=f17e41]: +
+      - generic [ref=f17e42]: ·
+      - generic [ref=f17e43]: +
+      - generic [ref=f17e44]: ·
+      - generic [ref=f17e45]: +
+      - img [ref=f17e46]
+      - button "Warm-up day 1 of being a learner · done" [ref=f17e62] [cursor=pointer]:
+        - img [ref=f17e63]
+        - generic [ref=f17e73]:
+          - generic [ref=f17e74]: Warm-up
+          - generic [ref=f17e75]: day 1 of being a learner · done
+        - img [ref=f17e77]
+      - button "What a force does continue · 20% walked" [ref=f17e80] [cursor=pointer]:
+        - img [ref=f17e81]
+        - generic [ref=f17e85]:
+          - generic [ref=f17e86]: What a force does
+          - generic [ref=f17e87]: continue · 20% walked
+        - img [ref=f17e91]
+      - button "What makes a number rational next up · a fresh idea" [ref=f17e94] [cursor=pointer]:
+        - img [ref=f17e95]
+        - generic [ref=f17e98]:
+          - generic [ref=f17e99]: What makes a number rational
+          - generic [ref=f17e100]: next up · a fresh idea
+        - img [ref=f17e102]
+      - button "Boss gate locked · finish today’s topic" [ref=f17e105] [cursor=pointer]:
+        - img [ref=f17e106]
+        - generic [ref=f17e109]:
+          - generic [ref=f17e110]: Boss gate
+          - generic [ref=f17e111]: locked · finish today’s topic
+        - img [ref=f17e113]
+      - button "Something is hiding here — open the sandbox" [ref=f17e116] [cursor=pointer]:
+        - img [ref=f17e117]
+      - generic: something is hiding here
+      - generic [ref=f17e121]:
+        - img "Vidya" [ref=f17e122]:
+          - img [ref=f17e126]
+        - generic [ref=f17e150]: right where we left it
+    - generic [ref=f17e151]:
+      - generic [ref=f17e152]: ⌘K
+      - text: Anything, anywhere
+  - banner:
+    - img "Classess" [ref=f17e154]
+    - generic [ref=f17e155]:
+      - button "Did you know" [ref=f17e156] [cursor=pointer]:
+        - img [ref=f17e157]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f17e159]:
+        - img [ref=f17e160]
+        - text: "1"
+      - generic [ref=f17e163]: 35 xp
+      - button "You — profile and settings" [ref=f17e164] [cursor=pointer]:
+        - generic "fox" [ref=f17e165]:
+          - img [ref=f17e167]

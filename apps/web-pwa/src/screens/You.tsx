@@ -32,14 +32,17 @@ import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { BossSigil } from '../ui/art';
 import {
-  AVATAR_IDS,
+  ANIMAL_IDS,
   type AvatarChoice,
+  type AvatarId,
+  avatarName,
+  BUDDY_IDS,
   CastAvatar,
   loadAvatarChoice,
   renderAvatar,
   saveAvatarChoice,
 } from '../ui/avatars';
-import { CAST, type CastId, Scene } from '../ui/cast';
+import { Scene } from '../ui/cast';
 import { toneForSubject } from '../ui/hues';
 import { Card, cascade, Hairline, MagneticButton, rise, SectionLabel } from '../ui/kit';
 import { Whisper } from './Learn';
@@ -258,6 +261,53 @@ const tilePop = {
   },
 } as const;
 
+const SELECT_RING = { boxShadow: '0 0 0 2px var(--clss-ultramarine)' } as const;
+
+/** One face tile in the picker — spring hover, ultramarine ring when it is the current choice. */
+function AvatarTile({
+  id,
+  selected,
+  onPick,
+}: {
+  id: AvatarId;
+  selected: boolean;
+  onPick: (id: AvatarId) => void;
+}) {
+  return (
+    <motion.button
+      type="button"
+      variants={tilePop}
+      whileHover={{ scale: 1.09, y: -2 }}
+      whileTap={{ scale: 0.92 }}
+      onClick={() => onPick(id)}
+      aria-label={`be ${avatarName(id)}`}
+      aria-pressed={selected}
+      style={{
+        border: 'none',
+        background: 'transparent',
+        padding: 0,
+        cursor: 'pointer',
+        fontFamily: 'inherit',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 5,
+      }}
+    >
+      <CastAvatar id={id} size={54} style={selected ? SELECT_RING : undefined} />
+      <span
+        style={{
+          fontSize: '0.65rem',
+          textTransform: 'lowercase',
+          color: selected ? 'var(--clss-ultramarine)' : 'var(--clss-ink-300)',
+        }}
+      >
+        {avatarName(id)}
+      </span>
+    </motion.button>
+  );
+}
+
 /** The face editor — a light frost popover: the cast as tiles, a photo, or your initial. */
 function AvatarPicker({
   open,
@@ -271,7 +321,7 @@ function AvatarPicker({
   open: boolean;
   choice: AvatarChoice | null;
   hasPhoto: boolean;
-  onPickCast: (id: CastId) => void;
+  onPickCast: (id: AvatarId) => void;
   onUpload: () => void;
   onInitial: () => void;
   onClose: () => void;
@@ -311,6 +361,13 @@ function AvatarPicker({
     padding: '0 12px',
   };
   const ring = { boxShadow: '0 0 0 2px var(--clss-ultramarine)' } as const;
+  const eyebrow: CSSProperties = {
+    fontSize: '0.62rem',
+    fontWeight: 600,
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    color: 'var(--clss-ink-300)',
+  };
 
   return (
     <AnimatePresence>
@@ -329,6 +386,8 @@ function AvatarPicker({
             left: 0,
             zIndex: 30,
             width: 'min(324px, calc(100vw - 48px))',
+            maxHeight: 'min(72vh, 560px)',
+            overflowY: 'auto',
             padding: 16,
             borderRadius: 3,
             background: 'rgba(255,255,255,0.93)',
@@ -347,44 +406,28 @@ function AvatarPicker({
             <motion.div variants={tilePop} style={whisper}>
               pick your look
             </motion.div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-              {AVATAR_IDS.map((id) => {
-                const selected = choice?.kind === 'cast' && choice.castId === id;
-                return (
-                  <motion.button
-                    key={id}
-                    type="button"
-                    variants={tilePop}
-                    whileHover={{ scale: 1.09, y: -2 }}
-                    whileTap={{ scale: 0.92 }}
-                    onClick={() => onPickCast(id)}
-                    aria-label={`be ${CAST[id].name}, ${CAST[id].role}`}
-                    aria-pressed={selected}
-                    style={{
-                      border: 'none',
-                      background: 'transparent',
-                      padding: 0,
-                      cursor: 'pointer',
-                      fontFamily: 'inherit',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: 5,
-                    }}
-                  >
-                    <CastAvatar id={id} size={58} style={selected ? ring : undefined} />
-                    <span
-                      style={{
-                        fontSize: '0.65rem',
-                        color: selected ? 'var(--clss-ultramarine)' : 'var(--clss-ink-300)',
-                      }}
-                    >
-                      {CAST[id].name.toLowerCase()}
-                    </span>
-                  </motion.button>
-                );
-              })}
-            </div>
+            {(
+              [
+                ['buddies', BUDDY_IDS],
+                ['animals', ANIMAL_IDS],
+              ] as const
+            ).map(([label, ids]) => (
+              <div key={label} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <motion.div variants={tilePop} style={eyebrow}>
+                  {label}
+                </motion.div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+                  {ids.map((id) => (
+                    <AvatarTile
+                      key={id}
+                      id={id}
+                      selected={choice?.kind === 'cast' && choice.castId === id}
+                      onPick={onPickCast}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
             <Hairline />
             <motion.div variants={tilePop} style={{ display: 'flex', gap: 8 }}>
               <button

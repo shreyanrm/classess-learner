@@ -1,0 +1,156 @@
+- generic [ref=f13e2]:
+  - generic [ref=f13e167]:
+    - button "Back — Home" [ref=f13e168] [cursor=pointer]:
+      - img [ref=f13e169]
+      - text: Home
+    - generic [ref=f13e172]:
+      - banner [ref=f13e173]:
+        - button "choose your avatar" [ref=f13e174] [cursor=pointer]:
+          - generic [ref=f13e176]: A
+        - generic [ref=f13e177]:
+          - textbox "your name" [ref=f13e178]: Aanya
+          - button "Class 8 · CBSE · change" [ref=f13e179] [cursor=pointer]:
+            - text: Class 8 · CBSE
+            - generic [ref=f13e180]: · change
+      - generic [ref=f13e182]:
+        - generic [ref=f13e183]: the ledger
+        - generic [ref=f13e184]:
+          - generic [ref=f13e185]:
+            - generic [ref=f13e186]: "0"
+            - generic [ref=f13e187]: xp
+          - generic [ref=f13e188]: day 1 of being a learner
+          - img "active on 1 of the last 7 days" [ref=f13e189]
+          - generic [ref=f13e197]: ACTIVITY · 30 DAYS
+          - img "this month's activity intensity" [ref=f13e198]:
+            - generic "2026-06-07 — 0 moments" [ref=f13e199]
+            - generic "2026-06-08 — 0 moments" [ref=f13e200]
+            - generic "2026-06-09 — 0 moments" [ref=f13e201]
+            - generic "2026-06-10 — 0 moments" [ref=f13e202]
+            - generic "2026-06-11 — 0 moments" [ref=f13e203]
+            - generic "2026-06-12 — 0 moments" [ref=f13e204]
+            - generic "2026-06-13 — 0 moments" [ref=f13e205]
+            - generic "2026-06-14 — 0 moments" [ref=f13e206]
+            - generic "2026-06-15 — 0 moments" [ref=f13e207]
+            - generic "2026-06-16 — 0 moments" [ref=f13e208]
+            - generic "2026-06-17 — 0 moments" [ref=f13e209]
+            - generic "2026-06-18 — 0 moments" [ref=f13e210]
+            - generic "2026-06-19 — 0 moments" [ref=f13e211]
+            - generic "2026-06-20 — 0 moments" [ref=f13e212]
+            - generic "2026-06-21 — 0 moments" [ref=f13e213]
+            - generic "2026-06-22 — 0 moments" [ref=f13e214]
+            - generic "2026-06-23 — 0 moments" [ref=f13e215]
+            - generic "2026-06-24 — 0 moments" [ref=f13e216]
+            - generic "2026-06-25 — 0 moments" [ref=f13e217]
+            - generic "2026-06-26 — 0 moments" [ref=f13e218]
+            - generic "2026-06-27 — 0 moments" [ref=f13e219]
+            - generic "2026-06-28 — 0 moments" [ref=f13e220]
+            - generic "2026-06-29 — 0 moments" [ref=f13e221]
+            - generic "2026-06-30 — 0 moments" [ref=f13e222]
+            - generic "2026-07-01 — 0 moments" [ref=f13e223]
+            - generic "2026-07-02 — 0 moments" [ref=f13e224]
+            - generic "2026-07-03 — 0 moments" [ref=f13e225]
+            - generic "2026-07-04 — 0 moments" [ref=f13e226]
+            - generic "2026-07-05 — 0 moments" [ref=f13e227]
+            - generic "2026-07-06 — 1 moments" [ref=f13e228]
+          - generic [ref=f13e229]: rest is part of learning — quiet days are allowed
+      - generic [ref=f13e232]:
+        - generic [ref=f13e233]: learning is better shared
+        - generic [ref=f13e234]:
+          - img [ref=f13e236]
+          - img [ref=f13e255]
+          - img [ref=f13e284]
+          - img [ref=f13e296]
+          - img [ref=f13e314]
+          - img [ref=f13e339]
+          - img [ref=f13e353]
+        - generic [ref=f13e372]:
+          - generic [ref=f13e373]:
+            - generic [ref=f13e374]: invite a friend
+            - generic [ref=f13e375]: when your friend finishes their first topic, you both unlock a bonus lesson.
+            - button "copy link" [ref=f13e377] [cursor=pointer]
+          - generic [ref=f13e378]:
+            - generic [ref=f13e379]: invite a parent
+            - generic [ref=f13e380]: give them a window into your learning — the weekly note shows them what you can now do.
+            - button "copy link" [ref=f13e382] [cursor=pointer]
+      - generic [ref=f13e385]:
+        - generic [ref=f13e386]: past courses
+        - generic [ref=f13e387]:
+          - generic [ref=f13e388]:
+            - img [ref=f13e390]
+            - img [ref=f13e412]
+            - img [ref=f13e423]
+          - generic [ref=f13e436]: your first finished course lands here
+      - generic [ref=f13e439]:
+        - generic [ref=f13e440]: the note home
+        - generic [ref=f13e441]:
+          - generic [ref=f13e442]:
+            - generic [ref=f13e443]: the weekly note
+            - generic [ref=f13e444]: preview
+          - generic [ref=f13e445]: Aanya showed up 1 of 7 days this week
+          - generic [ref=f13e446]: 0 topics mastered · 0 xp earned
+          - generic [ref=f13e447]: Aanya has just begun — the first mastered topic lands here soon
+          - generic [ref=f13e448]: arrives on WhatsApp, in your language — pride first, always
+        - generic [ref=f13e450]:
+          - textbox "a parent's phone number" [ref=f13e451]
+          - button "link a parent" [ref=f13e452] [cursor=pointer]
+      - generic [ref=f13e455]:
+        - generic [ref=f13e456]: your plan
+        - generic [ref=f13e457]:
+          - generic [ref=f13e458]:
+            - generic [ref=f13e459]: free
+            - generic [ref=f13e460]: your plan today
+          - generic [ref=f13e461]: everything you need to learn well, every single day.
+          - generic [ref=f13e463]: superstar — ₹999/mo · ₹8,999/yr
+          - generic [ref=f13e464]: for when you're ready to push your limits. we never discount — learners who show up get gifted superstar weeks instead.
+      - generic [ref=f13e467]:
+        - generic [ref=f13e468]: what Vidya knows about you
+        - generic [ref=f13e469]:
+          - generic [ref=f13e470]:
+            - generic [ref=f13e471]: you linger longest on practice runs
+            - generic [ref=f13e472]: you showed up 1 of the last 7 days
+          - generic [ref=f13e474]: this stays on your device and shapes how she helps you. you can clear it any time — she will not mind.
+          - button "clear what she knows" [ref=f13e476] [cursor=pointer]
+      - generic [ref=f13e479]:
+        - generic [ref=f13e480]: settings
+        - generic [ref=f13e481]:
+          - generic [ref=f13e482]:
+            - generic [ref=f13e483]:
+              - generic [ref=f13e484]: Vidya's voice
+              - generic [ref=f13e485]: she speaks her replies out loud
+            - switch "Vidya's voice" [checked] [ref=f13e486] [cursor=pointer]
+          - generic [ref=f13e489]:
+            - generic [ref=f13e490]:
+              - generic [ref=f13e491]: the ignite sound
+              - generic [ref=f13e492]: a sub-second note when something is genuinely mastered
+            - switch "the ignite sound" [checked] [ref=f13e493] [cursor=pointer]
+          - generic [ref=f13e496]:
+            - generic [ref=f13e497]:
+              - generic [ref=f13e498]: how forward she is
+              - generic [ref=f13e499]: gentle suggestion chips at the right moments
+            - generic [ref=f13e500]:
+              - button "quiet — she waits to be asked — no suggestions, no nudges" [ref=f13e501] [cursor=pointer]: quiet
+              - button "balanced — gentle suggestion chips at the right moments" [pressed] [ref=f13e502] [cursor=pointer]: balanced
+              - button "proactive — she speaks up when she sees something worth your time" [ref=f13e503] [cursor=pointer]: proactive
+          - button "start over erase everything on this device and begin again" [ref=f13e506] [cursor=pointer]:
+            - generic [ref=f13e507]: start over
+            - generic [ref=f13e508]: erase everything on this device and begin again
+  - banner:
+    - img "Classess" [ref=f13e154]
+    - generic [ref=f13e155]:
+      - button "Did you know" [ref=f13e156] [cursor=pointer]:
+        - img [ref=f13e157]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f13e159]:
+        - img [ref=f13e160]
+        - text: "1"
+      - generic [ref=f13e163]: 0 xp
+      - button "You — profile and settings" [active] [ref=f13e164] [cursor=pointer]:
+        - generic [ref=f13e165]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

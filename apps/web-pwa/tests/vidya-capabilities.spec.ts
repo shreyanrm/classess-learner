@@ -61,8 +61,10 @@ test('teach-back: the learner teaches the atom, she plays the student, bonus lan
     .getByRole('button', { name: /^Solving equations with the variable on one side/ })
     .click();
 
-  // open the docked drawer and step into teach-back
-  await page.getByRole('button', { name: 'Talk to Vidya' }).click();
+  // open the docked drawer and step into teach-back. The orb flies and never rests (constant
+  // idle micro-motion, VIDYA.md §12), so a positional click races its animation — dispatch the
+  // click straight at the element instead.
+  await page.getByRole('button', { name: 'Talk to Vidya' }).dispatchEvent('click');
   const door = page.getByRole('button', { name: /^teach her:/ });
   await expect(door).toBeVisible({ timeout: 10_000 });
   await door.click();

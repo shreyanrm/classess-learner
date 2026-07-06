@@ -1,0 +1,41 @@
+- generic [ref=f14e2]:
+  - generic [ref=f14e1382]:
+    - banner [ref=f14e1383]:
+      - button "Close course" [ref=f14e1384] [cursor=pointer]:
+        - img [ref=f14e1385]
+    - main [ref=f14e1399]:
+      - generic [ref=f14e1401]:
+        - img [ref=f14e1403]
+        - generic [ref=f14e1410]: written and verified
+        - generic [ref=f14e1411]: what a force does
+        - generic [ref=f14e1412]:
+          - generic [ref=f14e1413]: 1a push or a pull
+          - generic [ref=f14e1414]: 2force needs a direction
+          - generic [ref=f14e1415]: 3force can change speed
+          - generic [ref=f14e1416]: 4force can change direction
+          - generic [ref=f14e1417]: 5force can change shape
+          - generic [ref=f14e1418]: 6the workbook
+          - generic [ref=f14e1419]: 7the boss
+          - generic [ref=f14e1420]: composed and checked, line by line. it starts on the next card.
+    - button "start the course" [ref=f14e1423] [cursor=pointer]:
+      - generic [ref=f14e1424]: start the course
+  - banner:
+    - img "Classess" [ref=f14e154]
+    - generic [ref=f14e155]:
+      - button "Did you know" [ref=f14e156] [cursor=pointer]:
+        - img [ref=f14e157]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f14e159]:
+        - img [ref=f14e160]
+        - text: "1"
+      - generic [ref=f14e163]: 0 xp
+      - button "You — profile and settings" [ref=f14e164] [cursor=pointer]:
+        - generic [ref=f14e165]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

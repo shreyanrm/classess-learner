@@ -1,0 +1,40 @@
+- generic [ref=f11e2]:
+  - generic [ref=f11e812]:
+    - banner [ref=f11e813]:
+      - button "Close course" [ref=f11e814] [cursor=pointer]:
+        - img [ref=f11e815]
+    - main [ref=f11e828]:
+      - generic [ref=f11e830]:
+        - img [ref=f11e832]
+        - generic [ref=f11e839]: a working course, honestly floored
+        - generic [ref=f11e840]: what a force does
+        - generic [ref=f11e841]:
+          - generic [ref=f11e842]: 1meet what a force does
+          - generic [ref=f11e843]: 2feel the rule
+          - generic [ref=f11e844]: 3predict, then check
+          - generic [ref=f11e845]: 4where it bends
+          - generic [ref=f11e846]: 5the workbook
+          - generic [ref=f11e847]: 6the boss
+          - generic [ref=f11e848]: the fully generated course is still in verification — this working path is live now and follows the same grammar.
+    - button "start the working course" [ref=f11e851] [cursor=pointer]:
+      - generic [ref=f11e852]: start the working course
+  - banner:
+    - img "Classess" [ref=f11e138]
+    - generic [ref=f11e139]:
+      - button "Did you know" [ref=f11e140] [cursor=pointer]:
+        - img [ref=f11e141]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f11e143]:
+        - img [ref=f11e144]
+        - text: "1"
+      - generic [ref=f11e147]: 0 xp
+      - button "You — profile and settings" [ref=f11e148] [cursor=pointer]:
+        - generic [ref=f11e149]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

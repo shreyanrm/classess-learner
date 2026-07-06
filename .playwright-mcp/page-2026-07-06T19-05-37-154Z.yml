@@ -1,0 +1,45 @@
+- generic [ref=f2e2]:
+  - generic [ref=f2e1240]:
+    - button "Back — Home" [ref=f2e1241] [cursor=pointer]:
+      - img [ref=f2e1242]
+      - text: Home
+    - banner [ref=f2e1246]:
+      - generic [ref=f2e1247]: 0 of 8 concepts are yours
+      - generic [ref=f2e1248]: day 1 of being a learner · tap a star to see its story
+    - generic [ref=f2e1249]:
+      - img "your knowledge constellation — every star is a concept" [ref=f2e1251]:
+        - button "rational numbers — not started" [ref=f2e1262] [cursor=pointer]:
+          - generic [ref=f2e1266]: rational numbers
+        - button "operations — not started" [ref=f2e1267] [cursor=pointer]:
+          - generic [ref=f2e1271]: operations
+        - button "the number line — not started" [ref=f2e1272] [cursor=pointer]:
+          - generic [ref=f2e1276]: the number line
+        - button "integers — not started" [ref=f2e1277] [cursor=pointer]:
+          - generic [ref=f2e1281]: integers
+        - button "variables — not started" [ref=f2e1282] [cursor=pointer]:
+          - generic [ref=f2e1286]: variables
+        - button "linear equations — not started" [ref=f2e1287] [cursor=pointer]:
+          - generic [ref=f2e1291]: linear equations
+        - button "both sides — not started" [ref=f2e1292] [cursor=pointer]:
+          - generic [ref=f2e1296]: both sides
+        - button "word problems — not started" [ref=f2e1297] [cursor=pointer]:
+          - generic [ref=f2e1301]: word problems
+      - textbox "Ask your twin" [ref=f2e1305]:
+        - /placeholder: "ask your twin: what am I weakest at…"
+  - banner:
+    - img "Classess" [ref=f2e138]
+    - generic [ref=f2e139]:
+      - button "Did you know" [ref=f2e140] [cursor=pointer]:
+        - img [ref=f2e141]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f2e143]:
+        - img [ref=f2e144]
+        - text: "1"
+      - generic [ref=f2e147]: 0 xp
+      - button "You — profile and settings" [ref=f2e148] [cursor=pointer]:
+        - generic [ref=f2e149]: A
+  - generic [ref=f2e1307]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f2e1308] [cursor=pointer]:
+      - img [ref=f2e1312]

@@ -47,7 +47,7 @@ import {
   writeArchive,
 } from './vidya/chat';
 import { resolveTurnExtras, type TurnExtras } from './vidya/paths';
-import { speakLine, SpeechNarrator } from './vidya/speech';
+import { SpeechNarrator, speakLine } from './vidya/speech';
 
 const LLM_MODE = (import.meta.env.VITE_LLM_MODE as 'mock' | 'live' | undefined) ?? 'mock';
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;

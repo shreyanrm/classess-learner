@@ -1,0 +1,47 @@
+- generic [ref=f17e2]:
+  - generic [ref=f17e789]:
+    - banner [ref=f17e790]:
+      - button "Close course" [ref=f17e791] [cursor=pointer]:
+        - img [ref=f17e792]
+    - main [ref=f17e806]:
+      - generic [ref=f17e888]:
+        - generic [ref=f17e889]: the picture
+        - generic [ref=f17e890]: how fossil fuels form
+        - generic [ref=f17e891]: Coal, petroleum and natural gas took millions of years to form, which is why they are exhaustible.
+        - figure [ref=f17e894]:
+          - 'img "diagram: How fossil fuels form" [ref=f17e896]':
+            - img [ref=f17e897]:
+              - generic [ref=f17e898]: How Fossil Fuels Form
+              - generic [ref=f17e899]: Millions of years ago
+              - generic [ref=f17e903]: dead plants & animals
+              - generic [ref=f17e905]: Buried under layers
+              - generic [ref=f17e907]: mud & sand
+              - generic [ref=f17e911]: heat + pressure
+              - generic [ref=f17e913]: Fossil Fuels (Exhaustible)
+              - generic [ref=f17e916]: Coal
+              - generic [ref=f17e919]: Oil
+              - generic [ref=f17e924]: Gas
+              - generic [ref=f17e925]: Take millions of years to form —
+              - generic [ref=f17e926]: once used up, cannot be replaced quickly.
+              - generic [ref=f17e927]: So we must use them wisely!
+        - generic [ref=f17e928]: Tap the reason fossil fuels are treated as exhaustible
+    - button "check" [ref=f17e929] [cursor=pointer]:
+      - generic [ref=f17e930]: check
+  - banner:
+    - img "Classess" [ref=f17e154]
+    - generic [ref=f17e155]:
+      - button "Did you know" [ref=f17e156] [cursor=pointer]:
+        - img [ref=f17e157]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f17e159]:
+        - img [ref=f17e160]
+        - text: "1"
+      - generic [ref=f17e931]: 370 xp
+      - button "You — profile and settings" [ref=f17e164] [cursor=pointer]:
+        - generic "fox" [ref=f17e165]:
+          - img [ref=f17e167]
+  - generic [ref=f17e831]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f17e832] [cursor=pointer]:
+      - img [ref=f17e836]

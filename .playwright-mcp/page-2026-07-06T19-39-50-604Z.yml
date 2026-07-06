@@ -1,0 +1,47 @@
+- generic [ref=f17e2]:
+  - generic [ref=f17e1419]:
+    - banner [ref=f17e1420]:
+      - button "Close course" [ref=f17e1421] [cursor=pointer]:
+        - img [ref=f17e1422]
+    - main [ref=f17e1436]:
+      - generic [ref=f17e1476]:
+        - generic [ref=f17e1477]: the picture
+        - generic [ref=f17e1478]: the timeline
+        - generic [ref=f17e1479]: A timeline is a line marked with dates, used to place events at their correct spots and see the gaps between them.
+        - figure [ref=f17e1482]:
+          - 'img "diagram: The timeline" [ref=f17e1484]':
+            - 'img "Why dates matter: The timeline" [ref=f17e1485]':
+              - generic [ref=f17e1486]: "The Timeline: putting events in order"
+              - generic [ref=f17e1488]: time
+              - generic [ref=f17e1489]: ← BCE (before)
+              - generic [ref=f17e1490]: CE (after) →
+              - generic [ref=f17e1492]: Indus Valley
+              - generic [ref=f17e1493]: 2500 BCE
+              - generic [ref=f17e1495]: Ashoka
+              - generic [ref=f17e1496]: 261 BCE
+              - generic [ref=f17e1498]: Mughal rule
+              - generic [ref=f17e1499]: 1526 CE
+              - generic [ref=f17e1501]: Freedom
+              - generic [ref=f17e1502]: 1947 CE
+              - generic [ref=f17e1503]: Dates tell us the order & distance between events.
+        - generic [ref=f17e1504]: Tap the point on the timeline where 1947 should sit, between 1900 and 2000
+    - button "check" [ref=f17e1505] [cursor=pointer]:
+      - generic [ref=f17e1506]: check
+  - banner:
+    - img "Classess" [ref=f17e154]
+    - generic [ref=f17e155]:
+      - button "Did you know" [ref=f17e156] [cursor=pointer]:
+        - img [ref=f17e157]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f17e159]:
+        - img [ref=f17e160]
+        - text: "1"
+      - generic [ref=f17e1507]: 660 xp
+      - button "You — profile and settings" [ref=f17e164] [cursor=pointer]:
+        - generic "fox" [ref=f17e165]:
+          - img [ref=f17e167]
+  - generic [ref=f17e831]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f17e832] [cursor=pointer]:
+      - img [ref=f17e836]

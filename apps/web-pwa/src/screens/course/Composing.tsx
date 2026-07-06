@@ -14,7 +14,7 @@
 
 import { useVidyaBus } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
-import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
+import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { topicById } from '../../data/catalog';
 import type { Topic } from '../../data/model';
 import { DiagramView, svgIsClean } from '../../engines/DiagramView';
@@ -923,6 +923,25 @@ export function Composing({
     };
   }, [sdk, topicId, title, setMood]);
 
+  // stable identities — ItemSet's action-bar effect depends on these; fresh lambdas
+  // every render would loop setBar -> parent setState -> render -> setBar forever
+  const bumpAttempts = useCallback(() => {
+    attempts.current += 1;
+  }, []);
+  const advance = useCallback(() => {
+    setRevealed(false);
+    setIdx((i) => i + 1);
+  }, []);
+  const awardWorkbookItem = useCallback(
+    (item: GenItem) => award('item', { onceKey: `gen-wb-${topicId}-${item.id}`, hue }),
+    [award, topicId, hue],
+  );
+  const awardNothing = useCallback(() => {}, []);
+  const bossDone = useCallback(() => {
+    award('boss', { onceKey: `gen-boss-${topicId}`, hue });
+    setIdx((i) => i + 1);
+  }, [award, topicId, hue]);
+
   const segments = (course?.cards.length ?? 4) + 3; // + workbook, boss, greeting
   const stops = course ? course.cards.length : 0;
   const stage: 'cards' | 'workbook' | 'boss' | 'greeting' = !course
@@ -1016,11 +1035,9 @@ export function Composing({
           hue={hue}
           passNeeded={0}
           setBar={setBar}
-          onAttempt={() => {
-            attempts.current += 1;
-          }}
-          awardCorrect={(item) => award('item', { onceKey: `gen-wb-${topicId}-${item.id}`, hue })}
-          onDone={() => setIdx((i) => i + 1)}
+          onAttempt={bumpAttempts}
+          awardCorrect={awardWorkbookItem}
+          onDone={advance}
         />
       </Deck>
     );
@@ -1038,14 +1055,9 @@ export function Composing({
           hue={hue}
           passNeeded={2}
           setBar={setBar}
-          onAttempt={() => {
-            attempts.current += 1;
-          }}
-          awardCorrect={() => {}}
-          onDone={() => {
-            award('boss', { onceKey: `gen-boss-${topicId}`, hue });
-            setIdx((i) => i + 1);
-          }}
+          onAttempt={bumpAttempts}
+          awardCorrect={awardNothing}
+          onDone={bossDone}
         />
       </Deck>
     );

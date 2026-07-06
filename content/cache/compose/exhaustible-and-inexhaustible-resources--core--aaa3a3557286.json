@@ -1,0 +1,130 @@
+{
+  "concept": "Exhaustible and inexhaustible resources",
+  "modality": "compose",
+  "difficulty": "core",
+  "verified": true,
+  "seeded": false,
+  "provenance": {
+    "engine": "engine.compose",
+    "model": "anthropic/claude-opus-4-8",
+    "prompt_version": "plexus-v1"
+  },
+  "artifact": {
+    "topic": "Exhaustible and inexhaustible resources",
+    "difficulty": "core",
+    "cards": [
+      {
+        "id": "c1",
+        "kind": "text",
+        "title": "Two kinds of resources",
+        "idea": "Some natural resources are present in unlimited amounts, while others are limited and can run out.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the resource you think can never run out: sunlight or coal"
+        },
+        "reveal": "Sunlight is available in unlimited amounts, so it can never run out. Coal is limited and will run out one day."
+      },
+      {
+        "id": "c2",
+        "kind": "text",
+        "title": "Inexhaustible resources",
+        "idea": "Inexhaustible resources are present in unlimited quantity and are not likely to be exhausted by human use.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap all that are inexhaustible: air, sunlight, petroleum, wind"
+        },
+        "reveal": "Air, sunlight and wind are inexhaustible. Petroleum is limited and will be used up, so it is not inexhaustible."
+      },
+      {
+        "id": "c3",
+        "kind": "text",
+        "title": "Exhaustible resources",
+        "idea": "Exhaustible resources are limited in nature and can be used up by human activities.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the exhaustible resource: forests and wildlife, or sunlight"
+        },
+        "reveal": "Forests and wildlife are limited and can be exhausted if overused. Coal, petroleum and natural gas are also exhaustible."
+      },
+      {
+        "id": "c4",
+        "kind": "diagram",
+        "title": "How fossil fuels form",
+        "idea": "Coal, petroleum and natural gas took millions of years to form, which is why they are exhaustible.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the reason fossil fuels are treated as exhaustible"
+        },
+        "reveal": "They form from buried remains of plants and animals over millions of years. They are used far faster than they form, so they can run out."
+      },
+      {
+        "id": "c5",
+        "kind": "text",
+        "title": "Why it matters",
+        "idea": "Because exhaustible resources cannot be quickly replaced, we must use them carefully and prefer inexhaustible sources where possible.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the wiser choice for daily electricity: solar power or burning more coal"
+        },
+        "reveal": "Solar power uses sunlight, an inexhaustible resource, so it helps conserve the limited coal we have."
+      }
+    ],
+    "workbook": [
+      {
+        "id": "w1",
+        "type": "mcq",
+        "prompt": "Which of these is an inexhaustible resource",
+        "options": ["Coal", "Wind", "Petroleum"],
+        "answer": "Wind"
+      },
+      {
+        "id": "w2",
+        "type": "fill",
+        "prompt": "Resources that are limited and can be used up by human activities are called ________ resources.",
+        "answer": "exhaustible"
+      },
+      {
+        "id": "w3",
+        "type": "mcq",
+        "prompt": "Why are coal and petroleum considered exhaustible",
+        "options": [
+          "They are found only under the sea",
+          "They took millions of years to form and are used faster than they form",
+          "They are made fresh in factories every day"
+        ],
+        "answer": "They took millions of years to form and are used faster than they form"
+      }
+    ],
+    "boss": [
+      {
+        "id": "b1",
+        "type": "mcq",
+        "prompt": "A village replaces its diesel generator with a solar panel. Which idea best explains why this helps",
+        "options": [
+          "Diesel is inexhaustible so it should be saved",
+          "Solar uses sunlight, an inexhaustible resource, reducing use of limited fuels",
+          "Sunlight will run out faster than diesel"
+        ],
+        "answer": "Solar uses sunlight, an inexhaustible resource, reducing use of limited fuels"
+      },
+      {
+        "id": "b2",
+        "type": "fill",
+        "prompt": "Air, sunlight and wind can never be used up by humans, so they are called ________ resources.",
+        "answer": "inexhaustible"
+      },
+      {
+        "id": "b3",
+        "type": "mcq",
+        "prompt": "Which statement is correct",
+        "options": [
+          "Forests are inexhaustible because trees grow back instantly",
+          "Natural gas is inexhaustible because it is a gas",
+          "Forests can be exhausted if cut faster than they can regrow"
+        ],
+        "answer": "Forests can be exhausted if cut faster than they can regrow"
+      }
+    ]
+  },
+  "createdAt": "2026-07-06T19:10:57+00:00"
+}

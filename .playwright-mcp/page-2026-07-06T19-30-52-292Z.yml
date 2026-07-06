@@ -1,0 +1,45 @@
+- generic [ref=f17e2]:
+  - generic [ref=f17e183]:
+    - banner [ref=f17e184]:
+      - button "Close course" [ref=f17e185] [cursor=pointer]:
+        - img [ref=f17e186]
+    - main [ref=f17e200]:
+      - generic [ref=f17e241]:
+        - generic [ref=f17e242]: the picture
+        - generic [ref=f17e243]: force needs a direction
+        - generic [ref=f17e244]: A force always acts in some direction, so we draw it as an arrow pointing that way.
+        - figure [ref=f17e247]:
+          - 'img "diagram: Force needs a direction" [ref=f17e249]':
+            - img [ref=f17e250]:
+              - generic [ref=f17e251]: Force needs a direction
+              - generic [ref=f17e253]: box
+              - generic [ref=f17e255]: push →
+              - generic [ref=f17e256]: moves right
+              - generic [ref=f17e258]: ← push
+              - generic [ref=f17e259]: moves left
+              - generic [ref=f17e260]: Same strength, different way to go
+              - generic [ref=f17e261]: A force has size AND direction
+        - generic [ref=f17e262]: Tap the arrow that shows the force when you pull a drawer toward yourself
+    - button "check" [ref=f17e263] [cursor=pointer]:
+      - generic [ref=f17e264]: check
+  - banner:
+    - img "Classess" [ref=f17e154]
+    - generic [ref=f17e155]:
+      - button "Did you know" [ref=f17e156] [cursor=pointer]:
+        - img [ref=f17e157]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f17e159]:
+        - img [ref=f17e160]
+        - text: "1"
+      - generic [ref=f17e163]: 35 xp
+      - button "You — profile and settings" [ref=f17e164] [cursor=pointer]:
+        - generic "fox" [ref=f17e165]:
+          - img [ref=f17e167]
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

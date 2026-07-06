@@ -15,7 +15,33 @@ import { Ember, Juni, Pico, Pip, Sage, Sprout, Torto, Volt } from './characters'
 import { Beaker, Books, Bulb, Flag, Pencil, Planet, Plant, Trophy } from './props';
 import { type CastFigureProps, hexWash, type Mood, type WorldPropProps } from './shared';
 
-export { Ember, Juni, Pico, Pip, Sage, Sprout, Torto, Volt } from './characters';
+export {
+  ANIMALS,
+  Animal,
+  type AnimalKind,
+  type AnimalProps,
+} from './animals';
+export {
+  // the buddies — ported catalog kids
+  Ace,
+  BUDDIES,
+  type BuddyId,
+  Ember,
+  Indi,
+  Iris,
+  Juni,
+  Maya,
+  Nova,
+  Pico,
+  Pip,
+  Robin,
+  Sage,
+  Sol,
+  Sprout,
+  Theo,
+  Torto,
+  Volt,
+} from './characters';
 export { Beaker, Books, Bulb, Flag, Pencil, Planet, Plant, Trophy } from './props';
 export {
   type CastFigureProps,

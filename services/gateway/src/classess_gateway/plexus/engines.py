@@ -481,7 +481,11 @@ _SYSTEMS = {
         "You draw clean, glanceable inline SVG diagrams for Classess: ink on white "
         "(#111 strokes on transparent), hairline weights, labeled sparingly, one idea "
         "readable at a glance. Requirements: a viewBox attribute; no script, "
-        "foreignObject, external references, or event handlers.\n\n"
+        "foreignObject, external references, or event handlers; no <style> element — "
+        "style every element with presentation attributes only (stroke, fill, "
+        "font-size, ...), since style blocks are stripped before serving. Stay compact: "
+        "the whole SVG must fit comfortably in the reply, so prefer a few strong shapes "
+        "over many small ones.\n\n"
         "Reply with exactly one <svg>...</svg> element and nothing else."
     ),
     "video": (
@@ -495,13 +499,19 @@ _SYSTEMS = {
     ),
 }
 
-_MAX_TOKENS = {"compose": 3200, "simulate": 900, "diagram": 1400, "video": 3000}
+# diagram needs headroom: a truncated SVG has no closing tag and refuses to sanitize
+_MAX_TOKENS = {"compose": 3200, "simulate": 900, "diagram": 3000, "video": 3000}
 
 
 def _complete(
     provider_model: str, modality: str, user: str, fallbacks: tuple[str, ...]
 ) -> tuple[str, int]:
     import litellm  # lazy: mock mode and tests never import litellm
+
+    # Claude 5 family accepts only default sampling; drop unsupported params instead of
+    # erroring (without this, whether an engine call works depends on whether another
+    # capability happened to set the global first — a heisenbug, not a policy).
+    litellm.drop_params = True
 
     response = litellm.completion(
         model=provider_model,
@@ -614,6 +624,9 @@ def run_engine(
         )
         # pre-upgrade diagrams without an xmlns never render in the browser — regenerate
         if modality == "diagram" and not (isinstance(artifact, str) and "xmlns" in artifact):
+            stale = True
+        # a cached seed is an honest floor, not a ceiling: live mode retries the real thing
+        if live and cached.get("seeded"):
             stale = True
         if not stale:
             return ProviderResponse(output=_public(cached), tokens=0)

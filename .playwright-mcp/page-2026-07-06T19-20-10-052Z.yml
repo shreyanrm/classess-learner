@@ -1,0 +1,284 @@
+- generic [ref=f15e2]:
+  - generic [ref=f15e167]:
+    - button "Back — Home" [ref=f15e168] [cursor=pointer]:
+      - img [ref=f15e169]
+      - text: Home
+    - generic [ref=f15e172]:
+      - banner [ref=f15e173]:
+        - button "choose your avatar" [expanded] [ref=f15e174] [cursor=pointer]:
+          - generic "fox" [ref=f15e1232]:
+            - img [ref=f15e1234]
+        - dialog "choose your avatar" [ref=f15e509]:
+          - generic [ref=f15e510]:
+            - generic [ref=f15e511]: pick your look
+            - generic [ref=f15e512]:
+              - generic [ref=f15e513]: buddies
+              - generic [ref=f15e514]:
+                - button "be Pip" [ref=f15e515] [cursor=pointer]:
+                  - generic "Pip" [ref=f15e516]:
+                    - img [ref=f15e518]
+                  - generic [ref=f15e547]: Pip
+                - button "be Sage" [ref=f15e548] [cursor=pointer]:
+                  - generic "Sage" [ref=f15e549]:
+                    - img [ref=f15e551]
+                  - generic [ref=f15e568]: Sage
+                - button "be Sprout" [ref=f15e569] [cursor=pointer]:
+                  - generic "Sprout" [ref=f15e570]:
+                    - img [ref=f15e572]
+                  - generic [ref=f15e591]: Sprout
+                - button "be Volt" [ref=f15e592] [cursor=pointer]:
+                  - generic "Volt" [ref=f15e593]:
+                    - img [ref=f15e595]
+                  - generic [ref=f15e619]: Volt
+                - button "be Ember" [ref=f15e620] [cursor=pointer]:
+                  - generic "Ember" [ref=f15e621]:
+                    - img [ref=f15e623]
+                  - generic [ref=f15e643]: Ember
+                - button "be Pico" [ref=f15e644] [cursor=pointer]:
+                  - generic "Pico" [ref=f15e645]:
+                    - img [ref=f15e647]
+                  - generic [ref=f15e668]: Pico
+                - button "be Juni" [ref=f15e669] [cursor=pointer]:
+                  - generic "Juni" [ref=f15e670]:
+                    - img [ref=f15e672]
+                  - generic [ref=f15e685]: Juni
+                - button "be Torto" [ref=f15e686] [cursor=pointer]:
+                  - generic "Torto" [ref=f15e687]:
+                    - img [ref=f15e689]
+                  - generic [ref=f15e707]: Torto
+                - button "be Ace" [ref=f15e708] [cursor=pointer]:
+                  - generic "Ace" [ref=f15e709]:
+                    - img [ref=f15e711]
+                  - generic [ref=f15e740]: Ace
+                - button "be Iris" [ref=f15e741] [cursor=pointer]:
+                  - generic "Iris" [ref=f15e742]:
+                    - img [ref=f15e744]
+                  - generic [ref=f15e774]: Iris
+                - button "be Theo" [ref=f15e775] [cursor=pointer]:
+                  - generic "Theo" [ref=f15e776]:
+                    - img [ref=f15e778]
+                  - generic [ref=f15e811]: Theo
+                - button "be Maya" [ref=f15e812] [cursor=pointer]:
+                  - generic "Maya" [ref=f15e813]:
+                    - img [ref=f15e815]
+                  - generic [ref=f15e845]: Maya
+                - button "be Sol" [ref=f15e846] [cursor=pointer]:
+                  - generic "Sol" [ref=f15e847]:
+                    - img [ref=f15e849]
+                  - generic [ref=f15e878]: Sol
+                - button "be Nova" [ref=f15e879] [cursor=pointer]:
+                  - generic "Nova" [ref=f15e880]:
+                    - img [ref=f15e882]
+                  - generic [ref=f15e910]: Nova
+                - button "be Indi" [ref=f15e911] [cursor=pointer]:
+                  - generic "Indi" [ref=f15e912]:
+                    - img [ref=f15e914]
+                  - generic [ref=f15e948]: Indi
+                - button "be Robin" [ref=f15e949] [cursor=pointer]:
+                  - generic "Robin" [ref=f15e950]:
+                    - img [ref=f15e952]
+                  - generic [ref=f15e981]: Robin
+            - generic [ref=f15e982]:
+              - generic [ref=f15e983]: animals
+              - generic [ref=f15e984]:
+                - button "be dog" [ref=f15e985] [cursor=pointer]:
+                  - generic "dog" [ref=f15e986]:
+                    - img [ref=f15e988]
+                  - generic [ref=f15e1006]: dog
+                - button "be cat" [ref=f15e1007] [cursor=pointer]:
+                  - generic "cat" [ref=f15e1008]:
+                    - img [ref=f15e1010]
+                  - generic [ref=f15e1029]: cat
+                - button "be rabbit" [ref=f15e1030] [cursor=pointer]:
+                  - generic "rabbit" [ref=f15e1031]:
+                    - img [ref=f15e1033]
+                  - generic [ref=f15e1048]: rabbit
+                - button "be pig" [ref=f15e1049] [cursor=pointer]:
+                  - generic "pig" [ref=f15e1050]:
+                    - img [ref=f15e1052]
+                  - generic [ref=f15e1069]: pig
+                - button "be fox" [active] [pressed] [ref=f15e1070] [cursor=pointer]:
+                  - generic "fox" [ref=f15e1071]:
+                    - img [ref=f15e1073]
+                  - generic [ref=f15e1088]: fox
+                - button "be bear" [ref=f15e1089] [cursor=pointer]:
+                  - generic "bear" [ref=f15e1090]:
+                    - img [ref=f15e1092]
+                  - generic [ref=f15e1108]: bear
+                - button "be panda" [ref=f15e1109] [cursor=pointer]:
+                  - generic "panda" [ref=f15e1110]:
+                    - img [ref=f15e1112]
+                  - generic [ref=f15e1128]: panda
+                - button "be owl" [ref=f15e1129] [cursor=pointer]:
+                  - generic "owl" [ref=f15e1130]:
+                    - img [ref=f15e1132]
+                  - generic [ref=f15e1149]: owl
+                - button "be frog" [ref=f15e1150] [cursor=pointer]:
+                  - generic "frog" [ref=f15e1151]:
+                    - img [ref=f15e1153]
+                  - generic [ref=f15e1169]: frog
+                - button "be deer" [ref=f15e1170] [cursor=pointer]:
+                  - generic "deer" [ref=f15e1171]:
+                    - img [ref=f15e1173]
+                  - generic [ref=f15e1190]: deer
+                - button "be elephant" [ref=f15e1191] [cursor=pointer]:
+                  - generic "elephant" [ref=f15e1192]:
+                    - img [ref=f15e1194]
+                  - generic [ref=f15e1208]: elephant
+                - button "be squirrel" [ref=f15e1209] [cursor=pointer]:
+                  - generic "squirrel" [ref=f15e1210]:
+                    - img [ref=f15e1212]
+                  - generic [ref=f15e1226]: squirrel
+            - generic [ref=f15e1228]:
+              - button "upload a picture" [ref=f15e1229] [cursor=pointer]
+              - button "use my initial" [ref=f15e1230] [cursor=pointer]
+        - generic [ref=f15e177]:
+          - textbox "your name" [ref=f15e178]: Aanya
+          - button "Class 8 · CBSE · change" [ref=f15e179] [cursor=pointer]:
+            - text: Class 8 · CBSE
+            - generic [ref=f15e180]: · change
+      - generic [ref=f15e182]:
+        - generic [ref=f15e183]: the ledger
+        - generic [ref=f15e184]:
+          - generic [ref=f15e185]:
+            - generic [ref=f15e186]: "35"
+            - generic [ref=f15e187]: xp
+          - generic [ref=f15e188]: day 1 of being a learner
+          - img "active on 1 of the last 7 days" [ref=f15e189]
+          - generic [ref=f15e197]: ACTIVITY · 30 DAYS
+          - img "this month's activity intensity" [ref=f15e198]:
+            - generic "2026-06-07 — 0 moments" [ref=f15e199]
+            - generic "2026-06-08 — 0 moments" [ref=f15e200]
+            - generic "2026-06-09 — 0 moments" [ref=f15e201]
+            - generic "2026-06-10 — 0 moments" [ref=f15e202]
+            - generic "2026-06-11 — 0 moments" [ref=f15e203]
+            - generic "2026-06-12 — 0 moments" [ref=f15e204]
+            - generic "2026-06-13 — 0 moments" [ref=f15e205]
+            - generic "2026-06-14 — 0 moments" [ref=f15e206]
+            - generic "2026-06-15 — 0 moments" [ref=f15e207]
+            - generic "2026-06-16 — 0 moments" [ref=f15e208]
+            - generic "2026-06-17 — 0 moments" [ref=f15e209]
+            - generic "2026-06-18 — 0 moments" [ref=f15e210]
+            - generic "2026-06-19 — 0 moments" [ref=f15e211]
+            - generic "2026-06-20 — 0 moments" [ref=f15e212]
+            - generic "2026-06-21 — 0 moments" [ref=f15e213]
+            - generic "2026-06-22 — 0 moments" [ref=f15e214]
+            - generic "2026-06-23 — 0 moments" [ref=f15e215]
+            - generic "2026-06-24 — 0 moments" [ref=f15e216]
+            - generic "2026-06-25 — 0 moments" [ref=f15e217]
+            - generic "2026-06-26 — 0 moments" [ref=f15e218]
+            - generic "2026-06-27 — 0 moments" [ref=f15e219]
+            - generic "2026-06-28 — 0 moments" [ref=f15e220]
+            - generic "2026-06-29 — 0 moments" [ref=f15e221]
+            - generic "2026-06-30 — 0 moments" [ref=f15e222]
+            - generic "2026-07-01 — 0 moments" [ref=f15e223]
+            - generic "2026-07-02 — 0 moments" [ref=f15e224]
+            - generic "2026-07-03 — 0 moments" [ref=f15e225]
+            - generic "2026-07-04 — 0 moments" [ref=f15e226]
+            - generic "2026-07-05 — 0 moments" [ref=f15e227]
+            - generic "2026-07-06 — 2 moments" [ref=f15e1249]
+          - generic [ref=f15e229]: rest is part of learning — quiet days are allowed
+      - generic [ref=f15e232]:
+        - generic [ref=f15e233]: learning is better shared
+        - generic [ref=f15e234]:
+          - img [ref=f15e236]
+          - img [ref=f15e255]
+          - img [ref=f15e284]
+          - img [ref=f15e296]
+          - img [ref=f15e314]
+          - img [ref=f15e339]
+          - img [ref=f15e353]
+        - generic [ref=f15e372]:
+          - generic [ref=f15e373]:
+            - generic [ref=f15e374]: invite a friend
+            - generic [ref=f15e375]: when your friend finishes their first topic, you both unlock a bonus lesson.
+            - button "copy link" [ref=f15e377] [cursor=pointer]
+          - generic [ref=f15e378]:
+            - generic [ref=f15e379]: invite a parent
+            - generic [ref=f15e380]: give them a window into your learning — the weekly note shows them what you can now do.
+            - button "copy link" [ref=f15e382] [cursor=pointer]
+      - generic [ref=f15e385]:
+        - generic [ref=f15e386]: past courses
+        - generic [ref=f15e387]:
+          - generic [ref=f15e388]:
+            - img [ref=f15e390]
+            - img [ref=f15e412]
+            - img [ref=f15e423]
+          - generic [ref=f15e436]: your first finished course lands here
+      - generic [ref=f15e439]:
+        - generic [ref=f15e440]: the note home
+        - generic [ref=f15e441]:
+          - generic [ref=f15e442]:
+            - generic [ref=f15e443]: the weekly note
+            - generic [ref=f15e444]: preview
+          - generic [ref=f15e445]: Aanya showed up 1 of 7 days this week
+          - generic [ref=f15e446]: 0 topics mastered · 35 xp earned
+          - generic [ref=f15e447]: Aanya is building a steady rhythm — the first mastery is close
+          - generic [ref=f15e448]: arrives on WhatsApp, in your language — pride first, always
+        - generic [ref=f15e450]:
+          - textbox "a parent's phone number" [ref=f15e451]
+          - button "link a parent" [ref=f15e452] [cursor=pointer]
+      - generic [ref=f15e455]:
+        - generic [ref=f15e456]: your plan
+        - generic [ref=f15e457]:
+          - generic [ref=f15e458]:
+            - generic [ref=f15e459]: free
+            - generic [ref=f15e460]: your plan today
+          - generic [ref=f15e461]: everything you need to learn well, every single day.
+          - generic [ref=f15e463]: superstar — ₹999/mo · ₹8,999/yr
+          - generic [ref=f15e464]: for when you're ready to push your limits. we never discount — learners who show up get gifted superstar weeks instead.
+      - generic [ref=f15e467]:
+        - generic [ref=f15e468]: what Vidya knows about you
+        - generic [ref=f15e469]:
+          - generic [ref=f15e470]:
+            - generic [ref=f15e471]: you linger longest on practice runs
+            - generic [ref=f15e472]: you showed up 1 of the last 7 days
+          - generic [ref=f15e474]: this stays on your device and shapes how she helps you. you can clear it any time — she will not mind.
+          - button "clear what she knows" [ref=f15e476] [cursor=pointer]
+      - generic [ref=f15e479]:
+        - generic [ref=f15e480]: settings
+        - generic [ref=f15e481]:
+          - generic [ref=f15e482]:
+            - generic [ref=f15e483]:
+              - generic [ref=f15e484]: Vidya's voice
+              - generic [ref=f15e485]: she speaks her replies out loud
+            - switch "Vidya's voice" [checked] [ref=f15e486] [cursor=pointer]
+          - generic [ref=f15e489]:
+            - generic [ref=f15e490]:
+              - generic [ref=f15e491]: the ignite sound
+              - generic [ref=f15e492]: a sub-second note when something is genuinely mastered
+            - switch "the ignite sound" [checked] [ref=f15e493] [cursor=pointer]
+          - generic [ref=f15e496]:
+            - generic [ref=f15e497]:
+              - generic [ref=f15e498]: how forward she is
+              - generic [ref=f15e499]: gentle suggestion chips at the right moments
+            - generic [ref=f15e500]:
+              - button "quiet — she waits to be asked — no suggestions, no nudges" [ref=f15e501] [cursor=pointer]: quiet
+              - button "balanced — gentle suggestion chips at the right moments" [pressed] [ref=f15e502] [cursor=pointer]: balanced
+              - button "proactive — she speaks up when she sees something worth your time" [ref=f15e503] [cursor=pointer]: proactive
+          - button "start over erase everything on this device and begin again" [ref=f15e506] [cursor=pointer]:
+            - generic [ref=f15e507]: start over
+            - generic [ref=f15e508]: erase everything on this device and begin again
+  - banner:
+    - img "Classess" [ref=f15e154]
+    - generic [ref=f15e155]:
+      - button "Did you know" [ref=f15e156] [cursor=pointer]:
+        - img [ref=f15e157]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f15e159]:
+        - img [ref=f15e160]
+        - text: "1"
+      - generic [ref=f15e1250]: 35 xp
+      - button "You — profile and settings" [ref=f15e164] [cursor=pointer]:
+        - generic "fox" [ref=f15e1251]:
+          - img [ref=f15e1253]
+      - generic:
+        - generic: +20 xp
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img
