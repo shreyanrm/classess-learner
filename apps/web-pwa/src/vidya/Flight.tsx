@@ -139,59 +139,54 @@ export function FlyingVidya({
       }}
     >
       <motion.div style={{ y: bob, x: px, translateY: py }}>
-        {/* The binary aura — while she flies, energy wisps lick around her whole silhouette. */}
+        {/* Her motion flame — an upside-down fire, trailing beneath her as she flies. */}
         <motion.div
           aria-hidden
           animate={{ opacity: flying ? 1 : 0 }}
-          transition={{ duration: flying ? 0.25 : 0.5 }}
-          style={{ position: 'absolute', inset: '-38%', pointerEvents: 'none' }}
+          transition={{ duration: flying ? 0.2 : 0.45 }}
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '62%',
+            width: size * 0.86,
+            height: size * 1.35,
+            translateX: '-50%',
+            transformOrigin: '50% 0%',
+            pointerEvents: 'none',
+            filter: 'blur(1.5px)',
+          }}
         >
-          <motion.div
-            animate={{ scale: [1, 1.12, 0.96, 1.08, 1], opacity: [0.7, 0.95, 0.75, 0.9, 0.7] }}
-            transition={{ duration: 1.1, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              borderRadius: '50%',
-              background:
-                'radial-gradient(circle, rgba(255,158,98,0.55) 22%, rgba(255,90,31,0.35) 46%, rgba(240,97,155,0.22) 64%, rgba(240,97,155,0) 78%)',
-              filter: 'blur(13px)',
+          <motion.svg
+            viewBox="0 0 40 60"
+            width="100%"
+            height="100%"
+            animate={{
+              scaleY: [1, 1.28, 0.92, 1.18, 1],
+              scaleX: [1, 0.92, 1.06, 0.95, 1],
+              skewX: [0, -3, 2.5, -2, 0],
             }}
-          />
-          {[0, 1, 2, 3, 4, 5, 6].map((i) => {
-            const a = -90 + i * 51.4; // around the rim
-            return (
-              <motion.div
-                key={i}
-                animate={{
-                  scaleY: [0.6, 1.5, 0.8, 1.3, 0.6],
-                  opacity: [0.5, 0.95, 0.6, 0.9, 0.5],
-                }}
-                transition={{
-                  duration: 0.75 + i * 0.11,
-                  repeat: Number.POSITIVE_INFINITY,
-                  ease: 'easeInOut',
-                  delay: i * 0.07,
-                }}
-                style={{
-                  position: 'absolute',
-                  left: '50%',
-                  top: '50%',
-                  width: 7,
-                  height: size * 0.52,
-                  marginLeft: -3.5,
-                  marginTop: -size * 0.52,
-                  transformOrigin: '50% 100%',
-                  rotate: a,
-                  translateY: -size * 0.34,
-                  borderRadius: 999,
-                  background:
-                    'linear-gradient(to top, rgba(255,217,168,0.9), rgba(255,90,31,0.75) 40%, rgba(240,97,155,0.45) 72%, rgba(240,97,155,0) 100%)',
-                  filter: 'blur(2.5px)',
-                }}
-              />
-            );
-          })}
+            transition={{ duration: 0.55, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+            style={{ transformOrigin: '50% 8%', display: 'block', overflow: 'visible' }}
+          >
+            {/* outer tongue — molten into rose */}
+            <path
+              d="M20 58 C7 41 2 30 6 18 C9 9 14 5 20 3 C26 5 31 9 34 18 C38 30 33 41 20 58 Z"
+              fill="rgba(240,97,155,0.55)"
+            />
+            <path
+              d="M20 54 C9 39 5 30 8.5 19 C11 11 15 7 20 5.5 C25 7 29 11 31.5 19 C35 30 31 39 20 54 Z"
+              fill="#FF5A1F"
+              opacity="0.85"
+            />
+            {/* the hot core */}
+            <motion.path
+              d="M20 46 C13 36 11 29 13 22 C15 16 17.5 13.5 20 12.5 C22.5 13.5 25 16 27 22 C29 29 27 36 20 46 Z"
+              fill="#FFD9A8"
+              animate={{ scaleY: [1, 1.2, 0.9, 1.15, 1] }}
+              transition={{ duration: 0.4, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+              style={{ transformOrigin: '50% 20%' }}
+            />
+          </motion.svg>
         </motion.div>
         {/* The light-beam shadow beneath her — the floating made visible. */}
         <motion.div
