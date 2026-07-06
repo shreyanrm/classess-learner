@@ -58,21 +58,56 @@ export function FlyingVidya({
     }
     const w = window.innerWidth;
     const h = window.innerHeight;
-    // Top-down entry → one full circle in the open room → settle on the dock. All in-viewport.
-    // Coordinates are offsets from the dock (bottom-right), so x∈[-(w-120),0], y∈[-(h-120),0].
-    const cxr = -Math.min(w * 0.42, w - 260); // circle centre, safely on-screen
-    const cyr = -h * 0.52;
-    const r = Math.max(70, Math.min(w, h) * 0.16);
-    const xs: number[] = [cxr, cxr];
-    const ys: number[] = [-h - 90, cyr - r];
-    const LOOP = 12;
-    for (let i = 1; i <= LOOP; i++) {
-      const a = -Math.PI / 2 + (i / LOOP) * Math.PI * 2; // start at circle top, one full loop
-      xs.push(cxr + r * Math.cos(a));
-      ys.push(cyr + r * Math.sin(a));
+    // Fully responsive, per-page choreography: geometry derives from the LIVE viewport with
+    // safe margins, and the route hash picks among distinct flight styles so no two pages
+    // feel identical. Small viewports get a short, graceful drop instead of a grand tour.
+    const small = w < 760 || h < 560;
+    const margin = Math.max(72, Math.min(w, h) * 0.08);
+    const clampX = (x: number) => Math.max(-(w - margin - 90), Math.min(0, x));
+    const clampY = (y: number) => Math.max(-(h - margin - 90), Math.min(0, y));
+    const xs: number[] = [];
+    const ys: number[] = [];
+    const style = hash(routeKey) % 3;
+    if (small) {
+      const STEPS_S = 6;
+      for (let i = 0; i <= STEPS_S; i++) {
+        const t = i / STEPS_S;
+        xs.push(clampX(-w * 0.08 * (1 - t)));
+        ys.push(-h * 0.5 * (1 - t) * (1 - t) - 60 * (1 - t));
+      }
+    } else if (style === 0) {
+      const cxr = clampX(-Math.min(w * 0.42, w - 260));
+      const cyr = clampY(-h * 0.52);
+      const r = Math.max(60, Math.min(w, h) * 0.14);
+      xs.push(cxr, cxr);
+      ys.push(-h - 90, cyr - r);
+      const LOOP = 12;
+      for (let i = 1; i <= LOOP; i++) {
+        const a = -Math.PI / 2 + (i / LOOP) * Math.PI * 2;
+        xs.push(clampX(cxr + r * Math.cos(a)));
+        ys.push(clampY(cyr + r * Math.sin(a)));
+      }
+      xs.push(0);
+      ys.push(0);
+    } else if (style === 1) {
+      const STEPS_1 = 12;
+      for (let i = 0; i <= STEPS_1; i++) {
+        const t = i / STEPS_1;
+        xs.push(clampX(-(w - margin - 100) * (1 - t)));
+        ys.push(clampY(-h * 0.32 - Math.sin(t * Math.PI * 2) * h * 0.16 * (1 - t)));
+      }
+      xs[xs.length - 1] = 0;
+      ys[ys.length - 1] = 0;
+    } else {
+      const STEPS_2 = 10;
+      for (let i = 0; i <= STEPS_2; i++) {
+        const t = i / STEPS_2;
+        xs.push(clampX(-(w * 0.7) * (1 - t)));
+        ys.push(clampY(-Math.sin(t * Math.PI) * h * 0.34));
+      }
+      xs[xs.length - 1] = 0;
+      ys[ys.length - 1] = 0;
     }
-    xs.push(0);
-    ys.push(0);
     const STEPS = xs.length - 1;
     // Banking follows velocity — she leans into the turn like a thing with weight.
     const rots = xs.map((x, i) => {
@@ -89,7 +124,7 @@ export function FlyingVidya({
         y: ys,
         rotate: rots,
         opacity: [0, 1, ...Array(STEPS - 1).fill(1)],
-        transition: { duration: 2.3, ease: [0.3, 0.9, 0.4, 1] },
+        transition: { duration: small ? 1.0 : 2.2, ease: [0.3, 0.9, 0.4, 1] },
       })
       .then(() =>
         controls.start({
