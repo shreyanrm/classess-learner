@@ -1,0 +1,8 @@
+- generic [ref=e38]:
+  - button "Vidya" [ref=e40] [cursor=pointer]:
+    - img [ref=e44]
+  - generic [ref=e69]:
+    - generic [ref=e70]: hi — I'm Vidya
+    - generic:
+      - button "let's begin"
+  - button "skip for now" [ref=e71] [cursor=pointer]

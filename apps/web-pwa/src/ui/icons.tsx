@@ -193,6 +193,8 @@ export function SparkIcon({ size = 12, color = '#1F35E0' }: { size?: number; col
 
 
 /** The mic — a sound wave, seven rounded bars; they dance while she listens. Never a wifi arc. */
+const BAR_IDS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'] as const;
+
 export function WaveformIcon({ active = false, size = 18 }: { active?: boolean; size?: number }) {
   const bars = [0.3, 0.55, 0.9, 0.5, 0.9, 0.55, 0.3];
   return (
@@ -202,7 +204,7 @@ export function WaveformIcon({ active = false, size = 18 }: { active?: boolean; 
     >
       {bars.map((h, i) => (
         <motion.span
-          key={`${i}-${h}`}
+          key={`bar-${BAR_IDS[i]}`}
           animate={active ? { scaleY: [h, Math.min(1, h + 0.45), h * 0.7, h] } : { scaleY: h }}
           transition={
             active

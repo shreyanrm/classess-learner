@@ -151,6 +151,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         save(next);
         return next;
       });
+      bumpToday(); // the You heat map warms with every earned moment
       // The bloom must feel immediate; if the grant was a duplicate one-time award it is silent.
       setTimeout(() => granted > 0 && pushBloom(amount, reason, opts?.hue), 0);
       return amount;
@@ -171,6 +172,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         save(next);
         return next;
       });
+      bumpToday();
       // a completion bloom carries the mastered topic's subject hue
       pushBloom(xp ?? XP_AWARDS.topic, 'topic', hueForTopic(topicId));
     },

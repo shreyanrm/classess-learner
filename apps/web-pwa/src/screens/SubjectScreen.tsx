@@ -11,7 +11,13 @@
 import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { chaptersBySubject, learner, subjectById, unmetPrereqs } from '../data/catalog';
+import {
+  chaptersBySubject,
+  displaySubjectById,
+  learner,
+  subjectById,
+  unmetPrereqs,
+} from '../data/catalog';
 import type { Chapter, Topic } from '../data/model';
 import { useRouter } from '../shell/router';
 import { useViewport } from '../shell/useViewport';
@@ -417,21 +423,29 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
   const router = useRouter();
   const { publishPage } = useVidyaBus();
   const { isDesktop } = useViewport();
-  const subject = subjectById(subjectId);
+  // the door may be a clubbed display group (CBSE "Science" = physics + chemistry + biology);
+  // chapters keep canonical subjectIds underneath, so each section carries its own hue and glyph
+  const group = displaySubjectById(subjectId);
   const tone = toneForSubject(subjectId);
-  const chapters = chaptersBySubject[subjectId] ?? [];
+  const sections = (group?.subjectIds ?? [subjectId]).map((id) => ({
+    subject: subjectById(id),
+    tone: toneForSubject(id),
+    chapters: chaptersBySubject[id] ?? [],
+  }));
+  const clubbed = sections.length > 1;
+  const chapterTotal = sections.reduce((n, s) => n + s.chapters.length, 0);
   const [openChapter, setOpenChapter] = useState<string | null>(null);
   const listRef = useRegisterTarget<HTMLDivElement>('subject-chapters', {
     kind: 'list',
-    label: `the ${subject?.name ?? subjectId} chapter list — a tap expands a chapter into its topics`,
+    label: `the ${group?.name ?? subjectId} chapter list — a tap expands a chapter into its topics`,
   });
 
   useEffect(() => {
     publishPage({
       route: 'subject',
-      state: { subjectId, subject: subject?.name, intent, openChapter },
+      state: { subjectId, subject: group?.name, intent, openChapter },
     });
-  }, [publishPage, subjectId, subject?.name, intent, openChapter]);
+  }, [publishPage, subjectId, group?.name, intent, openChapter]);
 
   return (
     <motion.div
@@ -491,10 +505,10 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
               color: 'var(--clss-ink-900)',
             }}
           >
-            {subject?.name ?? subjectId}
+            {group?.name ?? subjectId}
           </h1>
           <div style={{ marginTop: 7, fontSize: '0.92rem', color: 'var(--clss-ink-500)' }}>
-            {subject?.line}
+            {group?.line}
           </div>
           <div style={{ marginTop: 14, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <span
@@ -521,22 +535,71 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
                 fontVariantNumeric: 'tabular-nums',
               }}
             >
-              {chapters.length} chapters
+              {chapterTotal} chapters
             </span>
           </div>
         </div>
       </motion.div>
 
       <div ref={listRef} style={{ marginTop: 40 }}>
-        {chapters.map((ch) => (
-          <motion.div key={ch.id} variants={rise}>
-            <ChapterRow
-              chapter={ch}
-              intent={intent}
-              open={openChapter === ch.id}
-              onToggle={() => setOpenChapter((o) => (o === ch.id ? null : ch.id))}
-            />
-          </motion.div>
+        {sections.map((sec, i) => (
+          <div key={sec.subject?.id ?? subjectId}>
+            {/* a clubbed door sections its chapters under the canonical disciplines */}
+            {clubbed && sec.subject && (
+              <motion.div
+                variants={rise}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  padding: '10px 4px 12px',
+                  marginTop: i === 0 ? 0 : 38,
+                }}
+              >
+                <span
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: 3,
+                    background: sec.tone.wash,
+                    display: 'grid',
+                    placeItems: 'center',
+                  }}
+                >
+                  <SubjectGlyph subjectId={sec.subject.id} size={26} />
+                </span>
+                <span
+                  style={{
+                    fontSize: '0.95rem',
+                    fontWeight: 650,
+                    letterSpacing: '-0.01em',
+                    color: sec.tone.hue,
+                  }}
+                >
+                  {sec.subject.name}
+                </span>
+                <span
+                  style={{
+                    fontSize: '0.78rem',
+                    color: 'var(--clss-ink-300)',
+                    fontVariantNumeric: 'tabular-nums',
+                  }}
+                >
+                  {sec.chapters.length} chapters
+                </span>
+              </motion.div>
+            )}
+            {sec.chapters.map((ch) => (
+              <motion.div key={ch.id} variants={rise}>
+                <ChapterRow
+                  chapter={ch}
+                  intent={intent}
+                  open={openChapter === ch.id}
+                  onToggle={() => setOpenChapter((o) => (o === ch.id ? null : ch.id))}
+                />
+              </motion.div>
+            ))}
+          </div>
         ))}
       </div>
     </motion.div>

@@ -31,3 +31,6 @@ Where `CONTEXT.md` and `DESIGN.md` are silent on a taste call, the open question
 - **Hyperlocalization framing for the engines.** Generated examples use locally familiar money/food/cricket contexts per board and region — relevance, not translation.
 
 - **2026-07-06 (afternoon) · Design system, second cut (owner-directed).** Pure white canvas, black text, cool neutrals, vibrant brand-accent pops; subtle 3px radius on every card/button/chip/input; one button system (solid ink/tonal/ghost, fixed heights, 4px magnetic pull); end-to-end viewport layouts (padding, not boxed max-widths); entrance choreography (cascade/rise staggered springs with de-blur) as the page-load signature; Google Sans + Caveat. Overrides DESIGN.md §2 values where they conflict.
+
+- **2026-07-06 (evening) · The skeleton: Concept B, "the thread."** Owner-picked from three blank-page concepts. Home = the learner's day as one continuous drawn path with data-driven stops (continue, next, review, boss gate, mystery spur), Vidya walking it. Owner modification: stops route to dedicated pages, never render lessons inline. Concepts A/C retained under ⌘K for reference.
+- **2026-07-06 (evening) · Responsive law.** Every size is fluid: type via clamp() scale, spacing via fluid steps, layouts adapt per viewport — no fixed px that break at other resolutions.

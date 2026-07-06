@@ -204,6 +204,18 @@ export function SubjectGlyph({
           <stop offset="0%" stopColor="#F0A030" />
           <stop offset="100%" stopColor="#B26A00" />
         </linearGradient>
+        <linearGradient id={`sg-p-${subjectId}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#8E6CF5" />
+          <stop offset="100%" stopColor="#6D4AE0" />
+        </linearGradient>
+        <linearGradient id={`sg-b-${subjectId}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#3ECD8C" />
+          <stop offset="100%" stopColor="#1CA363" />
+        </linearGradient>
+        <linearGradient id={`sg-c-${subjectId}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#F04A9C" />
+          <stop offset="100%" stopColor="#D6196F" />
+        </linearGradient>
       </defs>
       {subjectId === 'math' && (
         <g opacity={o}>
@@ -230,7 +242,37 @@ export function SubjectGlyph({
           <circle cx={71} cy={30} r={6.5} fill="none" stroke="#0D0D10" strokeWidth={2} />
         </g>
       )}
-      {subjectId === 'science' && (
+      {subjectId === 'physics' && (
+        <g opacity={o}>
+          {/* an orbiting atom — violet nucleus, bold ink orbits, one golden electron */}
+          <ellipse
+            cx={48}
+            cy={48}
+            rx={31}
+            ry={13}
+            fill="none"
+            stroke="#0D0D10"
+            strokeWidth={3}
+            transform="rotate(-28 48 48)"
+          />
+          <ellipse
+            cx={48}
+            cy={48}
+            rx={31}
+            ry={13}
+            fill="none"
+            stroke="#0D0D10"
+            strokeWidth={3}
+            transform="rotate(28 48 48)"
+          />
+          <circle cx={48} cy={48} r={12} fill={`url(#sg-p-${subjectId})`} />
+          <circle cx={48} cy={48} r={12} fill="none" stroke="#0D0D10" strokeWidth={3} />
+          <circle cx={73} cy={31} r={5.5} fill="#FFC93C" />
+          <circle cx={73} cy={31} r={5.5} fill="none" stroke="#0D0D10" strokeWidth={2} />
+          <circle cx={24} cy={64} r={4} fill="#6D4AE0" stroke="#0D0D10" strokeWidth={2} />
+        </g>
+      )}
+      {(subjectId === 'chemistry' || subjectId === 'science') && (
         <g opacity={o}>
           {/* a chunky flask, teal liquid, rising bubbles */}
           <path
@@ -249,6 +291,75 @@ export function SubjectGlyph({
           <circle cx={54} cy={70} r={2.4} fill="rgba(255,255,255,0.7)" />
           <circle cx={60} cy={44} r={4} fill="#2BC4D3" />
           <circle cx={68} cy={32} r={2.6} fill="#FFC93C" />
+        </g>
+      )}
+      {subjectId === 'biology' && (
+        <g opacity={o}>
+          {/* a layered leaf with white veins, and a small golden-hearted cell */}
+          <path
+            d="M28 76 C 24 46 42 22 74 18 C 78 50 58 74 28 76 Z"
+            fill={`url(#sg-b-${subjectId})`}
+            stroke="#0D0D10"
+            strokeWidth={3.2}
+            strokeLinejoin="round"
+          />
+          <path
+            d="M33 71 C 44 58 56 44 69 25"
+            fill="none"
+            stroke="rgba(255,255,255,0.85)"
+            strokeWidth={2.6}
+            strokeLinecap="round"
+          />
+          <path
+            d="M42 60 L 54 62 M50 50 L 62 50 M58 40 L 67 37"
+            stroke="rgba(255,255,255,0.7)"
+            strokeWidth={2.2}
+            strokeLinecap="round"
+          />
+          <circle cx={68} cy={68} r={9} fill="#FFFFFF" stroke="#0D0D10" strokeWidth={2.6} />
+          <circle cx={68} cy={68} r={3.6} fill="#FFC93C" stroke="#0D0D10" strokeWidth={1.6} />
+        </g>
+      )}
+      {subjectId === 'cs' && (
+        <g opacity={o}>
+          {/* chunky code brackets on a magenta panel, a friendly golden cursor mid-line */}
+          <rect x={16} y={24} width={64} height={48} rx={7} fill={`url(#sg-c-${subjectId})`} />
+          <rect
+            x={16}
+            y={24}
+            width={64}
+            height={48}
+            rx={7}
+            fill="rgba(255,255,255,0.12)"
+            transform="rotate(-6 48 48)"
+          />
+          <path
+            d="M38 38 L28 48 L38 58"
+            fill="none"
+            stroke="#FFFFFF"
+            strokeWidth={4.2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M58 38 L68 48 L58 58"
+            fill="none"
+            stroke="#FFFFFF"
+            strokeWidth={4.2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <rect x={44.5} y={39} width={7} height={18} rx={1.5} fill="#FFC93C" />
+          <rect
+            x={44.5}
+            y={39}
+            width={7}
+            height={18}
+            rx={1.5}
+            fill="none"
+            stroke="#0D0D10"
+            strokeWidth={2}
+          />
         </g>
       )}
       {subjectId === 'social' && (
@@ -289,9 +400,9 @@ export function SubjectGlyph({
           />
         </g>
       )}
-      {subjectId !== 'math' && subjectId !== 'science' && subjectId !== 'social' && (
-        <circle cx={48} cy={48} r={26} fill={`url(#sg-m-${subjectId})`} />
-      )}
+      {!['math', 'physics', 'chemistry', 'science', 'biology', 'cs', 'social'].includes(
+        subjectId,
+      ) && <circle cx={48} cy={48} r={26} fill={`url(#sg-m-${subjectId})`} />}
     </svg>
   );
 }

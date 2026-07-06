@@ -10,8 +10,7 @@
 import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
 import { motion } from 'framer-motion';
 import { type CSSProperties, type ReactNode, useEffect, useState } from 'react';
-import { chaptersBySubject, subjects } from '../data/catalog';
-import type { Subject } from '../data/model';
+import { chaptersBySubject, type DisplaySubject, displaySubjects } from '../data/catalog';
 import { useRouter } from '../shell/router';
 import { EmptyConstellation, SubjectGlyph } from '../ui/art';
 import { toneForSubject } from '../ui/hues';
@@ -149,7 +148,8 @@ export function SubjectSceneBackdrop({
           />
         </g>
       )}
-      {subjectId === 'science' && (
+      {/* ponytail: the sciences share one scene — orbit (physics), molecule (chemistry), bubbles (biology) */}
+      {['science', 'physics', 'chemistry', 'biology'].includes(subjectId) && (
         <g>
           {/* an orbit, tilted */}
           <ellipse
@@ -188,6 +188,62 @@ export function SubjectSceneBackdrop({
             strokeOpacity={0.18}
             strokeWidth={1.6}
           />
+        </g>
+      )}
+      {subjectId === 'cs' && (
+        <g>
+          {/* a ghost column of code tokens, indented like real code */}
+          <path
+            d="M280 36 h72 M304 60 h110 M304 84 h64 M328 108 h96 M304 132 h84 M280 156 h56"
+            stroke="#D6196F"
+            strokeOpacity={0.14}
+            strokeWidth={7}
+            strokeLinecap="round"
+          />
+          {/* a dashed execution line along the floor */}
+          <path
+            d={`M0 184 H${w}`}
+            stroke="#D6196F"
+            strokeOpacity={0.2}
+            strokeWidth={1.6}
+            strokeDasharray="2 7"
+            strokeLinecap="round"
+          />
+          {/* the chunky prompt card */}
+          <motion.g {...drift(7)}>
+            <rect
+              x={40}
+              y={30}
+              width={92}
+              height={56}
+              rx={8}
+              fill="#FFFFFF"
+              stroke={INK}
+              strokeWidth={2.6}
+            />
+            <path
+              d="M54 48 L64 56 L54 64"
+              fill="none"
+              stroke={INK}
+              strokeWidth={3}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <rect x={72} y={52} width={26} height={7} rx={2} fill="#D6196F" opacity={0.85} />
+          </motion.g>
+          {/* the golden cursor block */}
+          <motion.g {...drift(5.4, 5)}>
+            <rect
+              x={352}
+              y={42}
+              width={10}
+              height={20}
+              rx={2}
+              fill={GOLD}
+              stroke={INK}
+              strokeWidth={2}
+            />
+          </motion.g>
         </g>
       )}
       {subjectId === 'social' && (
@@ -247,7 +303,7 @@ function SubjectStage({
   height = 172,
   glyph = 96,
 }: {
-  subject: Subject;
+  subject: DisplaySubject;
   lit: boolean;
   height?: number;
   glyph?: number;
@@ -274,10 +330,14 @@ function SubjectStage({
   );
 }
 
-function SubjectCard({ subject, onOpen }: { subject: Subject; onOpen: () => void }) {
+function SubjectCard({ subject, onOpen }: { subject: DisplaySubject; onOpen: () => void }) {
   const [lit, setLit] = useState(false);
   const tone = toneForSubject(subject.id);
-  const chapterCount = (chaptersBySubject[subject.id] ?? []).length;
+  // a clubbed door counts every chapter behind it
+  const chapterCount = subject.subjectIds.reduce(
+    (n, id) => n + (chaptersBySubject[id] ?? []).length,
+    0,
+  );
   return (
     <TiltCard
       onClick={onOpen}
@@ -324,6 +384,8 @@ function SubjectCard({ subject, onOpen }: { subject: Subject; onOpen: () => void
 /** The tactile subject grid — shared by learn and practice, differing only in intent. */
 export function SubjectGrid({ intent }: { intent: 'learn' | 'practice' }) {
   const router = useRouter();
+  // the board's doors over the canonical six — CBSE ≤10 clubs the sciences into one "Science"
+  const doors = displaySubjects();
   return (
     <motion.div
       variants={cascade}
@@ -333,7 +395,7 @@ export function SubjectGrid({ intent }: { intent: 'learn' | 'practice' }) {
         gap: 18,
       }}
     >
-      {subjects.map((s) => (
+      {doors.map((s) => (
         <motion.div key={s.id} variants={rise}>
           <SubjectCard
             subject={s}
@@ -410,7 +472,7 @@ export function Learn() {
       </motion.div>
 
       <motion.div variants={rise} style={{ marginTop: 54, marginBottom: 20 }}>
-        <GridHero prompt="Where to today?" support="three worlds, one tap each" />
+        <GridHero prompt="Where to today?" support="your subjects, one tap each" />
       </motion.div>
       <div ref={gridRef}>
         <SubjectGrid intent="learn" />

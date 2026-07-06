@@ -31,10 +31,14 @@ export const boards: Board[] = [
   { id: 'national-uk', name: 'National Curriculum', region: 'United Kingdom', seeded: false },
 ];
 
+/** The canonical six (owner law) — every chapter keys to one of these for concepts and mastery. */
 export const subjects: Subject[] = [
   { id: 'math', name: 'Mathematics', line: 'patterns, structure, and certainty' },
-  { id: 'science', name: 'Science', line: 'how the world actually works' },
-  { id: 'social', name: 'Social science', line: 'people, places, and power' },
+  { id: 'physics', name: 'Physics', line: 'forces, fields, and why things move' },
+  { id: 'chemistry', name: 'Chemistry', line: 'what everything is made of' },
+  { id: 'biology', name: 'Biology', line: 'the machinery of living things' },
+  { id: 'cs', name: 'Computer Science', line: 'how machines think in steps' },
+  { id: 'social', name: 'Social Science', line: 'people, places, and power' },
 ];
 
 const t = (
@@ -450,11 +454,14 @@ export const mathChapters: Chapter[] = [
   },
 ];
 
-/** CBSE Class 8 — Science (rationalized NCERT). */
-export const scienceChapters: Chapter[] = [
+/**
+ * CBSE Class 8 — the sciences in NCERT order. Each chapter keys to its canonical discipline
+ * (physics / chemistry / biology); the clubbed "Science" door is presentation only.
+ */
+const class8Science: Chapter[] = [
   {
     id: 's1',
-    subjectId: 'science',
+    subjectId: 'biology',
     index: 1,
     name: 'Crop production and management',
     topics: [
@@ -489,7 +496,7 @@ export const scienceChapters: Chapter[] = [
   },
   {
     id: 's2',
-    subjectId: 'science',
+    subjectId: 'biology',
     index: 2,
     name: 'Microorganisms: friend and foe',
     topics: [
@@ -520,7 +527,7 @@ export const scienceChapters: Chapter[] = [
   },
   {
     id: 's3',
-    subjectId: 'science',
+    subjectId: 'chemistry',
     index: 3,
     name: 'Coal and petroleum',
     topics: [
@@ -555,7 +562,7 @@ export const scienceChapters: Chapter[] = [
   },
   {
     id: 's4',
-    subjectId: 'science',
+    subjectId: 'chemistry',
     index: 4,
     name: 'Combustion and flame',
     topics: [
@@ -590,7 +597,7 @@ export const scienceChapters: Chapter[] = [
   },
   {
     id: 's5',
-    subjectId: 'science',
+    subjectId: 'biology',
     index: 5,
     name: 'Conservation of plants and animals',
     topics: [
@@ -625,7 +632,7 @@ export const scienceChapters: Chapter[] = [
   },
   {
     id: 's6',
-    subjectId: 'science',
+    subjectId: 'biology',
     index: 6,
     name: 'Reproduction in animals',
     topics: [
@@ -643,7 +650,7 @@ export const scienceChapters: Chapter[] = [
   },
   {
     id: 's7',
-    subjectId: 'science',
+    subjectId: 'biology',
     index: 7,
     name: 'Reaching the age of adolescence',
     topics: [
@@ -666,7 +673,7 @@ export const scienceChapters: Chapter[] = [
   },
   {
     id: 's8',
-    subjectId: 'science',
+    subjectId: 'physics',
     index: 8,
     name: 'Force and pressure',
     topics: [
@@ -692,7 +699,7 @@ export const scienceChapters: Chapter[] = [
   },
   {
     id: 's9',
-    subjectId: 'science',
+    subjectId: 'physics',
     index: 9,
     name: 'Friction',
     topics: [
@@ -718,7 +725,7 @@ export const scienceChapters: Chapter[] = [
   },
   {
     id: 's10',
-    subjectId: 'science',
+    subjectId: 'physics',
     index: 10,
     name: 'Sound',
     topics: [
@@ -753,7 +760,7 @@ export const scienceChapters: Chapter[] = [
   },
   {
     id: 's11',
-    subjectId: 'science',
+    subjectId: 'chemistry',
     index: 11,
     name: 'Chemical effects of electric current',
     topics: [
@@ -777,7 +784,7 @@ export const scienceChapters: Chapter[] = [
   },
   {
     id: 's12',
-    subjectId: 'science',
+    subjectId: 'physics',
     index: 12,
     name: 'Some natural phenomena',
     topics: [
@@ -808,7 +815,7 @@ export const scienceChapters: Chapter[] = [
   },
   {
     id: 's13',
-    subjectId: 'science',
+    subjectId: 'physics',
     index: 13,
     name: 'Light',
     topics: [
@@ -833,7 +840,98 @@ export const scienceChapters: Chapter[] = [
   },
 ];
 
-/** CBSE Class 8 — Social science (History · Geography · Civics). */
+/** Chapters of one canonical discipline, re-indexed 1..n for display. Topic ids never change. */
+const ofSubject = (chapters: Chapter[], subjectId: string): Chapter[] =>
+  chapters.filter((c) => c.subjectId === subjectId).map((c, i) => ({ ...c, index: i + 1 }));
+
+export const physicsChapters: Chapter[] = ofSubject(class8Science, 'physics');
+export const chemistryChapters: Chapter[] = ofSubject(class8Science, 'chemistry');
+export const biologyChapters: Chapter[] = ofSubject(class8Science, 'biology');
+/** @deprecated pre-split alias — the canonical six own the catalog now. */
+export const scienceChapters: Chapter[] = class8Science;
+
+/** CBSE Class 8 — Computer Science (the SUBJECTS.md ramp: blocks → patterns → the web). */
+export const csChapters: Chapter[] = [
+  {
+    id: 'cs1',
+    subjectId: 'cs',
+    index: 1,
+    name: 'Thinking in steps',
+    topics: [
+      t(
+        'cs1',
+        'cs1-1',
+        'What is an algorithm',
+        'A recipe a machine can follow — exact steps, no guessing.',
+      ),
+      t(
+        'cs1',
+        'cs1-2',
+        'Building with blocks',
+        'Snap labeled blocks together and walk a robot across the grid.',
+        ['cs1-1'],
+      ),
+      t(
+        'cs1',
+        'cs1-3',
+        'When the robot goes wrong',
+        'A wrong turn is a wrong step — find it and fix it.',
+        ['cs1-2'],
+      ),
+    ],
+  },
+  {
+    id: 'cs2',
+    subjectId: 'cs',
+    index: 2,
+    name: 'Patterns and loops',
+    topics: [
+      t('cs2', 'cs2-1', 'Repeat until done', 'One repeat block does the walking three tiles over.'),
+      t(
+        'cs2',
+        'cs2-2',
+        'Counting with loops',
+        'A counter that ticks up each time the loop comes around.',
+        ['cs2-1'],
+      ),
+      t('cs2', 'cs2-3', 'Loops inside loops', 'Rows and columns — a pattern made of patterns.', [
+        'cs2-2',
+      ]),
+      t(
+        'cs2',
+        'cs2-4',
+        'Choosing with conditions',
+        'If the path is blocked, turn — decisions inside the steps.',
+        ['cs2-1'],
+      ),
+    ],
+  },
+  {
+    id: 'cs3',
+    subjectId: 'cs',
+    index: 3,
+    name: 'How the web works',
+    topics: [
+      t('cs3', 'cs3-1', 'Clients and servers', 'Your device asks, a machine far away answers.'),
+      t(
+        'cs3',
+        'cs3-2',
+        'What an address means',
+        'Every page has an exact name the whole internet agrees on.',
+        ['cs3-1'],
+      ),
+      t(
+        'cs3',
+        'cs3-3',
+        "A page's journey",
+        'Request, response, render — the trip behind every tap.',
+        ['cs3-2'],
+      ),
+    ],
+  },
+];
+
+/** CBSE Class 8 — Social Science (History · Geography · Civics). */
 export const socialChapters: Chapter[] = [
   {
     id: 'h1',
@@ -1437,11 +1535,11 @@ export const mathChapters10: Chapter[] = [
   },
 ];
 
-/** CBSE Class 10 — Science. */
-export const scienceChapters10: Chapter[] = [
+/** CBSE Class 10 — the sciences in NCERT order, each chapter keyed to its canonical discipline. */
+const class10Science: Chapter[] = [
   {
     id: 'x10-s1',
-    subjectId: 'science',
+    subjectId: 'chemistry',
     index: 1,
     name: 'Chemical Reactions and Equations',
     topics: [
@@ -1460,7 +1558,7 @@ export const scienceChapters10: Chapter[] = [
   },
   {
     id: 'x10-s2',
-    subjectId: 'science',
+    subjectId: 'chemistry',
     index: 2,
     name: 'Acids, Bases and Salts',
     topics: [
@@ -1475,7 +1573,7 @@ export const scienceChapters10: Chapter[] = [
   },
   {
     id: 'x10-s3',
-    subjectId: 'science',
+    subjectId: 'chemistry',
     index: 3,
     name: 'Metals and Non-metals',
     topics: [
@@ -1495,7 +1593,7 @@ export const scienceChapters10: Chapter[] = [
   },
   {
     id: 'x10-s4',
-    subjectId: 'science',
+    subjectId: 'chemistry',
     index: 4,
     name: 'Carbon and its Compounds',
     topics: [
@@ -1514,7 +1612,7 @@ export const scienceChapters10: Chapter[] = [
   },
   {
     id: 'x10-s5',
-    subjectId: 'science',
+    subjectId: 'biology',
     index: 5,
     name: 'Life Processes',
     topics: [
@@ -1531,7 +1629,7 @@ export const scienceChapters10: Chapter[] = [
   },
   {
     id: 'x10-s6',
-    subjectId: 'science',
+    subjectId: 'biology',
     index: 6,
     name: 'Control and Coordination',
     topics: [
@@ -1544,7 +1642,7 @@ export const scienceChapters10: Chapter[] = [
   },
   {
     id: 'x10-s7',
-    subjectId: 'science',
+    subjectId: 'biology',
     index: 7,
     name: 'How do Organisms Reproduce?',
     topics: [
@@ -1559,7 +1657,7 @@ export const scienceChapters10: Chapter[] = [
   },
   {
     id: 'x10-s8',
-    subjectId: 'science',
+    subjectId: 'biology',
     index: 8,
     name: 'Heredity',
     topics: [
@@ -1574,7 +1672,7 @@ export const scienceChapters10: Chapter[] = [
   },
   {
     id: 'x10-s9',
-    subjectId: 'science',
+    subjectId: 'physics',
     index: 9,
     name: 'Light: Reflection and Refraction',
     topics: [
@@ -1598,7 +1696,7 @@ export const scienceChapters10: Chapter[] = [
   },
   {
     id: 'x10-s10',
-    subjectId: 'science',
+    subjectId: 'physics',
     index: 10,
     name: 'The Human Eye and the Colourful World',
     topics: [
@@ -1617,7 +1715,7 @@ export const scienceChapters10: Chapter[] = [
   },
   {
     id: 'x10-s11',
-    subjectId: 'science',
+    subjectId: 'physics',
     index: 11,
     name: 'Electricity',
     topics: [
@@ -1645,7 +1743,7 @@ export const scienceChapters10: Chapter[] = [
   },
   {
     id: 'x10-s12',
-    subjectId: 'science',
+    subjectId: 'physics',
     index: 12,
     name: 'Magnetic Effects of Electric Current',
     topics: [
@@ -1668,7 +1766,7 @@ export const scienceChapters10: Chapter[] = [
   },
   {
     id: 'x10-s13',
-    subjectId: 'science',
+    subjectId: 'biology',
     index: 13,
     name: 'Our Environment',
     topics: [
@@ -1691,7 +1789,108 @@ export const scienceChapters10: Chapter[] = [
   },
 ];
 
-/** CBSE Class 10 — Social science (History · Geography · Civics · Economics). */
+export const physicsChapters10: Chapter[] = ofSubject(class10Science, 'physics');
+export const chemistryChapters10: Chapter[] = ofSubject(class10Science, 'chemistry');
+export const biologyChapters10: Chapter[] = ofSubject(class10Science, 'biology');
+/** @deprecated pre-split alias — the canonical six own the catalog now. */
+export const scienceChapters10: Chapter[] = class10Science;
+
+/** CBSE Class 10 — Computer Science (the SUBJECTS.md ramp: Parsons Python → algorithms → AI). */
+export const csChapters10: Chapter[] = [
+  {
+    id: 'x10-cs1',
+    subjectId: 'cs',
+    index: 1,
+    name: 'Python basics',
+    topics: [
+      t(
+        'x10-cs1',
+        'x10-cs1-1',
+        'Variables and values',
+        'A name, a box, and the value it holds right now.',
+      ),
+      t(
+        'x10-cs1',
+        'x10-cs1-2',
+        'Lines in the right order',
+        'The code is written — drag its lines into the order that runs.',
+        ['x10-cs1-1'],
+      ),
+      t(
+        'x10-cs1',
+        'x10-cs1-3',
+        'Loops and conditions in Python',
+        'for, while, and if — the same thinking, now in real syntax.',
+        ['x10-cs1-2'],
+      ),
+      t(
+        'x10-cs1',
+        'x10-cs1-4',
+        'Spot the broken line',
+        'One line among the shuffled ones is wrong — debugging as a game.',
+        ['x10-cs1-2'],
+      ),
+    ],
+  },
+  {
+    id: 'x10-cs2',
+    subjectId: 'cs',
+    index: 2,
+    name: 'Algorithms',
+    topics: [
+      t(
+        'x10-cs2',
+        'x10-cs2-1',
+        'Searching a list',
+        'Checking one by one, or halving the haystack each step.',
+      ),
+      t(
+        'x10-cs2',
+        'x10-cs2-2',
+        'Sorting step by step',
+        'Watch bars swap themselves into order, pass by pass.',
+        ['x10-cs2-1'],
+      ),
+      t(
+        'x10-cs2',
+        'x10-cs2-3',
+        'How fast is fast',
+        'Why one method beats another as the list grows huge.',
+        ['x10-cs2-2'],
+      ),
+    ],
+  },
+  {
+    id: 'x10-cs3',
+    subjectId: 'cs',
+    index: 3,
+    name: 'How AI works',
+    topics: [
+      t(
+        'x10-cs3',
+        'x10-cs3-1',
+        'Learning from examples',
+        'No rules written by hand — patterns found in data.',
+      ),
+      t(
+        'x10-cs3',
+        'x10-cs3-2',
+        'Training and testing',
+        'Practice on one set, prove yourself on another.',
+        ['x10-cs3-1'],
+      ),
+      t(
+        'x10-cs3',
+        'x10-cs3-3',
+        'Where AI gets it wrong',
+        'Bias, blind spots, and why a confident answer can still be false.',
+        ['x10-cs3-2'],
+      ),
+    ],
+  },
+];
+
+/** CBSE Class 10 — Social Science (History · Geography · Civics · Economics). */
 export const socialChapters10: Chapter[] = [
   {
     id: 'x10-h1',
@@ -2055,26 +2254,46 @@ export const socialChapters10: Chapter[] = [
 ];
 
 const GRADE_CHAPTERS: Record<string, Record<string, Chapter[]>> = {
-  'Class 8': { math: mathChapters, science: scienceChapters, social: socialChapters },
-  'Class 10': { math: mathChapters10, science: scienceChapters10, social: socialChapters10 },
+  'Class 8': {
+    math: mathChapters,
+    physics: physicsChapters,
+    chemistry: chemistryChapters,
+    biology: biologyChapters,
+    cs: csChapters,
+    social: socialChapters,
+  },
+  'Class 10': {
+    math: mathChapters10,
+    physics: physicsChapters10,
+    chemistry: chemistryChapters10,
+    biology: biologyChapters10,
+    cs: csChapters10,
+    social: socialChapters10,
+  },
 };
 
 /** ponytail: same key profile.ts writes (clss-learner-profile) — kept local to dodge a circular import. */
-function currentGrade(): string {
+function currentProfile(): { grade: string; boardId: string } {
   try {
     const raw = localStorage.getItem('clss-learner-profile');
     if (raw) {
-      const grade = (JSON.parse(raw) as { grade?: string }).grade;
-      if (grade && GRADE_CHAPTERS[grade]) return grade;
+      const p = JSON.parse(raw) as { grade?: string; boardId?: string };
+      return {
+        grade: p.grade && GRADE_CHAPTERS[p.grade] ? p.grade : 'Class 8',
+        boardId: p.boardId || 'cbse',
+      };
     }
   } catch {
-    // storage unavailable — fall through to the seed grade
+    // storage unavailable — fall through to the seed profile
   }
-  return 'Class 8';
+  return { grade: 'Class 8', boardId: 'cbse' };
 }
 
 function currentGradeChapters(): Record<string, Chapter[]> {
-  return GRADE_CHAPTERS[currentGrade()] ?? (GRADE_CHAPTERS['Class 8'] as Record<string, Chapter[]>);
+  return (
+    GRADE_CHAPTERS[currentProfile().grade] ??
+    (GRADE_CHAPTERS['Class 8'] as Record<string, Chapter[]>)
+  );
 }
 
 /**
@@ -2118,6 +2337,62 @@ export function chapterById(id: string): Chapter | undefined {
 
 export function subjectById(id: string): Subject | undefined {
   return subjects.find((s) => s.id === id);
+}
+
+/**
+ * Presentation over the canonical six: a board clubs and names subjects its own way —
+ * CBSE through Class 10 teaches ONE "Science" — while chapters keep canonical subjectIds
+ * underneath for concepts and mastery. A door lists the canonical subjects it opens onto.
+ */
+export interface DisplaySubject {
+  id: string;
+  name: string;
+  line: string;
+  /** Canonical subject ids clubbed behind this door, in section order. */
+  subjectIds: string[];
+}
+
+const door = (id: string, name?: string): DisplaySubject => {
+  const s = subjectById(id);
+  return { id, name: name ?? s?.name ?? id, line: s?.line ?? '', subjectIds: [id] };
+};
+
+/** How this board, at this grade, clubs and names the canonical six. */
+export function displaySubjectsFor(boardId: string, grade: string): DisplaySubject[] {
+  const g = Number.parseInt(grade.replace(/\D+/g, ''), 10) || 8;
+  // ICSE examines the sciences as separate papers; senior secondary splits them everywhere.
+  const splitSciences = boardId === 'icse' || g >= 11;
+  const cs = door(
+    'cs',
+    boardId === 'icse' || (boardId === 'cbse' && g >= 9 && g <= 10)
+      ? 'Computer Applications'
+      : undefined,
+  );
+  const social = door('social', boardId === 'icse' ? 'History, Civics & Geography' : undefined);
+  if (splitSciences)
+    return [door('math'), door('physics'), door('chemistry'), door('biology'), cs, social];
+  return [
+    door('math'),
+    {
+      id: 'science',
+      name: 'Science',
+      line: 'how the world actually works',
+      subjectIds: ['physics', 'chemistry', 'biology'],
+    },
+    social,
+    cs,
+  ];
+}
+
+/** The display doors for the profile on this device (CBSE Class 8 seed fallback). */
+export function displaySubjects(): DisplaySubject[] {
+  const p = currentProfile();
+  return displaySubjectsFor(p.boardId, p.grade);
+}
+
+/** Resolve a door id — or a canonical subject id navigated to directly — to a display group. */
+export function displaySubjectById(id: string): DisplaySubject | undefined {
+  return displaySubjects().find((d) => d.id === id) ?? (subjectById(id) ? door(id) : undefined);
 }
 
 /**

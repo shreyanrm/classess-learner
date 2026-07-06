@@ -34,6 +34,28 @@ export const surface = {
 
 export const inkText: CSSProperties = { color: surface.ink };
 
+/**
+ * The fluid scale — every size breathes with the viewport (owner law: sizes adapt to
+ * resolution everywhere). Use these, never fixed px, for type and rhythm.
+ */
+export const fluidType = {
+  display: 'clamp(1.9rem, 1.3rem + 2.6vw, 3.2rem)',
+  title: 'clamp(1.5rem, 1.15rem + 1.5vw, 2.1rem)',
+  heading: 'clamp(1.15rem, 1rem + 0.7vw, 1.5rem)',
+  body: 'clamp(0.92rem, 0.88rem + 0.2vw, 1.05rem)',
+  small: 'clamp(0.8rem, 0.78rem + 0.1vw, 0.88rem)',
+  eyebrow: 'clamp(0.68rem, 0.66rem + 0.08vw, 0.74rem)',
+} as const;
+
+export const fluidSpace = {
+  xs: 'clamp(6px, 0.5vw, 10px)',
+  sm: 'clamp(10px, 1vw, 16px)',
+  md: 'clamp(16px, 2vw, 28px)',
+  lg: 'clamp(28px, 3.5vw, 52px)',
+  xl: 'clamp(44px, 6vw, 96px)',
+  gutter: 'clamp(20px, 5vw, 72px)',
+} as const;
+
 /** Page titles: one committed scale. */
 export const titleType: CSSProperties = {
   margin: 0,

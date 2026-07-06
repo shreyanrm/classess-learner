@@ -12,8 +12,13 @@ export interface SubjectTone {
 
 export const SUBJECT_HUES: Record<string, SubjectTone> = {
   math: { hue: '#1F35E0', wash: 'rgba(31,53,224,0.06)' },
+  physics: { hue: '#6D4AE0', wash: 'rgba(109,74,224,0.07)' },
+  chemistry: { hue: '#0FA3B1', wash: 'rgba(15,163,177,0.07)' },
+  biology: { hue: '#1CA363', wash: 'rgba(28,163,99,0.07)' },
+  cs: { hue: '#D6196F', wash: 'rgba(214,25,111,0.06)' },
+  social: { hue: '#E8881A', wash: 'rgba(232,136,26,0.08)' },
+  // ponytail: presentation alias — the clubbed "Science" door (and legacy ids) reads chemistry teal
   science: { hue: '#0FA3B1', wash: 'rgba(15,163,177,0.07)' },
-  social: { hue: '#B26A00', wash: 'rgba(178,106,0,0.07)' },
 };
 
 export function toneForSubject(subjectId: string): SubjectTone {
