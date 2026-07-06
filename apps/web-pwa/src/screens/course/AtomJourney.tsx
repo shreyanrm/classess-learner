@@ -228,7 +228,7 @@ export function AtomJourney({
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 230, damping: 26 }}
             >
-              <TopicSigil id={topic.id} size={140} draw />
+              <TopicSigil id={topic.id} size={150} draw bold />
             </motion.div>
           </Stage>
           <div style={{ textAlign: 'center' }}>

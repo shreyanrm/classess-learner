@@ -445,8 +445,12 @@ export function PracticeRun({
             <Stage
               hue={phase === 'correct' ? '#2E7D32' : HUE}
               tint={0.05}
-              minHeight={0}
-              style={{ padding: '18px 16px', gap: 16, justifyContent: 'flex-start' }}
+              minHeight={phase === 'correct' ? 300 : 0}
+              style={{
+                padding: '18px 16px',
+                gap: 16,
+                justifyContent: phase === 'correct' ? 'center' : 'flex-start',
+              }}
             >
               {/* the entry */}
               <motion.div

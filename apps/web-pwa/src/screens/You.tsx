@@ -602,31 +602,17 @@ export function You() {
           <Section label="learning is better shared">
             {/* the cast gathers — the world that learns beside you */}
             <Scene
-              height={340}
+              height={150}
               hue="#1F35E0"
               wash={0.05}
               items={[
-                { id: 'torto', x: 0.06, size: 160 },
-                { id: 'pip', x: 0.19, size: 160, mood: 'happy' },
-                { id: 'books', x: 0.32, size: 160 },
-                { id: 'sage', x: 0.46, size: 160 },
-                { id: 'volt', x: 0.62, size: 160, mood: 'delighted' },
-                { id: 'juni', x: 0.75, size: 160, lift: 46 },
-                { id: 'sprout', x: 0.89, size: 160 },
-              ]}
-            />
-            <Scene
-              height={340}
-              hue="#1F35E0"
-              wash={0.05}
-              items={[
-                { id: 'ember', x: 0.06, size: 160, mood: 'curious' },
-                { id: 'pico', x: 0.19, size: 160, mood: 'happy' },
-                { id: 'beaker', x: 0.32, size: 160 },
-                { id: 'planet', x: 0.46, size: 160 },
-                { id: 'flag', x: 0.62, size: 160 },
-                { id: 'pencil', x: 0.75, size: 160 },
-                { id: 'bulb', x: 0.89, size: 160 },
+                { id: 'torto', x: 0.07, size: 64 },
+                { id: 'pip', x: 0.2, size: 86, mood: 'happy' },
+                { id: 'books', x: 0.32, size: 54 },
+                { id: 'sage', x: 0.46, size: 82 },
+                { id: 'volt', x: 0.62, size: 86, mood: 'delighted' },
+                { id: 'juni', x: 0.75, size: 44, lift: 46 },
+                { id: 'sprout', x: 0.89, size: 66 },
               ]}
             />
             <div

@@ -191,7 +191,6 @@ export function SparkIcon({ size = 12, color = '#1F35E0' }: { size?: number; col
   );
 }
 
-
 /** The mic — a sound wave, seven rounded bars; they dance while she listens. Never a wifi arc. */
 const BAR_IDS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'] as const;
 
