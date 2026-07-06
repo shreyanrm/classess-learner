@@ -10,7 +10,7 @@
  * Vidya (packages/vidya) is untouched by this system: the cast are her world, not her rivals.
  */
 
-import type { CSSProperties, ComponentType } from 'react';
+import type { ComponentType, CSSProperties } from 'react';
 import { Ember, Juni, Pico, Pip, Sage, Sprout, Torto, Volt } from './characters';
 import { Beaker, Books, Bulb, Flag, Pencil, Planet, Plant, Trophy } from './props';
 import { type CastFigureProps, hexWash, type Mood, type WorldPropProps } from './shared';
@@ -32,9 +32,20 @@ export {
 
 // --- the registry --------------------------------------------------------------------------------
 export type CastId = 'pip' | 'sage' | 'sprout' | 'volt' | 'ember' | 'pico' | 'juni' | 'torto';
-export type PropId = 'books' | 'beaker' | 'planet' | 'plant' | 'flag' | 'pencil' | 'bulb' | 'trophy';
+export type PropId =
+  | 'books'
+  | 'beaker'
+  | 'planet'
+  | 'plant'
+  | 'flag'
+  | 'pencil'
+  | 'bulb'
+  | 'trophy';
 
-export const CAST: Record<CastId, { name: string; role: string; Component: ComponentType<CastFigureProps> }> = {
+export const CAST: Record<
+  CastId,
+  { name: string; role: string; Component: ComponentType<CastFigureProps> }
+> = {
   pip: { name: 'Pip', role: 'the curious cat', Component: Pip },
   sage: { name: 'Sage', role: 'the wise owl', Component: Sage },
   sprout: { name: 'Sprout', role: 'the new idea', Component: Sprout },

@@ -5,8 +5,7 @@
  * same shared baseline, same slow idle. One prop carries one idea.
  */
 
-import { Bob, Float, Ground, PAINT, Sway, type WorldPropProps } from './shared';
-import { Figure } from './shared';
+import { Bob, Figure, Float, Ground, PAINT, Sway, type WorldPropProps } from './shared';
 
 /** A stack of three well-loved books. */
 export function Books({ size, animate = true, seed = 0 }: WorldPropProps) {
@@ -40,7 +39,10 @@ export function Beaker({ size, animate = true, seed = 0 }: WorldPropProps) {
           strokeWidth={3}
           strokeLinejoin="round"
         />
-        <path d="M45.5 82 h29 L84 96 C86.6 102 83 108 77 108 H43 C37 108 33.4 102 36 96 Z" fill={PAINT.mint} />
+        <path
+          d="M45.5 82 h29 L84 96 C86.6 102 83 108 77 108 H43 C37 108 33.4 102 36 96 Z"
+          fill={PAINT.mint}
+        />
         <rect x="48" y="38" width="24" height="7" rx="3.5" fill={PAINT.slate} />
         <circle cx="52" cy="96" r="3.2" fill="#FFFFFF" opacity=".85" />
         <circle cx="63" cy="100" r="2.2" fill="#FFFFFF" opacity=".7" />

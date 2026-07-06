@@ -1,22 +1,25 @@
 'use client';
 
 /**
- * The home — radically minimal (DESIGN.md §7). On landing the learner sees almost nothing:
- * Vidya expanded into a full conversation, a did-you-know whisper top right, the you affordance
- * top left, and two doors. That emptiness is the premium signal.
+ * The home — the day as one walkable thread (Concept B, productionised). Vidya arrives first
+ * (swoop → land → typed greeting, once per session), then the page IS the journey: a machined
+ * bezier drawn down the canvas with data-driven stops that each route somewhere real. Vidya
+ * sits on the thread beside the current stop; the chat bar lives beneath the thread's start;
+ * the aurora doors wait at the thread's end.
  */
 
-import { VidyaBody } from '@classess/vidya';
+import { useVidyaBus, VidyaBody } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
-import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { learner } from '../data/catalog';
 import { useRouter } from '../shell/router';
-import { WaveformIcon, SendIcon, SparkIcon } from '../ui/icons';
-import { AuroraButton, cascade, Kbd, MagneticButton, rise } from '../ui/kit';
+import { useProgress } from '../store/progress';
+import { SendIcon, SparkIcon, WaveformIcon } from '../ui/icons';
+import { AuroraButton, cascade, fluidSpace, fluidType, Kbd, MagneticButton, rise } from '../ui/kit';
 import { useVidyaChat } from '../vidya/chat';
 import { useVidyaVoice } from '../vidya/voice';
-
-// did-you-know moved into the AppHeader — it owns all top chrome now
+import { deriveStops } from './home/stops';
+import { Thread } from './home/Thread';
 
 function greeting(name: string): string {
   const h = new Date().getHours();
@@ -24,6 +27,14 @@ function greeting(name: string): string {
     h < 5 ? 'Good night' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
   return `${part}, ${name}`;
 }
+
+const CAPS = {
+  fontSize: fluidType.eyebrow,
+  fontWeight: 600,
+  letterSpacing: '0.15em',
+  textTransform: 'uppercase',
+  color: 'rgba(18,19,22,0.36)',
+} as const;
 
 const CHIPS: { label: string; prompt: string }[] = [
   {
@@ -44,10 +55,16 @@ const CHIPS: { label: string; prompt: string }[] = [
 export function Home() {
   const router = useRouter();
   const { turns, ask, busy, mood, setMood } = useVidyaChat();
+  const progress = useProgress();
+  const { publishPage } = useVidyaBus();
   const [draft, setDraft] = useState('');
   const [voiceNote, setVoiceNote] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const voice = useVidyaVoice({ setMood });
+
+  // The day, derived from real state — every stop routes somewhere real.
+  const { stops, currentIndex } = useMemo(() => deriveStops(progress), [progress]);
+
   // The opening — once per session, Vidya arrives before anything else exists.
   const [firstVisit] = useState(() => sessionStorage.getItem('clss-home-opened') !== '1');
   const [landed, setLanded] = useState(!firstVisit);
@@ -58,13 +75,20 @@ export function Home() {
     const t = setInterval(() => setGreetShown((n) => n + 1), 28);
     return () => clearInterval(t);
   }, [landed, greetShown, greetingText.length]);
+
+  useEffect(() => {
+    publishPage({
+      route: 'home',
+      state: { title: 'today', intent: 'walk the day', stops: stops.map((s) => s.title) },
+    });
+  }, [publishPage, stops]);
+
   const voiceOn =
     voice.status === 'listening' || voice.status === 'speaking' || voice.status === 'connecting';
-
   const toggleVoice = () => {
     if (voiceOn) return voice.stop();
-    void voice.start().then((landed) => {
-      if (landed === 'unavailable') {
+    void voice.start().then((state) => {
+      if (state === 'unavailable') {
         setVoiceNote(true);
         window.setTimeout(() => setVoiceNote(false), 3000);
       }
@@ -88,76 +112,106 @@ export function Home() {
     void ask(text);
   };
 
-  return (
-    <div
-      style={{
-        minHeight: '100dvh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: '0 24px',
+  const now = new Date();
+  const dateLine = `today · ${now
+    .toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
+    .toLowerCase()
+    .replace(/,/g, '')}`;
+
+  const currentKind = stops[currentIndex]?.kind;
+  const vidyaLine = busy
+    ? 'thinking…'
+    : currentKind === 'continue'
+      ? 'right where we left it'
+      : 'I marked today’s walk for you';
+
+  // Vidya, on the journey — the Thread seats her beside the current stop.
+  const vidyaNode = (
+    <motion.div
+      initial={firstVisit ? { x: '30vw', y: '-70vh', rotate: 16, opacity: 0 } : false}
+      animate={{
+        x: ['30vw', '12vw', '-2vw', '0vw'],
+        y: ['-70vh', '-36vh', '-5vh', '0vh'],
+        rotate: [16, 9, -7, 0],
+        opacity: [0, 1, 1, 1],
       }}
+      transition={
+        firstVisit
+          ? { duration: 1.5, times: [0, 0.45, 0.8, 1], ease: [0.3, 0.9, 0.4, 1] }
+          : { duration: 0 }
+      }
+      onAnimationComplete={() => {
+        if (!landed) {
+          setLanded(true);
+          sessionStorage.setItem('clss-home-opened', '1');
+          setMood('celebrate');
+          window.setTimeout(() => setMood('idle'), 1100);
+        }
+      }}
+      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}
     >
-      {/* Vidya, front door */}
+      <VidyaBody size={96} mood={busy ? 'thinking' : mood} gaze="pointer" label="Vidya" />
+      <div
+        style={{
+          fontFamily: 'Caveat, cursive',
+          fontSize: 20,
+          fontWeight: 600,
+          color: 'rgba(18,19,22,0.58)',
+          textAlign: 'center',
+          lineHeight: 1.15,
+          maxWidth: 126,
+        }}
+      >
+        {vidyaLine}
+      </div>
+    </motion.div>
+  );
+
+  return (
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+      {/* beneath the global AppHeader — nothing at the top edge */}
       <motion.div
         variants={cascade}
         initial="hidden"
         animate={landed ? 'show' : 'hidden'}
         style={{
-          flex: 1,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          width: '100%',
-          padding: '0 6vw',
-          gap: 0,
+          padding: `calc(64px + ${fluidSpace.lg}) ${fluidSpace.gutter} 0`,
         }}
       >
-        <motion.div
-          initial={firstVisit ? { x: '36vw', y: '-62vh', rotate: 16, opacity: 0 } : false}
-          animate={{
-            x: ['36vw', '10vw', '-3vw', '0vw'],
-            y: ['-62vh', '-30vh', '-5vh', '0vh'],
-            rotate: [16, 9, -7, 0],
-            opacity: [0, 1, 1, 1],
-          }}
-          transition={
-            firstVisit
-              ? { duration: 1.5, times: [0, 0.45, 0.8, 1], ease: [0.3, 0.9, 0.4, 1] }
-              : { duration: 0 }
-          }
-          onAnimationComplete={() => {
-            if (!landed) {
-              setLanded(true);
-              sessionStorage.setItem('clss-home-opened', '1');
-              setMood('celebrate');
-              window.setTimeout(() => setMood('idle'), 1100);
-            }
-          }}
-        >
-          <VidyaBody size={116} mood={busy ? 'thinking' : mood} gaze="pointer" label="Vidya" />
+        {/* the trailhead — date, greeting, and her hand */}
+        <motion.div variants={rise} style={CAPS}>
+          {dateLine}
         </motion.div>
-        <motion.div
+        <motion.h1
           variants={rise}
           style={{
-            marginTop: 28,
-            fontSize: '1.7rem',
-            fontWeight: 650,
+            margin: `${fluidSpace.sm} 0 0`,
+            fontSize: fluidType.display,
+            fontWeight: 300,
+            letterSpacing: '-0.03em',
             color: '#121316',
-            letterSpacing: '-0.035em',
+            textAlign: 'center',
+            lineHeight: 1.1,
           }}
         >
           {greetingText.slice(0, greetShown)}
           {greetShown < greetingText.length && landed && (
             <span style={{ color: '#989AA4' }}>|</span>
           )}
-        </motion.div>
+        </motion.h1>
         <motion.div
           variants={rise}
-          style={{ marginTop: 10, color: '#5C5E66', fontSize: '0.98rem' }}
+          style={{
+            marginTop: 8,
+            fontFamily: 'Caveat, cursive',
+            fontSize: 'clamp(19px, 1.6vw, 24px)',
+            color: 'rgba(18,19,22,0.58)',
+          }}
         >
-          Ask me anything, or take a door
+          the day is a walk, not a list
         </motion.div>
 
         {conversation.length > 0 && (
@@ -165,9 +219,10 @@ export function Home() {
             ref={scrollRef}
             style={{
               width: '100%',
+              maxWidth: 640,
               maxHeight: '32vh',
               overflowY: 'auto',
-              marginTop: 24,
+              marginTop: fluidSpace.md,
               display: 'flex',
               flexDirection: 'column',
               gap: 10,
@@ -182,7 +237,7 @@ export function Home() {
                   maxWidth: '80%',
                   padding: '10px 14px',
                   borderRadius: 'var(--clss-radius-md)',
-                  fontSize: '0.95rem',
+                  fontSize: fluidType.body,
                   lineHeight: 1.55,
                   background: t.role === 'user' ? 'var(--clss-ink-900)' : 'var(--clss-paper)',
                   color: t.role === 'user' ? 'var(--clss-paper)' : 'var(--clss-ink-900)',
@@ -193,21 +248,21 @@ export function Home() {
               </div>
             ))}
             {busy && (
-              <div style={{ color: 'var(--clss-ink-500)', fontSize: '0.85rem' }}>
+              <div style={{ color: 'var(--clss-ink-500)', fontSize: fluidType.small }}>
                 Vidya is thinking…
               </div>
             )}
           </div>
         )}
 
-        {/* the chat bar */}
+        {/* the chat bar — a calm block beneath the thread's start */}
         <motion.form
           variants={rise}
           onSubmit={submit}
           style={{
             width: '100%',
             maxWidth: 560,
-            marginTop: 36,
+            marginTop: fluidSpace.md,
             display: 'flex',
             gap: 10,
             alignItems: 'center',
@@ -224,7 +279,7 @@ export function Home() {
                 flex: 1,
                 height: 52,
                 padding: '0 52px 0 18px',
-                fontSize: '1rem',
+                fontSize: fluidType.body,
                 fontFamily: 'inherit',
                 border: '1px solid #E9E9EE',
                 borderRadius: 3,
@@ -249,8 +304,8 @@ export function Home() {
                 right: 6,
                 top: '50%',
                 transform: 'translateY(-50%)',
-                width: 40,
-                height: 40,
+                width: 44,
+                height: 44,
                 display: 'grid',
                 placeItems: 'center',
                 border: 'none',
@@ -288,7 +343,7 @@ export function Home() {
           </AnimatePresence>
         </motion.form>
         {voiceNote && (
-          <div style={{ marginTop: 8, color: 'var(--clss-ink-500)', fontSize: '0.8rem' }}>
+          <div style={{ marginTop: 8, color: 'var(--clss-ink-500)', fontSize: fluidType.small }}>
             voice arrives with a key
           </div>
         )}
@@ -299,7 +354,7 @@ export function Home() {
           style={{
             display: 'flex',
             gap: 8,
-            marginTop: 16,
+            marginTop: fluidSpace.sm,
             flexWrap: 'wrap',
             justifyContent: 'center',
           }}
@@ -313,12 +368,13 @@ export function Home() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 7,
+                minHeight: 44,
                 border: 'none',
                 background: '#F1F1F5',
                 color: '#121316',
                 borderRadius: 3,
                 padding: '10px 18px',
-                fontSize: '0.87rem',
+                fontSize: fluidType.small,
                 fontWeight: 550,
                 cursor: 'pointer',
                 fontFamily: 'inherit',
@@ -339,14 +395,35 @@ export function Home() {
             </button>
           ))}
         </motion.div>
+      </motion.div>
 
-        {/* the two doors — the product's main features carry the aurora */}
-        <motion.div variants={rise} style={{ display: 'flex', gap: 16, marginTop: 56 }}>
+      {/* the day, drawn — one thread, stops on it, Vidya walking it */}
+      <div style={{ marginTop: fluidSpace.md }}>
+        <Thread
+          stops={stops}
+          currentIndex={currentIndex}
+          vidya={vidyaNode}
+          onGo={(route) => router.navigate(route)}
+        />
+      </div>
+
+      {/* the thread's end — wander beyond today */}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: fluidSpace.md,
+          padding: `0 ${fluidSpace.gutter} ${fluidSpace.sm}`,
+        }}
+      >
+        <div style={CAPS}>wander beyond today</div>
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
           <AuroraButton
             size="lg"
             onClick={() => router.navigate({ name: 'learn' })}
             style={{ minWidth: 170 }}
-            flashDelay={firstVisit ? 1.1 : undefined}
+            flashDelay={firstVisit ? 1.6 : undefined}
           >
             Learn
           </AuroraButton>
@@ -354,20 +431,21 @@ export function Home() {
             size="lg"
             onClick={() => router.navigate({ name: 'practice' })}
             style={{ minWidth: 170 }}
-            flashDelay={firstVisit ? 1.45 : undefined}
+            flashDelay={firstVisit ? 1.95 : undefined}
           >
             Practice
           </AuroraButton>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
       <div
         style={{
-          paddingBottom: 18,
+          padding: `${fluidSpace.md} 0 18px`,
           color: 'var(--clss-ink-300)',
           fontSize: '0.75rem',
           display: 'flex',
           alignItems: 'center',
+          justifyContent: 'center',
           gap: 8,
         }}
       >

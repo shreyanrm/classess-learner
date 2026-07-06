@@ -9,6 +9,7 @@
 import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { Sage } from '../../ui/cast';
 import type { BarState } from './shared';
 import { CardBody, cardTitle, GOLD, lead, Scrubber, Stage, whisper } from './shared';
 
@@ -114,6 +115,16 @@ export function MysteryTease({
         }}
       >
         <DaySky />
+        {/* Sage keeps watch over hidden doors — owls always know first */}
+        <motion.div
+          aria-hidden
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 230, damping: 24, delay: 0.7 }}
+          style={{ position: 'absolute', left: 22, bottom: 10 }}
+        >
+          <Sage size={64} mood="curious" />
+        </motion.div>
         <div style={{ ...whisper, position: 'relative' }}>something hidden unlocked</div>
       </Stage>
       <div style={{ textAlign: 'center' }}>

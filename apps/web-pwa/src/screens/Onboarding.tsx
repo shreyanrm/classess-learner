@@ -14,6 +14,7 @@ import { ONBOARDED_KEY } from '../App';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
+import { Pip, Sprout } from '../ui/cast';
 import { MagneticButton } from '../ui/kit';
 import { GradeBoardPicker } from './you/GradeBoardPicker';
 import { boardName, boardSeeded, saveProfile } from './you/profile';
@@ -445,6 +446,23 @@ export function Onboarding() {
                       your board's world arrives with you
                     </div>
                   )}
+                </motion.div>
+                {/* two of the cast are already waiting inside — the page comes furnished */}
+                <motion.div
+                  aria-hidden
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ ...spring, delay: 2.05 }}
+                  style={{
+                    position: 'absolute',
+                    right: 10,
+                    bottom: 3,
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                  }}
+                >
+                  <Sprout size={32} seed={1} />
+                  <Pip size={42} mood="delighted" seed={2} />
                 </motion.div>
               </div>
               <motion.div

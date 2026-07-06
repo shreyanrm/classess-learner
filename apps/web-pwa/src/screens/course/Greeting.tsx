@@ -163,6 +163,35 @@ export function Greeting({
         >
           <TopicSigil id={topic.id} size={130} mastered hue={hue} draw />
         </motion.div>
+
+        {/* the cast arrives to celebrate — her world catching the same light */}
+        <motion.div
+          aria-hidden
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 230, damping: 24, delay: 0.9 }}
+          style={{ position: 'absolute', left: 18, bottom: 0 }}
+        >
+          <Pip size={60} mood="delighted" />
+        </motion.div>
+        <motion.div
+          aria-hidden
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 230, damping: 24, delay: 1.05 }}
+          style={{ position: 'absolute', right: 20, bottom: 0 }}
+        >
+          <Pico size={54} mood="delighted" seed={2} />
+        </motion.div>
+        <motion.div
+          aria-hidden
+          initial={{ opacity: 0, scale: 0.6 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 1.25 }}
+          style={{ position: 'absolute', right: 74, top: 30 }}
+        >
+          <Juni size={40} seed={1} />
+        </motion.div>
       </Stage>
 
       <div style={{ position: 'relative', textAlign: 'center' }}>

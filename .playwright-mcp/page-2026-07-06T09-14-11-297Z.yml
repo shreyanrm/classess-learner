@@ -1,0 +1,38 @@
+- generic [ref=e2]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - img "Vidya" [ref=e7]:
+        - img [ref=e11]
+      - generic [ref=e35]: Ask me anything, or take a door
+      - generic [ref=e37]:
+        - textbox "Talk to Vidya…" [ref=e38]
+        - button "Talk by voice" [ref=e39] [cursor=pointer]
+      - generic [ref=e48]:
+        - button "Learn something cool" [ref=e49] [cursor=pointer]:
+          - img [ref=e50]
+          - text: Learn something cool
+        - button "Open a rabbit hole" [ref=e52] [cursor=pointer]:
+          - img [ref=e53]
+          - text: Open a rabbit hole
+        - button "What should I do today" [ref=e55] [cursor=pointer]:
+          - img [ref=e56]
+          - text: What should I do today
+      - generic [ref=e58]:
+        - button "Learn" [ref=e59] [cursor=pointer]:
+          - generic [ref=e60]: Learn
+        - button "Practice" [ref=e61] [cursor=pointer]:
+          - generic [ref=e62]: Practice
+    - generic [ref=e63]:
+      - generic [ref=e64]: ⌘K
+      - text: Anything, anywhere
+  - banner:
+    - img "Classess" [ref=e66]
+    - generic [ref=e67]:
+      - button "Did you know" [ref=e68] [cursor=pointer]:
+        - img [ref=e69]
+        - text: Did you know
+      - generic "day 3 of being a learner" [ref=e71]:
+        - img [ref=e72]
+        - text: "3"
+      - generic [ref=e75]: 480 xp
+      - button "You — profile and settings" [ref=e76] [cursor=pointer]: A

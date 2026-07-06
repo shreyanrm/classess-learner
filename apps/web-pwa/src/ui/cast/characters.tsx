@@ -30,7 +30,7 @@ export function Pip({ size, mood = 'curious', animate = true, flip, seed = 0 }: 
       <Bob animate={animate} delay={seed * 0.3}>
         {/* tail */}
         <path
-          d="M86 106 q22 -2 18 -26"
+          d="M82 112 q26 0 22 -28"
           fill="none"
           stroke={PAINT.silver}
           strokeWidth={9}
@@ -71,14 +71,11 @@ export function Sage({ size, mood = 'neutral', animate = true, flip, seed = 0 }:
     <Figure size={size} flip={flip} label="Sage the owl">
       <Ground />
       <Bob animate={animate} delay={0.2 + seed * 0.3} duration={4.1}>
+        {/* ear tufts, above the crown */}
+        <path d="M30 52 L24 30 L48 40 Z" fill="#A9794A" />
+        <path d="M90 52 L96 30 L72 40 Z" fill="#A9794A" />
         {/* body */}
-        <path
-          d="M30 70 q0 -34 30 -34 q30 0 30 34 q0 38 -30 38 q-30 0 -30 -38 Z"
-          fill="#A9794A"
-        />
-        {/* ear tufts */}
-        <path d="M34 44 L42 60 L26 62 Z" fill="#A9794A" />
-        <path d="M86 44 L78 60 L94 62 Z" fill="#A9794A" />
+        <path d="M30 70 q0 -34 30 -34 q30 0 30 34 q0 38 -30 38 q-30 0 -30 -38 Z" fill="#A9794A" />
         {/* belly */}
         <path d="M60 74 q-22 0 -22 18 q8 14 22 14 q14 0 22 -14 q0 -18 -22 -18 Z" fill="#C8A06A" />
         {/* eye discs */}
@@ -189,10 +186,10 @@ export function Ember({ size, mood = 'happy', animate = true, flip, seed = 0 }: 
         {/* head */}
         <circle cx="60" cy="58" r="24" fill={PAINT.amber} />
         {/* muzzle */}
-        <path d="M60 62 q-20 0 -20 12 q0 9 20 9 q20 0 20 -9 q0 -12 -20 -12 Z" fill="#F7F2EA" />
-        <Eyes lx={50} rx={70} y={56} r={2.8} mood={mood} animate={animate} seed={seed} />
-        <path d="M60 66 l-4 4 h8 Z" fill={FACE_INK} />
-        <Mouth cx={60} y={74} mood={mood} color="#B9822F" w={9} />
+        <path d="M60 64 q-16 0 -16 9.5 q0 7.5 16 7.5 q16 0 16 -7.5 q0 -9.5 -16 -9.5 Z" fill="#F7F2EA" />
+        <Eyes lx={49} rx={71} y={55} r={3.2} mood={mood} animate={animate} seed={seed} />
+        <path d="M60 68 l-4 3.6 4 3 4 -3 Z" fill={FACE_INK} />
+        <Mouth cx={60} y={77} mood={mood} color="#B9822F" w={8} />
       </Bob>
     </Figure>
   );
@@ -208,9 +205,15 @@ export function Pico({ size, mood = 'happy', animate = true, flip, seed = 0 }: C
         <ellipse cx="50" cy="118" rx="9" ry="4" fill={PAINT.gold} />
         <ellipse cx="70" cy="118" rx="9" ry="4" fill={PAINT.gold} />
         {/* body */}
-        <path d="M60 34 C40 34 32 52 32 82 32 106 44 117 60 117 76 117 88 106 88 82 88 52 80 34 60 34 Z" fill="#33343A" />
+        <path
+          d="M60 34 C40 34 32 52 32 82 32 106 44 117 60 117 76 117 88 106 88 82 88 52 80 34 60 34 Z"
+          fill="#33343A"
+        />
         {/* belly */}
-        <path d="M60 58 C48 58 42 70 42 88 42 104 50 111 60 111 70 111 78 104 78 88 78 70 72 58 60 58 Z" fill="#FFFFFF" />
+        <path
+          d="M60 58 C48 58 42 70 42 88 42 104 50 111 60 111 70 111 78 104 78 88 78 70 72 58 60 58 Z"
+          fill="#FFFFFF"
+        />
         {/* flippers */}
         <path d="M33 66 q-10 12 -2 26 q6 -2 8 -24 Z" fill="#26272C" />
         <path d="M87 66 q10 12 2 26 q-6 -2 -8 -24 Z" fill="#26272C" />
@@ -231,17 +234,55 @@ export function Juni({ size, mood = 'happy', animate = true, flip, seed = 0 }: C
     <Figure size={size} flip={flip} label="Juni the bee">
       <Flutter animate={animate} delay={seed * 0.4}>
         {/* wings */}
-        <ellipse cx="52" cy="52" rx="9" ry="14" fill="#FFFFFF" opacity=".75" transform="rotate(-18 52 52)" />
-        <ellipse cx="72" cy="52" rx="9" ry="14" fill="#FFFFFF" opacity=".75" transform="rotate(18 72 52)" />
+        <ellipse
+          cx="54"
+          cy="52"
+          rx="9"
+          ry="14"
+          fill="#FFFFFF"
+          opacity=".85"
+          transform="rotate(-18 54 52)"
+        />
+        <ellipse
+          cx="74"
+          cy="52"
+          rx="9"
+          ry="14"
+          fill="#FFFFFF"
+          opacity=".85"
+          transform="rotate(18 74 52)"
+        />
         {/* body */}
-        <ellipse cx="62" cy="76" rx="20" ry="15" fill={PAINT.gold} />
-        <path d="M56 62.5 q-2 13 0 27 M68 63.5 q3 12 0 25.5" stroke="#33343A" strokeWidth={5} fill="none" strokeLinecap="round" />
+        <ellipse cx="64" cy="76" rx="20" ry="15" fill={PAINT.gold} />
+        <path
+          d="M58 62.5 q-2 13 0 27 M70 63.5 q3 12 0 25.5"
+          stroke="#33343A"
+          strokeWidth={5}
+          fill="none"
+          strokeLinecap="round"
+        />
         {/* stinger */}
-        <path d="M82 76 l8 3 -8 3 Z" fill="#33343A" />
+        <path d="M84 76 l8 3 -8 3 Z" fill="#33343A" />
         {/* head */}
-        <circle cx="40" cy="72" r="11" fill="#33343A" />
-        <path d="M34 62 q-4 -6 -9 -6 M44 60 q0 -7 4 -10" stroke="#33343A" strokeWidth={1.8} fill="none" strokeLinecap="round" />
-        <Eyes lx={36} rx={44} y={71} r={1.9} color="#FFFFFF" glint={false} mood={mood} animate={animate} seed={seed} />
+        <circle cx="44" cy="73" r="11" fill="#33343A" />
+        <path
+          d="M38 63 q-4 -6 -9 -6 M48 61 q0 -7 4 -10"
+          stroke="#33343A"
+          strokeWidth={1.8}
+          fill="none"
+          strokeLinecap="round"
+        />
+        <Eyes
+          lx={40}
+          rx={48}
+          y={72}
+          r={1.9}
+          color="#FFFFFF"
+          glint={false}
+          mood={mood}
+          animate={animate}
+          seed={seed}
+        />
       </Flutter>
     </Figure>
   );
@@ -253,23 +294,24 @@ export function Torto({ size, mood = 'sleepy', animate = true, flip, seed = 0 }:
     <Figure size={size} flip={flip} label="Torto the turtle">
       <Ground rx={38} />
       <Bob animate={animate} delay={0.25 + seed * 0.3} duration={5.2}>
-        {/* head */}
-        <circle cx="97" cy="94" r="11" fill="#82B23A" />
-        <Eyes lx={95} rx={101} y={92} r={1.9} mood={mood} animate={animate} seed={seed} />
-        <Mouth cx={99} y={98} mood={mood} color="#5E822A" w={6} />
         {/* legs + tail */}
-        <rect x="34" y="106" width="12" height="12" rx="5" fill="#82B23A" />
-        <rect x="66" y="106" width="12" height="12" rx="5" fill="#82B23A" />
-        <path d="M24 102 q-8 2 -10 8 q8 2 12 -2 Z" fill="#82B23A" />
+        <rect x="32" y="106" width="12" height="12" rx="5" fill="#82B23A" />
+        <rect x="62" y="106" width="12" height="12" rx="5" fill="#82B23A" />
+        <path d="M22 102 q-8 2 -10 8 q8 2 12 -2 Z" fill="#82B23A" />
         {/* shell */}
-        <path d="M26 104 q0 -40 32 -40 q32 0 32 40 Z" fill={PAINT.mint} />
-        <rect x="22" y="102" width="72" height="9" rx="4.5" fill="#0FA3A3" />
+        <path d="M24 104 q0 -40 31 -40 q31 0 31 40 Z" fill={PAINT.mint} />
+        <rect x="20" y="102" width="68" height="9" rx="4.5" fill="#0FA3A3" />
         {/* shell plates */}
         <g fill="#0FA3A3" opacity=".5">
-          <circle cx="44" cy="90" r="5.5" />
-          <circle cx="58" cy="78" r="6.5" />
-          <circle cx="72" cy="90" r="5.5" />
+          <circle cx="41" cy="90" r="5.5" />
+          <circle cx="55" cy="78" r="6.5" />
+          <circle cx="69" cy="90" r="5.5" />
         </g>
+        {/* head, out for a look */}
+        <path d="M86 106 q0 -10 8 -10 q8 0 8 10 Z" fill="#82B23A" />
+        <circle cx="99" cy="93" r="10.5" fill="#82B23A" />
+        <Eyes lx={96} rx={103} y={91} r={2} mood={mood} animate={animate} seed={seed} />
+        <Mouth cx={100} y={97} mood={mood} color="#5E822A" w={6} />
       </Bob>
     </Figure>
   );

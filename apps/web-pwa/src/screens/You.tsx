@@ -535,45 +535,61 @@ export function You() {
                 ))}
               </div>
               {/* the month at a glance — intensity, not just presence */}
-            <div
-              style={{
-                fontSize: '0.7rem',
-                fontWeight: 600,
-                letterSpacing: '0.14em',
-                color: '#989AA4',
-                marginTop: 18,
-                marginBottom: 10,
-              }}
-            >
-              ACTIVITY · 30 DAYS
-            </div>
-            <div
-              role="img"
-              aria-label="this month's activity intensity"
-              style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 1fr)', gap: 6, maxWidth: 380 }}
-            >
-              {Array.from({ length: 30 }, (_, i) => {
-                const d = new Date(Date.now() - (29 - i) * 86400000).toISOString().slice(0, 10);
-                let n = 0;
-                try {
-                  n = (JSON.parse(localStorage.getItem('clss-activity-counts-v1') ?? '{}') as Record<string, number>)[d] ?? 0;
-                } catch {
-                  n = 0;
-                }
-                if (n === 0 && marks.includes(d)) n = 1;
-                const RAMP = ['#EFF1F5', '#D5EDDD', '#A9DCBB', '#6FC28D', '#3FA764'];
-                const fill = RAMP[Math.min(4, n === 0 ? 0 : n <= 1 ? 1 : n <= 3 ? 2 : n <= 6 ? 3 : 4)];
-                return (
-                  <motion.span
-                    key={d}
-                    title={`${d} — ${n} moments`}
-                    whileHover={{ scale: 1.18 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-                    style={{ aspectRatio: '1', borderRadius: 4, background: fill, display: 'block' }}
-                  />
-                );
-              })}
-            </div>
+              <div
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.14em',
+                  color: '#989AA4',
+                  marginTop: 18,
+                  marginBottom: 10,
+                }}
+              >
+                ACTIVITY · 30 DAYS
+              </div>
+              <div
+                role="img"
+                aria-label="this month's activity intensity"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(10, 1fr)',
+                  gap: 6,
+                  maxWidth: 380,
+                }}
+              >
+                {Array.from({ length: 30 }, (_, i) => {
+                  const d = new Date(Date.now() - (29 - i) * 86400000).toISOString().slice(0, 10);
+                  let n = 0;
+                  try {
+                    n =
+                      (
+                        JSON.parse(
+                          localStorage.getItem('clss-activity-counts-v1') ?? '{}',
+                        ) as Record<string, number>
+                      )[d] ?? 0;
+                  } catch {
+                    n = 0;
+                  }
+                  if (n === 0 && marks.includes(d)) n = 1;
+                  const RAMP = ['#EFF1F5', '#D5EDDD', '#A9DCBB', '#6FC28D', '#3FA764'];
+                  const fill =
+                    RAMP[Math.min(4, n === 0 ? 0 : n <= 1 ? 1 : n <= 3 ? 2 : n <= 6 ? 3 : 4)];
+                  return (
+                    <motion.span
+                      key={d}
+                      title={`${d} — ${n} moments`}
+                      whileHover={{ scale: 1.18 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+                      style={{
+                        aspectRatio: '1',
+                        borderRadius: 4,
+                        background: fill,
+                        display: 'block',
+                      }}
+                    />
+                  );
+                })}
+              </div>
               <div style={whisper}>rest is part of learning — quiet days are allowed</div>
             </div>
           </Section>
@@ -586,17 +602,31 @@ export function You() {
           <Section label="learning is better shared">
             {/* the cast gathers — the world that learns beside you */}
             <Scene
-              height={150}
+              height={340}
               hue="#1F35E0"
               wash={0.05}
               items={[
-                { id: 'plant', x: 0.06, size: 62 },
-                { id: 'pip', x: 0.19, size: 86, mood: 'happy' },
-                { id: 'books', x: 0.32, size: 54 },
-                { id: 'sage', x: 0.46, size: 82 },
-                { id: 'volt', x: 0.62, size: 86, mood: 'delighted' },
-                { id: 'juni', x: 0.75, size: 44, lift: 46 },
-                { id: 'sprout', x: 0.89, size: 66 },
+                { id: 'torto', x: 0.06, size: 160 },
+                { id: 'pip', x: 0.19, size: 160, mood: 'happy' },
+                { id: 'books', x: 0.32, size: 160 },
+                { id: 'sage', x: 0.46, size: 160 },
+                { id: 'volt', x: 0.62, size: 160, mood: 'delighted' },
+                { id: 'juni', x: 0.75, size: 160, lift: 46 },
+                { id: 'sprout', x: 0.89, size: 160 },
+              ]}
+            />
+            <Scene
+              height={340}
+              hue="#1F35E0"
+              wash={0.05}
+              items={[
+                { id: 'ember', x: 0.06, size: 160, mood: 'curious' },
+                { id: 'pico', x: 0.19, size: 160, mood: 'happy' },
+                { id: 'beaker', x: 0.32, size: 160 },
+                { id: 'planet', x: 0.46, size: 160 },
+                { id: 'flag', x: 0.62, size: 160 },
+                { id: 'pencil', x: 0.75, size: 160 },
+                { id: 'bulb', x: 0.89, size: 160 },
               ]}
             />
             <div

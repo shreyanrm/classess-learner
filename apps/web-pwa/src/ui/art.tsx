@@ -56,6 +56,8 @@ export interface TopicSigilProps {
   hue?: string;
   /** Draw-in animation on mount (used sparingly — course headers, not whole grids). */
   draw?: boolean;
+  /** Hero scale: full-ink strokes at poster weight — for a sigil that IS the card's subject. */
+  bold?: boolean;
 }
 
 /** The concept sigil — a topic's own geometry. */
@@ -65,6 +67,7 @@ export function TopicSigil({
   mastered = false,
   hue = ULTRA,
   draw = false,
+  bold = false,
 }: TopicSigilProps) {
   const art = useMemo(() => {
     const r = rng(hash(id));
@@ -99,7 +102,10 @@ export function TopicSigil({
   const c = 32;
   const arcEnd = art.arcStart + art.arcSpan;
   const large = art.arcSpan > Math.PI ? 1 : 0;
-  const stroke = mastered ? hue : INK_SOFT;
+  const stroke = mastered ? hue : bold ? INK : INK_SOFT;
+  const faint = mastered ? hue : bold ? INK_SOFT : INK_FAINT;
+  const wMain = bold ? 2 : 1.1;
+  const wFine = bold ? 1.4 : 0.8;
   const drawProps = draw
     ? {
         initial: { pathLength: 0, opacity: 0 },
@@ -122,30 +128,23 @@ export function TopicSigil({
         d={`M ${c + art.orbitR * Math.cos(art.arcStart)} ${c + art.orbitR * Math.sin(art.arcStart)}
             A ${art.orbitR} ${art.orbitR} 0 ${large} 1 ${c + art.orbitR * Math.cos(arcEnd)} ${c + art.orbitR * Math.sin(arcEnd)}`}
         fill="none"
-        stroke={mastered ? hue : INK_FAINT}
-        strokeWidth={1}
+        stroke={faint}
+        strokeWidth={bold ? 1.4 : 1}
         strokeLinecap="round"
         {...drawProps}
       />
       {/* the base polygon */}
       <motion.polygon
         points={polygonPoints(c, c, art.baseR, art.sides, art.rot)}
-        fill={mastered ? hue : 'none'}
-        fillOpacity={mastered ? 0.08 : undefined}
+        fill={mastered ? hue : bold ? '#FFFFFF' : 'none'}
+        fillOpacity={mastered ? 0.08 : bold ? 0.85 : undefined}
         stroke={stroke}
-        strokeWidth={1.1}
+        strokeWidth={wMain}
         strokeLinejoin="round"
         {...drawProps}
       />
       {/* inner echo */}
-      <circle
-        cx={c}
-        cy={c}
-        r={art.innerR}
-        fill="none"
-        stroke={mastered ? hue : INK_FAINT}
-        strokeWidth={0.8}
-      />
+      <circle cx={c} cy={c} r={art.innerR} fill="none" stroke={faint} strokeWidth={wFine} />
       {/* a chord through the idea */}
       {art.hasChord && (
         <line
@@ -154,17 +153,19 @@ export function TopicSigil({
           x2={c + art.baseR * Math.cos(art.chordB)}
           y2={c + art.baseR * Math.sin(art.chordB)}
           stroke={stroke}
-          strokeWidth={0.9}
+          strokeWidth={bold ? 1.6 : 0.9}
         />
       )}
-      {/* orbit nodes */}
+      {/* orbit nodes — in bold the first carries the art system's one golden accent */}
       {art.dotAngles.map((a, i) => (
         <circle
           key={`${id}-dot-${a.toFixed(4)}`}
           cx={c + art.orbitR * Math.cos(a)}
           cy={c + art.orbitR * Math.sin(a)}
-          r={i === 0 ? 2.2 : 1.5}
-          fill={mastered && i === 0 ? hue : INK}
+          r={i === 0 ? (bold ? 3 : 2.2) : bold ? 2 : 1.5}
+          fill={mastered && i === 0 ? hue : bold && i === 0 ? '#FFC93C' : INK}
+          stroke={bold && i === 0 ? INK : undefined}
+          strokeWidth={bold && i === 0 ? 1.2 : undefined}
         />
       ))}
     </svg>

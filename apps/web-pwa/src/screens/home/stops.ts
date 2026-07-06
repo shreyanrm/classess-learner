@@ -44,9 +44,10 @@ function worldTopics(): Topic[] {
   return mathChapters.flatMap((c) => c.topics);
 }
 
-export function deriveStops(
-  p: Pick<ProgressStore, 'completed' | 'topicProgress' | 'streakDays'>,
-): { stops: ThreadStop[]; currentIndex: number } {
+export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress' | 'streakDays'>): {
+  stops: ThreadStop[];
+  currentIndex: number;
+} {
   const { completed, topicProgress, streakDays } = p;
 
   // Continue — the furthest-along topic still in flight.

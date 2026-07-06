@@ -1,0 +1,38 @@
+- generic [ref=f7e2]:
+  - generic [ref=f7e4]:
+    - generic [ref=f7e5]:
+      - img "Vidya" [ref=f7e7]:
+        - img [ref=f7e11]
+      - generic [ref=f7e35]: Ask me anything, or take a door
+      - generic [ref=f7e37]:
+        - textbox "Talk to Vidya…" [ref=f7e38]
+        - button "Talk by voice" [ref=f7e39] [cursor=pointer]
+      - generic [ref=f7e48]:
+        - button "Learn something cool" [ref=f7e49] [cursor=pointer]:
+          - img [ref=f7e50]
+          - text: Learn something cool
+        - button "Open a rabbit hole" [ref=f7e52] [cursor=pointer]:
+          - img [ref=f7e53]
+          - text: Open a rabbit hole
+        - button "What should I do today" [ref=f7e55] [cursor=pointer]:
+          - img [ref=f7e56]
+          - text: What should I do today
+      - generic [ref=f7e58]:
+        - button "Learn" [ref=f7e59] [cursor=pointer]:
+          - generic [ref=f7e60]: Learn
+        - button "Practice" [ref=f7e61] [cursor=pointer]:
+          - generic [ref=f7e62]: Practice
+    - generic [ref=f7e63]:
+      - generic [ref=f7e64]: ⌘K
+      - text: Anything, anywhere
+  - banner:
+    - img "Classess" [ref=f7e66]
+    - generic [ref=f7e67]:
+      - button "Did you know" [ref=f7e68] [cursor=pointer]:
+        - img [ref=f7e69]
+        - text: Did you know
+      - generic "day 3 of being a learner" [ref=f7e71]:
+        - img [ref=f7e72]
+        - text: "3"
+      - generic [ref=f7e75]: 480 xp
+      - button "You — profile and settings" [ref=f7e76] [cursor=pointer]: A

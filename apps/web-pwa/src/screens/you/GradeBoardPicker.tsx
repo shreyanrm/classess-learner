@@ -32,13 +32,12 @@ function Chip({
       whileTap={{ scale: 0.96 }}
       transition={{ type: 'spring', stiffness: 400, damping: 26 }}
       style={{
-        border: selected
-          ? '0.5px solid var(--clss-ink-900)'
-          : '0.5px solid var(--clss-hairline-on-paper-strong)',
-        background: selected ? 'var(--clss-ink-900)' : 'var(--clss-paper)',
+        // the one chip system: tonal at rest, solid ink when chosen — 3px, never pills
+        border: 'none',
+        background: selected ? 'var(--clss-ink-900)' : '#F1F1F5',
         color: selected ? 'var(--clss-paper)' : 'var(--clss-ink-700)',
-        borderRadius: 999,
-        padding: '8px 15px',
+        borderRadius: 3,
+        padding: '9px 15px',
         fontSize: '0.9rem',
         fontFamily: 'inherit',
         cursor: 'pointer',
