@@ -114,7 +114,7 @@ export function Practice() {
             color: 'var(--clss-ink-900)',
           }}
         >
-          practice
+          Practice
         </h1>
         <div style={{ marginTop: 6, fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>
           memory fades on a real curve — practice keeps it honest

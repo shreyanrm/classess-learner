@@ -62,7 +62,9 @@ function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
               : hover
                 ? 'var(--clss-ink-100)'
                 : 'transparent',
-          border: hover ? '0.5px solid var(--clss-ink-300)' : '0.5px solid var(--clss-hairline-on-paper)',
+          border: hover
+            ? '0.5px solid var(--clss-ink-300)'
+            : '0.5px solid var(--clss-hairline-on-paper)',
           borderRadius: 'var(--clss-radius-sm)',
           padding: '13px 12px',
           cursor: 'pointer',
@@ -357,13 +359,13 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
             color: 'var(--clss-ink-900)',
           }}
         >
-          {subject?.name.toLowerCase() ?? subjectId}
+          {subject?.name ?? subjectId}
         </h1>
         <div style={{ marginTop: 6, fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>
           {subject?.line}
         </div>
         <div style={{ marginTop: 4, fontSize: '0.8rem', color: 'var(--clss-ink-300)' }}>
-          {learner.board} {learner.grade.toLowerCase()} · {chapters.length} chapters
+          {learner.board} · {learner.grade} · {chapters.length} chapters
         </div>
 
         <div ref={listRef} style={{ marginTop: 44 }}>

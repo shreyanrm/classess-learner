@@ -33,7 +33,7 @@ function buildCommands(): Command[] {
   for (const s of subjects)
     cmds.push({
       id: `subj-${s.id}`,
-      label: s.name.toLowerCase(),
+      label: s.name,
       hint: 'subject',
       route: { name: 'subject', subjectId: s.id, intent: 'learn' },
     });
@@ -42,8 +42,8 @@ function buildCommands(): Command[] {
       for (const topic of ch.topics)
         cmds.push({
           id: `topic-${topic.id}`,
-          label: topic.name.toLowerCase(),
-          hint: ch.name.toLowerCase(),
+          label: topic.name,
+          hint: ch.name,
           route: { name: 'course', topicId: topic.id },
         });
   return cmds;

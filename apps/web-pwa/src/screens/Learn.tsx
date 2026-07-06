@@ -12,6 +12,7 @@ import { type CSSProperties, type ReactNode, useEffect, useState } from 'react';
 import { subjects } from '../data/catalog';
 import type { Subject } from '../data/model';
 import { useRouter } from '../shell/router';
+import { SubjectGlyph } from '../ui/art';
 import { SectionLabel } from '../ui/kit';
 
 /** A whisper-quiet fixed affordance, top left — the register of home's "◦ you". */
@@ -48,8 +49,15 @@ export function Whisper({
   );
 }
 
+const SUBJECT_HUES: Record<string, { hue: string; wash: string }> = {
+  math: { hue: '#1F35E0', wash: 'rgba(31,53,224,0.06)' },
+  science: { hue: '#0FA3B1', wash: 'rgba(15,163,177,0.07)' },
+  social: { hue: '#B26A00', wash: 'rgba(178,106,0,0.07)' },
+};
+
 function SubjectCard({ subject, onOpen }: { subject: Subject; onOpen: () => void }) {
   const [hover, setHover] = useState(false);
+  const tone = SUBJECT_HUES[subject.id] ?? SUBJECT_HUES.math;
   return (
     <motion.button
       type="button"
@@ -63,24 +71,44 @@ function SubjectCard({ subject, onOpen }: { subject: Subject; onOpen: () => void
       transition={{ type: 'spring', stiffness: 360, damping: 26 }}
       style={{
         textAlign: 'left',
-        background: 'var(--clss-paper)',
-        border: `0.5px solid ${hover ? 'var(--clss-ink-300)' : 'var(--clss-hairline-on-paper-strong)'}`,
-        transition: 'border-color 0.25s ease',
-        borderRadius: 'var(--clss-radius-sm)',
-        padding: '26px 22px 22px',
+        background: hover
+          ? `linear-gradient(150deg, ${tone?.wash} 0%, var(--clss-paper) 62%)`
+          : 'var(--clss-paper)',
+        border: `0.5px solid ${hover ? (tone?.hue ?? 'var(--clss-ink-300)') : 'var(--clss-hairline-on-paper-strong)'}`,
+        transition: 'border-color 0.3s ease, background 0.3s ease',
+        borderRadius: 'var(--clss-radius-md)',
+        padding: '24px 22px 20px',
         cursor: 'pointer',
         fontFamily: 'inherit',
         display: 'flex',
         flexDirection: 'column',
-        gap: 8,
-        minHeight: 132,
+        gap: 10,
+        minHeight: 190,
       }}
     >
-      <span style={{ fontSize: '1.02rem', fontWeight: 500, color: 'var(--clss-ink-900)' }}>
+      <motion.span
+        animate={hover ? { scale: 1.06, rotate: -2 } : { scale: 1, rotate: 0 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+        style={{ display: 'block', width: 72, height: 72 }}
+      >
+        <SubjectGlyph subjectId={subject.id} size={72} accent={hover} />
+      </motion.span>
+      <span style={{ fontSize: '1.05rem', fontWeight: 550, color: 'var(--clss-ink-900)' }}>
         {subject.name}
       </span>
       <span style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)', lineHeight: 1.5 }}>
         {subject.line}
+      </span>
+      <span
+        style={{
+          marginTop: 'auto',
+          fontSize: '0.78rem',
+          fontWeight: 550,
+          color: hover ? (tone?.hue ?? 'var(--clss-ink-500)') : 'var(--clss-ink-300)',
+          transition: 'color 0.3s ease',
+        }}
+      >
+        13 chapters →
       </span>
     </motion.button>
   );
@@ -146,7 +174,7 @@ export function Learn() {
             color: 'var(--clss-ink-900)',
           }}
         >
-          learn
+          Learn
         </h1>
         <div style={{ marginTop: 6, fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>
           pick a subject — a topic is a course, composed for you

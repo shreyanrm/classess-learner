@@ -174,7 +174,7 @@ function InviteCard({
 /** One strength line for the note home, composed from real data — pride first, always. */
 function strengthLine(name: string, mastered: Topic[], xp: number): string {
   const last = mastered[mastered.length - 1];
-  if (last) return `${name} can now solve ${last.name.toLowerCase()} on their own`;
+  if (last) return `${name} can now solve ${last.name} on their own`;
   if (xp > 0) return `${name} is building a steady rhythm — the first mastery is close`;
   return `${name} has just begun — the first mastered topic lands here soon`;
 }
@@ -522,7 +522,12 @@ export function You() {
             <div
               role="img"
               aria-label="this month's activity"
-              style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 14px)', gap: 4, marginTop: 12 }}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(10, 14px)',
+                gap: 4,
+                marginTop: 12,
+              }}
             >
               {Array.from({ length: 30 }, (_, i) => {
                 const d = new Date(Date.now() - (29 - i) * 86400000).toISOString().slice(0, 10);

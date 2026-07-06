@@ -19,7 +19,6 @@ export function SectionLabel({ children, style }: { children: ReactNode; style?:
       style={{
         fontSize: '0.72rem',
         letterSpacing: '0.14em',
-        textTransform: 'lowercase',
         color: 'var(--clss-ink-500)',
         fontWeight: 500,
         ...style,

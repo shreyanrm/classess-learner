@@ -134,7 +134,7 @@ export function VidyaCompanion() {
                   Vidya
                 </div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--clss-ink-500)' }}>
-                  {busy ? 'thinking…' : 'watching this page with you'}
+                  {busy ? 'Thinking…' : 'Watching this page with you'}
                 </div>
               </div>
               <button
@@ -218,7 +218,7 @@ export function VidyaCompanion() {
                 onChange={(e) => setDraft(e.target.value)}
                 onFocus={() => setMood('listening')}
                 onBlur={() => setMood('idle')}
-                placeholder="ask or do anything…"
+                placeholder="Ask or do anything…"
                 style={{
                   flex: 1,
                   border: '0.5px solid var(--clss-hairline-on-paper-strong)',

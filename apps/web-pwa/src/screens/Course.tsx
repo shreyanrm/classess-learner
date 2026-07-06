@@ -105,7 +105,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
         </button>
         {mode === 'sandbox' ? (
           <div style={{ ...whisper, flex: 1, textAlign: 'center' }}>
-            free play{topic ? ` · ${topic.name.toLowerCase()}` : ''}
+            Free play{topic ? ` · ${topic.name}` : ''}
           </div>
         ) : (
           <div style={{ flex: 1, maxWidth: 460, margin: '0 auto', display: 'flex' }}>

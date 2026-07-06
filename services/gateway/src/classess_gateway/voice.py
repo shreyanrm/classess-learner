@@ -58,7 +58,7 @@ def _consume_token(token: str | None) -> bool:
 
 def voice_session() -> dict[str, str]:
     """The voice handshake: which mode the client may use right now."""
-    if os.getenv("GEMINI_API_KEY"):
+    if (os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY")):
         return {"mode": "relay", "model": VOICE_MODEL, "token": _mint_token()}
     return {"mode": "unavailable"}
 
@@ -81,7 +81,7 @@ def register_voice(app: FastAPI) -> None:
     @app.websocket("/v1/voice/relay")
     async def relay(client: WebSocket) -> None:
         global _active_relays
-        key = os.getenv("GEMINI_API_KEY")
+        key = (os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY"))
         # Gate BEFORE accept: a session-minted, unexpired, single-use token is required,
         # and the concurrent-relay cap bounds worst-case spend on the upstream key.
         if (

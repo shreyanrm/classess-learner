@@ -42,22 +42,22 @@ function todaysFact(): string {
 function greeting(name: string): string {
   const h = new Date().getHours();
   const part =
-    h < 5 ? 'good night' : h < 12 ? 'good morning' : h < 17 ? 'good afternoon' : 'good evening';
-  return `${part}, ${name.toLowerCase()}`;
+    h < 5 ? 'Good night' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  return `${part}, ${name}`;
 }
 
 const CHIPS: { label: string; prompt: string }[] = [
   {
-    label: 'learn something cool',
+    label: 'Learn something cool',
     prompt:
       'Tell me something genuinely cool from science or math that most people never learn in school.',
   },
   {
-    label: 'open a rabbit hole',
+    label: 'Open a rabbit hole',
     prompt: 'Pick a fascinating question connected to what I already know and pull me into it.',
   },
   {
-    label: 'what should I do today',
+    label: 'What should I do today',
     prompt: 'Look at where I am and tell me the one best thing to work on right now.',
   },
 ];
@@ -131,7 +131,7 @@ export function Home() {
             padding: 4,
           }}
         >
-          ✦ did you know
+          ✦ Did you know
         </button>
         <AnimatePresence>
           {factOpen && (
@@ -187,7 +187,7 @@ export function Home() {
           {greeting(learner.name)}
         </motion.div>
         <div style={{ marginTop: 6, color: 'var(--clss-ink-500)', fontSize: '0.95rem' }}>
-          ask me anything, or take a door
+          Ask me anything, or take a door
         </div>
 
         {conversation.length > 0 && (
@@ -237,7 +237,7 @@ export function Home() {
             onChange={(e) => setDraft(e.target.value)}
             onFocus={() => setMood('listening')}
             onBlur={() => setMood('idle')}
-            placeholder="talk to Vidya…"
+            placeholder="Talk to Vidya…"
             style={{
               flex: 1,
               padding: '14px 18px',
@@ -317,14 +317,14 @@ export function Home() {
             onClick={() => router.navigate({ name: 'learn' })}
             style={{ minWidth: 160 }}
           >
-            learn
+            Learn
           </AuroraButton>
           <AuroraButton
             size="lg"
             onClick={() => router.navigate({ name: 'practice' })}
             style={{ minWidth: 160 }}
           >
-            practice
+            Practice
           </AuroraButton>
         </div>
       </div>
@@ -339,7 +339,7 @@ export function Home() {
           gap: 8,
         }}
       >
-        <Kbd>⌘K</Kbd> anything, anywhere
+        <Kbd>⌘K</Kbd> Anything, anywhere
       </div>
     </div>
   );
