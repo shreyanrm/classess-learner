@@ -11,7 +11,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { learner } from '../data/catalog';
 import { useRouter } from '../shell/router';
-import { AuroraButton, Kbd, MagneticButton } from '../ui/kit';
+import { AuroraButton, Kbd, MagneticButton, SparkIcon, WaveformIcon } from '../ui/kit';
 import { ClassessLogo } from '../ui/Logo';
 import { useVidyaChat } from '../vidya/chat';
 import { useVidyaVoice } from '../vidya/voice';
@@ -113,7 +113,7 @@ export function Home() {
     >
       {/* the wordmark — quiet, top centre */}
       <div style={{ position: 'fixed', top: 16, left: 22 }}>
-        <ClassessLogo height={14} />
+        <ClassessLogo height={20} />
       </div>
 
       {/* did you know — top right, fresh every day */}
@@ -265,7 +265,7 @@ export function Home() {
               whiteSpace: 'nowrap',
             }}
           >
-            {voiceOn ? '● listening' : '◦ mic'}
+            <WaveformIcon active={voiceOn} size={18} />
           </button>
           {draft.trim() && (
             <MagneticButton variant="primary" onClick={() => {}} ariaLabel="Ask Vidya">
@@ -295,17 +295,32 @@ export function Home() {
               type="button"
               onClick={() => !busy && void ask(c.prompt)}
               style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 7,
                 border: '0.5px solid var(--clss-hairline-on-paper-strong)',
                 background: 'var(--clss-paper)',
                 color: 'var(--clss-ink-700)',
                 borderRadius: 999,
-                padding: '7px 14px',
-                fontSize: '0.85rem',
+                padding: '8px 16px',
+                fontSize: '0.86rem',
+                fontWeight: 500,
                 cursor: 'pointer',
                 fontFamily: 'inherit',
+                transition: 'border-color 0.25s ease, transform 0.2s ease, color 0.25s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'var(--clss-ultramarine)';
+                e.currentTarget.style.color = 'var(--clss-ink-900)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'var(--clss-hairline-on-paper-strong)';
+                e.currentTarget.style.color = 'var(--clss-ink-700)';
+                e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
-              ✧ {c.label}
+              <SparkIcon size={11} /> {c.label}
             </button>
           ))}
         </div>
