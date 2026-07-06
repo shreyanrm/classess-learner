@@ -102,7 +102,7 @@ export function Practice() {
         padding: '108px 24px 72px',
       }}
     >
-      <Whisper onClick={() => router.navigate({ name: 'home' })}>◦ home</Whisper>
+      <Whisper onClick={() => router.navigate({ name: 'home' })}>Home</Whisper>
 
       <div style={{ width: '100%', maxWidth: 720 }}>
         <h1

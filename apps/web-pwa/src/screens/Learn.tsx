@@ -26,26 +26,38 @@ export function Whisper({
   style?: CSSProperties;
 }) {
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
+      aria-label={`Back — ${String(children)}`}
+      whileHover={{ x: -3 }}
+      whileTap={{ scale: 0.95 }}
+      transition={{ type: 'spring', stiffness: 380, damping: 24 }}
       style={{
         position: 'fixed',
-        top: 20,
-        left: 24,
+        top: 16,
+        left: 22,
         zIndex: 10,
-        border: 'none',
-        background: 'transparent',
-        color: 'var(--clss-ink-500)',
-        fontSize: '0.85rem',
-        cursor: 'pointer',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 9,
+        padding: '8px 15px 8px 11px',
+        background: 'var(--clss-paper)',
+        border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+        borderRadius: 999,
+        color: 'var(--clss-ink-700)',
         fontFamily: 'inherit',
-        padding: 4,
+        fontSize: '0.85rem',
+        fontWeight: 500,
+        cursor: 'pointer',
         ...style,
       }}
     >
+      <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden style={{ display: 'block' }}>
+        <path d="M9.5 3 L4.5 8 L9.5 13 M4.8 8 L13 8" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
       {children}
-    </button>
+    </motion.button>
   );
 }
 
@@ -162,7 +174,7 @@ export function Learn() {
         padding: '108px 24px 72px',
       }}
     >
-      <Whisper onClick={() => router.navigate({ name: 'home' })}>◦ home</Whisper>
+      <Whisper onClick={() => router.navigate({ name: 'home' })}>Home</Whisper>
 
       <div style={{ width: '100%', maxWidth: 720 }}>
         <h1

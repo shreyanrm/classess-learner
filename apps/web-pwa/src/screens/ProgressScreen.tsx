@@ -186,7 +186,7 @@ export function ProgressScreen() {
         overflow: 'hidden',
       }}
     >
-      <Whisper onClick={() => router.navigate({ name: 'home' })}>◦ home</Whisper>
+      <Whisper onClick={() => router.navigate({ name: 'home' })}>Home</Whisper>
 
       {/* one line of identity — the count that is yours, and the streak whisper */}
       <header style={{ paddingTop: 76, textAlign: 'center' }}>

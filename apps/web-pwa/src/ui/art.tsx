@@ -156,89 +156,65 @@ export function TopicSigil({ id, size = 56, mastered = false, draw = false }: To
   );
 }
 
-/** Hand-drawn subject glyphs — construction-line art, one accent node each. */
+/** Subject artworks — bold, layered, colorful; each one its own little poster. */
 export function SubjectGlyph({
   subjectId,
   size = 72,
   accent = false,
-}: {
-  subjectId: string;
-  size?: number;
-  accent?: boolean;
-}) {
-  const a = accent ? ULTRA : INK;
-  const common = {
-    fill: 'none' as const,
-    strokeLinecap: 'round' as const,
-    strokeLinejoin: 'round' as const,
-  };
+}: { subjectId: string; size?: number; accent?: boolean }) {
+  const o = accent ? 1 : 0.92;
   return (
     // biome-ignore lint/a11y/noSvgWithoutTitle: decorative, aria-hidden
     <svg viewBox="0 0 96 96" width={size} height={size} aria-hidden style={{ display: 'block' }}>
+      <defs>
+        <linearGradient id={`sg-m-${subjectId}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#4257F0" />
+          <stop offset="100%" stopColor="#1F35E0" />
+        </linearGradient>
+        <linearGradient id={`sg-s-${subjectId}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#2BC4D3" />
+          <stop offset="100%" stopColor="#0A7E8A" />
+        </linearGradient>
+        <linearGradient id={`sg-g-${subjectId}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#F0A030" />
+          <stop offset="100%" stopColor="#B26A00" />
+        </linearGradient>
+      </defs>
       {subjectId === 'math' && (
-        <g>
-          {/* a compass construction: circle, inscribed triangle, its height */}
-          <circle cx={48} cy={48} r={30} stroke={INK_FAINT} strokeWidth={1.2} {...common} />
-          <polygon
-            points={polygonPoints(48, 48, 30, 3, -Math.PI / 2)}
-            stroke={INK_SOFT}
-            strokeWidth={1.4}
-            {...common}
-          />
-          <line
-            x1={48}
-            y1={18}
-            x2={48}
-            y2={78}
-            stroke={INK_FAINT}
-            strokeWidth={1}
-            strokeDasharray="2 4"
-          />
-          <circle cx={48} cy={18} r={3} fill={a} />
-          <circle cx={22} cy={63} r={2} fill={INK} />
-          <circle cx={74} cy={63} r={2} fill={INK} />
+        <g opacity={o}>
+          {/* a bold construction: gradient square, tilted triangle, the golden point */}
+          <rect x={18} y={26} width={44} height={44} rx={7} fill={`url(#sg-m-${subjectId})`} />
+          <rect x={18} y={26} width={44} height={44} rx={7} fill="rgba(255,255,255,0.14)" transform="rotate(-8 40 48)" />
+          <polygon points="50,18 78,66 22,66" fill="none" stroke="#0D0D10" strokeWidth={3.4} strokeLinejoin="round" transform="rotate(6 50 48)" />
+          <circle cx={71} cy={30} r={6.5} fill="#FFC93C" />
+          <circle cx={71} cy={30} r={6.5} fill="none" stroke="#0D0D10" strokeWidth={2} />
         </g>
       )}
       {subjectId === 'science' && (
-        <g>
-          {/* two electron orbits and a nucleus */}
-          <ellipse
-            cx={48}
-            cy={48}
-            rx={32}
-            ry={13}
-            stroke={INK_FAINT}
-            strokeWidth={1.2}
-            transform="rotate(-24 48 48)"
-            {...common}
-          />
-          <ellipse
-            cx={48}
-            cy={48}
-            rx={32}
-            ry={13}
-            stroke={INK_SOFT}
-            strokeWidth={1.2}
-            transform="rotate(38 48 48)"
-            {...common}
-          />
-          <circle cx={48} cy={48} r={4} fill={a} />
-          <circle cx={73} cy={35} r={2.2} fill={INK} />
-          <circle cx={26} cy={62} r={2.2} fill={INK} />
+        <g opacity={o}>
+          {/* a chunky flask, teal liquid, rising bubbles */}
+          <path d="M40 20 L40 40 L24 66 C21 72 25 78 32 78 L64 78 C71 78 75 72 72 66 L56 40 L56 20 Z" fill="#EAF7F8" stroke="#0D0D10" strokeWidth={3.2} strokeLinejoin="round" />
+          <path d="M31 56 L65 56 L72 66 C75 72 71 78 64 78 L32 78 C25 78 21 72 24 66 Z" fill={`url(#sg-s-${subjectId})`} />
+          <rect x={35} y={16} width={26} height={7} rx={3.5} fill="#0D0D10" />
+          <circle cx={42} cy={66} r={3.4} fill="rgba(255,255,255,0.85)" />
+          <circle cx={54} cy={70} r={2.4} fill="rgba(255,255,255,0.7)" />
+          <circle cx={60} cy={44} r={4} fill="#2BC4D3" />
+          <circle cx={68} cy={32} r={2.6} fill="#FFC93C" />
         </g>
       )}
       {subjectId === 'social' && (
-        <g>
-          {/* a meridian globe over a horizon */}
-          <circle cx={48} cy={44} r={26} stroke={INK_SOFT} strokeWidth={1.3} {...common} />
-          <ellipse cx={48} cy={44} rx={11} ry={26} stroke={INK_FAINT} strokeWidth={1} {...common} />
-          <line x1={22} y1={44} x2={74} y2={44} stroke={INK_FAINT} strokeWidth={1} />
-          <line x1={14} y1={78} x2={82} y2={78} stroke={INK_SOFT} strokeWidth={1.2} />
-          <circle cx={58} cy={33} r={3} fill={a} />
+        <g opacity={o}>
+          {/* a warm globe with bold meridians and a horizon flag */}
+          <circle cx={46} cy={48} r={27} fill={`url(#sg-g-${subjectId})`} />
+          <ellipse cx={46} cy={48} rx={12} ry={27} fill="none" stroke="rgba(255,255,255,0.75)" strokeWidth={2.6} />
+          <path d="M20 48 L72 48 M23 36 L69 36 M23 60 L69 60" stroke="rgba(255,255,255,0.65)" strokeWidth={2.4} strokeLinecap="round" />
+          <circle cx={46} cy={48} r={27} fill="none" stroke="#0D0D10" strokeWidth={3.2} />
+          <path d="M72 26 L72 14 L84 17.5 L72 21" fill="#CC1E7A" stroke="#0D0D10" strokeWidth={2.2} strokeLinejoin="round" />
+          <line x1={72} y1={14} x2={72} y2={34} stroke="#0D0D10" strokeWidth={2.6} strokeLinecap="round" />
         </g>
       )}
       {subjectId !== 'math' && subjectId !== 'science' && subjectId !== 'social' && (
-        <circle cx={48} cy={48} r={26} stroke={INK_SOFT} strokeWidth={1.3} fill="none" />
+        <circle cx={48} cy={48} r={26} fill={`url(#sg-m-${subjectId})`} />
       )}
     </svg>
   );

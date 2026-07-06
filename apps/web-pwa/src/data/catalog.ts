@@ -1178,15 +1178,898 @@ export const socialChapters: Chapter[] = [
   },
 ];
 
-export const chaptersBySubject: Record<string, Chapter[]> = {
-  math: mathChapters,
-  science: scienceChapters,
-  social: socialChapters,
+/** CBSE Class 10 — Mathematics. */
+export const mathChapters10: Chapter[] = [
+  {
+    id: 'x10-m1',
+    subjectId: 'math',
+    index: 1,
+    name: 'Real Numbers',
+    topics: [
+      t('x10-m1', 'x10-m1-1', "Euclid's division lemma", 'A basis for finding common factors.'),
+      t(
+        'x10-m1',
+        'x10-m1-2',
+        'The fundamental theorem of arithmetic',
+        'Every number as a product of primes.',
+        ['x10-m1-1'],
+      ),
+      t(
+        'x10-m1',
+        'x10-m1-3',
+        'Rational and irrational numbers',
+        'Proving numbers irrational and decimal expansions.',
+        ['x10-m1-2'],
+      ),
+    ],
+  },
+  {
+    id: 'x10-m2',
+    subjectId: 'math',
+    index: 2,
+    name: 'Polynomials',
+    topics: [
+      t('x10-m2', 'x10-m2-1', 'Zeroes of a polynomial', 'Where a polynomial equals zero.'),
+      t(
+        'x10-m2',
+        'x10-m2-2',
+        'Relationship between zeroes and coefficients',
+        'How roots and coefficients connect.',
+        ['x10-m2-1'],
+      ),
+      t(
+        'x10-m2',
+        'x10-m2-3',
+        'Division of polynomials',
+        'Dividing one polynomial by another.',
+        ['x10-m2-2'],
+      ),
+    ],
+  },
+  {
+    id: 'x10-m3',
+    subjectId: 'math',
+    index: 3,
+    name: 'Pair of Linear Equations in Two Variables',
+    topics: [
+      t('x10-m3', 'x10-m3-1', 'Graphical solution', 'Finding solutions where lines meet.'),
+      t(
+        'x10-m3',
+        'x10-m3-2',
+        'Algebraic methods',
+        'Substitution, elimination and cross-multiplication.',
+        ['x10-m3-1'],
+      ),
+      t(
+        'x10-m3',
+        'x10-m3-3',
+        'Consistency of equations',
+        'When a pair has one, none or many solutions.',
+        ['x10-m3-2'],
+      ),
+    ],
+  },
+  {
+    id: 'x10-m4',
+    subjectId: 'math',
+    index: 4,
+    name: 'Quadratic Equations',
+    topics: [
+      t('x10-m4', 'x10-m4-1', 'Standard form', 'Recognising a quadratic equation.'),
+      t(
+        'x10-m4',
+        'x10-m4-2',
+        'Solving quadratics',
+        'By factorisation and the quadratic formula.',
+        ['x10-m4-1'],
+      ),
+      t('x10-m4', 'x10-m4-3', 'Nature of roots', 'What the discriminant reveals.', ['x10-m4-2']),
+    ],
+  },
+  {
+    id: 'x10-m5',
+    subjectId: 'math',
+    index: 5,
+    name: 'Arithmetic Progressions',
+    topics: [
+      t('x10-m5', 'x10-m5-1', 'The nth term', 'Finding any term of a sequence.'),
+      t('x10-m5', 'x10-m5-2', 'Sum of n terms', 'Adding the terms of a progression.', [
+        'x10-m5-1',
+      ]),
+      t('x10-m5', 'x10-m5-3', 'Applications of AP', 'Using patterns to solve problems.', [
+        'x10-m5-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-m6',
+    subjectId: 'math',
+    index: 6,
+    name: 'Triangles',
+    topics: [
+      t('x10-m6', 'x10-m6-1', 'Similarity of triangles', 'When triangles have the same shape.'),
+      t('x10-m6', 'x10-m6-2', 'Criteria for similarity', 'AA, SAS and SSS similarity.', [
+        'x10-m6-1',
+      ]),
+      t(
+        'x10-m6',
+        'x10-m6-3',
+        'Areas of similar triangles',
+        "How area relates to the ratio of sides.",
+        ['x10-m6-2'],
+      ),
+    ],
+  },
+  {
+    id: 'x10-m7',
+    subjectId: 'math',
+    index: 7,
+    name: 'Coordinate Geometry',
+    topics: [
+      t('x10-m7', 'x10-m7-1', 'Distance formula', 'Length between two points.'),
+      t('x10-m7', 'x10-m7-2', 'Section formula', 'Dividing a segment in a ratio.', ['x10-m7-1']),
+      t(
+        'x10-m7',
+        'x10-m7-3',
+        'Area of a triangle',
+        'From the coordinates of its vertices.',
+        ['x10-m7-2'],
+      ),
+    ],
+  },
+  {
+    id: 'x10-m8',
+    subjectId: 'math',
+    index: 8,
+    name: 'Introduction to Trigonometry',
+    topics: [
+      t('x10-m8', 'x10-m8-1', 'Trigonometric ratios', 'Sine, cosine and tangent of an angle.'),
+      t(
+        'x10-m8',
+        'x10-m8-2',
+        'Ratios of specific angles',
+        'Values at 0, 30, 45, 60 and 90 degrees.',
+        ['x10-m8-1'],
+      ),
+      t(
+        'x10-m8',
+        'x10-m8-3',
+        'Trigonometric identities',
+        'Relationships that always hold.',
+        ['x10-m8-2'],
+      ),
+    ],
+  },
+  {
+    id: 'x10-m9',
+    subjectId: 'math',
+    index: 9,
+    name: 'Some Applications of Trigonometry',
+    topics: [
+      t('x10-m9', 'x10-m9-1', 'Heights and distances', 'Measuring the unreachable with angles.'),
+      t('x10-m9', 'x10-m9-2', 'Angle of elevation', 'Looking up to a distant point.', [
+        'x10-m9-1',
+      ]),
+      t('x10-m9', 'x10-m9-3', 'Angle of depression', 'Looking down from a height.', [
+        'x10-m9-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-m10',
+    subjectId: 'math',
+    index: 10,
+    name: 'Circles',
+    topics: [
+      t('x10-m10', 'x10-m10-1', 'Tangent to a circle', 'A line touching the circle at one point.'),
+      t(
+        'x10-m10',
+        'x10-m10-2',
+        'Number of tangents from a point',
+        'How many tangents can be drawn.',
+        ['x10-m10-1'],
+      ),
+      t(
+        'x10-m10',
+        'x10-m10-3',
+        'Tangent properties',
+        'The tangent and the radius at the point of contact.',
+        ['x10-m10-2'],
+      ),
+    ],
+  },
+  {
+    id: 'x10-m11',
+    subjectId: 'math',
+    index: 11,
+    name: 'Areas Related to Circles',
+    topics: [
+      t(
+        'x10-m11',
+        'x10-m11-1',
+        'Perimeter and area of a circle',
+        'The circumference and area recalled.',
+      ),
+      t(
+        'x10-m11',
+        'x10-m11-2',
+        'Areas of sectors and segments',
+        "Parts of a circle's area.",
+        ['x10-m11-1'],
+      ),
+      t('x10-m11', 'x10-m11-3', 'Combined figures', 'Areas of shapes made with circles.', [
+        'x10-m11-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-m12',
+    subjectId: 'math',
+    index: 12,
+    name: 'Surface Areas and Volumes',
+    topics: [
+      t(
+        'x10-m12',
+        'x10-m12-1',
+        'Surface area of combined solids',
+        'Adding up the faces of joined solids.',
+      ),
+      t('x10-m12', 'x10-m12-2', 'Volume of combined solids', 'Space held by combined shapes.', [
+        'x10-m12-1',
+      ]),
+      t('x10-m12', 'x10-m12-3', 'Conversion of solids', 'Reshaping one solid into another.', [
+        'x10-m12-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-m13',
+    subjectId: 'math',
+    index: 13,
+    name: 'Statistics',
+    topics: [
+      t('x10-m13', 'x10-m13-1', 'Mean of grouped data', 'The average of data in intervals.'),
+      t(
+        'x10-m13',
+        'x10-m13-2',
+        'Mode and median of grouped data',
+        'Central values for grouped data.',
+        ['x10-m13-1'],
+      ),
+      t('x10-m13', 'x10-m13-3', 'Cumulative frequency', 'Building towards the ogive.', [
+        'x10-m13-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-m14',
+    subjectId: 'math',
+    index: 14,
+    name: 'Probability',
+    topics: [
+      t(
+        'x10-m14',
+        'x10-m14-1',
+        'Theoretical probability',
+        'Measuring chance from equally likely outcomes.',
+      ),
+      t('x10-m14', 'x10-m14-2', 'Simple events', 'Finding the probability of one event.', [
+        'x10-m14-1',
+      ]),
+      t(
+        'x10-m14',
+        'x10-m14-3',
+        'Complementary events',
+        'The chance of an event not happening.',
+        ['x10-m14-2'],
+      ),
+    ],
+  },
+];
+
+/** CBSE Class 10 — Science. */
+export const scienceChapters10: Chapter[] = [
+  {
+    id: 'x10-s1',
+    subjectId: 'science',
+    index: 1,
+    name: 'Chemical Reactions and Equations',
+    topics: [
+      t('x10-s1', 'x10-s1-1', 'Chemical equations', 'Writing and balancing reactions.'),
+      t('x10-s1', 'x10-s1-2', 'Types of reactions', 'Combination, decomposition and displacement.', [
+        'x10-s1-1',
+      ]),
+      t('x10-s1', 'x10-s1-3', 'Oxidation and reduction', 'Gain and loss of oxygen or electrons.', [
+        'x10-s1-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-s2',
+    subjectId: 'science',
+    index: 2,
+    name: 'Acids, Bases and Salts',
+    topics: [
+      t('x10-s2', 'x10-s2-1', 'Properties of acids and bases', 'How they react and behave.'),
+      t('x10-s2', 'x10-s2-2', 'The pH scale', 'Measuring how acidic or basic a solution is.', [
+        'x10-s2-1',
+      ]),
+      t('x10-s2', 'x10-s2-3', 'Salts and their uses', 'Common salts and their everyday roles.', [
+        'x10-s2-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-s3',
+    subjectId: 'science',
+    index: 3,
+    name: 'Metals and Non-metals',
+    topics: [
+      t('x10-s3', 'x10-s3-1', 'Physical and chemical properties', 'How metals and non-metals differ.'),
+      t('x10-s3', 'x10-s3-2', 'The reactivity series', 'Ranking metals by how they react.', [
+        'x10-s3-1',
+      ]),
+      t('x10-s3', 'x10-s3-3', 'Extraction and corrosion', 'Getting metals and protecting them.', [
+        'x10-s3-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-s4',
+    subjectId: 'science',
+    index: 4,
+    name: 'Carbon and its Compounds',
+    topics: [
+      t('x10-s4', 'x10-s4-1', 'Covalent bonding in carbon', 'How carbon shares electrons.'),
+      t(
+        'x10-s4',
+        'x10-s4-2',
+        'Hydrocarbons and functional groups',
+        'Chains, rings and reactive groups.',
+        ['x10-s4-1'],
+      ),
+      t('x10-s4', 'x10-s4-3', 'Important carbon compounds', 'Ethanol, ethanoic acid and soaps.', [
+        'x10-s4-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-s5',
+    subjectId: 'science',
+    index: 5,
+    name: 'Life Processes',
+    topics: [
+      t('x10-s5', 'x10-s5-1', 'Nutrition', 'How organisms obtain and use food.'),
+      t('x10-s5', 'x10-s5-2', 'Respiration and transport', 'Releasing energy and moving materials.', [
+        'x10-s5-1',
+      ]),
+      t('x10-s5', 'x10-s5-3', 'Excretion', 'Removing waste from the body.', ['x10-s5-2']),
+    ],
+  },
+  {
+    id: 'x10-s6',
+    subjectId: 'science',
+    index: 6,
+    name: 'Control and Coordination',
+    topics: [
+      t('x10-s6', 'x10-s6-1', 'The nervous system', 'How the body senses and responds.'),
+      t('x10-s6', 'x10-s6-2', 'Reflex action', 'Fast, automatic responses.', ['x10-s6-1']),
+      t('x10-s6', 'x10-s6-3', 'Hormones in animals and plants', 'Chemical control of the body.', [
+        'x10-s6-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-s7',
+    subjectId: 'science',
+    index: 7,
+    name: 'How do Organisms Reproduce?',
+    topics: [
+      t('x10-s7', 'x10-s7-1', 'Asexual reproduction', 'Making offspring from a single parent.'),
+      t('x10-s7', 'x10-s7-2', 'Sexual reproduction in plants', 'The flower and its role.', [
+        'x10-s7-1',
+      ]),
+      t('x10-s7', 'x10-s7-3', 'Reproduction in humans', 'The reproductive system and its work.', [
+        'x10-s7-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-s8',
+    subjectId: 'science',
+    index: 8,
+    name: 'Heredity',
+    topics: [
+      t('x10-s8', 'x10-s8-1', 'Inheritance of traits', 'How features pass to offspring.'),
+      t('x10-s8', 'x10-s8-2', "Mendel's experiments", 'The rules of inheritance from pea plants.', [
+        'x10-s8-1',
+      ]),
+      t('x10-s8', 'x10-s8-3', 'Sex determination', 'How the sex of a child is decided.', [
+        'x10-s8-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-s9',
+    subjectId: 'science',
+    index: 9,
+    name: 'Light: Reflection and Refraction',
+    topics: [
+      t(
+        'x10-s9',
+        'x10-s9-1',
+        'Reflection by spherical mirrors',
+        'Images formed by concave and convex mirrors.',
+      ),
+      t('x10-s9', 'x10-s9-2', 'Refraction of light', 'How light bends between media.', [
+        'x10-s9-1',
+      ]),
+      t('x10-s9', 'x10-s9-3', 'Lenses and their formulae', 'Image formation and the lens equation.', [
+        'x10-s9-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-s10',
+    subjectId: 'science',
+    index: 10,
+    name: 'The Human Eye and the Colourful World',
+    topics: [
+      t('x10-s10', 'x10-s10-1', 'The human eye', 'How the eye forms an image.'),
+      t('x10-s10', 'x10-s10-2', 'Defects of vision', 'Common eye problems and their correction.', [
+        'x10-s10-1',
+      ]),
+      t(
+        'x10-s10',
+        'x10-s10-3',
+        'Refraction through a prism',
+        'Dispersion, the rainbow and scattering.',
+        ['x10-s10-2'],
+      ),
+    ],
+  },
+  {
+    id: 'x10-s11',
+    subjectId: 'science',
+    index: 11,
+    name: 'Electricity',
+    topics: [
+      t(
+        'x10-s11',
+        'x10-s11-1',
+        'Electric current and potential difference',
+        'What drives charge through a circuit.',
+      ),
+      t('x10-s11', 'x10-s11-2', "Ohm's law and resistance", 'Relating current, voltage and resistance.', [
+        'x10-s11-1',
+      ]),
+      t('x10-s11', 'x10-s11-3', 'Heating effect of current', 'Power and heat in electrical circuits.', [
+        'x10-s11-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-s12',
+    subjectId: 'science',
+    index: 12,
+    name: 'Magnetic Effects of Electric Current',
+    topics: [
+      t('x10-s12', 'x10-s12-1', 'Magnetic field of a current', 'How current creates magnetism.'),
+      t(
+        'x10-s12',
+        'x10-s12-2',
+        'Force on a conductor and the motor',
+        'Turning electricity into motion.',
+        ['x10-s12-1'],
+      ),
+      t(
+        'x10-s12',
+        'x10-s12-3',
+        'Electromagnetic induction',
+        'Generating current from a moving magnet.',
+        ['x10-s12-2'],
+      ),
+    ],
+  },
+  {
+    id: 'x10-s13',
+    subjectId: 'science',
+    index: 13,
+    name: 'Our Environment',
+    topics: [
+      t('x10-s13', 'x10-s13-1', 'Ecosystems', 'The web of living and non-living things.'),
+      t('x10-s13', 'x10-s13-2', 'Food chains and food webs', 'How energy flows through an ecosystem.', [
+        'x10-s13-1',
+      ]),
+      t('x10-s13', 'x10-s13-3', 'Waste and its management', 'Handling waste to protect the environment.', [
+        'x10-s13-2',
+      ]),
+    ],
+  },
+];
+
+/** CBSE Class 10 — Social science (History · Geography · Civics · Economics). */
+export const socialChapters10: Chapter[] = [
+  {
+    id: 'x10-h1',
+    subjectId: 'social',
+    index: 1,
+    name: 'The Rise of Nationalism in Europe',
+    topics: [
+      t('x10-h1', 'x10-h1-1', 'The making of nationalism', 'How the idea of the nation grew.'),
+      t('x10-h1', 'x10-h1-2', 'Unification of Germany and Italy', 'Nations forged from many states.', [
+        'x10-h1-1',
+      ]),
+      t('x10-h1', 'x10-h1-3', 'Nationalism and imperialism', 'How nationalism turned outward.', [
+        'x10-h1-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-h2',
+    subjectId: 'social',
+    index: 2,
+    name: 'Nationalism in India',
+    topics: [
+      t('x10-h2', 'x10-h2-1', 'The First World War and Khilafat', 'The stir of mass nationalism.'),
+      t('x10-h2', 'x10-h2-2', 'Movements led by Gandhi', 'Non-cooperation and civil disobedience.', [
+        'x10-h2-1',
+      ]),
+      t('x10-h2', 'x10-h2-3', 'Towards a collective identity', 'Symbols that united the nation.', [
+        'x10-h2-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-h3',
+    subjectId: 'social',
+    index: 3,
+    name: 'The Making of a Global World',
+    topics: [
+      t('x10-h3', 'x10-h3-1', 'The pre-modern world', 'Early trade and travel across regions.'),
+      t(
+        'x10-h3',
+        'x10-h3-2',
+        'The nineteenth-century world economy',
+        'Trade, labour and capital flows.',
+        ['x10-h3-1'],
+      ),
+      t('x10-h3', 'x10-h3-3', 'The interwar economy', 'Depression and its worldwide reach.', [
+        'x10-h3-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-h4',
+    subjectId: 'social',
+    index: 4,
+    name: 'The Age of Industrialisation',
+    topics: [
+      t('x10-h4', 'x10-h4-1', 'Before the factory', 'Proto-industrial production.'),
+      t('x10-h4', 'x10-h4-2', 'The coming of the factory', 'Machines and the industrial city.', [
+        'x10-h4-1',
+      ]),
+      t('x10-h4', 'x10-h4-3', 'Industrialisation in India', 'Factories and workers in the colony.', [
+        'x10-h4-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-h5',
+    subjectId: 'social',
+    index: 5,
+    name: 'Print Culture and the Modern World',
+    topics: [
+      t('x10-h5', 'x10-h5-1', 'The coming of print', 'From manuscripts to the printing press.'),
+      t('x10-h5', 'x10-h5-2', 'Print and society', 'How reading changed the world.', [
+        'x10-h5-1',
+      ]),
+      t('x10-h5', 'x10-h5-3', 'Print in colonial India', 'The press and Indian society.', [
+        'x10-h5-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-g1',
+    subjectId: 'social',
+    index: 6,
+    name: 'Resources and Development',
+    topics: [
+      t('x10-g1', 'x10-g1-1', 'Types of resources', "Classifying the world's resources."),
+      t('x10-g1', 'x10-g1-2', 'Resource planning', 'Using resources wisely and fairly.', [
+        'x10-g1-1',
+      ]),
+      t('x10-g1', 'x10-g1-3', 'Land and soil resources', 'Caring for land and preventing degradation.', [
+        'x10-g1-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-g2',
+    subjectId: 'social',
+    index: 7,
+    name: 'Forest and Wildlife Resources',
+    topics: [
+      t('x10-g2', 'x10-g2-1', 'Biodiversity', 'The rich variety of life.'),
+      t('x10-g2', 'x10-g2-2', 'Threats to flora and fauna', 'Why species are in danger.', [
+        'x10-g2-1',
+      ]),
+      t('x10-g2', 'x10-g2-3', 'Conservation efforts', 'Protecting forests and wildlife.', [
+        'x10-g2-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-g3',
+    subjectId: 'social',
+    index: 8,
+    name: 'Water Resources',
+    topics: [
+      t('x10-g3', 'x10-g3-1', 'Water scarcity', 'Why fresh water is under strain.'),
+      t('x10-g3', 'x10-g3-2', 'Dams and irrigation', 'Storing and sharing water.', ['x10-g3-1']),
+      t('x10-g3', 'x10-g3-3', 'Rainwater harvesting', 'Traditional and modern ways to save water.', [
+        'x10-g3-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-g4',
+    subjectId: 'social',
+    index: 9,
+    name: 'Agriculture',
+    topics: [
+      t('x10-g4', 'x10-g4-1', 'Types of farming', 'Subsistence and commercial agriculture.'),
+      t('x10-g4', 'x10-g4-2', 'Cropping patterns and major crops', 'The seasons and staples of India.', [
+        'x10-g4-1',
+      ]),
+      t('x10-g4', 'x10-g4-3', 'Agriculture and the economy', "Farming's place in national life.", [
+        'x10-g4-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-g5',
+    subjectId: 'social',
+    index: 10,
+    name: 'Minerals and Energy Resources',
+    topics: [
+      t('x10-g5', 'x10-g5-1', 'Types of minerals', 'Metallic and non-metallic minerals.'),
+      t('x10-g5', 'x10-g5-2', 'Conservation of minerals', 'Using a finite resource carefully.', [
+        'x10-g5-1',
+      ]),
+      t(
+        'x10-g5',
+        'x10-g5-3',
+        'Conventional and non-conventional energy',
+        'Sources of power for the future.',
+        ['x10-g5-2'],
+      ),
+    ],
+  },
+  {
+    id: 'x10-g6',
+    subjectId: 'social',
+    index: 11,
+    name: 'Manufacturing Industries',
+    topics: [
+      t('x10-g6', 'x10-g6-1', 'Importance of manufacturing', 'Turning raw materials into goods.'),
+      t('x10-g6', 'x10-g6-2', 'Classification of industries', 'By source, role and ownership.', [
+        'x10-g6-1',
+      ]),
+      t('x10-g6', 'x10-g6-3', 'Industry and the environment', 'Managing pollution from industry.', [
+        'x10-g6-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-g7',
+    subjectId: 'social',
+    index: 12,
+    name: 'Lifelines of National Economy',
+    topics: [
+      t('x10-g7', 'x10-g7-1', 'Transport', 'Roads, railways, waterways and air routes.'),
+      t('x10-g7', 'x10-g7-2', 'Communication', 'Networks that link the nation.', ['x10-g7-1']),
+      t('x10-g7', 'x10-g7-3', 'Trade', 'The exchange of goods within and beyond India.', [
+        'x10-g7-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-c1',
+    subjectId: 'social',
+    index: 13,
+    name: 'Power-sharing',
+    topics: [
+      t('x10-c1', 'x10-c1-1', 'Why power-sharing', 'Spreading power for a stable society.'),
+      t('x10-c1', 'x10-c1-2', 'Forms of power-sharing', 'Across levels, organs and groups.', [
+        'x10-c1-1',
+      ]),
+      t('x10-c1', 'x10-c1-3', 'Case studies', 'Belgium and Sri Lanka compared.', ['x10-c1-2']),
+    ],
+  },
+  {
+    id: 'x10-c2',
+    subjectId: 'social',
+    index: 14,
+    name: 'Federalism',
+    topics: [
+      t('x10-c2', 'x10-c2-1', 'What is federalism', 'Dividing power between centre and states.'),
+      t('x10-c2', 'x10-c2-2', 'Federalism in India', 'How power is shared in India.', [
+        'x10-c2-1',
+      ]),
+      t('x10-c2', 'x10-c2-3', 'Decentralisation', 'Bringing government closer to people.', [
+        'x10-c2-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-c3',
+    subjectId: 'social',
+    index: 15,
+    name: 'Gender, Religion and Caste',
+    topics: [
+      t('x10-c3', 'x10-c3-1', 'Gender and politics', "Women's roles in public life."),
+      t('x10-c3', 'x10-c3-2', 'Religion and politics', 'Communalism and secularism.', [
+        'x10-c3-1',
+      ]),
+      t('x10-c3', 'x10-c3-3', 'Caste and politics', 'How caste shapes and is shaped by politics.', [
+        'x10-c3-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-c4',
+    subjectId: 'social',
+    index: 16,
+    name: 'Political Parties',
+    topics: [
+      t('x10-c4', 'x10-c4-1', 'Role of political parties', 'Why democracies need parties.'),
+      t('x10-c4', 'x10-c4-2', 'Party systems', 'One, two and multi-party systems.', ['x10-c4-1']),
+      t('x10-c4', 'x10-c4-3', 'Challenges and reforms', 'Improving how parties work.', [
+        'x10-c4-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-c5',
+    subjectId: 'social',
+    index: 17,
+    name: 'Outcomes of Democracy',
+    topics: [
+      t('x10-c5', 'x10-c5-1', 'Accountable government', 'Democracy and responsive rule.'),
+      t('x10-c5', 'x10-c5-2', 'Economic and social outcomes', 'What democracy delivers for people.', [
+        'x10-c5-1',
+      ]),
+      t('x10-c5', 'x10-c5-3', 'Dignity and freedom', 'The promise democracy holds.', [
+        'x10-c5-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-e1',
+    subjectId: 'social',
+    index: 18,
+    name: 'Development',
+    topics: [
+      t('x10-e1', 'x10-e1-1', 'Ideas of development', 'Different goals for different people.'),
+      t('x10-e1', 'x10-e1-2', 'Measuring development', 'Income and beyond.', ['x10-e1-1']),
+      t('x10-e1', 'x10-e1-3', 'Sustainability of development', 'Keeping development going for the future.', [
+        'x10-e1-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-e2',
+    subjectId: 'social',
+    index: 19,
+    name: 'Sectors of the Indian Economy',
+    topics: [
+      t(
+        'x10-e2',
+        'x10-e2-1',
+        'Primary, secondary and tertiary sectors',
+        'The three sectors of the economy.',
+      ),
+      t('x10-e2', 'x10-e2-2', 'Organised and unorganised sectors', 'Where and how people work.', [
+        'x10-e2-1',
+      ]),
+      t('x10-e2', 'x10-e2-3', 'Public and private sectors', 'Who owns economic activity.', [
+        'x10-e2-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-e3',
+    subjectId: 'social',
+    index: 20,
+    name: 'Money and Credit',
+    topics: [
+      t('x10-e3', 'x10-e3-1', 'Money as a medium of exchange', 'How money makes trade easy.'),
+      t('x10-e3', 'x10-e3-2', 'Modern forms of credit', 'Loans, banks and terms of credit.', [
+        'x10-e3-1',
+      ]),
+      t('x10-e3', 'x10-e3-3', 'Formal and informal credit', 'Fair and unfair sources of loans.', [
+        'x10-e3-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-e4',
+    subjectId: 'social',
+    index: 21,
+    name: 'Globalisation and the Indian Economy',
+    topics: [
+      t('x10-e4', 'x10-e4-1', 'What is globalisation', "The world's economies growing connected."),
+      t('x10-e4', 'x10-e4-2', 'Factors enabling globalisation', 'Technology, trade and investment.', [
+        'x10-e4-1',
+      ]),
+      t('x10-e4', 'x10-e4-3', 'Impact on India', 'How globalisation reshaped the economy.', [
+        'x10-e4-2',
+      ]),
+    ],
+  },
+  {
+    id: 'x10-e5',
+    subjectId: 'social',
+    index: 22,
+    name: 'Consumer Rights',
+    topics: [
+      t('x10-e5', 'x10-e5-1', 'The consumer in the marketplace', 'Why consumers need protection.'),
+      t('x10-e5', 'x10-e5-2', 'Consumer rights', 'The rights every buyer holds.', ['x10-e5-1']),
+      t('x10-e5', 'x10-e5-3', 'Consumer movement and redressal', 'Seeking justice as a consumer.', [
+        'x10-e5-2',
+      ]),
+    ],
+  },
+];
+
+const GRADE_CHAPTERS: Record<string, Record<string, Chapter[]>> = {
+  'Class 8': { math: mathChapters, science: scienceChapters, social: socialChapters },
+  'Class 10': { math: mathChapters10, science: scienceChapters10, social: socialChapters10 },
 };
 
+/** ponytail: same key profile.ts writes (clss-learner-profile) — kept local to dodge a circular import. */
+function currentGrade(): string {
+  try {
+    const raw = localStorage.getItem('clss-learner-profile');
+    if (raw) {
+      const grade = (JSON.parse(raw) as { grade?: string }).grade;
+      if (grade && GRADE_CHAPTERS[grade]) return grade;
+    }
+  } catch {
+    // storage unavailable — fall through to the seed grade
+  }
+  return 'Class 8';
+}
+
+/**
+ * Grade-aware by the persisted profile grade, Class 8 fallback. A Proxy so every property read
+ * (and Object.values/keys) resolves the current grade live, without callers changing shape.
+ */
+export const chaptersBySubject: Record<string, Chapter[]> = new Proxy(
+  {},
+  {
+    get(_target, prop: string) {
+      return GRADE_CHAPTERS[currentGrade()][prop];
+    },
+    has(_target, prop: string) {
+      return prop in GRADE_CHAPTERS[currentGrade()];
+    },
+    ownKeys() {
+      return Reflect.ownKeys(GRADE_CHAPTERS[currentGrade()]);
+    },
+    getOwnPropertyDescriptor(_target, prop) {
+      const bySubject = GRADE_CHAPTERS[currentGrade()] as Record<string, Chapter[] | undefined>;
+      if (!(prop in bySubject)) return undefined;
+      return { enumerable: true, configurable: true, value: bySubject[prop as string] };
+    },
+  },
+) as Record<string, Chapter[]>;
+
 const allTopics = new Map<string, Topic>();
-for (const chapters of Object.values(chaptersBySubject))
-  for (const ch of chapters) for (const topic of ch.topics) allTopics.set(topic.id, topic);
+for (const bySubject of Object.values(GRADE_CHAPTERS))
+  for (const chapters of Object.values(bySubject))
+    for (const ch of chapters) for (const topic of ch.topics) allTopics.set(topic.id, topic);
 
 export function topicById(id: string): Topic | undefined {
   return allTopics.get(id);
