@@ -59,8 +59,10 @@ _POLICIES: dict[str, RoutingPolicy] = {
             # reply is a groundedness bug (she answers a different moment). Track 1 frontier
             # until the real tutor SLM lands in the Track-2 slot.
             track=Track.TRACK_1,
-            primary="frontier.reason",
-            fallback=("frontier.sonnet", "frontier.fast"),
+            # Verdict law (wave 8): a tutor turn must FEEL instant — the fast tier carries the
+            # conversation; sonnet then opus wait in the chain for genuinely hard moments.
+            primary="frontier.fast",
+            fallback=("frontier.sonnet", "frontier.reason"),
             max_latency_ms=8000,
             cost_ceiling=0.05,
             cache_tier=CacheTier.NONE,
