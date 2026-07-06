@@ -35,8 +35,8 @@ export function Whisper({
       transition={{ type: 'spring', stiffness: 380, damping: 24 }}
       style={{
         position: 'fixed',
-        top: 16,
-        left: 22,
+        top: 74,
+        left: 24,
         zIndex: 10,
         display: 'inline-flex',
         alignItems: 'center',
@@ -54,7 +54,14 @@ export function Whisper({
       }}
     >
       <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden style={{ display: 'block' }}>
-        <path d="M9.5 3 L4.5 8 L9.5 13 M4.8 8 L13 8" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+        <path
+          d="M9.5 3 L4.5 8 L9.5 13 M4.8 8 L13 8"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.8}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
       {children}
     </motion.button>

@@ -52,12 +52,20 @@ export interface TopicSigilProps {
   size?: number;
   /** Mastered sigils carry the pigment. */
   mastered?: boolean;
+  /** The owning subject's hue — earned moments take the subject family (default ultramarine). */
+  hue?: string;
   /** Draw-in animation on mount (used sparingly — course headers, not whole grids). */
   draw?: boolean;
 }
 
 /** The concept sigil — a topic's own geometry. */
-export function TopicSigil({ id, size = 56, mastered = false, draw = false }: TopicSigilProps) {
+export function TopicSigil({
+  id,
+  size = 56,
+  mastered = false,
+  hue = ULTRA,
+  draw = false,
+}: TopicSigilProps) {
   const art = useMemo(() => {
     const r = rng(hash(id));
     const sides = 3 + Math.floor(r() * 6); // 3..8
@@ -91,7 +99,7 @@ export function TopicSigil({ id, size = 56, mastered = false, draw = false }: To
   const c = 32;
   const arcEnd = art.arcStart + art.arcSpan;
   const large = art.arcSpan > Math.PI ? 1 : 0;
-  const stroke = mastered ? ULTRA : INK_SOFT;
+  const stroke = mastered ? hue : INK_SOFT;
   const drawProps = draw
     ? {
         initial: { pathLength: 0, opacity: 0 },
@@ -101,14 +109,20 @@ export function TopicSigil({ id, size = 56, mastered = false, draw = false }: To
     : {};
 
   return (
-    // biome-ignore lint/a11y/noSvgWithoutTitle: decorative, aria-hidden
-    <svg viewBox="0 0 64 64" width={size} height={size} aria-hidden style={{ display: 'block' }}>
+    <svg
+      viewBox="0 0 64 64"
+      width={size}
+      height={size}
+      role="presentation"
+      aria-hidden
+      style={{ display: 'block' }}
+    >
       {/* the orbit arc */}
       <motion.path
         d={`M ${c + art.orbitR * Math.cos(art.arcStart)} ${c + art.orbitR * Math.sin(art.arcStart)}
             A ${art.orbitR} ${art.orbitR} 0 ${large} 1 ${c + art.orbitR * Math.cos(arcEnd)} ${c + art.orbitR * Math.sin(arcEnd)}`}
         fill="none"
-        stroke={mastered ? ULTRA : INK_FAINT}
+        stroke={mastered ? hue : INK_FAINT}
         strokeWidth={1}
         strokeLinecap="round"
         {...drawProps}
@@ -116,7 +130,8 @@ export function TopicSigil({ id, size = 56, mastered = false, draw = false }: To
       {/* the base polygon */}
       <motion.polygon
         points={polygonPoints(c, c, art.baseR, art.sides, art.rot)}
-        fill={mastered ? 'var(--clss-ultramarine-soft)' : 'none'}
+        fill={mastered ? hue : 'none'}
+        fillOpacity={mastered ? 0.08 : undefined}
         stroke={stroke}
         strokeWidth={1.1}
         strokeLinejoin="round"
@@ -128,7 +143,7 @@ export function TopicSigil({ id, size = 56, mastered = false, draw = false }: To
         cy={c}
         r={art.innerR}
         fill="none"
-        stroke={mastered ? ULTRA : INK_FAINT}
+        stroke={mastered ? hue : INK_FAINT}
         strokeWidth={0.8}
       />
       {/* a chord through the idea */}
@@ -149,7 +164,7 @@ export function TopicSigil({ id, size = 56, mastered = false, draw = false }: To
           cx={c + art.orbitR * Math.cos(a)}
           cy={c + art.orbitR * Math.sin(a)}
           r={i === 0 ? 2.2 : 1.5}
-          fill={mastered && i === 0 ? ULTRA : INK}
+          fill={mastered && i === 0 ? hue : INK}
         />
       ))}
     </svg>
@@ -164,8 +179,14 @@ export function SubjectGlyph({
 }: { subjectId: string; size?: number; accent?: boolean }) {
   const o = accent ? 1 : 0.92;
   return (
-    // biome-ignore lint/a11y/noSvgWithoutTitle: decorative, aria-hidden
-    <svg viewBox="0 0 96 96" width={size} height={size} aria-hidden style={{ display: 'block' }}>
+    <svg
+      viewBox="0 0 96 96"
+      width={size}
+      height={size}
+      role="presentation"
+      aria-hidden
+      style={{ display: 'block' }}
+    >
       <defs>
         <linearGradient id={`sg-m-${subjectId}`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#4257F0" />
@@ -239,16 +260,16 @@ export function ChapterFiligree({
   }, [id, width]);
   const cy = height / 2;
   return (
-    // biome-ignore lint/a11y/noSvgWithoutTitle: decorative, aria-hidden
     <svg
       viewBox={`0 0 ${width} ${height}`}
       width={width}
       height={height}
+      role="presentation"
       aria-hidden
       style={{ display: 'block' }}
     >
       <line x1={0} y1={cy} x2={width} y2={cy} stroke={INK_FAINT} strokeWidth={0.8} />
-      {marks.map((m, i) =>
+      {marks.map((m) =>
         m.kind === 'dot' ? (
           <circle key={`${id}-mark-${m.x.toFixed(1)}`} cx={m.x} cy={cy} r={1.6} fill={INK_SOFT} />
         ) : m.kind === 'tick' ? (
@@ -268,7 +289,15 @@ export function ChapterFiligree({
 }
 
 /** An empty-state constellation sketch — a promise, not a void. */
-export function EmptyConstellation({ size = 140, label }: { size?: number; label?: string }) {
+export function EmptyConstellation({
+  size = 140,
+  label,
+  hue = ULTRA,
+}: {
+  size?: number;
+  label?: string;
+  hue?: string;
+}) {
   const stars: [number, number, number][] = [
     [30, 84, 2],
     [58, 40, 2.6],
@@ -278,11 +307,11 @@ export function EmptyConstellation({ size = 140, label }: { size?: number; label
   ];
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-      // biome-ignore lint/a11y/noSvgWithoutTitle: decorative, aria-hidden
       <svg
         viewBox="0 0 140 140"
         width={size}
         height={size}
+        role="presentation"
         aria-hidden
         style={{ display: 'block' }}
       >
@@ -298,7 +327,7 @@ export function EmptyConstellation({ size = 140, label }: { size?: number; label
             cx={x}
             cy={y}
             r={r}
-            fill={i === 1 ? ULTRA : INK_SOFT}
+            fill={i === 1 ? hue : INK_SOFT}
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{
               duration: 3.4 + i * 0.6,
@@ -314,25 +343,43 @@ export function EmptyConstellation({ size = 140, label }: { size?: number; label
 }
 
 /** The boss sigil — the topic's own geometry, set in a ring, worthy of a final door. */
-export function BossSigil({ id, size = 96 }: { id: string; size?: number }) {
+export function BossSigil({
+  id,
+  size = 96,
+  mastered = false,
+  hue = ULTRA,
+}: {
+  id: string;
+  size?: number;
+  /** Once the topic is mastered, the ring ignites in the subject's hue. */
+  mastered?: boolean;
+  hue?: string;
+}) {
   return (
     <div style={{ position: 'relative', width: size, height: size }}>
-      {/* biome-ignore lint/a11y/noSvgWithoutTitle: decorative, aria-hidden */}
       <svg
         viewBox="0 0 64 64"
         width={size}
         height={size}
+        role="presentation"
         aria-hidden
         style={{ position: 'absolute', inset: 0 }}
       >
-        <circle
+        <motion.circle
           cx={32}
           cy={32}
           r={30}
           fill="none"
-          stroke={INK_SOFT}
+          stroke={mastered ? hue : INK_SOFT}
           strokeWidth={1}
           strokeDasharray="3 5"
+          animate={mastered ? { rotate: 360 } : undefined}
+          transition={
+            mastered
+              ? { duration: 60, repeat: Number.POSITIVE_INFINITY, ease: 'linear' }
+              : undefined
+          }
+          style={{ transformOrigin: '32px 32px' }}
         />
       </svg>
       <div
@@ -344,7 +391,7 @@ export function BossSigil({ id, size = 96 }: { id: string; size?: number }) {
           justifyContent: 'center',
         }}
       >
-        <TopicSigil id={id} size={size * 0.72} />
+        <TopicSigil id={id} size={size * 0.72} mastered={mastered} hue={hue} />
       </div>
     </div>
   );

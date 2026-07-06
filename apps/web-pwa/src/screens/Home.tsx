@@ -11,8 +11,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { learner } from '../data/catalog';
 import { useRouter } from '../shell/router';
-import { AuroraButton, cascade, Kbd, MagneticButton, rise, SparkIcon, WaveformIcon } from '../ui/kit';
-import { ClassessLogo } from '../ui/Logo';
+import { MicBloomIcon, SparkIcon } from '../ui/icons';
+import { AuroraButton, cascade, Kbd, MagneticButton, rise } from '../ui/kit';
 import { useVidyaChat } from '../vidya/chat';
 import { useVidyaVoice } from '../vidya/voice';
 
@@ -66,10 +66,8 @@ export function Home() {
   const router = useRouter();
   const { turns, ask, busy, mood, setMood } = useVidyaChat();
   const [draft, setDraft] = useState('');
-  const [factOpen, setFactOpen] = useState(false);
   const [voiceNote, setVoiceNote] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const fact = useMemo(todaysFact, []);
   const voice = useVidyaVoice({ setMood });
   const voiceOn =
     voice.status === 'listening' || voice.status === 'speaking' || voice.status === 'connecting';
@@ -111,53 +109,6 @@ export function Home() {
         padding: '0 24px',
       }}
     >
-      {/* the wordmark — quiet, top centre */}
-      <div style={{ position: 'fixed', top: 16, left: 22 }}>
-        <ClassessLogo height={20} />
-      </div>
-
-      {/* did you know — top right, fresh every day */}
-      <div style={{ position: 'fixed', top: 58, right: 24, textAlign: 'right', maxWidth: 300 }}>
-        <button
-          type="button"
-          onClick={() => setFactOpen((o) => !o)}
-          style={{
-            border: 'none',
-            background: 'transparent',
-            color: 'var(--clss-ink-500)',
-            fontSize: '0.85rem',
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-            padding: 4,
-          }}
-        >
-          ✦ Did you know
-        </button>
-        <AnimatePresence>
-          {factOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.24, ease: [0.2, 0, 0, 1] }}
-              style={{
-                marginTop: 8,
-                padding: '12px 14px',
-                background: 'var(--clss-paper)',
-                border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-                borderRadius: 'var(--clss-radius-sm)',
-                fontSize: '0.9rem',
-                lineHeight: 1.55,
-                color: 'var(--clss-ink-700)',
-                textAlign: 'left',
-              }}
-            >
-              {fact}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
       {/* Vidya, front door */}
       <motion.div
         variants={cascade}
@@ -189,7 +140,10 @@ export function Home() {
         >
           {greeting(learner.name)}
         </motion.div>
-        <motion.div variants={rise} style={{ marginTop: 10, color: '#5C5E66', fontSize: '0.98rem' }}>
+        <motion.div
+          variants={rise}
+          style={{ marginTop: 10, color: '#5C5E66', fontSize: '0.98rem' }}
+        >
           Ask me anything, or take a door
         </motion.div>
 
@@ -287,7 +241,7 @@ export function Home() {
               whiteSpace: 'nowrap',
             }}
           >
-            <WaveformIcon active={voiceOn} size={18} />
+            <MicBloomIcon active={voiceOn} size={18} />
           </button>
           {draft.trim() && (
             <MagneticButton variant="primary" onClick={() => {}} ariaLabel="Ask Vidya">

@@ -11,9 +11,9 @@ import { VidyaBody } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { useRouter } from '../shell/router';
+import { MicBloomIcon } from '../ui/icons';
 import { useVidyaChat } from './chat';
 import { FlyingVidya } from './Flight';
-import { WaveformIcon } from '../ui/kit';
 import { useVidyaVoice } from './voice';
 
 /** Her hand: letter-by-letter reveal for the newest line she speaks. */
@@ -247,7 +247,7 @@ export function VidyaCompanion() {
                   whiteSpace: 'nowrap',
                 }}
               >
-                <WaveformIcon active={voiceOn} size={17} />
+                <MicBloomIcon active={voiceOn} size={17} />
               </button>
               {draft.trim() && (
                 <button

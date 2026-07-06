@@ -218,11 +218,16 @@ export function TiltCard({
   onClick,
   style,
   spotlight = 'rgba(18,19,22,0.045)',
+  ariaLabel,
+  onLitChange,
 }: {
   children: ReactNode;
   onClick?: () => void;
   style?: CSSProperties;
   spotlight?: string;
+  ariaLabel?: string;
+  /** Fires when the pointer arrives/leaves — lets a card swap its own accents in sync. */
+  onLitChange?: (lit: boolean) => void;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const rx = useMotionValue(0);
@@ -251,16 +256,35 @@ export function TiltCard({
     rx.set(0);
     ry.set(0);
     setLit(false);
-  }, [rx, ry]);
+    onLitChange?.(false);
+  }, [rx, ry, onLitChange]);
 
   const spot = useMotionTemplate`radial-gradient(240px circle at ${sx}% ${sy}%, ${spotlight}, transparent 70%)`;
 
   return (
     <motion.div
       ref={ref}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      aria-label={ariaLabel}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClick();
+              }
+            }
+          : undefined
+      }
       onPointerMove={onMove}
-      onPointerEnter={() => setLit(true)}
+      onPointerEnter={() => {
+        setLit(true);
+        onLitChange?.(true);
+      }}
       onPointerLeave={onLeaveTilt}
+      onFocus={() => onLitChange?.(true)}
+      onBlur={() => onLitChange?.(false)}
       onClick={onClick}
       whileTap={onClick ? { scale: 0.985 } : undefined}
       style={{
@@ -378,52 +402,6 @@ export function AuroraButton({
         {children}
       </span>
     </motion.button>
-  );
-}
-
-// --- Icons ------------------------------------------------------------------------------------------
-export function WaveformIcon({ active = false, size = 18 }: { active?: boolean; size?: number }) {
-  const bars = [0.3, 0.55, 0.9, 0.5, 0.9, 0.55, 0.3];
-  return (
-    <span
-      aria-hidden
-      style={{ display: 'inline-flex', alignItems: 'center', gap: size * 0.12, height: size }}
-    >
-      {bars.map((h, i) => (
-        <motion.span
-          key={`${i}-${h}`}
-          animate={active ? { scaleY: [h, Math.min(1, h + 0.45), h * 0.7, h] } : { scaleY: h }}
-          transition={
-            active
-              ? {
-                  duration: 0.7,
-                  repeat: Number.POSITIVE_INFINITY,
-                  ease: 'easeInOut',
-                  delay: i * 0.08,
-                }
-              : { type: 'spring', stiffness: 300, damping: 24 }
-          }
-          style={{
-            width: Math.max(2, size * 0.13),
-            height: size,
-            borderRadius: 999,
-            background: 'currentColor',
-            transformOrigin: '50% 50%',
-          }}
-        />
-      ))}
-    </span>
-  );
-}
-
-export function SparkIcon({ size = 12, color = '#1F35E0' }: { size?: number; color?: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 14 14" aria-hidden style={{ display: 'block' }}>
-      <path
-        d="M7 0.5 C7.9 4 8.9 5 12.5 7 C8.9 9 7.9 10 7 13.5 C6.1 10 5.1 9 1.5 7 C5.1 5 6.1 4 7 0.5 Z"
-        fill={color}
-      />
-    </svg>
   );
 }
 

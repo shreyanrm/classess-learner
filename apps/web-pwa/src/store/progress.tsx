@@ -10,6 +10,7 @@
  */
 
 import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from 'react';
+import { hueForTopic } from '../ui/hues';
 
 export type XpReason =
   | 'item'
@@ -38,6 +39,8 @@ export interface XpBloom {
   id: number;
   amount: number;
   reason: XpReason;
+  /** The owning subject's hue — earned moments carry the subject family. */
+  hue?: string;
 }
 
 interface Persisted {
@@ -93,7 +96,7 @@ export interface ProgressStore {
   reportProgress: (topicId: string, fraction: number) => void;
   blooms: XpBloom[];
   /** Award XP with a bloom. One-time reasons (account, invites, photo) only ever grant once. */
-  award: (reason: XpReason, opts?: { amount?: number; onceKey?: string }) => number;
+  award: (reason: XpReason, opts?: { amount?: number; onceKey?: string; hue?: string }) => number;
   completeTopic: (topicId: string, xp?: number) => void;
   dismissBloom: (id: number) => void;
 }
@@ -112,14 +115,14 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<Persisted>(load);
   const [blooms, setBlooms] = useState<XpBloom[]>([]);
 
-  const pushBloom = useCallback((amount: number, reason: XpReason) => {
+  const pushBloom = useCallback((amount: number, reason: XpReason, hue?: string) => {
     const id = bloomSeq++;
-    setBlooms((b) => [...b, { id, amount, reason }]);
+    setBlooms((b) => [...b, { id, amount, reason, hue }]);
     setTimeout(() => setBlooms((b) => b.filter((x) => x.id !== id)), 2400);
   }, []);
 
   const award = useCallback(
-    (reason: XpReason, opts?: { amount?: number; onceKey?: string }) => {
+    (reason: XpReason, opts?: { amount?: number; onceKey?: string; hue?: string }) => {
       const amount = opts?.amount ?? XP_AWARDS[reason];
       let granted = 0;
       setState((prev) => {
@@ -137,7 +140,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         return next;
       });
       // The bloom must feel immediate; if the grant was a duplicate one-time award it is silent.
-      setTimeout(() => granted > 0 && pushBloom(amount, reason), 0);
+      setTimeout(() => granted > 0 && pushBloom(amount, reason, opts?.hue), 0);
       return amount;
     },
     [pushBloom],
@@ -156,7 +159,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         save(next);
         return next;
       });
-      pushBloom(xp ?? XP_AWARDS.topic, 'topic');
+      // a completion bloom carries the mastered topic's subject hue
+      pushBloom(xp ?? XP_AWARDS.topic, 'topic', hueForTopic(topicId));
     },
     [pushBloom],
   );

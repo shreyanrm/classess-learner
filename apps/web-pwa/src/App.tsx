@@ -29,8 +29,8 @@ import { CommandPalette } from './shell/CommandPalette';
 import { type Route, RouterProvider, useRouter } from './shell/router';
 import { ProgressProvider } from './store/progress';
 import { SdkProvider } from './store/sdk';
+import { AppHeader } from './ui/AppHeader';
 import { ClickInk } from './ui/ClickInk';
-import { XpBloomLayer } from './ui/XpBloomLayer';
 import { VidyaCompanion } from './vidya/Companion';
 import { type ChatTurn, VidyaChatProvider } from './vidya/chat';
 
@@ -148,7 +148,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       <Screen />
       {/* Her ink over the current screen — annotations anchored to real elements. */}
       <VidyaOverlay />
-      {!inFlow && <XpBloomLayer />}
+      {!inFlow && <AppHeader />}
       {!inFlow && !onHome && <VidyaCompanion />}
       <CommandPalette />
       <ClickInk />
