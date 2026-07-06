@@ -75,25 +75,28 @@ export function FlyingVidya({
     }
     const w = window.innerWidth;
     const h = window.innerHeight;
-    const from = ENTRIES[hash(routeKey) % ENTRIES.length]?.(w, h) ?? { x: -w * 0.5, y: -h * 0.4 };
-    // Sample a quadratic bezier through the open room — a real swooping curve, not segments.
-    const cx = from.x * 0.35 - w * 0.12;
-    const cy = Math.min(from.y * 0.25, -h * 0.3);
-    const STEPS = 14;
-    const xs: number[] = [];
-    const ys: number[] = [];
-    for (let i = 0; i <= STEPS; i++) {
-      const t = i / STEPS;
-      const u = 1 - t;
-      xs.push(u * u * from.x + 2 * u * t * cx + t * t * 0);
-      ys.push(u * u * from.y + 2 * u * t * cy + t * t * 0);
+    // Top-down entry → one full circle in the open room → settle on the dock. All in-viewport.
+    // Coordinates are offsets from the dock (bottom-right), so x∈[-(w-120),0], y∈[-(h-120),0].
+    const cxr = -Math.min(w * 0.42, w - 260); // circle centre, safely on-screen
+    const cyr = -h * 0.52;
+    const r = Math.max(70, Math.min(w, h) * 0.16);
+    const xs: number[] = [cxr, cxr];
+    const ys: number[] = [-h - 90, cyr - r];
+    const LOOP = 12;
+    for (let i = 1; i <= LOOP; i++) {
+      const a = -Math.PI / 2 + (i / LOOP) * Math.PI * 2; // start at circle top, one full loop
+      xs.push(cxr + r * Math.cos(a));
+      ys.push(cyr + r * Math.sin(a));
     }
+    xs.push(0);
+    ys.push(0);
+    const STEPS = xs.length - 1;
     // Banking follows velocity — she leans into the turn like a thing with weight.
     const rots = xs.map((x, i) => {
       if (i === 0) return 0;
       const dx = x - (xs[i - 1] as number);
       const dy = (ys[i] as number) - (ys[i - 1] as number);
-      return Math.max(-24, Math.min(24, dx * 0.14 + dy * -0.03));
+      return Math.max(-26, Math.min(26, dx * 0.16 + dy * -0.04));
     });
     rots[STEPS] = 0;
     setFlying(true);
@@ -103,7 +106,7 @@ export function FlyingVidya({
         y: ys,
         rotate: rots,
         opacity: [0, 1, ...Array(STEPS - 1).fill(1)],
-        transition: { duration: 1.9, ease: [0.22, 1, 0.36, 1] },
+        transition: { duration: 2.3, ease: [0.3, 0.9, 0.4, 1] },
       })
       .then(() =>
         controls.start({
