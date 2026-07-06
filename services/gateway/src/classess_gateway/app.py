@@ -3,15 +3,23 @@
 The engine ties the pieces together for one invocation: consent gate -> cache lookup ->
 model resolution -> provider call -> cache write -> telemetry. The HTTP surface exposes
 invoke, a registry dump, and a health check.
+
+Boot posture: :func:`validate_env` fails fast on a misconfigured environment (never serve
+a request half-configured), CORS is locked to the prod origin outside dev, capability
+routes are rate limited per IP, and logs are structured JSON.
 """
 
 from __future__ import annotations
 
+import json
+import logging
 import os
 import time
+from collections.abc import Awaitable, Callable
+from datetime import UTC, datetime
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
@@ -27,6 +35,64 @@ from classess_gateway.registry import (
 from classess_gateway.routing import resolve, resolve_any
 from classess_gateway.telemetry import MetricsSink, TelemetryEvent, emit
 from classess_gateway.voice import register_voice
+
+logger = logging.getLogger("classess.gateway")
+
+_PROD_ORIGIN = "https://learner.classess.com"
+_DEV_ORIGINS = ("http://localhost:5173", "http://localhost:4173")
+
+
+class _JsonFormatter(logging.Formatter):
+    """One JSON object per line — machine-parseable on any host's log drain."""
+
+    def format(self, record: logging.LogRecord) -> str:
+        entry: dict[str, Any] = {
+            "ts": datetime.now(UTC).isoformat(timespec="milliseconds"),
+            "level": record.levelname.lower(),
+            "logger": record.name,
+            "msg": record.getMessage(),
+        }
+        entry.update(getattr(record, "fields", None) or {})
+        if record.exc_info:
+            entry["exc"] = self.formatException(record.exc_info)
+        return json.dumps(entry, default=str)
+
+
+def configure_logging() -> None:
+    root = logging.getLogger()
+    if any(isinstance(h.formatter, _JsonFormatter) for h in root.handlers):
+        return  # already configured (create_app runs once per test)
+    handler = logging.StreamHandler()
+    handler.setFormatter(_JsonFormatter())
+    root.handlers = [handler]
+    root.setLevel(os.getenv("LOG_LEVEL", "INFO").upper())
+
+
+def validate_env() -> None:
+    """Fail fast on boot — a misconfigured gateway must never serve a single request."""
+    env = os.getenv("ENV", "dev").lower()
+    if env not in {"dev", "stg", "prod"}:
+        raise RuntimeError(f"ENV must be one of dev|stg|prod, got {env!r}")
+    mode = os.getenv("LLM_MODE", "mock").lower()
+    if mode not in {"mock", "live"}:
+        raise RuntimeError(f"LLM_MODE must be mock|live, got {mode!r}")
+    if mode == "live":
+        if not os.getenv("ANTHROPIC_API_KEY"):
+            raise RuntimeError(
+                "LLM_MODE=live requires ANTHROPIC_API_KEY (Track 1 primary). "
+                "Set it in the environment or run with LLM_MODE=mock."
+            )
+        if not os.getenv("OPENAI_API_KEY"):
+            logger.warning("OPENAI_API_KEY missing: cross-check fallbacks will fail over")
+        if not (os.getenv("GOOGLE_AI_API_KEY") or os.getenv("GEMINI_API_KEY")):
+            logger.warning("GOOGLE_AI_API_KEY missing: voice and imagery stay unavailable")
+
+
+def _cors_origins() -> list[str]:
+    # Locked: localhost is a dev convenience and must never reach prod's allowlist.
+    if os.getenv("ENV", "dev").lower() == "prod":
+        return [_PROD_ORIGIN]
+    return [_PROD_ORIGIN, *_DEV_ORIGINS]
 
 
 class ConsentDenied(Exception):
@@ -149,15 +215,69 @@ def build_gateway() -> Gateway:
 
 
 def create_app(gateway: Gateway | None = None) -> FastAPI:
+    configure_logging()
+    validate_env()
     app = FastAPI(title="Classess model gateway", version="0.0.0")
-    # Dev: the web-pwa (Vite/preview) calls the gateway from the browser.
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:5173", "http://localhost:4173"],
+        allow_origins=_cors_origins(),
         allow_methods=["*"],
         allow_headers=["*"],
     )
     gw = gateway or build_gateway()
+    logger.info(
+        "gateway booted",
+        extra={
+            "fields": {
+                "env": os.getenv("ENV", "dev").lower(),
+                "llm_mode": os.getenv("LLM_MODE", "mock").lower(),
+            }
+        },
+    )
+
+    # Per-IP rate limit on spend-bearing routes (capability invokes + voice-token mints).
+    # ponytail: in-memory fixed window, per process — move to Redis when >1 instance runs.
+    limit = int(os.getenv("RATE_LIMIT_PER_MINUTE", "60"))
+    hits: dict[tuple[str, int], int] = {}
+
+    @app.middleware("http")
+    async def _guard_and_log(
+        request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
+        started = time.perf_counter()
+        path = request.url.path
+        ip = request.client.host if request.client else "unknown"
+        limited = path.startswith("/v1/capability/") or path == "/v1/voice/session"
+        if limited:
+            window = int(time.time() // 60)
+            if len(hits) > 4096:
+                hits.clear()  # ponytail: cheap prune; worst case one window over-admits
+            key = (ip, window)
+            hits[key] = hits.get(key, 0) + 1
+            if hits[key] > limit:
+                response: Response = JSONResponse(
+                    status_code=429,
+                    content={"error": "rate_limited", "detail": "too many requests"},
+                    headers={"Retry-After": str(60 - int(time.time()) % 60)},
+                )
+            else:
+                response = await call_next(request)
+        else:
+            response = await call_next(request)
+        if path != "/healthz":  # health probes would drown the log
+            logger.info(
+                "request",
+                extra={
+                    "fields": {
+                        "method": request.method,
+                        "path": path,
+                        "status": response.status_code,
+                        "ip": ip,
+                        "duration_ms": round((time.perf_counter() - started) * 1000, 1),
+                    }
+                },
+            )
+        return response
 
     @app.exception_handler(ConsentDenied)
     async def _on_consent_denied(_: Request, exc: ConsentDenied) -> JSONResponse:

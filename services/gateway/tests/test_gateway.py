@@ -160,3 +160,73 @@ def test_voice_session_is_unavailable_without_a_key(monkeypatch: pytest.MonkeyPa
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     client = TestClient(create_app(make_gateway()))
     assert client.get("/v1/voice/session").json() == {"mode": "unavailable"}
+
+
+# --- boot posture: env validation, CORS lockdown, rate limiting ------------------------
+def test_live_mode_without_anthropic_key_fails_fast(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("LLM_MODE", "live")
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    with pytest.raises(RuntimeError, match="ANTHROPIC_API_KEY"):
+        create_app(make_gateway())
+
+
+def test_unknown_llm_mode_fails_fast(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("LLM_MODE", "yolo")
+    with pytest.raises(RuntimeError, match="LLM_MODE"):
+        create_app(make_gateway())
+
+
+def test_prod_cors_excludes_localhost(monkeypatch: pytest.MonkeyPatch) -> None:
+    from fastapi.testclient import TestClient
+
+    monkeypatch.setenv("ENV", "prod")
+    client = TestClient(create_app(make_gateway()))
+    preflight = {"Access-Control-Request-Method": "POST"}
+
+    allowed = client.options(
+        "/v1/capabilities",
+        headers={"Origin": "https://learner.classess.com", **preflight},
+    )
+    assert allowed.headers["access-control-allow-origin"] == "https://learner.classess.com"
+
+    denied = client.options(
+        "/v1/capabilities",
+        headers={"Origin": "http://localhost:5173", **preflight},
+    )
+    assert "access-control-allow-origin" not in denied.headers
+
+
+def test_dev_cors_allows_localhost(monkeypatch: pytest.MonkeyPatch) -> None:
+    from fastapi.testclient import TestClient
+
+    monkeypatch.setenv("ENV", "dev")
+    client = TestClient(create_app(make_gateway()))
+    ok = client.options(
+        "/v1/capabilities",
+        headers={"Origin": "http://localhost:5173", "Access-Control-Request-Method": "POST"},
+    )
+    assert ok.headers["access-control-allow-origin"] == "http://localhost:5173"
+
+
+def test_capability_routes_are_rate_limited_per_ip(monkeypatch: pytest.MonkeyPatch) -> None:
+    import time
+    from types import SimpleNamespace
+
+    from fastapi.testclient import TestClient
+
+    monkeypatch.setenv("RATE_LIMIT_PER_MINUTE", "3")
+    # pin the wall clock so all four posts land in one rate-limit window
+    monkeypatch.setattr(
+        "classess_gateway.app.time",
+        SimpleNamespace(time=lambda: 1_000_000.0, perf_counter=time.perf_counter),
+    )
+    client = TestClient(create_app(make_gateway()))
+    body = {"consent_tier": "un_elevated", "payload": {}}
+
+    statuses = [client.post("/v1/capability/tutor.turn", json=body).status_code for _ in range(4)]
+    assert statuses[:3] == [200, 200, 200]
+    assert statuses[3] == 429
+
+    # non-capability routes are never limited
+    assert client.get("/healthz").status_code == 200
+    assert client.get("/v1/capabilities").status_code == 200

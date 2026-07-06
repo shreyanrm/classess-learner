@@ -186,7 +186,10 @@ export function Ember({ size, mood = 'happy', animate = true, flip, seed = 0 }: 
         {/* head */}
         <circle cx="60" cy="58" r="24" fill={PAINT.amber} />
         {/* muzzle */}
-        <path d="M60 64 q-16 0 -16 9.5 q0 7.5 16 7.5 q16 0 16 -7.5 q0 -9.5 -16 -9.5 Z" fill="#F7F2EA" />
+        <path
+          d="M60 64 q-16 0 -16 9.5 q0 7.5 16 7.5 q16 0 16 -7.5 q0 -9.5 -16 -9.5 Z"
+          fill="#F7F2EA"
+        />
         <Eyes lx={49} rx={71} y={55} r={3.2} mood={mood} animate={animate} seed={seed} />
         <path d="M60 68 l-4 3.6 4 3 4 -3 Z" fill={FACE_INK} />
         <Mouth cx={60} y={77} mood={mood} color="#B9822F" w={8} />

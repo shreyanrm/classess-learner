@@ -11,7 +11,7 @@ import { VidyaBody } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { useRouter } from '../shell/router';
-import { CloseIcon, WaveformIcon, SendIcon } from '../ui/icons';
+import { CloseIcon, SendIcon, WaveformIcon } from '../ui/icons';
 import { useVidyaChat } from './chat';
 import { FlyingVidya } from './Flight';
 import { useVidyaVoice } from './voice';

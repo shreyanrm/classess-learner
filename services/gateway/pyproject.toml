@@ -9,6 +9,7 @@ dependencies = [
     "fastapi>=0.115",
     "litellm>=1.50",
     "pydantic>=2.7",
+    "uvicorn[standard]>=0.30",
 ]
 
 [build-system]
