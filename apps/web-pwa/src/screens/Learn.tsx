@@ -61,7 +61,7 @@ export function Whisper({
   );
 }
 
-const SUBJECT_HUES: Record<string, { hue: string; wash: string }> = {
+export const SUBJECT_HUES: Record<string, { hue: string; wash: string }> = {
   math: { hue: '#1F35E0', wash: 'rgba(31,53,224,0.06)' },
   science: { hue: '#0FA3B1', wash: 'rgba(15,163,177,0.07)' },
   social: { hue: '#B26A00', wash: 'rgba(178,106,0,0.07)' },

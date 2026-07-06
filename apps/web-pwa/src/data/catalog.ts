@@ -2042,6 +2042,10 @@ function currentGrade(): string {
   return 'Class 8';
 }
 
+function currentGradeChapters(): Record<string, Chapter[]> {
+  return GRADE_CHAPTERS[currentGrade()] ?? (GRADE_CHAPTERS['Class 8'] as Record<string, Chapter[]>);
+}
+
 /**
  * Grade-aware by the persisted profile grade, Class 8 fallback. A Proxy so every property read
  * (and Object.values/keys) resolves the current grade live, without callers changing shape.
@@ -2050,16 +2054,16 @@ export const chaptersBySubject: Record<string, Chapter[]> = new Proxy(
   {},
   {
     get(_target, prop: string) {
-      return GRADE_CHAPTERS[currentGrade()][prop];
+      return currentGradeChapters()[prop];
     },
     has(_target, prop: string) {
-      return prop in GRADE_CHAPTERS[currentGrade()];
+      return prop in currentGradeChapters();
     },
     ownKeys() {
-      return Reflect.ownKeys(GRADE_CHAPTERS[currentGrade()]);
+      return Reflect.ownKeys(currentGradeChapters());
     },
     getOwnPropertyDescriptor(_target, prop) {
-      const bySubject = GRADE_CHAPTERS[currentGrade()] as Record<string, Chapter[] | undefined>;
+      const bySubject = currentGradeChapters() as Record<string, Chapter[] | undefined>;
       if (!(prop in bySubject)) return undefined;
       return { enumerable: true, configurable: true, value: bySubject[prop as string] };
     },

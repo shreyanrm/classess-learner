@@ -101,7 +101,8 @@ def _gemini_image(prompt: str, key: str) -> tuple[str, str] | None:
             if inline and inline.get("data"):
                 data = inline["data"]
                 if _valid_b64_png(data):
-                    return data, str(inline.get("mimeType") or inline.get("mime_type") or "image/png")
+                    mime = inline.get("mimeType") or inline.get("mime_type") or "image/png"
+                    return data, str(mime)
     return None
 
 

@@ -14,8 +14,9 @@ import { chaptersBySubject, learner, subjectById, unmetPrereqs } from '../data/c
 import type { Chapter, Topic } from '../data/model';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
+import { SubjectGlyph, TopicSigil } from '../ui/art';
 import { MagneticButton } from '../ui/kit';
-import { Whisper } from './Learn';
+import { SUBJECT_HUES, Whisper } from './Learn';
 
 const EXPAND_SPRING = { type: 'spring', stiffness: 320, damping: 32 } as const;
 
@@ -75,7 +76,10 @@ function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
           gap: 16,
         }}
       >
-        <span style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+        <span style={{ flexShrink: 0, opacity: mastered ? 1 : 0.8 }}>
+          <TopicSigil id={topic.id} size={34} mastered={mastered} />
+        </span>
+        <span style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, flex: 1 }}>
           <span style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--clss-ink-900)' }}>
             {topic.name}
           </span>
@@ -223,7 +227,15 @@ function ChapterRow({
             color: 'var(--clss-ink-300)',
             fontVariantNumeric: 'tabular-nums',
             flexShrink: 0,
-            width: 22,
+            width: 30,
+            height: 30,
+            display: 'grid',
+            placeItems: 'center',
+            background: tone?.wash,
+            color: tone?.hue,
+            borderRadius: 8,
+            fontWeight: 600,
+            fontSize: '0.78rem',
           }}
         >
           {String(chapter.index).padStart(2, '0')}
@@ -350,6 +362,9 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
       <Whisper onClick={() => router.back()}>◦ {intent}</Whisper>
 
       <div style={{ width: '100%', maxWidth: 720 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 4 }}>
+          <SubjectGlyph subjectId={subjectId} size={64} accent />
+        </div>
         <h1
           style={{
             margin: 0,
