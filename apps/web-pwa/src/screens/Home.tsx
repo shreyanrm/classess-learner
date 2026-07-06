@@ -170,7 +170,7 @@ export function Home() {
           alignItems: 'center',
           justifyContent: 'center',
           width: '100%',
-          maxWidth: 620,
+          padding: '0 6vw',
           gap: 0,
         }}
       >
@@ -302,11 +302,12 @@ export function Home() {
         )}
 
         {/* learn-something-cool chips */}
-        <div
+        <motion.div
+          variants={rise}
           style={{
             display: 'flex',
             gap: 8,
-            marginTop: 14,
+            marginTop: 16,
             flexWrap: 'wrap',
             justifyContent: 'center',
           }}
