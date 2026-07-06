@@ -12,10 +12,10 @@
 import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type ReactNode, useEffect, useState } from 'react';
-import { imageSrcFrom, GeneratedImage } from '../../engines/GeneratedImage';
 import { DiagramView, svgIsClean } from '../../engines/DiagramView';
-import { type MotionScene, MotionPlayer, parseMotionScene } from '../../engines/MotionPlayer';
-import { parseSimSpec, type SimSpec, SimRunner } from '../../engines/SimRunner';
+import { GeneratedImage, imageSrcFrom } from '../../engines/GeneratedImage';
+import { MotionPlayer, type MotionScene, parseMotionScene } from '../../engines/MotionPlayer';
+import { parseSimSpec, SimRunner, type SimSpec } from '../../engines/SimRunner';
 import { useRouter } from '../../shell/router';
 import { useSdk } from '../../store/sdk';
 import { useVidyaChat } from '../../vidya/chat';
@@ -139,7 +139,13 @@ function useArtifact(card: ComposedCard, topic: string, courseId: string): Artif
     sdk.llm
       .invoke(
         ENGINE_FOR[card.kind],
-        { topic, concept: card.title, brief: card.blurb ?? '', course_id: courseId, difficulty: 'core' },
+        {
+          topic,
+          concept: card.title,
+          brief: card.blurb ?? '',
+          course_id: courseId,
+          difficulty: 'core',
+        },
         { consentTier: 'un_elevated' },
       )
       .then((res) => {

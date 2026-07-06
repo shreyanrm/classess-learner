@@ -68,7 +68,10 @@ const FUNCTIONS: Record<string, (...args: number[]) => number> = {
 
 const CONSTANTS: Record<string, number> = { pi: Math.PI };
 
-type Token = { kind: 'num'; value: number } | { kind: 'id'; name: string } | { kind: 'op'; op: string };
+type Token =
+  | { kind: 'num'; value: number }
+  | { kind: 'id'; name: string }
+  | { kind: 'op'; op: string };
 
 function tokenize(src: string): Token[] | null {
   const tokens: Token[] = [];
@@ -171,7 +174,8 @@ export function formatSimNumber(v: number | null): string {
   if (v === null || Number.isNaN(v)) return '—';
   if (!Number.isFinite(v)) return v > 0 ? '∞' : '−∞';
   if (Number.isInteger(v)) return String(v);
-  const rendered = Math.abs(v) >= 100 ? v.toFixed(0) : Math.abs(v) >= 1 ? v.toFixed(2) : v.toPrecision(3);
+  const rendered =
+    Math.abs(v) >= 100 ? v.toFixed(0) : Math.abs(v) >= 1 ? v.toFixed(2) : v.toPrecision(3);
   return String(Number(rendered));
 }
 
@@ -319,7 +323,9 @@ export function SimRunner({ spec }: { spec: SimSpec }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
       {spec.law && (
-        <div style={{ ...equationType, textAlign: 'center', padding: '12px 0 2px' }}>{spec.law}</div>
+        <div style={{ ...equationType, textAlign: 'center', padding: '12px 0 2px' }}>
+          {spec.law}
+        </div>
       )}
       {spec.caption && <div style={lead}>{spec.caption}</div>}
 

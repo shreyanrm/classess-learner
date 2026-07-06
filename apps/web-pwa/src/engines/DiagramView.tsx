@@ -27,11 +27,15 @@ export function sanitizeSvgElement(raw: string): SVGSVGElement | null {
   const svg = doc.documentElement;
   if (!(svg instanceof SVGSVGElement)) return null;
 
-  for (const el of Array.from(svg.querySelectorAll('script, foreignObject, iframe, embed, object'))) {
+  for (const el of Array.from(
+    svg.querySelectorAll('script, foreignObject, iframe, embed, object'),
+  )) {
     el.remove();
   }
   // SMIL animation is welcome (animated SVG is a design requirement) unless it rewrites hrefs
-  for (const el of Array.from(svg.querySelectorAll('animate, animateTransform, animateMotion, set'))) {
+  for (const el of Array.from(
+    svg.querySelectorAll('animate, animateTransform, animateMotion, set'),
+  )) {
     const attr = (el.getAttribute('attributeName') ?? '').toLowerCase();
     if (el.tagName.toLowerCase() === 'set' || attr.includes('href')) el.remove();
   }
@@ -39,11 +43,13 @@ export function sanitizeSvgElement(raw: string): SVGSVGElement | null {
     if ((el.textContent ?? '').toLowerCase().includes('url(')) el.remove();
   }
 
+  // Fragments and raster data images only — data:image/svg+xml is a sanitizer bypass, not an image.
+  const RASTER = ['data:image/png;base64,', 'data:image/jpeg;base64,', 'data:image/webp;base64,'];
   const scrub = (el: Element): void => {
     for (const attr of Array.from(el.attributes)) {
       const name = attr.name.toLowerCase();
       const value = attr.value.trim().toLowerCase();
-      const external = !value.startsWith('#') && !value.startsWith('data:image/');
+      const external = !value.startsWith('#') && !RASTER.some((p) => value.startsWith(p));
       if (
         name.startsWith('on') ||
         ((name === 'href' || name === 'xlink:href' || name === 'src') && external) ||

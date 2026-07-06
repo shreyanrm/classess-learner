@@ -63,7 +63,11 @@ export function parseMotionScene(raw: unknown): MotionScene | null {
   if (!isRecord(raw)) return null;
   const src = isRecord(raw.scene) ? raw.scene : raw;
   if (src.verified === false) return null;
-  const rawSteps = Array.isArray(src.steps) ? src.steps : Array.isArray(src.scenes) ? src.scenes : [];
+  const rawSteps = Array.isArray(src.steps)
+    ? src.steps
+    : Array.isArray(src.scenes)
+      ? src.scenes
+      : [];
   const steps: MotionStep[] = [];
   rawSteps.forEach((s, i) => {
     if (!isRecord(s)) return;
@@ -80,11 +84,12 @@ export function parseMotionScene(raw: unknown): MotionScene | null {
     });
   });
   if (steps.length === 0) return null;
-  const narrationSrc = isRecord(src.narration) && typeof src.narration.src === 'string'
-    ? src.narration.src
-    : typeof src.narration_src === 'string'
-      ? src.narration_src
-      : null;
+  const narrationSrc =
+    isRecord(src.narration) && typeof src.narration.src === 'string'
+      ? src.narration.src
+      : typeof src.narration_src === 'string'
+        ? src.narration_src
+        : null;
   return {
     id: typeof src.id === 'string' ? src.id : 'motion',
     title: typeof src.title === 'string' ? src.title : undefined,
@@ -102,7 +107,14 @@ function clock(ms: number): string {
 
 function PlayIcon({ playing }: { playing: boolean }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden style={{ display: 'block' }}>
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      role="presentation"
+      aria-hidden
+      style={{ display: 'block' }}
+    >
       {playing ? (
         <>
           <rect x="2.5" y="1.5" width="3.2" height="11" fill="currentColor" />
@@ -209,9 +221,7 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
     let raf = requestAnimationFrame(function tick(now: number) {
       const a = audioRef.current;
       const next =
-        a && !a.paused && !a.ended
-          ? a.currentTime * 1000
-          : elapsedRef.current + (now - last);
+        a && !a.paused && !a.ended ? a.currentTime * 1000 : elapsedRef.current + (now - last);
       last = now;
       elapsedRef.current = Math.min(next, total);
       setElapsed(elapsedRef.current);
@@ -345,6 +355,7 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
 
       {scene.narration && (
         // ponytail: sync is rAF-vs-audio-clock; drift is imperceptible at these durations
+        // biome-ignore lint/a11y/useMediaCaption: the narration text renders on-screen as the scene captions, in sync
         <audio ref={audioRef} src={scene.narration.src} preload="auto" />
       )}
     </div>
