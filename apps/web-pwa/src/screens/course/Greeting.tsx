@@ -13,6 +13,7 @@ import type { Topic } from '../../data/model';
 import { useProgress } from '../../store/progress';
 import { useSdk } from '../../store/sdk';
 import { TopicSigil } from '../../ui/art';
+import { Juni, Pico, Pip } from '../../ui/cast';
 import { hueForTopic } from '../../ui/hues';
 import { useVidyaChat } from '../../vidya/chat';
 import type { BarState } from './shared';

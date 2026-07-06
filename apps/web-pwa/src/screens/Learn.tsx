@@ -12,7 +12,8 @@ import { motion } from 'framer-motion';
 import { type CSSProperties, type ReactNode, useEffect, useState } from 'react';
 import { chaptersBySubject, type DisplaySubject, displaySubjects } from '../data/catalog';
 import { useRouter } from '../shell/router';
-import { EmptyConstellation, SubjectGlyph } from '../ui/art';
+import { SubjectGlyph } from '../ui/art';
+import { Scene } from '../ui/cast';
 import { toneForSubject } from '../ui/hues';
 import { BackIcon } from '../ui/icons';
 import { cascade, rise, TiltCard } from '../ui/kit';
@@ -505,20 +506,26 @@ export function Learn() {
           alignItems: 'stretch',
         }}
       >
-        {/* an empty shelf is a promise, not a void — the constellation waits on its own stage */}
+        {/* an empty shelf is a promise, not a void — Volt is already wondering about the sky */}
         <span
           style={{
             flexShrink: 0,
             width: 'clamp(150px, 26vw, 240px)',
             minHeight: 170,
             background: 'rgba(31,53,224,0.05)',
-            display: 'grid',
-            placeItems: 'center',
+            display: 'block',
             position: 'relative',
             overflow: 'hidden',
           }}
         >
-          <EmptyConstellation size={126} />
+          <Scene
+            wash={0}
+            style={{ background: 'transparent', position: 'absolute', inset: 0, height: '100%' }}
+            items={[
+              { id: 'volt', x: 0.36, size: 82, mood: 'curious' },
+              { id: 'planet', x: 0.72, size: 60, lift: 30 },
+            ]}
+          />
         </span>
         <span
           style={{
