@@ -12,6 +12,15 @@ import { VidyaBody, type VidyaMood } from '@classess/vidya';
 import { motion, useAnimationControls, useSpring, useTime, useTransform } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 
+function hash(str: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return h >>> 0;
+}
+
 export function FlyingVidya({
   routeKey,
   mood,

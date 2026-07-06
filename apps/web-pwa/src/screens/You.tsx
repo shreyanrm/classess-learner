@@ -22,7 +22,8 @@ import type { Topic } from '../data/model';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
-import { BossSigil, EmptyConstellation } from '../ui/art';
+import { BossSigil } from '../ui/art';
+import { Scene } from '../ui/cast';
 import { toneForSubject } from '../ui/hues';
 import { Card, cascade, Hairline, MagneticButton, rise, SectionLabel } from '../ui/kit';
 import { GradeBoardPicker } from './you/GradeBoardPicker';
@@ -583,6 +584,21 @@ export function You() {
         {/* ---- invite ---- */}
         <motion.div variants={rise}>
           <Section label="learning is better shared">
+            {/* the cast gathers — the world that learns beside you */}
+            <Scene
+              height={150}
+              hue="#1F35E0"
+              wash={0.05}
+              items={[
+                { id: 'plant', x: 0.06, size: 62 },
+                { id: 'pip', x: 0.19, size: 86, mood: 'happy' },
+                { id: 'books', x: 0.32, size: 54 },
+                { id: 'sage', x: 0.46, size: 82 },
+                { id: 'volt', x: 0.62, size: 86, mood: 'delighted' },
+                { id: 'juni', x: 0.75, size: 44, lift: 46 },
+                { id: 'sprout', x: 0.89, size: 66 },
+              ]}
+            />
             <div
               style={{
                 display: 'grid',
@@ -623,8 +639,20 @@ export function You() {
                   alignItems: 'center',
                 }}
               >
-                {/* an empty shelf is a promise, not a void */}
-                <EmptyConstellation size={112} label="your first finished course lands here" />
+                {/* an empty shelf is a promise, not a void — Ember already has her eye on it */}
+                <Scene
+                  height={124}
+                  wash={0}
+                  style={{ background: 'transparent', width: '100%', maxWidth: 420 }}
+                  items={[
+                    { id: 'ember', x: 0.26, size: 82, mood: 'curious' },
+                    { id: 'trophy', x: 0.56, size: 74 },
+                    { id: 'juni', x: 0.78, size: 42, lift: 44 },
+                  ]}
+                />
+                <div style={{ ...whisper, marginTop: 8 }}>
+                  your first finished course lands here
+                </div>
               </div>
             ) : (
               <div

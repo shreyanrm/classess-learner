@@ -229,8 +229,6 @@ export function Pico({ size, mood = 'happy', animate = true, flip, seed = 0 }: C
 export function Juni({ size, mood = 'happy', animate = true, flip, seed = 0 }: CastFigureProps) {
   return (
     <Figure size={size} flip={flip} label="Juni the bee">
-      {/* she hovers — a smaller, fainter shadow */}
-      <ellipse cx="60" cy="122" rx="18" ry="4" fill="rgba(18,19,22,0.045)" />
       <Flutter animate={animate} delay={seed * 0.4}>
         {/* wings */}
         <ellipse cx="52" cy="52" rx="9" ry="14" fill="#FFFFFF" opacity=".75" transform="rotate(-18 52 52)" />
