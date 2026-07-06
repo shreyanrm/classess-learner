@@ -29,6 +29,25 @@ function buildCommands(): Command[] {
     },
     { id: 'progress', label: 'progress', hint: 'your knowledge twin', route: { name: 'progress' } },
     { id: 'you', label: 'you', hint: 'profile, settings, past courses', route: { name: 'you' } },
+    // Temporary: blank-page design concepts for review.
+    {
+      id: 'concept-a',
+      label: 'concept a',
+      hint: 'stage & rail',
+      route: { name: 'concept', which: 'a' },
+    },
+    {
+      id: 'concept-b',
+      label: 'concept b',
+      hint: 'the thread',
+      route: { name: 'concept', which: 'b' },
+    },
+    {
+      id: 'concept-c',
+      label: 'concept c',
+      hint: 'the broadsheet',
+      route: { name: 'concept', which: 'c' },
+    },
   ];
   for (const s of subjects)
     cmds.push({

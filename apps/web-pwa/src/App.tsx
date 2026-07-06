@@ -18,6 +18,9 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
 import { Course } from './screens/Course';
+import { ConceptA } from './screens/concepts/ConceptA';
+import { ConceptB } from './screens/concepts/ConceptB';
+import { ConceptC } from './screens/concepts/ConceptC';
 import { Home } from './screens/Home';
 import { Learn } from './screens/Learn';
 import { Onboarding } from './screens/Onboarding';
@@ -85,6 +88,9 @@ function Screen() {
         {route.name === 'sandbox' && <Course topicId={route.topicId ?? ''} sandbox />}
         {route.name === 'progress' && <ProgressScreen />}
         {route.name === 'you' && <You />}
+        {route.name === 'concept' && route.which === 'a' && <ConceptA />}
+        {route.name === 'concept' && route.which === 'b' && <ConceptB />}
+        {route.name === 'concept' && route.which === 'c' && <ConceptC />}
       </motion.div>
     </AnimatePresence>
   );
@@ -140,7 +146,8 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: ask is recreated with turns; tracking turns/busy/mood covers it
   const chat = useMemo(() => ({ turns, ask, busy, mood, setMood }), [turns, busy, mood]);
 
-  const inFlow = route.name === 'onboarding';
+  // Design concepts render standalone — no app chrome over them, they own the whole canvas.
+  const inFlow = route.name === 'onboarding' || route.name === 'concept';
   const onHome = route.name === 'home';
 
   return (

@@ -16,12 +16,41 @@ import { TopicSigil } from '../../ui/art';
 import { hueForTopic } from '../../ui/hues';
 import { useVidyaChat } from '../../vidya/chat';
 import type { BarState } from './shared';
-import { CardBody, lead, whisper } from './shared';
+import { CardBody, GOLD, lead, rgba, whisper } from './shared';
 
-/** `rgba()` from a hex hue — the ignite sweep needs translucent stops of the subject's hue. */
-function rgba(hex: string, alpha: number): string {
-  const n = Number.parseInt(hex.slice(1), 16);
-  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${alpha})`;
+/** Floating sparks — a handful of hue and gold motes rising once, then gone. */
+function Sparks({ hue }: { hue: string }) {
+  const sparks = [
+    { id: 's1', left: '12%', top: '78%', s: 5, d: 0.4 },
+    { id: 's2', left: '26%', top: '88%', s: 3, d: 0.9 },
+    { id: 's3', left: '44%', top: '92%', s: 4, d: 0.6 },
+    { id: 's4', left: '62%', top: '86%', s: 6, d: 0.3 },
+    { id: 's5', left: '78%', top: '90%', s: 3, d: 1.1 },
+    { id: 's6', left: '88%', top: '80%', s: 4, d: 0.7 },
+    { id: 's7', left: '34%', top: '84%', s: 3, d: 1.4 },
+    { id: 's8', left: '70%', top: '94%', s: 4, d: 1.2 },
+  ];
+  return (
+    <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+      {sparks.map((sp, i) => (
+        <motion.span
+          key={sp.id}
+          initial={{ y: 0, opacity: 0 }}
+          animate={{ y: -220 - i * 14, opacity: [0, 0.9, 0] }}
+          transition={{ delay: sp.d, duration: 2.6, ease: [0.2, 0, 0.4, 1] }}
+          style={{
+            position: 'absolute',
+            left: sp.left,
+            top: sp.top,
+            width: sp.s,
+            height: sp.s,
+            borderRadius: 999,
+            background: i % 3 === 0 ? GOLD : hue,
+          }}
+        />
+      ))}
+    </div>
+  );
 }
 
 export function Greeting({
@@ -91,6 +120,21 @@ export function Greeting({
 
   return (
     <CardBody maxWidth={560}>
+      {/* the full-screen ignite — one hue wave sweeping the whole viewport, once, sub-second */}
+      <motion.div
+        aria-hidden
+        initial={{ x: '-45%' }}
+        animate={{ x: '145%', opacity: [1, 1, 0] }}
+        transition={{ duration: 0.9, ease: [0.2, 0, 0.2, 1], delay: 0.25 }}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          width: '55vw',
+          background: `linear-gradient(100deg, transparent 0%, ${rgba(hue, 0.14)} 42%, ${rgba(hue, 0.26)} 50%, ${rgba(hue, 0.14)} 58%, transparent 100%)`,
+          pointerEvents: 'none',
+          zIndex: 30,
+        }}
+      />
       <div
         style={{
           position: 'relative',
@@ -99,27 +143,18 @@ export function Greeting({
           textAlign: 'center',
         }}
       >
-        {/* the ignite — one region catching light, once, under a second, in the subject's hue */}
-        <motion.div
-          aria-hidden
-          initial={{ x: '-130%' }}
-          animate={{ x: '260%' }}
-          transition={{ duration: 0.75, ease: [0.2, 0, 0.2, 1], delay: 0.25 }}
-          style={{
-            position: 'absolute',
-            top: '-30%',
-            bottom: '-30%',
-            left: 0,
-            width: '42%',
-            background: `linear-gradient(100deg, transparent 0%, ${rgba(hue, 0.16)} 45%, ${rgba(hue, 0.24)} 50%, ${rgba(hue, 0.16)} 55%, transparent 100%)`,
-            pointerEvents: 'none',
-          }}
-        />
+        {/* sparks drift up while the room catches light */}
+        <Sparks hue={hue} />
 
-        {/* the sigil, mastered — the same geometry from the row and the door, now lit */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-          <TopicSigil id={topic.id} size={68} mastered hue={hue} draw />
-        </div>
+        {/* the sigil, mastered — the same geometry from the row and the door, now lit large */}
+        <motion.div
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          transition={{ type: 'spring', stiffness: 230, damping: 24, delay: 0.2 }}
+          style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}
+        >
+          <TopicSigil id={topic.id} size={96} mastered hue={hue} draw />
+        </motion.div>
 
         <div style={whisper}>the greeting</div>
         <motion.div
@@ -143,8 +178,8 @@ export function Greeting({
           transition={{ delay: 0.55, duration: 0.5, ease: [0.2, 0, 0, 1] }}
           style={{ ...lead, marginTop: 14 }}
         >
-          <span style={{ color: hue, fontWeight: 550 }}>{topic.name.toLowerCase()}</span>{' '}
-          is yours now — not memorised, understood.
+          <span style={{ color: hue, fontWeight: 550 }}>{topic.name.toLowerCase()}</span> is yours
+          now — not memorised, understood.
         </motion.div>
         <motion.div
           initial={{ opacity: 0 }}

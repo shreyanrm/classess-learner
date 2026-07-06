@@ -16,7 +16,7 @@ import { useSdk } from '../../store/sdk';
 import { useVidyaChat } from '../../vidya/chat';
 import { firstMove, fmt, linearize } from './equations';
 import type { BarState } from './shared';
-import { CardBody, cardTitle, lead, whisper } from './shared';
+import { CardBody, cardTitle, lead, ParticlePop, rgba, Stage, whisper } from './shared';
 
 const PAD_KEYS = [
   ['7', '8', '9'],
@@ -24,6 +24,9 @@ const PAD_KEYS = [
   ['1', '2', '3'],
   ['−', '0', '⌫'],
 ] as const;
+
+const HUE = '#1F35E0';
+const RETRY = '#B26A00';
 
 function Detonation({ item, theirs }: { item: PracticeItem; theirs: number }) {
   const lin = linearize(item.equation);
@@ -57,20 +60,89 @@ function Detonation({ item, theirs }: { item: PracticeItem; theirs: number }) {
         {substituted} → {fmt(lhsVal)}
       </motion.div>
 
-      {/* the equality breaks — shake, then settle */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1, x: [0, -9, 8, -5, 3, 0] }}
-        transition={{ opacity: { delay: 1.1, duration: 0.25 }, x: { delay: 1.2, duration: 0.55 } }}
-        style={{
-          fontSize: '1.8rem',
-          fontWeight: 550,
-          color: 'var(--clss-feedback-retry)',
-          fontVariantNumeric: 'tabular-nums',
-        }}
-      >
-        {fmt(lhsVal)} ≠ {fmt(rhsVal)}
-      </motion.div>
+      {/* the equality physically cracks — a flash, then the two halves separate */}
+      <div style={{ position: 'relative', padding: '6px 0' }}>
+        {/* the flash at the moment of the break */}
+        <motion.div
+          aria-hidden
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 0.9, 0] }}
+          transition={{ delay: 1.1, duration: 0.55, times: [0, 0.25, 1] }}
+          style={{
+            position: 'absolute',
+            inset: -24,
+            background: `radial-gradient(circle, ${rgba(RETRY, 0.3)} 0%, transparent 62%)`,
+            pointerEvents: 'none',
+          }}
+        />
+        <div
+          style={{
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 4,
+            fontSize: '2rem',
+            fontWeight: 600,
+            color: 'var(--clss-feedback-retry)',
+            fontVariantNumeric: 'tabular-nums',
+          }}
+        >
+          <motion.span
+            initial={{ x: 0, rotate: 0 }}
+            animate={{ x: [0, -6, -18], rotate: [0, -1, -3] }}
+            transition={{ delay: 1.15, duration: 0.5, ease: [0.2, 0, 0.2, 1] }}
+            style={{ display: 'inline-block' }}
+          >
+            {fmt(lhsVal)}
+          </motion.span>
+          {/* the crack itself, drawing down between the halves */}
+          <span
+            style={{
+              position: 'relative',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 46,
+            }}
+          >
+            <motion.svg
+              aria-hidden
+              viewBox="0 0 16 56"
+              width={16}
+              height={56}
+              style={{ position: 'absolute', top: -8 }}
+            >
+              <motion.path
+                d="M 9 0 L 5 12 L 11 22 L 4 34 L 10 44 L 6 56"
+                fill="none"
+                stroke={RETRY}
+                strokeWidth={2}
+                strokeLinejoin="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ delay: 1.12, duration: 0.35, ease: [0.3, 0, 0.4, 1] }}
+              />
+            </motion.svg>
+            <motion.span
+              initial={{ opacity: 0, scale: 0.4 }}
+              animate={{ opacity: 1, scale: [0.4, 1.35, 1] }}
+              transition={{ delay: 1.5, duration: 0.4, times: [0, 0.55, 1] }}
+              style={{ display: 'inline-block', position: 'relative' }}
+            >
+              ≠
+            </motion.span>
+          </span>
+          <motion.span
+            initial={{ x: 0, rotate: 0 }}
+            animate={{ x: [0, 6, 18], rotate: [0, 1, 3] }}
+            transition={{ delay: 1.15, duration: 0.5, ease: [0.2, 0, 0.2, 1] }}
+            style={{ display: 'inline-block' }}
+          >
+            {fmt(rhsVal)}
+          </motion.span>
+        </div>
+      </div>
 
       <motion.div {...at(1.8)} style={{ ...lead, textAlign: 'center' }}>
         the two sides stopped being equal — the scale tipped.
@@ -84,6 +156,7 @@ function Detonation({ item, theirs }: { item: PracticeItem; theirs: number }) {
           border: '0.5px solid var(--clss-hairline-on-paper-strong)',
           borderRadius: 'var(--clss-radius-md)',
           maxWidth: 420,
+          background: 'var(--clss-paper)',
         }}
       >
         <div style={{ ...whisper, marginBottom: 6 }}>the honest move</div>
@@ -357,7 +430,9 @@ export function PracticeRun({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <Detonation item={item} theirs={wrongValue} />
+            <Stage hue={RETRY} tint={0.06} minHeight={320} style={{ padding: '28px 18px' }}>
+              <Detonation item={item} theirs={wrongValue} />
+            </Stage>
           </motion.div>
         ) : (
           <motion.div
@@ -366,88 +441,102 @@ export function PracticeRun({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
           >
-            {/* the entry */}
-            <motion.div
-              animate={phase === 'correct' ? { scale: [1, 1.03, 1] } : {}}
-              transition={{ duration: 0.45, ease: [0.2, 0, 0, 1] }}
-              style={{
-                ...tint,
-                borderRadius: 'var(--clss-radius-sm)',
-                minHeight: 64,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.7rem',
-                fontWeight: 550,
-                fontVariantNumeric: 'tabular-nums',
-                color: 'var(--clss-ink-900)',
-                gap: 10,
-              }}
+            <Stage
+              hue={phase === 'correct' ? '#2E7D32' : HUE}
+              tint={0.05}
+              minHeight={0}
+              style={{ padding: '18px 16px', gap: 16, justifyContent: 'flex-start' }}
             >
-              <span style={{ color: 'var(--clss-ink-500)', fontWeight: 500 }}>x =</span>
-              <span>{entry === '' ? ' ' : entry.replace('-', '−')}</span>
-            </motion.div>
+              {/* the entry */}
+              <motion.div
+                animate={phase === 'correct' ? { scale: [1, 1.03, 1] } : {}}
+                transition={{ duration: 0.45, ease: [0.2, 0, 0, 1] }}
+                style={{
+                  ...tint,
+                  position: 'relative',
+                  width: '100%',
+                  borderRadius: 'var(--clss-radius-sm)',
+                  minHeight: 64,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.7rem',
+                  fontWeight: 550,
+                  fontVariantNumeric: 'tabular-nums',
+                  color: 'var(--clss-ink-900)',
+                  gap: 10,
+                }}
+              >
+                <span style={{ color: 'var(--clss-ink-500)', fontWeight: 500 }}>x =</span>
+                <span>{entry === '' ? ' ' : entry.replace('-', '−')}</span>
+                {/* the earned burst — small, hue-true, once */}
+                {phase === 'correct' && <ParticlePop hue={HUE} />}
+              </motion.div>
 
-            {phase === 'correct' && (
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ color: 'var(--clss-feedback-correct)', fontWeight: 550 }}>
-                  that holds.
-                </div>
-                <AnimatePresence>
-                  {whyOpen && lin && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
-                      style={{ overflow: 'hidden' }}
-                    >
-                      <div style={{ ...lead, marginTop: 8 }}>
-                        put x = {fmt(correctValue)} back in: both sides make{' '}
-                        {fmt(lin.lhs(correctValue))}. the scale stays level — that is what being a
-                        solution means.
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            )}
-
-            {/* the pad — generous, tactile */}
-            {phase === 'answer' && (
-              <div ref={padRef} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {PAD_KEYS.map((row) => (
-                  <div key={row.join('')} style={{ display: 'flex', gap: 8 }}>
-                    {row.map((key) => (
-                      <motion.button
-                        key={key}
-                        type="button"
-                        onClick={() => onKey(key)}
-                        whileTap={{ scale: 0.93 }}
-                        transition={{ type: 'spring', stiffness: 500, damping: 28 }}
-                        aria-label={key === '⌫' ? 'delete' : key === '−' ? 'minus' : key}
-                        style={{
-                          flex: 1,
-                          height: 56,
-                          fontSize: '1.15rem',
-                          fontFamily: 'inherit',
-                          fontWeight: 500,
-                          color: 'var(--clss-ink-900)',
-                          background: 'var(--clss-paper)',
-                          border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-                          borderRadius: 'var(--clss-radius-sm)',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        {key}
-                      </motion.button>
-                    ))}
+              {phase === 'correct' && (
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ color: 'var(--clss-feedback-correct)', fontWeight: 550 }}>
+                    that holds.
                   </div>
-                ))}
-              </div>
-            )}
+                  <AnimatePresence>
+                    {whyOpen && lin && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
+                        style={{ overflow: 'hidden' }}
+                      >
+                        <div style={{ ...lead, marginTop: 8 }}>
+                          put x = {fmt(correctValue)} back in: both sides make{' '}
+                          {fmt(lin.lhs(correctValue))}. the scale stays level — that is what being a
+                          solution means.
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {/* the pad — tactile keys with real faces */}
+              {phase === 'answer' && (
+                <div
+                  ref={padRef}
+                  style={{ display: 'flex', flexDirection: 'column', gap: 9, width: '100%' }}
+                >
+                  {PAD_KEYS.map((row) => (
+                    <div key={row.join('')} style={{ display: 'flex', gap: 9 }}>
+                      {row.map((key) => (
+                        <motion.button
+                          key={key}
+                          type="button"
+                          onClick={() => onKey(key)}
+                          whileTap={{ scale: 0.94, y: 2 }}
+                          transition={{ type: 'spring', stiffness: 500, damping: 28 }}
+                          aria-label={key === '⌫' ? 'delete' : key === '−' ? 'minus' : key}
+                          style={{
+                            flex: 1,
+                            height: 58,
+                            fontSize: '1.2rem',
+                            fontFamily: 'inherit',
+                            fontWeight: 550,
+                            color: 'var(--clss-ink-900)',
+                            background: 'linear-gradient(180deg, #FFFFFF 0%, #F2F3FB 100%)',
+                            border: '1px solid #DDE0F0',
+                            borderBottom: '3px solid #C9CEE8',
+                            borderRadius: 4,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {key}
+                        </motion.button>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Stage>
           </motion.div>
         )}
       </AnimatePresence>

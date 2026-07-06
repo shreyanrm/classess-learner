@@ -53,8 +53,10 @@ def test_tracks_are_never_conflated() -> None:
     for name in capabilities():
         pol = policy(name)
         assert resolve(pol.primary, pol.track).track is pol.track
-    # most routine teaching turns target track 2; frontier is reserved
-    assert policy("vidya.turn").track is Track.TRACK_2
+    # routine volume targets track 2; the live tutor turn rides frontier (uncached,
+    # per the 2026-07-06 routing law) until the real tutor SLM fills its slot
+    assert policy("vidya.turn").track is Track.TRACK_1
+    assert policy("vidya.turn").cache_tier.value == "none"
     assert policy("grade.attempt").track is Track.TRACK_2
     assert policy("verify.math").track is Track.TRACK_1
 
@@ -114,7 +116,7 @@ def test_telemetry_records_each_invocation() -> None:
     assert len(sink.events) == 1
     ev = sink.events[0]
     assert ev.capability == "vidya.turn"
-    assert ev.track == "track_2"
+    assert ev.track == "track_1"
     assert ev.cache_hit is False
     assert ev.tokens > 0
 

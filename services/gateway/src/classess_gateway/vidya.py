@@ -139,6 +139,9 @@ def run_vidya_turn(
     """One grounded, action-returning Vidya turn. Returns (output, tokens)."""
     import litellm
 
+    # Claude 5 family accepts only default sampling; drop unsupported params instead of erroring.
+    litellm.drop_params = True
+
     context = payload.get("context") or {}
     canvas = context.get("canvas") or {}
     grounding = _ground_working(canvas.get("equation"), canvas.get("steps") or [])

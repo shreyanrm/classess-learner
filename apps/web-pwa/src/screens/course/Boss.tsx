@@ -264,7 +264,7 @@ export function Boss({
           <div style={whisper}>{ORDINALS[0]} · solve it</div>
           <div
             style={{
-              fontSize: '1.3rem',
+              fontSize: '1.45rem',
               fontWeight: 550,
               fontVariantNumeric: 'tabular-nums',
               color: 'var(--clss-ink-900)',

@@ -22,6 +22,8 @@ import type { Topic } from '../data/model';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
+import { EmptyConstellation, TopicSigil } from '../ui/art';
+import { hueForTopic } from '../ui/hues';
 import { Card, Hairline, MagneticButton, SectionLabel } from '../ui/kit';
 import { GradeBoardPicker } from './you/GradeBoardPicker';
 import {
@@ -587,12 +589,14 @@ export function You() {
                 style={{
                   border: '0.5px solid var(--clss-hairline-on-paper)',
                   borderRadius: 'var(--clss-radius-sm)',
-                  padding: '26px 20px',
-                  textAlign: 'center',
-                  ...whisper,
+                  padding: '30px 20px 26px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
                 }}
               >
-                your first finished course lands here
+                {/* an empty shelf is a promise, not a void */}
+                <EmptyConstellation size={104} label="your first finished course lands here" />
               </div>
             ) : (
               <div
@@ -604,7 +608,7 @@ export function You() {
               >
                 {mastered.map((t) => (
                   <Card key={t.id} style={{ padding: 16, position: 'relative' }}>
-                    {/* the corner tick — ultramarine, the mastery pigment */}
+                    {/* the corner tick — the owning subject's hue, the earned pigment */}
                     <svg
                       width="14"
                       height="14"
@@ -615,18 +619,21 @@ export function You() {
                     >
                       <path
                         d="M2.5 7.5 5.5 10.5 11.5 3.5"
-                        stroke="var(--clss-ultramarine)"
+                        stroke={hueForTopic(t.id)}
                         strokeWidth="1.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />
                     </svg>
+                    {/* the trophy carries the concept's own ignited sigil */}
+                    <TopicSigil id={t.id} size={34} mastered hue={hueForTopic(t.id)} />
                     <div
                       style={{
                         fontSize: '0.95rem',
                         fontWeight: 500,
                         color: 'var(--clss-ink-900)',
                         paddingRight: 20,
+                        marginTop: 8,
                       }}
                     >
                       {t.name}

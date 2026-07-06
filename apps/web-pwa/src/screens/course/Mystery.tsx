@@ -10,7 +10,79 @@ import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import type { BarState } from './shared';
-import { CardBody, cardTitle, lead, Scrubber, whisper } from './shared';
+import { CardBody, cardTitle, GOLD, lead, Scrubber, Stage, whisper } from './shared';
+
+/** The night sky — stars, a constellation tracing three juggled arcs, one golden star. */
+function NightSky() {
+  const stars: [number, number, number][] = [
+    [40, 40, 1.6],
+    [90, 96, 1.2],
+    [150, 30, 1.8],
+    [210, 110, 1.3],
+    [265, 52, 1.5],
+    [330, 100, 1.2],
+    [370, 36, 1.7],
+    [300, 24, 1.1],
+    [120, 130, 1.2],
+    [250, 140, 1.4],
+  ];
+  // the constellation — three balls mid-cascade, joined
+  const constellation: [number, number][] = [
+    [130, 92],
+    [172, 56],
+    [214, 44],
+    [256, 56],
+    [298, 92],
+  ];
+  const path = constellation.map(([x, y], i) => `${i === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ');
+  return (
+    <svg
+      viewBox="0 0 420 170"
+      role="presentation"
+      aria-hidden
+      style={{ width: '100%', height: '100%', display: 'block', position: 'absolute', inset: 0 }}
+      preserveAspectRatio="xMidYMid slice"
+    >
+      {stars.map(([x, y, r], i) => (
+        <motion.circle
+          key={`st-${x}-${y}`}
+          cx={x}
+          cy={y}
+          r={r}
+          fill="rgba(255,255,255,0.85)"
+          animate={{ opacity: [0.3, 0.9, 0.3] }}
+          transition={{
+            duration: 2.8 + (i % 4) * 0.9,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: 'easeInOut',
+            delay: i * 0.35,
+          }}
+        />
+      ))}
+      <motion.path
+        d={path}
+        fill="none"
+        stroke="rgba(255,255,255,0.4)"
+        strokeWidth={1}
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 1.6, ease: [0.2, 0, 0.2, 1], delay: 0.4 }}
+      />
+      {constellation.map(([x, y], i) => (
+        <motion.circle
+          key={`cn-${x}-${y}`}
+          cx={x}
+          cy={y}
+          r={i === 2 ? 4 : 2.4}
+          fill={i === 2 ? GOLD : 'rgba(255,255,255,0.9)'}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.5 + i * 0.22 }}
+        />
+      ))}
+    </svg>
+  );
+}
 
 export function MysteryTease({
   setBar,
@@ -29,14 +101,28 @@ export function MysteryTease({
   }, [setBar, onOpen, onSkip]);
 
   return (
-    <CardBody maxWidth={520}>
+    <CardBody maxWidth={620}>
+      {/* the night sky — a hidden door, discovered not assigned */}
+      <Stage
+        dark
+        minHeight={300}
+        style={{
+          background: 'linear-gradient(165deg, #171B3E 0%, #0E1230 55%, #0A0C22 100%)',
+          justifyContent: 'flex-end',
+          padding: '0 0 26px',
+        }}
+      >
+        <NightSky />
+        <div style={{ ...whisper, position: 'relative', color: 'rgba(255,255,255,0.6)' }}>
+          something hidden unlocked
+        </div>
+      </Stage>
       <div style={{ textAlign: 'center' }}>
-        <div style={whisper}>something hidden unlocked</div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.5, ease: [0.2, 0, 0, 1] }}
-          style={{ ...cardTitle, marginTop: 14 }}
+          style={{ ...cardTitle, fontSize: 'clamp(1.6rem, 5vw, 2rem)' }}
         >
           the mathematics of juggling
         </motion.div>
@@ -86,8 +172,8 @@ function ThrowToy() {
     <div
       ref={toyRef}
       style={{
-        border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-        borderRadius: 'var(--clss-radius-md)',
+        background: 'rgba(31,53,224,0.05)',
+        borderRadius: 3,
         padding: '18px 20px 10px',
       }}
     >

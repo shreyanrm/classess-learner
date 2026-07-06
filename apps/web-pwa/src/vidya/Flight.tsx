@@ -12,23 +12,6 @@ import { VidyaBody, type VidyaMood } from '@classess/vidya';
 import { motion, useAnimationControls, useSpring, useTime, useTransform } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 
-function hash(s: string): number {
-  let h = 0x811c9dc5;
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
-    h = Math.imul(h, 0x01000193);
-  }
-  return h >>> 0;
-}
-
-/** Entry points she may fly in from, relative to the viewport. */
-const ENTRIES: Array<(w: number, h: number) => { x: number; y: number }> = [
-  (w, h) => ({ x: -w * 0.55, y: -h * 0.45 }), // over the top-left horizon
-  (w, h) => ({ x: -w * 0.7, y: -h * 0.05 }), // straight across the room
-  (w, h) => ({ x: -w * 0.25, y: -h * 0.8 }), // a dive from above
-  (w, h) => ({ x: w * 0.3, y: -h * 0.75 }), // over the right shoulder
-];
-
 export function FlyingVidya({
   routeKey,
   mood,

@@ -23,8 +23,43 @@ import { Greeting } from './Greeting';
 import { MysteryLesson, MysteryTease } from './Mystery';
 import { PracticeRun } from './PracticeRun';
 import type { BarState } from './shared';
-import { CardBody, cardTitle, Deck, lead, whisper } from './shared';
+import { CardBody, Deck, lead, rgba, Stage, whisper } from './shared';
 import { WhatIf } from './WhatIf';
+
+/** A few slow hue motes drifting on the arrival stage — calm, alive. */
+function StageMotes({ hue }: { hue: string }) {
+  const motes = [
+    { id: 'm1', left: '16%', top: '68%', s: 6, dur: 7 },
+    { id: 'm2', left: '80%', top: '30%', s: 4, dur: 9 },
+    { id: 'm3', left: '70%', top: '76%', s: 5, dur: 8 },
+    { id: 'm4', left: '24%', top: '22%', s: 3, dur: 10 },
+  ];
+  return (
+    <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+      {motes.map((m, i) => (
+        <motion.span
+          key={m.id}
+          animate={{ y: [0, -14, 0], opacity: [0.35, 0.7, 0.35] }}
+          transition={{
+            duration: m.dur,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: 'easeInOut',
+            delay: i * 0.9,
+          }}
+          style={{
+            position: 'absolute',
+            left: m.left,
+            top: m.top,
+            width: m.s,
+            height: m.s,
+            borderRadius: 999,
+            background: i === 1 ? '#FFC93C' : rgba(hue, 0.5),
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 type CardId =
   | 'arrival'
@@ -184,18 +219,32 @@ export function AtomJourney({
   return (
     <Deck id={card}>
       {card === 'arrival' && (
-        <CardBody maxWidth={560}>
+        <CardBody maxWidth={620}>
+          {/* the concept's own sigil, XL, drawing itself over its stage — this course's identity */}
+          <Stage hue={hueForTopic(topic.id)} tint={0.06} minHeight={320}>
+            <StageMotes hue={hueForTopic(topic.id)} />
+            <motion.div
+              initial={{ scale: 0.92 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 230, damping: 26 }}
+            >
+              <TopicSigil id={topic.id} size={140} draw />
+            </motion.div>
+          </Stage>
           <div style={{ textAlign: 'center' }}>
-            {/* the concept's own sigil, drawing itself — this course's identity */}
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}>
-              <TopicSigil id={topic.id} size={76} draw />
-            </div>
             <div style={whisper}>{(chapter?.name ?? 'mathematics').toLowerCase()}</div>
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.5, ease: [0.2, 0, 0, 1] }}
-              style={{ ...cardTitle, marginTop: 14 }}
+              style={{
+                marginTop: 12,
+                fontSize: 'clamp(1.9rem, 6vw, 2.5rem)',
+                fontWeight: 600,
+                letterSpacing: '-0.03em',
+                lineHeight: 1.12,
+                color: 'var(--clss-ink-900)',
+              }}
             >
               {topic.name.toLowerCase()}
             </motion.div>
@@ -234,18 +283,53 @@ export function AtomJourney({
         ))}
 
       {card === 'bossdoor' && (
-        <CardBody maxWidth={520}>
-          <div style={{ textAlign: 'center' }}>
-            {/* the boss door carries the topic's sigil set in its ring — it ignites once mastered */}
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-              <BossSigil id={topic.id} size={92} hue={hueForTopic(topic.id)} />
+        <CardBody maxWidth={620}>
+          {/* the one dark moment — an ink stage; the topic's sigil glowing in its ring */}
+          <Stage dark minHeight={340}>
+            <motion.div
+              aria-hidden
+              animate={{ opacity: [0.5, 0.85, 0.5], scale: [1, 1.08, 1] }}
+              transition={{ duration: 4.2, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+              style={{
+                position: 'absolute',
+                width: 300,
+                height: 300,
+                borderRadius: 999,
+                background: `radial-gradient(circle, ${rgba(hueForTopic(topic.id), 0.3)} 0%, transparent 62%)`,
+                pointerEvents: 'none',
+              }}
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 230, damping: 26, delay: 0.15 }}
+              style={{ position: 'relative' }}
+            >
+              <BossSigil id={topic.id} size={120} mastered hue={hueForTopic(topic.id)} />
+            </motion.div>
+            <div
+              style={{
+                ...whisper,
+                position: 'relative',
+                marginTop: 22,
+                color: 'rgba(255,255,255,0.6)',
+              }}
+            >
+              no fear — just weight
             </div>
-            <div style={whisper}>no fear — just weight</div>
+          </Stage>
+          <div style={{ textAlign: 'center' }}>
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.5, ease: [0.2, 0, 0, 1] }}
-              style={{ ...cardTitle, marginTop: 14 }}
+              style={{
+                fontSize: 'clamp(1.6rem, 5vw, 2rem)',
+                fontWeight: 600,
+                letterSpacing: '-0.025em',
+                lineHeight: 1.15,
+                color: 'var(--clss-ink-900)',
+              }}
             >
               the boss
             </motion.div>

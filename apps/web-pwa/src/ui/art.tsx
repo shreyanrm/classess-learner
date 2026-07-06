@@ -176,7 +176,11 @@ export function SubjectGlyph({
   subjectId,
   size = 72,
   accent = false,
-}: { subjectId: string; size?: number; accent?: boolean }) {
+}: {
+  subjectId: string;
+  size?: number;
+  accent?: boolean;
+}) {
   const o = accent ? 1 : 0.92;
   return (
     <svg
@@ -205,8 +209,23 @@ export function SubjectGlyph({
         <g opacity={o}>
           {/* a bold construction: gradient square, tilted triangle, the golden point */}
           <rect x={18} y={26} width={44} height={44} rx={7} fill={`url(#sg-m-${subjectId})`} />
-          <rect x={18} y={26} width={44} height={44} rx={7} fill="rgba(255,255,255,0.14)" transform="rotate(-8 40 48)" />
-          <polygon points="50,18 78,66 22,66" fill="none" stroke="#0D0D10" strokeWidth={3.4} strokeLinejoin="round" transform="rotate(6 50 48)" />
+          <rect
+            x={18}
+            y={26}
+            width={44}
+            height={44}
+            rx={7}
+            fill="rgba(255,255,255,0.14)"
+            transform="rotate(-8 40 48)"
+          />
+          <polygon
+            points="50,18 78,66 22,66"
+            fill="none"
+            stroke="#0D0D10"
+            strokeWidth={3.4}
+            strokeLinejoin="round"
+            transform="rotate(6 50 48)"
+          />
           <circle cx={71} cy={30} r={6.5} fill="#FFC93C" />
           <circle cx={71} cy={30} r={6.5} fill="none" stroke="#0D0D10" strokeWidth={2} />
         </g>
@@ -214,8 +233,17 @@ export function SubjectGlyph({
       {subjectId === 'science' && (
         <g opacity={o}>
           {/* a chunky flask, teal liquid, rising bubbles */}
-          <path d="M40 20 L40 40 L24 66 C21 72 25 78 32 78 L64 78 C71 78 75 72 72 66 L56 40 L56 20 Z" fill="#EAF7F8" stroke="#0D0D10" strokeWidth={3.2} strokeLinejoin="round" />
-          <path d="M31 56 L65 56 L72 66 C75 72 71 78 64 78 L32 78 C25 78 21 72 24 66 Z" fill={`url(#sg-s-${subjectId})`} />
+          <path
+            d="M40 20 L40 40 L24 66 C21 72 25 78 32 78 L64 78 C71 78 75 72 72 66 L56 40 L56 20 Z"
+            fill="#EAF7F8"
+            stroke="#0D0D10"
+            strokeWidth={3.2}
+            strokeLinejoin="round"
+          />
+          <path
+            d="M31 56 L65 56 L72 66 C75 72 71 78 64 78 L32 78 C25 78 21 72 24 66 Z"
+            fill={`url(#sg-s-${subjectId})`}
+          />
           <rect x={35} y={16} width={26} height={7} rx={3.5} fill="#0D0D10" />
           <circle cx={42} cy={66} r={3.4} fill="rgba(255,255,255,0.85)" />
           <circle cx={54} cy={70} r={2.4} fill="rgba(255,255,255,0.7)" />
@@ -227,11 +255,38 @@ export function SubjectGlyph({
         <g opacity={o}>
           {/* a warm globe with bold meridians and a horizon flag */}
           <circle cx={46} cy={48} r={27} fill={`url(#sg-g-${subjectId})`} />
-          <ellipse cx={46} cy={48} rx={12} ry={27} fill="none" stroke="rgba(255,255,255,0.75)" strokeWidth={2.6} />
-          <path d="M20 48 L72 48 M23 36 L69 36 M23 60 L69 60" stroke="rgba(255,255,255,0.65)" strokeWidth={2.4} strokeLinecap="round" />
+          <ellipse
+            cx={46}
+            cy={48}
+            rx={12}
+            ry={27}
+            fill="none"
+            stroke="rgba(255,255,255,0.75)"
+            strokeWidth={2.6}
+          />
+          <path
+            d="M20 48 L72 48 M23 36 L69 36 M23 60 L69 60"
+            stroke="rgba(255,255,255,0.65)"
+            strokeWidth={2.4}
+            strokeLinecap="round"
+          />
           <circle cx={46} cy={48} r={27} fill="none" stroke="#0D0D10" strokeWidth={3.2} />
-          <path d="M72 26 L72 14 L84 17.5 L72 21" fill="#CC1E7A" stroke="#0D0D10" strokeWidth={2.2} strokeLinejoin="round" />
-          <line x1={72} y1={14} x2={72} y2={34} stroke="#0D0D10" strokeWidth={2.6} strokeLinecap="round" />
+          <path
+            d="M72 26 L72 14 L84 17.5 L72 21"
+            fill="#CC1E7A"
+            stroke="#0D0D10"
+            strokeWidth={2.2}
+            strokeLinejoin="round"
+          />
+          <line
+            x1={72}
+            y1={14}
+            x2={72}
+            y2={34}
+            stroke="#0D0D10"
+            strokeWidth={2.6}
+            strokeLinecap="round"
+          />
         </g>
       )}
       {subjectId !== 'math' && subjectId !== 'science' && subjectId !== 'social' && (

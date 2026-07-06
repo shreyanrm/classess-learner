@@ -7,7 +7,15 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!**/dist", "!**/node_modules", "!docs", "!**/schemas", "!**/_bundle.json"]
+    "includes": [
+      "**",
+      "!**/dist",
+      "!**/node_modules",
+      "!docs",
+      "!**/schemas",
+      "!**/_bundle.json",
+      "!**/*.workflow.js"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -18,7 +26,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "preset": "recommended"
     }
   },
   "javascript": {

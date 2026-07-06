@@ -1,0 +1,33 @@
+- generic [ref=f1e2]:
+  - generic [ref=f1e452]:
+    - banner [ref=f1e453]:
+      - button "Close course" [ref=f1e454] [cursor=pointer]:
+        - img [ref=f1e455]
+    - main [ref=f1e478]:
+      - generic [ref=f1e480]:
+        - img [ref=f1e483]
+        - generic [ref=f1e489]:
+          - generic [ref=f1e490]: linear equations in one variable
+          - generic [ref=f1e491]: solving equations with the variable on one side
+          - generic [ref=f1e492]: one idea, a scale that cannot lie, and a boss at the end.
+    - button "begin" [ref=f1e495] [cursor=pointer]:
+      - generic [ref=f1e496]: begin
+  - banner:
+    - img "Classess" [ref=f1e63]
+    - generic [ref=f1e64]:
+      - button "Did you know" [ref=f1e65] [cursor=pointer]:
+        - img [ref=f1e66]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f1e68]:
+        - img [ref=f1e69]
+        - text: "1"
+      - generic [ref=f1e72]: 0 xp
+      - button "You — profile and settings" [ref=f1e73] [cursor=pointer]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

@@ -55,12 +55,15 @@ _POLICIES: dict[str, RoutingPolicy] = {
         ),
         RoutingPolicy(
             capability="vidya.turn",
-            track=Track.TRACK_2,
-            primary="slm.tutor",
-            fallback=("frontier.fast", "frontier.reason"),
-            max_latency_ms=900,
-            cost_ceiling=0.004,
-            cache_tier=CacheTier.SEMANTIC,
+            # A live tutor turn is NEVER cached — context differs every time, and a cached
+            # reply is a groundedness bug (she answers a different moment). Track 1 frontier
+            # until the real tutor SLM lands in the Track-2 slot.
+            track=Track.TRACK_1,
+            primary="frontier.reason",
+            fallback=("frontier.sonnet", "frontier.fast"),
+            max_latency_ms=8000,
+            cost_ceiling=0.05,
+            cache_tier=CacheTier.NONE,
         ),
         RoutingPolicy(
             capability="grade.attempt",

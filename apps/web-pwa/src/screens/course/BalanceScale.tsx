@@ -11,15 +11,18 @@ import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { BarState } from './shared';
-import { CardBody, cardTitle, lead, whisper } from './shared';
+import { CardBody, cardTitle, GOLD, lead, Stage, whisper } from './shared';
 
 const STAGE_W = 540;
-const STAGE_H = 224;
+const STAGE_H = 234;
 const BEAM_Y = 46;
 const HALF = 196;
 const PAN_W = 148;
 const STRING = 64;
 const X_WEIGHT = 5; // what x truly weighs — the scale never lies
+
+const HUE = '#1F35E0';
+const INK = '#121316';
 
 const spring = { type: 'spring', stiffness: 150, damping: 14 } as const;
 const rad = (deg: number) => (deg * Math.PI) / 180;
@@ -52,16 +55,17 @@ function UnitWeight({
       }}
       aria-label={restore ? 'put this weight back' : 'take this weight off'}
       style={{
-        width: 28,
-        height: 26,
-        border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-        background: 'var(--clss-paper)',
-        borderRadius: 'var(--clss-radius-sm)',
+        width: 30,
+        height: 28,
+        border: `1.5px solid ${INK}`,
+        borderBottomWidth: 3.5,
+        background: 'linear-gradient(180deg, #FFFFFF 0%, #E3E7FB 100%)',
+        borderRadius: 4,
         display: 'grid',
         placeItems: 'center',
-        fontSize: '0.7rem',
-        fontWeight: 500,
-        color: 'var(--clss-ink-700)',
+        fontSize: '0.72rem',
+        fontWeight: 600,
+        color: INK,
         cursor: removable || restore ? 'grab' : 'default',
         touchAction: 'none',
         userSelect: 'none',
@@ -95,26 +99,35 @@ function Pan({
         height: STRING + 4,
       }}
     >
-      {/* the string */}
+      {/* the strings — a triangle of suspension, like a real pan */}
+      <svg
+        role="presentation"
+        aria-hidden
+        width={PAN_W}
+        height={STRING + 4}
+        viewBox={`0 0 ${PAN_W} ${STRING + 4}`}
+        style={{ position: 'absolute', inset: 0, display: 'block', pointerEvents: 'none' }}
+      >
+        <path
+          d={`M ${PAN_W / 2} 2 L 14 ${STRING} M ${PAN_W / 2} 2 L ${PAN_W - 14} ${STRING}`}
+          stroke={INK}
+          strokeWidth={1.4}
+          strokeLinecap="round"
+          fill="none"
+        />
+        <circle cx={PAN_W / 2} cy={3} r={3} fill={INK} />
+      </svg>
+      {/* the plate — a gradient dish with an ink edge */}
       <div
         style={{
           position: 'absolute',
-          left: '50%',
-          top: 0,
-          width: 1,
-          height: STRING,
-          background: 'var(--clss-ink-300)',
-        }}
-      />
-      {/* the plate */}
-      <div
-        style={{
-          position: 'absolute',
-          left: 8,
-          right: 8,
-          top: STRING,
-          height: 2.5,
-          background: 'var(--clss-ink-900)',
+          left: 6,
+          right: 6,
+          top: STRING - 2,
+          height: 9,
+          background: 'linear-gradient(180deg, #4257F0 0%, #1F35E0 70%, #16279E 100%)',
+          border: `1.5px solid ${INK}`,
+          borderRadius: '3px 3px 6px 6px',
         }}
       />
       {/* weights rest on the plate, stacking upward */}
@@ -249,163 +262,204 @@ export function BalanceScale({
       <div style={cardTitle}>get x alone</div>
       <div style={lead}>take weights off the pans — the scale must end level.</div>
 
-      {/* the equation, morphing at the reveal */}
-      <div style={{ textAlign: 'center', minHeight: 44, marginTop: 6 }}>
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={revealed ? 'solved' : 'posed'}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ type: 'spring', stiffness: 340, damping: 28 }}
-            style={{
-              fontSize: '1.7rem',
-              fontWeight: 550,
-              letterSpacing: '-0.01em',
-              color: 'var(--clss-ink-900)',
-              fontVariantNumeric: 'tabular-nums',
-            }}
-          >
-            {revealed ? 'x = 5' : 'x + 3 = 8'}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+      <Stage hue={HUE} tint={0.055} minHeight={340} style={{ padding: '20px 16px 12px' }}>
+        {/* the equation, morphing at the reveal */}
+        <div style={{ textAlign: 'center', minHeight: 48, width: '100%' }}>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={revealed ? 'solved' : 'posed'}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ type: 'spring', stiffness: 340, damping: 28 }}
+              style={{
+                fontSize: '1.8rem',
+                fontWeight: 600,
+                letterSpacing: '-0.01em',
+                color: revealed ? HUE : 'var(--clss-ink-900)',
+                fontVariantNumeric: 'tabular-nums',
+              }}
+            >
+              {revealed ? 'x = 5' : 'x + 3 = 8'}
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
-      {/* the scale */}
-      <div ref={wrapRef} style={{ width: '100%' }}>
-        <div
-          ref={stageRef}
-          style={{
-            width: STAGE_W,
-            height: STAGE_H * scale,
-            margin: '0 auto',
-            maxWidth: '100%',
-          }}
-        >
+        {/* the scale */}
+        <div ref={wrapRef} style={{ width: '100%' }}>
           <div
+            ref={stageRef}
             style={{
               width: STAGE_W,
-              height: STAGE_H,
-              position: 'relative',
-              transform: `scale(${scale})`,
-              transformOrigin: 'top center',
-              marginLeft: scale < 1 ? (STAGE_W * (scale - 1)) / 2 : 0,
+              height: STAGE_H * scale,
+              margin: '0 auto',
+              maxWidth: '100%',
             }}
           >
-            {/* fulcrum */}
             <div
               style={{
-                position: 'absolute',
-                left: STAGE_W / 2 - 1,
-                top: BEAM_Y + 2,
-                width: 2,
-                height: STAGE_H - BEAM_Y - 26,
-                background: 'var(--clss-ink-300)',
+                width: STAGE_W,
+                height: STAGE_H,
+                position: 'relative',
+                transform: `scale(${scale})`,
+                transformOrigin: 'top center',
+                marginLeft: scale < 1 ? (STAGE_W * (scale - 1)) / 2 : 0,
               }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                left: STAGE_W / 2 - 56,
-                top: STAGE_H - 24,
-                width: 112,
-                height: 2,
-                background: 'var(--clss-ink-900)',
-              }}
-            />
-            {/* beam */}
-            <motion.div
-              animate={{ rotate: angle }}
-              transition={spring}
-              style={{
-                position: 'absolute',
-                left: STAGE_W / 2 - HALF,
-                top: BEAM_Y - 1.5,
-                width: HALF * 2,
-                height: 3,
-                background: 'var(--clss-ink-900)',
-                transformOrigin: 'center',
-              }}
-            />
-            {/* pivot */}
-            <div
-              style={{
-                position: 'absolute',
-                left: STAGE_W / 2 - 4,
-                top: BEAM_Y - 4,
-                width: 8,
-                height: 8,
-                borderRadius: 999,
-                background: 'var(--clss-ink-900)',
-              }}
-            />
-
-            <Pan side={-1} angle={angle}>
-              {/* x — the unknown; it cannot be taken off */}
-              <motion.div
-                layout
-                transition={{ type: 'spring', stiffness: 420, damping: 26 }}
+            >
+              {/* the ground — a soft tonal shadow the whole scene stands on */}
+              <div
+                aria-hidden
                 style={{
-                  width: 40,
-                  height: 32,
-                  background: 'var(--clss-ink-900)',
-                  color: 'var(--clss-paper)',
-                  borderRadius: 'var(--clss-radius-sm)',
-                  display: 'grid',
-                  placeItems: 'center',
-                  fontWeight: 550,
-                  fontSize: '0.95rem',
-                  userSelect: 'none',
+                  position: 'absolute',
+                  left: STAGE_W / 2 - 110,
+                  top: STAGE_H - 20,
+                  width: 220,
+                  height: 16,
+                  borderRadius: '50%',
+                  background: 'radial-gradient(ellipse, rgba(18,19,22,0.14) 0%, transparent 68%)',
+                }}
+              />
+              {/* the fulcrum — a chunky gradient pillar with an ink outline */}
+              <svg
+                role="presentation"
+                aria-hidden
+                width={72}
+                height={STAGE_H - BEAM_Y - 8}
+                viewBox={`0 0 72 ${STAGE_H - BEAM_Y - 8}`}
+                style={{
+                  position: 'absolute',
+                  left: STAGE_W / 2 - 36,
+                  top: BEAM_Y + 2,
+                  display: 'block',
                 }}
               >
-                x
-              </motion.div>
-              <AnimatePresence>
-                {leftOn.map((id) => (
-                  <UnitWeight key={id} removable={!revealed} onRemove={() => remove('l', id)} />
-                ))}
-              </AnimatePresence>
-            </Pan>
+                <defs>
+                  <linearGradient id="scale-pillar" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#3A3B42" />
+                    <stop offset="50%" stopColor="#121316" />
+                    <stop offset="100%" stopColor="#2A2B31" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d={`M 36 0 L 58 ${STAGE_H - BEAM_Y - 26} L 14 ${STAGE_H - BEAM_Y - 26} Z`}
+                  fill="url(#scale-pillar)"
+                  stroke={INK}
+                  strokeWidth={2}
+                  strokeLinejoin="round"
+                />
+                <rect x={4} y={STAGE_H - BEAM_Y - 28} width={64} height={9} rx={3} fill={INK} />
+              </svg>
+              {/* beam — a solid ink bar with a light top edge */}
+              <motion.div
+                animate={{ rotate: angle }}
+                transition={spring}
+                style={{
+                  position: 'absolute',
+                  left: STAGE_W / 2 - HALF,
+                  top: BEAM_Y - 3,
+                  width: HALF * 2,
+                  height: 6,
+                  background: 'linear-gradient(180deg, #3A3B42 0%, #121316 55%)',
+                  borderRadius: 3,
+                  transformOrigin: 'center',
+                }}
+              />
+              {/* pivot — the golden point, the art system's one accent */}
+              <div
+                style={{
+                  position: 'absolute',
+                  left: STAGE_W / 2 - 6,
+                  top: BEAM_Y - 6,
+                  width: 12,
+                  height: 12,
+                  borderRadius: 999,
+                  background: GOLD,
+                  border: `2px solid ${INK}`,
+                }}
+              />
 
-            <Pan side={1} angle={angle}>
-              <AnimatePresence>
-                {rightOn.map((id) => (
-                  <UnitWeight key={id} removable={!revealed} onRemove={() => remove('r', id)} />
-                ))}
-              </AnimatePresence>
-            </Pan>
+              <Pan side={-1} angle={angle}>
+                {/* x — the unknown; it cannot be taken off */}
+                <motion.div
+                  layout
+                  transition={{ type: 'spring', stiffness: 420, damping: 26 }}
+                  style={{
+                    position: 'relative',
+                    width: 42,
+                    height: 34,
+                    background: 'linear-gradient(180deg, #2E3038 0%, #121316 100%)',
+                    color: '#FFFFFF',
+                    border: `1.5px solid ${INK}`,
+                    borderRadius: 4,
+                    display: 'grid',
+                    placeItems: 'center',
+                    fontWeight: 600,
+                    fontSize: '1rem',
+                    userSelect: 'none',
+                  }}
+                >
+                  x{/* the golden accent — the unknown carries the treasure */}
+                  <span
+                    aria-hidden
+                    style={{
+                      position: 'absolute',
+                      top: 3,
+                      right: 3,
+                      width: 6,
+                      height: 6,
+                      borderRadius: 999,
+                      background: GOLD,
+                    }}
+                  />
+                </motion.div>
+                <AnimatePresence>
+                  {leftOn.map((id) => (
+                    <UnitWeight key={id} removable={!revealed} onRemove={() => remove('l', id)} />
+                  ))}
+                </AnimatePresence>
+              </Pan>
+
+              <Pan side={1} angle={angle}>
+                <AnimatePresence>
+                  {rightOn.map((id) => (
+                    <UnitWeight key={id} removable={!revealed} onRemove={() => remove('r', id)} />
+                  ))}
+                </AnimatePresence>
+              </Pan>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* the table — taken-off weights can go back */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          gap: 16,
-          minHeight: 34,
-          alignItems: 'center',
-        }}
-      >
-        <div style={{ display: 'flex', gap: 5, minHeight: 26 }}>
-          <AnimatePresence>
-            {leftOff.map((id) => (
-              <UnitWeight key={id} restore removable={false} onRemove={() => restore('l', id)} />
-            ))}
-          </AnimatePresence>
+        {/* the table — taken-off weights can go back */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: 16,
+            minHeight: 34,
+            alignItems: 'center',
+            width: '100%',
+          }}
+        >
+          <div style={{ display: 'flex', gap: 5, minHeight: 26 }}>
+            <AnimatePresence>
+              {leftOff.map((id) => (
+                <UnitWeight key={id} restore removable={false} onRemove={() => restore('l', id)} />
+              ))}
+            </AnimatePresence>
+          </div>
+          {(leftOff.length > 0 || rightOff.length > 0) && !revealed && (
+            <div style={{ ...whisper, textAlign: 'center' }}>off the scale — tap to put back</div>
+          )}
+          <div style={{ display: 'flex', gap: 5, minHeight: 26 }}>
+            <AnimatePresence>
+              {rightOff.map((id) => (
+                <UnitWeight key={id} restore removable={false} onRemove={() => restore('r', id)} />
+              ))}
+            </AnimatePresence>
+          </div>
         </div>
-        {(leftOff.length > 0 || rightOff.length > 0) && !revealed && (
-          <div style={{ ...whisper, textAlign: 'center' }}>off the scale — tap to put back</div>
-        )}
-        <div style={{ display: 'flex', gap: 5, minHeight: 26 }}>
-          <AnimatePresence>
-            {rightOff.map((id) => (
-              <UnitWeight key={id} restore removable={false} onRemove={() => restore('r', id)} />
-            ))}
-          </AnimatePresence>
-        </div>
-      </div>
+      </Stage>
 
       {/* struggle → a quiet nudge; success → the principle, only after the act */}
       <div style={{ minHeight: 52, textAlign: 'center' }}>

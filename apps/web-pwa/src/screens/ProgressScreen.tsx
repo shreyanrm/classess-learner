@@ -14,6 +14,7 @@ import { useRouter } from '../shell/router';
 import { useViewport } from '../shell/useViewport';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
+import { CloseIcon } from '../ui/icons';
 import { MagneticButton } from '../ui/kit';
 import { useVidyaChat } from '../vidya/chat';
 import { Whisper } from './Learn';
@@ -291,14 +292,13 @@ export function ProgressScreen() {
                 border: 'none',
                 background: 'transparent',
                 color: 'var(--clss-ink-300)',
-                fontSize: '0.95rem',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 padding: 4,
                 lineHeight: 1,
               }}
             >
-              ×
+              <CloseIcon size={14} />
             </button>
             <div
               style={{

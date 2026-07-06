@@ -511,7 +511,6 @@ export function VidyaBody({
     return s * (pose.spark >= 2 ? 1.25 : pose.spark);
   });
 
-  const eyeH = 12 * Math.min(1, pose.eyeOpen);
   const lidScale = blink ? 0.06 : Math.min(1, pose.eyeOpen);
   const showOpenEyes = pose.eyes === 'open';
 
@@ -565,6 +564,8 @@ export function VidyaBody({
             viewBox="-50 -50 100 100"
             width="100%"
             height="100%"
+            role="presentation"
+            aria-hidden
             style={{ display: 'block', overflow: 'visible' }}
           >
             <defs>

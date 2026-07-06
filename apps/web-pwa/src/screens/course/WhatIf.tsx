@@ -11,7 +11,102 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { type ReactNode, useEffect, useState } from 'react';
 import { fmt, fractionText } from './equations';
 import type { BarState } from './shared';
-import { CardBody, cardTitle, equationType, lead, Scrubber, whisper } from './shared';
+import {
+  CardBody,
+  cardTitle,
+  equationType,
+  GOLD,
+  lead,
+  rgba,
+  Scrubber,
+  Stage,
+  whisper,
+} from './shared';
+
+const HUE = '#1F35E0';
+const MAGENTA = '#CC1E7A';
+
+/**
+ * The living plot behind the equation — y = a·x + b as a line, y = c as a horizon, their
+ * crossing marked in gold. Every scrub moves it on springs; the algebra↔geometry link, felt.
+ */
+function GraphBackdrop({ a, b, c }: { a: number; b: number; c: number }) {
+  const W = 400;
+  const H = 230;
+  // x: −10..10 → px; y: −38..38 → px (clipped by the svg — lines may run out of frame honestly)
+  const px = (x: number) => W / 2 + x * (W / 22);
+  const py = (y: number) => H / 2 - y * (H / 80);
+  const spring = { type: 'spring', stiffness: 210, damping: 26 } as const;
+  const xStar = (c - b) / a;
+  const crossing = Math.abs(xStar) <= 10 && Math.abs(c) <= 38;
+
+  return (
+    <svg
+      role="presentation"
+      aria-hidden
+      viewBox={`0 0 ${W} ${H}`}
+      preserveAspectRatio="xMidYMid slice"
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+    >
+      {/* faint grid + axes */}
+      {[-8, -4, 4, 8].map((gx) => (
+        <line
+          key={`gx${gx}`}
+          x1={px(gx)}
+          y1={0}
+          x2={px(gx)}
+          y2={H}
+          stroke={rgba(HUE, 0.07)}
+          strokeWidth={1}
+        />
+      ))}
+      {[-24, 24].map((gy) => (
+        <line
+          key={`gy${gy}`}
+          x1={0}
+          y1={py(gy)}
+          x2={W}
+          y2={py(gy)}
+          stroke={rgba(HUE, 0.07)}
+          strokeWidth={1}
+        />
+      ))}
+      <line x1={px(0)} y1={0} x2={px(0)} y2={H} stroke={rgba(HUE, 0.16)} strokeWidth={1} />
+      <line x1={0} y1={py(0)} x2={W} y2={py(0)} stroke={rgba(HUE, 0.16)} strokeWidth={1} />
+      {/* y = c — the horizon the line must reach */}
+      <motion.line
+        animate={{ y1: py(c), y2: py(c) }}
+        transition={spring}
+        x1={0}
+        x2={W}
+        stroke={rgba(MAGENTA, 0.38)}
+        strokeWidth={1.6}
+        strokeDasharray="6 5"
+      />
+      {/* y = a·x + b — the learner's line */}
+      <motion.line
+        animate={{ y1: py(a * -10 + b), y2: py(a * 10 + b) }}
+        transition={spring}
+        x1={px(-10)}
+        x2={px(10)}
+        stroke={rgba(HUE, 0.45)}
+        strokeWidth={2}
+        strokeLinecap="round"
+      />
+      {/* the crossing — x, found geometrically */}
+      {crossing && (
+        <motion.circle
+          animate={{ cx: px(xStar), cy: py(c) }}
+          transition={spring}
+          r={5.5}
+          fill={GOLD}
+          stroke="#121316"
+          strokeWidth={1.6}
+        />
+      )}
+    </svg>
+  );
+}
 
 /** A number that fades/rises when its value changes. */
 function Live({ children }: { children: ReactNode }) {
@@ -120,34 +215,41 @@ export function WhatIf({
       <div style={cardTitle}>every number here is yours to drag</div>
       <div style={lead}>pull a, b, or c sideways — the whole solution keeps up.</div>
 
-      {/* the editable equation */}
-      <div
-        ref={equationRef}
-        style={{
-          ...equationType,
-          textAlign: 'center',
-          padding: '26px 0 10px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'baseline',
-          gap: 10,
-          flexWrap: 'wrap',
-        }}
-      >
-        <Scrubber value={a} min={1} max={9} onChange={setA} label="coefficient a" />
-        <span>x</span>
-        <span>{op}</span>
-        <Scrubber
-          value={b}
-          min={-9}
-          max={9}
-          onChange={setB}
-          label="constant b"
-          display={String(Math.abs(b))}
-        />
-        <span>=</span>
-        <Scrubber value={c} min={-20} max={20} onChange={setC} label="right side c" />
-      </div>
+      {/* the editable equation, staged over its own living graph */}
+      <Stage hue={HUE} tint={0.05} minHeight={280}>
+        <GraphBackdrop a={a} b={b} c={c} />
+        <div
+          ref={equationRef}
+          style={{
+            ...equationType,
+            fontSize: 'clamp(1.8rem, 6vw, 2.4rem)',
+            position: 'relative',
+            textAlign: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'baseline',
+            gap: 12,
+            flexWrap: 'wrap',
+            padding: '10px 18px',
+            borderRadius: 3,
+            background: 'rgba(255,255,255,0.78)',
+          }}
+        >
+          <Scrubber value={a} min={1} max={9} onChange={setA} label="coefficient a" />
+          <span>x</span>
+          <span>{op}</span>
+          <Scrubber
+            value={b}
+            min={-9}
+            max={9}
+            onChange={setB}
+            label="constant b"
+            display={String(Math.abs(b))}
+          />
+          <span>=</span>
+          <Scrubber value={c} min={-20} max={20} onChange={setC} label="right side c" />
+        </div>
+      </Stage>
 
       {/* the worked solution, always live */}
       <div

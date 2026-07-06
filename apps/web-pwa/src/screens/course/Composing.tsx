@@ -18,9 +18,10 @@ import { MotionPlayer, type MotionScene, parseMotionScene } from '../../engines/
 import { parseSimSpec, SimRunner, type SimSpec } from '../../engines/SimRunner';
 import { useRouter } from '../../shell/router';
 import { useSdk } from '../../store/sdk';
+import { TopicSigil } from '../../ui/art';
 import { useVidyaChat } from '../../vidya/chat';
 import type { BarState } from './shared';
-import { CardBody, cardTitle, Deck, lead, whisper } from './shared';
+import { CardBody, cardTitle, Deck, lead, Stage, whisper } from './shared';
 
 const ATOM_TOPIC_ID = 'm2-1';
 
@@ -641,6 +642,10 @@ export function Composing({
   return (
     <Deck id="compose-ink">
       <CardBody maxWidth={560}>
+        {/* the course arrives with its own sigil — the topic's identity, drawing itself on stage */}
+        <Stage tint={0.055} minHeight={170}>
+          <TopicSigil id={topicId} size={104} draw />
+        </Stage>
         <div style={whisper}>Vidya is writing your course</div>
         <div style={cardTitle}>{title.toLowerCase()}</div>
         <div style={{ display: 'flex', gap: 18, marginTop: 10 }}>

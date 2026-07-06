@@ -2,8 +2,9 @@
 
 /**
  * Course-player chrome, shared across every card: the segmented progress bar (endowed, eased),
- * the bottom action bar (Check/Continue + a quiet "why?"), the horizontal card deck, and the
- * draggable number scrubber. Ink on paper, hairlines, 3px corners, no shadows (DESIGN.md §2).
+ * the bottom action bar (Check/Continue + a quiet "why?"), the horizontal card deck, the
+ * hue-tinted Stage every card's visual subject sits on, the celebration particle pop, and the
+ * draggable number scrubber. Ink on paper, hairlines, 3px corners (DESIGN.md §2).
  */
 
 import { AnimatePresence, motion } from 'framer-motion';
@@ -12,9 +13,19 @@ import {
   type KeyboardEvent,
   type ReactNode,
   type PointerEvent as ReactPointerEvent,
+  useMemo,
   useRef,
 } from 'react';
 import { MagneticButton } from '../../ui/kit';
+
+/** `rgba()` from a hex hue — stages and ignites need translucent stops of the subject's hue. */
+export function rgba(hex: string, alpha: number): string {
+  const n = Number.parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${alpha})`;
+}
+
+/** The one golden accent of the art system. */
+export const GOLD = '#FFC93C';
 
 // --- Text registers ------------------------------------------------------------------------------
 
@@ -139,16 +150,122 @@ export function SegmentedProgress({ fraction, segments }: { fraction: number; se
   );
 }
 
-// --- The deck (horizontal slide + fade, springs) --------------------------------------------------
+// --- The stage — every card's visual subject sits on one ------------------------------------------
+
+/**
+ * A subtly hue-tinted panel that holds a card's centerpiece: 3px radius, tonal fill of the
+ * subject's hue, generous height. Dark stages are reserved for the boss door and the night sky.
+ */
+export function Stage({
+  hue = '#1F35E0',
+  tint = 0.06,
+  dark = false,
+  minHeight = 300,
+  children,
+  style,
+}: {
+  hue?: string;
+  tint?: number;
+  dark?: boolean;
+  minHeight?: number;
+  children: ReactNode;
+  style?: CSSProperties;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.985 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+      style={{
+        position: 'relative',
+        width: '100%',
+        minHeight,
+        borderRadius: 3,
+        background: dark
+          ? 'linear-gradient(160deg, #1A1B21 0%, #121316 60%, #0D0D10 100%)'
+          : rgba(hue, tint),
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        ...style,
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// --- The particle pop — a small burst for earned moments ------------------------------------------
+
+export function ParticlePop({ hue = '#1F35E0', count = 12 }: { hue?: string; count?: number }) {
+  const parts = useMemo(
+    () =>
+      Array.from({ length: count }, (_, i) => {
+        const a = (i / count) * Math.PI * 2 + (i % 2) * 0.35;
+        const d = 36 + (i % 3) * 18;
+        return {
+          id: `p${i}`,
+          x: Math.cos(a) * d,
+          y: Math.sin(a) * d,
+          s: i % 3 === 0 ? 7 : 4,
+          gold: i % 4 === 0,
+        };
+      }),
+    [count],
+  );
+  return (
+    <div
+      aria-hidden
+      style={{
+        position: 'absolute',
+        inset: 0,
+        pointerEvents: 'none',
+        display: 'grid',
+        placeItems: 'center',
+        overflow: 'visible',
+      }}
+    >
+      {parts.map((p, i) => (
+        <motion.span
+          key={p.id}
+          initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+          animate={{ x: p.x, y: p.y, opacity: 0, scale: 0.3 }}
+          transition={{ duration: 0.75, ease: [0.15, 0, 0.2, 1], delay: i * 0.014 }}
+          style={{
+            position: 'absolute',
+            width: p.s,
+            height: p.s,
+            borderRadius: 999,
+            background: p.gold ? GOLD : hue,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// --- The deck (horizontal slide-spring + stage crossfade) ------------------------------------------
 
 export function Deck({ id, children }: { id: string; children: ReactNode }) {
   return (
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
         key={id}
-        initial={{ x: 72, opacity: 0 }}
-        animate={{ x: 0, opacity: 1, transition: { type: 'spring', stiffness: 320, damping: 30 } }}
-        exit={{ x: -56, opacity: 0, transition: { duration: 0.16, ease: [0.4, 0, 1, 1] } }}
+        initial={{ x: 72, opacity: 0, scale: 0.99 }}
+        animate={{
+          x: 0,
+          opacity: 1,
+          scale: 1,
+          transition: { type: 'spring', stiffness: 320, damping: 30 },
+        }}
+        exit={{
+          x: -56,
+          opacity: 0,
+          scale: 0.985,
+          transition: { duration: 0.18, ease: [0.4, 0, 1, 1] },
+        }}
         style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}
       >
         {children}

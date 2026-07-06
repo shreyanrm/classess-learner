@@ -168,6 +168,8 @@ export function MagneticButton({
     <motion.button
       ref={ref}
       aria-label={ariaLabel}
+      disabled={disabled}
+      aria-disabled={disabled || undefined}
       onPointerMove={onMove}
       onPointerEnter={() => setHover(true)}
       onPointerLeave={onLeave}

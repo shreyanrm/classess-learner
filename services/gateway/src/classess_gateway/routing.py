@@ -37,9 +37,14 @@ class ModelSpec:
 
 
 # --- Track 1: external market LLMs (quality per capability; the frontier tier) --------
+# Routing law (owner, 2026-07-06): Fable 5 is the orchestrator of ALL generation — content,
+# motion physics, effects specs. By complexity the generator is Opus (frontier.reason) or
+# Sonnet (frontier.sonnet); Gemini and OpenAI engines are prompted by the same orchestrator
+# (gemini.voice / nano banana imagery / openai.crosscheck as the second-model verifier).
 _TRACK_1: dict[str, str] = {
     "frontier.reason": "anthropic/claude-opus-4-8",
     "frontier.fast": "anthropic/claude-haiku-4-5",
+    "frontier.sonnet": "anthropic/claude-sonnet-5",
     "gemini.voice": "gemini/gemini-2.5-flash",
     "openai.crosscheck": "openai/gpt-4.1",
 }

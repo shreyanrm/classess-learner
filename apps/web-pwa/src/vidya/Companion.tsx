@@ -11,7 +11,7 @@ import { VidyaBody } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { useRouter } from '../shell/router';
-import { MicBloomIcon } from '../ui/icons';
+import { CloseIcon, MicBloomIcon, SendIcon } from '../ui/icons';
 import { useVidyaChat } from './chat';
 import { FlyingVidya } from './Flight';
 import { useVidyaVoice } from './voice';
@@ -147,13 +147,12 @@ export function VidyaCompanion() {
                   background: 'transparent',
                   color: 'var(--clss-ink-500)',
                   cursor: 'pointer',
-                  fontSize: '1.3rem',
                   fontFamily: 'inherit',
                   lineHeight: 1,
-                  padding: 4,
+                  padding: 6,
                 }}
               >
-                ×
+                <CloseIcon size={16} />
               </button>
             </div>
 
@@ -249,24 +248,35 @@ export function VidyaCompanion() {
               >
                 <MicBloomIcon active={voiceOn} size={17} />
               </button>
-              {draft.trim() && (
-                <button
-                  type="submit"
-                  disabled={busy}
-                  style={{
-                    border: 'none',
-                    background: 'var(--clss-ink-900)',
-                    color: 'var(--clss-paper)',
-                    borderRadius: 'var(--clss-radius-sm)',
-                    padding: '10px 14px',
-                    cursor: busy ? 'default' : 'pointer',
-                    fontFamily: 'inherit',
-                    fontSize: '0.9rem',
-                  }}
-                >
-                  ask
-                </button>
-              )}
+              {/* the ask affordance exists only once there is something to ask */}
+              <AnimatePresence initial={false}>
+                {draft.trim() && (
+                  <motion.button
+                    key="ask"
+                    type="submit"
+                    disabled={busy}
+                    initial={{ opacity: 0, scale: 0.88 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.88 }}
+                    transition={{ type: 'spring', stiffness: 380, damping: 26 }}
+                    style={{
+                      border: 'none',
+                      background: 'var(--clss-ink-900)',
+                      color: 'var(--clss-paper)',
+                      borderRadius: 'var(--clss-radius-sm)',
+                      padding: '10px 14px',
+                      cursor: busy ? 'default' : 'pointer',
+                      fontFamily: 'inherit',
+                      fontSize: '0.9rem',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 7,
+                    }}
+                  >
+                    <SendIcon size={13} /> ask
+                  </motion.button>
+                )}
+              </AnimatePresence>
             </form>
             {voiceNote && (
               <div

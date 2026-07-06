@@ -1,0 +1,51 @@
+- generic [ref=f1e2]:
+  - generic [ref=f1e452]:
+    - banner [ref=f1e453]:
+      - button "Close course" [ref=f1e454] [cursor=pointer]:
+        - img [ref=f1e455]
+    - main [ref=f1e478]:
+      - generic [ref=f1e498]:
+        - generic [ref=f1e499]: guided discovery
+        - generic [ref=f1e500]: get x alone
+        - generic [ref=f1e501]: take weights off the pans — the scale must end level.
+        - generic [ref=f1e502]:
+          - generic [ref=f1e504]: x + 3 = 8
+          - generic [ref=f1e507]:
+            - img [ref=f1e509]
+            - generic [ref=f1e514]:
+              - img
+              - generic [ref=f1e516]:
+                - generic [ref=f1e517]: x
+                - generic "take this weight off" [ref=f1e519]: "1"
+                - generic "take this weight off" [ref=f1e520]: "1"
+                - generic "take this weight off" [ref=f1e521]: "1"
+            - generic [ref=f1e522]:
+              - img
+              - generic [ref=f1e524]:
+                - generic "take this weight off" [ref=f1e525]: "1"
+                - generic "take this weight off" [ref=f1e526]: "1"
+                - generic "take this weight off" [ref=f1e527]: "1"
+                - generic "take this weight off" [ref=f1e528]: "1"
+                - generic "take this weight off" [ref=f1e529]: "1"
+                - generic "take this weight off" [ref=f1e530]: "1"
+                - generic "take this weight off" [ref=f1e531]: "1"
+                - generic "take this weight off" [ref=f1e532]: "1"
+    - button "begin continue" [disabled] [ref=f1e535]:
+      - generic [ref=f1e496]: begin
+      - generic [ref=f1e536]: continue
+  - banner:
+    - img "Classess" [ref=f1e63]
+    - generic [ref=f1e64]:
+      - button "Did you know" [ref=f1e65] [cursor=pointer]:
+        - img [ref=f1e66]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f1e68]:
+        - img [ref=f1e69]
+        - text: "1"
+      - generic [ref=f1e72]: 0 xp
+      - button "You — profile and settings" [ref=f1e73] [cursor=pointer]: A
+  - generic [ref=f1e422]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f1e423] [cursor=pointer]:
+      - img [ref=f1e427]

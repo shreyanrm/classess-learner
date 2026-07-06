@@ -1,0 +1,125 @@
+- generic [ref=f1e2]:
+  - generic [ref=f1e136]:
+    - button "Back — ◦ ,learn" [ref=f1e137] [cursor=pointer]:
+      - img [ref=f1e138]
+      - text: ◦ learn
+    - generic [ref=f1e141]:
+      - img [ref=f1e143]
+      - heading "Mathematics" [level=1] [ref=f1e150]
+      - generic [ref=f1e151]: patterns, structure, and certainty
+      - generic [ref=f1e152]: CBSE · Class 8 · 13 chapters
+      - generic [ref=f1e153]:
+        - button "01 Rational numbers" [ref=f1e155] [cursor=pointer]:
+          - generic [ref=f1e156]: "01"
+          - generic [ref=f1e157]:
+            - generic [ref=f1e158]: Rational numbers
+            - img [ref=f1e159]
+          - img [ref=f1e166]
+        - generic [ref=f1e172]:
+          - button "02 Linear equations in one variable" [expanded] [active] [ref=f1e173] [cursor=pointer]:
+            - generic [ref=f1e174]: "02"
+            - generic [ref=f1e175]:
+              - generic [ref=f1e176]: Linear equations in one variable
+              - img [ref=f1e177]
+            - img [ref=f1e182]
+          - generic [ref=f1e377]:
+            - button "Solving equations with the variable on one side Undo operations in the right order and the unknown surrenders." [ref=f1e379] [cursor=pointer]:
+              - img [ref=f1e381]
+              - generic [ref=f1e387]:
+                - generic [ref=f1e388]: Solving equations with the variable on one side
+                - generic [ref=f1e389]: Undo operations in the right order and the unknown surrenders.
+              - img [ref=f1e391]
+            - button "Variables on both sides Gather the xs, gather the numbers, and the equation folds flat. builds on Solving equations with the variable on one side" [ref=f1e395] [cursor=pointer]:
+              - img [ref=f1e397]
+              - generic [ref=f1e404]:
+                - generic [ref=f1e405]: Variables on both sides
+                - generic [ref=f1e406]: Gather the xs, gather the numbers, and the equation folds flat.
+              - generic [ref=f1e407]: builds on Solving equations with the variable on one side
+            - button "Word problems that become equations Turn a sentence into an equation, then solve it cleanly. builds on Solving equations with the variable on one side" [ref=f1e409] [cursor=pointer]:
+              - img [ref=f1e411]
+              - generic [ref=f1e417]:
+                - generic [ref=f1e418]: Word problems that become equations
+                - generic [ref=f1e419]: Turn a sentence into an equation, then solve it cleanly.
+              - generic [ref=f1e420]: builds on Solving equations with the variable on one side
+        - button "03 Understanding quadrilaterals" [ref=f1e189] [cursor=pointer]:
+          - generic [ref=f1e190]: "03"
+          - generic [ref=f1e191]:
+            - generic [ref=f1e192]: Understanding quadrilaterals
+            - img [ref=f1e193]
+          - img [ref=f1e199]
+        - button "04 Data handling" [ref=f1e206] [cursor=pointer]:
+          - generic [ref=f1e207]: "04"
+          - generic [ref=f1e208]:
+            - generic [ref=f1e209]: Data handling
+            - img [ref=f1e210]
+          - img [ref=f1e216]
+        - button "05 Squares and square roots" [ref=f1e223] [cursor=pointer]:
+          - generic [ref=f1e224]: "05"
+          - generic [ref=f1e225]:
+            - generic [ref=f1e226]: Squares and square roots
+            - img [ref=f1e227]
+          - img [ref=f1e233]
+        - button "06 Cubes and cube roots" [ref=f1e240] [cursor=pointer]:
+          - generic [ref=f1e241]: "06"
+          - generic [ref=f1e242]:
+            - generic [ref=f1e243]: Cubes and cube roots
+            - img [ref=f1e244]
+          - img [ref=f1e250]
+        - button "07 Comparing quantities" [ref=f1e257] [cursor=pointer]:
+          - generic [ref=f1e258]: "07"
+          - generic [ref=f1e259]:
+            - generic [ref=f1e260]: Comparing quantities
+            - img [ref=f1e261]
+          - img [ref=f1e267]
+        - button "08 Algebraic expressions and identities" [ref=f1e274] [cursor=pointer]:
+          - generic [ref=f1e275]: "08"
+          - generic [ref=f1e276]:
+            - generic [ref=f1e277]: Algebraic expressions and identities
+            - img [ref=f1e278]
+          - img [ref=f1e286]
+        - button "09 Mensuration" [ref=f1e293] [cursor=pointer]:
+          - generic [ref=f1e294]: "09"
+          - generic [ref=f1e295]:
+            - generic [ref=f1e296]: Mensuration
+            - img [ref=f1e297]
+          - img [ref=f1e302]
+        - button "10 Exponents and powers" [ref=f1e309] [cursor=pointer]:
+          - generic [ref=f1e310]: "10"
+          - generic [ref=f1e311]:
+            - generic [ref=f1e312]: Exponents and powers
+            - img [ref=f1e313]
+          - img [ref=f1e320]
+        - button "11 Direct and inverse proportions" [ref=f1e327] [cursor=pointer]:
+          - generic [ref=f1e328]: "11"
+          - generic [ref=f1e329]:
+            - generic [ref=f1e330]: Direct and inverse proportions
+            - img [ref=f1e331]
+          - img [ref=f1e338]
+        - button "12 Factorisation" [ref=f1e345] [cursor=pointer]:
+          - generic [ref=f1e346]: "12"
+          - generic [ref=f1e347]:
+            - generic [ref=f1e348]: Factorisation
+            - img [ref=f1e349]
+          - img [ref=f1e355]
+        - button "13 Introduction to graphs" [ref=f1e362] [cursor=pointer]:
+          - generic [ref=f1e363]: "13"
+          - generic [ref=f1e364]:
+            - generic [ref=f1e365]: Introduction to graphs
+            - img [ref=f1e366]
+          - img [ref=f1e370]
+  - banner:
+    - img "Classess" [ref=f1e63]
+    - generic [ref=f1e64]:
+      - button "Did you know" [ref=f1e65] [cursor=pointer]:
+        - img [ref=f1e66]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f1e68]:
+        - img [ref=f1e69]
+        - text: "1"
+      - generic [ref=f1e72]: 0 xp
+      - button "You — profile and settings" [ref=f1e73] [cursor=pointer]: A
+  - generic [ref=f1e422]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f1e423] [cursor=pointer]:
+      - img [ref=f1e427]

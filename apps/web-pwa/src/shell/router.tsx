@@ -19,7 +19,8 @@ export type Route =
   | { name: 'course'; topicId: string }
   | { name: 'sandbox'; topicId?: string }
   | { name: 'progress' }
-  | { name: 'you' };
+  | { name: 'you' }
+  | { name: 'concept'; which: 'a' | 'b' | 'c' };
 
 export interface Router {
   route: Route;

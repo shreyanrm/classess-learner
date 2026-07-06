@@ -17,6 +17,7 @@ import { chapterById, topicById } from '../data/catalog';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
+import { CloseIcon } from '../ui/icons';
 import { AtomJourney } from './course/AtomJourney';
 import { Composing } from './course/Composing';
 import { ActionBar, type BarState, SegmentedProgress, whisper } from './course/shared';
@@ -94,14 +95,13 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
             border: 'none',
             background: 'transparent',
             color: 'var(--clss-ink-500)',
-            fontSize: '1.45rem',
             lineHeight: 1,
             cursor: 'pointer',
             fontFamily: 'inherit',
-            padding: '2px 6px',
+            padding: 6,
           }}
         >
-          ×
+          <CloseIcon size={17} />
         </button>
         {mode === 'sandbox' ? (
           <div style={{ ...whisper, flex: 1, textAlign: 'center' }}>

@@ -136,6 +136,9 @@ def _generate_course(
     """Generate a course path (title, estMinutes, ordered nodes) from a free-text goal."""
     import litellm
 
+    # Claude 5 family accepts only default sampling; drop unsupported params instead of erroring.
+    litellm.drop_params = True
+
     from classess_gateway.vidya import _extract_json  # same robust code-fence/JSON parser
 
     goal = str(payload.get("goal") or "").strip() or "learn the basics of this topic"
@@ -202,6 +205,8 @@ class LiveProvider:
             )
 
         import litellm  # lazy: mock mode and tests never import litellm
+
+        litellm.drop_params = True
 
         messages = payload.get("messages")
         if not messages:

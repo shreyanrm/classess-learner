@@ -1,0 +1,108 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e139]:
+    - button "Back — ◦ ,learn" [ref=f3e140] [cursor=pointer]:
+      - img [ref=f3e141]
+      - text: ◦ learn
+    - generic [ref=f3e144]:
+      - img [ref=f3e146]
+      - heading "Mathematics" [level=1] [ref=f3e153]
+      - generic [ref=f3e154]: patterns, structure, and certainty
+      - generic [ref=f3e155]: CBSE · Class 8 · 13 chapters
+      - generic [ref=f3e156]:
+        - button "01 Rational numbers" [ref=f3e158] [cursor=pointer]:
+          - generic [ref=f3e159]: "01"
+          - generic [ref=f3e160]:
+            - generic [ref=f3e161]: Rational numbers
+            - img [ref=f3e162]
+          - img [ref=f3e169]
+        - button "02 Linear equations in one variable" [ref=f3e176] [cursor=pointer]:
+          - generic [ref=f3e177]: "02"
+          - generic [ref=f3e178]:
+            - generic [ref=f3e179]: Linear equations in one variable
+            - img [ref=f3e180]
+          - img [ref=f3e185]
+        - button "03 Understanding quadrilaterals" [ref=f3e192] [cursor=pointer]:
+          - generic [ref=f3e193]: "03"
+          - generic [ref=f3e194]:
+            - generic [ref=f3e195]: Understanding quadrilaterals
+            - img [ref=f3e196]
+          - img [ref=f3e202]
+        - button "04 Data handling" [ref=f3e209] [cursor=pointer]:
+          - generic [ref=f3e210]: "04"
+          - generic [ref=f3e211]:
+            - generic [ref=f3e212]: Data handling
+            - img [ref=f3e213]
+          - img [ref=f3e219]
+        - button "05 Squares and square roots" [ref=f3e226] [cursor=pointer]:
+          - generic [ref=f3e227]: "05"
+          - generic [ref=f3e228]:
+            - generic [ref=f3e229]: Squares and square roots
+            - img [ref=f3e230]
+          - img [ref=f3e236]
+        - button "06 Cubes and cube roots" [ref=f3e243] [cursor=pointer]:
+          - generic [ref=f3e244]: "06"
+          - generic [ref=f3e245]:
+            - generic [ref=f3e246]: Cubes and cube roots
+            - img [ref=f3e247]
+          - img [ref=f3e253]
+        - button "07 Comparing quantities" [ref=f3e260] [cursor=pointer]:
+          - generic [ref=f3e261]: "07"
+          - generic [ref=f3e262]:
+            - generic [ref=f3e263]: Comparing quantities
+            - img [ref=f3e264]
+          - img [ref=f3e270]
+        - button "08 Algebraic expressions and identities" [ref=f3e277] [cursor=pointer]:
+          - generic [ref=f3e278]: "08"
+          - generic [ref=f3e279]:
+            - generic [ref=f3e280]: Algebraic expressions and identities
+            - img [ref=f3e281]
+          - img [ref=f3e289]
+        - button "09 Mensuration" [ref=f3e296] [cursor=pointer]:
+          - generic [ref=f3e297]: "09"
+          - generic [ref=f3e298]:
+            - generic [ref=f3e299]: Mensuration
+            - img [ref=f3e300]
+          - img [ref=f3e305]
+        - button "10 Exponents and powers" [ref=f3e312] [cursor=pointer]:
+          - generic [ref=f3e313]: "10"
+          - generic [ref=f3e314]:
+            - generic [ref=f3e315]: Exponents and powers
+            - img [ref=f3e316]
+          - img [ref=f3e323]
+        - button "11 Direct and inverse proportions" [ref=f3e330] [cursor=pointer]:
+          - generic [ref=f3e331]: "11"
+          - generic [ref=f3e332]:
+            - generic [ref=f3e333]: Direct and inverse proportions
+            - img [ref=f3e334]
+          - img [ref=f3e341]
+        - button "12 Factorisation" [ref=f3e348] [cursor=pointer]:
+          - generic [ref=f3e349]: "12"
+          - generic [ref=f3e350]:
+            - generic [ref=f3e351]: Factorisation
+            - img [ref=f3e352]
+          - img [ref=f3e358]
+        - button "13 Introduction to graphs" [ref=f3e365] [cursor=pointer]:
+          - generic [ref=f3e366]: "13"
+          - generic [ref=f3e367]:
+            - generic [ref=f3e368]: Introduction to graphs
+            - img [ref=f3e369]
+          - img [ref=f3e373]
+  - banner:
+    - img "Classess" [ref=f3e63]
+    - generic [ref=f3e64]:
+      - button "Did you know" [ref=f3e65] [cursor=pointer]:
+        - img [ref=f3e66]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f3e68]:
+        - img [ref=f3e69]
+        - text: "1"
+      - generic [ref=f3e72]: 0 xp
+      - button "You — profile and settings" [ref=f3e73] [cursor=pointer]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

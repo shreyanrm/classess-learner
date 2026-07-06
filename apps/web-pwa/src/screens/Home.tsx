@@ -8,36 +8,15 @@
 
 import { VidyaBody } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
-import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { learner } from '../data/catalog';
 import { useRouter } from '../shell/router';
-import { MicBloomIcon, SparkIcon } from '../ui/icons';
+import { MicBloomIcon, SendIcon, SparkIcon } from '../ui/icons';
 import { AuroraButton, cascade, Kbd, MagneticButton, rise } from '../ui/kit';
 import { useVidyaChat } from '../vidya/chat';
 import { useVidyaVoice } from '../vidya/voice';
 
-/** Genuinely surprising, calm, sentence case. Rotates every single day. */
-const DID_YOU_KNOW: string[] = [
-  'a white tiger has stripes on its skin, not just its fur',
-  'a day on Venus lasts longer than its entire year',
-  'honey found in Egyptian tombs is still edible after three thousand years',
-  'lightning is about five times hotter than the surface of the sun',
-  'octopuses have three hearts, and their blood is blue',
-  'sound travels about four times faster underwater than in air',
-  'sharks existed on Earth before trees did',
-  'bananas are berries, but strawberries are not',
-  'the Eiffel Tower grows about fifteen centimetres taller every summer',
-  'hot water can sometimes freeze faster than cold water',
-  'there are more possible chess games than atoms in the observable universe',
-  'a teaspoon of neutron star material would weigh about a billion tonnes',
-  'your bones are about five times stronger than steel of the same weight',
-  'the human brain runs on roughly the power of a dim light bulb',
-];
-
-function todaysFact(): string {
-  const day = Math.floor(Date.now() / 86400000);
-  return DID_YOU_KNOW[day % DID_YOU_KNOW.length] as string;
-}
+// did-you-know moved into the AppHeader — it owns all top chrome now
 
 function greeting(name: string): string {
   const h = new Date().getHours();
@@ -290,11 +269,23 @@ export function Home() {
               <MicBloomIcon active={voiceOn} size={19} />
             </button>
           </div>
-          {draft.trim() && (
-            <MagneticButton variant="primary" onClick={() => {}} ariaLabel="Ask Vidya">
-              ask
-            </MagneticButton>
-          )}
+          {/* the ask affordance exists only once there is something to ask */}
+          <AnimatePresence initial={false}>
+            {draft.trim() && (
+              <motion.span
+                key="ask"
+                initial={{ opacity: 0, scale: 0.88 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.88 }}
+                transition={{ type: 'spring', stiffness: 380, damping: 26 }}
+                style={{ display: 'inline-flex' }}
+              >
+                <MagneticButton variant="primary" onClick={() => {}} ariaLabel="Ask Vidya">
+                  <SendIcon size={13} /> ask
+                </MagneticButton>
+              </motion.span>
+            )}
+          </AnimatePresence>
         </motion.form>
         {voiceNote && (
           <div style={{ marginTop: 8, color: 'var(--clss-ink-500)', fontSize: '0.8rem' }}>

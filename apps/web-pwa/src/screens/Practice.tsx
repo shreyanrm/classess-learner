@@ -11,13 +11,14 @@ import { motion } from 'framer-motion';
 import { type ReactNode, useEffect, useState } from 'react';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
+import { ChevronIcon } from '../ui/icons';
 import { SectionLabel } from '../ui/kit';
 import { SubjectGrid, Whisper } from './Learn';
 
 function Door({
   title,
   line,
-  hint = '›',
+  hint,
   onOpen,
   targetRef,
 }: {
@@ -64,8 +65,19 @@ function Door({
           {line}
         </span>
       </span>
-      <span style={{ color: 'var(--clss-ink-300)', fontSize: '0.9rem', flexShrink: 0 }}>
+      <span
+        style={{
+          color: hover ? 'var(--clss-ink-500)' : 'var(--clss-ink-300)',
+          fontSize: '0.9rem',
+          flexShrink: 0,
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          transition: 'color 0.25s ease',
+        }}
+      >
         {hint}
+        <ChevronIcon size={14} />
       </span>
     </motion.button>
   );
@@ -143,7 +155,7 @@ export function Practice() {
               targetRef={reviewRef}
               title="due for review"
               line="nothing is fading yet — learn something first"
-              hint="learn ›"
+              hint="learn"
               onOpen={() => router.navigate({ name: 'learn' })}
             />
           )}
