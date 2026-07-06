@@ -18,16 +18,28 @@ import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState }
 import { topicById } from '../../data/catalog';
 import type { Topic } from '../../data/model';
 import { DiagramView, svgIsClean } from '../../engines/DiagramView';
+import { MotionPlayer, type MotionScene, parseMotionScene } from '../../engines/MotionPlayer';
 import { parseSimSpec, SimRunner, type SimSpec, simSpecFromGateway } from '../../engines/SimRunner';
 import { useProgress } from '../../store/progress';
 import { useSdk } from '../../store/sdk';
-import { TopicSigil } from '../../ui/art';
+import { CourseIntroScene } from '../../ui/courseIntro';
 import { hueForTopic } from '../../ui/hues';
 import { cascade, rise } from '../../ui/kit';
 import { useVidyaChat } from '../../vidya/chat';
 import { Greeting } from './Greeting';
 import type { BarState } from './shared';
-import { CardBody, cardTitle, Deck, lead, rgba, Stage, whisper } from './shared';
+import {
+  CardBody,
+  ChoiceButton,
+  cardTitle,
+  Deck,
+  lead,
+  readCoursePos,
+  rgba,
+  Stage,
+  whisper,
+  writeCoursePos,
+} from './shared';
 
 // --- The composed course (engine.compose output, validated before anything renders) ---------------
 
@@ -339,7 +351,7 @@ function Shimmer({ lines = 3, note }: { lines?: number; note?: string }) {
           style={{
             height: 12,
             width: widths[i % widths.length],
-            background: '#F1F1F5',
+            background: 'var(--clss-tonal)',
             borderRadius: 3,
           }}
         />
@@ -378,20 +390,6 @@ const itemBlockStyle = (state: 'idle' | 'correct' | 'retry'): CSSProperties => (
   display: 'flex',
   flexDirection: 'column',
   gap: 10,
-});
-
-const choiceStyle = (selected: boolean): CSSProperties => ({
-  width: '100%',
-  textAlign: 'left',
-  padding: '11px 14px',
-  fontSize: '0.95rem',
-  lineHeight: 1.45,
-  fontFamily: 'inherit',
-  color: selected ? 'var(--clss-paper)' : 'var(--clss-ink-900)',
-  background: selected ? 'var(--clss-ink-900)' : 'var(--clss-paper)',
-  border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-  borderRadius: 3,
-  cursor: 'pointer',
 });
 
 // --- Item answering (shared by the workbook and the boss) ------------------------------------------
@@ -443,16 +441,17 @@ function ItemBlock({
       {item.type === 'mcq' ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {(item.options ?? []).map((choice) => (
-            <motion.button
+            <ChoiceButton
               key={choice}
-              type="button"
+              chosen={entry === choice}
+              evaluated={state !== 'idle'}
+              isAnswer={choice === item.answer}
+              blockWrong={state === 'retry'}
               disabled={disabled}
-              whileTap={{ scale: 0.985 }}
               onClick={() => onEntry(choice)}
-              style={choiceStyle(entry === choice)}
             >
               {choice}
-            </motion.button>
+            </ChoiceButton>
           ))}
         </div>
       ) : (
@@ -764,9 +763,12 @@ function InkScreen({
     : null;
   return (
     <CardBody maxWidth={560}>
-      <Stage tint={0.055} minHeight={170}>
-        <TopicSigil id={topicId} size={104} draw />
-      </Stage>
+      <CourseIntroScene
+        topicId={topicId}
+        hue={hueForTopic(topicId)}
+        minHeight={252}
+        sigilSize={112}
+      />
       <div style={whisper}>
         {course
           ? course.seeded
@@ -814,6 +816,139 @@ function InkScreen({
   );
 }
 
+// --- The topic's motion video (engine.video, one per course, placed after discovery) --------------
+
+const VIDEO_TIMEOUT_MS = 90_000;
+
+type VideoState =
+  | { status: 'pending' }
+  | { status: 'ready'; scene: MotionScene }
+  | { status: 'failed' };
+
+/** Bridge engine.video's {scenes:[{visual:{kind,payload}}],narrationAudio} into a MotionScene. */
+function motionSceneFromVideo(raw: unknown, title: string): MotionScene | null {
+  if (!isRecord(raw)) return null;
+  const src = isRecord(raw.artifact) ? raw.artifact : raw;
+  if (raw.verified === false || src.verified === false) return null;
+  const scenes = Array.isArray(src.scenes) ? src.scenes : [];
+  const steps = scenes
+    .map((s, i) => {
+      if (!isRecord(s)) return null;
+      const v = isRecord(s.visual) ? s.visual : null;
+      const payload = v?.payload;
+      // svg/diagram payloads are watchable SVG strings; a sim payload is interactive, not video
+      if (!v || (v.kind !== 'svg' && v.kind !== 'diagram') || typeof payload !== 'string') {
+        return null;
+      }
+      const durationMs = typeof s.durationMs === 'number' ? s.durationMs : 6000;
+      const caption =
+        typeof s.title === 'string' && s.title
+          ? s.title
+          : typeof s.narration === 'string'
+            ? s.narration
+            : undefined;
+      return {
+        id: typeof s.id === 'string' ? s.id : `s${i + 1}`,
+        durationMs,
+        caption,
+        visual: { svg: payload },
+      };
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null);
+  if (steps.length === 0) return null;
+  const audio = isRecord(src.narrationAudio) ? src.narrationAudio : null;
+  const narration =
+    audio && typeof audio.b64 === 'string' && typeof audio.mime === 'string'
+      ? { src: `data:${audio.mime};base64,${audio.b64}` }
+      : undefined;
+  return parseMotionScene({ id: 'video', title, steps, narration });
+}
+
+function useVideoScene(title: string, courseId: string): VideoState {
+  const sdk = useSdk();
+  const [state, setState] = useState<VideoState>({ status: 'pending' });
+  useEffect(() => {
+    let cancelled = false;
+    let timer = 0;
+    setState({ status: 'pending' });
+    const timeout = new Promise<never>((_, reject) => {
+      timer = window.setTimeout(() => reject(new Error('video timeout')), VIDEO_TIMEOUT_MS);
+    });
+    Promise.race([
+      sdk.llm.invoke(
+        'engine.video',
+        { topic: title, concept: title, course_id: courseId, difficulty: 'core' },
+        { consentTier: 'un_elevated' },
+      ),
+      timeout,
+    ])
+      .then((res) => {
+        if (cancelled) return;
+        const scene = motionSceneFromVideo(res.output, title);
+        setState(scene ? { status: 'ready', scene } : { status: 'failed' });
+      })
+      .catch(() => {
+        if (!cancelled) setState({ status: 'failed' });
+      })
+      .finally(() => window.clearTimeout(timer));
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [sdk, title, courseId]);
+  return state;
+}
+
+/** One motion video per course — an honest placeholder while she animates, the player when ready. */
+function VideoBeat({
+  title,
+  courseId,
+  setBar,
+  onDone,
+}: {
+  title: string;
+  courseId: string;
+  setBar: (b: BarState | null) => void;
+  onDone: () => void;
+}) {
+  const video = useVideoScene(title, courseId);
+  useEffect(() => {
+    setBar({
+      primary: { label: 'continue', disabled: video.status === 'pending', onClick: onDone },
+    });
+  }, [setBar, video.status, onDone]);
+  return (
+    <CardBody maxWidth={620}>
+      <motion.div
+        variants={cascade}
+        initial="hidden"
+        animate="show"
+        style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
+      >
+        <motion.div variants={rise} style={whisper}>
+          watch it move
+        </motion.div>
+        <motion.div variants={rise} style={cardTitle}>
+          {title.toLowerCase()}
+        </motion.div>
+        {video.status === 'ready' && (
+          <motion.div variants={rise}>
+            <MotionPlayer scene={video.scene} />
+          </motion.div>
+        )}
+        {video.status === 'pending' && (
+          <Shimmer lines={4} note="she is animating this — it lands here on its own" />
+        )}
+        {video.status === 'failed' && (
+          <motion.div variants={rise} style={lead}>
+            the animation is still rendering — carry on; it will be here when you come back.
+          </motion.div>
+        )}
+      </motion.div>
+    </CardBody>
+  );
+}
+
 // --- The player ------------------------------------------------------------------------------------
 
 const COMPOSE_TIMEOUT_MS = 75_000;
@@ -824,12 +959,15 @@ export function Composing({
   setBar,
   setProgress,
   onExit,
+  onResume,
 }: {
   topicId: string;
   title: string;
   setBar: (b: BarState | null) => void;
   setProgress: (p: { f: number; segments: number }) => void;
   onExit: () => void;
+  /** Fired once when the player restores a saved mid-course position. */
+  onResume?: () => void;
 }) {
   const sdk = useSdk();
   const { setMood } = useVidyaChat();
@@ -874,6 +1012,7 @@ export function Composing({
   }, [sdk, nodeUuid]);
 
   // ask the engines for the real course; refusal anywhere floors to the seed, never an error
+  // biome-ignore lint/correctness/useExhaustiveDependencies: compose runs once on mount; onResume is a stable callback
   useEffect(() => {
     let cancelled = false;
     let timer = 0;
@@ -912,9 +1051,18 @@ export function Composing({
       }
       window.clearTimeout(timer);
       if (cancelled) return;
-      setCourse(parsed ?? seedCourse(title));
+      const built = parsed ?? seedCourse(title);
+      setCourse(built);
       setSettled(true);
       setMood('idle');
+      // resume where they left off — a course never restarts (mission 1). The stored value is a
+      // card index; restore only into content/workbook/boss, never the finished greeting.
+      const saved = readCoursePos(topicId);
+      if (typeof saved === 'number' && saved >= 1 && saved <= built.cards.length + 1) {
+        setIdx(saved);
+        setEntered(true);
+        onResume?.();
+      }
     })();
     return () => {
       cancelled = true;
@@ -942,22 +1090,29 @@ export function Composing({
     setIdx((i) => i + 1);
   }, [award, topicId, hue]);
 
-  const segments = (course?.cards.length ?? 4) + 3; // + workbook, boss, greeting
+  const segments = (course?.cards.length ?? 4) + 4; // + video, workbook, boss, greeting
   const stops = course ? course.cards.length : 0;
-  const stage: 'cards' | 'workbook' | 'boss' | 'greeting' = !course
+  const stage: 'cards' | 'video' | 'workbook' | 'boss' | 'greeting' = !course
     ? 'cards'
     : idx < stops
       ? 'cards'
       : idx === stops
-        ? 'workbook'
+        ? 'video'
         : idx === stops + 1
-          ? 'boss'
-          : 'greeting';
+          ? 'workbook'
+          : idx === stops + 2
+            ? 'boss'
+            : 'greeting';
 
   // endowed progress — never empty, eased forward as the learner travels
   useEffect(() => {
     setProgress({ f: entered ? (idx + 0.6) / segments : 0.07, segments });
   }, [entered, idx, segments, setProgress]);
+
+  // persist the card index as the learner travels — resume reads it on the next entry
+  useEffect(() => {
+    if (entered && course) writeCoursePos(topicId, idx);
+  }, [entered, course, idx, topicId]);
 
   // the ink card's action bar
   useEffect(() => {
@@ -1018,6 +1173,19 @@ export function Composing({
           enteredAt={enteredAt.current}
           setBar={setBar}
           onContinue={onExit}
+        />
+      </Deck>
+    );
+  }
+
+  if (stage === 'video') {
+    return (
+      <Deck id="gen-video">
+        <VideoBeat
+          title={course.title}
+          courseId={course.courseId}
+          setBar={setBar}
+          onDone={advance}
         />
       </Deck>
     );

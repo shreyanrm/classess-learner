@@ -1,0 +1,25 @@
+- generic [ref=f21e4]:
+  - generic [ref=f21e5]:
+    - button "Vidya" [ref=f21e7] [cursor=pointer]:
+      - img [ref=f21e11]
+    - generic [ref=f21e36]: Vidya
+    - button "Mute Vidya" [ref=f21e44] [cursor=pointer]:
+      - img [ref=f21e45]
+  - generic [ref=f21e49]:
+    - generic [ref=f21e50]: hi — I’m Vidya
+    - generic [ref=f21e51]: I’m going to learn how you think — my favourite thing. first, what should I call you?
+    - generic [ref=f21e71]: Riya
+    - generic [ref=f21e72]: good to meet you, Riya. how old are you?
+  - generic [ref=f21e52]:
+    - generic [ref=f21e74]:
+      - button "9" [ref=f21e75] [cursor=pointer]
+      - button "10" [ref=f21e76] [cursor=pointer]
+      - button "11" [ref=f21e77] [cursor=pointer]
+      - button "12" [ref=f21e78] [cursor=pointer]
+      - button "13" [ref=f21e79] [cursor=pointer]
+      - button "14" [ref=f21e80] [cursor=pointer]
+      - button "15" [ref=f21e81] [cursor=pointer]
+      - button "16" [ref=f21e82] [cursor=pointer]
+      - button "17" [ref=f21e83] [cursor=pointer]
+      - button "18" [ref=f21e84] [cursor=pointer]
+    - button "skip for now" [ref=f21e56] [cursor=pointer]

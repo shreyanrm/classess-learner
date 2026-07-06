@@ -16,7 +16,7 @@ import { ChevronIcon } from '../ui/icons';
 import { cascade, rise } from '../ui/kit';
 import { GridHero, SubjectGrid, Whisper } from './Learn';
 
-const INK = '#0D0D10';
+const INK = 'var(--clss-ink-900)';
 const GOLD = '#FFC93C';
 
 /** The open canvas — chunky blocks mid-build, a golden ball bouncing, a play arc. */
@@ -33,7 +33,7 @@ function SandboxScene() {
       <defs>
         <linearGradient id={`${uid}-b`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#4257F0" />
-          <stop offset="100%" stopColor="#1F35E0" />
+          <stop offset="100%" stopColor="var(--clss-ultramarine)" />
         </linearGradient>
       </defs>
       {/* the ground to build on */}
@@ -50,7 +50,7 @@ function SandboxScene() {
       <path
         d="M38 46 Q 70 14 120 32"
         fill="none"
-        stroke="#1F35E0"
+        stroke="var(--clss-ultramarine)"
         strokeOpacity={0.5}
         strokeWidth={1.8}
         strokeDasharray="1 7"
@@ -188,8 +188,8 @@ function Door({
       style={{
         width: '100%',
         textAlign: 'left',
-        background: '#FFFFFF',
-        border: `1px solid ${hover ? '#B9BBC6' : '#E9E9EE'}`,
+        background: 'var(--clss-card)',
+        border: `1px solid ${hover ? 'var(--clss-faint)' : 'var(--clss-card-border)'}`,
         transition: 'border-color 0.25s ease',
         borderRadius: 3,
         padding: 0,

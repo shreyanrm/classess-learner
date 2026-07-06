@@ -36,6 +36,7 @@ import { ProgressProvider } from './store/progress';
 import { SdkProvider } from './store/sdk';
 import { AppHeader } from './ui/AppHeader';
 import { ClickInk } from './ui/ClickInk';
+import { sfx } from './ui/sound';
 import { VidyaCompanion } from './vidya/Companion';
 import {
   appendToArchive,
@@ -78,6 +79,16 @@ function Screen() {
   // One intention per screen; transitions overlap and ease with physical logic (DESIGN.md §5) —
   // the leaving page recedes while the arriving one springs in, so nothing ever feels like a cut.
   const key = JSON.stringify(route);
+  // A whoosh rides every page change — felt more than heard. Skip the first mount.
+  const firstScreen = useRef(true);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: key is the trigger, not a body dep
+  useEffect(() => {
+    if (firstScreen.current) {
+      firstScreen.current = false;
+      return;
+    }
+    sfx.whoosh();
+  }, [key]);
   return (
     <AnimatePresence mode="popLayout" initial={false}>
       <motion.div
@@ -191,11 +202,18 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       const turn = { ...t, id: `t${readArchive().length}-${t.role}` };
       appendToArchive(turn);
       setTurns((prev) => [...prev, turn]);
+      if (t.role === 'vidya') sfx.chime(); // a gentle chime as she arrives
       return turn;
     };
     const userTurn = say({ role: 'user', text });
     setBusy(true);
     setMood('thinking');
+    // Optimistic ink: she reacts in <100ms — a point at what she's looking at, before the model
+    // returns. The real actions replace this the moment they land, so it never lingers wrong.
+    const targets = bus.getTargets();
+    const looking =
+      targets.find((t) => /equation|expression|step|option/.test(t.kind)) ?? targets[0];
+    if (looking) bus.dispatch([{ type: 'point', targetId: looking.id, ttl: 2200 }]);
     // She remembers what matters, not the transcript: a short recent window, with her own long
     // explanations clipped — the archive is for the learner to scroll, never re-fed to the model.
     const recent = [...turns.slice(-7), userTurn].map((t) => ({

@@ -13,6 +13,14 @@ describe('parseActions', () => {
     expect(actions.map((a) => a.type)).toEqual(['say', 'highlight']);
   });
 
+  it('normalizes a mark shorthand into a real annotate', () => {
+    // The model sometimes emits {type:'circle'} instead of {type:'annotate',mark:'circle'}.
+    const actions = parseActions([{ type: 'circle', targetId: 'eq', level: 'primary' }]);
+    expect(actions).toEqual([
+      { type: 'annotate', targetId: 'eq', mark: 'circle', level: 'primary' },
+    ]);
+  });
+
   it('returns [] for non-arrays', () => {
     expect(parseActions(null)).toEqual([]);
     expect(parseActions({ type: 'say', text: 'x' })).toEqual([]);

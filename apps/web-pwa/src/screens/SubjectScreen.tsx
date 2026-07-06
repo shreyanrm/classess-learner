@@ -28,7 +28,9 @@ import { ChapterFiligree, SubjectGlyph, TopicSigil } from '../ui/art';
 import { hueForTopic, type SubjectTone, toneForSubject } from '../ui/hues';
 import { ChevronIcon } from '../ui/icons';
 import { cascade, MagneticButton, rise } from '../ui/kit';
+import { loadViewPref, type SubjectView, saveViewPref } from '../ui/viewPref';
 import { type BridgePlan, composeBridge, masteredGround } from '../vidya/tutor';
+import { AdventureRoadmap } from './AdventureRoadmap';
 import { SubjectSceneBackdrop, Whisper } from './Learn';
 
 const EXPAND_SPRING = { type: 'spring', stiffness: 320, damping: 32 } as const;
@@ -281,23 +283,105 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
 }
 
 /**
- * Endowed progress (CONTEXT.md §9): the filament never renders empty — an unstarted chapter
- * still shows a 4% thread of ink; the earned portion turns the subject's hue only when real.
+ * The chapter filament — a thread that lights stop by stop, one stop per topic (DESIGN.md §5,
+ * ignition). Completed stops fill the subject's hue; the thread lights up to the last-done stop;
+ * the frontier stop breathes a soft ignition halo. Endowed (CONTEXT.md §9): even unstarted, the
+ * faint stops render — never an empty void.
  */
 function Filament({ done, total, hue }: { done: number; total: number; hue: string }) {
-  const pct = Math.max(4, total > 0 ? (done / total) * 100 : 0);
+  // composed-on-open chapters have no stops yet — a single faint endowed thread stands in
+  if (total <= 0) {
+    return <div style={{ height: 2, background: 'var(--clss-hairline-on-paper)' }} />;
+  }
+  const lit = Math.min(done, total);
+  const frontier = lit - 1; // index of the last-lit stop (−1 when nothing is done)
+  // the lit thread reaches the frontier stop's position along the row
+  const litPct = total <= 1 ? (lit > 0 ? 100 : 0) : (Math.max(0, frontier) / (total - 1)) * 100;
   return (
-    <div style={{ height: 2, background: 'var(--clss-hairline-on-paper)', overflow: 'hidden' }}>
-      <motion.div
-        initial={{ width: 0 }}
-        animate={{ width: `${pct}%` }}
-        transition={{ type: 'spring', stiffness: 120, damping: 26 }}
+    <div style={{ position: 'relative', display: 'flex', alignItems: 'center', height: 14 }}>
+      {/* the baseline the stops sit on */}
+      <div
         style={{
-          height: '100%',
-          // the earned stretch carries the subject's hue; the endowed thread stays ink
-          background: done > 0 ? hue : 'var(--clss-ink-100)',
+          position: 'absolute',
+          left: 3,
+          right: 3,
+          top: '50%',
+          height: 1.5,
+          background: 'var(--clss-hairline-on-paper)',
+          transform: 'translateY(-50%)',
         }}
       />
+      {/* the lit stretch — hue only when a stop is genuinely earned */}
+      <motion.div
+        initial={{ width: 0 }}
+        animate={{ width: `${litPct}%` }}
+        transition={{ type: 'spring', stiffness: 120, damping: 26 }}
+        style={{
+          position: 'absolute',
+          left: 3,
+          top: '50%',
+          height: 1.5,
+          maxWidth: 'calc(100% - 6px)',
+          background: lit > 0 ? hue : 'transparent',
+          transform: 'translateY(-50%)',
+        }}
+      />
+      {/* the stops themselves */}
+      <div
+        style={{
+          position: 'relative',
+          display: 'flex',
+          justifyContent: 'space-between',
+          width: '100%',
+        }}
+      >
+        {Array.from({ length: total }, (_, i) => {
+          const on = i < lit;
+          const isFrontier = i === frontier;
+          return (
+            <span
+              // biome-ignore lint/suspicious/noArrayIndexKey: stops are positional by nature
+              key={i}
+              style={{
+                position: 'relative',
+                display: 'grid',
+                placeItems: 'center',
+                width: 8,
+                height: 8,
+              }}
+            >
+              {isFrontier && (
+                <motion.span
+                  aria-hidden
+                  animate={{ scale: [1, 1.9, 1], opacity: [0.5, 0, 0.5] }}
+                  transition={{
+                    duration: 2.4,
+                    repeat: Number.POSITIVE_INFINITY,
+                    ease: 'easeInOut',
+                  }}
+                  style={{
+                    position: 'absolute',
+                    width: 8,
+                    height: 8,
+                    borderRadius: 999,
+                    background: hue,
+                  }}
+                />
+              )}
+              <span
+                style={{
+                  position: 'relative',
+                  width: on ? 7 : 5,
+                  height: on ? 7 : 5,
+                  borderRadius: 999,
+                  background: on ? hue : 'var(--clss-paper)',
+                  border: on ? 'none' : '0.5px solid var(--clss-hairline-on-paper-strong)',
+                }}
+              />
+            </span>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -516,7 +600,15 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
     .sort((a, b) => b.f - a.f)[0];
   const clubbed = sections.length > 1;
   const chapterTotal = sections.reduce((n, s) => n + s.chapters.length, 0);
+  const roadmapChapters = sections.flatMap((s) =>
+    s.chapters.map((ch) => ({ chapter: ch, tone: s.tone })),
+  );
   const [openChapter, setOpenChapter] = useState<string | null>(null);
+  const [view, setView] = useState<SubjectView>(loadViewPref);
+  const setViewPref = (v: SubjectView) => {
+    setView(v);
+    saveViewPref(v);
+  };
   const listRef = useRegisterTarget<HTMLDivElement>('subject-chapters', {
     kind: 'list',
     label: `the ${group?.name ?? subjectId} chapter list — a tap expands a chapter into its topics`,
@@ -597,7 +689,7 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
               style={{
                 padding: '5px 11px',
                 borderRadius: 3,
-                background: '#FFFFFF',
+                background: 'var(--clss-card)',
                 border: '0.5px solid var(--clss-hairline-on-paper)',
                 fontSize: '0.75rem',
                 fontWeight: 550,
@@ -610,7 +702,7 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
               style={{
                 padding: '5px 11px',
                 borderRadius: 3,
-                background: '#FFFFFF',
+                background: 'var(--clss-card)',
                 fontSize: '0.75rem',
                 fontWeight: 600,
                 color: tone.hue,
@@ -638,7 +730,7 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
             alignItems: 'center',
             gap: 16,
             padding: '16px 18px',
-            background: '#FFFFFF',
+            background: 'var(--clss-card)',
             border: `1px solid ${hueForTopic(inFlight.topic.id)}33`,
             borderRadius: 3,
             cursor: 'pointer',
@@ -677,7 +769,7 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
                 marginTop: 8,
                 height: 3,
                 borderRadius: 2,
-                background: '#F1F1F5',
+                background: 'var(--clss-tonal)',
                 overflow: 'hidden',
               }}
             >
@@ -695,8 +787,8 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
               flexShrink: 0,
               padding: '9px 16px',
               borderRadius: 3,
-              background: '#121316',
-              color: '#FFFFFF',
+              background: 'var(--clss-ink)',
+              color: 'var(--clss-on-ink)',
               fontSize: '0.84rem',
               fontWeight: 600,
             }}
@@ -706,67 +798,135 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
         </motion.button>
       )}
 
-      <div ref={listRef} style={{ marginTop: inFlight ? 26 : 40 }}>
-        {sections.map((sec, i) => (
-          <div key={sec.subject?.id ?? subjectId}>
-            {/* a clubbed door sections its chapters under the canonical disciplines */}
-            {clubbed && sec.subject && (
-              <motion.div
-                variants={rise}
+      {/* two ways to see the journey: the ledgered list, or the adventure roadmap */}
+      <motion.div
+        variants={rise}
+        style={{
+          marginTop: inFlight ? 26 : 40,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12,
+        }}
+      >
+        <span
+          style={{
+            fontSize: '0.72rem',
+            fontWeight: 600,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+            color: 'var(--clss-ink-300)',
+          }}
+        >
+          {view === 'adventure' ? 'the adventure' : 'the chapters'}
+        </span>
+        <div
+          role="tablist"
+          aria-label="how to view chapters"
+          style={{
+            display: 'inline-flex',
+            gap: 4,
+            padding: 3,
+            borderRadius: 3,
+            background: 'var(--clss-tonal)',
+          }}
+        >
+          {(['list', 'adventure'] as const).map((v) => {
+            const on = view === v;
+            return (
+              <button
+                key={v}
+                type="button"
+                role="tab"
+                aria-selected={on}
+                onClick={() => setViewPref(v)}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  padding: '10px 4px 12px',
-                  marginTop: i === 0 ? 0 : 38,
+                  padding: '6px 14px',
+                  borderRadius: 3,
+                  border: 'none',
+                  background: on ? 'var(--clss-card)' : 'transparent',
+                  color: on ? 'var(--clss-ink-900)' : 'var(--clss-ink-500)',
+                  fontFamily: 'inherit',
+                  fontSize: '0.8rem',
+                  fontWeight: on ? 600 : 450,
+                  cursor: 'pointer',
+                  boxShadow: on ? '0 0 0 0.5px var(--clss-hairline-on-paper-strong)' : 'none',
                 }}
               >
-                <span
+                {v === 'list' ? 'list' : 'roadmap'}
+              </button>
+            );
+          })}
+        </div>
+      </motion.div>
+
+      {view === 'adventure' ? (
+        <div ref={listRef} style={{ marginTop: 8 }}>
+          <AdventureRoadmap chapters={roadmapChapters} intent={intent} />
+        </div>
+      ) : (
+        <div ref={listRef} style={{ marginTop: 20 }}>
+          {sections.map((sec, i) => (
+            <div key={sec.subject?.id ?? subjectId}>
+              {/* a clubbed door sections its chapters under the canonical disciplines */}
+              {clubbed && sec.subject && (
+                <motion.div
+                  variants={rise}
                   style={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: 3,
-                    background: sec.tone.wash,
-                    display: 'grid',
-                    placeItems: 'center',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '10px 4px 12px',
+                    marginTop: i === 0 ? 0 : 38,
                   }}
                 >
-                  <SubjectGlyph subjectId={sec.subject.id} size={26} />
-                </span>
-                <span
-                  style={{
-                    fontSize: '0.95rem',
-                    fontWeight: 650,
-                    letterSpacing: '-0.01em',
-                    color: sec.tone.hue,
-                  }}
-                >
-                  {sec.subject.name}
-                </span>
-                <span
-                  style={{
-                    fontSize: '0.78rem',
-                    color: 'var(--clss-ink-300)',
-                    fontVariantNumeric: 'tabular-nums',
-                  }}
-                >
-                  {sec.chapters.length} chapters
-                </span>
-              </motion.div>
-            )}
-            {sec.chapters.map((ch) => (
-              <motion.div key={ch.id} variants={rise}>
-                <ChapterRow
-                  chapter={ch}
-                  intent={intent}
-                  open={openChapter === ch.id}
-                  onToggle={() => setOpenChapter((o) => (o === ch.id ? null : ch.id))}
-                />
-              </motion.div>
-            ))}
-          </div>
-        ))}
-      </div>
+                  <span
+                    style={{
+                      width: 34,
+                      height: 34,
+                      borderRadius: 3,
+                      background: sec.tone.wash,
+                      display: 'grid',
+                      placeItems: 'center',
+                    }}
+                  >
+                    <SubjectGlyph subjectId={sec.subject.id} size={26} />
+                  </span>
+                  <span
+                    style={{
+                      fontSize: '0.95rem',
+                      fontWeight: 650,
+                      letterSpacing: '-0.01em',
+                      color: sec.tone.hue,
+                    }}
+                  >
+                    {sec.subject.name}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: '0.78rem',
+                      color: 'var(--clss-ink-300)',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}
+                  >
+                    {sec.chapters.length} chapters
+                  </span>
+                </motion.div>
+              )}
+              {sec.chapters.map((ch) => (
+                <motion.div key={ch.id} variants={rise}>
+                  <ChapterRow
+                    chapter={ch}
+                    intent={intent}
+                    open={openChapter === ch.id}
+                    onToggle={() => setOpenChapter((o) => (o === ch.id ? null : ch.id))}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
     </motion.div>
   );
 }

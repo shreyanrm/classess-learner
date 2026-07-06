@@ -1,0 +1,14 @@
+- generic [active] [ref=f86e1]:
+  - text: Classess
+  - heading "let's confirm it's you" [level=1] [ref=f86e2]
+  - paragraph [ref=f86e3]: tap the button below to confirm your email and open your account. the link works once and expires shortly.
+  - text: "482913"
+  - paragraph [ref=f86e4]: or enter that code if you'd rather. if you didn't ask for this, you can ignore it, nothing happens until the link is used.
+  - link "verify email" [ref=f86e5] [cursor=pointer]:
+    - /url: https://learner.classess.com/verify?token=abc123
+  - generic [ref=f86e6]: — Vidya
+  - paragraph [ref=f86e7]: Classess · made for curious minds
+  - paragraph [ref=f86e8]: "[street address placeholder] · [city, country]"
+  - paragraph [ref=f86e9]:
+    - link "unsubscribe" [ref=f86e10] [cursor=pointer]:
+      - /url: "{{unsubscribe_url}}"

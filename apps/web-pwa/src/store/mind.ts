@@ -37,9 +37,17 @@ export interface MindState {
   dwellSec: Record<string, number>;
   /** ISO dates with at least one session — cadence */
   sessionDays: string[];
+  /** what the learner is into (from onboarding) — grounds analogies and examples */
+  interests: string[];
 }
 
-const EMPTY: MindState = { latenciesMs: [], slips: [], dwellSec: {}, sessionDays: [] };
+const EMPTY: MindState = {
+  latenciesMs: [],
+  slips: [],
+  dwellSec: {},
+  sessionDays: [],
+  interests: [],
+};
 const MAX_LATENCIES = 60;
 const MAX_SLIPS = 12;
 const MAX_DAYS = 30;
@@ -54,10 +62,18 @@ export function loadMind(): MindState {
       slips: Array.isArray(m.slips) ? m.slips : [],
       dwellSec: m.dwellSec && typeof m.dwellSec === 'object' ? m.dwellSec : {},
       sessionDays: Array.isArray(m.sessionDays) ? m.sessionDays : [],
+      interests: Array.isArray(m.interests) ? m.interests : [],
     };
   } catch {
     return { ...EMPTY };
   }
+}
+
+/** Onboarding writes what the learner is into — folded into every Vidya call via the lifetime slot. */
+export function rememberInterests(interests: string[]): void {
+  const mind = loadMind();
+  mind.interests = interests.slice(0, 8);
+  saveMind(mind);
 }
 
 export function saveMind(mind: MindState): void {
@@ -184,6 +200,7 @@ export function activeDaysOfLastSeven(mind: MindState): number {
 /** The disclosure lines — exactly what the You card shows the learner. */
 export function mindLines(mind: MindState): string[] {
   const lines: string[] = [];
+  if (mind.interests.length > 0) lines.push(`you're into ${mind.interests.join(', ')}`);
   const median = medianLatencyMs(mind);
   if (median !== undefined)
     lines.push(
@@ -206,6 +223,7 @@ export function mindLines(mind: MindState): string[] {
 /** One compact string for the lifetime slot — every Vidya call is conditioned on this. */
 export function summarizeMind(mind: MindState): string | undefined {
   const parts: string[] = [];
+  if (mind.interests.length > 0) parts.push(`into ${mind.interests.join(', ')}`);
   const median = medianLatencyMs(mind);
   if (median !== undefined) parts.push(`median item latency ~${Math.round(median / 1000)}s`);
   if (mind.slips.length > 0) {

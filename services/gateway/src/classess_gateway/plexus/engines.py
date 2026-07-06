@@ -42,6 +42,17 @@ _MAX_SCENE_MS = 120_000
 
 # --- verification (every artifact passes here before caching or serving) ---------------
 
+_CARD_WORD_CAP = 60  # per-card prose cap (owner: visual-first, text hard-capped ~60 words)
+
+
+def _cap_words(text: str, cap: int = _CARD_WORD_CAP) -> str:
+    """Enforce the per-card word cap by trimming, never by rejecting — a slightly long card
+    is trimmed to the cap (with an ellipsis) rather than seeding the whole course away."""
+    words = text.split()
+    if len(words) <= cap:
+        return text
+    return " ".join(words[:cap]).rstrip(",.;:") + "…"
+
 
 def _verify_items(raw: Any, need: int = 3) -> list[dict[str, Any]] | None:
     """Workbook / boss items with structurally verified answers.
@@ -81,7 +92,12 @@ def _verify_items(raw: Any, need: int = 3) -> list[dict[str, Any]] | None:
             if len(answer) > 60:
                 continue
             clean.append(
-                {"id": str(item.get("id") or f"i{i + 1}"), "type": "fill", "prompt": prompt, "answer": answer}
+                {
+                    "id": str(item.get("id") or f"i{i + 1}"),
+                    "type": "fill",
+                    "prompt": prompt,
+                    "answer": answer,
+                }
             )
         if len(clean) == need:
             return clean
@@ -115,9 +131,9 @@ def _verify_compose(spec: Any, concept: str, difficulty: str) -> dict[str, Any] 
                 "id": str(card.get("id") or f"c{i + 1}"),
                 "kind": kind,
                 "title": title,
-                "idea": idea,
+                "idea": _cap_words(idea),
                 "interaction": {"kind": interaction["kind"], "prompt": prompt},
-                "reveal": reveal,
+                "reveal": _cap_words(reveal),
             }
         )
     # the mini-workbook and the boss both ship WITH the outline, answers verified here
@@ -393,27 +409,67 @@ def _seed_diagram(concept: str) -> str:
     )
 
 
+def _seed_video_svg(concept: str, phase: str) -> str:
+    """A self-animating (SMIL) inline SVG — the floor video genuinely MOVES, never slideware.
+    Sanitizer-clean: viewBox + xmlns, <animate>/<animateTransform>/<animateMotion> only."""
+    label = quoteattr(concept)
+    text = concept if len(concept) <= 34 else concept[:33] + "…"
+    head = (
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-label={label}>'
+        f'<text x="160" y="26" text-anchor="middle" font-size="13" fill="#111">{text}</text>'
+    )
+    if phase == "grow":
+        # a bar rising to its value — a quantity becoming real
+        body = (
+            '<rect x="60" y="60" width="200" height="110" fill="none" stroke="#E9E9EE" stroke-width="1"/>'
+            '<rect x="96" width="36" fill="#1F35E0">'
+            '<animate attributeName="height" values="0;96" dur="1.6s" fill="freeze"/>'
+            '<animate attributeName="y" values="170;74" dur="1.6s" fill="freeze"/></rect>'
+            '<rect x="188" width="36" fill="#111">'
+            '<animate attributeName="height" values="0;58" dur="1.6s" begin="0.4s" fill="freeze"/>'
+            '<animate attributeName="y" values="170;112" dur="1.6s" begin="0.4s" fill="freeze"/></rect>'
+        )
+    elif phase == "sweep":
+        # an arrow sweeping across — cause reaching effect
+        body = (
+            '<line x1="60" y1="130" x2="260" y2="130" stroke="#E9E9EE" stroke-width="1"/>'
+            '<circle r="7" fill="#FF5A1F"><animateMotion path="M60,130 L250,130" '
+            'dur="2s" repeatCount="indefinite"/></circle>'
+            '<text x="60" y="160" font-size="10" fill="#111">cause</text>'
+            '<text x="228" y="160" font-size="10" fill="#111">effect</text>'
+        )
+    else:  # settle — a shape assembling and settling
+        body = (
+            '<circle cx="160" cy="120" r="46" fill="none" stroke="#111" stroke-width="1">'
+            '<animate attributeName="r" values="6;46" dur="1.4s" fill="freeze"/></circle>'
+            '<circle cx="160" cy="120" r="4" fill="#1F35E0">'
+            '<animate attributeName="opacity" values="0;1" dur="0.8s" begin="1s" fill="freeze"/></circle>'
+        )
+    return head + body + "</svg>"
+
+
 def _seed_video(concept: str) -> dict[str, Any]:
     return {
+        "complexity": "simple",
         "scenes": [
             {
                 "id": "s1",
                 "durationMs": 6000,
                 "title": concept,
                 "narration": f"Here is {concept}, one idea at a time.",
-                "visual": {"kind": "diagram", "payload": _seed_diagram(concept)},
+                "visual": {"kind": "svg", "payload": _seed_video_svg(concept, "grow")},
             },
             {
                 "id": "s2",
-                "durationMs": 9000,
-                "narration": "Watch what changes when we move just one thing.",
-                "visual": {"kind": "sim", "payload": _seed_sim()},
+                "durationMs": 7000,
+                "narration": "Watch how one thing reaches the next.",
+                "visual": {"kind": "svg", "payload": _seed_video_svg(concept, "sweep")},
             },
             {
                 "id": "s3",
                 "durationMs": 6000,
-                "narration": "Now try it yourself. One step, no hurry.",
-                "visual": {"kind": "svg", "payload": _seed_diagram(concept)},
+                "narration": "It settles into one clear shape. Now it is yours.",
+                "visual": {"kind": "svg", "payload": _seed_video_svg(concept, "settle")},
             },
         ],
         "narrationAudio": None,
@@ -445,26 +501,33 @@ _JSON_RULES = (
 _SYSTEMS = {
     "compose": (
         "You design complete guided-discovery micro-courses for Classess, an Indian K-12 "
-        "learning app in the spirit of Brilliant: one idea per card, act-to-reveal before "
-        "any explanation, zero lecturing. Everything must be factually correct for an "
-        "Indian middle-school learner (NCERT framing where it fits).\n\n"
+        "learning app in the spirit of Brilliant: VISUAL-FIRST, one idea per card, the "
+        "learner ACTS before any prose, zero lecturing. Everything must be factually "
+        "correct for an Indian middle-school learner (NCERT framing where it fits).\n\n"
         '{"topic":"...",'
         '"cards":[{"id":"c1","kind":"sim|diagram|text","title":"...",'
-        '"idea":"<the one idea, one or two sentences>",'
-        '"interaction":{"kind":"tap|drag|slide|type","prompt":"<what the learner does>"},'
-        '"reveal":"<what the action uncovers>"}],'
+        '"idea":"<the one idea, at most ~40 words — never a paragraph>",'
+        '"interaction":{"kind":"tap|drag|slide|type","prompt":"<what the learner does first>"},'
+        '"reveal":"<what the action uncovers, at most ~40 words>"}],'
         '"workbook":[{"id":"w1","type":"mcq","prompt":"...",'
         '"options":["...","...","..."],"answer":"<copied character-for-character from options>"},'
         '{"id":"w2","type":"fill","prompt":"<a sentence with a ________ gap>",'
         '"answer":"<one unambiguous word or short phrase>"}],'
         '"boss":[<3 items, same shapes, noticeably harder>]}\n\n'
-        "Rules: 4 to 6 cards in discovery order. Card kind 'sim' only when the idea rests "
-        "on a real quantitative law with 1-3 parameters (at most one sim card); 'diagram' "
-        "when a labeled picture carries the idea (1 or 2 cards); otherwise 'text'. Exactly "
-        "3 workbook items and exactly 3 boss items, each testing an idea actually taught "
-        "on the cards. Every mcq has 3 or 4 distinct options and its answer string appears "
-        "exactly once among them; distractors are plausible misconceptions. Every fill "
-        "answer is a single word or short phrase a learner could reasonably type. "
+        "PEDAGOGICAL SEQUENCE — the 4 to 6 cards MUST run in this order:\n"
+        "  1. HOOK — a concrete real-world moment; a 'tap' interaction to notice something.\n"
+        "  2-3. EXPLORE — the learner FEELS the rule move ('sim' when a quantitative law "
+        "with 1-3 parameters drives it; 'diagram' when a labeled picture carries it).\n"
+        "  4. FORMALIZE — name the rule that the exploration just revealed.\n"
+        "  5. PRACTICE-READY / EDGE — apply it, or push it to where the model breaks.\n\n"
+        "VISUAL-FIRST is law: every card that rests on anything quantitative or spatial MUST "
+        "be 'sim' or 'diagram', never 'text'. Aim for AT LEAST TWO visual (sim/diagram) cards; "
+        "'text' is the exception, not the default. Use at most one 'sim' card. Keep every "
+        "'idea' and 'reveal' under ~40 words — dense, not wordy; the visual does the teaching.\n\n"
+        "Exactly 3 workbook items and exactly 3 boss items, each testing an idea actually "
+        "taught on the cards. Every mcq has 3 or 4 distinct options and its answer string "
+        "appears exactly once among them; distractors are plausible misconceptions. Every "
+        "fill answer is a single word or short phrase a learner could reasonably type. "
         + _JSON_RULES
     ),
     "simulate": (
@@ -474,8 +537,7 @@ _SYSTEMS = {
         "name where the ideal model stops working in reality.\n\n"
         '{"params":[{"name":"R","min":0,"max":100,"default":10,"unit":"ohm"}],'
         '"formula":"V = I*R","outputs":["V"],'
-        '"breakpoints":[{"param":"R","at":0,"why":"..."}],"layout":"sliders-left"}\n'
-        + _JSON_RULES
+        '"breakpoints":[{"param":"R","at":0,"why":"..."}],"layout":"sliders-left"}\n' + _JSON_RULES
     ),
     "diagram": (
         "You draw clean, glanceable inline SVG diagrams for Classess: ink on white "
@@ -490,17 +552,30 @@ _SYSTEMS = {
     ),
     "video": (
         "You storyboard short explainer motion pieces for Classess (ten seconds to two "
-        "minutes total). Each scene animates meaning, never chrome; narration is calm "
-        "and precise.\n\n"
-        '{"scenes":[{"id":"s1","durationMs":6000,"title":"...","narration":"...",'
-        '"visual":{"kind":"svg|diagram|sim","payload":"<svg with viewBox> or a sim '
-        'spec {params,formula,outputs,breakpoints,layout}"}}]}\n'
-        "Use 3 to 6 scenes. " + _JSON_RULES
+        "minutes total). This is a WATCHED piece, so the visual must GENUINELY ANIMATE the "
+        "idea — moving parts, a quantity growing, a shape assembling, an annotated moment "
+        "arriving — NEVER a static slideshow. Prefer inline SVG that animates itself with "
+        "SMIL: <animate>, <animateTransform>, <animateMotion> on real elements (a bar that "
+        "grows, an arrow that sweeps, a label that fades in at the right beat). Narration is "
+        "calm and precise, one or two sentences per scene, matched to what moves on screen.\n\n"
+        "When a topic naturally teaches in bits, use MORE, SHORTER scenes — one clean idea "
+        "per scene, each as long as it needs (a few seconds to ~30s). Do not pad.\n\n"
+        '{"complexity":"simple|complex",'
+        '"scenes":[{"id":"s1","durationMs":6000,"title":"...","narration":"...",'
+        '"visual":{"kind":"svg|diagram|sim","payload":"<self-animating svg with viewBox> or '
+        'a sim spec {params,formula,outputs,breakpoints,layout}"}}]}\n\n'
+        'Set "complexity":"complex" ONLY when animating this idea genuinely needs frontier '
+        "reasoning (intricate synchronized motion, a multi-part derivation assembling, subtle "
+        'physical dynamics); otherwise "simple". Use 3 to 6 scenes. ' + _JSON_RULES
     ),
 }
 
 # diagram needs headroom: a truncated SVG has no closing tag and refuses to sanitize
-_MAX_TOKENS = {"compose": 3200, "simulate": 900, "diagram": 3000, "video": 3000}
+# These are thinking-heavy frontier models: reasoning tokens count against max_tokens, so a
+# tight budget gets exhausted mid-thought and returns EMPTY content — which parses to {} and
+# silently seeds. Give real headroom so the answer actually lands. Video (multi-scene self-
+# animating SVG) is the most verbose and needs the most; compose grew richer too.
+_MAX_TOKENS = {"compose": 8000, "simulate": 2000, "diagram": 6000, "video": 16000}
 
 
 def _complete(
@@ -543,6 +618,54 @@ def _raster_diagram(concept: str, difficulty: str) -> str | None:
     )
 
 
+def _scene_plan_complex(obj: Any) -> bool:
+    """A video scene plan can self-declare that animating it needs the frontier reasoner
+    (owner's video routing law): an explicit complexity flag escalates sonnet -> Opus."""
+    if not isinstance(obj, dict):
+        return False
+    flag = obj.get("complexity")
+    if isinstance(flag, str) and flag.strip().lower() in {"complex", "high", "hard"}:
+        return True
+    return obj.get("escalate") is True
+
+
+def _generate_video_live(
+    concept: str,
+    difficulty: str,
+    provider_model: str,
+    fallbacks: tuple[str, ...],
+    user: str,
+) -> tuple[Any, str, int, bool]:
+    """engine.video routing law (owner, 2026-07-07): storyboard on the sonnet tier by DEFAULT,
+    escalate to the frontier reasoner (Opus — the first fallback) ONLY when necessary: the scene
+    plan flags itself complex, or the sonnet draft fails structural verification. Returns the
+    Opus draft only when it actually verifies, so an escalation never degrades the result."""
+    from classess_gateway.vidya import _extract_json
+
+    text, tokens = _complete(provider_model, "video", user, fallbacks)
+    obj = _extract_json(text)
+    artifact = _verify_artifact("video", obj, concept, difficulty)
+    model_used = provider_model
+
+    escalation_model = fallbacks[0] if fallbacks else ""
+    if (
+        escalation_model
+        and escalation_model != provider_model
+        and (artifact is None or _scene_plan_complex(obj))
+    ):
+        text2, tokens2 = _complete(escalation_model, "video", user, fallbacks[1:])
+        tokens += tokens2
+        artifact2 = _verify_artifact("video", _extract_json(text2), concept, difficulty)
+        if artifact2 is not None:
+            artifact, model_used = artifact2, escalation_model
+
+    if artifact is None:
+        raise ValueError("video verification failed on both tiers")
+    narration = " ".join(s["narration"] for s in artifact["scenes"])
+    artifact["narrationAudio"] = synthesize_narration(narration)
+    return artifact, model_used, tokens, False
+
+
 def _generate_live(
     modality: str,
     concept: str,
@@ -562,6 +685,8 @@ def _generate_live(
                     return clean, image.MODEL, 0, False
             # no key or the image path refused: fall through to the SVG path
         user = f"Concept: {concept}\nDifficulty: {difficulty}\nAudience: Indian K-12 learner."
+        if modality == "video":
+            return _generate_video_live(concept, difficulty, provider_model, fallbacks, user)
         text, tokens = _complete(provider_model, modality, user, fallbacks)
         obj: Any = text
         if modality != "diagram":
@@ -570,9 +695,6 @@ def _generate_live(
             obj = _extract_json(text)
         artifact = _verify_artifact(modality, obj, concept, difficulty)
         if artifact is not None:
-            if modality == "video":
-                narration = " ".join(s["narration"] for s in artifact["scenes"])
-                artifact["narrationAudio"] = synthesize_narration(narration)
             return artifact, provider_model, tokens, False
     except Exception:  # ponytail: refusal invisible by contract — any live failure seeds
         pass

@@ -24,6 +24,32 @@ export function rgba(hex: string, alpha: number): string {
   return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${alpha})`;
 }
 
+// --- Course position store (shared by every player: a course never restarts) ---------------------
+// One store keyed by topicId. The atom stores a CardId string; the generated player stores a card
+// index number. A topic is only ever one kind, so the value types never collide.
+
+const POS_KEY = 'clss-course-pos-v1';
+
+export function readCoursePos(topicId: string): string | number | undefined {
+  try {
+    return (JSON.parse(localStorage.getItem(POS_KEY) ?? '{}') as Record<string, string | number>)[
+      topicId
+    ];
+  } catch {
+    return undefined;
+  }
+}
+
+export function writeCoursePos(topicId: string, pos: string | number): void {
+  try {
+    const all = JSON.parse(localStorage.getItem(POS_KEY) ?? '{}') as Record<string, unknown>;
+    all[topicId] = pos;
+    localStorage.setItem(POS_KEY, JSON.stringify(all));
+  } catch {
+    // storage unavailable — session-only resume
+  }
+}
+
 /** The one golden accent of the art system. */
 export const GOLD = '#FFC93C';
 
@@ -72,8 +98,16 @@ export interface BarState {
   secondary?: BarAction;
 }
 
-export function ActionBar({ bar }: { bar: BarState | null }) {
+export function ActionBar({
+  bar,
+  gate,
+}: {
+  bar: BarState | null;
+  /** When present, the primary advance button is held closed and fills up as Vidya reads. */
+  gate?: { progress: number };
+}) {
   if (!bar) return null;
+  const gated = Boolean(gate);
   return (
     <div
       style={{
@@ -101,9 +135,31 @@ export function ActionBar({ bar }: { bar: BarState | null }) {
         <MagneticButton
           variant="primary"
           onClick={bar.primary.onClick}
-          disabled={bar.primary.disabled}
-          style={{ minWidth: 148, justifyContent: 'center' }}
+          disabled={bar.primary.disabled || gated}
+          style={{
+            minWidth: 148,
+            justifyContent: 'center',
+            position: 'relative',
+            overflow: 'hidden',
+            // never a dead button while she reads — it stays lit and fills up
+            ...(gated ? { opacity: 1, cursor: 'default' } : {}),
+          }}
         >
+          {gated && (
+            <motion.span
+              aria-hidden
+              animate={{ width: `${Math.round((gate?.progress ?? 0) * 100)}%` }}
+              transition={{ ease: 'linear', duration: 0.12 }}
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                bottom: 0,
+                background: 'rgba(255,255,255,0.2)',
+                pointerEvents: 'none',
+              }}
+            />
+          )}
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.span
               key={bar.primary.label}
@@ -111,6 +167,7 @@ export function ActionBar({ bar }: { bar: BarState | null }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -7 }}
               transition={{ type: 'spring', stiffness: 420, damping: 30 }}
+              style={{ position: 'relative' }}
             >
               {bar.primary.label}
             </motion.span>
@@ -125,6 +182,8 @@ export function ActionBar({ bar }: { bar: BarState | null }) {
 
 export function SegmentedProgress({ fraction, segments }: { fraction: number; segments: number }) {
   const f = Math.max(0, Math.min(1, fraction));
+  // the frontier stop — the one currently lighting; it breathes so progress feels alive, not static
+  const lead = f >= 1 ? -1 : Math.min(segments - 1, Math.floor(f * segments));
   return (
     <div
       aria-hidden
@@ -136,17 +195,109 @@ export function SegmentedProgress({ fraction, segments }: { fraction: number; se
           <div
             // biome-ignore lint/suspicious/noArrayIndexKey: segments are positional by nature
             key={i}
-            style={{ flex: 1, height: 3, background: 'var(--clss-ink-100)', overflow: 'hidden' }}
+            style={{
+              position: 'relative',
+              flex: 1,
+              height: 3,
+              background: 'var(--clss-ink-100)',
+              overflow: 'hidden',
+            }}
           >
+            {i === lead && (
+              // the stop igniting: a faint ink breath on the segment about to fill
+              <motion.div
+                aria-hidden
+                animate={{ opacity: [0.22, 0.6, 0.22] }}
+                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+                style={{ position: 'absolute', inset: 0, background: 'var(--clss-ink-900)' }}
+              />
+            )}
             <motion.div
               animate={{ width: `${fill * 100}%` }}
               transition={{ type: 'spring', stiffness: 120, damping: 26 }}
-              style={{ height: '100%', background: 'var(--clss-ink-900)' }}
+              style={{ position: 'relative', height: '100%', background: 'var(--clss-ink-900)' }}
             />
           </div>
         );
       })}
     </div>
+  );
+}
+
+// --- A multiple-choice option — checking a wrong pick lights the correct one green ----------------
+// After the wrong pick shakes, the right answer's green fades in (a beat later). Reused by the
+// generated player's workbook/boss and the atom boss. (DESIGN.md §9 — a wrong answer never shames.)
+
+export function ChoiceButton({
+  children,
+  chosen,
+  evaluated,
+  isAnswer,
+  blockWrong,
+  disabled,
+  onClick,
+  style,
+}: {
+  children: ReactNode;
+  /** The learner's current selection. */
+  chosen: boolean;
+  /** True once the set has been checked. */
+  evaluated: boolean;
+  /** True if this option is the correct answer. */
+  isAnswer: boolean;
+  /** True if the learner got this block wrong — delays the correct green until after the shake. */
+  blockWrong: boolean;
+  disabled: boolean;
+  onClick: () => void;
+  style?: CSSProperties;
+}) {
+  const wrongPick = evaluated && chosen && !isAnswer;
+  const showCorrect = evaluated && isAnswer;
+  const delay = showCorrect && blockWrong ? 0.4 : 0;
+  const border = !evaluated
+    ? chosen
+      ? '0.5px solid var(--clss-ink-900)'
+      : '0.5px solid var(--clss-hairline-on-paper-strong)'
+    : showCorrect
+      ? '1px solid var(--clss-feedback-correct)'
+      : wrongPick
+        ? '1px solid var(--clss-feedback-retry)'
+        : '0.5px solid var(--clss-hairline-on-paper)';
+  const background = !evaluated
+    ? chosen
+      ? 'var(--clss-ink-900)'
+      : 'var(--clss-paper)'
+    : showCorrect
+      ? 'var(--clss-feedback-correctSoft)'
+      : wrongPick
+        ? 'var(--clss-feedback-retrySoft)'
+        : 'var(--clss-paper)';
+  return (
+    <motion.button
+      type="button"
+      disabled={disabled}
+      whileTap={disabled ? undefined : { scale: 0.985 }}
+      animate={wrongPick ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+      transition={{ duration: 0.4 }}
+      onClick={onClick}
+      style={{
+        width: '100%',
+        textAlign: 'left',
+        padding: '11px 14px',
+        fontSize: '0.95rem',
+        lineHeight: 1.45,
+        fontFamily: 'inherit',
+        color: !evaluated && chosen ? 'var(--clss-paper)' : 'var(--clss-ink-900)',
+        background,
+        border,
+        borderRadius: 'var(--clss-radius-sm)',
+        cursor: disabled ? 'default' : 'pointer',
+        transition: `background 0.25s ease ${delay}s, border-color 0.25s ease ${delay}s, color 0.2s ease`,
+        ...style,
+      }}
+    >
+      {children}
+    </motion.button>
   );
 }
 
@@ -158,7 +309,7 @@ export function SegmentedProgress({ fraction, segments }: { fraction: number; se
  * comes from composition, never from darkness.
  */
 export function Stage({
-  hue = '#1F35E0',
+  hue = 'var(--clss-ultramarine)',
   tint = 0.06,
   tonal = false,
   minHeight = 300,
@@ -182,7 +333,7 @@ export function Stage({
         width: '100%',
         minHeight,
         borderRadius: 3,
-        background: tonal ? '#F1F1F5' : rgba(hue, tint),
+        background: tonal ? 'var(--clss-tonal)' : rgba(hue, tint),
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -198,7 +349,13 @@ export function Stage({
 
 // --- The particle pop — a small burst for earned moments ------------------------------------------
 
-export function ParticlePop({ hue = '#1F35E0', count = 12 }: { hue?: string; count?: number }) {
+export function ParticlePop({
+  hue = 'var(--clss-ultramarine)',
+  count = 12,
+}: {
+  hue?: string;
+  count?: number;
+}) {
   const parts = useMemo(
     () =>
       Array.from({ length: count }, (_, i) => {

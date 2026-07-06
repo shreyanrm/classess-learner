@@ -18,13 +18,13 @@ import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { ClassessLogo } from '../../ui/Logo';
 
-const INK = '#0D0D10';
-const INK_60 = 'rgba(13,13,16,0.58)';
-const INK_40 = 'rgba(13,13,16,0.36)';
-const HAIR = 'rgba(13,13,16,0.10)';
-const HAIR_SOFT = 'rgba(13,13,16,0.055)';
-const TONAL = 'rgba(13,13,16,0.026)';
-const ULTRA = '#1F35E0';
+const INK = 'var(--clss-ink-900)';
+const INK_60 = 'color-mix(in srgb, var(--clss-ink) 58%, transparent)';
+const INK_40 = 'color-mix(in srgb, var(--clss-ink) 36%, transparent)';
+const HAIR = 'color-mix(in srgb, var(--clss-ink) 10%, transparent)';
+const HAIR_SOFT = 'color-mix(in srgb, var(--clss-ink) 5.5%, transparent)';
+const TONAL = 'color-mix(in srgb, var(--clss-ink) 2.6%, transparent)';
+const ULTRA = 'var(--clss-ultramarine)';
 const SPRING = { type: 'spring', stiffness: 260, damping: 26 } as const;
 const SETTLE = { type: 'spring', stiffness: 120, damping: 13 } as const;
 
@@ -102,7 +102,7 @@ function BalanceScene({ tilt, size = 250 }: { tilt: number; size?: number }) {
         </linearGradient>
         <linearGradient id="ca-fulcrum" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#26262E" />
-          <stop offset="100%" stopColor="#0D0D10" />
+          <stop offset="100%" stopColor="var(--clss-ink-900)" />
         </linearGradient>
       </defs>
 
@@ -261,7 +261,7 @@ function PadKey({
         justifyContent: 'center',
         border: primary ? `1px solid ${INK}` : `1px solid ${HAIR}`,
         borderRadius: 3,
-        background: primary ? INK : '#FFFFFF',
+        background: primary ? INK : 'var(--clss-card)',
         color: primary ? '#FFFFFF' : INK,
         fontSize: 22,
         fontWeight: 500,
@@ -376,7 +376,7 @@ function Rail({ mood, solved }: { mood: VidyaMood; solved: boolean }) {
         alignItems: 'center',
         padding: '28px 28px 32px',
         borderRight: `1px solid ${HAIR_SOFT}`,
-        background: '#FFFFFF',
+        background: 'var(--clss-card)',
         zIndex: 4,
       }}
     >
@@ -449,7 +449,7 @@ function Rail({ mood, solved }: { mood: VidyaMood; solved: boolean }) {
                 width: 26,
                 height: 4,
                 borderRadius: 2,
-                background: d.on ? INK : 'rgba(13,13,16,0.10)',
+                background: d.on ? INK : 'color-mix(in srgb, var(--clss-ink) 10%, transparent)',
               }}
             />
           ))}
@@ -536,7 +536,7 @@ function HeroCard({ tilt, onContinue }: { tilt: number; onContinue: () => void }
         border: `1px solid ${HAIR}`,
         borderRadius: 3,
         padding: '36px 44px 36px 32px',
-        background: '#FFFFFF',
+        background: 'var(--clss-card)',
         maxWidth: 780,
       }}
     >
@@ -559,7 +559,7 @@ function HeroCard({ tilt, onContinue }: { tilt: number; onContinue: () => void }
             marginTop: 20,
             height: 3,
             borderRadius: 2,
-            background: 'rgba(13,13,16,0.07)',
+            background: 'color-mix(in srgb, var(--clss-ink) 7%, transparent)',
             overflow: 'hidden',
             maxWidth: 320,
           }}
@@ -632,7 +632,7 @@ function Door({
         gap: 18,
         border: `1px solid ${HAIR}`,
         borderRadius: 3,
-        background: '#FFFFFF',
+        background: 'var(--clss-card)',
         padding: '20px 24px',
         cursor: 'pointer',
         fontFamily: 'inherit',

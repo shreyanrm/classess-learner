@@ -34,7 +34,7 @@ const CAPS = {
   fontWeight: 600,
   letterSpacing: '0.15em',
   textTransform: 'uppercase',
-  color: 'rgba(18,19,22,0.36)',
+  color: 'color-mix(in srgb, var(--clss-ink) 36%, transparent)',
 } as const;
 
 const CHIPS: { label: string; prompt: string }[] = [
@@ -171,7 +171,7 @@ export function Home() {
           fontFamily: 'Caveat, cursive',
           fontSize: 20,
           fontWeight: 600,
-          color: 'rgba(18,19,22,0.58)',
+          color: 'color-mix(in srgb, var(--clss-ink) 58%, transparent)',
           textAlign: 'center',
           lineHeight: 1.15,
           maxWidth: 126,
@@ -207,14 +207,14 @@ export function Home() {
             fontSize: fluidType.display,
             fontWeight: 300,
             letterSpacing: '-0.03em',
-            color: '#121316',
+            color: 'var(--clss-ink)',
             textAlign: 'center',
             lineHeight: 1.1,
           }}
         >
           {greetingText.slice(0, greetShown)}
           {greetShown < greetingText.length && landed && (
-            <span style={{ color: '#989AA4' }}>|</span>
+            <span style={{ color: 'var(--clss-ink-faint)' }}>|</span>
           )}
         </motion.h1>
         <motion.div
@@ -223,7 +223,7 @@ export function Home() {
             marginTop: 8,
             fontFamily: 'Caveat, cursive',
             fontSize: 'clamp(19px, 1.6vw, 24px)',
-            color: 'rgba(18,19,22,0.58)',
+            color: 'color-mix(in srgb, var(--clss-ink) 58%, transparent)',
           }}
         >
           the day is a walk, not a list
@@ -255,18 +255,18 @@ export function Home() {
                 padding: '0 52px 0 18px',
                 fontSize: fluidType.body,
                 fontFamily: 'inherit',
-                border: '1px solid #E9E9EE',
+                border: '1px solid var(--clss-card-border)',
                 borderRadius: 3,
                 outline: 'none',
-                background: '#FFFFFF',
-                color: '#121316',
+                background: 'var(--clss-card)',
+                color: 'var(--clss-ink)',
                 transition: 'border-color 0.2s ease',
               }}
               onFocusCapture={(e) => {
-                e.currentTarget.style.borderColor = '#B9BBC6';
+                e.currentTarget.style.borderColor = 'var(--clss-faint)';
               }}
               onBlurCapture={(e) => {
-                e.currentTarget.style.borderColor = '#E9E9EE';
+                e.currentTarget.style.borderColor = 'var(--clss-card-border)';
               }}
             />
             <button
@@ -284,15 +284,15 @@ export function Home() {
                 placeItems: 'center',
                 border: 'none',
                 background: 'transparent',
-                color: voiceOn ? '#FF5A1F' : '#989AA4',
+                color: voiceOn ? '#FF5A1F' : 'var(--clss-ink-faint)',
                 cursor: 'pointer',
                 transition: 'color 0.25s ease',
               }}
               onMouseEnter={(e) => {
-                if (!voiceOn) e.currentTarget.style.color = '#121316';
+                if (!voiceOn) e.currentTarget.style.color = 'var(--clss-ink)';
               }}
               onMouseLeave={(e) => {
-                if (!voiceOn) e.currentTarget.style.color = '#989AA4';
+                if (!voiceOn) e.currentTarget.style.color = 'var(--clss-ink-faint)';
               }}
             >
               <WaveformIcon active={voiceOn} size={19} />
@@ -349,8 +349,8 @@ export function Home() {
                   gap: 7,
                   minHeight: 44,
                   border: 'none',
-                  background: '#F1F1F5',
-                  color: '#121316',
+                  background: 'var(--clss-tonal)',
+                  color: 'var(--clss-ink)',
                   borderRadius: 3,
                   padding: '10px 18px',
                   fontSize: fluidType.small,
@@ -360,13 +360,13 @@ export function Home() {
                   transition: 'border-color 0.25s ease, transform 0.2s ease, color 0.25s ease',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#E8E8EE';
-                  e.currentTarget.style.color = '#1F35E0';
+                  e.currentTarget.style.background = 'var(--clss-tonal-hover)';
+                  e.currentTarget.style.color = 'var(--clss-ultramarine)';
                   e.currentTarget.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = '#F1F1F5';
-                  e.currentTarget.style.color = '#121316';
+                  e.currentTarget.style.background = 'var(--clss-tonal)';
+                  e.currentTarget.style.color = 'var(--clss-ink)';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >

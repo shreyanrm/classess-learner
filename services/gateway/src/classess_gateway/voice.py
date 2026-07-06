@@ -38,7 +38,9 @@ _GEMINI_LIVE_URL = (
     "google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent"
 )
 
-_TOKEN_TTL_S = 60.0
+# Generous window: the client mints this only after the mic permission is granted, but a slow
+# getUserMedia prompt (user deliberating) must never outlive the token before the relay connects.
+_TOKEN_TTL_S = 300.0
 _MAX_CONCURRENT_RELAYS = 4
 _tokens: dict[str, float] = {}  # token -> expiry (monotonic); single-use, pruned on mint
 _active_relays = 0

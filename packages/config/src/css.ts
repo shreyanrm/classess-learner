@@ -1,6 +1,8 @@
 import {
   accent,
   canvas,
+  chrome,
+  dark,
   duration,
   easing,
   feedback,
@@ -17,6 +19,11 @@ import {
   vidyaHighlight,
   zIndex,
 } from './tokens';
+
+/** Map a camelCase chrome role to its `--clss-*` custom-property name. */
+function chromeVar(role: string): string {
+  return `--clss-${role.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)}`;
+}
 
 /**
  * CSS custom properties derived from the token tree (single source of truth — no hand-kept CSS
@@ -57,5 +64,10 @@ export function cssVariables(): string {
 
   for (const [name, z] of Object.entries(zIndex)) push(`--clss-z-${name}`, String(z));
 
-  return `:root {\n${lines.join('\n')}\n}\n`;
+  // Chrome (second-cut neutrals) — light values; the dark block below overrides the theme-sensitive ones.
+  for (const [role, hex] of Object.entries(chrome)) push(chromeVar(role), hex);
+
+  const darkLines = Object.entries(dark).map(([name, value]) => `  ${name}: ${value};`);
+
+  return `:root {\n${lines.join('\n')}\n}\n[data-theme="dark"] {\n${darkLines.join('\n')}\n}\n`;
 }

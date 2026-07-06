@@ -1,0 +1,13 @@
+- generic [active] [ref=f83e1]:
+  - text: Classess
+  - heading "welcome, Aarav" [level=1] [ref=f83e2]
+  - paragraph [ref=f83e3]: i'm Vidya. i'll be the one learning how you think, so every idea meets you where you are, not where a textbook assumes you are.
+  - paragraph [ref=f83e4]: there's nothing to set up. pick something you're curious about and we'll start there. your first course is on me, written for you the moment you open it.
+  - link "start your first course" [ref=f83e5] [cursor=pointer]:
+    - /url: https://learner.classess.com/learn
+  - generic [ref=f83e6]: — Vidya
+  - paragraph [ref=f83e7]: Classess · made for curious minds
+  - paragraph [ref=f83e8]: "[street address placeholder] · [city, country]"
+  - paragraph [ref=f83e9]:
+    - link "unsubscribe" [ref=f83e10] [cursor=pointer]:
+      - /url: "{{unsubscribe_url}}"

@@ -63,7 +63,7 @@ function Handwritten({ text, animate }: { text: string; animate: boolean }) {
         padding: '2px 2px',
         fontSize: '0.92rem',
         lineHeight: 1.6,
-        color: '#121316',
+        color: 'var(--clss-ink)',
       }}
     >
       {text.slice(0, shown)}
@@ -214,8 +214,9 @@ export function VidyaCompanion() {
             exit={{ x: '104%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 32 }}
             style={{
+              // starts below the 64px header so it never overlaps the profile/xp/streak cluster
               position: 'fixed',
-              top: 0,
+              top: 64,
               right: 0,
               bottom: 0,
               width: 'min(420px, 94vw)',
@@ -224,6 +225,7 @@ export function VidyaCompanion() {
               backdropFilter: 'blur(var(--clss-frost-blur))',
               WebkitBackdropFilter: 'blur(var(--clss-frost-blur))',
               borderLeft: '0.5px solid var(--clss-hairline-on-paper-strong)',
+              borderTop: '0.5px solid var(--clss-hairline-on-paper)',
               display: 'flex',
               flexDirection: 'column',
             }}

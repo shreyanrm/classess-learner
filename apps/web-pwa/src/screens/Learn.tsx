@@ -18,7 +18,7 @@ import { toneForSubject } from '../ui/hues';
 import { BackIcon } from '../ui/icons';
 import { cascade, rise, TiltCard } from '../ui/kit';
 
-const INK = '#0D0D10';
+const INK = 'var(--clss-ink-900)';
 const GOLD = '#FFC93C';
 
 /** A whisper-quiet fixed affordance, top left — the register of home's "◦ you". */
@@ -100,7 +100,7 @@ export function SubjectSceneBackdrop({
           {/* graph paper, whispered — drawn full-bleed; the card view clips the rest */}
           <path
             d={`M0 52 H${w} M0 104 H${w} M0 156 H${w} M66 0 V210 M133 0 V210 M200 0 V210 M266 0 V210 M333 0 V210 M400 0 V210 M466 0 V210 M533 0 V210 M600 0 V210 M666 0 V210 M733 0 V210`}
-            stroke="#1F35E0"
+            stroke="var(--clss-ultramarine)"
             strokeOpacity={0.07}
             strokeWidth={1}
           />
@@ -111,7 +111,7 @@ export function SubjectSceneBackdrop({
             width={116}
             height={116}
             rx={10}
-            fill="#1F35E0"
+            fill="var(--clss-ultramarine)"
             opacity={0.07}
             transform="rotate(12 334 94)"
           />
@@ -119,7 +119,7 @@ export function SubjectSceneBackdrop({
           <path
             d="M18 178 A 132 132 0 0 1 150 46"
             fill="none"
-            stroke="#1F35E0"
+            stroke="var(--clss-ultramarine)"
             strokeOpacity={0.3}
             strokeWidth={1.6}
             strokeDasharray="2 7"
@@ -142,7 +142,7 @@ export function SubjectSceneBackdrop({
           </motion.g>
           <path
             d="M56 158 v20 M46 168 h20"
-            stroke="#1F35E0"
+            stroke="var(--clss-ultramarine)"
             strokeOpacity={0.5}
             strokeWidth={2.4}
             strokeLinecap="round"
@@ -339,46 +339,56 @@ function SubjectCard({ subject, onOpen }: { subject: DisplaySubject; onOpen: () 
     (n, id) => n + (chaptersBySubject[id] ?? []).length,
     0,
   );
+  // Each card is its own target — she can circle "Physics" specifically, not the whole grid.
+  const cardRef = useRegisterTarget<HTMLDivElement>(`learn-subject-${subject.id}`, {
+    kind: 'subject',
+    label: `the ${subject.name} subject card`,
+    getSceneState: () => ({ subject: subject.name, chapters: chapterCount }),
+  });
   return (
-    <TiltCard
-      onClick={onOpen}
-      ariaLabel={`${subject.name} — open the subject`}
-      onLitChange={setLit}
-      spotlight={tone.wash}
-      style={{ padding: 0 }}
-    >
-      <SubjectStage subject={subject} lit={lit} />
-      <div style={{ padding: '18px 20px 20px', display: 'flex', flexDirection: 'column', gap: 7 }}>
-        <span
-          style={{
-            fontSize: '1.35rem',
-            fontWeight: 600,
-            letterSpacing: '-0.02em',
-            color: 'var(--clss-ink-900)',
-          }}
+    <div ref={cardRef}>
+      <TiltCard
+        onClick={onOpen}
+        ariaLabel={`${subject.name} — open the subject`}
+        onLitChange={setLit}
+        spotlight={tone.wash}
+        style={{ padding: 0 }}
+      >
+        <SubjectStage subject={subject} lit={lit} />
+        <div
+          style={{ padding: '18px 20px 20px', display: 'flex', flexDirection: 'column', gap: 7 }}
         >
-          {subject.name}
-        </span>
-        <span style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)', lineHeight: 1.5 }}>
-          {subject.line}
-        </span>
-        <span
-          style={{
-            marginTop: 9,
-            alignSelf: 'flex-start',
-            padding: '5px 11px',
-            borderRadius: 3,
-            background: tone.wash,
-            color: tone.hue,
-            fontSize: '0.75rem',
-            fontWeight: 600,
-            fontVariantNumeric: 'tabular-nums',
-          }}
-        >
-          {chapterCount} chapters
-        </span>
-      </div>
-    </TiltCard>
+          <span
+            style={{
+              fontSize: '1.35rem',
+              fontWeight: 600,
+              letterSpacing: '-0.02em',
+              color: 'var(--clss-ink-900)',
+            }}
+          >
+            {subject.name}
+          </span>
+          <span style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)', lineHeight: 1.5 }}>
+            {subject.line}
+          </span>
+          <span
+            style={{
+              marginTop: 9,
+              alignSelf: 'flex-start',
+              padding: '5px 11px',
+              borderRadius: 3,
+              background: tone.wash,
+              color: tone.hue,
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
+            {chapterCount} chapters
+          </span>
+        </div>
+      </TiltCard>
+    </div>
   );
 }
 
@@ -436,6 +446,15 @@ export function Learn() {
   const gridRef = useRegisterTarget<HTMLDivElement>('learn-subjects', {
     kind: 'grid',
     label: 'the subject grid — one tap opens a subject',
+    // She reads which subjects sit on the grid and how much lives behind each, so she points at a
+    // real one instead of the whole box. Each card also registers its own fine-grained target.
+    getSceneState: () => ({
+      subjects: displaySubjects().map((s) => ({
+        name: s.name,
+        chapters: s.subjectIds.reduce((n, id) => n + (chaptersBySubject[id] ?? []).length, 0),
+        targetId: `learn-subject-${s.id}`,
+      })),
+    }),
   });
   const coursesRef = useRegisterTarget<HTMLButtonElement>('learn-courses', {
     kind: 'door',
@@ -494,8 +513,8 @@ export function Learn() {
         transition={{ type: 'spring', stiffness: 360, damping: 26 }}
         style={{
           width: '100%',
-          background: '#FFFFFF',
-          border: `1px solid ${coursesLit ? '#B9BBC6' : '#E9E9EE'}`,
+          background: 'var(--clss-card)',
+          border: `1px solid ${coursesLit ? 'var(--clss-faint)' : 'var(--clss-card-border)'}`,
           borderRadius: 3,
           padding: 0,
           overflow: 'hidden',

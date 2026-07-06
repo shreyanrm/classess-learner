@@ -18,13 +18,13 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useMemo, useState } from 'react';
 import { ClassessLogo } from '../../ui/Logo';
 
-const INK = '#0D0D10';
-const INK_60 = 'rgba(13,13,16,0.58)';
-const INK_40 = 'rgba(13,13,16,0.36)';
-const HAIR = 'rgba(13,13,16,0.10)';
-const HAIR_SOFT = 'rgba(13,13,16,0.055)';
-const TONAL = 'rgba(13,13,16,0.026)';
-const ULTRA = '#1F35E0';
+const INK = 'var(--clss-ink-900)';
+const INK_60 = 'color-mix(in srgb, var(--clss-ink) 58%, transparent)';
+const INK_40 = 'color-mix(in srgb, var(--clss-ink) 36%, transparent)';
+const HAIR = 'color-mix(in srgb, var(--clss-ink) 10%, transparent)';
+const HAIR_SOFT = 'color-mix(in srgb, var(--clss-ink) 5.5%, transparent)';
+const TONAL = 'color-mix(in srgb, var(--clss-ink) 2.6%, transparent)';
+const ULTRA = 'var(--clss-ultramarine)';
 const MOLTEN = '#FF5A1F';
 const MAGENTA = '#CC1E7A';
 const ACID = '#66B300';
@@ -135,7 +135,7 @@ function ShieldMedallion({ lit }: { lit: boolean }) {
       </defs>
       <path
         d="M23 5 L38 11 V 23 C 38 32.5 31.5 38.5 23 42 C 14.5 38.5 8 32.5 8 23 V 11 Z"
-        fill={lit ? 'url(#cb-shield)' : 'rgba(13,13,16,0.08)'}
+        fill={lit ? 'url(#cb-shield)' : 'color-mix(in srgb, var(--clss-ink) 8%, transparent)'}
       />
       <path
         d="M15.5 22.5 L21 28 L30.5 17.5"
@@ -221,7 +221,7 @@ function StopCard({
         gap: 14,
         border: `1px solid ${HAIR}`,
         borderRadius: 3,
-        background: '#FFFFFF',
+        background: 'var(--clss-card)',
         padding: '14px 18px',
         cursor: 'pointer',
       }}
@@ -359,7 +359,7 @@ function PadKey({
         justifyContent: 'center',
         border: primary ? `1px solid ${INK}` : `1px solid ${HAIR}`,
         borderRadius: 3,
-        background: primary ? INK : '#FFFFFF',
+        background: primary ? INK : 'var(--clss-card)',
         color: primary ? '#FFFFFF' : INK,
         fontSize: 20,
         fontWeight: 500,
@@ -392,7 +392,7 @@ function Board({ practice }: { practice: ReturnType<typeof usePractice> }) {
         width: 760,
         border: `1px solid ${HAIR}`,
         borderRadius: 3,
-        background: '#FFFFFF',
+        background: 'var(--clss-card)',
         padding: '30px 38px 36px',
       }}
     >
@@ -699,7 +699,7 @@ export function ConceptB() {
                 top: d.y,
                 fontSize: d.glyph === '+' ? 15 : 22,
                 fontWeight: 300,
-                color: 'rgba(13,13,16,0.14)',
+                color: 'color-mix(in srgb, var(--clss-ink) 14%, transparent)',
                 userSelect: 'none',
               }}
             >

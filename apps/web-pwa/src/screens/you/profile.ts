@@ -17,6 +17,10 @@ export interface StoredProfile {
   name: string;
   grade: string;
   boardId: string;
+  /** Mandatory in onboarding (drives the age-branch); optional here for older saved profiles. */
+  age?: number;
+  /** What they're into — folded into Vidya's analogies/examples. */
+  interests?: string[];
 }
 
 const FALLBACK: StoredProfile = { name: learner.name, grade: learner.grade, boardId: 'cbse' };
@@ -30,6 +34,8 @@ export function loadProfile(): StoredProfile {
         name: p.name?.trim() || FALLBACK.name,
         grade: p.grade || FALLBACK.grade,
         boardId: p.boardId || FALLBACK.boardId,
+        age: typeof p.age === 'number' ? p.age : undefined,
+        interests: Array.isArray(p.interests) ? p.interests : undefined,
       };
     }
   } catch {

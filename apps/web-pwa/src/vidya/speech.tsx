@@ -7,7 +7,7 @@
  * always speaks back and ignores this switch entirely.
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { type ChatTurn, useVidyaChat } from './chat';
 import { base64ToFloat32 } from './voice';
 
@@ -35,8 +35,11 @@ export function setMuted(muted: boolean): void {
 
 // One voice at a time — a new line stops the previous one mid-word, like a person would.
 let playing: { ctx: AudioContext; source: AudioBufferSourceNode } | null = null;
+// Bumped on every stop/new-utterance so a running sentence pipeline knows it was superseded.
+let speechGen = 0;
 
 export function stopSpeaking(): void {
+  speechGen++; // abort any in-flight sentence sequence
   if (!playing) return;
   const p = playing;
   playing = null;
@@ -48,40 +51,91 @@ export function stopSpeaking(): void {
   void p.ctx.close();
 }
 
-/** Speak one line aloud. Resolves when playback starts (not when it ends). */
-export async function speakLine(text: string): Promise<void> {
-  if (!GATEWAY_URL || isMuted() || !text.trim()) return;
-  let audio: { mime?: string; b64?: string };
+/** Split into speakable sentences so we can synth+play the first while the rest queues. */
+function sentences(text: string): string[] {
+  const parts = text
+    .match(/[^.!?\n]+[.!?]*/g)
+    ?.map((s) => s.trim())
+    .filter(Boolean);
+  return parts && parts.length > 0 ? parts : [text.trim()];
+}
+
+/** Synthesize one sentence to PCM samples (or null when keyless/rate-limited/muted). */
+async function synth(
+  text: string,
+): Promise<{ samples: Float32Array<ArrayBuffer>; rate: number } | null> {
+  if (!GATEWAY_URL || !text.trim()) return null;
   try {
     const res = await fetch(`${GATEWAY_URL}/v1/voice/tts`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ text: text.slice(0, 600) }),
     });
-    if (!res.ok) return; // keyless or rate-limited — the words are already on screen
-    audio = (await res.json()) as { mime?: string; b64?: string };
+    if (!res.ok) return null;
+    const audio = (await res.json()) as { mime?: string; b64?: string };
+    if (!audio.b64) return null;
+    const rate = Number(/rate=(\d+)/.exec(audio.mime ?? '')?.[1] ?? 24000);
+    const samples = base64ToFloat32(audio.b64);
+    return samples.length === 0 ? null : { samples, rate };
   } catch {
+    return null;
+  }
+}
+
+/** Play one sentence; resolves when it finishes (or immediately if superseded). */
+function playSamples(samples: Float32Array<ArrayBuffer>, rate: number, gen: number): Promise<void> {
+  return new Promise((resolve) => {
+    if (gen !== speechGen) return resolve();
+    if (playing) {
+      try {
+        playing.source.stop();
+      } catch {
+        /* ended */
+      }
+      void playing.ctx.close();
+      playing = null;
+    }
+    const ctx = new AudioContext({ sampleRate: rate });
+    const buffer = ctx.createBuffer(1, samples.length, rate);
+    buffer.copyToChannel(samples, 0);
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ctx.destination);
+    playing = { ctx, source };
+    source.onended = () => {
+      if (playing?.source === source) {
+        playing = null;
+        void ctx.close();
+      }
+      resolve();
+    };
+    source.start();
+  });
+}
+
+/**
+ * Speak a line aloud, sentence by sentence: the first sentence plays the instant it returns while
+ * the next is already synthesizing — first audio in ~1s instead of after the whole line renders.
+ * `onDone` fires once the last sentence finishes (used to gate the course's advance button).
+ */
+export async function speakLine(text: string, opts?: { onDone?: () => void }): Promise<void> {
+  if (!GATEWAY_URL || isMuted() || !text.trim()) {
+    opts?.onDone?.();
     return;
   }
-  if (!audio.b64 || isMuted()) return; // muted mid-fetch: respect it
-  const rate = Number(/rate=(\d+)/.exec(audio.mime ?? '')?.[1] ?? 24000);
-  const samples = base64ToFloat32(audio.b64);
-  if (samples.length === 0) return;
   stopSpeaking();
-  const ctx = new AudioContext({ sampleRate: rate });
-  const buffer = ctx.createBuffer(1, samples.length, rate);
-  buffer.copyToChannel(samples, 0);
-  const source = ctx.createBufferSource();
-  source.buffer = buffer;
-  source.connect(ctx.destination);
-  playing = { ctx, source };
-  source.onended = () => {
-    if (playing?.source === source) {
-      playing = null;
-      void ctx.close();
-    }
-  };
-  source.start();
+  const gen = ++speechGen;
+  const parts = sentences(text);
+  let pending = synth(parts[0] as string);
+  for (let i = 0; i < parts.length; i++) {
+    const cur = await pending;
+    if (gen !== speechGen) return; // a newer utterance took over
+    pending = i + 1 < parts.length ? synth(parts[i + 1] as string) : Promise.resolve(null);
+    if (isMuted()) return; // muted mid-flight — respect it
+    if (cur) await playSamples(cur.samples, cur.rate, gen);
+    if (gen !== speechGen) return;
+  }
+  if (gen === speechGen) opts?.onDone?.();
 }
 
 /**
@@ -111,6 +165,160 @@ export function SpeechNarrator() {
   return null;
 }
 
+// --- Card narration: she reads each course card aloud, and the advance button waits for her ------
+//
+// A card announces its core line on arrival; the course shell speaks it and, for teaching cards,
+// gates "begin/continue" until she finishes — or, when muted, until an equal reading time passes.
+// A tiny window-event singleton so any card can announce without threading props through the deck.
+
+interface Narration {
+  key: string;
+  text: string;
+  gate: boolean;
+}
+let currentNarration: Narration = { key: 'none', text: '', gate: false };
+const NARR_EVENT = 'clss-card-narration';
+
+/** A card calls this on arrival. `gate` locks the advance button while she reads (teaching cards). */
+export function announceCard(key: string, text: string, gate = true): void {
+  currentNarration = { key, text, gate };
+  window.dispatchEvent(new Event(NARR_EVENT));
+}
+
+/** Rough spoken/read duration for a line — the fallback clock when she is muted. */
+export function estimateReadMs(text: string): number {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1600, Math.min(14000, (words / 165) * 60000)); // ~165 wpm
+}
+
+export interface CardNarration {
+  /** True once she has finished reading (or the muted reading clock elapsed). */
+  ready: boolean;
+  /** 0→1 fill for the locked advance button — never a dead button. */
+  progress: number;
+  /** True while a gating (teaching) line is still being read. */
+  gating: boolean;
+  /** Re-speak the current card from the top. */
+  replay: () => void;
+}
+
+/**
+ * Mounted once by the course shell. Watches announced cards, speaks each on arrival, and reports
+ * readiness so the advance button can wait for her. When muted, a reading-time clock stands in.
+ */
+export function useCardNarration(): CardNarration {
+  const [narr, setNarr] = useState<Narration>(currentNarration);
+  const [progress, setProgress] = useState(1);
+  const [ready, setReady] = useState(true);
+  const [epoch, setEpoch] = useState(0);
+
+  useEffect(() => {
+    const h = () => setNarr(currentNarration);
+    // Child cards run their announce effect BEFORE this parent effect attaches (React runs child
+    // effects first), so the first card's event lands before we're listening — re-sync on attach.
+    h();
+    window.addEventListener(NARR_EVENT, h);
+    return () => window.removeEventListener(NARR_EVENT, h);
+  }, []);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: epoch is a replay trigger, not read here
+  useEffect(() => {
+    if (!narr.text) {
+      setProgress(1);
+      setReady(true);
+      return;
+    }
+    setProgress(0);
+    setReady(false);
+    let raf = 0;
+    let cancelled = false;
+    let audioDone = false;
+    const muted = isMuted();
+    const dur = estimateReadMs(narr.text);
+    const started = performance.now();
+    if (!muted) void speakLine(narr.text, { onDone: () => (audioDone = true) });
+    const tick = () => {
+      if (cancelled) return;
+      const t = (performance.now() - started) / dur;
+      if (muted) {
+        const p = Math.min(1, t);
+        setProgress(p);
+        if (p >= 1) {
+          setReady(true);
+          return;
+        }
+      } else {
+        // ramp toward 0.95 on the estimate, then snap to done when her audio actually ends
+        setProgress(audioDone ? 1 : Math.min(0.95, t * 0.95));
+        if (audioDone) {
+          setReady(true);
+          return;
+        }
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf);
+    };
+  }, [narr, epoch]);
+
+  const replay = useCallback(() => {
+    stopSpeaking();
+    setEpoch((e) => e + 1);
+  }, []);
+
+  return { ready, progress, gating: narr.gate, replay };
+}
+
+/** Replay button for the course stage — re-speaks the current card. Sits beside mute. */
+export function ReplayButton({ onReplay, size = 17 }: { onReplay: () => void; size?: number }) {
+  return (
+    <button
+      type="button"
+      onClick={onReplay}
+      aria-label="Replay Vidya"
+      title="hear this again"
+      style={{
+        border: 'none',
+        background: 'transparent',
+        color: 'var(--clss-ink)',
+        cursor: 'pointer',
+        fontFamily: 'inherit',
+        padding: 6,
+        display: 'grid',
+        placeItems: 'center',
+      }}
+    >
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 20 20"
+        fill="none"
+        aria-hidden
+        role="presentation"
+      >
+        <path
+          d="M15.5 6.5 A6 6 0 1 0 16.4 11"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M15.8 3.4 L16 6.9 L12.5 6.6"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </button>
+  );
+}
+
 /** The sound switch — mutes her voice, never her words. Lives beside her name. */
 export function MuteButton({ size = 17 }: { size?: number }) {
   const [muted, setMutedState] = useState(isMuted);
@@ -133,7 +341,7 @@ export function MuteButton({ size = 17 }: { size?: number }) {
       style={{
         border: 'none',
         background: 'transparent',
-        color: muted ? '#989AA4' : '#121316',
+        color: muted ? 'var(--clss-ink-faint)' : 'var(--clss-ink)',
         cursor: 'pointer',
         fontFamily: 'inherit',
         padding: 6,

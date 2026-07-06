@@ -1,0 +1,14 @@
+- generic [active] [ref=f7e1]:
+  - text: Classess
+  - heading "24 days of being a learner" [level=1] [ref=f7e2]
+  - generic [ref=f7e3]: ▲ 24 days
+  - paragraph [ref=f7e4]: that's 24 days you chose to think a little harder than you had to. that isn't a number, it's who you're becoming.
+  - paragraph [ref=f7e5]: if you need a rest day, take it. a planned pause keeps this honest, and i'll hold your place. the streak is the habit, not the pressure.
+  - link "continue your streak" [ref=f7e6] [cursor=pointer]:
+    - /url: https://learner.classess.com/learn
+  - generic [ref=f7e7]: — Vidya
+  - paragraph [ref=f7e8]: Classess · made for curious minds
+  - paragraph [ref=f7e9]: "[street address placeholder] · [city, country]"
+  - paragraph [ref=f7e10]:
+    - link "unsubscribe" [ref=f7e11] [cursor=pointer]:
+      - /url: "{{unsubscribe_url}}"

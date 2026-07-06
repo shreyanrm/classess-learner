@@ -1,0 +1,19 @@
+- generic [active] [ref=f9e1]:
+  - text: Classess
+  - heading "Aarav's week" [level=1] [ref=f9e2]
+  - paragraph [ref=f9e3]: a quiet look at Aarav's week, Mrs. Sharma, drawn from their own work, not a test. this is who they're becoming.
+  - paragraph [ref=f9e4]: strengths
+  - text: independent problem-solving strong sticking with hard problems strong connecting ideas across topics growing
+  - paragraph [ref=f9e5]: worth a nudge
+  - generic [ref=f9e6]:
+    - generic [ref=f9e7]: speed under time pressure
+    - generic [ref=f9e8]: revising older topics
+  - generic [ref=f9e9]: trajectory on track to master this term's core science ahead of the exam window
+  - link "see the full picture" [ref=f9e10] [cursor=pointer]:
+    - /url: https://learner.classess.com/parent
+  - generic [ref=f9e11]: — Vidya
+  - paragraph [ref=f9e12]: Classess · made for curious minds
+  - paragraph [ref=f9e13]: "[street address placeholder] · [city, country]"
+  - paragraph [ref=f9e14]:
+    - link "unsubscribe" [ref=f9e15] [cursor=pointer]:
+      - /url: "{{unsubscribe_url}}"

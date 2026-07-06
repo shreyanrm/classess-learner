@@ -125,6 +125,27 @@ export function classifyLocal(text: string, nodeName?: string): LocalClassificat
       concept,
     };
   }
+  // learn intent — "teach me X", "I want to learn X", "make a course on X" compose a course,
+  // even out-of-syllabus (the atom only ever a fallback when no concept is named)
+  const learn = t.match(
+    /\b(?:teach me(?: about)?|teach us|i want to learn|want to learn|help me learn|learn about|(?:make|create)(?: me)? an? course (?:on|about)|course (?:on|about))\s+(.+)/,
+  );
+  if (learn?.[1]) {
+    const c = learn[1]
+      .trim()
+      .replace(/^["']|["'.?!,]+$/g, '')
+      .slice(0, 120);
+    if (c) {
+      return {
+        path: 'action',
+        capability: 'open_course',
+        params: { query: c },
+        why: `you want to learn ${c} — I will compose a course for it`,
+        confidence: 'medium',
+        concept: c,
+      };
+    }
+  }
 
   // component — an interactive surface summoned into the thread
   if (/\b(sim|simulate|simulation|play with|interactive)\b/.test(t)) {

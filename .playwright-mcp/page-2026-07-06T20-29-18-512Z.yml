@@ -1,0 +1,58 @@
+- generic [ref=f66e2]:
+  - generic [ref=f66e237]:
+    - banner [ref=f66e238]:
+      - button "Close course" [ref=f66e239] [cursor=pointer]:
+        - img [ref=f66e240]
+      - generic [ref=f66e257]:
+        - button "Replay Vidya" [ref=f66e258] [cursor=pointer]:
+          - img [ref=f66e259]
+        - button "Unmute Vidya" [pressed] [ref=f66e262] [cursor=pointer]:
+          - img [ref=f66e263]
+    - main [ref=f66e266]:
+      - generic [ref=f66e268]:
+        - generic [ref=f66e269]:
+          - generic:
+            - img
+          - img [ref=f66e271]
+          - generic [ref=f66e278]:
+            - img [ref=f66e280]
+            - img [ref=f66e302]
+            - img [ref=f66e313]
+        - generic [ref=f66e326]: written and verified
+        - generic [ref=f66e327]: variables on both sides
+        - generic [ref=f66e328]:
+          - generic [ref=f66e329]: 1a balanced scale
+          - generic [ref=f66e330]: 2move the x blocks together
+          - generic [ref=f66e331]: 3isolate x
+          - generic [ref=f66e332]: 4the rule
+          - generic [ref=f66e333]: 5when it flips
+          - generic [ref=f66e334]: 6the workbook
+          - generic [ref=f66e335]: 7the boss
+          - generic [ref=f66e336]: composed and checked, line by line. it starts on the next card.
+    - button "start the course" [ref=f66e339] [cursor=pointer]:
+      - generic [ref=f66e340]: start the course
+  - banner:
+    - img "Classess" [ref=f66e199]
+    - generic [ref=f66e200]:
+      - button "Did you know" [ref=f66e201] [cursor=pointer]:
+        - img [ref=f66e202]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f66e204]:
+        - img [ref=f66e205]
+        - text: "1"
+      - generic [ref=f66e208]: 795 xp
+      - generic [ref=f66e209]:
+        - generic "level 5 · 235/240 xp to level 6" [ref=f66e210]:
+          - img [ref=f66e211]
+          - generic [ref=f66e214]: "5"
+        - button "You — level 5, profile and settings" [ref=f66e215] [cursor=pointer]:
+          - generic "Torto" [ref=f66e216]:
+            - img [ref=f66e218]
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

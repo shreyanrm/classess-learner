@@ -1,0 +1,46 @@
+- generic [ref=f43e2]:
+  - generic [ref=f43e212]:
+    - banner [ref=f43e213]:
+      - button "Close course" [ref=f43e214] [cursor=pointer]:
+        - img [ref=f43e215]
+      - generic [ref=f43e239]:
+        - button "Replay Vidya" [ref=f43e240] [cursor=pointer]:
+          - img [ref=f43e241]
+        - button "Unmute Vidya" [pressed] [ref=f43e244] [cursor=pointer]:
+          - img [ref=f43e245]
+    - main [ref=f43e248]:
+      - generic [ref=f43e250]:
+        - generic [ref=f43e251]:
+          - generic:
+            - img
+          - img [ref=f43e253]
+          - generic [ref=f43e259]:
+            - img [ref=f43e261]
+            - img [ref=f43e272]
+            - img [ref=f43e291]
+        - generic [ref=f43e316]:
+          - generic [ref=f43e317]: linear equations in one variable
+          - generic [ref=f43e318]: solving equations with the variable on one side
+          - generic [ref=f43e319]: one idea, a scale that cannot lie, and a boss at the end.
+    - button "begin" [ref=f43e322] [cursor=pointer]:
+      - generic [ref=f43e323]: begin
+  - banner:
+    - img "Classess" [ref=f43e325]
+    - generic [ref=f43e326]:
+      - button "Did you know" [ref=f43e327] [cursor=pointer]:
+        - img [ref=f43e328]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f43e330]:
+        - img [ref=f43e331]
+        - text: "1"
+      - generic [ref=f43e334]: 620 xp
+      - button "You — profile and settings" [ref=f43e335] [cursor=pointer]:
+        - generic [ref=f43e336]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

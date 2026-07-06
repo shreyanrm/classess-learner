@@ -1,0 +1,14 @@
+- generic [active] [ref=f11e1]:
+  - text: Classess
+  - heading "a gift for you, Aarav" [level=1] [ref=f11e2]
+  - generic [ref=f11e3]: 14 days of premium
+  - paragraph [ref=f11e4]: this one's a gift, Aarav. you've shown up with real curiosity and earned mastery the honest way, so i've unlocked 14 days of premium for you, no strings and nothing to enter.
+  - paragraph [ref=f11e5]: go deeper, follow a rabbit hole, build something out of syllabus. see how far it goes while it's yours.
+  - link "enjoy premium" [ref=f11e6] [cursor=pointer]:
+    - /url: https://learner.classess.com/learn
+  - generic [ref=f11e7]: — Vidya
+  - paragraph [ref=f11e8]: Classess · made for curious minds
+  - paragraph [ref=f11e9]: "[street address placeholder] · [city, country]"
+  - paragraph [ref=f11e10]:
+    - link "unsubscribe" [ref=f11e11] [cursor=pointer]:
+      - /url: "{{unsubscribe_url}}"

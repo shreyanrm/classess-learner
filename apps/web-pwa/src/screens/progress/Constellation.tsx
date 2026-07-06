@@ -10,6 +10,7 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
+import { hueForTopic } from '../../ui/hues';
 import {
   EDGES,
   FAR_STARS,
@@ -23,7 +24,12 @@ import {
 } from './twin-data';
 
 /** Ultramarine as mastery light — daylight register, ink-legible against white. */
-const GLOW = '#1F35E0';
+const GLOW = 'var(--clss-ultramarine)';
+
+/** An earned star burns in its own subject's hue; ungrounded atom nodes keep ultramarine. */
+function hueForStar(star: Star): string {
+  return star.topicId ? hueForTopic(star.topicId) : GLOW;
+}
 
 /** Far suns in the subject hues — the skies of subjects still to come, light-legible. */
 const DUST_HUES = [
@@ -80,20 +86,22 @@ function trimmed(from: Star, to: Star, by = 14) {
 }
 
 function StarCore({ star, state }: { star: Star; state: StarState }) {
+  const hue = hueForStar(star);
   if (state === 'independent')
     return (
       <>
-        <circle cx={star.x} cy={star.y} r={24} style={{ fill: 'url(#twin-halo)' }} />
-        {/* the cross flare — a star that burns on its own */}
+        <circle cx={star.x} cy={star.y} r={26} style={{ fill: 'url(#twin-halo)' }} />
+        {/* the cross flare — a star that burns on its own, in its subject's hue */}
         <path
-          d={`M ${star.x - 14} ${star.y} H ${star.x + 14} M ${star.x} ${star.y - 14} V ${star.y + 14}`}
-          stroke="rgba(31,53,224,0.3)"
-          strokeWidth={0.8}
+          d={`M ${star.x - 16} ${star.y} H ${star.x + 16} M ${star.x} ${star.y - 16} V ${star.y + 16}`}
+          stroke={hue}
+          strokeOpacity={0.4}
+          strokeWidth={1}
           strokeLinecap="round"
           fill="none"
         />
-        <circle cx={star.x} cy={star.y} r={4.6} style={{ fill: GLOW }} />
-        <circle cx={star.x} cy={star.y} r={1.6} style={{ fill: 'rgba(255,255,255,0.85)' }} />
+        <circle cx={star.x} cy={star.y} r={6} style={{ fill: hue }} />
+        <circle cx={star.x} cy={star.y} r={2} style={{ fill: 'rgba(255,255,255,0.92)' }} />
       </>
     );
   if (state === 'supported')
@@ -102,18 +110,25 @@ function StarCore({ star, state }: { star: Star; state: StarState }) {
         <circle
           cx={star.x}
           cy={star.y}
-          r={9.5}
-          style={{ fill: 'none', stroke: 'rgba(31,53,224,0.18)', strokeWidth: 1 }}
+          r={10}
+          style={{ fill: 'none', stroke: hue, strokeOpacity: 0.28, strokeWidth: 1.2 }}
         />
         <circle
           cx={star.x}
           cy={star.y}
-          r={4.6}
-          style={{ fill: '#FFFFFF', stroke: GLOW, strokeWidth: 1.3 }}
+          r={5}
+          style={{ fill: '#FFFFFF', stroke: hue, strokeWidth: 1.8 }}
         />
       </>
     );
-  return <circle cx={star.x} cy={star.y} r={3} style={{ fill: '#E3E5EE' }} />;
+  return (
+    <circle
+      cx={star.x}
+      cy={star.y}
+      r={3.4}
+      style={{ fill: '#FFFFFF', stroke: '#AEB2BE', strokeWidth: 1.2 }}
+    />
+  );
 }
 
 export function Constellation({
@@ -195,7 +210,7 @@ export function Constellation({
         ))}
       </g>
 
-      {/* prerequisite lines — light runs between stars that are both lit */}
+      {/* prerequisite lines — ink-strength on white; the earned stretch runs in the star's hue */}
       <g>
         {EDGES.map((e) => {
           const t = trimmed(e.from, e.to);
@@ -204,8 +219,13 @@ export function Constellation({
             <line
               key={`${e.from.id}-${e.to.id}`}
               {...t}
-              style={{ stroke: alive ? 'rgba(31,53,224,0.35)' : '#E4E6F0' }}
-              strokeWidth={1}
+              style={{
+                stroke: alive
+                  ? hueForStar(e.to)
+                  : 'color-mix(in srgb, var(--clss-ink) 22%, transparent)',
+                strokeOpacity: alive ? 0.55 : 1,
+              }}
+              strokeWidth={alive ? 1.6 : 1.2}
               vectorEffect="non-scaling-stroke"
             />
           );
@@ -271,7 +291,11 @@ export function Constellation({
                   cx={star.x}
                   cy={star.y}
                   r={10}
-                  style={{ fill: 'none', stroke: 'rgba(18,19,22,0.4)', strokeWidth: 0.75 }}
+                  style={{
+                    fill: 'none',
+                    stroke: 'color-mix(in srgb, var(--clss-ink) 40%, transparent)',
+                    strokeWidth: 0.75,
+                  }}
                   vectorEffect="non-scaling-stroke"
                 />
               )}
@@ -281,7 +305,7 @@ export function Constellation({
                 y={star.y + 24}
                 textAnchor="middle"
                 style={{
-                  fill: isLit ? '#5C5E66' : 'rgba(92,94,102,0.5)',
+                  fill: isLit ? 'var(--clss-ink-soft)' : 'rgba(92,94,102,0.5)',
                   fontSize: 11.5,
                   fontFamily: 'inherit',
                 }}

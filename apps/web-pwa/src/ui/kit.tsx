@@ -17,18 +17,20 @@ import {
   useRef,
   useState,
 } from 'react';
+import { sfx } from './sound';
 
 // --- The surface language (cool neutrals) ----------------------------------------------------------
+// Theme-driven: light values live in the token layer, `[data-theme="dark"]` swaps graphite in.
 export const surface = {
-  page: '#FFFFFF',
-  card: '#FFFFFF',
-  cardBorder: '#E9E9EE',
-  cardHover: '#FCFCFE',
-  tonal: '#F1F1F5',
-  tonalHover: '#E8E8EE',
-  ink: '#121316',
-  inkSoft: '#5C5E66',
-  inkFaint: '#989AA4',
+  page: 'var(--clss-page)',
+  card: 'var(--clss-card)',
+  cardBorder: 'var(--clss-card-border)',
+  cardHover: 'var(--clss-card-hover)',
+  tonal: 'var(--clss-tonal)',
+  tonalHover: 'var(--clss-tonal-hover)',
+  ink: 'var(--clss-ink)',
+  inkSoft: 'var(--clss-ink-soft)',
+  inkFaint: 'var(--clss-ink-faint)',
   radius: { card: 3, control: 3, pill: 3 },
 } as const;
 
@@ -131,9 +133,15 @@ export function Card({
 export type ButtonVariant = 'primary' | 'quiet' | 'pigment' | 'ghost';
 
 const BUTTON_LOOK: Record<ButtonVariant, { bg: string; bgHover: string; color: string }> = {
-  primary: { bg: surface.ink, bgHover: '#26272C', color: '#FFFFFF' },
+  // Primary inverts with the theme (dark button on light / light button on dark), so its text
+  // must ride the ink surface via on-ink rather than a fixed white.
+  primary: { bg: surface.ink, bgHover: 'var(--clss-ink-hover)', color: 'var(--clss-on-ink)' },
   quiet: { bg: surface.tonal, bgHover: surface.tonalHover, color: surface.ink },
-  pigment: { bg: '#1F35E0', bgHover: '#1A2DC4', color: '#FFFFFF' },
+  pigment: {
+    bg: 'var(--clss-ultramarine)',
+    bgHover: 'var(--clss-ultramarine-hover)',
+    color: '#FFFFFF',
+  },
   ghost: { bg: 'transparent', bgHover: surface.tonal, color: surface.inkSoft },
 };
 
@@ -195,7 +203,14 @@ export function MagneticButton({
       onPointerMove={onMove}
       onPointerEnter={() => setHover(true)}
       onPointerLeave={onLeave}
-      onClick={disabled ? undefined : onClick}
+      onClick={
+        disabled
+          ? undefined
+          : () => {
+              sfx.tap();
+              onClick?.();
+            }
+      }
       whileTap={disabled ? undefined : { scale: 0.97 }}
       style={{
         background: hover && !disabled ? look.bgHover : look.bg,
@@ -248,7 +263,7 @@ export function TiltCard({
   children,
   onClick,
   style,
-  spotlight = 'rgba(18,19,22,0.045)',
+  spotlight = 'var(--clss-spotlight)',
   ariaLabel,
   onLitChange,
 }: {

@@ -1,0 +1,14 @@
+- generic [active] [ref=f10e1]:
+  - text: Classess
+  - heading "it's been a minute, Aarav" [level=1] [ref=f10e2]
+  - paragraph [ref=f10e3]: no guilt here, life gets loud. but you left something half-finished, and it's the good kind of half-finished.
+  - generic [ref=f10e4]: you were one screen from cracking why the missing 2ab rectangles complete the square
+  - paragraph [ref=f10e5]: give it ten minutes. i'll pick up exactly where we stopped, nothing to retrace.
+  - link "come back to it" [ref=f10e6] [cursor=pointer]:
+    - /url: https://learner.classess.com/learn
+  - generic [ref=f10e7]: — Vidya
+  - paragraph [ref=f10e8]: Classess · made for curious minds
+  - paragraph [ref=f10e9]: "[street address placeholder] · [city, country]"
+  - paragraph [ref=f10e10]:
+    - link "unsubscribe" [ref=f10e11] [cursor=pointer]:
+      - /url: "{{unsubscribe_url}}"

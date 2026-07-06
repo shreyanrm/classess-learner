@@ -15,9 +15,9 @@ import { useSdk } from '../../store/sdk';
 import { BossSigil } from '../../ui/art';
 import { aX, firstMove, fmt, linearize } from './equations';
 import type { BarState } from './shared';
-import { CardBody, cardTitle, rgba, Stage, whisper } from './shared';
+import { CardBody, ChoiceButton, cardTitle, rgba, Stage, whisper } from './shared';
 
-const HUE = '#1F35E0';
+const HUE = 'var(--clss-ultramarine)';
 
 const ORDINALS = ['one', 'two', 'three'];
 
@@ -91,19 +91,6 @@ const blockStyle = (state: 'idle' | 'correct' | 'retry'): CSSProperties => ({
   display: 'flex',
   flexDirection: 'column',
   gap: 12,
-});
-
-const choiceStyle = (selected: boolean): CSSProperties => ({
-  width: '100%',
-  textAlign: 'left',
-  padding: '11px 14px',
-  fontSize: '0.95rem',
-  fontFamily: 'inherit',
-  color: selected ? 'var(--clss-paper)' : 'var(--clss-ink-900)',
-  background: selected ? 'var(--clss-ink-900)' : 'var(--clss-paper)',
-  border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-  borderRadius: 'var(--clss-radius-sm)',
-  cursor: 'pointer',
 });
 
 export function Boss({
@@ -363,16 +350,17 @@ export function Boss({
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {step.choices.map((choice, i) => (
-                <motion.button
+                <ChoiceButton
                   key={choice}
-                  type="button"
+                  chosen={stepChoice === i}
+                  evaluated={evaluated}
+                  isAnswer={i === step.correctIndex}
+                  blockWrong={!!results && !results[1]}
                   disabled={evaluated}
-                  whileTap={{ scale: 0.985 }}
                   onClick={() => setStepChoice(i)}
-                  style={choiceStyle(stepChoice === i)}
                 >
                   {choice}
-                </motion.button>
+                </ChoiceButton>
               ))}
             </div>
             <div
@@ -398,21 +386,22 @@ export function Boss({
             <div style={whisper}>{ORDINALS[2]} · one line below is wrong — tap it</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {error.lines.map((line, i) => (
-                <motion.button
+                <ChoiceButton
                   key={line}
-                  type="button"
+                  chosen={errorChoice === i}
+                  evaluated={evaluated}
+                  isAnswer={i === error.errorIndex}
+                  blockWrong={!!results && !results[2]}
                   disabled={evaluated}
-                  whileTap={{ scale: 0.985 }}
                   onClick={() => setErrorChoice(i)}
                   style={{
-                    ...choiceStyle(errorChoice === i),
                     fontVariantNumeric: 'tabular-nums',
                     fontSize: '1.05rem',
                     fontWeight: 550,
                   }}
                 >
                   {line}
-                </motion.button>
+                </ChoiceButton>
               ))}
             </div>
             {evaluated && results && !results[2] && (

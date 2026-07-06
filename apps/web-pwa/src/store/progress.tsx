@@ -23,6 +23,7 @@ import {
   useState,
 } from 'react';
 import { hueForTopic } from '../ui/hues';
+import { sfx } from '../ui/sound';
 import { useSdk } from './sdk';
 
 export type XpReason =
@@ -54,6 +55,45 @@ export interface XpBloom {
   reason: XpReason;
   /** The owning subject's hue — earned moments carry the subject family. */
   hue?: string;
+  /** Set only when this award crossed a level boundary — the new level. Triggers the level-up beat. */
+  crossedTo?: number;
+}
+
+/**
+ * The level curve. Level n opens at cumForLevel(n) cumulative xp; the step to the next level
+ * widens by 40 each time (80 → 120 → 160 …) so early levels come fast for the hook and later
+ * ones stretch. Closed-form so a single xp number tells the whole story — no separate persistence.
+ */
+export interface LevelInfo {
+  level: number;
+  /** xp earned into the current level. */
+  intoLevel: number;
+  /** xp remaining to the next level. */
+  toNext: number;
+  /** total xp the current level spans (intoLevel + toNext). */
+  span: number;
+  /** 0..1 fraction through the current level (for the ring). */
+  progress: number;
+}
+
+const cumForLevel = (l: number): number => 20 * (l - 1) * (l + 2); // xp needed to REACH level l
+
+export function levelInfo(xp: number): LevelInfo {
+  const x = Math.max(0, Math.floor(xp));
+  // invert cumForLevel: largest l with 20(l-1)(l+2) <= x. +epsilon guards fp at exact boundaries.
+  const level = Math.max(1, Math.floor((-1 + Math.sqrt(9 + x / 5)) / 2 + 1e-9));
+  const base = cumForLevel(level);
+  const span = cumForLevel(level + 1) - base;
+  const intoLevel = x - base;
+  return { level, intoLevel, toNext: span - intoLevel, span, progress: intoLevel / span };
+}
+
+// ponytail: one runnable check — dev-only, console.assert never throws so a wrong curve just logs.
+if (import.meta.env.DEV) {
+  console.assert(levelInfo(0).level === 1 && levelInfo(0).toNext === 80, 'lvl@0');
+  console.assert(levelInfo(79).level === 1 && levelInfo(80).level === 2, 'lvl boundary 80');
+  console.assert(levelInfo(200).level === 3 && levelInfo(199).level === 2, 'lvl boundary 200');
+  console.assert(levelInfo(100).intoLevel === 20 && levelInfo(100).span === 120, 'into@100');
 }
 
 function today(): string {
@@ -141,21 +181,30 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     [sdk],
   );
 
-  const pushBloom = useCallback((amount: number, reason: XpReason, hue?: string) => {
+  const pushBloom = useCallback((amount: number, reason: XpReason, hue?: string, fromXp = 0) => {
     const id = bloomSeq++;
-    setBlooms((b) => [...b, { id, amount, reason, hue }]);
-    setTimeout(() => setBlooms((b) => b.filter((x) => x.id !== id)), 2400);
+    const before = levelInfo(fromXp).level;
+    const after = levelInfo(fromXp + amount).level;
+    const crossedTo = after > before ? after : undefined;
+    setBlooms((b) => [...b, { id, amount, reason, hue, crossedTo }]);
+    // a small bloom for a routine correct item, a warm chord for the earned moments
+    if (reason === 'item' && !crossedTo) sfx.bloom();
+    else sfx.chord();
+    // the level-up beat lingers a touch longer than a routine bloom
+    setTimeout(() => setBlooms((b) => b.filter((x) => x.id !== id)), crossedTo ? 3000 : 2400);
   }, []);
 
   const award = useCallback(
     (reason: XpReason, opts?: { amount?: number; onceKey?: string; hue?: string }) => {
       const amount = opts?.amount ?? XP_AWARDS[reason];
       let granted = 0;
+      let fromXp = 0;
       setState((prev) => {
         const onceKey =
           opts?.onceKey ?? (['account', 'profile_photo'].includes(reason) ? reason : undefined);
         if (onceKey && prev.awardedOnce.includes(onceKey)) return prev;
         granted = amount;
+        fromXp = prev.xp;
         return persist({
           ...prev,
           xp: prev.xp + amount,
@@ -165,7 +214,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       });
       bumpToday(); // the You heat map warms with every earned moment
       // The bloom must feel immediate; if the grant was a duplicate one-time award it is silent.
-      setTimeout(() => granted > 0 && pushBloom(amount, reason, opts?.hue), 0);
+      setTimeout(() => granted > 0 && pushBloom(amount, reason, opts?.hue, fromXp), 0);
       return amount;
     },
     [pushBloom, persist],
@@ -173,8 +222,12 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
   const completeTopic = useCallback(
     (topicId: string, xp?: number) => {
+      let fromXp = 0;
+      let granted = false;
       setState((prev) => {
         if (prev.completedTopics.includes(topicId)) return prev;
+        fromXp = prev.xp;
+        granted = true;
         return persist({
           ...prev,
           xp: prev.xp + (xp ?? XP_AWARDS.topic),
@@ -183,8 +236,11 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         });
       });
       bumpToday();
-      // a completion bloom carries the mastered topic's subject hue
-      pushBloom(xp ?? XP_AWARDS.topic, 'topic', hueForTopic(topicId));
+      // a completion bloom carries the mastered topic's subject hue; silent on a repeat completion
+      setTimeout(
+        () => granted && pushBloom(xp ?? XP_AWARDS.topic, 'topic', hueForTopic(topicId), fromXp),
+        0,
+      );
     },
     [pushBloom, persist],
   );

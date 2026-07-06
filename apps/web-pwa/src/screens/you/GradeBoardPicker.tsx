@@ -34,7 +34,7 @@ function Chip({
       style={{
         // the one chip system: tonal at rest, solid ink when chosen — 3px, never pills
         border: 'none',
-        background: selected ? 'var(--clss-ink-900)' : '#F1F1F5',
+        background: selected ? 'var(--clss-ink-900)' : 'var(--clss-tonal)',
         color: selected ? 'var(--clss-paper)' : 'var(--clss-ink-700)',
         borderRadius: 3,
         padding: '9px 15px',

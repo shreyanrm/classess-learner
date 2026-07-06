@@ -1,0 +1,15 @@
+- generic [active] [ref=f90e1]:
+  - text: Classess
+  - heading "level 5" [level=1] [ref=f90e2]
+  - generic [ref=f90e3]: level 5
+  - paragraph [ref=f90e4]: "you've been showing up, and it shows. here's what just opened up for you:"
+  - text: · synthesis boss battles across everything you know · a sanctioned rabbit hole from where you stand · the perturbation sandbox, where you break a law to understand it
+  - paragraph [ref=f90e5]: no rush to use all of it today. it'll be here when you're curious.
+  - link "keep going" [ref=f90e6] [cursor=pointer]:
+    - /url: https://learner.classess.com/learn
+  - generic [ref=f90e7]: — Vidya
+  - paragraph [ref=f90e8]: Classess · made for curious minds
+  - paragraph [ref=f90e9]: "[street address placeholder] · [city, country]"
+  - paragraph [ref=f90e10]:
+    - link "unsubscribe" [ref=f90e11] [cursor=pointer]:
+      - /url: "{{unsubscribe_url}}"

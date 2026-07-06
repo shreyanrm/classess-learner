@@ -12,12 +12,14 @@
  */
 
 import { useVidyaBus } from '@classess/vidya';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { chapterById, topicById } from '../data/catalog';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { CloseIcon } from '../ui/icons';
+import { MuteButton, ReplayButton, useCardNarration } from '../vidya/speech';
 import { AtomJourney } from './course/AtomJourney';
 import { Composing } from './course/Composing';
 import { ActionBar, type BarState, SegmentedProgress, whisper } from './course/shared';
@@ -28,9 +30,12 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
   const sdk = useSdk();
   const bus = useVidyaBus();
 
-  const topic = topicById(topicId);
-  const chapter = topic ? chapterById(topic.chapterId) : chapterById(topicId);
-  const title = topic?.name ?? chapter?.name ?? 'a new course';
+  // A custom course Vidya composed from a free-text ask: topicId carries the concept itself
+  // (`custom:black holes`), so the composing player gets the real title, never "a new course".
+  const custom = topicId.startsWith('custom:') ? topicId.slice('custom:'.length).trim() : null;
+  const topic = custom ? undefined : topicById(topicId);
+  const chapter = topic ? chapterById(topic.chapterId) : custom ? undefined : chapterById(topicId);
+  const title = topic?.name ?? chapter?.name ?? custom ?? 'a new course';
   const nodeId = topic?.nodeId;
   const mode: 'sandbox' | 'atom' | 'composing' = sandbox
     ? 'sandbox'
@@ -45,6 +50,25 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
     segments: 9,
   });
   const sandboxEntered = useRef(false);
+  // the quiet "picking up where you left off" beat — shown when a player restores a saved position
+  const [resumed, setResumed] = useState(false);
+  const onResume = useCallback(() => setResumed(true), []);
+  useEffect(() => {
+    if (!resumed) return;
+    const t = window.setTimeout(() => setResumed(false), 3200);
+    return () => window.clearTimeout(t);
+  }, [resumed]);
+  // She reads each card aloud and the advance button waits for her — muted, an equal reading clock
+  // stands in. Gating only bites teaching cards' advance (never "check", never a question read).
+  const narration = useCardNarration();
+  const primaryLabel = (bar?.primary.label ?? '').toLowerCase();
+  const gateApplies =
+    narration.gating &&
+    !narration.ready &&
+    primaryLabel !== 'check' &&
+    primaryLabel !== 'hint' &&
+    primaryLabel !== 'another hint';
+
   // stable exit — card effects depend on it
   const exit = useCallback(() => router.back(), [router]);
 
@@ -113,7 +137,11 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
             <SegmentedProgress fraction={progress.f} segments={progress.segments} />
           </div>
         )}
-        <div aria-hidden style={{ width: 34 }} />
+        {/* on-stage voice controls: mute her narration, or replay the current card */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <ReplayButton onReplay={narration.replay} />
+          <MuteButton />
+        </div>
       </header>
 
       {/* the full-bleed card area */}
@@ -135,6 +163,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
             setBar={setBar}
             setProgress={setProgress}
             onExit={exit}
+            onResume={onResume}
           />
         )}
         {mode === 'composing' && (
@@ -144,11 +173,41 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
             setBar={setBar}
             setProgress={setProgress}
             onExit={exit}
+            onResume={onResume}
           />
         )}
       </main>
 
-      <ActionBar bar={bar} />
+      {/* the quiet resume beat — a soft line, then it fades on its own */}
+      <AnimatePresence>
+        {resumed && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+            style={{
+              position: 'fixed',
+              left: '50%',
+              bottom: 'calc(84px + env(safe-area-inset-bottom, 0px))',
+              transform: 'translateX(-50%)',
+              zIndex: 40,
+              padding: '9px 16px',
+              borderRadius: 3,
+              background: 'var(--clss-ink-900)',
+              color: 'var(--clss-paper)',
+              fontSize: '0.82rem',
+              fontWeight: 500,
+              whiteSpace: 'nowrap',
+              pointerEvents: 'none',
+            }}
+          >
+            picking up where you left off
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <ActionBar bar={bar} gate={gateApplies ? { progress: narration.progress } : undefined} />
     </div>
   );
 }

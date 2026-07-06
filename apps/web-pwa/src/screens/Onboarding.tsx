@@ -1,12 +1,15 @@
 'use client';
 
 /**
- * Onboarding — Vidya-first (DESIGN.md §4). Blank paper; she bounces in, learns your name and
- * where you are in school, and a door draws itself open. One intention per beat, calm typed
- * lines, spring transitions. The single pigment moment is the ultramarine wash when the page
- * becomes yours. In live mode (DEV_AUTH=false) she adds one beat of her own before the door:
- * sign in — phone → code → verified, or Google — introduced warmly, never as an auth wall.
- * Mock mode keeps the four-beat flow and stays skippable without guilt.
+ * Onboarding — a conversation, not a form (owner directive, 2026-07-07). You meet Vidya: she
+ * greets you aloud (voice + typed lines), you answer in a chat-like thread with quick chips, and
+ * she gathers your name, AGE (mandatory — drives the age-branch), class + board, and what you're
+ * into — the likes framed as "what do you do when you're not studying" so it never feels like
+ * data collection. Everything persists to the learner profile AND the mind's interests slot, so
+ * her analogies reach for cricket or video games from the very first lesson. In live mode a single
+ * sign-in beat is woven into the talk (phone code or Google), never bolted on as a wall. It ends
+ * with the page becoming yours — one ultramarine wash — and you step in, where she flies to meet
+ * you on home. A keen learner is through in under a minute.
  */
 
 import { useRegisterTarget, useVidyaBus, VidyaBody, type VidyaMood } from '@classess/vidya';
@@ -14,19 +17,46 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { ONBOARDED_KEY, SIGNIN_SOURCE_KEY } from '../App';
 import { useRouter } from '../shell/router';
+import { loadMind, rememberInterests, summarizeMind } from '../store/mind';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { Pip, Sprout } from '../ui/cast';
-import { MagneticButton } from '../ui/kit';
+import { fluidSpace, MagneticButton } from '../ui/kit';
+import { MuteButton, speakLine } from '../vidya/speech';
 import { GradeBoardPicker } from './you/GradeBoardPicker';
 import { boardName, boardSeeded, loadProfile, saveProfile } from './you/profile';
 
-const TOTAL_STEPS = 4;
-/** Survives the Google round-trip in this tab: on return, restore the flow at the door beat. */
+/** Survives the Google round-trip in this tab: on return, restore the flow at the ready beat. */
 const ONB_RETURN_KEY = 'clss-onb-return';
-const AUTH_BEAT = 3;
-const DOOR_BEAT = 4;
 const spring = { type: 'spring', stiffness: 320, damping: 30 } as const;
+
+/** The ages our grades actually span, offered as one-tap chips (mandatory). */
+const AGES = Array.from({ length: 10 }, (_, i) => i + 9); // 9…18
+
+/** Framed as fun, gathered as signal — Vidya's analogies reach for these. */
+const LIKES = [
+  'cricket',
+  'football',
+  'video games',
+  'music',
+  'movies',
+  'drawing',
+  'reading',
+  'space',
+  'coding',
+  'animals',
+  'dancing',
+  'food',
+];
+
+type Phase = 'name' | 'age' | 'school' | 'likes' | 'auth' | 'ready';
+
+interface Message {
+  id: string;
+  role: 'vidya' | 'user';
+  text: string;
+  onDone?: () => void;
+}
 
 /** "98765 43210" or "+91 98765 43210" → E.164; bare Indian numbers get +91. */
 function normalizePhone(raw: string): string {
@@ -35,45 +65,29 @@ function normalizePhone(raw: string): string {
 }
 
 /** A line that types itself, letter by letter, at a calm pace. */
-function TypedLine({
-  text,
-  startDelay = 0,
-  onDone,
-  style,
-}: {
-  text: string;
-  startDelay?: number;
-  onDone?: () => void;
-  style?: React.CSSProperties;
-}) {
+function TypedLine({ text, onDone }: { text: string; onDone?: () => void }) {
   const [n, setN] = useState(0);
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
 
   useEffect(() => {
     let i = 0;
-    let interval: number | undefined;
-    const start = window.setTimeout(() => {
-      interval = window.setInterval(() => {
-        i += 1;
-        setN(i);
-        if (i >= text.length) {
-          window.clearInterval(interval);
-          window.setTimeout(() => onDoneRef.current?.(), 260);
-        }
-      }, 34);
-    }, startDelay);
-    return () => {
-      window.clearTimeout(start);
-      if (interval) window.clearInterval(interval);
-    };
-  }, [text, startDelay]);
+    const interval = window.setInterval(() => {
+      i += 1;
+      setN(i);
+      if (i >= text.length) {
+        window.clearInterval(interval);
+        window.setTimeout(() => onDoneRef.current?.(), 240);
+      }
+    }, 30);
+    return () => window.clearInterval(interval);
+  }, [text]);
 
   return (
-    <div style={{ minHeight: '1.6em', ...style }}>
+    <span>
       {text.slice(0, n)}
-      {n > 0 && n < text.length && <span style={{ color: 'var(--clss-ink-300)' }}>▏</span>}
-    </div>
+      {n < text.length && <span style={{ color: 'var(--clss-ink-300)' }}>▏</span>}
+    </span>
   );
 }
 
@@ -87,21 +101,55 @@ const ghostButton: React.CSSProperties = {
   padding: 4,
 };
 
+function Chip({
+  label,
+  selected,
+  onClick,
+}: {
+  label: string;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      aria-pressed={selected}
+      whileTap={{ scale: 0.95 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 26 }}
+      style={{
+        border: 'none',
+        background: selected ? 'var(--clss-ink-900)' : 'var(--clss-tonal)',
+        color: selected ? 'var(--clss-paper)' : 'var(--clss-ink-700)',
+        borderRadius: 3,
+        padding: '10px 16px',
+        fontSize: '0.92rem',
+        fontFamily: 'inherit',
+        cursor: 'pointer',
+        lineHeight: 1.2,
+      }}
+    >
+      {label}
+    </motion.button>
+  );
+}
+
 export function Onboarding() {
   const router = useRouter();
   const sdk = useSdk();
   const bus = useVidyaBus();
   const { award } = useProgress();
 
-  const [beat, setBeat] = useState(0);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [promptReady, setPromptReady] = useState(false);
+  const [phase, setPhase] = useState<Phase>('name');
   const [mood, setMood] = useState<VidyaMood>('idle');
+
   const [name, setName] = useState('');
+  const [age, setAge] = useState<number | null>(null);
   const [grade, setGrade] = useState<string | null>(null);
   const [boardId, setBoardId] = useState<string | null>(null);
-
-  // beat one line choreography
-  const [lineOneDone, setLineOneDone] = useState(false);
-  const [lineTwoDone, setLineTwoDone] = useState(false);
+  const [interests, setInterests] = useState<string[]>([]);
 
   // the sign-in beat (live mode only — mock mode never sees it)
   const liveAuth = !sdk.config.devAuth;
@@ -111,72 +159,126 @@ export function Onboarding() {
   const [authStage, setAuthStage] = useState<'phone' | 'code'>('phone');
   const [authBusy, setAuthBusy] = useState(false);
   const [authErr, setAuthErr] = useState<string | null>(null);
-  const totalSteps = liveAuth ? TOTAL_STEPS + 1 : TOTAL_STEPS;
 
-  // Returning from Google: the session arrived with the redirect — pick the flow up at the door.
-  useEffect(() => {
-    if (!sessionStorage.getItem(ONB_RETURN_KEY)) return;
-    sessionStorage.removeItem(ONB_RETURN_KEY);
-    if (!sdk.identity.isAuthenticated()) return;
-    const p = loadProfile();
-    setName(p.name);
-    setGrade(p.grade);
-    setBoardId(p.boardId);
-    setAuthed(true);
-    setBeat(DOOR_BEAT);
-  }, [sdk]);
+  const idRef = useRef(0);
+  const nid = () => `m${idRef.current++}`;
+  const endRef = useRef<HTMLDivElement>(null);
+  const finalName = name.trim() || 'Aanya';
 
-  const beginRef = useRegisterTarget<HTMLDivElement>('onb-begin', {
-    kind: 'button',
-    label: 'the door that begins onboarding',
-  });
   const readyRef = useRegisterTarget<HTMLDivElement>('onb-ready', {
     kind: 'card',
     label: 'the learner page that just became ready',
   });
 
+  // --- the thread's two moves --------------------------------------------------------------------
+  /** Vidya speaks a line: it types on screen and plays aloud together. */
+  const say = (text: string, onDone?: () => void) => {
+    setPromptReady(false);
+    setMessages((m) => [
+      ...m,
+      { id: nid(), role: 'vidya', text, onDone: onDone ?? (() => setPromptReady(true)) },
+    ]);
+    void speakLine(text);
+  };
+  const youSaid = (text: string) => setMessages((m) => [...m, { id: nid(), role: 'user', text }]);
+
+  // --- the beats ---------------------------------------------------------------------------------
+  const toAge = (who: string) => {
+    setPhase('age');
+    say(`good to meet you, ${who}. how old are you?`);
+  };
+  const toSchool = () => {
+    setPhase('school');
+    say('and where are you in school — which class, and your board?');
+  };
+  const toLikes = () => {
+    setPhase('likes');
+    say("last thing, and it's the fun one — when you're not studying, what are you into?");
+  };
+  const toAuth = () => {
+    setPhase('auth');
+    say('let me keep this page safe so it follows you to any device — a quick sign in.');
+  };
+  const toReady = () => {
+    setPhase('ready');
+    setMood('celebrate');
+    say(`that's everything I need. your page is ready, ${finalName}.`);
+  };
+
+  // Boot: returning from Google lands at ready; otherwise Vidya opens the conversation.
+  const booted = useRef(false);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: run-once boot, guarded by booted ref
+  useEffect(() => {
+    if (booted.current) return;
+    booted.current = true;
+    if (sessionStorage.getItem(ONB_RETURN_KEY) && sdk.identity.isAuthenticated()) {
+      sessionStorage.removeItem(ONB_RETURN_KEY);
+      const p = loadProfile();
+      setName(p.name);
+      setAge(p.age ?? null);
+      setGrade(p.grade);
+      setBoardId(p.boardId);
+      setInterests(p.interests ?? []);
+      setAuthed(true);
+      setPhase('ready');
+      setMood('celebrate');
+      say(`welcome back, ${p.name}. your page is ready.`);
+      return;
+    }
+    say('hi — I’m Vidya', () =>
+      say('I’m going to learn how you think — my favourite thing. first, what should I call you?'),
+    );
+  }, [sdk]);
+
   useEffect(() => {
     bus.publishPage({
       route: 'onboarding',
       state: {
-        beat,
+        phase,
         name: name || undefined,
+        age: age ?? undefined,
         grade: grade ?? undefined,
         board: boardId ?? undefined,
+        interests: interests.length ? interests : undefined,
         signedIn: authed,
       },
     });
-  }, [bus, beat, name, grade, boardId, authed]);
+  }, [bus, phase, name, age, grade, boardId, interests, authed]);
 
-  const finalName = name.trim() || 'Aanya';
+  // Keep the newest line in view as the thread grows.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: scroll on every thread change
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [messages, promptReady, authStage]);
 
-  const stepDone = (step: 'door_choice' | 'age_grade' | 'aha', index: number) => {
-    sdk.events.record('onboarding.step.completed.v1', {
-      step,
-      step_index: index,
-      total_steps: totalSteps,
-    });
+  // --- answers -----------------------------------------------------------------------------------
+  const submitName = () => {
+    const n = name.trim() || 'Aanya';
+    setName(n);
+    youSaid(n);
+    setMood('celebrate');
+    window.setTimeout(() => setMood('idle'), 800);
+    toAge(n);
+  };
+  const pickAge = (a: number) => {
+    setAge(a);
+    youSaid(`${a}`);
+    toSchool();
+  };
+  const submitSchool = () => {
+    if (!grade || !boardId) return;
+    youSaid(`${grade} · ${boardName(boardId)}`);
+    toLikes();
+  };
+  const toggleLike = (l: string) =>
+    setInterests((xs) => (xs.includes(l) ? xs.filter((x) => x !== l) : [...xs, l]));
+  const submitLikes = () => {
+    youSaid(interests.length ? interests.join(', ') : 'a bit of everything');
+    if (liveAuth && !authed) toAuth();
+    else toReady();
   };
 
-  const finish = () => {
-    if (grade && boardId) saveProfile({ name: finalName, grade, boardId });
-    stepDone('aha', totalSteps - 1);
-    award('account'); // +50, blooms on home
-    localStorage.setItem(ONBOARDED_KEY, '1');
-    if (liveAuth) {
-      // Rebuild the app on the real session: providers re-key to auth.uid() and hydrate live.
-      window.location.assign('/');
-      return;
-    }
-    router.replace({ name: 'home' });
-  };
-
-  const skip = () => {
-    localStorage.setItem(ONBOARDED_KEY, '1');
-    router.replace({ name: 'home' });
-  };
-
-  // --- the sign-in beat's moves (live mode) --------------------------------
+  // --- the sign-in beat's moves (live mode) ------------------------------------------------------
   const sendCode = async () => {
     const normalized = normalizePhone(phone);
     if (normalized.replace(/\D/g, '').length < 10) {
@@ -205,9 +307,9 @@ export function Onboarding() {
     try {
       await sdk.identity.auth.verifyPhoneOtp(normalizePhone(phone), candidate);
       localStorage.setItem(SIGNIN_SOURCE_KEY, 'phone');
+      youSaid('signed in');
       setAuthed(true);
-      setMood('celebrate');
-      window.setTimeout(() => setBeat(DOOR_BEAT), 900);
+      toReady();
     } catch {
       setAuthErr('that code did not match — take another look and try again');
       setMood('oops');
@@ -217,8 +319,11 @@ export function Onboarding() {
   };
 
   const withGoogle = async () => {
-    // The redirect leaves the page: keep what she has learned so far, and mark the return path.
-    if (grade && boardId) saveProfile({ name: finalName, grade, boardId });
+    // The redirect leaves the page: keep what she has learned so far, mark the return path.
+    if (grade && boardId) {
+      saveProfile({ name: finalName, grade, boardId, age: age ?? undefined, interests });
+    }
+    rememberInterests(interests);
     sessionStorage.setItem(ONB_RETURN_KEY, '1');
     localStorage.setItem(SIGNIN_SOURCE_KEY, 'google');
     try {
@@ -229,147 +334,158 @@ export function Onboarding() {
     }
   };
 
+  // --- the finish --------------------------------------------------------------------------------
+  const finish = () => {
+    if (grade && boardId) {
+      saveProfile({ name: finalName, grade, boardId, age: age ?? undefined, interests });
+    }
+    rememberInterests(interests);
+    // Publish now so mock-mode home greets with the likes without waiting for the next fold.
+    bus.publishLifetime({ twinSummary: summarizeMind(loadMind()) });
+    sdk.events.record('onboarding.step.completed.v1', {
+      step: 'aha',
+      step_index: 0,
+      total_steps: 1,
+    });
+    award('account'); // +50, blooms on home
+    localStorage.setItem(ONBOARDED_KEY, '1');
+    if (liveAuth) {
+      // Rebuild on the real session: providers re-key to auth.uid() and hydrate live.
+      window.location.assign('/');
+      return;
+    }
+    router.replace({ name: 'home' });
+  };
+
+  const skip = () => {
+    localStorage.setItem(ONBOARDED_KEY, '1');
+    router.replace({ name: 'home' });
+  };
+
+  const steps: Phase[] = liveAuth
+    ? ['name', 'age', 'school', 'likes', 'auth', 'ready']
+    : ['name', 'age', 'school', 'likes', 'ready'];
+  const stepIndex = steps.indexOf(phase);
+
   return (
     <div
       style={{
         minHeight: '100dvh',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '48px 24px 84px',
+        maxWidth: 660,
+        margin: '0 auto',
+        width: '100%',
+        padding: `0 ${fluidSpace.gutter}`,
       }}
     >
-      {/* back — between beats, never out of the flow */}
-      <AnimatePresence>
-        {beat > 0 && (
-          <motion.button
-            type="button"
-            onClick={() =>
-              // an already-signed-in door steps back over the sign-in beat, never into it
-              setBeat((b) => Math.max(0, b === DOOR_BEAT && (!liveAuth || authed) ? 2 : b - 1))
-            }
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{ ...ghostButton, position: 'fixed', top: 20, left: 24 }}
-          >
-            ← back
-          </motion.button>
-        )}
-      </AnimatePresence>
-
-      {/* Vidya — she arrives first and never leaves */}
-      <motion.div
-        initial={{ scale: 0, y: 48, opacity: 0 }}
-        animate={{ scale: beat === 0 ? 1 : 0.6, y: 0, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 240, damping: 17, delay: 0.15 }}
-        style={{ marginBottom: beat === 0 ? 8 : -14 }}
+      {/* her header — she arrives first and stays through the whole talk */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          paddingTop: fluidSpace.md,
+          paddingBottom: fluidSpace.sm,
+        }}
       >
-        <VidyaBody
-          size={120}
-          mood={mood}
-          gaze="pointer"
-          label="Vidya"
-          onTap={() => {
-            setMood('celebrate');
-            window.setTimeout(() => setMood('idle'), 1100);
-          }}
-        />
-      </motion.div>
-
-      <div style={{ width: '100%', maxWidth: 520 }}>
-        <AnimatePresence mode="wait">
-          {/* ---- beat one: hello ---- */}
-          {beat === 0 && (
-            <motion.div
-              key="hello"
-              initial={{ opacity: 0, x: 44 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -36 }}
-              transition={spring}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 6,
-                marginTop: 22,
-              }}
-            >
-              <TypedLine
-                text="hi — I'm Vidya"
-                startDelay={950}
-                onDone={() => setLineOneDone(true)}
+        <motion.div
+          initial={{ scale: 0, y: 20, opacity: 0 }}
+          animate={{ scale: 1, y: 0, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 240, damping: 18, delay: 0.1 }}
+        >
+          <VidyaBody
+            size={54}
+            mood={mood}
+            gaze="pointer"
+            label="Vidya"
+            onTap={() => {
+              setMood('celebrate');
+              window.setTimeout(() => setMood('idle'), 1000);
+            }}
+          />
+        </motion.div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--clss-ink-900)' }}>
+            Vidya
+          </div>
+          <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+            {steps.map((s, i) => (
+              <span
+                key={s}
                 style={{
-                  fontSize: '1.6rem',
-                  fontWeight: 500,
-                  letterSpacing: '-0.02em',
-                  color: 'var(--clss-ink-900)',
-                  textAlign: 'center',
+                  width: i === stepIndex ? 16 : 6,
+                  height: 6,
+                  borderRadius: 3,
+                  transition: 'width 240ms cubic-bezier(0.2,0,0,1), background 240ms',
+                  background:
+                    i < stepIndex
+                      ? 'var(--clss-ink-700)'
+                      : i === stepIndex
+                        ? 'var(--clss-ultramarine)'
+                        : 'var(--clss-hairline-on-paper-strong)',
                 }}
               />
-              {lineOneDone && (
-                <TypedLine
-                  text="I'm going to learn how you think. that's my favourite thing to do"
-                  startDelay={420}
-                  onDone={() => setLineTwoDone(true)}
-                  style={{
-                    fontSize: '1.02rem',
-                    color: 'var(--clss-ink-500)',
-                    textAlign: 'center',
-                    lineHeight: 1.6,
-                    maxWidth: 400,
-                  }}
-                />
-              )}
-              <motion.div
-                ref={beginRef}
-                initial={false}
-                animate={{ opacity: lineTwoDone ? 1 : 0, y: lineTwoDone ? 0 : 10 }}
-                transition={spring}
-                style={{ marginTop: 30, pointerEvents: lineTwoDone ? 'auto' : 'none' }}
-              >
-                <MagneticButton
-                  size="lg"
-                  variant="primary"
-                  onClick={() => {
-                    stepDone('door_choice', 0);
-                    setBeat(1);
-                  }}
-                  style={{ minWidth: 170, justifyContent: 'center' }}
-                >
-                  let's begin
-                </MagneticButton>
-              </motion.div>
-            </motion.div>
-          )}
+            ))}
+          </div>
+        </div>
+        <div style={{ marginLeft: 'auto' }}>
+          <MuteButton />
+        </div>
+      </div>
 
-          {/* ---- beat two: your name ---- */}
-          {beat === 1 && (
+      {/* the thread — past lines stay, faint; the newest is the live prompt */}
+      <div
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10,
+          paddingBottom: fluidSpace.md,
+        }}
+      >
+        {messages.map((m, i) => {
+          const isLast = i === messages.length - 1;
+          const isVidya = m.role === 'vidya';
+          return (
             <motion.div
-              key="name"
-              initial={{ opacity: 0, x: 44 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -36 }}
+              key={m.id}
+              initial={{ opacity: 0, y: 12, filter: 'blur(4px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={spring}
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 8,
-                marginTop: 26,
+                alignSelf: isVidya ? 'flex-start' : 'flex-end',
+                maxWidth: '80%',
+                borderRadius: 3,
+                padding: '10px 14px',
+                fontSize: 'clamp(0.98rem, 0.92rem + 0.4vw, 1.12rem)',
+                lineHeight: 1.5,
+                background: isVidya ? 'var(--clss-tonal)' : 'var(--clss-ink-900)',
+                color: isVidya ? 'var(--clss-ink-900)' : 'var(--clss-paper)',
+                // older lines recede so the live prompt reads as current
+                opacity: isVidya && !isLast ? 0.55 : 1,
               }}
             >
-              <div
-                style={{
-                  fontSize: '1.35rem',
-                  fontWeight: 500,
-                  letterSpacing: '-0.02em',
-                  color: 'var(--clss-ink-900)',
-                }}
-              >
-                what should I call you
-              </div>
+              {isVidya ? <TypedLine text={m.text} onDone={m.onDone} /> : m.text}
+            </motion.div>
+          );
+        })}
+        <div ref={endRef} />
+      </div>
+
+      {/* the dock — the current beat's single input, revealed once she's finished asking */}
+      <div style={{ paddingBottom: fluidSpace.lg, paddingTop: fluidSpace.xs }}>
+        <AnimatePresence mode="wait">
+          {promptReady && phase === 'name' && (
+            <motion.div
+              key="d-name"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={spring}
+              style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}
+            >
               <input
                 // biome-ignore lint/a11y/noAutofocus: the input is this beat's single intention
                 autoFocus
@@ -377,66 +493,57 @@ export function Onboarding() {
                 onChange={(e) => setName(e.target.value)}
                 onFocus={() => setMood('listening')}
                 onBlur={() => setMood('idle')}
-                onKeyDown={(e) => e.key === 'Enter' && setBeat(2)}
-                placeholder="Aanya"
+                onKeyDown={(e) => e.key === 'Enter' && submitName()}
+                placeholder="type your name"
                 aria-label="your name"
                 style={{
-                  marginTop: 18,
-                  width: '100%',
-                  maxWidth: 360,
-                  fontSize: '2rem',
-                  fontWeight: 500,
-                  letterSpacing: '-0.02em',
-                  textAlign: 'center',
+                  flex: 1,
+                  minWidth: 180,
+                  fontSize: '1.15rem',
                   fontFamily: 'inherit',
                   color: 'var(--clss-ink-900)',
-                  background: 'transparent',
+                  background: 'var(--clss-tonal)',
                   border: 'none',
-                  borderBottom: '0.5px solid var(--clss-hairline-on-paper-strong)',
+                  borderRadius: 3,
                   outline: 'none',
-                  padding: '6px 4px 12px',
+                  padding: '13px 15px',
                 }}
               />
-              <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-300)' }}>
-                you can change this any time
-              </div>
               <MagneticButton
                 size="lg"
                 variant="primary"
-                onClick={() => setBeat(2)}
-                style={{ marginTop: 26, minWidth: 170, justifyContent: 'center' }}
+                onClick={submitName}
+                style={{ minWidth: 120, justifyContent: 'center' }}
               >
-                {name.trim() ? `I'm ${name.trim()}` : "I'm Aanya"}
+                {name.trim() ? `I’m ${name.trim()}` : 'I’m Aanya'}
               </MagneticButton>
             </motion.div>
           )}
 
-          {/* ---- beat three: where you are in school ---- */}
-          {beat === 2 && (
+          {promptReady && phase === 'age' && (
             <motion.div
-              key="school"
-              initial={{ opacity: 0, x: 44 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -36 }}
+              key="d-age"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
               transition={spring}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 26,
-                marginTop: 26,
-              }}
+              style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}
             >
-              <div
-                style={{
-                  fontSize: '1.35rem',
-                  fontWeight: 500,
-                  letterSpacing: '-0.02em',
-                  color: 'var(--clss-ink-900)',
-                }}
-              >
-                where are you in school
-              </div>
+              {AGES.map((a) => (
+                <Chip key={a} label={`${a}`} selected={age === a} onClick={() => pickAge(a)} />
+              ))}
+            </motion.div>
+          )}
+
+          {promptReady && phase === 'school' && (
+            <motion.div
+              key="d-school"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={spring}
+              style={{ display: 'flex', flexDirection: 'column', gap: 18 }}
+            >
               <GradeBoardPicker
                 grade={grade}
                 boardId={boardId}
@@ -447,57 +554,55 @@ export function Onboarding() {
                 size="lg"
                 variant="primary"
                 disabled={!grade || !boardId}
-                onClick={() => {
-                  stepDone('age_grade', 2);
-                  setBeat(liveAuth && !authed ? AUTH_BEAT : DOOR_BEAT);
-                }}
-                style={{ minWidth: 170, justifyContent: 'center' }}
+                onClick={submitSchool}
+                style={{ alignSelf: 'flex-start', minWidth: 140, justifyContent: 'center' }}
               >
-                that's me
+                that’s me
               </MagneticButton>
             </motion.div>
           )}
 
-          {/* ---- the sign-in beat (live mode): her introduction, never an auth wall ---- */}
-          {beat === AUTH_BEAT && (
+          {promptReady && phase === 'likes' && (
             <motion.div
-              key="signin"
-              initial={{ opacity: 0, x: 44 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -36 }}
+              key="d-likes"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
               transition={spring}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 8,
-                marginTop: 26,
-              }}
+              style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
             >
-              <div
-                style={{
-                  fontSize: '1.35rem',
-                  fontWeight: 500,
-                  letterSpacing: '-0.02em',
-                  color: 'var(--clss-ink-900)',
-                }}
-              >
-                let's make this page truly yours
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {LIKES.map((l) => (
+                  <Chip
+                    key={l}
+                    label={l}
+                    selected={interests.includes(l)}
+                    onClick={() => toggleLike(l)}
+                  />
+                ))}
               </div>
-              <div
-                style={{
-                  fontSize: '0.95rem',
-                  color: 'var(--clss-ink-500)',
-                  textAlign: 'center',
-                  lineHeight: 1.6,
-                  maxWidth: 380,
-                }}
+              <MagneticButton
+                size="lg"
+                variant="primary"
+                onClick={submitLikes}
+                style={{ alignSelf: 'flex-start', minWidth: 140, justifyContent: 'center' }}
               >
-                sign in once and I'll keep your page safe — it follows you to any device you open
-              </div>
+                {interests.length ? 'that’s me' : 'a bit of everything'}
+              </MagneticButton>
+            </motion.div>
+          )}
 
+          {promptReady && phase === 'auth' && (
+            <motion.div
+              key="d-auth"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={spring}
+              style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
+            >
               {authStage === 'phone' ? (
-                <>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
                   <input
                     type="tel"
                     inputMode="tel"
@@ -509,37 +614,30 @@ export function Onboarding() {
                     placeholder="your phone number"
                     aria-label="your phone number"
                     style={{
-                      marginTop: 18,
-                      width: '100%',
-                      maxWidth: 320,
-                      fontSize: '1.4rem',
-                      fontWeight: 500,
-                      letterSpacing: '0.01em',
-                      textAlign: 'center',
+                      flex: 1,
+                      minWidth: 180,
+                      fontSize: '1.15rem',
                       fontFamily: 'inherit',
                       color: 'var(--clss-ink-900)',
-                      background: 'transparent',
+                      background: 'var(--clss-tonal)',
                       border: 'none',
-                      borderBottom: '0.5px solid var(--clss-hairline-on-paper-strong)',
+                      borderRadius: 3,
                       outline: 'none',
-                      padding: '6px 4px 12px',
+                      padding: '13px 15px',
                     }}
                   />
-                  <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-300)' }}>
-                    we'll text you a six-digit code — your number stays private
-                  </div>
                   <MagneticButton
                     size="lg"
                     variant="primary"
                     disabled={authBusy}
                     onClick={() => void sendCode()}
-                    style={{ marginTop: 22, minWidth: 190, justifyContent: 'center' }}
+                    style={{ minWidth: 150, justifyContent: 'center' }}
                   >
                     {authBusy ? 'sending…' : 'text me the code'}
                   </MagneticButton>
-                </>
+                </div>
               ) : (
-                <>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
                   <input
                     // biome-ignore lint/a11y/noAutofocus: the code is this stage's single intention
                     autoFocus
@@ -553,71 +651,37 @@ export function Onboarding() {
                       if (digits.length === 6 && !authBusy) void verifyCode(digits);
                     }}
                     onFocus={() => setMood('listening')}
-                    placeholder="······"
+                    placeholder="6-digit code"
                     aria-label="the six-digit code we texted you"
                     style={{
-                      marginTop: 18,
-                      width: '100%',
-                      maxWidth: 240,
-                      fontSize: '2rem',
-                      fontWeight: 500,
-                      letterSpacing: '0.35em',
-                      textAlign: 'center',
+                      flex: 1,
+                      minWidth: 160,
+                      fontSize: '1.4rem',
+                      letterSpacing: '0.3em',
                       fontFamily: 'inherit',
                       color: 'var(--clss-ink-900)',
-                      background: 'transparent',
+                      background: 'var(--clss-tonal)',
                       border: 'none',
-                      borderBottom: '0.5px solid var(--clss-hairline-on-paper-strong)',
+                      borderRadius: 3,
                       outline: 'none',
-                      padding: '6px 4px 12px',
+                      padding: '13px 15px',
                     }}
                   />
-                  <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-300)' }}>
-                    sent to {normalizePhone(phone)} ·{' '}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAuthStage('phone');
-                        setCode('');
-                        setAuthErr(null);
-                      }}
-                      style={{ ...ghostButton, padding: 0, fontSize: '0.85rem' }}
-                    >
-                      change number
-                    </button>
-                  </div>
                   <MagneticButton
                     size="lg"
                     variant="primary"
                     disabled={authBusy || code.length < 6}
                     onClick={() => void verifyCode(code)}
-                    style={{ marginTop: 22, minWidth: 190, justifyContent: 'center' }}
+                    style={{ minWidth: 140, justifyContent: 'center' }}
                   >
-                    {authBusy ? 'checking…' : "that's my code"}
+                    {authBusy ? 'checking…' : 'that’s my code'}
                   </MagneticButton>
-                </>
+                </div>
               )}
-
               {authErr && (
-                <motion.div
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)', marginTop: 6 }}
-                >
-                  {authErr}
-                </motion.div>
+                <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>{authErr}</div>
               )}
-
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  marginTop: 20,
-                  width: '100%',
-                  maxWidth: 320,
-                }}
-              >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ flex: 1, height: 1, background: 'var(--clss-hairline-on-paper)' }} />
                 <span style={{ fontSize: '0.8rem', color: 'var(--clss-ink-300)' }}>or</span>
                 <span style={{ flex: 1, height: 1, background: 'var(--clss-hairline-on-paper)' }} />
@@ -627,36 +691,30 @@ export function Onboarding() {
                 variant="ghost"
                 disabled={authBusy}
                 onClick={() => void withGoogle()}
-                style={{ marginTop: 4, minWidth: 190, justifyContent: 'center' }}
+                style={{ alignSelf: 'flex-start', minWidth: 190, justifyContent: 'center' }}
               >
                 continue with Google
               </MagneticButton>
             </motion.div>
           )}
 
-          {/* ---- the last beat: the door opens ---- */}
-          {beat === DOOR_BEAT && (
+          {phase === 'ready' && (
             <motion.div
-              key="door"
-              initial={{ opacity: 0, x: 44 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -36 }}
+              key="d-ready"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={spring}
-              onAnimationComplete={() => setMood('celebrate')}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 30,
-                marginTop: 30,
-              }}
+              style={{ display: 'flex', flexDirection: 'column', gap: 22 }}
             >
-              <div ref={readyRef} style={{ position: 'relative', width: 320, height: 190 }}>
-                {/* the hairline door draws itself */}
+              <div
+                ref={readyRef}
+                style={{ position: 'relative', width: '100%', maxWidth: 340, height: 176 }}
+              >
                 <svg
-                  width="320"
-                  height="190"
-                  viewBox="0 0 320 190"
+                  width="100%"
+                  height="176"
+                  viewBox="0 0 340 176"
+                  preserveAspectRatio="none"
                   fill="none"
                   aria-hidden="true"
                   style={{ position: 'absolute', inset: 0 }}
@@ -664,21 +722,21 @@ export function Onboarding() {
                   <motion.rect
                     x="0.5"
                     y="0.5"
-                    width="319"
-                    height="189"
+                    width="339"
+                    height="175"
                     rx="3"
                     stroke="var(--clss-ink-900)"
                     strokeWidth="1"
                     initial={{ pathLength: 0 }}
                     animate={{ pathLength: 1 }}
-                    transition={{ duration: 1.05, ease: [0.2, 0, 0, 1], delay: 0.2 }}
+                    transition={{ duration: 1, ease: [0.2, 0, 0, 1], delay: 0.15 }}
                   />
                 </svg>
                 {/* the one pigment moment: an ultramarine wash sweeps the page */}
                 <motion.div
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.7, ease: [0.2, 0, 0, 1], delay: 1.25 }}
+                  transition={{ duration: 0.7, ease: [0.2, 0, 0, 1], delay: 1.1 }}
                   style={{
                     position: 'absolute',
                     inset: 1,
@@ -690,7 +748,7 @@ export function Onboarding() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 1.8 }}
+                  transition={{ duration: 0.5, delay: 1.6 }}
                   style={{
                     position: 'absolute',
                     inset: 0,
@@ -698,16 +756,20 @@ export function Onboarding() {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: 8,
+                    gap: 6,
+                    textAlign: 'center',
+                    padding: '0 16px',
                   }}
                 >
                   <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>
-                    {finalName} · {grade ?? 'Class 8'} · {boardId ? boardName(boardId) : 'CBSE'}
+                    {finalName}
+                    {age ? ` · ${age}` : ''} · {grade ?? 'Class 8'} ·{' '}
+                    {boardId ? boardName(boardId) : 'CBSE'}
                   </div>
                   <div
                     style={{
-                      fontSize: '1.4rem',
-                      fontWeight: 500,
+                      fontSize: '1.35rem',
+                      fontWeight: 600,
                       letterSpacing: '-0.02em',
                       color: 'var(--clss-ink-900)',
                     }}
@@ -716,7 +778,7 @@ export function Onboarding() {
                   </div>
                   {boardId && !boardSeeded(boardId) && (
                     <div style={{ fontSize: '0.8rem', color: 'var(--clss-ink-500)' }}>
-                      your board's world arrives with you
+                      your board’s world arrives with you
                     </div>
                   )}
                 </motion.div>
@@ -725,7 +787,7 @@ export function Onboarding() {
                   aria-hidden
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ ...spring, delay: 2.05 }}
+                  transition={{ ...spring, delay: 1.9 }}
                   style={{
                     position: 'absolute',
                     right: 10,
@@ -734,40 +796,43 @@ export function Onboarding() {
                     alignItems: 'flex-end',
                   }}
                 >
-                  <Sprout size={32} seed={1} />
-                  <Pip size={42} mood="delighted" seed={2} />
+                  <Sprout size={30} seed={1} />
+                  <Pip size={40} mood="delighted" seed={2} />
                 </motion.div>
               </div>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ ...spring, delay: 2.1 }}
-              >
-                <MagneticButton
-                  size="lg"
-                  variant="primary"
-                  onClick={finish}
-                  style={{ minWidth: 170, justifyContent: 'center' }}
-                >
-                  step in
-                </MagneticButton>
-              </motion.div>
+              <AnimatePresence>
+                {promptReady && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={spring}
+                  >
+                    <MagneticButton
+                      size="lg"
+                      variant="primary"
+                      onClick={finish}
+                      style={{ minWidth: 150, justifyContent: 'center' }}
+                    >
+                      step in
+                    </MagneticButton>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
 
-      {/* skip — a door out, no guilt, nothing awarded until it completes from You.
-          Live mode keeps the flow: the page cannot exist without its owner signed in. */}
-      {!liveAuth && beat < AUTH_BEAT && (
-        <button
-          type="button"
-          onClick={skip}
-          style={{ ...ghostButton, position: 'fixed', bottom: 22 }}
-        >
-          skip for now
-        </button>
-      )}
+        {/* skip — a quiet door out, no guilt; live mode keeps the flow (a page needs its owner) */}
+        {!liveAuth && phase !== 'ready' && (
+          <button
+            type="button"
+            onClick={skip}
+            style={{ ...ghostButton, marginTop: 14, display: 'block' }}
+          >
+            skip for now
+          </button>
+        )}
+      </div>
     </div>
   );
 }

@@ -7,7 +7,13 @@ export function ClassessLogo({ height = 22 }: { height?: number }) {
     <img
       src="/classess-logo.png"
       alt="Classess"
-      style={{ height: height * 1.5, width: 'auto', display: 'block', userSelect: 'none' }}
+      style={{
+        height: height * 1.5,
+        width: 'auto',
+        display: 'block',
+        userSelect: 'none',
+        filter: 'var(--clss-logo-filter)',
+      }}
       draggable={false}
     />
   );

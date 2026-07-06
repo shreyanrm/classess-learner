@@ -124,7 +124,7 @@ export function CommandPalette() {
             position: 'fixed',
             inset: 0,
             zIndex: 'var(--clss-z-modal)' as unknown as number,
-            background: 'rgba(13,13,16,0.28)',
+            background: 'color-mix(in srgb, var(--clss-ink) 28%, transparent)',
             backdropFilter: 'blur(6px)',
             WebkitBackdropFilter: 'blur(6px)',
             display: 'flex',

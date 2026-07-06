@@ -17,7 +17,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { chapterById, topicById } from '../data/catalog';
+import { topicById } from '../data/catalog';
 import type { Topic } from '../data/model';
 import { useRouter } from '../shell/router';
 import {
@@ -28,9 +28,9 @@ import {
   type Proactivity,
   saveProactivity,
 } from '../store/mind';
-import { useProgress } from '../store/progress';
+import { levelInfo, useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
-import { BossSigil } from '../ui/art';
+import { LevelBadge } from '../ui/AppHeader';
 import {
   ANIMAL_IDS,
   type AvatarChoice,
@@ -43,8 +43,9 @@ import {
   saveAvatarChoice,
 } from '../ui/avatars';
 import { Scene } from '../ui/cast';
-import { toneForSubject } from '../ui/hues';
 import { Card, cascade, Hairline, MagneticButton, rise, SectionLabel } from '../ui/kit';
+import { setThemePref, type ThemePref, useThemePref } from '../ui/theme';
+import { loadViewPref, saveViewPref } from '../ui/viewPref';
 import { Whisper } from './Learn';
 import { GradeBoardPicker } from './you/GradeBoardPicker';
 import {
@@ -62,6 +63,7 @@ import {
   setFlag,
   VOICE_KEY,
 } from './you/profile';
+import { TrophyRoom } from './you/TrophyRoom';
 
 const whisper: CSSProperties = { fontSize: '0.8rem', color: 'var(--clss-ink-300)' };
 const bodyLine: CSSProperties = {
@@ -194,7 +196,58 @@ function ProactivityRow({
                 height: 34,
                 borderRadius: 3,
                 border: on ? '0.5px solid var(--clss-ink-900)' : '0.5px solid transparent',
-                background: on ? 'var(--clss-ink-900)' : '#F1F1F5',
+                background: on ? 'var(--clss-ink-900)' : 'var(--clss-tonal)',
+                color: on ? 'var(--clss-paper)' : 'var(--clss-ink-700)',
+                fontFamily: 'inherit',
+                fontSize: '0.8rem',
+                fontWeight: on ? 550 : 400,
+                cursor: 'pointer',
+                transition: 'background 0.2s ease, color 0.2s ease',
+              }}
+            >
+              {p}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+const APPEARANCE_LINES: Record<ThemePref, string> = {
+  light: 'the paper canvas — bright and open',
+  dark: 'soft graphite — subtle, easy at night',
+  system: 'follows your device, light by day and dark by night',
+};
+
+/** Light / dark / system — the appearance picker. Subtle graphite, never black. */
+function AppearanceRow() {
+  const pref = useThemePref();
+  const options: ThemePref[] = ['light', 'dark', 'system'];
+  return (
+    <div style={{ padding: '13px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div>
+        <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>appearance</div>
+        <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
+          {APPEARANCE_LINES[pref]}
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 6, maxWidth: 340 }}>
+        {options.map((p) => {
+          const on = p === pref;
+          return (
+            <button
+              key={p}
+              type="button"
+              aria-pressed={on}
+              aria-label={`${p} — ${APPEARANCE_LINES[p]}`}
+              onClick={() => setThemePref(p)}
+              style={{
+                flex: 1,
+                height: 34,
+                borderRadius: 3,
+                border: on ? '0.5px solid var(--clss-ink-900)' : '0.5px solid transparent',
+                background: on ? 'var(--clss-ink-900)' : 'var(--clss-tonal)',
                 color: on ? 'var(--clss-paper)' : 'var(--clss-ink-700)',
                 fontFamily: 'inherit',
                 fontSize: '0.8rem',
@@ -352,7 +405,7 @@ function AvatarPicker({
     height: 34,
     borderRadius: 3,
     border: 'none',
-    background: '#F1F1F5',
+    background: 'var(--clss-tonal)',
     fontFamily: 'inherit',
     fontSize: '0.8rem',
     color: 'var(--clss-ink-700)',
@@ -468,6 +521,7 @@ export function You() {
   const sdk = useSdk();
   const bus = useVidyaBus();
   const { xp, streakDays, completed, award } = useProgress();
+  const level = levelInfo(xp);
 
   // --- who you are -------------------------------------------------------
   const [profile, setProfile] = useState<StoredProfile>(() => loadProfile());
@@ -603,6 +657,7 @@ export function You() {
   // --- settings ----------------------------------------------------------
   const [voice, setVoice] = useState(() => getFlag(VOICE_KEY));
   const [sound, setSound] = useState(() => getFlag(SOUND_KEY));
+  const [adventure, setAdventure] = useState(() => loadViewPref() === 'adventure');
   const [proactivity, setProactivity] = useState<Proactivity>(() => loadProactivity());
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
@@ -820,19 +875,48 @@ export function You() {
                 gap: 12,
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                <span
-                  style={{
-                    fontSize: '3rem',
-                    fontWeight: 650,
-                    letterSpacing: '-0.035em',
-                    color: 'var(--clss-ink-900)',
-                    lineHeight: 1,
-                  }}
-                >
-                  {xp.toLocaleString('en-IN')}
-                </span>
-                <span style={{ fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>xp</span>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 16,
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                  <span
+                    style={{
+                      fontSize: '3rem',
+                      fontWeight: 650,
+                      letterSpacing: '-0.035em',
+                      color: 'var(--clss-ink-900)',
+                      lineHeight: 1,
+                    }}
+                  >
+                    {xp.toLocaleString('en-IN')}
+                  </span>
+                  <span style={{ fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>xp</span>
+                </div>
+                {/* the level medallion — bigger here, with the xp-to-next spelled out */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ textAlign: 'right' }}>
+                    <div
+                      style={{
+                        fontSize: '0.72rem',
+                        letterSpacing: '0.06em',
+                        textTransform: 'uppercase',
+                        color: 'var(--clss-ink-500)',
+                        fontWeight: 600,
+                      }}
+                    >
+                      level {level.level}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--clss-ink-700)' }}>
+                      {level.toNext} xp to level {level.level + 1}
+                    </div>
+                  </div>
+                  <LevelBadge info={level} celebrate={false} size={56} />
+                </div>
               </div>
               <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-700)' }}>
                 day {streakDays} of being a learner
@@ -860,7 +944,7 @@ export function You() {
                   fontSize: '0.7rem',
                   fontWeight: 600,
                   letterSpacing: '0.14em',
-                  color: '#989AA4',
+                  color: 'var(--clss-ink-faint)',
                   marginTop: 18,
                   marginBottom: 10,
                 }}
@@ -891,7 +975,7 @@ export function You() {
                     n = 0;
                   }
                   if (n === 0 && marks.includes(d)) n = 1;
-                  const RAMP = ['#EFF1F5', '#D5EDDD', '#A9DCBB', '#6FC28D', '#3FA764'];
+                  const RAMP = ['var(--clss-tonal)', '#D5EDDD', '#A9DCBB', '#6FC28D', '#3FA764'];
                   const fill =
                     RAMP[Math.min(4, n === 0 ? 0 : n <= 1 ? 1 : n <= 3 ? 2 : n <= 6 ? 3 : 4)];
                   return (
@@ -923,7 +1007,7 @@ export function You() {
             {/* the cast gathers — the world that learns beside you */}
             <Scene
               height={150}
-              hue="#1F35E0"
+              hue="var(--clss-ultramarine)"
               wash={0.05}
               items={[
                 { id: 'torto', x: 0.07, size: 64 },
@@ -960,110 +1044,10 @@ export function You() {
 
         <Hairline />
 
-        {/* ---- past courses: the trophy shelf ---- */}
+        {/* ---- the trophy room ---- */}
         <motion.div variants={rise} ref={shelfRef}>
-          <Section label="past courses">
-            {mastered.length === 0 ? (
-              <div
-                style={{
-                  background: 'rgba(31,53,224,0.04)',
-                  border: '1px solid rgba(31,53,224,0.1)',
-                  borderRadius: 3,
-                  padding: '34px 20px 30px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                }}
-              >
-                {/* an empty shelf is a promise, not a void — Ember already has her eye on it */}
-                <Scene
-                  height={124}
-                  wash={0}
-                  style={{ background: 'transparent', width: '100%', maxWidth: 420 }}
-                  items={[
-                    { id: 'ember', x: 0.26, size: 82, mood: 'curious' },
-                    { id: 'trophy', x: 0.56, size: 74 },
-                    { id: 'juni', x: 0.78, size: 42, lift: 44 },
-                  ]}
-                />
-                <div style={{ ...whisper, marginTop: 8 }}>
-                  your first finished course lands here
-                </div>
-              </div>
-            ) : (
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-                  gap: 12,
-                }}
-              >
-                {mastered.map((t) => {
-                  const tone = toneForSubject(chapterById(t.chapterId)?.subjectId ?? 'math');
-                  return (
-                    <Card
-                      key={t.id}
-                      style={{ padding: 10, display: 'flex', flexDirection: 'column' }}
-                    >
-                      {/* the trophy — the concept's own ignited sigil on its subject's stage */}
-                      <div
-                        style={{
-                          height: 132,
-                          borderRadius: 3,
-                          background: tone.wash,
-                          display: 'grid',
-                          placeItems: 'center',
-                        }}
-                      >
-                        <BossSigil id={t.id} size={92} mastered hue={tone.hue} />
-                      </div>
-                      <div style={{ padding: '12px 8px 8px' }}>
-                        <div
-                          style={{
-                            fontSize: '1rem',
-                            fontWeight: 550,
-                            letterSpacing: '-0.01em',
-                            color: 'var(--clss-ink-900)',
-                          }}
-                        >
-                          {t.name}
-                        </div>
-                        <div style={{ ...whisper, marginTop: 4 }}>
-                          {chapterById(t.chapterId)?.name}
-                        </div>
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 6,
-                            fontSize: '0.8rem',
-                            color: 'var(--clss-ink-500)',
-                            marginTop: 10,
-                          }}
-                        >
-                          <svg
-                            width="12"
-                            height="12"
-                            viewBox="0 0 14 14"
-                            fill="none"
-                            aria-hidden="true"
-                          >
-                            <path
-                              d="M2.5 7.5 5.5 10.5 11.5 3.5"
-                              stroke={tone.hue}
-                              strokeWidth="1.8"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                          mastered
-                        </div>
-                      </div>
-                    </Card>
-                  );
-                })}
-              </div>
-            )}
+          <Section label="your trophy room">
+            <TrophyRoom mastered={mastered} xp={xp} streakDays={streakDays} />
           </Section>
         </motion.div>
 
@@ -1241,6 +1225,16 @@ export function You() {
                 }}
               />
               <Hairline />
+              <DialRow
+                title="adventure roadmap"
+                line="see each subject's chapters as a journey through biomes, not a list"
+                on={adventure}
+                onChange={(v) => {
+                  setAdventure(v);
+                  saveViewPref(v ? 'adventure' : 'list');
+                }}
+              />
+              <Hairline />
               <ProactivityRow
                 value={proactivity}
                 onChange={(p) => {
@@ -1248,6 +1242,8 @@ export function You() {
                   saveProactivity(p);
                 }}
               />
+              <Hairline />
+              <AppearanceRow />
               {/* sign out — live mode only; the dev-mock learner has no session to end */}
               {!sdk.config.devAuth && (
                 <>

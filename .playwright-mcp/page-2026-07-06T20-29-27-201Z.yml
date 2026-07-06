@@ -1,0 +1,57 @@
+- generic [ref=f66e2]:
+  - generic [ref=f66e237]:
+    - banner [ref=f66e238]:
+      - button "Close course" [ref=f66e239] [cursor=pointer]:
+        - img [ref=f66e240]
+      - generic [ref=f66e257]:
+        - button "Replay Vidya" [ref=f66e258] [cursor=pointer]:
+          - img [ref=f66e259]
+        - button "Unmute Vidya" [pressed] [ref=f66e262] [cursor=pointer]:
+          - img [ref=f66e263]
+    - main [ref=f66e266]:
+      - generic [ref=f66e343]:
+        - generic [ref=f66e344]: the picture
+        - generic [ref=f66e345]: a balanced scale
+        - generic [ref=f66e346]: A pan balance holds 3x + 2 on the left and x + 8 on the right, resting level. Both sides are equal.
+        - figure [ref=f66e349]:
+          - 'img "diagram: A balanced scale" [ref=f66e351]':
+            - img [ref=f66e352]:
+              - generic [ref=f66e353]: Variables on Both Sides
+              - generic [ref=f66e354]: 2x + 3 = x + 5
+              - generic [ref=f66e360]: x
+              - generic [ref=f66e362]: x
+              - generic [ref=f66e363]: "+3"
+              - generic [ref=f66e365]: x
+              - generic [ref=f66e366]: "+5"
+              - generic [ref=f66e367]: 2x + 3
+              - generic [ref=f66e368]: x + 5
+              - generic [ref=f66e369]: Remove same from both sides → keep balance
+              - generic [ref=f66e370]: x = 2
+        - generic [ref=f66e371]: Tap the pan that carries more x blocks
+    - button "check" [active] [ref=f66e372] [cursor=pointer]:
+      - generic [ref=f66e373]: check
+  - banner:
+    - img "Classess" [ref=f66e199]
+    - generic [ref=f66e200]:
+      - button "Did you know" [ref=f66e201] [cursor=pointer]:
+        - img [ref=f66e202]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f66e204]:
+        - img [ref=f66e205]
+        - text: "1"
+      - generic [ref=f66e208]: 795 xp
+      - generic [ref=f66e209]:
+        - generic "level 5 · 235/240 xp to level 6" [ref=f66e210]:
+          - img [ref=f66e211]
+          - generic [ref=f66e214]: "5"
+        - button "You — level 5, profile and settings" [ref=f66e215] [cursor=pointer]:
+          - generic "Torto" [ref=f66e216]:
+            - img [ref=f66e218]
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

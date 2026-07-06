@@ -75,7 +75,7 @@ function DaySky() {
           cx={x}
           cy={y}
           r={i === 2 ? 4 : 2.4}
-          fill={i === 2 ? GOLD : '#1F35E0'}
+          fill={i === 2 ? GOLD : 'var(--clss-ultramarine)'}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.5 + i * 0.22 }}
@@ -108,8 +108,8 @@ export function MysteryTease({
         minHeight={300}
         style={{
           background:
-            'radial-gradient(70% 60% at 30% 20%, rgba(49,72,255,0.12), transparent 65%), linear-gradient(165deg, #FFFFFF 0%, #F3F4FC 55%, #EDEFFA 100%)',
-          border: '1px solid #E9E9EE',
+            'radial-gradient(70% 60% at 30% 20%, rgba(49,72,255,0.12), transparent 65%), linear-gradient(165deg, var(--clss-card) 0%, #F3F4FC 55%, #EDEFFA 100%)',
+          border: '1px solid var(--clss-card-border)',
           justifyContent: 'flex-end',
           padding: '0 0 26px',
         }}

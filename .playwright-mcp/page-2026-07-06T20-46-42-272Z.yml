@@ -1,0 +1,20 @@
+- generic [active] [ref=f2e1]:
+  - text: Classess
+  - heading "your week, Aarav" [level=1] [ref=f2e2]
+  - paragraph [ref=f2e3]: here's your week in one glance, Aarav. you touched 3 topics and kept the habit alive.
+  - generic [ref=f2e4]: "+640"
+  - generic [ref=f2e5]: xp earned
+  - generic [ref=f2e6]: "3"
+  - generic [ref=f2e7]: topics touched
+  - generic [ref=f2e8]: 82m
+  - generic [ref=f2e9]: time thinking
+  - text: acids and bases solid the mole concept growing electric circuits started
+  - paragraph [ref=f2e10]: the circuits work is the one to keep warm this week, you're closer than it feels.
+  - link "pick up where you left off" [ref=f2e11] [cursor=pointer]:
+    - /url: https://learner.classess.com/learn
+  - generic [ref=f2e12]: — Vidya
+  - paragraph [ref=f2e13]: Classess · made for curious minds
+  - paragraph [ref=f2e14]: "[street address placeholder] · [city, country]"
+  - paragraph [ref=f2e15]:
+    - link "unsubscribe" [ref=f2e16] [cursor=pointer]:
+      - /url: "{{unsubscribe_url}}"

@@ -96,6 +96,90 @@ export const feedback = {
   retrySoft: 'rgba(178,106,0,0.08)',
 } as const;
 
+// --- Chrome (second-cut neutrals) — the surface language most screens paint with -----------------
+/**
+ * The second-cut neutral palette (kit.tsx `surface`). Semantic roles, not raw greys, so a single
+ * dark override (below) reskins the whole app. Light values are byte-identical to the old literals.
+ */
+export const chrome = {
+  page: '#FFFFFF',
+  card: '#FFFFFF',
+  cardBorder: '#E9E9EE',
+  cardHover: '#FCFCFE',
+  tonal: '#F1F1F5',
+  tonalHover: '#E8E8EE',
+  ink: '#121316',
+  /** Text/icon that sits ON an ink surface (inverts with it). */
+  onInk: '#FFFFFF',
+  inkHover: '#26272C',
+  inkSoft: '#5C5E66',
+  inkFaint: '#989AA4',
+  faint: '#B9BBC6',
+  /** Soft pointer spotlight on cards — a dark wash on paper, a light glow on graphite. */
+  spotlight: 'rgba(18,19,22,0.05)',
+  /** Vidya's light-beam beneath her (grounding glow); dimmed on graphite so it never over-blooms. */
+  vidyaBeam:
+    'linear-gradient(to bottom, rgba(255,133,71,0.42), rgba(255,90,31,0.16) 55%, rgba(255,90,31,0) 88%)',
+  vidyaBeamPool: 'radial-gradient(ellipse at center, rgba(255,90,31,0.3), rgba(255,90,31,0) 70%)',
+  /** The black PNG wordmark inverts to white on graphite. */
+  logoFilter: 'none',
+} as const;
+
+/**
+ * Dark theme — subtle graphite, never black (Fable's spec). Keyed by the full `--clss-*` var name;
+ * `[data-theme="dark"]` on the document root swaps these in. Only theme-sensitive tokens appear:
+ * neutrals flip, ultramarine lightens for contrast, feedback hues brighten, frost inverts.
+ * Vidya's molten body and the decorative subject hues are deliberately absent — they glow on graphite.
+ */
+export const dark: Record<string, string> = {
+  // chrome neutrals
+  '--clss-page': '#17181C',
+  '--clss-card': '#1F2026',
+  '--clss-card-border': '#2A2B32',
+  '--clss-card-hover': '#24252C',
+  '--clss-tonal': '#24252C',
+  '--clss-tonal-hover': '#2E2F37',
+  '--clss-ink': '#F2F2F5',
+  '--clss-on-ink': '#17181C',
+  '--clss-ink-hover': '#E4E5EA',
+  '--clss-ink-soft': '#B4B6BF',
+  '--clss-ink-faint': '#7A7D88',
+  '--clss-faint': '#585A63',
+  // token ink scale (inverts: darkest → lightest)
+  '--clss-ink-900': '#F2F2F5',
+  '--clss-ink-800': '#E4E5EA',
+  '--clss-ink-700': '#C7C9D1',
+  '--clss-ink-500': '#9A9DA8',
+  '--clss-ink-300': '#4A4C55',
+  '--clss-ink-100': '#26272E',
+  '--clss-paper': '#17181C',
+  '--clss-canvas': '#17181C',
+  // hairlines invert to light-on-dark
+  '--clss-hairline-on-paper': 'rgba(255,255,255,0.09)',
+  '--clss-hairline-on-paper-strong': 'rgba(255,255,255,0.16)',
+  // ultramarine lightens for contrast on graphite
+  '--clss-ultramarine': '#4D63F2',
+  '--clss-ultramarine-base': '#4D63F2',
+  '--clss-ultramarine-hover': '#6579F5',
+  '--clss-ultramarine-active': '#3D52E0',
+  '--clss-ultramarine-soft': 'rgba(77,99,242,0.14)',
+  '--clss-ultramarine-wash': 'rgba(77,99,242,0.20)',
+  '--clss-ultramarine-ring': 'rgba(77,99,242,0.5)',
+  // feedback hues brighten just enough to pass contrast
+  '--clss-feedback-correct': '#4CAF50',
+  '--clss-feedback-correctSoft': 'rgba(76,175,80,0.16)',
+  '--clss-feedback-retry': '#E0982E',
+  '--clss-feedback-retrySoft': 'rgba(224,152,46,0.16)',
+  // frost inverts to a dark graphite glass
+  '--clss-frost-on-paper': 'rgba(23,24,28,0.62)',
+  '--clss-spotlight': 'rgba(255,255,255,0.05)',
+  '--clss-vidya-beam':
+    'linear-gradient(to bottom, rgba(255,150,90,0.30), rgba(255,110,50,0.12) 55%, rgba(255,110,50,0) 88%)',
+  '--clss-vidya-beam-pool':
+    'radial-gradient(ellipse at center, rgba(255,120,60,0.22), rgba(255,120,60,0) 70%)',
+  '--clss-logo-filter': 'brightness(0) invert(1)',
+};
+
 // --- Shape: sharp corners, 3px default ------------------------------------------------------------
 export const radius = {
   sm: 3,
@@ -175,6 +259,8 @@ export const tokens = {
   ink,
   paper,
   canvas,
+  chrome,
+  dark,
   surface,
   hairline,
   ultramarine,

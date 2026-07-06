@@ -1,0 +1,79 @@
+- generic [ref=f26e2]:
+  - generic [ref=f26e151]:
+    - button "Back — Home" [ref=f26e152] [cursor=pointer]:
+      - img [ref=f26e153]
+      - text: Home
+    - generic [ref=f26e156]:
+      - heading "Learn" [level=1] [ref=f26e157]
+      - generic [ref=f26e158]: pick a subject — a topic is a course, composed for you
+    - generic [ref=f26e160]:
+      - generic [ref=f26e161]: Where to today?
+      - generic [ref=f26e162]: your subjects, one tap each
+    - generic [ref=f26e164]:
+      - button "Mathematics — open the subject" [ref=f26e167] [cursor=pointer]:
+        - generic [ref=f26e168]:
+          - generic [ref=f26e169]:
+            - img [ref=f26e170]
+            - img [ref=f26e181]
+          - generic [ref=f26e188]:
+            - generic [ref=f26e189]: Mathematics
+            - generic [ref=f26e190]: patterns, structure, and certainty
+            - generic [ref=f26e191]: 13 chapters
+      - button "Science — open the subject" [ref=f26e194] [cursor=pointer]:
+        - generic [ref=f26e195]:
+          - generic [ref=f26e196]:
+            - img [ref=f26e197]
+            - img [ref=f26e210]
+          - generic [ref=f26e219]:
+            - generic [ref=f26e220]: Science
+            - generic [ref=f26e221]: how the world actually works
+            - generic [ref=f26e222]: 13 chapters
+      - button "Social Science — open the subject" [ref=f26e225] [cursor=pointer]:
+        - generic [ref=f26e226]:
+          - generic [ref=f26e227]:
+            - img [ref=f26e228]
+            - img [ref=f26e238]
+          - generic [ref=f26e245]:
+            - generic [ref=f26e246]: Social Science
+            - generic [ref=f26e247]: people, places, and power
+            - generic [ref=f26e248]: 14 chapters
+      - button "Computer Science — open the subject" [ref=f26e251] [cursor=pointer]:
+        - generic [ref=f26e252]:
+          - generic [ref=f26e253]:
+            - img [ref=f26e254]
+            - img [ref=f26e264]
+          - generic [ref=f26e272]:
+            - generic [ref=f26e273]: Computer Science
+            - generic [ref=f26e274]: how machines think in steps
+            - generic [ref=f26e275]: 3 chapters
+    - generic [ref=f26e277]:
+      - generic [ref=f26e278]: Courses of your own
+      - generic [ref=f26e279]: composed the moment you ask
+    - button "Ask Vidya for a course on anything black holes, cricket physics, the history of zero — your custom courses will live here" [ref=f26e280] [cursor=pointer]:
+      - generic [ref=f26e282]:
+        - img [ref=f26e284]
+        - img [ref=f26e310]
+      - generic [ref=f26e321]:
+        - generic [ref=f26e322]: Ask Vidya for a course on anything
+        - generic [ref=f26e323]: black holes, cricket physics, the history of zero — your custom courses will live here
+    - button "past courses ›" [ref=f26e325] [cursor=pointer]
+  - banner:
+    - img "Classess" [ref=f26e137]
+    - generic [ref=f26e138]:
+      - button "Did you know" [ref=f26e139] [cursor=pointer]:
+        - img [ref=f26e140]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f26e142]:
+        - img [ref=f26e143]
+        - text: "1"
+      - generic [ref=f26e146]: 0 xp
+      - button "You — profile and settings" [ref=f26e147] [cursor=pointer]:
+        - generic [ref=f26e148]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

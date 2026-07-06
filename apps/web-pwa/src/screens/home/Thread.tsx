@@ -15,13 +15,13 @@ import { ChevronIcon } from '../../ui/icons';
 import { fluidType } from '../../ui/kit';
 import type { StopKind, ThreadStop } from './stops';
 
-const INK = '#121316';
-const INK_60 = 'rgba(18,19,22,0.58)';
-const INK_40 = 'rgba(18,19,22,0.36)';
-const HAIR = 'rgba(18,19,22,0.10)';
-const HAIR_SOFT = 'rgba(18,19,22,0.055)';
-const TONAL = 'rgba(18,19,22,0.026)';
-const ULTRA = '#1F35E0';
+const INK = 'var(--clss-ink)';
+const INK_60 = 'color-mix(in srgb, var(--clss-ink) 58%, transparent)';
+const INK_40 = 'color-mix(in srgb, var(--clss-ink) 36%, transparent)';
+const HAIR = 'color-mix(in srgb, var(--clss-ink) 10%, transparent)';
+const HAIR_SOFT = 'color-mix(in srgb, var(--clss-ink) 5.5%, transparent)';
+const TONAL = 'color-mix(in srgb, var(--clss-ink) 2.6%, transparent)';
+const ULTRA = 'var(--clss-ultramarine)';
 const MAGENTA = '#CC1E7A';
 const ACID = '#66B300';
 const TEAL = '#0FA3B1';
@@ -223,7 +223,7 @@ function ShieldMedallion({ lit }: { lit: boolean }) {
       </defs>
       <path
         d="M23 5 L38 11 V 23 C 38 32.5 31.5 38.5 23 42 C 14.5 38.5 8 32.5 8 23 V 11 Z"
-        fill={lit ? 'url(#th-shield)' : 'rgba(18,19,22,0.08)'}
+        fill={lit ? 'url(#th-shield)' : 'color-mix(in srgb, var(--clss-ink) 8%, transparent)'}
       />
       <path
         d="M15.5 22.5 L21 28 L30.5 17.5"
@@ -335,7 +335,7 @@ function StopCard({
         gap: 13,
         border: `1px solid ${HAIR}`,
         borderRadius: 3,
-        background: '#FFFFFF',
+        background: 'var(--clss-card)',
         padding: '13px 14px 13px 16px',
         cursor: 'pointer',
         fontFamily: 'inherit',
@@ -602,7 +602,7 @@ export function Thread({
             top: d.fy * H,
             fontSize: d.glyph === '+' ? 15 : 22,
             fontWeight: 300,
-            color: 'rgba(18,19,22,0.14)',
+            color: 'color-mix(in srgb, var(--clss-ink) 14%, transparent)',
             userSelect: 'none',
           }}
         >

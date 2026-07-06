@@ -21,8 +21,8 @@ const PAN_W = 148;
 const STRING = 64;
 const X_WEIGHT = 5; // what x truly weighs — the scale never lies
 
-const HUE = '#1F35E0';
-const INK = '#121316';
+const HUE = 'var(--clss-ultramarine)';
+const INK = 'var(--clss-ink)';
 
 const spring = { type: 'spring', stiffness: 150, damping: 14 } as const;
 const rad = (deg: number) => (deg * Math.PI) / 180;
@@ -59,7 +59,7 @@ function UnitWeight({
         height: 28,
         border: `1.5px solid ${INK}`,
         borderBottomWidth: 3.5,
-        background: 'linear-gradient(180deg, #FFFFFF 0%, #E3E7FB 100%)',
+        background: 'linear-gradient(180deg, var(--clss-card) 0%, #E3E7FB 100%)',
         borderRadius: 4,
         display: 'grid',
         placeItems: 'center',
@@ -125,7 +125,8 @@ function Pan({
           right: 6,
           top: STRING - 2,
           height: 9,
-          background: 'linear-gradient(180deg, #4257F0 0%, #1F35E0 70%, #16279E 100%)',
+          background:
+            'linear-gradient(180deg, #4257F0 0%, var(--clss-ultramarine) 70%, #16279E 100%)',
           border: `1.5px solid ${INK}`,
           borderRadius: '3px 3px 6px 6px',
         }}
@@ -316,7 +317,8 @@ export function BalanceScale({
                   width: 220,
                   height: 16,
                   borderRadius: '50%',
-                  background: 'radial-gradient(ellipse, rgba(18,19,22,0.14) 0%, transparent 68%)',
+                  background:
+                    'radial-gradient(ellipse, color-mix(in srgb, var(--clss-ink) 14%, transparent) 0%, transparent 68%)',
                 }}
               />
               {/* the fulcrum — a chunky gradient pillar with an ink outline */}
@@ -336,7 +338,7 @@ export function BalanceScale({
                 <defs>
                   <linearGradient id="scale-pillar" x1="0" y1="0" x2="1" y2="0">
                     <stop offset="0%" stopColor="#3A3B42" />
-                    <stop offset="50%" stopColor="#121316" />
+                    <stop offset="50%" stopColor="var(--clss-ink)" />
                     <stop offset="100%" stopColor="#2A2B31" />
                   </linearGradient>
                 </defs>
@@ -359,7 +361,7 @@ export function BalanceScale({
                   top: BEAM_Y - 3,
                   width: HALF * 2,
                   height: 6,
-                  background: 'linear-gradient(180deg, #3A3B42 0%, #121316 55%)',
+                  background: 'linear-gradient(180deg, #3A3B42 0%, var(--clss-ink) 55%)',
                   borderRadius: 3,
                   transformOrigin: 'center',
                 }}
@@ -387,7 +389,7 @@ export function BalanceScale({
                     position: 'relative',
                     width: 42,
                     height: 34,
-                    background: 'linear-gradient(180deg, #2E3038 0%, #121316 100%)',
+                    background: 'linear-gradient(180deg, #2E3038 0%, var(--clss-ink) 100%)',
                     color: '#FFFFFF',
                     border: `1.5px solid ${INK}`,
                     borderRadius: 4,

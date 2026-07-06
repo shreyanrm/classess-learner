@@ -14,7 +14,7 @@ import { motion } from 'framer-motion';
 import { useMemo } from 'react';
 
 /** FNV-1a — stable tiny hash for deterministic art. */
-function hash(s: string): number {
+export function hash(s: string): number {
   let h = 0x811c9dc5;
   for (let i = 0; i < s.length; i++) {
     h ^= s.charCodeAt(i);
@@ -24,7 +24,7 @@ function hash(s: string): number {
 }
 
 /** A tiny seeded PRNG (mulberry32) so each sigil's features are stable. */
-function rng(seed: number): () => number {
+export function rng(seed: number): () => number {
   let a = seed;
   return () => {
     a |= 0;

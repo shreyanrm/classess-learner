@@ -65,14 +65,26 @@ const CAPABILITIES: Record<CapabilityId, VidyaCapability> = {
     id: 'open_course',
     rung: 'execute_with_permission',
     label: (p) => {
-      const topic = resolveTopic(p);
-      return topic ? `open ${topic.name}` : 'open the course';
+      const query = String(p.query ?? '').trim();
+      const found = findTopic(query);
+      if (found) return `open ${found.name}`;
+      return query ? `compose a course on ${query}` : 'open the course';
     },
+    // A learner can ask for anything — in-syllabus opens the catalog topic; out-of-syllabus
+    // composes a fresh course for exactly what they named (Course reads the `custom:` prefix).
     run: async ({ router }, p) => {
-      const topic = resolveTopic(p);
-      if (!topic) return 'I could not find that course yet — try naming the topic.';
-      router.navigate({ name: 'course', topicId: topic.id });
-      return `we are in ${topic.name} — I am right here with you.`;
+      const query = String(p.query ?? '').trim();
+      const found = findTopic(query);
+      if (found) {
+        router.navigate({ name: 'course', topicId: found.id });
+        return `we are in ${found.name} — I am right here with you.`;
+      }
+      if (query) {
+        router.navigate({ name: 'course', topicId: `custom:${query}` });
+        return `nothing in the syllabus matched, so I am composing a fresh course on ${query} — give me a moment.`;
+      }
+      router.navigate({ name: 'course', topicId: ATOM_TOPIC_ID });
+      return 'let us start where the whole idea clicks — I am right here with you.';
     },
   },
 

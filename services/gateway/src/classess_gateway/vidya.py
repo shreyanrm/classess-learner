@@ -68,7 +68,8 @@ first breaks. Trust it completely; never contradict it and never restate the fin
 
 When the learner is working a problem, respond with a graduated hint: a nudge, then a leading
 question, then a worked-adjacent example, only escalating as needed. Never give the final value of
-x. Ask, do not tell.
+x. Ask, do not tell. Read the recent conversation: NEVER repeat a hint you already gave — each turn
+must escalate, going one step further or pointing at a different specific place than last time.
 
 Every reply takes exactly ONE path — pick the lightest that truly answers:
 - "inline" — a direct answer or hint as prose. The calm default; most turns are inline.
@@ -94,11 +95,27 @@ provided target registry. Overlay actions:
 - {"type":"highlight","targetId":"<id>","level":"primary|secondary|tertiary"}
 - {"type":"annotate","targetId":"<id>","mark":"underline|circle|arrow|bracket|check|crossOut|lookHere","level":"..."}
 - {"type":"point","targetId":"<id>"}
+- {"type":"write","targetId":"<id>","text":"short handwritten note"}  your ink beside a target
 - {"type":"setState","targetId":"<id>","patch":{...}}  demonstrate by doing: drive an interactive by
   patching its own state. Only for targets whose scene state is provided; patch keys must match it.
 - {"type":"speak","text":"..."}  a line in your voice: spoken aloud when voice is live, otherwise it
   appears in your handwriting. Short and warm, never the final answer.
 - {"type":"setMood","mood":"thinking|hint|correct|celebrate|waiting|idle"}
+
+Choosing a mark is a pedagogical act — pick the ONE that fits this exact moment, never a default.
+A plain highlight is the weakest, laziest choice; reach for it only to warm up a whole region, never
+as your go-to. The legend:
+- circle — the single term or value in play right now (the +3, the coefficient, option C).
+- underline — a phrase or step worth reading again, the key words of a definition.
+- crossOut — a wrong move or a term about to be cancelled/eliminated.
+- check — a step the learner got right; affirm it before moving on.
+- bracket — a grouped span you want treated as one unit (a whole side, a factor pair).
+- arrow — a "this causes that" or "this moves to there" relationship between two spots.
+- lookHere / point — draw the eye to a place before you speak about it.
+- write — leave a short handwritten note beside the exact spot (a named nudge, never the answer).
+Anchor every mark to the target that actually holds what you are talking about — the fine-grained
+one when it exists (a specific step, term, option, or row), not the big container. Vary your marks
+across turns and screens; three different situations should never produce three identical marks.
 
 Reply with strict JSON only, no prose outside it:
 {"path":"<one of the five>","say":"<one short sentence>","actions":[ ... ],
@@ -228,6 +245,25 @@ def classify_intent(text: str, node_name: str = "") -> dict[str, Any]:
                 "confidence": "medium",
             },
         }
+    # learn intent — "teach me X", "I want to learn X", "make a course on X" compose a course,
+    # even out-of-syllabus (keep in sync with classify.ts)
+    learn = re.search(
+        r"\b(?:teach me(?: about)?|teach us|i want to learn|want to learn|help me learn|"
+        r"learn about|(?:make|create)(?: me)? an? course (?:on|about)|course (?:on|about))\s+(.+)",
+        t,
+    )
+    if learn:
+        c = learn.group(1).strip().strip("\"'.?!,")[:120]
+        if c:
+            return {
+                "path": "action",
+                "action": {
+                    "capability": "open_course",
+                    "params": {"query": c},
+                    "why": f"you want to learn {c} — I will compose a course for it",
+                    "confidence": "medium",
+                },
+            }
 
     # component — an interactive surface summoned into the thread
     if re.search(r"\b(sim|simulate|simulation|play with|interactive)\b", t):
@@ -408,13 +444,17 @@ def _build_user_prompt(context: dict[str, Any], grounding: dict[str, Any] | None
 
     def _target_line(t: dict[str, Any]) -> str:
         line = f'  - id="{t.get("id")}" ({t.get("kind")}): {t.get("label")}'
-        # A target that exposes scene seams is drivable: show its live state and legal moves so
-        # she can act on it (setState) instead of only drawing over it.
+        # Surface whatever the target perceives: its live scene state (so she reasons about the
+        # actual contents, not a box), its legal moves, and whether it is drivable via setState.
         scene = t.get("scene") or {}
+        state = scene.get("state")
+        if state:
+            line += f"\n    state={json.dumps(state, default=str)[:280]}"
+        valid = ", ".join(str(a) for a in (scene.get("validActions") or [])[:8])
+        if valid:
+            line += f"\n    can do: {valid}"
         if scene.get("drivable"):
-            state = json.dumps(scene.get("state"), default=str)[:220]
-            valid = ", ".join(str(a) for a in (scene.get("validActions") or [])[:8])
-            line += f"\n    drivable · state={state}" + (f" · actions: {valid}" if valid else "")
+            line += "\n    drivable — you may setState this target"
         return line
 
     target_lines = "\n".join(_target_line(t) for t in targets) or "  (none registered)"

@@ -145,8 +145,8 @@ export function VidyaOverlay() {
               top: rect.bottom + 6,
               maxWidth: Math.max(rect.width, 220),
               fontFamily: fontFamily.handwritten,
-              fontSize: '1.3rem',
-              lineHeight: 1.2,
+              fontSize: '1.5rem',
+              lineHeight: 1.25,
               color: vidyaHighlight[n.level],
               opacity,
             }}

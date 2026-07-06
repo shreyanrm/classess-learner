@@ -88,9 +88,7 @@ def test_compose_refuses_ambiguous_or_missing_answers() -> None:
 
     # answer absent from options
     assert (
-        _verify_items(
-            [{"type": "mcq", "prompt": "p", "options": ["a", "b"], "answer": "c"}] * 3
-        )
+        _verify_items([{"type": "mcq", "prompt": "p", "options": ["a", "b"], "answer": "c"}] * 3)
         is None
     )
     # answer present twice (duplicate options are refused)
@@ -193,6 +191,121 @@ def test_video_scenes_shape_and_keyless_null_audio() -> None:
             parse_equation(scene["visual"]["payload"]["formula"])
 
 
+# --- video model routing law (owner, 2026-07-07) ----------------------------------------
+
+_VALID_PLAN = (
+    '{"complexity":"%s","scenes":[{"id":"s1","durationMs":5000,"narration":"watch it move",'
+    '"visual":{"kind":"svg","payload":"<svg viewBox=\\"0 0 10 10\\">'
+    '<rect width=\\"5\\" height=\\"5\\"/></svg>"}}]}'
+)
+
+
+def _video_routing():
+    from classess_gateway.registry import policy
+    from classess_gateway.routing import resolve, resolve_any
+
+    pol = policy("engine.video")
+    sonnet = resolve(pol.primary, pol.track).provider_model
+    fallbacks = tuple(resolve_any(n).provider_model for n in pol.fallback)
+    return sonnet, fallbacks
+
+
+def test_video_defaults_to_sonnet_and_escalates_to_reason() -> None:
+    """engine.video storyboards on the sonnet tier and escalates to the frontier reasoner."""
+    from classess_gateway.registry import policy
+    from classess_gateway.routing import resolve, resolve_any
+
+    pol = policy("engine.video")
+    assert pol.primary == "frontier.sonnet"
+    assert resolve(pol.primary, pol.track).provider_model == "anthropic/claude-sonnet-5"
+    # the escalation target is the FIRST fallback: the frontier reasoner (Opus)
+    assert pol.fallback[0] == "frontier.reason"
+    assert resolve_any(pol.fallback[0]).provider_model == "anthropic/claude-opus-4-8"
+
+
+def _patch_complete(monkeypatch, plans: dict[str, str]) -> list[str]:
+    """Route each engine _complete call to a canned scene-plan JSON, recording the models hit."""
+    from classess_gateway.plexus import engines
+
+    calls: list[str] = []
+
+    def fake(model: str, modality: str, user: str, fbs):  # noqa: ANN001
+        calls.append(model)
+        return plans[model], 7
+
+    monkeypatch.setattr(engines, "_complete", fake)
+    return calls
+
+
+def test_video_escalates_when_scene_plan_flags_complex(monkeypatch) -> None:
+    from classess_gateway.plexus.engines import _generate_video_live
+
+    sonnet, fallbacks = _video_routing()
+    opus = fallbacks[0]
+    # sonnet returns a perfectly valid plan, but it self-declares complex -> escalate anyway
+    calls = _patch_complete(
+        monkeypatch, {sonnet: _VALID_PLAN % "complex", opus: _VALID_PLAN % "simple"}
+    )
+    artifact, model_used, _tokens, seeded = _generate_video_live(
+        "orbital motion", "core", sonnet, fallbacks, "user"
+    )
+    assert calls == [sonnet, opus]  # tried sonnet, then escalated to the reasoner
+    assert model_used == opus
+    assert seeded is False
+    assert artifact["scenes"]
+
+
+def test_video_escalates_when_sonnet_draft_fails_verification(monkeypatch) -> None:
+    from classess_gateway.plexus.engines import _generate_video_live
+
+    sonnet, fallbacks = _video_routing()
+    opus = fallbacks[0]
+    # sonnet returns junk (fails structural verification) -> escalate to the reasoner
+    calls = _patch_complete(monkeypatch, {sonnet: '{"scenes":[]}', opus: _VALID_PLAN % "simple"})
+    artifact, model_used, _tokens, _seeded = _generate_video_live(
+        "orbital motion", "core", sonnet, fallbacks, "user"
+    )
+    assert calls == [sonnet, opus]
+    assert model_used == opus
+    assert artifact["scenes"]
+
+
+def test_video_stays_on_sonnet_for_a_simple_valid_plan(monkeypatch) -> None:
+    from classess_gateway.plexus.engines import _generate_video_live
+
+    sonnet, fallbacks = _video_routing()
+    # a simple, valid plan never escalates — the reasoner is reserved for when it is needed
+    calls = _patch_complete(monkeypatch, {sonnet: _VALID_PLAN % "simple"})
+    _artifact, model_used, _tokens, _seeded = _generate_video_live(
+        "a falling apple", "core", sonnet, fallbacks, "user"
+    )
+    assert calls == [sonnet]
+    assert model_used == sonnet
+
+
+def test_pcm_narration_wrapped_as_playable_wav() -> None:
+    """Gemini returns raw PCM; the browser needs a WAV container to play it."""
+    import base64
+
+    from classess_gateway.plexus.media import _as_playable
+
+    pcm_b64 = base64.b64encode(b"\x00\x01" * 100).decode()
+    out = _as_playable("audio/pcm;rate=24000", pcm_b64)
+    assert out["mime"] == "audio/wav"
+    assert base64.b64decode(out["b64"]).startswith(b"RIFF")
+    # an already-containerised track passes through untouched
+    passthrough = _as_playable("audio/mp3", "abc")
+    assert passthrough == {"mime": "audio/mp3", "b64": "abc"}
+
+
+def test_seed_video_is_genuinely_animated() -> None:
+    from classess_gateway.plexus.engines import _seed_video
+
+    scenes = _seed_video("photosynthesis")["scenes"]
+    joined = " ".join(s["visual"]["payload"] for s in scenes)
+    assert "<animate" in joined  # SMIL motion, not slideware
+
+
 def test_video_rejects_scene_with_unsafe_svg() -> None:
     bad = {
         "scenes": [
@@ -237,7 +350,7 @@ def test_sanitizer_strips_scripts_and_handlers() -> None:
     dirty = (
         '<svg viewBox="0 0 10 10" onload="steal()">'
         "<script>alert(1)</script>"
-        '<foreignObject><body>x</body></foreignObject>'
+        "<foreignObject><body>x</body></foreignObject>"
         '<rect width="5" height="5" onclick="x()"/>'
         '<a href="https://evil.example"><text>go</text></a>'
         '<use href="#local"/>'

@@ -1,0 +1,14 @@
+- generic [active] [ref=f89e1]:
+  - text: Classess
+  - heading "you beat the mole concept boss" [level=1] [ref=f89e2]
+  - generic [ref=f89e3]: +320 XP
+  - paragraph [ref=f89e4]: that wasn't a quiz, it was the real thing, and you worked it out yourself. that's the part that stays with you.
+  - paragraph [ref=f89e5]: i've marked what you're solid on and what's worth a revisit later, so nothing you earned quietly slips away.
+  - link "see what's next" [ref=f89e6] [cursor=pointer]:
+    - /url: https://learner.classess.com/learn
+  - generic [ref=f89e7]: — Vidya
+  - paragraph [ref=f89e8]: Classess · made for curious minds
+  - paragraph [ref=f89e9]: "[street address placeholder] · [city, country]"
+  - paragraph [ref=f89e10]:
+    - link "unsubscribe" [ref=f89e11] [cursor=pointer]:
+      - /url: "{{unsubscribe_url}}"

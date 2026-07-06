@@ -19,12 +19,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ClassessLogo } from '../../ui/Logo';
 
-const INK = '#0D0D10';
-const INK_60 = 'rgba(13,13,16,0.58)';
-const INK_40 = 'rgba(13,13,16,0.36)';
-const HAIR = 'rgba(13,13,16,0.10)';
-const HAIR_SOFT = 'rgba(13,13,16,0.055)';
-const TONAL = 'rgba(13,13,16,0.026)';
+const INK = 'var(--clss-ink-900)';
+const INK_60 = 'color-mix(in srgb, var(--clss-ink) 58%, transparent)';
+const INK_40 = 'color-mix(in srgb, var(--clss-ink) 36%, transparent)';
+const HAIR = 'color-mix(in srgb, var(--clss-ink) 10%, transparent)';
+const HAIR_SOFT = 'color-mix(in srgb, var(--clss-ink) 5.5%, transparent)';
+const TONAL = 'color-mix(in srgb, var(--clss-ink) 2.6%, transparent)';
 const MAGENTA = '#CC1E7A';
 const SPRING = { type: 'spring', stiffness: 260, damping: 26 } as const;
 
@@ -272,7 +272,7 @@ function PadKey({
         justifyContent: 'center',
         border: primary ? `1px solid ${INK}` : `1px solid ${HAIR}`,
         borderRadius: 3,
-        background: primary ? INK : '#FFFFFF',
+        background: primary ? INK : 'var(--clss-card)',
         color: primary ? '#FFFFFF' : INK,
         fontSize: 21,
         fontWeight: 500,

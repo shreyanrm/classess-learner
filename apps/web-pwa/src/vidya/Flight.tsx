@@ -228,8 +228,7 @@ export function FlyingVidya({
             transformOrigin: '50% 0%',
             scaleY: beamScaleY,
             opacity: beamOpacity,
-            background:
-              'linear-gradient(to bottom, rgba(255,133,71,0.42), rgba(255,90,31,0.16) 55%, rgba(255,90,31,0) 88%)',
+            background: 'var(--clss-vidya-beam)',
             clipPath: 'polygon(38% 0%, 62% 0%, 92% 100%, 8% 100%)',
             filter: 'blur(5px)',
             pointerEvents: 'none',
@@ -245,8 +244,7 @@ export function FlyingVidya({
             height: size * 0.2,
             translateX: '-50%',
             borderRadius: '50%',
-            background:
-              'radial-gradient(ellipse at center, rgba(255,90,31,0.3), rgba(255,90,31,0) 70%)',
+            background: 'var(--clss-vidya-beam-pool)',
             filter: 'blur(4px)',
             opacity: beamOpacity,
             scaleX: beamScaleY,

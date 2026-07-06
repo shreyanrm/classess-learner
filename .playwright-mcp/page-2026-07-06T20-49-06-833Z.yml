@@ -1,0 +1,14 @@
+- generic [active] [ref=f4e1]:
+  - text: Classess
+  - heading "your course on acids, bases and salts is ready" [level=1] [ref=f4e2]
+  - paragraph [ref=f4e3]: "i built it for you just now, grounded on the real syllabus and shaped to how you learn. here's what's inside:"
+  - text: · one idea per screen, nothing rushed · a titration sim where the colour shifts as you add drops · a boss battle waiting at the end
+  - paragraph [ref=f4e4]: come in when you have ten quiet minutes. we'll take it one screen at a time.
+  - link "open your course" [ref=f4e5] [cursor=pointer]:
+    - /url: https://learner.classess.com/learn
+  - generic [ref=f4e6]: — Vidya
+  - paragraph [ref=f4e7]: Classess · made for curious minds
+  - paragraph [ref=f4e8]: "[street address placeholder] · [city, country]"
+  - paragraph [ref=f4e9]:
+    - link "unsubscribe" [ref=f4e10] [cursor=pointer]:
+      - /url: "{{unsubscribe_url}}"

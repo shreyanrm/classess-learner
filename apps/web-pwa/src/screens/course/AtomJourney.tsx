@@ -15,51 +15,27 @@ import { chapterById } from '../../data/catalog';
 import type { Topic } from '../../data/model';
 import { useProgress } from '../../store/progress';
 import { useSdk } from '../../store/sdk';
-import { BossSigil, TopicSigil } from '../../ui/art';
+import { BossSigil } from '../../ui/art';
+import { CourseIntroScene } from '../../ui/courseIntro';
 import { hueForTopic } from '../../ui/hues';
+import { announceCard } from '../../vidya/speech';
 import { BalanceScale } from './BalanceScale';
 import { Boss } from './Boss';
 import { Greeting } from './Greeting';
 import { MysteryLesson, MysteryTease } from './Mystery';
 import { PracticeRun } from './PracticeRun';
 import type { BarState } from './shared';
-import { CardBody, Deck, lead, rgba, Stage, whisper } from './shared';
+import {
+  CardBody,
+  Deck,
+  lead,
+  readCoursePos,
+  rgba,
+  Stage,
+  whisper,
+  writeCoursePos,
+} from './shared';
 import { WhatIf } from './WhatIf';
-
-/** A few slow hue motes drifting on the arrival stage — calm, alive. */
-function StageMotes({ hue }: { hue: string }) {
-  const motes = [
-    { id: 'm1', left: '16%', top: '68%', s: 6, dur: 7 },
-    { id: 'm2', left: '80%', top: '30%', s: 4, dur: 9 },
-    { id: 'm3', left: '70%', top: '76%', s: 5, dur: 8 },
-    { id: 'm4', left: '24%', top: '22%', s: 3, dur: 10 },
-  ];
-  return (
-    <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-      {motes.map((m, i) => (
-        <motion.span
-          key={m.id}
-          animate={{ y: [0, -14, 0], opacity: [0.35, 0.7, 0.35] }}
-          transition={{
-            duration: m.dur,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: 'easeInOut',
-            delay: i * 0.9,
-          }}
-          style={{
-            position: 'absolute',
-            left: m.left,
-            top: m.top,
-            width: m.s,
-            height: m.s,
-            borderRadius: 999,
-            background: i === 1 ? '#FFC93C' : rgba(hue, 0.5),
-          }}
-        />
-      ))}
-    </div>
-  );
-}
 
 type CardId =
   | 'arrival'
@@ -92,12 +68,15 @@ export function AtomJourney({
   setBar,
   setProgress,
   onExit,
+  onResume,
 }: {
   topic: Topic;
   nodeId: string;
   setBar: (b: BarState | null) => void;
   setProgress: (p: { f: number; segments: number }) => void;
   onExit: () => void;
+  /** Fired once when the player restores a saved mid-course position. */
+  onResume?: () => void;
 }) {
   const sdk = useSdk();
   const bus = useVidyaBus();
@@ -105,16 +84,19 @@ export function AtomJourney({
 
   const [card, setCard] = useState<CardId>(() => {
     // Resume where they left off — a course remembers its place (cliffhanger-friendly).
-    try {
-      const saved = (
-        JSON.parse(localStorage.getItem('clss-course-pos-v1') ?? '{}') as Record<string, CardId>
-      )[topic.id];
-      if (saved && saved !== 'greeting' && saved !== 'tease' && saved !== 'mystery') return saved;
-    } catch {
-      // fresh start below
+    const saved = readCoursePos(topic.id);
+    if (
+      typeof saved === 'string' &&
+      saved !== 'arrival' &&
+      saved !== 'greeting' &&
+      saved !== 'tease' &&
+      saved !== 'mystery'
+    ) {
+      return saved as CardId;
     }
     return 'arrival';
   });
+  const resumedRef = useRef(card !== 'arrival');
   const [sub, setSub] = useState(0);
   const [items, setItems] = useState<PracticeItem[]>([]);
   const enteredAt = useRef(Date.now());
@@ -122,6 +104,37 @@ export function AtomJourney({
   const enteredFired = useRef(false);
 
   const chapter = chapterById(topic.chapterId);
+
+  // She reads each card's core line on arrival. Teaching cards gate the advance button (true);
+  // celebration + the boss workbook narrate without locking (false). Practice is omitted — the run
+  // reads each question itself as the learner moves.
+  useEffect(() => {
+    const name = topic.name.toLowerCase();
+    const lines: Partial<Record<CardId, [text: string, gate: boolean]>> = {
+      arrival: [`${name}. one idea — a scale that cannot lie, and a boss at the end.`, true],
+      scale: [
+        'here is a scale that cannot lie. whatever you do to one side, do to the other, and it stays balanced.',
+        true,
+      ],
+      whatif: ['now play. change a number, and watch the whole equation answer back.', true],
+      bossdoor: [
+        'the boss. three questions — everything you just did, once more with weight. two of three closes the topic.',
+        true,
+      ],
+      boss: ['take your time. solve it, fill in the missing step, and spot the error.', false],
+      greeting: ['you did it. you can move a whole equation now, and keep it true.', false],
+      tease: ['one more thing before you go — a small mystery.', false],
+      mystery: ['here is the twist that makes it all click.', false],
+    };
+    const entry = lines[card];
+    if (entry) announceCard(`atom-${topic.id}-${card}`, entry[0], entry[1]);
+  }, [card, topic.id, topic.name]);
+
+  // resumed mid-course — let the shell show the quiet "picking up where you left off" beat, once
+  // biome-ignore lint/correctness/useExhaustiveDependencies: mount-only, resumedRef is stable
+  useEffect(() => {
+    if (resumedRef.current) onResume?.();
+  }, []);
 
   // arrival: the entered event, with the band the evidence plane currently holds
   useEffect(() => {
@@ -171,14 +184,7 @@ export function AtomJourney({
   );
   const go = useCallback(
     (next: CardId) => {
-      try {
-        const key = 'clss-course-pos-v1';
-        const pos = JSON.parse(localStorage.getItem(key) ?? '{}') as Record<string, CardId>;
-        pos[topic.id] = next;
-        localStorage.setItem(key, JSON.stringify(pos));
-      } catch {
-        // storage unavailable — session-only resume
-      }
+      writeCoursePos(topic.id, next);
       const earned = CARD_XP[card];
       if (earned) award('bonus', { amount: earned, onceKey: `card-${topic.id}-${card}` });
       setSub(0);
@@ -239,17 +245,13 @@ export function AtomJourney({
     <Deck id={card}>
       {card === 'arrival' && (
         <CardBody maxWidth={620}>
-          {/* the concept's own sigil, XL, drawing itself over its stage — this course's identity */}
-          <Stage hue={hueForTopic(topic.id)} tint={0.06} minHeight={320}>
-            <StageMotes hue={hueForTopic(topic.id)} />
-            <motion.div
-              initial={{ scale: 0.92 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 230, damping: 26 }}
-            >
-              <TopicSigil id={topic.id} size={150} draw bold />
-            </motion.div>
-          </Stage>
+          {/* this course's own arrival scene — sigil geometry + subject hue + a small cast */}
+          <CourseIntroScene
+            topicId={topic.id}
+            hue={hueForTopic(topic.id)}
+            minHeight={320}
+            sigilSize={150}
+          />
           <div style={{ textAlign: 'center' }}>
             <div style={whisper}>{(chapter?.name ?? 'mathematics').toLowerCase()}</div>
             <motion.div

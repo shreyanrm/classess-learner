@@ -2,6 +2,8 @@ import { cssVariables } from '@classess/config/css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { ensureDefaultAvatar } from './ui/avatars';
+import { initTheme } from './ui/theme';
 
 // Inject the design tokens once, plus a minimal token-driven base reset. No hardcoded hexes.
 const STYLE_ID = 'clss-tokens';
@@ -20,8 +22,9 @@ body {
   color: var(--clss-ink-900);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  /* Paper. Emptiness is the premium signal (DESIGN.md §2). */
-  background: #FFFFFF;
+  /* Paper in light, soft graphite in dark — never pure black (DESIGN.md §2). */
+  background: var(--clss-page);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 /* Type as craft: confident, tightly-tracked display; balanced headings; tidy prose. */
 h1, h2, h3, h4 { letter-spacing: -0.022em; text-wrap: balance; margin: 0; }
@@ -38,6 +41,9 @@ html { scrollbar-width: none; }
 `;
   document.head.appendChild(style);
 }
+
+initTheme();
+ensureDefaultAvatar();
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Missing #root');

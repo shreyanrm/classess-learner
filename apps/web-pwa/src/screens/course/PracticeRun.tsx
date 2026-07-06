@@ -14,6 +14,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useProgress } from '../../store/progress';
 import { useSdk } from '../../store/sdk';
 import { useVidyaChat } from '../../vidya/chat';
+import { announceCard } from '../../vidya/speech';
 import { hintFor, maxHintDepth, noteCorrect, noteMiss, regrade, useTutor } from '../../vidya/tutor';
 import { firstMove, fmt, linearize } from './equations';
 import type { BarState } from './shared';
@@ -26,7 +27,7 @@ const PAD_KEYS = [
   ['−', '0', '⌫'],
 ] as const;
 
-const HUE = '#1F35E0';
+const HUE = 'var(--clss-ultramarine)';
 const RETRY = '#B26A00';
 
 function Detonation({ item, theirs }: { item: PracticeItem; theirs: number }) {
@@ -203,7 +204,7 @@ export function PracticeRun({
   const [wrongValue, setWrongValue] = useState(0);
   // the assistance ladder at work: hint depth per item, and the "I think I'm right" contest
   const [hintLevel, setHintLevel] = useState(0);
-  const [hint, setHint] = useState<string | null>(null);
+  const lastHintRef = useRef<string>('');
   const [contest, setContest] = useState<'idle' | 'checking' | 'upheld' | 'stood'>('idle');
   const [contestNote, setContestNote] = useState('');
 
@@ -239,6 +240,18 @@ export function PracticeRun({
       { ontologyNodeId: nodeId },
     );
   }, [item, pos, sdk, nodeId]);
+
+  // she reads each question aloud as the learner arrives at it — never gates the check button
+  useEffect(() => {
+    if (!item || phase !== 'answer') return;
+    const spoken = item.equation
+      .replace(/=/g, ' equals ')
+      .replace(/\+/g, ' plus ')
+      .replace(/[-−]/g, ' minus ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    announceCard(`q-${nodeId}-${item.id}-${pos}`, `solve for x. ${spoken}.`, false);
+  }, [item, pos, phase, nodeId]);
 
   // done when the queue (including re-queued misses) is exhausted
   useEffect(() => {
@@ -276,7 +289,7 @@ export function PracticeRun({
     setWhyOpen(false);
     setDetReady(false);
     setHintLevel(0);
-    setHint(null);
+    lastHintRef.current = '';
     setContest('idle');
     setContestNote('');
     setPos((p) => p + 1);
@@ -285,11 +298,17 @@ export function PracticeRun({
   // one clue at a time — depth escalates on request, capped by the ladder, delivered in her ink
   const giveHint = useCallback(() => {
     if (!item) return;
-    const next = Math.min(hintLevel + 1, maxHintDepth(mode));
-    if (next === hintLevel) return;
-    const text = hintFor(item, next, mode);
+    const cap = maxHintDepth(mode);
+    // Escalate — and never repeat the last clue: if a depth lands on the same words, step further.
+    let next = hintLevel;
+    let text = '';
+    do {
+      next = Math.min(next + 1, cap);
+      text = hintFor(item, next, mode);
+    } while (text === lastHintRef.current && next < cap);
+    if (next === hintLevel && text === lastHintRef.current) return;
+    lastHintRef.current = text;
     setHintLevel(next);
-    setHint(text);
     sdk.events.record(
       'vidya.hint.escalated.v1',
       { node_id: nodeId, from_level: hintLevel, to_level: next, reason: 'explicit_request' },
@@ -516,28 +535,7 @@ export function PracticeRun({
         {item.equation}
       </div>
 
-      {/* the hint stays while her overlay ink fades — one clue, escalating only on request */}
-      <AnimatePresence initial={false}>
-        {phase === 'answer' && hint && (
-          <motion.div
-            key={hint}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
-            style={{
-              textAlign: 'center',
-              fontSize: '0.92rem',
-              lineHeight: 1.55,
-              color: 'var(--clss-ink-700)',
-              padding: '0 8px 10px',
-            }}
-          >
-            <span style={{ ...whisper, marginRight: 8 }}>hint {hintLevel}</span>
-            {hint}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* one hint, one surface: her handwritten ink beside the equation (VidyaOverlay 'write'). */}
 
       <AnimatePresence mode="wait" initial={false}>
         {phase === 'detonate' ? (
@@ -670,7 +668,8 @@ export function PracticeRun({
                             fontFamily: 'inherit',
                             fontWeight: 550,
                             color: 'var(--clss-ink-900)',
-                            background: 'linear-gradient(180deg, #FFFFFF 0%, #F2F3FB 100%)',
+                            background:
+                              'linear-gradient(180deg, var(--clss-card) 0%, #F2F3FB 100%)',
                             border: '1px solid #DDE0F0',
                             borderBottom: '3px solid #C9CEE8',
                             borderRadius: 4,

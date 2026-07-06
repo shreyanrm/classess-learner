@@ -72,12 +72,31 @@ export function isConsequential(action: VidyaAction): action is ConsequentialAct
   return CONSEQUENTIAL.has(action.type);
 }
 
+const ANNOTATION_SET = new Set<string>(ANNOTATION_KINDS);
+
+/**
+ * Normalize a raw action before validation. The model sometimes shorthands a mark as its own
+ * type — {"type":"circle","targetId":...} instead of {"type":"annotate","mark":"circle"} — because
+ * the mark legend reads like a type list. Fold that shorthand back into a real annotate so her ink
+ * still renders instead of being silently dropped.
+ */
+function normalizeAction(item: unknown): unknown {
+  if (item && typeof item === 'object' && !Array.isArray(item)) {
+    const t = (item as { type?: unknown }).type;
+    if (typeof t === 'string' && ANNOTATION_SET.has(t)) {
+      const { type: _t, ...rest } = item as Record<string, unknown>;
+      return { type: 'annotate', mark: t, ...rest };
+    }
+  }
+  return item;
+}
+
 /** Validate a raw action list from Vidya's reasoning; silently drop anything malformed. */
 export function parseActions(raw: unknown): VidyaAction[] {
   if (!Array.isArray(raw)) return [];
   const actions: VidyaAction[] = [];
   for (const item of raw) {
-    const result = VidyaActionSchema.safeParse(item);
+    const result = VidyaActionSchema.safeParse(normalizeAction(item));
     if (result.success) actions.push(result.data);
   }
   return actions;

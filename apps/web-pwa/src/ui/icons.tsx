@@ -173,7 +173,13 @@ export function ChevronIcon({ size = 14 }: { size?: number }) {
 }
 
 /** Her four-point spark — the chip mark. The accent IS the mark. */
-export function SparkIcon({ size = 12, color = '#1F35E0' }: { size?: number; color?: string }) {
+export function SparkIcon({
+  size = 12,
+  color = 'var(--clss-ultramarine)',
+}: {
+  size?: number;
+  color?: string;
+}) {
   return (
     <svg
       viewBox="0 0 14 14"

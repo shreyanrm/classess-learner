@@ -35,7 +35,7 @@ function Shell({ eyebrow, children }: { eyebrow: string; children: React.ReactNo
       {...rise}
       style={{
         width: '100%',
-        background: '#FFFFFF',
+        background: 'var(--clss-card)',
         border: '0.5px solid var(--clss-hairline-on-paper-strong)',
         borderRadius: 'var(--clss-radius-sm)',
         padding: '14px 16px 16px',
@@ -128,12 +128,12 @@ function QuizCard({ items }: { items: QuizItem[] }) {
                   ? 'var(--clss-feedback-retry)'
                   : 'var(--clss-hairline-on-paper)';
             const background = !answered
-              ? '#FFFFFF'
+              ? 'var(--clss-card)'
               : isAnswer
                 ? 'var(--clss-feedback-correctSoft)'
                 : chosen
                   ? 'var(--clss-feedback-retrySoft)'
-                  : '#FFFFFF';
+                  : 'var(--clss-card)';
             return (
               <button
                 key={option}
@@ -178,7 +178,7 @@ function QuizCard({ items }: { items: QuizItem[] }) {
               fontFamily: 'inherit',
               outline: 'none',
               color: 'var(--clss-ink-900)',
-              background: '#FFFFFF',
+              background: 'var(--clss-card)',
               borderRadius: 'var(--clss-radius-sm)',
               border: `1px solid ${
                 !answered
@@ -272,7 +272,7 @@ function FlashcardsCard({ cards }: { cards: Flashcard[] }) {
           gap: 8,
           textAlign: 'center',
           fontFamily: 'inherit',
-          background: flipped ? 'var(--clss-canvas)' : '#FFFFFF',
+          background: flipped ? 'var(--clss-canvas)' : 'var(--clss-card)',
           border: '0.5px solid var(--clss-hairline-on-paper-strong)',
           borderRadius: 'var(--clss-radius-sm)',
           cursor: 'pointer',

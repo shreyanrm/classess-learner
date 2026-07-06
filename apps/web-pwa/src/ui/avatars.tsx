@@ -114,6 +114,16 @@ export function loadAvatarChoice(): AvatarChoice | null {
   }
 }
 
+/**
+ * First boot has no face — allot a random cast buddy so the learner is never a letter.
+ * A stored choice (any picker pick, including 'initial') always wins and is left untouched.
+ */
+export function ensureDefaultAvatar(): void {
+  if (loadAvatarChoice()) return;
+  const castId = BUDDY_IDS[Math.floor(Math.random() * BUDDY_IDS.length)];
+  if (castId) saveAvatarChoice({ kind: 'cast', castId });
+}
+
 export function saveAvatarChoice(choice: AvatarChoice): void {
   try {
     localStorage.setItem(AVATAR_KEY, JSON.stringify(choice));

@@ -1,0 +1,52 @@
+- generic [ref=f44e2]:
+  - generic [ref=f44e533]:
+    - button "Back — Home" [ref=f44e534] [cursor=pointer]:
+      - img [ref=f44e535]
+      - text: Home
+    - banner [ref=f44e539]:
+      - generic [ref=f44e540]: 4 of 8 concepts are yours
+      - generic [ref=f44e541]: day 1 of being a learner · tap a star to see its story
+    - generic [ref=f44e542]:
+      - img "your knowledge constellation — every star is a concept" [ref=f44e544]:
+        - button "rational numbers — yours, independently" [ref=f44e555] [cursor=pointer]:
+          - generic [ref=f44e562]: rational numbers
+        - button "operations — yours, independently" [ref=f44e563] [cursor=pointer]:
+          - generic [ref=f44e570]: operations
+        - button "the number line — yours, independently" [ref=f44e571] [cursor=pointer]:
+          - generic [ref=f44e578]: the number line
+        - button "integers — not started" [ref=f44e579] [cursor=pointer]:
+          - generic [ref=f44e583]: integers
+        - button "variables — not started" [ref=f44e584] [cursor=pointer]:
+          - generic [ref=f44e588]: variables
+        - button "linear equations — yours, independently" [ref=f44e589] [cursor=pointer]:
+          - generic [ref=f44e596]: linear equations
+        - button "both sides — not started" [ref=f44e597] [cursor=pointer]:
+          - generic [ref=f44e601]: both sides
+        - button "word problems — not started" [ref=f44e602] [cursor=pointer]:
+          - generic [ref=f44e606]: word problems
+      - textbox "Ask your twin" [ref=f44e610]:
+        - /placeholder: "ask your twin: what am I weakest at…"
+  - banner:
+    - img "Classess" [ref=f44e199]
+    - generic [ref=f44e200]:
+      - button "Did you know" [ref=f44e201] [cursor=pointer]:
+        - img [ref=f44e202]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f44e204]:
+        - img [ref=f44e205]
+        - text: "1"
+      - generic [ref=f44e208]: 620 xp
+      - generic [ref=f44e496]:
+        - generic "level 5 · 60/240 xp to level 6" [ref=f44e497]:
+          - img [ref=f44e498]
+          - generic [ref=f44e501]: "5"
+        - button "You — level 5, profile and settings" [ref=f44e502] [cursor=pointer]:
+          - generic [ref=f44e503]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

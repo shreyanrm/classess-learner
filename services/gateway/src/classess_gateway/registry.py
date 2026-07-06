@@ -166,11 +166,16 @@ _POLICIES: dict[str, RoutingPolicy] = {
             cost_ceiling=0.05,
             cache_tier=CacheTier.EXACT,
         ),
+        # Video routing law (owner, 2026-07-07): scene plans are storyboarded on the sonnet
+        # tier by DEFAULT and escalate to the frontier reasoner (Opus) ONLY when necessary —
+        # a complexity flag in the scene plan or a failed structural/quality validation. The
+        # escalation target is the FIRST fallback, which the engine calls explicitly (not just
+        # an error-fallback): frontier.reason. See plexus.engines._generate_video_live.
         RoutingPolicy(
             capability="engine.video",
             track=Track.TRACK_1,
-            primary="frontier.reason",
-            fallback=("frontier.fast",),
+            primary="frontier.sonnet",
+            fallback=("frontier.reason", "frontier.fast"),
             max_latency_ms=30000,
             cost_ceiling=0.15,
             cache_tier=CacheTier.EXACT,

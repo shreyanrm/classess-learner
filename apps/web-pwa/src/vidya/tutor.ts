@@ -104,9 +104,14 @@ export function hintFor(item: PracticeItem, depth: number, mode: AssistMode): st
   const lin = linearize(item.equation);
   if (!lin) return 'read it once aloud — which part is the unknown, and what has been done to it?';
   if (d === 1) {
-    return lin.b !== 0 && lin.a !== 1
-      ? `two layers sit on x — a multiply and a ${lin.b > 0 ? 'plus' : 'minus'}. peel the outside one first, on both sides.`
-      : 'one honest move undoes this — and whatever you do to one side, you do to the other.';
+    // Grounded in this item's own numbers, so consecutive problems never read identically.
+    const term = lin.b > 0 ? `+ ${fmt(lin.b)}` : `− ${fmt(Math.abs(lin.b))}`;
+    if (lin.a !== 1 && lin.b !== 0)
+      return `two things wrap x here: a ×${fmt(lin.a)} and a ${term}. undo the ${term} first, same on both sides.`;
+    if (lin.a !== 1)
+      return `x is multiplied by ${fmt(lin.a)} — divide both sides by ${fmt(lin.a)} to free it.`;
+    if (lin.b !== 0) return `peel the ${term} off first — do the opposite to both sides.`;
+    return 'one honest move undoes this — whatever you do to one side, you do to the other.';
   }
   const move = firstMove(lin);
   if (d === 2) return `the move is: ${move.text}.`;

@@ -23,7 +23,7 @@ import {
   whisper,
 } from './shared';
 
-const HUE = '#1F35E0';
+const HUE = 'var(--clss-ultramarine)';
 const MAGENTA = '#CC1E7A';
 
 /**
@@ -100,7 +100,7 @@ function GraphBackdrop({ a, b, c }: { a: number; b: number; c: number }) {
           transition={spring}
           r={5.5}
           fill={GOLD}
-          stroke="#121316"
+          stroke="var(--clss-ink)"
           strokeWidth={1.6}
         />
       )}

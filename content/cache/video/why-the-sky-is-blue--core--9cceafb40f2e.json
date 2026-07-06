@@ -1,0 +1,46 @@
+{
+ "concept": "why the sky is blue",
+ "modality": "video",
+ "difficulty": "core",
+ "verified": true,
+ "seeded": true,
+ "provenance": {
+  "engine": "engine.video",
+  "model": "seed",
+  "prompt_version": "plexus-v1"
+ },
+ "artifact": {
+  "scenes": [
+   {
+    "id": "s1",
+    "durationMs": 6000,
+    "narration": "Here is why the sky is blue, one idea at a time.",
+    "visual": {
+     "kind": "svg",
+     "payload": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 320 200\" role=\"img\" aria-label=\"why the sky is blue\"><text x=\"160\" y=\"26\" text-anchor=\"middle\" font-size=\"13\" fill=\"#111\">why the sky is blue</text><rect x=\"60\" y=\"60\" width=\"200\" height=\"110\" fill=\"none\" stroke=\"#E9E9EE\" stroke-width=\"1\" /><rect x=\"96\" width=\"36\" fill=\"#1F35E0\"><animate attributeName=\"height\" values=\"0;96\" dur=\"1.6s\" fill=\"freeze\" /><animate attributeName=\"y\" values=\"170;74\" dur=\"1.6s\" fill=\"freeze\" /></rect><rect x=\"188\" width=\"36\" fill=\"#111\"><animate attributeName=\"height\" values=\"0;58\" dur=\"1.6s\" begin=\"0.4s\" fill=\"freeze\" /><animate attributeName=\"y\" values=\"170;112\" dur=\"1.6s\" begin=\"0.4s\" fill=\"freeze\" /></rect></svg>"
+    },
+    "title": "why the sky is blue"
+   },
+   {
+    "id": "s2",
+    "durationMs": 7000,
+    "narration": "Watch how one thing reaches the next.",
+    "visual": {
+     "kind": "svg",
+     "payload": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 320 200\" role=\"img\" aria-label=\"why the sky is blue\"><text x=\"160\" y=\"26\" text-anchor=\"middle\" font-size=\"13\" fill=\"#111\">why the sky is blue</text><line x1=\"60\" y1=\"130\" x2=\"260\" y2=\"130\" stroke=\"#E9E9EE\" stroke-width=\"1\" /><circle r=\"7\" fill=\"#FF5A1F\"><animateMotion path=\"M60,130 L250,130\" dur=\"2s\" repeatCount=\"indefinite\" /></circle><text x=\"60\" y=\"160\" font-size=\"10\" fill=\"#111\">cause</text><text x=\"228\" y=\"160\" font-size=\"10\" fill=\"#111\">effect</text></svg>"
+    }
+   },
+   {
+    "id": "s3",
+    "durationMs": 6000,
+    "narration": "It settles into one clear shape. Now it is yours.",
+    "visual": {
+     "kind": "svg",
+     "payload": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 320 200\" role=\"img\" aria-label=\"why the sky is blue\"><text x=\"160\" y=\"26\" text-anchor=\"middle\" font-size=\"13\" fill=\"#111\">why the sky is blue</text><circle cx=\"160\" cy=\"120\" r=\"46\" fill=\"none\" stroke=\"#111\" stroke-width=\"1\"><animate attributeName=\"r\" values=\"6;46\" dur=\"1.4s\" fill=\"freeze\" /></circle><circle cx=\"160\" cy=\"120\" r=\"4\" fill=\"#1F35E0\"><animate attributeName=\"opacity\" values=\"0;1\" dur=\"0.8s\" begin=\"1s\" fill=\"freeze\" /></circle></svg>"
+    }
+   }
+  ],
+  "narrationAudio": null
+ },
+ "createdAt": "2026-07-06T20:20:34+00:00"
+}

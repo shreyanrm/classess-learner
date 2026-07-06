@@ -41,6 +41,22 @@ function pcm16Base64(samples: Float32Array): string {
   return btoa(bin);
 }
 
+/** Linear-resample a mono chunk to 16 kHz PCM input. Identity when already 16 kHz (Chrome). */
+function resampleTo16k(input: Float32Array, inRate: number): Float32Array {
+  if (inRate === 16000) return input;
+  const ratio = inRate / 16000;
+  const outLen = Math.max(1, Math.round(input.length / ratio));
+  const out = new Float32Array(outLen);
+  for (let i = 0; i < outLen; i++) {
+    const src = i * ratio;
+    const i0 = Math.floor(src);
+    const i1 = Math.min(input.length - 1, i0 + 1);
+    const frac = src - i0;
+    out[i] = (input[i0] as number) * (1 - frac) + (input[i1] as number) * frac;
+  }
+  return out;
+}
+
 export function base64ToFloat32(b64: string): Float32Array<ArrayBuffer> {
   const bin = atob(b64);
   const bytes = new Uint8Array(bin.length);
@@ -91,20 +107,10 @@ export function useVidyaVoice(options?: { setMood?: (mood: VidyaMood) => void })
       return 'unavailable';
     }
     setStatus('connecting');
-    let session: { mode?: string; token?: string } = {};
-    try {
-      session = (await (await fetch(`${GATEWAY_URL}/v1/voice/session`)).json()) as {
-        mode?: string;
-        token?: string;
-      };
-    } catch {
-      // absent gateway — degrade silently
-    }
-    if (session.mode !== 'relay' || !session.token) {
-      setStatus('unavailable');
-      return 'unavailable';
-    }
 
+    // Mic FIRST: the permission prompt can sit for many seconds, so we must not mint the
+    // single-use relay token until after it clears — otherwise the token can expire in the gap
+    // and the relay closes 1008 before a word is spoken (the owner's "mic doesn't work").
     let stream: MediaStream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({
@@ -115,12 +121,32 @@ export function useVidyaVoice(options?: { setMood?: (mood: VidyaMood) => void })
       return 'idle';
     }
 
+    let session: { mode?: string; token?: string } = {};
+    try {
+      session = (await (await fetch(`${GATEWAY_URL}/v1/voice/session`)).json()) as {
+        mode?: string;
+        token?: string;
+      };
+    } catch {
+      // absent gateway — degrade silently
+    }
+    if (session.mode !== 'relay' || !session.token) {
+      for (const t of stream.getTracks()) t.stop();
+      setStatus('unavailable');
+      return 'unavailable';
+    }
+
     // The session-minted single-use token gates the relay (never the raw key, never open).
     const ws = new WebSocket(
       `${GATEWAY_URL.replace(/^http/, 'ws')}/v1/voice/relay?token=${encodeURIComponent(session.token)}`,
     );
-    const capture = new AudioContext({ sampleRate: 16000 });
+    // Do NOT force 16 kHz: Safari/iOS silently ignore the hint and hand back 44.1/48 kHz, so we
+    // read the real capture rate below and resample every chunk to the 16 kHz Gemini expects.
+    const capture = new AudioContext();
     const playback = new AudioContext({ sampleRate: 24000 });
+    // A user gesture opened this call, but Safari still starts contexts suspended.
+    await capture.resume().catch(() => {});
+    await playback.resume().catch(() => {});
     const state: LiveSession = { ws, stream, capture, playback, sources: new Set(), playhead: 0 };
     live.current = state;
 
@@ -128,13 +154,14 @@ export function useVidyaVoice(options?: { setMood?: (mood: VidyaMood) => void })
     // worklet module if capture jitter ever becomes audible.
     const source = capture.createMediaStreamSource(stream);
     const processor = capture.createScriptProcessor(1024, 1, 1);
+    const inRate = capture.sampleRate; // 16000 on Chrome, 44100/48000 on Safari
     processor.onaudioprocess = (e) => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(
           JSON.stringify({
             realtimeInput: {
               audio: {
-                data: pcm16Base64(e.inputBuffer.getChannelData(0)),
+                data: pcm16Base64(resampleTo16k(e.inputBuffer.getChannelData(0), inRate)),
                 mimeType: 'audio/pcm;rate=16000',
               },
             },

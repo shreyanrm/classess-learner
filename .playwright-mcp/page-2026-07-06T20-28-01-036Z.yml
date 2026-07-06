@@ -1,0 +1,43 @@
+- generic [ref=f64e2]:
+  - generic [ref=f64e218]:
+    - banner [ref=f64e219]:
+      - button "Close course" [ref=f64e220] [cursor=pointer]:
+        - img [ref=f64e221]
+      - generic [ref=f64e237]:
+        - button "Replay Vidya" [ref=f64e238] [cursor=pointer]:
+          - img [ref=f64e239]
+        - button "Unmute Vidya" [pressed] [ref=f64e242] [cursor=pointer]:
+          - img [ref=f64e243]
+    - main [ref=f64e246]:
+      - generic [ref=f64e323]:
+        - generic [ref=f64e324]: the picture
+        - generic [ref=f64e325]: a balanced scale
+        - generic [ref=f64e326]: A pan balance holds 3x + 2 on the left and x + 8 on the right, resting level. Both sides are equal.
+        - generic [ref=f64e332]: she is composing this piece — it lands here on its own
+        - generic [ref=f64e333]: Tap the pan that carries more x blocks
+    - button "check" [active] [ref=f64e336] [cursor=pointer]:
+      - generic [ref=f64e335]: check
+  - banner:
+    - img "Classess" [ref=f64e199]
+    - generic [ref=f64e200]:
+      - button "Did you know" [ref=f64e201] [cursor=pointer]:
+        - img [ref=f64e202]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f64e204]:
+        - img [ref=f64e205]
+        - text: "1"
+      - generic [ref=f64e208]: 795 xp
+      - generic [ref=f64e209]:
+        - generic "level 5 · 235/240 xp to level 6" [ref=f64e210]:
+          - img [ref=f64e211]
+          - generic [ref=f64e214]: "5"
+        - button "You — level 5, profile and settings" [ref=f64e215] [cursor=pointer]:
+          - generic [ref=f64e216]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

@@ -1,0 +1,142 @@
+- generic [ref=f40e2]:
+  - generic [ref=f40e388]:
+    - button "Back — ◦ ,learn" [ref=f40e389] [cursor=pointer]:
+      - img [ref=f40e390]
+      - text: ◦ learn
+    - generic [ref=f40e393]:
+      - img [ref=f40e394]
+      - generic:
+        - generic:
+          - img
+      - generic [ref=f40e404]:
+        - heading "Mathematics" [level=1] [ref=f40e405]
+        - generic [ref=f40e406]: patterns, structure, and certainty
+        - generic [ref=f40e407]:
+          - generic [ref=f40e408]: CBSE · Class 8
+          - generic [ref=f40e409]: 13 chapters
+    - button "Continue · Linear equations in one variable Variables on both sides Continue" [ref=f40e410] [cursor=pointer]:
+      - img [ref=f40e411]
+      - generic [ref=f40e418]:
+        - generic [ref=f40e419]: Continue · Linear equations in one variable
+        - generic [ref=f40e420]: Variables on both sides
+      - generic [ref=f40e423]: Continue
+    - generic [ref=f40e424]:
+      - generic [ref=f40e425]: the adventure
+      - tablist "how to view chapters" [ref=f40e426]:
+        - tab "list" [ref=f40e427] [cursor=pointer]
+        - tab "roadmap" [selected] [ref=f40e428] [cursor=pointer]
+    - generic [ref=f40e430]:
+      - img [ref=f40e431]
+      - generic [ref=f40e444]:
+        - generic:
+          - generic: 01 · the snowfields
+          - generic: Rational numbers
+          - generic: every stop cleared
+        - button "Rational numbers — the snowfields" [ref=f40e445] [cursor=pointer]:
+          - img [ref=f40e446]
+          - img [ref=f40e461]
+      - generic [ref=f40e463]:
+        - generic:
+          - generic: 02 · the deep forest
+          - generic: Linear equations in one variable
+          - generic: 1 of 3 cleared
+        - button "Linear equations in one variable — the deep forest, you are here" [ref=f40e464] [cursor=pointer]:
+          - img [ref=f40e465]
+        - generic: you are here
+      - generic [ref=f40e481]:
+        - generic:
+          - generic: 03 · the open ocean
+          - generic: Understanding quadrilaterals
+          - generic: 4 stops
+        - button "Understanding quadrilaterals — the open ocean" [ref=f40e482] [cursor=pointer]:
+          - img [ref=f40e483]
+      - generic [ref=f40e493]:
+        - generic:
+          - generic: 04 · the ember ridge
+          - generic: Data handling
+          - generic: 4 stops
+        - button "Data handling — the ember ridge" [ref=f40e494] [cursor=pointer]:
+          - img [ref=f40e495]
+      - generic [ref=f40e508]:
+        - generic:
+          - generic: 05 · the dunes
+          - generic: Squares and square roots
+          - generic: 4 stops
+        - button "Squares and square roots — the dunes" [ref=f40e509] [cursor=pointer]:
+          - img [ref=f40e510]
+      - generic [ref=f40e519]:
+        - generic:
+          - generic: 06 · the night sky
+          - generic: Cubes and cube roots
+          - generic: 3 stops
+        - button "Cubes and cube roots — the night sky" [ref=f40e520] [cursor=pointer]:
+          - img [ref=f40e521]
+      - generic [ref=f40e535]:
+        - generic:
+          - generic: 07 · the red canyon
+          - generic: Comparing quantities
+          - generic: 4 stops
+        - button "Comparing quantities — the red canyon" [ref=f40e536] [cursor=pointer]:
+          - img [ref=f40e537]
+      - generic [ref=f40e546]:
+        - generic:
+          - generic: 08 · the sunlit meadow
+          - generic: Algebraic expressions and identities
+          - generic: 4 stops
+        - button "Algebraic expressions and identities — the sunlit meadow" [ref=f40e547] [cursor=pointer]:
+          - img [ref=f40e548]
+      - generic [ref=f40e563]:
+        - generic:
+          - generic: 09 · the snowfields
+          - generic: Mensuration
+          - generic: 4 stops
+        - button "Mensuration — the snowfields" [ref=f40e564] [cursor=pointer]:
+          - img [ref=f40e565]
+      - generic [ref=f40e578]:
+        - generic:
+          - generic: 10 · the open ocean
+          - generic: Exponents and powers
+          - generic: 3 stops
+        - button "Exponents and powers — the open ocean" [ref=f40e579] [cursor=pointer]:
+          - img [ref=f40e580]
+      - generic [ref=f40e590]:
+        - generic:
+          - generic: 11 · the deep forest
+          - generic: Direct and inverse proportions
+          - generic: 3 stops
+        - button "Direct and inverse proportions — the deep forest" [ref=f40e591] [cursor=pointer]:
+          - img [ref=f40e592]
+      - generic [ref=f40e610]:
+        - generic:
+          - generic: 12 · the snowfields
+          - generic: Factorisation
+          - generic: 3 stops
+        - button "Factorisation — the snowfields" [ref=f40e611] [cursor=pointer]:
+          - img [ref=f40e612]
+      - generic [ref=f40e625]:
+        - generic:
+          - generic: 13 · the sunlit meadow
+          - generic: Introduction to graphs
+          - generic: 3 stops
+        - button "Introduction to graphs — the sunlit meadow" [ref=f40e626] [cursor=pointer]:
+          - img [ref=f40e627]
+  - banner:
+    - img "Classess" [ref=f40e199]
+    - generic [ref=f40e200]:
+      - button "Did you know" [ref=f40e201] [cursor=pointer]:
+        - img [ref=f40e202]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f40e204]:
+        - img [ref=f40e205]
+        - text: "1"
+      - generic [ref=f40e208]: 620 xp
+      - button "You — profile and settings" [ref=f40e209] [cursor=pointer]:
+        - generic [ref=f40e210]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

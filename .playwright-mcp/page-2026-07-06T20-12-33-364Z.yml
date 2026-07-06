@@ -1,0 +1,35 @@
+- generic [ref=f28e2]:
+  - generic [ref=f28e151]:
+    - button "Back — ◦ back" [ref=f28e152] [cursor=pointer]:
+      - img [ref=f28e153]
+      - text: ◦ back
+    - generic [ref=f28e156]:
+      - img "Vidya" [ref=f28e157]:
+        - img [ref=f28e161]
+      - generic [ref=f28e185]:
+        - generic [ref=f28e186]: Vidya
+        - generic [ref=f28e187]: one conversation, always
+      - button "Mute Vidya" [ref=f28e188] [cursor=pointer]:
+        - img [ref=f28e189]
+    - generic [ref=f28e194]:
+      - generic [ref=f28e195]: where we began
+      - generic [ref=f28e197]: ask me anything — I can see the page you are on.
+      - generic [ref=f28e198]: which subject has the most chapters for me?
+      - generic [ref=f28e199]:
+        - generic [ref=f28e200]: Let's peek at your learn tab — it lists every subject and its chapters so we can spot the biggest one together.
+        - generic [ref=f28e201]: taking you to learn — the learn area shows all subjects and chapter counts, which I can't see from here
+    - generic [ref=f28e203]:
+      - textbox "Talk to Vidya…" [active] [ref=f28e204]
+      - button "Talk by voice" [ref=f28e205] [cursor=pointer]
+  - banner:
+    - img "Classess" [ref=f28e138]
+    - generic [ref=f28e139]:
+      - button "Did you know" [ref=f28e140] [cursor=pointer]:
+        - img [ref=f28e141]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f28e143]:
+        - img [ref=f28e144]
+        - text: "1"
+      - generic [ref=f28e147]: 0 xp
+      - button "You — profile and settings" [ref=f28e148] [cursor=pointer]:
+        - generic [ref=f28e149]: A

@@ -92,7 +92,7 @@ export function ChatScreen() {
         display: 'flex',
         flexDirection: 'column',
         paddingTop: 64,
-        background: '#FFFFFF',
+        background: 'var(--clss-card)',
       }}
     >
       <Whisper onClick={() => router.back()}>◦ back</Whisper>
@@ -109,8 +109,8 @@ export function ChatScreen() {
       >
         <VidyaBody size={44} mood={busy ? 'thinking' : mood} gaze="pointer" label="Vidya" />
         <div>
-          <div style={{ fontWeight: 600, color: '#121316', lineHeight: 1.1 }}>Vidya</div>
-          <div style={{ fontSize: '0.75rem', color: '#989AA4' }}>
+          <div style={{ fontWeight: 600, color: 'var(--clss-ink)', lineHeight: 1.1 }}>Vidya</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--clss-ink-faint)' }}>
             {busy ? 'thinking…' : 'one conversation, always'}
           </div>
         </div>
@@ -139,7 +139,7 @@ export function ChatScreen() {
                 textAlign: 'center',
                 fontFamily: 'Caveat, cursive',
                 fontSize: 19,
-                color: 'rgba(18,19,22,0.45)',
+                color: 'color-mix(in srgb, var(--clss-ink) 45%, transparent)',
                 padding: '18px 0 6px',
               }}
             >
@@ -158,8 +158,8 @@ export function ChatScreen() {
                   borderRadius: 'var(--clss-radius-md)',
                   fontSize: fluidType.body,
                   lineHeight: 1.6,
-                  background: '#121316',
-                  color: '#FFFFFF',
+                  background: 'var(--clss-ink)',
+                  color: 'var(--clss-on-ink)',
                   whiteSpace: 'pre-wrap',
                   overflowWrap: 'anywhere',
                 }}
@@ -183,7 +183,7 @@ export function ChatScreen() {
                     padding: '2px 2px',
                     fontSize: fluidType.body,
                     lineHeight: 1.7,
-                    color: '#121316',
+                    color: 'var(--clss-ink)',
                     whiteSpace: 'pre-wrap',
                     overflowWrap: 'anywhere',
                   }}
@@ -199,7 +199,11 @@ export function ChatScreen() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              style={{ color: '#989AA4', fontSize: fluidType.small, padding: '2px 4px' }}
+              style={{
+                color: 'var(--clss-ink-faint)',
+                fontSize: fluidType.small,
+                padding: '2px 4px',
+              }}
             >
               Vidya is thinking…
             </motion.div>
@@ -215,7 +219,7 @@ export function ChatScreen() {
           gap: 10,
           alignItems: 'center',
           padding: '12px 20px calc(16px + env(safe-area-inset-bottom))',
-          borderTop: '1px solid #F1F1F5',
+          borderTop: '1px solid var(--clss-tonal)',
           maxWidth: 760,
           width: '100%',
           margin: '0 auto',
@@ -235,18 +239,18 @@ export function ChatScreen() {
               padding: '0 52px 0 18px',
               fontSize: fluidType.body,
               fontFamily: 'inherit',
-              border: '1px solid #E9E9EE',
+              border: '1px solid var(--clss-card-border)',
               borderRadius: 3,
               outline: 'none',
-              background: '#FFFFFF',
-              color: '#121316',
+              background: 'var(--clss-card)',
+              color: 'var(--clss-ink)',
               transition: 'border-color 0.2s ease',
             }}
             onFocusCapture={(e) => {
-              e.currentTarget.style.borderColor = '#B9BBC6';
+              e.currentTarget.style.borderColor = 'var(--clss-faint)';
             }}
             onBlurCapture={(e) => {
-              e.currentTarget.style.borderColor = '#E9E9EE';
+              e.currentTarget.style.borderColor = 'var(--clss-card-border)';
             }}
           />
           <button
@@ -264,7 +268,7 @@ export function ChatScreen() {
               placeItems: 'center',
               border: 'none',
               background: 'transparent',
-              color: voiceOn ? '#FF5A1F' : '#989AA4',
+              color: voiceOn ? '#FF5A1F' : 'var(--clss-ink-faint)',
               cursor: 'pointer',
               transition: 'color 0.25s ease',
             }}
@@ -294,7 +298,7 @@ export function ChatScreen() {
           style={{
             textAlign: 'center',
             paddingBottom: 10,
-            color: '#989AA4',
+            color: 'var(--clss-ink-faint)',
             fontSize: fluidType.small,
           }}
         >

@@ -1,0 +1,70 @@
+- generic [ref=f62e2]:
+  - generic [ref=f62e380]:
+    - banner [ref=f62e381]:
+      - button "Close course" [ref=f62e382] [cursor=pointer]:
+        - img [ref=f62e383]
+      - generic [ref=f62e386]: Free play · What makes a number rational
+      - generic [ref=f62e387]:
+        - button "Replay Vidya" [ref=f62e388] [cursor=pointer]:
+          - img [ref=f62e389]
+        - button "Unmute Vidya" [pressed] [ref=f62e392] [cursor=pointer]:
+          - img [ref=f62e393]
+    - main [ref=f62e396]:
+      - generic [ref=f62e397]:
+        - generic [ref=f62e398]: no task, no clock
+        - generic [ref=f62e399]: every number here is yours to drag
+        - generic [ref=f62e400]: pull a, b, or c sideways — the whole solution keeps up.
+        - generic [ref=f62e401]:
+          - img [ref=f62e402]
+          - generic [ref=f62e405]:
+            - slider "coefficient a" [ref=f62e406]: "2"
+            - generic [ref=f62e407]: x
+            - generic [ref=f62e408]: +
+            - slider "constant b" [ref=f62e409]: "3"
+            - generic [ref=f62e410]: =
+            - slider "right side c" [ref=f62e411]: "11"
+        - generic [ref=f62e412]:
+          - generic [ref=f62e413]:
+            - generic [ref=f62e414]: subtract 3 from both sides
+            - generic [ref=f62e415]:
+              - generic [ref=f62e416]: 2x
+              - generic [ref=f62e417]: =
+              - generic [ref=f62e418]: 11 − 3
+          - generic [ref=f62e420]:
+            - generic [ref=f62e421]: divide both sides by 2
+            - generic [ref=f62e422]:
+              - generic [ref=f62e423]: x
+              - generic [ref=f62e424]: =
+              - generic [ref=f62e425]: 8/2
+              - button "how we got here" [ref=f62e426] [cursor=pointer]: i
+          - generic [ref=f62e428]:
+            - generic [ref=f62e429]: the answer, live
+            - generic [ref=f62e430]:
+              - generic [ref=f62e431]: x
+              - generic [ref=f62e432]: =
+              - generic [ref=f62e433]: "4"
+        - generic [ref=f62e434]: no task here — bend the equation until it makes sense. Vidya is watching the numbers.
+  - banner:
+    - img "Classess" [ref=f62e199]
+    - generic [ref=f62e200]:
+      - button "Did you know" [ref=f62e201] [cursor=pointer]:
+        - img [ref=f62e202]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f62e204]:
+        - img [ref=f62e205]
+        - text: "1"
+      - generic [ref=f62e208]: 795 xp
+      - generic [ref=f62e209]:
+        - generic "level 5 · 235/240 xp to level 6" [ref=f62e210]:
+          - img [ref=f62e211]
+          - generic [ref=f62e214]: "5"
+        - button "You — level 5, profile and settings" [ref=f62e215] [cursor=pointer]:
+          - generic [ref=f62e216]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img
