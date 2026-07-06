@@ -1,10 +1,11 @@
 'use client';
 
 /**
- * A subject — chapters as a numbered, quiet vertical list (DESIGN.md §8). One tap expands a
- * chapter into its topics; a topic is a course. Prerequisite gates are suggestions with a
- * proceed-anyway door — advice, never a wall (CONTEXT.md §8). Ultramarine appears only where
- * mastery is real: the tick and the earned stretch of each chapter's progress filament.
+ * A subject — second cut. The header is a poster band: the subject glyph XL floating on its
+ * hue-washed stage with the layered scene behind it, title overlaid. Chapter rows carry their
+ * own sigil stage thumbnails; expanded topics slide in with stagger. Prerequisite gates are
+ * suggestions with a proceed-anyway door — advice, never a wall (CONTEXT.md §8). Pigment
+ * appears only where mastery is real: ignited sigils and the earned stretch of each filament.
  */
 
 import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
@@ -13,12 +14,13 @@ import { useEffect, useState } from 'react';
 import { chaptersBySubject, learner, subjectById, unmetPrereqs } from '../data/catalog';
 import type { Chapter, Topic } from '../data/model';
 import { useRouter } from '../shell/router';
+import { useViewport } from '../shell/useViewport';
 import { useProgress } from '../store/progress';
 import { ChapterFiligree, SubjectGlyph, TopicSigil } from '../ui/art';
-import { hueForTopic, toneForSubject } from '../ui/hues';
+import { hueForTopic, type SubjectTone, toneForSubject } from '../ui/hues';
 import { ChevronIcon } from '../ui/icons';
-import { MagneticButton } from '../ui/kit';
-import { Whisper } from './Learn';
+import { cascade, MagneticButton, rise } from '../ui/kit';
+import { SubjectSceneBackdrop, Whisper } from './Learn';
 
 const EXPAND_SPRING = { type: 'spring', stiffness: 320, damping: 32 } as const;
 
@@ -31,7 +33,7 @@ function topicRoute(topicId: string, intent: Intent) {
     : ({ name: 'course', topicId } as const);
 }
 
-function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
+function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone: SubjectTone }) {
   const router = useRouter();
   const { completed, topicProgress } = useProgress();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -68,8 +70,8 @@ function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
           border: hover
             ? '0.5px solid var(--clss-ink-300)'
             : '0.5px solid var(--clss-hairline-on-paper)',
-          borderRadius: 'var(--clss-radius-sm)',
-          padding: '13px 12px',
+          borderRadius: 3,
+          padding: '12px 12px',
           cursor: 'pointer',
           fontFamily: 'inherit',
           display: 'flex',
@@ -78,12 +80,22 @@ function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
           gap: 16,
         }}
       >
-        <span style={{ flexShrink: 0, opacity: mastered ? 1 : 0.8 }}>
-          {/* the concept's own geometry — ignited in the subject's hue once mastered */}
-          <TopicSigil id={topic.id} size={34} mastered={mastered} hue={hueForTopic(topic.id)} />
+        {/* the concept's own geometry on its own small stage — ignited once mastered */}
+        <span
+          style={{
+            flexShrink: 0,
+            width: 48,
+            height: 48,
+            borderRadius: 3,
+            background: tone.wash,
+            display: 'grid',
+            placeItems: 'center',
+          }}
+        >
+          <TopicSigil id={topic.id} size={36} mastered={mastered} hue={hueForTopic(topic.id)} />
         </span>
         <span style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, flex: 1 }}>
-          <span style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--clss-ink-900)' }}>
+          <span style={{ fontSize: '0.98rem', fontWeight: 550, color: 'var(--clss-ink-900)' }}>
             {topic.name}
           </span>
           <span style={{ fontSize: '0.82rem', color: 'var(--clss-ink-500)', lineHeight: 1.5 }}>
@@ -128,7 +140,7 @@ function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
             style={{
               flexShrink: 0,
               border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-              borderRadius: 999,
+              borderRadius: 3,
               padding: '4px 10px',
               fontSize: '0.75rem',
               color: 'var(--clss-ink-500)',
@@ -159,7 +171,7 @@ function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
                 margin: '2px 4px 12px',
                 padding: '14px 16px',
                 border: '0.5px solid var(--clss-hairline-on-paper)',
-                borderRadius: 'var(--clss-radius-sm)',
+                borderRadius: 3,
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 12,
@@ -190,7 +202,7 @@ function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
 
 /**
  * Endowed progress (CONTEXT.md §9): the filament never renders empty — an unstarted chapter
- * still shows a 4% thread of ink; the earned portion turns ultramarine only when it is real.
+ * still shows a 4% thread of ink; the earned portion turns the subject's hue only when real.
  */
 function Filament({ done, total, hue }: { done: number; total: number; hue: string }) {
   const pct = Math.max(4, total > 0 ? (done / total) * 100 : 0);
@@ -238,7 +250,7 @@ function ChapterRow({
           textAlign: 'left',
           background: 'transparent',
           border: 'none',
-          padding: '20px 4px 16px',
+          padding: '16px 4px 14px',
           cursor: 'pointer',
           fontFamily: 'inherit',
           display: 'flex',
@@ -246,22 +258,40 @@ function ChapterRow({
           gap: 18,
         }}
       >
+        {/* the chapter's sigil on its own stage thumbnail — ignited when every topic is done */}
         <span
           style={{
-            fontVariantNumeric: 'tabular-nums',
+            position: 'relative',
             flexShrink: 0,
-            width: 30,
-            height: 30,
+            width: 56,
+            height: 56,
+            borderRadius: 3,
+            background: tone.wash,
             display: 'grid',
             placeItems: 'center',
-            background: tone?.wash,
-            color: tone?.hue,
-            borderRadius: 8,
-            fontWeight: 600,
-            fontSize: '0.78rem',
+            overflow: 'hidden',
           }}
         >
-          {String(chapter.index).padStart(2, '0')}
+          <TopicSigil
+            id={chapter.id}
+            size={40}
+            mastered={total > 0 && done === total}
+            hue={tone.hue}
+          />
+          <span
+            style={{
+              position: 'absolute',
+              right: 5,
+              bottom: 3,
+              fontSize: '0.6rem',
+              fontWeight: 700,
+              color: tone.hue,
+              fontVariantNumeric: 'tabular-nums',
+              opacity: 0.85,
+            }}
+          >
+            {String(chapter.index).padStart(2, '0')}
+          </span>
         </span>
         <span
           style={{
@@ -272,7 +302,7 @@ function ChapterRow({
             gap: 7,
           }}
         >
-          <span style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--clss-ink-900)' }}>
+          <span style={{ fontSize: '1.05rem', fontWeight: 550, color: 'var(--clss-ink-900)' }}>
             {chapter.name}
           </span>
           {/* the chapter's own filigree — generative, derived from its id */}
@@ -312,10 +342,22 @@ function ChapterRow({
             transition={EXPAND_SPRING}
             style={{ overflow: 'hidden' }}
           >
-            <div style={{ padding: '10px 0 14px 40px' }}>
+            {/* topics slide in with stagger — each rises as the chapter unfolds */}
+            <motion.div
+              variants={cascade}
+              initial="hidden"
+              animate="show"
+              style={{
+                padding: '12px 0 16px 74px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 6,
+              }}
+            >
               {total === 0 ? (
                 <>
-                  <div
+                  <motion.div
+                    variants={rise}
                     style={{
                       fontSize: '0.85rem',
                       color: 'var(--clss-ink-500)',
@@ -324,8 +366,9 @@ function ChapterRow({
                     }}
                   >
                     Vidya composes this chapter's course when you open it
-                  </div>
+                  </motion.div>
                   <motion.button
+                    variants={rise}
                     type="button"
                     onClick={() => router.navigate(topicRoute(chapter.id, intent))}
                     whileHover={{ x: 3 }}
@@ -357,10 +400,12 @@ function ChapterRow({
                 </>
               ) : (
                 chapter.topics.map((topic) => (
-                  <TopicRow key={topic.id} topic={topic} intent={intent} />
+                  <motion.div key={topic.id} variants={rise}>
+                    <TopicRow topic={topic} intent={intent} tone={tone} />
+                  </motion.div>
                 ))
               )}
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -371,7 +416,9 @@ function ChapterRow({
 export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent: Intent }) {
   const router = useRouter();
   const { publishPage } = useVidyaBus();
+  const { isDesktop } = useViewport();
   const subject = subjectById(subjectId);
+  const tone = toneForSubject(subjectId);
   const chapters = chaptersBySubject[subjectId] ?? [];
   const [openChapter, setOpenChapter] = useState<string | null>(null);
   const listRef = useRegisterTarget<HTMLDivElement>('subject-chapters', {
@@ -387,51 +434,111 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
   }, [publishPage, subjectId, subject?.name, intent, openChapter]);
 
   return (
-    <div
-      style={{
-        minHeight: '100dvh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: '108px 24px 72px',
-      }}
+    <motion.div
+      variants={cascade}
+      initial="hidden"
+      animate="show"
+      style={{ minHeight: '100dvh', padding: '108px 6vw 96px' }}
     >
       <Whisper onClick={() => router.back()}>◦ {intent}</Whisper>
 
-      <div style={{ width: '100%', maxWidth: 720 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 4 }}>
-          <SubjectGlyph subjectId={subjectId} size={64} accent />
-        </div>
-        <h1
+      {/* the poster band — the subject's stage, its scene behind, the glyph XL afloat */}
+      <motion.div
+        variants={rise}
+        style={{
+          position: 'relative',
+          minHeight: isDesktop ? 300 : 260,
+          borderRadius: 3,
+          background: tone.wash,
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'flex-end',
+        }}
+      >
+        <SubjectSceneBackdrop subjectId={subjectId} />
+        <div
           style={{
-            margin: 0,
-            fontSize: '1.6rem',
-            fontWeight: 500,
-            letterSpacing: '-0.02em',
-            color: 'var(--clss-ink-900)',
+            position: 'absolute',
+            right: isDesktop ? '8%' : 16,
+            top: 0,
+            bottom: 0,
+            display: 'flex',
+            alignItems: 'center',
+            pointerEvents: 'none',
           }}
         >
-          {subject?.name ?? subjectId}
-        </h1>
-        <div style={{ marginTop: 6, fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>
-          {subject?.line}
+          <motion.div
+            animate={{ y: [0, -9, 0], rotate: [0, -2, 0] }}
+            transition={{ duration: 6.5, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+          >
+            <SubjectGlyph subjectId={subjectId} size={isDesktop ? 184 : 116} accent />
+          </motion.div>
         </div>
-        <div style={{ marginTop: 4, fontSize: '0.8rem', color: 'var(--clss-ink-300)' }}>
-          {learner.board} · {learner.grade} · {chapters.length} chapters
+        <div
+          style={{
+            position: 'relative',
+            padding: isDesktop ? '30px 36px' : '22px 22px',
+            maxWidth: isDesktop ? '58%' : '64%',
+          }}
+        >
+          <h1
+            style={{
+              margin: 0,
+              fontSize: isDesktop ? '2rem' : '1.55rem',
+              fontWeight: 650,
+              letterSpacing: '-0.03em',
+              lineHeight: 1.12,
+              color: 'var(--clss-ink-900)',
+            }}
+          >
+            {subject?.name ?? subjectId}
+          </h1>
+          <div style={{ marginTop: 7, fontSize: '0.92rem', color: 'var(--clss-ink-500)' }}>
+            {subject?.line}
+          </div>
+          <div style={{ marginTop: 14, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <span
+              style={{
+                padding: '5px 11px',
+                borderRadius: 3,
+                background: '#FFFFFF',
+                border: '0.5px solid var(--clss-hairline-on-paper)',
+                fontSize: '0.75rem',
+                fontWeight: 550,
+                color: 'var(--clss-ink-500)',
+              }}
+            >
+              {learner.board} · {learner.grade}
+            </span>
+            <span
+              style={{
+                padding: '5px 11px',
+                borderRadius: 3,
+                background: '#FFFFFF',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                color: tone.hue,
+                fontVariantNumeric: 'tabular-nums',
+              }}
+            >
+              {chapters.length} chapters
+            </span>
+          </div>
         </div>
+      </motion.div>
 
-        <div ref={listRef} style={{ marginTop: 44 }}>
-          {chapters.map((ch) => (
+      <div ref={listRef} style={{ marginTop: 40 }}>
+        {chapters.map((ch) => (
+          <motion.div key={ch.id} variants={rise}>
             <ChapterRow
-              key={ch.id}
               chapter={ch}
               intent={intent}
               open={openChapter === ch.id}
               onToggle={() => setOpenChapter((o) => (o === ch.id ? null : ch.id))}
             />
-          ))}
-        </div>
+          </motion.div>
+        ))}
       </div>
-    </div>
+    </motion.div>
   );
 }

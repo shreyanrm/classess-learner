@@ -1,0 +1,161 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e191]:
+    - button "Back — ◦ ,learn" [ref=f3e192] [cursor=pointer]:
+      - img [ref=f3e193]
+      - text: ◦ learn
+    - generic [ref=f3e196]:
+      - img [ref=f3e197]
+      - generic:
+        - generic:
+          - img
+      - generic [ref=f3e207]:
+        - heading "Mathematics" [level=1] [ref=f3e208]
+        - generic [ref=f3e209]: patterns, structure, and certainty
+        - generic [ref=f3e210]:
+          - generic [ref=f3e211]: CBSE · Class 8
+          - generic [ref=f3e212]: 13 chapters
+    - generic [ref=f3e213]:
+      - button "01 Rational numbers 1 of 3" [ref=f3e216] [cursor=pointer]:
+        - generic [ref=f3e217]:
+          - img [ref=f3e218]
+          - generic [ref=f3e226]: "01"
+        - generic [ref=f3e227]:
+          - generic [ref=f3e228]: Rational numbers
+          - img [ref=f3e229]
+        - generic [ref=f3e235]: 1 of 3
+        - img [ref=f3e237]
+      - generic [ref=f3e244]:
+        - button "02 Linear equations in one variable 1 of 3" [expanded] [active] [ref=f3e245] [cursor=pointer]:
+          - generic [ref=f3e246]:
+            - img [ref=f3e247]
+            - generic [ref=f3e253]: "02"
+          - generic [ref=f3e254]:
+            - generic [ref=f3e255]: Linear equations in one variable
+            - img [ref=f3e256]
+          - generic [ref=f3e260]: 1 of 3
+          - img [ref=f3e262]
+        - generic [ref=f3e551]:
+          - button "Solving equations with the variable on one side Undo operations in the right order and the unknown surrenders. mastered" [ref=f3e554] [cursor=pointer]:
+            - img [ref=f3e556]
+            - generic [ref=f3e562]:
+              - generic [ref=f3e563]: Solving equations with the variable on one side
+              - generic [ref=f3e564]: Undo operations in the right order and the unknown surrenders.
+            - generic [ref=f3e565]:
+              - img [ref=f3e566]
+              - text: mastered
+          - button "Variables on both sides Gather the xs, gather the numbers, and the equation folds flat." [ref=f3e570] [cursor=pointer]:
+            - img [ref=f3e572]
+            - generic [ref=f3e579]:
+              - generic [ref=f3e580]: Variables on both sides
+              - generic [ref=f3e581]: Gather the xs, gather the numbers, and the equation folds flat.
+            - img [ref=f3e583]
+          - button "Word problems that become equations Turn a sentence into an equation, then solve it cleanly. builds on Variables on both sides" [ref=f3e588] [cursor=pointer]:
+            - img [ref=f3e590]
+            - generic [ref=f3e596]:
+              - generic [ref=f3e597]: Word problems that become equations
+              - generic [ref=f3e598]: Turn a sentence into an equation, then solve it cleanly.
+            - generic [ref=f3e599]: builds on Variables on both sides
+      - button "03 Understanding quadrilaterals" [ref=f3e270] [cursor=pointer]:
+        - generic [ref=f3e271]:
+          - img [ref=f3e272]
+          - generic [ref=f3e278]: "03"
+        - generic [ref=f3e279]:
+          - generic [ref=f3e280]: Understanding quadrilaterals
+          - img [ref=f3e281]
+        - img [ref=f3e287]
+      - button "04 Data handling" [ref=f3e295] [cursor=pointer]:
+        - generic [ref=f3e296]:
+          - img [ref=f3e297]
+          - generic [ref=f3e305]: "04"
+        - generic [ref=f3e306]:
+          - generic [ref=f3e307]: Data handling
+          - img [ref=f3e308]
+        - img [ref=f3e314]
+      - button "05 Squares and square roots" [ref=f3e322] [cursor=pointer]:
+        - generic [ref=f3e323]:
+          - img [ref=f3e324]
+          - generic [ref=f3e330]: "05"
+        - generic [ref=f3e331]:
+          - generic [ref=f3e332]: Squares and square roots
+          - img [ref=f3e333]
+        - img [ref=f3e339]
+      - button "06 Cubes and cube roots" [ref=f3e347] [cursor=pointer]:
+        - generic [ref=f3e348]:
+          - img [ref=f3e349]
+          - generic [ref=f3e357]: "06"
+        - generic [ref=f3e358]:
+          - generic [ref=f3e359]: Cubes and cube roots
+          - img [ref=f3e360]
+        - img [ref=f3e366]
+      - button "07 Comparing quantities" [ref=f3e374] [cursor=pointer]:
+        - generic [ref=f3e375]:
+          - img [ref=f3e376]
+          - generic [ref=f3e382]: "07"
+        - generic [ref=f3e383]:
+          - generic [ref=f3e384]: Comparing quantities
+          - img [ref=f3e385]
+        - img [ref=f3e391]
+      - button "08 Algebraic expressions and identities" [ref=f3e399] [cursor=pointer]:
+        - generic [ref=f3e400]:
+          - img [ref=f3e401]
+          - generic [ref=f3e406]: "08"
+        - generic [ref=f3e407]:
+          - generic [ref=f3e408]: Algebraic expressions and identities
+          - img [ref=f3e409]
+        - img [ref=f3e417]
+      - button "09 Mensuration" [ref=f3e425] [cursor=pointer]:
+        - generic [ref=f3e426]:
+          - img [ref=f3e427]
+          - generic [ref=f3e435]: "09"
+        - generic [ref=f3e436]:
+          - generic [ref=f3e437]: Mensuration
+          - img [ref=f3e438]
+        - img [ref=f3e443]
+      - button "10 Exponents and powers" [ref=f3e451] [cursor=pointer]:
+        - generic [ref=f3e452]:
+          - img [ref=f3e453]
+          - generic [ref=f3e459]: "10"
+        - generic [ref=f3e460]:
+          - generic [ref=f3e461]: Exponents and powers
+          - img [ref=f3e462]
+        - img [ref=f3e469]
+      - button "11 Direct and inverse proportions" [ref=f3e477] [cursor=pointer]:
+        - generic [ref=f3e478]:
+          - img [ref=f3e479]
+          - generic [ref=f3e484]: "11"
+        - generic [ref=f3e485]:
+          - generic [ref=f3e486]: Direct and inverse proportions
+          - img [ref=f3e487]
+        - img [ref=f3e494]
+      - button "12 Factorisation" [ref=f3e502] [cursor=pointer]:
+        - generic [ref=f3e503]:
+          - img [ref=f3e504]
+          - generic [ref=f3e511]: "12"
+        - generic [ref=f3e512]:
+          - generic [ref=f3e513]: Factorisation
+          - img [ref=f3e514]
+        - img [ref=f3e520]
+      - button "13 Introduction to graphs" [ref=f3e528] [cursor=pointer]:
+        - generic [ref=f3e529]:
+          - img [ref=f3e530]
+          - generic [ref=f3e537]: "13"
+        - generic [ref=f3e538]:
+          - generic [ref=f3e539]: Introduction to graphs
+          - img [ref=f3e540]
+        - img [ref=f3e544]
+  - banner:
+    - img "Classess" [ref=f3e64]
+    - generic [ref=f3e65]:
+      - button "Did you know" [ref=f3e66] [cursor=pointer]:
+        - img [ref=f3e67]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f3e69]:
+        - img [ref=f3e70]
+        - text: "1"
+      - generic [ref=f3e73]: 230 xp
+      - button "You — profile and settings" [ref=f3e74] [cursor=pointer]: A
+  - generic [ref=f3e601]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f3e602] [cursor=pointer]:
+      - img [ref=f3e606]

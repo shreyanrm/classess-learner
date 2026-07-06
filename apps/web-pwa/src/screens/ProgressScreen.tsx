@@ -1,21 +1,22 @@
 'use client';
 
 /**
- * Progress — the knowledge twin as hero (DESIGN.md §8, §11). One full-bleed living constellation,
- * one line of identity above it, one calm question below it. No dashboards, no number cards.
- * Tap a star for a quiet card: plain-language mastery, its evidence, and two doors.
+ * Progress — the knowledge twin as hero (DESIGN.md §8, §11). The app's one nocturne: a deep-space
+ * stage panel where nebulae wash in the subject hues and every concept is a star. One line of
+ * identity above the sky, one calm question floating on frost at its foot. No dashboards, no
+ * number cards. Tap a star for a quiet frost card: plain-language mastery, evidence, two doors.
  */
 
 import { ATOM_NODE_IDS, type OntologyNode } from '@classess/sdk';
 import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from '../shell/router';
 import { useViewport } from '../shell/useViewport';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { CloseIcon } from '../ui/icons';
-import { MagneticButton } from '../ui/kit';
+import { MagneticButton, Reveal } from '../ui/kit';
 import { useVidyaChat } from '../vidya/chat';
 import { Whisper } from './Learn';
 import { Constellation } from './progress/Constellation';
@@ -31,14 +32,21 @@ import {
   writeSeen,
 } from './progress/twin-data';
 
-/** The card's small echo of the star it describes. */
+/** The nocturne — nebulae in the subject hues over deep ink. The one dark surface in the app. */
+const NOCTURNE = [
+  'radial-gradient(58% 46% at 18% 12%, rgba(49,72,255,0.32), transparent 62%)',
+  'radial-gradient(44% 38% at 84% 26%, rgba(15,163,177,0.18), transparent 64%)',
+  'radial-gradient(46% 42% at 62% 88%, rgba(204,30,122,0.14), transparent 66%)',
+  'radial-gradient(30% 26% at 38% 60%, rgba(240,160,48,0.07), transparent 70%)',
+  '#06070D',
+].join(', ');
+
+/** The card's small echo of the star it describes — nocturne register. */
 function StateDot({ state }: { state: StarState }) {
   const base = { width: 9, height: 9, borderRadius: '50%', flexShrink: 0 } as const;
-  if (state === 'independent')
-    return <span style={{ ...base, background: 'var(--clss-ultramarine)' }} />;
-  if (state === 'supported')
-    return <span style={{ ...base, border: '1.25px solid var(--clss-ultramarine)' }} />;
-  return <span style={{ ...base, background: 'var(--clss-ink-100)' }} />;
+  if (state === 'independent') return <span style={{ ...base, background: '#96A4FF' }} />;
+  if (state === 'supported') return <span style={{ ...base, border: '1.25px solid #96A4FF' }} />;
+  return <span style={{ ...base, background: 'rgba(233,236,252,0.3)' }} />;
 }
 
 export function ProgressScreen() {
@@ -48,10 +56,11 @@ export function ProgressScreen() {
   const { ask, busy } = useVidyaChat();
   const { publishPage, publishCurriculum } = useVidyaBus();
   const { isDesktop } = useViewport();
+  const reduced = useReducedMotion();
 
   const mapRef = useRegisterTarget<HTMLDivElement>('twin-constellation', {
     kind: 'map',
-    label: 'the knowledge twin — every star is a concept; ultramarine means mastered',
+    label: 'the knowledge twin — every star is a concept; a glowing star means mastered',
   });
   const askRef = useRegisterTarget<HTMLInputElement>('twin-ask', {
     kind: 'input',
@@ -190,70 +199,122 @@ export function ProgressScreen() {
       <Whisper onClick={() => router.navigate({ name: 'home' })}>Home</Whisper>
 
       {/* one line of identity — the count that is yours, and the streak whisper */}
-      <header style={{ paddingTop: 76, textAlign: 'center' }}>
-        <div
-          style={{
-            fontSize: '1.18rem',
-            fontWeight: 500,
-            letterSpacing: '-0.02em',
-            color: 'var(--clss-ink-900)',
-          }}
-        >
-          {mastered} of {STARS.length} concepts are yours
-        </div>
-        <div style={{ marginTop: 6, fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>
-          day {streakDays} of being a learner
-        </div>
-      </header>
+      <Reveal>
+        <header style={{ paddingTop: 76, textAlign: 'center' }}>
+          <div
+            style={{
+              fontSize: '1.45rem',
+              fontWeight: 650,
+              letterSpacing: '-0.03em',
+              color: '#121316',
+            }}
+          >
+            {mastered} of {STARS.length} concepts are yours
+          </div>
+          <div style={{ marginTop: 5, fontSize: '0.85rem', color: '#989AA4' }}>
+            day {streakDays} of being a learner · tap a star to see its story
+          </div>
+        </header>
+      </Reveal>
 
-      {/* the twin — full bleed, centred, breathing */}
-      <div ref={mapRef} style={{ flex: 1, minHeight: 0, width: '100%' }}>
-        <Constellation
-          states={states}
-          ignited={ignited}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
-        />
-      </div>
-
-      {/* ask your twin — one calm question, answered by Vidya over this exact page */}
-      <form
-        onSubmit={submitQuery}
-        style={{ width: 'min(560px, calc(100% - 48px))', margin: '0 auto', paddingBottom: 26 }}
+      {/* the nocturne — the twin's deep-space stage, the one dark surface in the app */}
+      <motion.div
+        initial={reduced ? false : { opacity: 0, y: 26, filter: 'blur(8px)' }}
+        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        transition={{ type: 'spring', stiffness: 230, damping: 27, mass: 0.9, delay: 0.08 }}
+        style={{
+          flex: 1,
+          minHeight: 340,
+          position: 'relative',
+          margin: '18px clamp(14px, 3vw, 44px) clamp(14px, 2.5vh, 26px)',
+          borderRadius: 3,
+          overflow: 'hidden',
+          background: NOCTURNE,
+        }}
       >
-        <input
-          ref={askRef}
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          placeholder="ask your twin: what am I weakest at…"
-          aria-label="Ask your twin"
+        {/* a slow aurora drifting behind the stars — alive even at rest */}
+        {!reduced && (
+          <motion.div
+            aria-hidden
+            animate={{ rotate: 360 }}
+            transition={{ duration: 140, repeat: Number.POSITIVE_INFINITY, ease: 'linear' }}
+            style={{
+              position: 'absolute',
+              inset: '-35%',
+              background:
+                'conic-gradient(from 0deg at 50% 50%, rgba(49,72,255,0.1), rgba(204,30,122,0.05), rgba(15,163,177,0.08), rgba(240,160,48,0.04), rgba(49,72,255,0.1))',
+              filter: 'blur(60px)',
+              pointerEvents: 'none',
+            }}
+          />
+        )}
+
+        <div ref={mapRef} style={{ position: 'absolute', inset: 0 }}>
+          <Constellation
+            states={states}
+            ignited={ignited}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+          />
+        </div>
+
+        {/* ask your twin — one calm question floating on frost at the sky's foot */}
+        <form
+          onSubmit={submitQuery}
           style={{
-            width: '100%',
-            boxSizing: 'border-box',
-            padding: '13px 16px',
-            fontSize: '0.95rem',
-            fontFamily: 'inherit',
-            border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-            borderRadius: 'var(--clss-radius-sm)',
-            outline: 'none',
-            background: 'var(--clss-paper)',
-            color: 'var(--clss-ink-900)',
-          }}
-        />
-        <div
-          style={{
-            marginTop: 8,
-            textAlign: 'center',
-            fontSize: '0.8rem',
-            color: 'var(--clss-ink-300)',
-            minHeight: 18,
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            bottom: 16,
+            width: 'min(560px, calc(100% - 32px))',
           }}
         >
-          {busy ? 'Vidya is thinking…' : ''}
-        </div>
-      </form>
+          <div
+            style={{
+              marginBottom: 6,
+              textAlign: 'center',
+              fontSize: '0.8rem',
+              color: 'rgba(233,236,252,0.62)',
+              minHeight: 18,
+            }}
+          >
+            {busy ? 'Vidya is thinking…' : ''}
+          </div>
+          <div
+            style={{
+              background: 'rgba(12,14,26,0.44)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255,255,255,0.16)',
+              borderRadius: 3,
+              display: 'flex',
+            }}
+          >
+            <input
+              ref={askRef}
+              className="twin-ask-input"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              placeholder="ask your twin: what am I weakest at…"
+              aria-label="Ask your twin"
+              style={{
+                flex: 1,
+                boxSizing: 'border-box',
+                padding: '13px 16px',
+                fontSize: '0.95rem',
+                fontFamily: 'inherit',
+                border: 'none',
+                outline: 'none',
+                background: 'transparent',
+                color: '#F2F4FF',
+              }}
+            />
+          </div>
+        </form>
+        <style>{'.twin-ask-input::placeholder{color:rgba(233,236,252,0.5)}'}</style>
+      </motion.div>
 
-      {/* the star card — quiet, to the side */}
+      {/* the star card — frost over the nocturne, quiet, to the side */}
       <AnimatePresence>
         {selected && (
           <motion.aside
@@ -266,17 +327,19 @@ export function ProgressScreen() {
               position: 'fixed',
               ...(isDesktop
                 ? {
-                    right: 28,
+                    right: 'clamp(30px, 4.5vw, 64px)',
                     top: 0,
                     bottom: 0,
                     margin: 'auto 0',
                     height: 'fit-content',
                     width: 300,
                   }
-                : { left: 16, right: 16, bottom: 104 }),
-              background: 'var(--clss-paper)',
-              border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-              borderRadius: 'var(--clss-radius-sm)',
+                : { left: 28, right: 28, bottom: 128 }),
+              background: 'rgba(12,14,26,0.66)',
+              backdropFilter: 'blur(18px)',
+              WebkitBackdropFilter: 'blur(18px)',
+              border: '1px solid rgba(255,255,255,0.14)',
+              borderRadius: 3,
               padding: '18px 18px 16px',
               zIndex: 20,
             }}
@@ -291,7 +354,7 @@ export function ProgressScreen() {
                 right: 10,
                 border: 'none',
                 background: 'transparent',
-                color: 'var(--clss-ink-300)',
+                color: 'rgba(233,236,252,0.55)',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 padding: 4,
@@ -303,8 +366,8 @@ export function ProgressScreen() {
             <div
               style={{
                 fontSize: '1rem',
-                fontWeight: 500,
-                color: 'var(--clss-ink-900)',
+                fontWeight: 550,
+                color: '#F2F4FF',
                 letterSpacing: '-0.01em',
                 paddingRight: 18,
               }}
@@ -318,13 +381,13 @@ export function ProgressScreen() {
                 alignItems: 'center',
                 gap: 8,
                 fontSize: '0.9rem',
-                color: 'var(--clss-ink-700)',
+                color: '#C7CDEA',
               }}
             >
               <StateDot state={selectedState} />
               {BAND_LANGUAGE[selectedState]}
             </div>
-            <div style={{ marginTop: 4, fontSize: '0.8rem', color: 'var(--clss-ink-500)' }}>
+            <div style={{ marginTop: 4, fontSize: '0.8rem', color: 'rgba(233,236,252,0.55)' }}>
               {evidenceLine}
             </div>
             <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>

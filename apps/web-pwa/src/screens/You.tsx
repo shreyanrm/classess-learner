@@ -22,9 +22,9 @@ import type { Topic } from '../data/model';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
-import { EmptyConstellation, TopicSigil } from '../ui/art';
-import { hueForTopic } from '../ui/hues';
-import { Card, Hairline, MagneticButton, SectionLabel } from '../ui/kit';
+import { BossSigil, EmptyConstellation } from '../ui/art';
+import { toneForSubject } from '../ui/hues';
+import { Card, cascade, Hairline, MagneticButton, rise, SectionLabel } from '../ui/kit';
 import { GradeBoardPicker } from './you/GradeBoardPicker';
 import {
   boardName,
@@ -374,11 +374,14 @@ export function You() {
         ← home
       </button>
 
-      <div
+      <motion.div
+        variants={cascade}
+        initial="hidden"
+        animate="show"
         style={{ width: '100%', maxWidth: 600, display: 'flex', flexDirection: 'column', gap: 40 }}
       >
         {/* ---- the learner ---- */}
-        <header style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+        <motion.header variants={rise} style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
           <button
             type="button"
             aria-label={photo ? 'change your profile photo' : 'add a profile photo'}
@@ -460,7 +463,7 @@ export function You() {
               </span>
             </button>
           </div>
-        </header>
+        </motion.header>
 
         <AnimatePresence>
           {changingSchool && (
@@ -482,121 +485,135 @@ export function You() {
         </AnimatePresence>
 
         {/* ---- the ledger ---- */}
-        <div ref={ledgerRef}>
+        <motion.div variants={rise} ref={ledgerRef}>
           <Section label="the ledger">
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-              <span
-                style={{
-                  fontSize: '2.6rem',
-                  fontWeight: 500,
-                  letterSpacing: '-0.03em',
-                  color: 'var(--clss-ink-900)',
-                  lineHeight: 1,
-                }}
-              >
-                {xp.toLocaleString('en-IN')}
-              </span>
-              <span style={{ fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>xp</span>
-            </div>
-            <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-700)' }}>
-              day {streakDays} of being a learner
-            </div>
+            {/* the earned record sits on its own ultramarine-tinted stage */}
             <div
-              role="img"
-              aria-label={`active on ${activeDays} of the last 7 days`}
-              style={{ display: 'flex', gap: 6, maxWidth: 260, marginTop: 4 }}
-            >
-              {filament.map((d) => (
-                <span
-                  key={d.day}
-                  style={{
-                    flex: 1,
-                    height: 3,
-                    borderRadius: 2,
-                    background: d.active
-                      ? 'var(--clss-ink-900)'
-                      : 'var(--clss-hairline-on-paper-strong)',
-                  }}
-                />
-              ))}
-            </div>
-            {/* the month at a glance — a quiet heat map, never a guilt trip */}
-            <div
-              role="img"
-              aria-label="this month's activity"
               style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(10, 14px)',
-                gap: 4,
-                marginTop: 12,
+                background: 'rgba(31,53,224,0.05)',
+                border: '1px solid rgba(31,53,224,0.1)',
+                borderRadius: 3,
+                padding: '26px 26px 22px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 12,
               }}
             >
-              {Array.from({ length: 30 }, (_, i) => {
-                const d = new Date(Date.now() - (29 - i) * 86400000).toISOString().slice(0, 10);
-                const on = marks.includes(d);
-                return (
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                <span
+                  style={{
+                    fontSize: '3rem',
+                    fontWeight: 650,
+                    letterSpacing: '-0.035em',
+                    color: 'var(--clss-ink-900)',
+                    lineHeight: 1,
+                  }}
+                >
+                  {xp.toLocaleString('en-IN')}
+                </span>
+                <span style={{ fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>xp</span>
+              </div>
+              <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-700)' }}>
+                day {streakDays} of being a learner
+              </div>
+              <div
+                role="img"
+                aria-label={`active on ${activeDays} of the last 7 days`}
+                style={{ display: 'flex', gap: 6, maxWidth: 260 }}
+              >
+                {filament.map((d) => (
                   <span
-                    key={d}
-                    title={d}
+                    key={d.day}
                     style={{
-                      width: 14,
-                      height: 14,
-                      borderRadius: 3,
-                      background: on ? 'var(--clss-ultramarine)' : 'var(--clss-ink-100)',
-                      opacity: on ? 0.9 : 1,
+                      flex: 1,
+                      height: 3,
+                      borderRadius: 2,
+                      background: d.active ? 'var(--clss-ink-900)' : 'rgba(31,53,224,0.14)',
                     }}
                   />
-                );
-              })}
+                ))}
+              </div>
+              {/* the month at a glance — a quiet heat map, never a guilt trip */}
+              <div
+                role="img"
+                aria-label="this month's activity"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(10, 16px)',
+                  gap: 5,
+                  marginTop: 4,
+                }}
+              >
+                {Array.from({ length: 30 }, (_, i) => {
+                  const d = new Date(Date.now() - (29 - i) * 86400000).toISOString().slice(0, 10);
+                  const on = marks.includes(d);
+                  return (
+                    <span
+                      key={d}
+                      title={d}
+                      style={{
+                        width: 16,
+                        height: 16,
+                        borderRadius: 3,
+                        background: on ? 'var(--clss-ultramarine)' : 'rgba(31,53,224,0.09)',
+                        opacity: on ? 0.9 : 1,
+                      }}
+                    />
+                  );
+                })}
+              </div>
+              <div style={whisper}>rest is part of learning — quiet days are allowed</div>
             </div>
-            <div style={whisper}>rest is part of learning — quiet days are allowed</div>
           </Section>
-        </div>
+        </motion.div>
 
         <Hairline />
 
         {/* ---- invite ---- */}
-        <Section label="learning is better shared">
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
-              gap: 12,
-            }}
-          >
-            <InviteCard
-              title="invite a friend"
-              line="when your friend finishes their first topic, you both unlock a bonus lesson."
-              copied={copied === 'friend'}
-              onCopy={() => copyInvite('friend')}
-            />
-            <InviteCard
-              title="invite a parent"
-              line="give them a window into your learning — the weekly note shows them what you can now do."
-              copied={copied === 'parent'}
-              onCopy={() => copyInvite('parent')}
-            />
-          </div>
-        </Section>
+        <motion.div variants={rise}>
+          <Section label="learning is better shared">
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
+                gap: 12,
+              }}
+            >
+              <InviteCard
+                title="invite a friend"
+                line="when your friend finishes their first topic, you both unlock a bonus lesson."
+                copied={copied === 'friend'}
+                onCopy={() => copyInvite('friend')}
+              />
+              <InviteCard
+                title="invite a parent"
+                line="give them a window into your learning — the weekly note shows them what you can now do."
+                copied={copied === 'parent'}
+                onCopy={() => copyInvite('parent')}
+              />
+            </div>
+          </Section>
+        </motion.div>
 
         <Hairline />
 
         {/* ---- past courses: the trophy shelf ---- */}
-        <div ref={shelfRef}>
+        <motion.div variants={rise} ref={shelfRef}>
           <Section label="past courses">
             {mastered.length === 0 ? (
               <div
                 style={{
-                  border: '0.5px solid var(--clss-hairline-on-paper)',
-                  borderRadius: 'var(--clss-radius-sm)',
-                  padding: '30px 20px 26px',
+                  background: 'rgba(31,53,224,0.04)',
+                  border: '1px solid rgba(31,53,224,0.1)',
+                  borderRadius: 3,
+                  padding: '34px 20px 30px',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                 }}
               >
                 {/* an empty shelf is a promise, not a void */}
-                <EmptyConstellation size={104} label="your first finished course lands here" />
+                <EmptyConstellation size={112} label="your first finished course lands here" />
               </div>
             ) : (
               <div
@@ -606,55 +623,79 @@ export function You() {
                   gap: 12,
                 }}
               >
-                {mastered.map((t) => (
-                  <Card key={t.id} style={{ padding: 16, position: 'relative' }}>
-                    {/* the corner tick — the owning subject's hue, the earned pigment */}
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 14 14"
-                      fill="none"
-                      aria-hidden="true"
-                      style={{ position: 'absolute', top: 12, right: 12 }}
+                {mastered.map((t) => {
+                  const tone = toneForSubject(chapterById(t.chapterId)?.subjectId ?? 'math');
+                  return (
+                    <Card
+                      key={t.id}
+                      style={{ padding: 10, display: 'flex', flexDirection: 'column' }}
                     >
-                      <path
-                        d="M2.5 7.5 5.5 10.5 11.5 3.5"
-                        stroke={hueForTopic(t.id)}
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    {/* the trophy carries the concept's own ignited sigil */}
-                    <TopicSigil id={t.id} size={34} mastered hue={hueForTopic(t.id)} />
-                    <div
-                      style={{
-                        fontSize: '0.95rem',
-                        fontWeight: 500,
-                        color: 'var(--clss-ink-900)',
-                        paddingRight: 20,
-                        marginTop: 8,
-                      }}
-                    >
-                      {t.name}
-                    </div>
-                    <div style={{ ...whisper, marginTop: 4 }}>{chapterById(t.chapterId)?.name}</div>
-                    <div
-                      style={{ fontSize: '0.8rem', color: 'var(--clss-ink-500)', marginTop: 10 }}
-                    >
-                      mastered
-                    </div>
-                  </Card>
-                ))}
+                      {/* the trophy — the concept's own ignited sigil on its subject's stage */}
+                      <div
+                        style={{
+                          height: 132,
+                          borderRadius: 3,
+                          background: tone.wash,
+                          display: 'grid',
+                          placeItems: 'center',
+                        }}
+                      >
+                        <BossSigil id={t.id} size={92} mastered hue={tone.hue} />
+                      </div>
+                      <div style={{ padding: '12px 8px 8px' }}>
+                        <div
+                          style={{
+                            fontSize: '1rem',
+                            fontWeight: 550,
+                            letterSpacing: '-0.01em',
+                            color: 'var(--clss-ink-900)',
+                          }}
+                        >
+                          {t.name}
+                        </div>
+                        <div style={{ ...whisper, marginTop: 4 }}>
+                          {chapterById(t.chapterId)?.name}
+                        </div>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            fontSize: '0.8rem',
+                            color: 'var(--clss-ink-500)',
+                            marginTop: 10,
+                          }}
+                        >
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 14 14"
+                            fill="none"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M2.5 7.5 5.5 10.5 11.5 3.5"
+                              stroke={tone.hue}
+                              strokeWidth="1.8"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                          mastered
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </Section>
-        </div>
+        </motion.div>
 
         <Hairline />
 
         {/* ---- the note home ---- */}
-        <div ref={noteRef}>
+        <motion.div variants={rise} ref={noteRef}>
           <Section label="the note home">
             <Card style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div
@@ -731,12 +772,12 @@ export function You() {
               </div>
             )}
           </Section>
-        </div>
+        </motion.div>
 
         <Hairline />
 
         {/* ---- the plan ---- */}
-        <div ref={planRef}>
+        <motion.div variants={rise} ref={planRef}>
           <Section label="your plan">
             <Card style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div
@@ -760,83 +801,85 @@ export function You() {
               </div>
             </Card>
           </Section>
-        </div>
+        </motion.div>
 
         <Hairline />
 
         {/* ---- settings ---- */}
-        <Section label="settings">
-          <div>
-            <DialRow
-              title="Vidya's voice"
-              line="she speaks her replies out loud"
-              on={voice}
-              onChange={(v) => {
-                setVoice(v);
-                setFlag(VOICE_KEY, v);
-              }}
-            />
-            <Hairline />
-            <DialRow
-              title="the ignite sound"
-              line="a sub-second note when something is genuinely mastered"
-              on={sound}
-              onChange={(v) => {
-                setSound(v);
-                setFlag(SOUND_KEY, v);
-              }}
-            />
-            <Hairline />
-            <div style={{ padding: '13px 0' }}>
-              {confirmingReset ? (
-                <motion.div
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-                  style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
-                >
-                  <div style={bodyLine}>
-                    this clears your name, photo, progress, and settings from this device. it cannot
-                    be undone.
-                  </div>
-                  <div style={{ display: 'flex', gap: 10 }}>
-                    <MagneticButton size="sm" variant="quiet" onClick={startOver}>
-                      erase and start over
-                    </MagneticButton>
-                    <MagneticButton
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => setConfirmingReset(false)}
-                    >
-                      keep going
-                    </MagneticButton>
-                  </div>
-                </motion.div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setConfirmingReset(true)}
-                  style={{
-                    border: 'none',
-                    background: 'transparent',
-                    fontFamily: 'inherit',
-                    cursor: 'pointer',
-                    padding: 0,
-                    textAlign: 'left',
-                  }}
-                >
-                  <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>
-                    start over
-                  </div>
-                  <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
-                    erase everything on this device and begin again
-                  </div>
-                </button>
-              )}
+        <motion.div variants={rise}>
+          <Section label="settings">
+            <div>
+              <DialRow
+                title="Vidya's voice"
+                line="she speaks her replies out loud"
+                on={voice}
+                onChange={(v) => {
+                  setVoice(v);
+                  setFlag(VOICE_KEY, v);
+                }}
+              />
+              <Hairline />
+              <DialRow
+                title="the ignite sound"
+                line="a sub-second note when something is genuinely mastered"
+                on={sound}
+                onChange={(v) => {
+                  setSound(v);
+                  setFlag(SOUND_KEY, v);
+                }}
+              />
+              <Hairline />
+              <div style={{ padding: '13px 0' }}>
+                {confirmingReset ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+                    style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
+                  >
+                    <div style={bodyLine}>
+                      this clears your name, photo, progress, and settings from this device. it
+                      cannot be undone.
+                    </div>
+                    <div style={{ display: 'flex', gap: 10 }}>
+                      <MagneticButton size="sm" variant="quiet" onClick={startOver}>
+                        erase and start over
+                      </MagneticButton>
+                      <MagneticButton
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setConfirmingReset(false)}
+                      >
+                        keep going
+                      </MagneticButton>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingReset(true)}
+                    style={{
+                      border: 'none',
+                      background: 'transparent',
+                      fontFamily: 'inherit',
+                      cursor: 'pointer',
+                      padding: 0,
+                      textAlign: 'left',
+                    }}
+                  >
+                    <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>
+                      start over
+                    </div>
+                    <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
+                      erase everything on this device and begin again
+                    </div>
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        </Section>
-      </div>
+          </Section>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

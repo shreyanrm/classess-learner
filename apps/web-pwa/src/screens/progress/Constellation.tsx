@@ -1,11 +1,12 @@
 'use client';
 
 /**
- * The living constellation — the knowledge twin as hero art (DESIGN.md §11). Stars are concepts;
- * hairlines are the prerequisite graph. Independent mastery fills a star ultramarine inside a soft
- * wash halo; guided mastery is an ultramarine ring, unfilled — the visible difference between
- * "can do alone" and "can do with help". Stars breathe, one mote drifts, and a newly earned star
- * replays its ignite once: it catches light and its edges illuminate outward.
+ * The living constellation — the knowledge twin as hero art on the app's one nocturne
+ * (DESIGN.md §11). A deep-space sky: a dust field of far suns in the subject hues, the
+ * prerequisite graph as faint light-lines, and the learner's concepts as glowing stars.
+ * Independent mastery burns with a halo and a cross flare; guided mastery is a lit ring;
+ * unlit concepts wait as faint points. Stars breathe, a mote drifts the whole sky, and a
+ * newly earned star replays its ignite once — light catching and running down its edges.
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
@@ -20,7 +21,47 @@ import {
   VIEW_W,
 } from './twin-data';
 
-const ULTRAMARINE = 'var(--clss-ultramarine)';
+/** Ultramarine lifted to glow against the dark — mastery light, nocturne register. */
+const GLOW = '#96A4FF';
+const GLOW_CORE = '#CBD4FF';
+
+/** Far suns in the subject hues — the skies of subjects still to come. */
+const DUST_HUES = [
+  'rgba(235,238,255,0.5)',
+  'rgba(235,238,255,0.5)',
+  'rgba(150,164,255,0.45)',
+  'rgba(95,212,224,0.45)',
+  'rgba(240,180,92,0.4)',
+  'rgba(240,123,184,0.35)',
+];
+
+interface Dust {
+  x: number;
+  y: number;
+  r: number;
+  fill: string;
+  twinkle: boolean;
+  dur: number;
+  delay: number;
+}
+
+/** Deterministic dust field — the sky never reshuffles between visits. */
+const DUST: Dust[] = (() => {
+  let s = 20260706;
+  const rand = () => {
+    s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
+  return Array.from({ length: 110 }, () => ({
+    x: Math.round(rand() * VIEW_W * 10) / 10,
+    y: Math.round(rand() * VIEW_H * 10) / 10,
+    r: 0.4 + rand() * 1.1,
+    fill: DUST_HUES[Math.floor(rand() * DUST_HUES.length)] as string,
+    twinkle: rand() > 0.86,
+    dur: 2.4 + rand() * 3.4,
+    delay: rand() * 4,
+  }));
+})();
 
 /** Pull a prerequisite line's endpoints in so it meets the star's halo, not its centre. */
 function trimmed(from: Star, to: Star, by = 14) {
@@ -42,20 +83,37 @@ function StarCore({ star, state }: { star: Star; state: StarState }) {
   if (state === 'independent')
     return (
       <>
-        <circle cx={star.x} cy={star.y} r={19} style={{ fill: 'url(#twin-halo)' }} />
-        <circle cx={star.x} cy={star.y} r={4.5} style={{ fill: ULTRAMARINE }} />
+        <circle cx={star.x} cy={star.y} r={24} style={{ fill: 'url(#twin-halo)' }} />
+        {/* the cross flare — a star that burns on its own */}
+        <path
+          d={`M ${star.x - 14} ${star.y} H ${star.x + 14} M ${star.x} ${star.y - 14} V ${star.y + 14}`}
+          stroke="rgba(150,164,255,0.38)"
+          strokeWidth={0.8}
+          strokeLinecap="round"
+          fill="none"
+        />
+        <circle cx={star.x} cy={star.y} r={4.6} style={{ fill: GLOW_CORE }} />
+        <circle cx={star.x} cy={star.y} r={1.9} style={{ fill: '#FFFFFF' }} />
       </>
     );
   if (state === 'supported')
     return (
-      <circle
-        cx={star.x}
-        cy={star.y}
-        r={4.5}
-        style={{ fill: 'var(--clss-paper)', stroke: ULTRAMARINE, strokeWidth: 1.25 }}
-      />
+      <>
+        <circle
+          cx={star.x}
+          cy={star.y}
+          r={9.5}
+          style={{ fill: 'none', stroke: 'rgba(150,164,255,0.22)', strokeWidth: 1 }}
+        />
+        <circle
+          cx={star.x}
+          cy={star.y}
+          r={4.6}
+          style={{ fill: 'rgba(13,16,32,0.85)', stroke: GLOW, strokeWidth: 1.3 }}
+        />
+      </>
     );
-  return <circle cx={star.x} cy={star.y} r={3} style={{ fill: 'var(--clss-ink-100)' }} />;
+  return <circle cx={star.x} cy={star.y} r={3} style={{ fill: 'rgba(233,236,252,0.25)' }} />;
 }
 
 export function Constellation({
@@ -71,6 +129,7 @@ export function Constellation({
   onSelect: (id: string | null) => void;
 }) {
   const reduced = useReducedMotion();
+  const lit = (id: string) => (states[id] ?? 'unlit') !== 'unlit';
 
   return (
     <svg
@@ -82,9 +141,9 @@ export function Constellation({
       <title>your knowledge constellation</title>
       <defs>
         <radialGradient id="twin-halo">
-          <stop offset="0%" style={{ stopColor: ULTRAMARINE, stopOpacity: 0.22 }} />
-          <stop offset="55%" style={{ stopColor: ULTRAMARINE, stopOpacity: 0.09 }} />
-          <stop offset="100%" style={{ stopColor: ULTRAMARINE, stopOpacity: 0 }} />
+          <stop offset="0%" style={{ stopColor: GLOW, stopOpacity: 0.55 }} />
+          <stop offset="45%" style={{ stopColor: GLOW, stopOpacity: 0.16 }} />
+          <stop offset="100%" style={{ stopColor: GLOW, stopOpacity: 0 }} />
         </radialGradient>
       </defs>
 
@@ -99,45 +158,70 @@ export function Constellation({
         onClick={() => onSelect(null)}
       />
 
-      {/* far stars — the chapters still to come (decorative, no accessible text) */}
-      <g>
-        {FAR_STARS.map((f) => (
-          <circle key={f.id} cx={f.x} cy={f.y} r={1.6} style={{ fill: 'var(--clss-ink-100)' }} />
+      {/* the dust field — far suns in the subject hues, a handful twinkling */}
+      <g style={{ pointerEvents: 'none' }}>
+        {DUST.map((d) => (
+          <circle
+            key={`dust-${d.x}-${d.y}`}
+            cx={d.x}
+            cy={d.y}
+            r={d.r}
+            opacity={0.9}
+            style={{ fill: d.fill }}
+          >
+            {d.twinkle && !reduced && (
+              <animate
+                attributeName="opacity"
+                values="0.2;1;0.2"
+                dur={`${d.dur}s`}
+                begin={`${d.delay}s`}
+                repeatCount="indefinite"
+              />
+            )}
+          </circle>
         ))}
       </g>
 
-      {/* prerequisite lines */}
+      {/* far stars — the chapters still to come (decorative, no accessible text) */}
+      <g style={{ pointerEvents: 'none' }}>
+        {FAR_STARS.map((f) => (
+          <circle key={f.id} cx={f.x} cy={f.y} r={1.9} style={{ fill: 'rgba(190,200,240,0.4)' }} />
+        ))}
+      </g>
+
+      {/* prerequisite lines — light runs between stars that are both lit */}
       <g>
         {EDGES.map((e) => {
           const t = trimmed(e.from, e.to);
+          const alive = lit(e.from.id) && lit(e.to.id);
           return (
             <line
               key={`${e.from.id}-${e.to.id}`}
               {...t}
-              style={{ stroke: 'var(--clss-ink-100)' }}
-              strokeWidth={0.5}
+              style={{ stroke: alive ? 'rgba(150,164,255,0.42)' : 'rgba(233,236,252,0.1)' }}
+              strokeWidth={alive ? 0.75 : 0.5}
               vectorEffect="non-scaling-stroke"
             />
           );
         })}
       </g>
 
-      {/* one faint drifting mote — the sky is alive even when nothing happens */}
+      {/* one drifting mote — the sky is alive even when nothing happens */}
       {!reduced && (
         <motion.circle
           cx={0}
           cy={150}
           r={1.4}
-          style={{ fill: 'var(--clss-ink-300)' }}
-          animate={{ x: [0, VIEW_W], y: [0, -36, 24, -14, 0], opacity: [0, 0.5, 0.5, 0.5, 0] }}
+          style={{ fill: 'rgba(235,238,255,0.85)' }}
+          animate={{ x: [0, VIEW_W], y: [0, -36, 24, -14, 0], opacity: [0, 0.7, 0.7, 0.7, 0] }}
           transition={{ duration: 38, repeat: Number.POSITIVE_INFINITY, ease: 'linear' }}
         />
       )}
 
-      {/* the stars — breathing, staggered */}
+      {/* the stars — arriving staggered, then breathing */}
       {STARS.map((star, i) => {
         const state = states[star.id] ?? 'unlit';
-        const lit = state !== 'unlit';
+        const isLit = state !== 'unlit';
         const selected = selectedId === star.id;
         const pick = () => onSelect(selected ? null : star.id);
         return (
@@ -147,17 +231,9 @@ export function Constellation({
             tabIndex={0}
             aria-label={`${star.label} — ${BREATH_LABEL[state]}`}
             style={{ cursor: 'pointer', outline: 'none' }}
-            animate={reduced ? undefined : { opacity: [0.85, 1, 0.85] }}
-            transition={
-              reduced
-                ? undefined
-                : {
-                    duration: 4.8,
-                    delay: i * 0.55,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: 'easeInOut',
-                  }
-            }
+            initial={reduced ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.7, delay: 0.15 + i * 0.07, ease: 'easeOut' }}
             onClick={(e) => {
               e.stopPropagation();
               pick();
@@ -169,30 +245,44 @@ export function Constellation({
               }
             }}
           >
-            {/* generous invisible hit area */}
-            <circle cx={star.x} cy={star.y} r={18} fill="transparent" />
-            {selected && (
-              <circle
-                cx={star.x}
-                cy={star.y}
-                r={10}
-                style={{ fill: 'none', stroke: 'var(--clss-ink-300)', strokeWidth: 0.75 }}
-                vectorEffect="non-scaling-stroke"
-              />
-            )}
-            <StarCore star={star} state={state} />
-            <text
-              x={star.x}
-              y={star.y + 24}
-              textAnchor="middle"
-              style={{
-                fill: lit ? 'var(--clss-ink-700)' : 'var(--clss-ink-300)',
-                fontSize: 11.5,
-                fontFamily: 'inherit',
-              }}
+            <motion.g
+              animate={reduced ? undefined : { opacity: [0.82, 1, 0.82] }}
+              transition={
+                reduced
+                  ? undefined
+                  : {
+                      duration: 4.8,
+                      delay: i * 0.55,
+                      repeat: Number.POSITIVE_INFINITY,
+                      ease: 'easeInOut',
+                    }
+              }
             >
-              {star.label}
-            </text>
+              {/* generous invisible hit area */}
+              <circle cx={star.x} cy={star.y} r={18} fill="transparent" />
+              {selected && (
+                <circle
+                  cx={star.x}
+                  cy={star.y}
+                  r={10}
+                  style={{ fill: 'none', stroke: 'rgba(255,255,255,0.55)', strokeWidth: 0.75 }}
+                  vectorEffect="non-scaling-stroke"
+                />
+              )}
+              <StarCore star={star} state={state} />
+              <text
+                x={star.x}
+                y={star.y + 24}
+                textAnchor="middle"
+                style={{
+                  fill: isLit ? '#C7CDEA' : 'rgba(226,230,248,0.42)',
+                  fontSize: 11.5,
+                  fontFamily: 'inherit',
+                }}
+              >
+                {star.label}
+              </text>
+            </motion.g>
           </motion.g>
         );
       })}
@@ -208,10 +298,10 @@ export function Constellation({
               <motion.circle
                 cx={star.x}
                 cy={star.y}
-                style={{ fill: 'none', stroke: ULTRAMARINE }}
+                style={{ fill: 'none', stroke: GLOW }}
                 strokeWidth={1}
-                initial={{ r: 4, opacity: 0.75 }}
-                animate={{ r: 30, opacity: 0 }}
+                initial={{ r: 4, opacity: 0.9 }}
+                animate={{ r: 34, opacity: 0 }}
                 transition={{ duration: 0.75, ease: 'easeOut' }}
               />
               {rays.map((e) => {
@@ -224,10 +314,10 @@ export function Constellation({
                     y1={a.y}
                     x2={b.x}
                     y2={b.y}
-                    style={{ stroke: ULTRAMARINE }}
+                    style={{ stroke: GLOW }}
                     strokeWidth={1}
                     vectorEffect="non-scaling-stroke"
-                    initial={{ pathLength: 0, opacity: 0.8 }}
+                    initial={{ pathLength: 0, opacity: 0.9 }}
                     animate={{ pathLength: 1, opacity: 0 }}
                     transition={{
                       pathLength: { duration: 0.45, ease: 'easeOut' },
