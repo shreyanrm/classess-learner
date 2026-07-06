@@ -1,0 +1,67 @@
+- generic [ref=f1e2]:
+  - generic [ref=f1e93]:
+    - button "◦ learn" [ref=f1e94] [cursor=pointer]
+    - generic [ref=f1e95]:
+      - heading "mathematics" [level=1] [ref=f1e96]
+      - generic [ref=f1e97]: patterns, structure, and certainty
+      - generic [ref=f1e98]: CBSE class 8 · 13 chapters
+      - generic [ref=f1e99]:
+        - button "01 Rational numbers ›" [ref=f1e101] [cursor=pointer]:
+          - generic [ref=f1e102]: "01"
+          - generic [ref=f1e103]: Rational numbers
+          - generic [ref=f1e104]: ›
+        - button "02 Linear equations in one variable ›" [ref=f1e109] [cursor=pointer]:
+          - generic [ref=f1e110]: "02"
+          - generic [ref=f1e111]: Linear equations in one variable
+          - generic [ref=f1e112]: ›
+        - button "03 Understanding quadrilaterals ›" [ref=f1e117] [cursor=pointer]:
+          - generic [ref=f1e118]: "03"
+          - generic [ref=f1e119]: Understanding quadrilaterals
+          - generic [ref=f1e120]: ›
+        - button "04 Data handling ›" [ref=f1e125] [cursor=pointer]:
+          - generic [ref=f1e126]: "04"
+          - generic [ref=f1e127]: Data handling
+          - generic [ref=f1e128]: ›
+        - button "05 Squares and square roots ›" [ref=f1e133] [cursor=pointer]:
+          - generic [ref=f1e134]: "05"
+          - generic [ref=f1e135]: Squares and square roots
+          - generic [ref=f1e136]: ›
+        - button "06 Cubes and cube roots ›" [ref=f1e141] [cursor=pointer]:
+          - generic [ref=f1e142]: "06"
+          - generic [ref=f1e143]: Cubes and cube roots
+          - generic [ref=f1e144]: ›
+        - button "07 Comparing quantities ›" [ref=f1e149] [cursor=pointer]:
+          - generic [ref=f1e150]: "07"
+          - generic [ref=f1e151]: Comparing quantities
+          - generic [ref=f1e152]: ›
+        - button "08 Algebraic expressions and identities ›" [ref=f1e157] [cursor=pointer]:
+          - generic [ref=f1e158]: "08"
+          - generic [ref=f1e159]: Algebraic expressions and identities
+          - generic [ref=f1e160]: ›
+        - button "09 Mensuration ›" [ref=f1e165] [cursor=pointer]:
+          - generic [ref=f1e166]: "09"
+          - generic [ref=f1e167]: Mensuration
+          - generic [ref=f1e168]: ›
+        - button "10 Exponents and powers ›" [ref=f1e173] [cursor=pointer]:
+          - generic [ref=f1e174]: "10"
+          - generic [ref=f1e175]: Exponents and powers
+          - generic [ref=f1e176]: ›
+        - button "11 Direct and inverse proportions ›" [ref=f1e181] [cursor=pointer]:
+          - generic [ref=f1e182]: "11"
+          - generic [ref=f1e183]: Direct and inverse proportions
+          - generic [ref=f1e184]: ›
+        - button "12 Factorisation ›" [ref=f1e189] [cursor=pointer]:
+          - generic [ref=f1e190]: "12"
+          - generic [ref=f1e191]: Factorisation
+          - generic [ref=f1e192]: ›
+        - button "13 Introduction to graphs ›" [ref=f1e197] [cursor=pointer]:
+          - generic [ref=f1e198]: "13"
+          - generic [ref=f1e199]: Introduction to graphs
+          - generic [ref=f1e200]: ›
+  - generic:
+    - generic:
+      - generic: 0 xp
+      - generic: ·
+      - generic: day 1 of being a learner
+  - button "Talk to Vidya" [ref=f1e70] [cursor=pointer]:
+    - img [ref=f1e74]

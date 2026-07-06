@@ -149,3 +149,12 @@ def test_http_surface() -> None:
         json={"consent_tier": "un_elevated", "payload": {}},
     )
     assert unknown.status_code == 404
+
+
+# --- voice ------------------------------------------------------------------------------
+def test_voice_session_is_unavailable_without_a_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    from fastapi.testclient import TestClient
+
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    client = TestClient(create_app(make_gateway()))
+    assert client.get("/v1/voice/session").json() == {"mode": "unavailable"}

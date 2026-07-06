@@ -1,0 +1,51 @@
+- generic [ref=f1e2]:
+  - generic [ref=f1e4]:
+    - button "◦ you" [ref=f1e5] [cursor=pointer]
+    - button "✦ did you know" [ref=f1e7] [cursor=pointer]
+    - generic [ref=f1e8]:
+      - img "Vidya" [ref=f1e9]:
+        - img [ref=f1e13]
+      - generic [ref=f1e28]: good morning, aanya
+      - generic [ref=f1e29]: ask me anything, or take a door
+      - generic [ref=f1e30]:
+        - textbox "talk to Vidya…" [ref=f1e31]
+        - button "Talk by voice" [ref=f1e32] [cursor=pointer]: ◦ mic
+        - button "Ask Vidya" [ref=f1e33] [cursor=pointer]: ask
+      - generic [ref=f1e34]:
+        - button "✧ learn something cool" [ref=f1e35] [cursor=pointer]
+        - button "✧ open a rabbit hole" [ref=f1e36] [cursor=pointer]
+        - button "✧ what should I do today" [ref=f1e37] [cursor=pointer]
+      - generic [ref=f1e38]:
+        - button "learn" [active] [ref=f1e39] [cursor=pointer]
+        - button "practice" [ref=f1e40] [cursor=pointer]
+    - generic [ref=f1e41]:
+      - generic [ref=f1e42]: ⌘K
+      - text: anything, anywhere
+  - generic [ref=f1e47]:
+    - button "◦ home" [ref=f1e48] [cursor=pointer]
+    - generic [ref=f1e49]:
+      - heading "learn" [level=1] [ref=f1e50]
+      - generic [ref=f1e51]: pick a subject — a topic is a course, composed for you
+      - generic [ref=f1e52]: your subjects
+      - generic [ref=f1e54]:
+        - button "Mathematics patterns, structure, and certainty" [ref=f1e55] [cursor=pointer]:
+          - generic [ref=f1e56]: Mathematics
+          - generic [ref=f1e57]: patterns, structure, and certainty
+        - button "Science how the world actually works" [ref=f1e58] [cursor=pointer]:
+          - generic [ref=f1e59]: Science
+          - generic [ref=f1e60]: how the world actually works
+        - button "Social science people, places, and power" [ref=f1e61] [cursor=pointer]:
+          - generic [ref=f1e62]: Social science
+          - generic [ref=f1e63]: people, places, and power
+      - generic [ref=f1e64]: courses
+      - button "ask Vidya for a course on anything your custom courses will live here" [ref=f1e65] [cursor=pointer]:
+        - generic [ref=f1e66]: ask Vidya for a course on anything
+        - generic [ref=f1e67]: your custom courses will live here
+      - button "past courses ›" [ref=f1e68] [cursor=pointer]
+  - generic:
+    - generic:
+      - generic: 0 xp
+      - generic: ·
+      - generic: day 1 of being a learner
+  - button "Talk to Vidya" [ref=f1e70] [cursor=pointer]:
+    - img [ref=f1e74]

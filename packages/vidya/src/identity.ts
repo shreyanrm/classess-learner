@@ -47,7 +47,8 @@ export type VidyaMood =
   | 'waiting' // quietly dimmed to an ember
   | 'hint' // flame flickers brighter as a hint escalates
   | 'explaining' // gesturing toward what she annotates (DESIGN.md §4)
-  | 'resting'; // a slow calm breath — sanctioned rest, never guilt (DESIGN.md §4)
+  | 'resting' // a slow calm breath — sanctioned rest, never guilt (DESIGN.md §4)
+  | 'oops'; // a sympathetic wince on a wrong answer — with them, never at them
 
 /**
  * The flame is expressive (per the license): it may lean, trail, flare, calm to an ember, or flicker
@@ -71,6 +72,8 @@ export function flameForMood(mood: VidyaMood): FlameState {
       return 'brighten';
     case 'explaining':
       return 'lean';
+    case 'oops':
+      return 'ember';
     default:
       return 'steady';
   }

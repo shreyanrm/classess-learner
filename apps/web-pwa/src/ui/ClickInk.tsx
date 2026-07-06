@@ -30,7 +30,15 @@ export function ClickInk() {
   }, []);
 
   return (
-    <div aria-hidden style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 'var(--clss-z-toast)' as unknown as number }}>
+    <div
+      aria-hidden
+      style={{
+        position: 'fixed',
+        inset: 0,
+        pointerEvents: 'none',
+        zIndex: 'var(--clss-z-toast)' as unknown as number,
+      }}
+    >
       <AnimatePresence>
         {inks.map((ink) => (
           <motion.span

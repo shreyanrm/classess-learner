@@ -35,7 +35,39 @@ export interface LLMProvider {
 /** Capabilities that profile the learner — refused under un_elevated (DPDP). Mirrors the gateway. */
 const ELEVATED_ONLY = new Set(['archetype.classify', 'peakcut.evaluate']);
 
-function mockOutputFor(capability: string, _input: CapabilityInput): unknown {
+/** Her voice, canned: warm, playful, page-aware. Rotated deterministically by the input. */
+const MOCK_VIDYA_TURNS = [
+  {
+    say: 'Oh, I like this page — I can see the whole thing from where I sit. Want to take the first step together?',
+    actions: [
+      { type: 'setMood', mood: 'thinking' },
+      { type: 'highlight', targetId: 'concept-linear-eq', level: 'primary' },
+      { type: 'annotate', targetId: 'concept-linear-eq', mark: 'lookHere', level: 'secondary' },
+    ],
+  },
+  {
+    say: "I'm right here, watching your working as you write it — nothing sneaks past us. Try a step and I'll follow along.",
+    actions: [{ type: 'setMood', mood: 'listening' }],
+  },
+  {
+    say: "You bring the curiosity, I'll bring the second pair of eyes. Tell me where it feels wobbly and we'll steady it together.",
+    actions: [{ type: 'setMood', mood: 'thinking' }],
+  },
+  {
+    say: "I was hoping you'd ask. I've got your page in view, so point me anywhere and we'll poke at it.",
+    actions: [{ type: 'setMood', mood: 'hint' }],
+  },
+];
+
+/** Deterministic seed so the mock rotates without ever being random. */
+function mockSeed(input: CapabilityInput): number {
+  const body = JSON.stringify(input) ?? '';
+  let h = 0;
+  for (let i = 0; i < body.length; i++) h = (h * 31 + body.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+function mockOutputFor(capability: string, input: CapabilityInput): unknown {
   switch (capability) {
     case 'generate.opener':
       return {
@@ -43,17 +75,12 @@ function mockOutputFor(capability: string, _input: CapabilityInput): unknown {
         interactive: true,
         verification_hash: 'seed-opener-linear-eq-1',
       };
-    case 'vidya.turn':
-      return {
-        say: 'That is the topic we are on. Open it and we will pose the first step together.',
-        actions: [
-          { type: 'setMood', mood: 'thinking' },
-          { type: 'highlight', targetId: 'concept-linear-eq', level: 'primary' },
-          { type: 'annotate', targetId: 'concept-linear-eq', mark: 'lookHere', level: 'secondary' },
-        ],
-        grounded: true,
-        handed_answer: false,
-      };
+    case 'vidya.turn': {
+      const turn = MOCK_VIDYA_TURNS[
+        mockSeed(input) % MOCK_VIDYA_TURNS.length
+      ] as (typeof MOCK_VIDYA_TURNS)[number];
+      return { ...turn, grounded: true, handed_answer: false };
+    }
     case 'generate.course':
       return {
         title: 'Your course',

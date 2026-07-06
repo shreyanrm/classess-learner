@@ -1,0 +1,28 @@
+- generic [ref=f2e2]:
+  - generic [ref=f2e4]:
+    - button "◦ you" [ref=f2e5] [cursor=pointer]
+    - button "✦ did you know" [ref=f2e7] [cursor=pointer]
+    - generic [ref=f2e8]:
+      - img "Vidya" [ref=f2e9]:
+        - img [ref=f2e13]
+      - generic [ref=f2e28]: good morning, aanya
+      - generic [ref=f2e29]: ask me anything, or take a door
+      - generic [ref=f2e30]:
+        - textbox "talk to Vidya…" [ref=f2e31]
+        - button "Talk by voice" [ref=f2e32] [cursor=pointer]: ◦ mic
+        - button "Ask Vidya" [ref=f2e33] [cursor=pointer]: ask
+      - generic [ref=f2e34]:
+        - button "✧ learn something cool" [ref=f2e35] [cursor=pointer]
+        - button "✧ open a rabbit hole" [ref=f2e36] [cursor=pointer]
+        - button "✧ what should I do today" [ref=f2e37] [cursor=pointer]
+      - generic [ref=f2e38]:
+        - button "learn" [ref=f2e39] [cursor=pointer]
+        - button "practice" [ref=f2e40] [cursor=pointer]
+    - generic [ref=f2e41]:
+      - generic [ref=f2e42]: ⌘K
+      - text: anything, anywhere
+  - generic:
+    - generic:
+      - generic: 0 xp
+      - generic: ·
+      - generic: day 1 of being a learner

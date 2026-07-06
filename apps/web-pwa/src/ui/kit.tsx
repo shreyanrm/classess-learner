@@ -8,8 +8,8 @@
  * Micro-interaction character lives here once: magnetic buttons, tactile press, butter easing.
  */
 
-import { motion, useMotionValue, useSpring } from 'framer-motion';
-import { type CSSProperties, type ReactNode, useCallback, useRef } from 'react';
+import { motion, useMotionTemplate, useMotionValue, useSpring } from 'framer-motion';
+import { type CSSProperties, type ReactNode, useCallback, useRef, useState } from 'react';
 
 export const inkText: CSSProperties = { color: 'var(--clss-ink-900)' };
 
@@ -31,7 +31,16 @@ export function SectionLabel({ children, style }: { children: ReactNode; style?:
 }
 
 export function Hairline({ style }: { style?: CSSProperties }) {
-  return <div style={{ height: 1, transform: 'scaleY(0.5)', background: 'var(--clss-hairline-on-paper-strong)', ...style }} />;
+  return (
+    <div
+      style={{
+        height: 1,
+        transform: 'scaleY(0.5)',
+        background: 'var(--clss-hairline-on-paper-strong)',
+        ...style,
+      }}
+    />
+  );
 }
 
 export function Card({
@@ -67,10 +76,26 @@ export function Card({
 export type ButtonVariant = 'primary' | 'quiet' | 'pigment' | 'ghost';
 
 const BUTTON_STYLES: Record<ButtonVariant, CSSProperties> = {
-  primary: { background: 'var(--clss-ink-900)', color: 'var(--clss-paper)', border: '0.5px solid var(--clss-ink-900)' },
-  quiet: { background: 'var(--clss-paper)', color: 'var(--clss-ink-900)', border: '0.5px solid var(--clss-hairline-on-paper-strong)' },
-  pigment: { background: 'var(--clss-ultramarine)', color: 'var(--clss-paper)', border: '0.5px solid var(--clss-ultramarine)' },
-  ghost: { background: 'transparent', color: 'var(--clss-ink-500)', border: '0.5px solid transparent' },
+  primary: {
+    background: 'var(--clss-ink-900)',
+    color: 'var(--clss-paper)',
+    border: '0.5px solid var(--clss-ink-900)',
+  },
+  quiet: {
+    background: 'var(--clss-paper)',
+    color: 'var(--clss-ink-900)',
+    border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+  },
+  pigment: {
+    background: 'var(--clss-ultramarine)',
+    color: 'var(--clss-paper)',
+    border: '0.5px solid var(--clss-ultramarine)',
+  },
+  ghost: {
+    background: 'transparent',
+    color: 'var(--clss-ink-500)',
+    border: '0.5px solid transparent',
+  },
 };
 
 /**
@@ -165,5 +190,179 @@ export function Kbd({ children }: { children: ReactNode }) {
     >
       {children}
     </span>
+  );
+}
+
+/**
+ * TiltCard — spotlight + tilt, blended and subtle (owner directive). The card leans toward the
+ * cursor (capped at 3.5°) while a soft light pool follows it. Premium, never a gimmick.
+ */
+export function TiltCard({
+  children,
+  onClick,
+  style,
+  spotlight = 'rgba(13,13,16,0.05)',
+}: {
+  children: ReactNode;
+  onClick?: () => void;
+  style?: CSSProperties;
+  spotlight?: string;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const rx = useMotionValue(0);
+  const ry = useMotionValue(0);
+  const sx = useMotionValue(50);
+  const sy = useMotionValue(50);
+  const rotateX = useSpring(rx, { stiffness: 260, damping: 24 });
+  const rotateY = useSpring(ry, { stiffness: 260, damping: 24 });
+  const [lit, setLit] = useState(false);
+
+  const onMove = useCallback(
+    (e: React.PointerEvent) => {
+      const el = ref.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width;
+      const py = (e.clientY - r.top) / r.height;
+      ry.set((px - 0.5) * 7);
+      rx.set((0.5 - py) * 7);
+      sx.set(px * 100);
+      sy.set(py * 100);
+    },
+    [rx, ry, sx, sy],
+  );
+  const onLeave = useCallback(() => {
+    rx.set(0);
+    ry.set(0);
+    setLit(false);
+  }, [rx, ry]);
+
+  const spot = useMotionTemplate`radial-gradient(220px circle at ${sx}% ${sy}%, ${spotlight}, transparent 70%)`;
+
+  return (
+    <motion.div
+      ref={ref}
+      onPointerMove={onMove}
+      onPointerEnter={() => setLit(true)}
+      onPointerLeave={onLeave}
+      onClick={onClick}
+      whileTap={onClick ? { scale: 0.985 } : undefined}
+      style={{
+        rotateX,
+        rotateY,
+        transformPerspective: 900,
+        background: 'var(--clss-paper)',
+        border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+        borderRadius: 'var(--clss-radius-sm)',
+        cursor: onClick ? 'pointer' : 'default',
+        position: 'relative',
+        overflow: 'hidden',
+        ...style,
+      }}
+    >
+      <motion.div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: spot,
+          opacity: lit ? 1 : 0,
+          transition: 'opacity 0.3s ease',
+          pointerEvents: 'none',
+        }}
+      />
+      <div style={{ position: 'relative' }}>{children}</div>
+    </motion.div>
+  );
+}
+
+/**
+ * AuroraButton — for the product's hero doors only. A quiet button until the cursor arrives;
+ * then a spectral gradient flows around its border and through its label. One per intention.
+ */
+export function AuroraButton({
+  children,
+  onClick,
+  size = 'lg',
+  style,
+}: {
+  children: ReactNode;
+  onClick?: () => void;
+  size?: 'md' | 'lg';
+  style?: CSSProperties;
+}) {
+  const [lit, setLit] = useState(false);
+  const pad = size === 'lg' ? '15px 30px' : '10px 20px';
+  const font = size === 'lg' ? '1.08rem' : '0.95rem';
+  const aurora =
+    'conic-gradient(from var(--clss-aurora-angle, 0deg), #1F35E0, #CC1E7A, #FF5A1F, #66B300, #0FA3B1, #1F35E0)';
+  return (
+    <motion.button
+      onPointerEnter={() => setLit(true)}
+      onPointerLeave={() => setLit(false)}
+      onClick={onClick}
+      whileHover={{ y: -2 }}
+      whileTap={{ scale: 0.96 }}
+      transition={{ type: 'spring', stiffness: 380, damping: 24 }}
+      style={{
+        position: 'relative',
+        padding: pad,
+        fontSize: font,
+        fontWeight: 550,
+        fontFamily: 'inherit',
+        color: 'var(--clss-ink-900)',
+        background: 'var(--clss-paper)',
+        border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+        borderRadius: 'var(--clss-radius-sm)',
+        cursor: 'pointer',
+        overflow: 'hidden',
+        ...style,
+      }}
+    >
+      {/* the flowing border */}
+      <motion.span
+        aria-hidden
+        animate={lit ? { opacity: 1, rotate: 360 } : { opacity: 0, rotate: 0 }}
+        transition={
+          lit
+            ? {
+                opacity: { duration: 0.25 },
+                rotate: { duration: 6, repeat: Number.POSITIVE_INFINITY, ease: 'linear' },
+              }
+            : { duration: 0.3 }
+        }
+        style={{
+          position: 'absolute',
+          inset: -60,
+          background: aurora,
+          filter: 'blur(18px)',
+          opacity: 0,
+          pointerEvents: 'none',
+        }}
+      />
+      {/* the paper core keeps the button readable — the aurora lives at its rim */}
+      <span
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 1.5,
+          background: 'var(--clss-paper)',
+          borderRadius: 2,
+          pointerEvents: 'none',
+        }}
+      />
+      <span
+        style={{
+          position: 'relative',
+          background: lit ? 'linear-gradient(90deg, #1F35E0, #CC1E7A, #FF5A1F)' : 'none',
+          WebkitBackgroundClip: lit ? 'text' : undefined,
+          backgroundClip: lit ? 'text' : undefined,
+          WebkitTextFillColor: lit ? 'transparent' : undefined,
+          transition: 'all 0.25s ease',
+        }}
+      >
+        {children}
+      </span>
+    </motion.button>
   );
 }

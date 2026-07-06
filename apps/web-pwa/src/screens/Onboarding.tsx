@@ -102,7 +102,12 @@ export function Onboarding() {
   useEffect(() => {
     bus.publishPage({
       route: 'onboarding',
-      state: { beat, name: name || undefined, grade: grade ?? undefined, board: boardId ?? undefined },
+      state: {
+        beat,
+        name: name || undefined,
+        grade: grade ?? undefined,
+        board: boardId ?? undefined,
+      },
     });
   }, [bus, beat, name, grade, boardId]);
 
@@ -185,7 +190,13 @@ export function Onboarding() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -36 }}
               transition={spring}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, marginTop: 22 }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 6,
+                marginTop: 22,
+              }}
             >
               <TypedLine
                 text="hi — I'm Vidya"
@@ -243,9 +254,22 @@ export function Onboarding() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -36 }}
               transition={spring}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginTop: 26 }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 8,
+                marginTop: 26,
+              }}
             >
-              <div style={{ fontSize: '1.35rem', fontWeight: 500, letterSpacing: '-0.02em', color: 'var(--clss-ink-900)' }}>
+              <div
+                style={{
+                  fontSize: '1.35rem',
+                  fontWeight: 500,
+                  letterSpacing: '-0.02em',
+                  color: 'var(--clss-ink-900)',
+                }}
+              >
                 what should I call you
               </div>
               <input
@@ -297,12 +321,30 @@ export function Onboarding() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -36 }}
               transition={spring}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 26, marginTop: 26 }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 26,
+                marginTop: 26,
+              }}
             >
-              <div style={{ fontSize: '1.35rem', fontWeight: 500, letterSpacing: '-0.02em', color: 'var(--clss-ink-900)' }}>
+              <div
+                style={{
+                  fontSize: '1.35rem',
+                  fontWeight: 500,
+                  letterSpacing: '-0.02em',
+                  color: 'var(--clss-ink-900)',
+                }}
+              >
                 where are you in school
               </div>
-              <GradeBoardPicker grade={grade} boardId={boardId} onGrade={setGrade} onBoard={setBoardId} />
+              <GradeBoardPicker
+                grade={grade}
+                boardId={boardId}
+                onGrade={setGrade}
+                onBoard={setBoardId}
+              />
               <MagneticButton
                 size="lg"
                 variant="primary"
@@ -327,7 +369,13 @@ export function Onboarding() {
               exit={{ opacity: 0, x: -36 }}
               transition={spring}
               onAnimationComplete={() => setMood('celebrate')}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 30, marginTop: 30 }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 30,
+                marginTop: 30,
+              }}
             >
               <div ref={readyRef} style={{ position: 'relative', width: 320, height: 190 }}>
                 {/* the hairline door draws itself */}
@@ -382,7 +430,14 @@ export function Onboarding() {
                   <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>
                     {finalName} · {grade ?? 'Class 8'} · {boardId ? boardName(boardId) : 'CBSE'}
                   </div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 500, letterSpacing: '-0.02em', color: 'var(--clss-ink-900)' }}>
+                  <div
+                    style={{
+                      fontSize: '1.4rem',
+                      fontWeight: 500,
+                      letterSpacing: '-0.02em',
+                      color: 'var(--clss-ink-900)',
+                    }}
+                  >
                     your page is ready
                   </div>
                   {boardId && !boardSeeded(boardId) && (
@@ -397,7 +452,12 @@ export function Onboarding() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ ...spring, delay: 2.1 }}
               >
-                <MagneticButton size="lg" variant="primary" onClick={finish} style={{ minWidth: 170, justifyContent: 'center' }}>
+                <MagneticButton
+                  size="lg"
+                  variant="primary"
+                  onClick={finish}
+                  style={{ minWidth: 170, justifyContent: 'center' }}
+                >
                   step in
                 </MagneticButton>
               </motion.div>
@@ -408,7 +468,11 @@ export function Onboarding() {
 
       {/* skip — a door out, no guilt, nothing awarded until it completes from You */}
       {beat < 3 && (
-        <button type="button" onClick={skip} style={{ ...ghostButton, position: 'fixed', bottom: 22 }}>
+        <button
+          type="button"
+          onClick={skip}
+          style={{ ...ghostButton, position: 'fixed', bottom: 22 }}
+        >
           skip for now
         </button>
       )}

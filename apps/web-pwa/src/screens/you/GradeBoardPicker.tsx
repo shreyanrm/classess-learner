@@ -82,22 +82,47 @@ export function GradeBoardPicker({
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <SectionLabel>your board</SectionLabel>
-        <div style={{ maxHeight: 240, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14, paddingRight: 4 }}>
+        <div
+          style={{
+            maxHeight: 240,
+            overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 14,
+            paddingRight: 4,
+          }}
+        >
           <div style={row}>
             {seeded.map((b) => (
-              <Chip key={b.id} label={b.name} selected={boardId === b.id} onClick={() => onBoard(b.id)} />
+              <Chip
+                key={b.id}
+                label={b.name}
+                selected={boardId === b.id}
+                onClick={() => onBoard(b.id)}
+              />
             ))}
           </div>
           {regions.map((region) => (
             <div key={region} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div style={{ fontSize: '0.72rem', color: 'var(--clss-ink-300)', letterSpacing: '0.1em' }}>
+              <div
+                style={{
+                  fontSize: '0.72rem',
+                  color: 'var(--clss-ink-300)',
+                  letterSpacing: '0.1em',
+                }}
+              >
                 {region.toLowerCase()}
               </div>
               <div style={row}>
                 {rest
                   .filter((b) => b.region === region)
                   .map((b) => (
-                    <Chip key={b.id} label={b.name} selected={boardId === b.id} onClick={() => onBoard(b.id)} />
+                    <Chip
+                      key={b.id}
+                      label={b.name}
+                      selected={boardId === b.id}
+                      onClick={() => onBoard(b.id)}
+                    />
                   ))}
               </div>
             </div>

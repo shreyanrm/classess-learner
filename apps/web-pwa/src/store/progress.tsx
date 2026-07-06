@@ -118,7 +118,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       const amount = opts?.amount ?? XP_AWARDS[reason];
       let granted = 0;
       setState((prev) => {
-        const onceKey = opts?.onceKey ?? (['account', 'profile_photo'].includes(reason) ? reason : undefined);
+        const onceKey =
+          opts?.onceKey ?? (['account', 'profile_photo'].includes(reason) ? reason : undefined);
         if (onceKey && prev.awardedOnce.includes(onceKey)) return prev;
         granted = amount;
         const next: Persisted = {

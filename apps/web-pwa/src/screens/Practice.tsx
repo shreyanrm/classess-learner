@@ -64,7 +64,9 @@ function Door({
           {line}
         </span>
       </span>
-      <span style={{ color: 'var(--clss-ink-300)', fontSize: '0.9rem', flexShrink: 0 }}>{hint}</span>
+      <span style={{ color: 'var(--clss-ink-300)', fontSize: '0.9rem', flexShrink: 0 }}>
+        {hint}
+      </span>
     </motion.button>
   );
 }

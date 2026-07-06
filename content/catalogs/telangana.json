@@ -1,0 +1,3952 @@
+{
+  "board": "Telangana State Board",
+  "provenance": "model-knowledge",
+  "note": "pending verification against official syllabus documents",
+  "grades": [
+    {
+      "grade": "Class 6",
+      "subjects": [
+        {
+          "id": "math",
+          "name": "Mathematics",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Knowing Our Numbers",
+              "topics": [
+                {
+                  "name": "Comparing numbers",
+                  "blurb": "Ordering large numbers and finding the greatest and smallest."
+                },
+                {
+                  "name": "Place value",
+                  "blurb": "Reading and writing numbers in the Indian and international systems."
+                },
+                {
+                  "name": "Estimation and rounding",
+                  "blurb": "Rounding numbers to make quick, sensible approximations."
+                },
+                {
+                  "name": "Roman numerals",
+                  "blurb": "Reading and writing numbers the Roman way."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Whole Numbers",
+              "topics": [
+                {
+                  "name": "The number line",
+                  "blurb": "Placing whole numbers on a line and moving along it."
+                },
+                {
+                  "name": "Properties of whole numbers",
+                  "blurb": "Closure, commutativity and associativity of operations."
+                },
+                {
+                  "name": "Patterns in whole numbers",
+                  "blurb": "Arranging numbers as shapes to see patterns."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Playing with Numbers",
+              "topics": [
+                {
+                  "name": "Factors and multiples",
+                  "blurb": "Finding what divides a number and what it divides into."
+                },
+                {
+                  "name": "Prime and composite numbers",
+                  "blurb": "Sorting numbers by how many factors they have."
+                },
+                {
+                  "name": "HCF and LCM",
+                  "blurb": "Finding common factors and common multiples of numbers."
+                },
+                {
+                  "name": "Divisibility rules",
+                  "blurb": "Quick tests for dividing by 2, 3, 5, 9 and 10."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Basic Geometrical Ideas",
+              "topics": [
+                {
+                  "name": "Points, lines and rays",
+                  "blurb": "The building blocks of every figure we draw."
+                },
+                {
+                  "name": "Curves and polygons",
+                  "blurb": "Open and closed curves and their sides and vertices."
+                },
+                {
+                  "name": "Angles and triangles",
+                  "blurb": "Naming interior, exterior and vertex of a figure."
+                },
+                {
+                  "name": "Circles",
+                  "blurb": "Centre, radius, diameter and chord of a circle."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Measures of Lines and Angles",
+              "topics": [
+                {
+                  "name": "Measuring line segments",
+                  "blurb": "Using a ruler to compare and measure lengths."
+                },
+                {
+                  "name": "Kinds of angles",
+                  "blurb": "Acute, right, obtuse, straight and reflex angles."
+                },
+                {
+                  "name": "Measuring angles",
+                  "blurb": "Reading an angle with a protractor in degrees."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Integers",
+              "topics": [
+                {
+                  "name": "Positive and negative numbers",
+                  "blurb": "Numbers below zero and where they appear in life."
+                },
+                {
+                  "name": "Integers on the number line",
+                  "blurb": "Ordering integers and reading them left to right."
+                },
+                {
+                  "name": "Addition and subtraction of integers",
+                  "blurb": "Combining integers using the number line."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Fractions and Decimals",
+              "topics": [
+                {
+                  "name": "Understanding fractions",
+                  "blurb": "Parts of a whole shown as numerator and denominator."
+                },
+                {
+                  "name": "Equivalent and like fractions",
+                  "blurb": "Fractions that name the same amount."
+                },
+                {
+                  "name": "Operations on fractions",
+                  "blurb": "Adding and subtracting like and unlike fractions."
+                },
+                {
+                  "name": "Decimals",
+                  "blurb": "Writing tenths and hundredths with a decimal point."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Data Handling",
+              "topics": [
+                {
+                  "name": "Collecting and organising data",
+                  "blurb": "Recording observations using tally marks."
+                },
+                {
+                  "name": "Pictographs",
+                  "blurb": "Showing data with picture symbols that stand for amounts."
+                },
+                {
+                  "name": "Bar graphs",
+                  "blurb": "Reading and drawing bars to compare quantities."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Introduction to Algebra",
+              "topics": [
+                {
+                  "name": "Using letters for numbers",
+                  "blurb": "Letting a symbol stand for an unknown number."
+                },
+                {
+                  "name": "Patterns and rules",
+                  "blurb": "Writing a general rule for a repeating pattern."
+                },
+                {
+                  "name": "Simple equations",
+                  "blurb": "Finding the value that makes a statement true."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Perimeter and Area",
+              "topics": [
+                {
+                  "name": "Perimeter",
+                  "blurb": "The distance all the way around a closed figure."
+                },
+                {
+                  "name": "Area by counting squares",
+                  "blurb": "Measuring surface using unit squares."
+                },
+                {
+                  "name": "Area of rectangles and squares",
+                  "blurb": "Using length and breadth to find area."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "Ratio and Proportion",
+              "topics": [
+                {
+                  "name": "Ratio",
+                  "blurb": "Comparing two quantities of the same kind."
+                },
+                {
+                  "name": "Proportion",
+                  "blurb": "When two ratios are equal to each other."
+                },
+                {
+                  "name": "Unitary method",
+                  "blurb": "Finding the value of one to find the value of many."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Symmetry",
+              "topics": [
+                {
+                  "name": "Line of symmetry",
+                  "blurb": "The fold that makes two halves match exactly."
+                },
+                {
+                  "name": "Figures with many lines of symmetry",
+                  "blurb": "Shapes that look the same in more than one way."
+                },
+                {
+                  "name": "Reflection",
+                  "blurb": "How a mirror flips a figure across a line."
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "name": "Practical Geometry",
+              "topics": [
+                {
+                  "name": "Drawing with a compass",
+                  "blurb": "Constructing circles and arcs of a given radius."
+                },
+                {
+                  "name": "Constructing line segments",
+                  "blurb": "Copying and measuring segments accurately."
+                },
+                {
+                  "name": "Constructing angles",
+                  "blurb": "Making angles and perpendiculars with instruments."
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "name": "Understanding 3D and 2D Shapes",
+              "topics": [
+                {
+                  "name": "Faces, edges and vertices",
+                  "blurb": "The parts that make up a solid shape."
+                },
+                {
+                  "name": "Common solids",
+                  "blurb": "Cubes, cuboids, cones, cylinders and spheres."
+                },
+                {
+                  "name": "Nets of solids",
+                  "blurb": "Flat patterns that fold up into a solid."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "science",
+          "name": "Science",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Our Food",
+              "topics": [
+                {
+                  "name": "Food from plants and animals",
+                  "blurb": "Where the things on our plate come from."
+                },
+                {
+                  "name": "Components of food",
+                  "blurb": "Carbohydrates, proteins, fats, vitamins and minerals."
+                },
+                {
+                  "name": "Balanced diet and deficiency",
+                  "blurb": "Eating well and the diseases of eating poorly."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Playing with Magnets",
+              "topics": [
+                {
+                  "name": "Magnetic and non-magnetic materials",
+                  "blurb": "Sorting what a magnet pulls from what it ignores."
+                },
+                {
+                  "name": "Poles of a magnet",
+                  "blurb": "Why a magnet is strongest at its two ends."
+                },
+                {
+                  "name": "Finding directions",
+                  "blurb": "How a freely hung magnet points north and south."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Rain: Where Does It Come From?",
+              "topics": [
+                {
+                  "name": "Evaporation and condensation",
+                  "blurb": "Water turning to vapour and back to droplets."
+                },
+                {
+                  "name": "The water cycle",
+                  "blurb": "How rain, rivers and seas keep water moving."
+                },
+                {
+                  "name": "Uses of water",
+                  "blurb": "Why every home, farm and factory depends on water."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "What Do Animals Eat?",
+              "topics": [
+                {
+                  "name": "Herbivores, carnivores and omnivores",
+                  "blurb": "Grouping animals by the food they eat."
+                },
+                {
+                  "name": "Food habits and teeth",
+                  "blurb": "How an animal's teeth suit its diet."
+                },
+                {
+                  "name": "Food chains",
+                  "blurb": "Who eats whom in a simple chain of life."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Materials and Things",
+              "topics": [
+                {
+                  "name": "Objects around us",
+                  "blurb": "Sorting everyday things by the material they are made of."
+                },
+                {
+                  "name": "Properties of materials",
+                  "blurb": "Hardness, shine, and whether things float or sink."
+                },
+                {
+                  "name": "Grouping materials",
+                  "blurb": "Putting materials together by shared properties."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Habitat",
+              "topics": [
+                {
+                  "name": "Living and non-living",
+                  "blurb": "Telling apart what is alive from what is not."
+                },
+                {
+                  "name": "Habitats of plants and animals",
+                  "blurb": "The homes that suit different kinds of life."
+                },
+                {
+                  "name": "Adaptations",
+                  "blurb": "Features that help living things survive where they live."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Separation of Substances",
+              "topics": [
+                {
+                  "name": "Why we separate substances",
+                  "blurb": "Removing what we do not want from a mixture."
+                },
+                {
+                  "name": "Handpicking, winnowing and sieving",
+                  "blurb": "Simple ways to separate solids."
+                },
+                {
+                  "name": "Filtration and evaporation",
+                  "blurb": "Separating solids from liquids at home."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Fibre to Fabric",
+              "topics": [
+                {
+                  "name": "Plant fibres",
+                  "blurb": "Cotton and jute and where they grow."
+                },
+                {
+                  "name": "From fibre to yarn",
+                  "blurb": "Spinning loose fibre into a continuous thread."
+                },
+                {
+                  "name": "Weaving and knitting",
+                  "blurb": "Turning yarn into cloth on a loom."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Playing with Ropeways and Levers",
+              "topics": [
+                {
+                  "name": "Simple machines around us",
+                  "blurb": "Everyday tools that make work easier."
+                },
+                {
+                  "name": "Levers and pulleys",
+                  "blurb": "Lifting heavy loads with less effort."
+                },
+                {
+                  "name": "The inclined plane",
+                  "blurb": "Why a ramp is easier than a straight lift."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Learning How to Measure",
+              "topics": [
+                {
+                  "name": "Need for standard units",
+                  "blurb": "Why a handspan is not a fair measure."
+                },
+                {
+                  "name": "Measuring length",
+                  "blurb": "Using a scale and reading it correctly."
+                },
+                {
+                  "name": "Measuring mass and time",
+                  "blurb": "Balances and clocks in standard units."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "Movements in Animals",
+              "topics": [
+                {
+                  "name": "Body movements",
+                  "blurb": "How animals bend, walk, fly and swim."
+                },
+                {
+                  "name": "The human skeleton",
+                  "blurb": "The bones that support and shape the body."
+                },
+                {
+                  "name": "Joints and muscles",
+                  "blurb": "How joints and muscles work together to move."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "social",
+          "name": "Social science",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Reading Maps",
+              "topics": [
+                {
+                  "name": "Maps and their uses",
+                  "blurb": "How a map shrinks the world onto paper."
+                },
+                {
+                  "name": "Symbols, scale and direction",
+                  "blurb": "The grammar that makes a map readable."
+                },
+                {
+                  "name": "Sketches and plans",
+                  "blurb": "The difference between a rough sketch and a scaled plan."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "The Earth in the Solar System",
+              "topics": [
+                {
+                  "name": "The Sun and its family",
+                  "blurb": "Planets, moons and the star at the centre."
+                },
+                {
+                  "name": "Our unique Earth",
+                  "blurb": "Why Earth alone supports life as we know it."
+                },
+                {
+                  "name": "The Moon and stars",
+                  "blurb": "Earth's companion and the distant suns at night."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Globe: Latitudes and Longitudes",
+              "topics": [
+                {
+                  "name": "The globe as a model",
+                  "blurb": "A round model of a round Earth."
+                },
+                {
+                  "name": "Latitudes",
+                  "blurb": "Lines that measure distance north and south of the equator."
+                },
+                {
+                  "name": "Longitudes and time",
+                  "blurb": "Lines that fix east-west position and set the clock."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Landforms",
+              "topics": [
+                {
+                  "name": "Mountains, plateaus and plains",
+                  "blurb": "The major shapes of the land."
+                },
+                {
+                  "name": "How landforms are used",
+                  "blurb": "Why people settle and farm where they do."
+                },
+                {
+                  "name": "Weathering and erosion",
+                  "blurb": "Slow forces that reshape the land."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Continents and Oceans",
+              "topics": [
+                {
+                  "name": "The seven continents",
+                  "blurb": "The great landmasses of the world."
+                },
+                {
+                  "name": "The oceans",
+                  "blurb": "The vast bodies of salt water between them."
+                },
+                {
+                  "name": "Locating places on the globe",
+                  "blurb": "Using continents and oceans to find your way."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Our Country: India",
+              "topics": [
+                {
+                  "name": "Location and neighbours",
+                  "blurb": "Where India sits and who lies alongside it."
+                },
+                {
+                  "name": "Physical divisions",
+                  "blurb": "Mountains, plains, plateau, desert and coasts."
+                },
+                {
+                  "name": "States and Union Territories",
+                  "blurb": "How the country is divided for governing."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "From Gathering to Growing Food",
+              "topics": [
+                {
+                  "name": "Life of early humans",
+                  "blurb": "How the first people found food and shelter."
+                },
+                {
+                  "name": "The beginning of farming",
+                  "blurb": "When people first tamed plants and animals."
+                },
+                {
+                  "name": "Making of tools",
+                  "blurb": "Stone tools and the skills they took."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "The First Cities",
+              "topics": [
+                {
+                  "name": "The Indus Valley towns",
+                  "blurb": "Planned cities of Harappa and Mohenjodaro."
+                },
+                {
+                  "name": "Life in the cities",
+                  "blurb": "Houses, drains, crafts and trade of the Harappans."
+                },
+                {
+                  "name": "The end of the cities",
+                  "blurb": "Why these early cities were left behind."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Village Panchayats",
+              "topics": [
+                {
+                  "name": "The gram panchayat",
+                  "blurb": "How a village governs its own affairs."
+                },
+                {
+                  "name": "Work of the panchayat",
+                  "blurb": "The everyday services a panchayat provides."
+                },
+                {
+                  "name": "Gram sabha",
+                  "blurb": "The village meeting where everyone has a voice."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Diversity in Our Society",
+              "topics": [
+                {
+                  "name": "Many languages and faiths",
+                  "blurb": "The variety of people who make up India."
+                },
+                {
+                  "name": "Unity in diversity",
+                  "blurb": "What binds a diverse country together."
+                },
+                {
+                  "name": "Respecting differences",
+                  "blurb": "Living together with fairness and dignity."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "Class 7",
+      "subjects": [
+        {
+          "id": "math",
+          "name": "Mathematics",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Integers",
+              "topics": [
+                {
+                  "name": "Properties of integers",
+                  "blurb": "Closure, commutativity and associativity for integers."
+                },
+                {
+                  "name": "Multiplication of integers",
+                  "blurb": "Rules of signs when multiplying integers."
+                },
+                {
+                  "name": "Division of integers",
+                  "blurb": "Dividing integers and the sign of the result."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Fractions, Decimals and Rational Numbers",
+              "topics": [
+                {
+                  "name": "Multiplying fractions",
+                  "blurb": "Finding a fraction of a fraction."
+                },
+                {
+                  "name": "Dividing fractions",
+                  "blurb": "Using the reciprocal to divide by a fraction."
+                },
+                {
+                  "name": "Rational numbers",
+                  "blurb": "Numbers written as a ratio of two integers."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Simple Equations",
+              "topics": [
+                {
+                  "name": "Setting up an equation",
+                  "blurb": "Turning a word problem into a balance."
+                },
+                {
+                  "name": "Solving equations",
+                  "blurb": "Keeping the balance while finding the unknown."
+                },
+                {
+                  "name": "Applications",
+                  "blurb": "Using equations to answer real questions."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Lines and Angles",
+              "topics": [
+                {
+                  "name": "Pairs of angles",
+                  "blurb": "Complementary, supplementary and adjacent angles."
+                },
+                {
+                  "name": "Intersecting lines",
+                  "blurb": "Vertically opposite angles at a crossing."
+                },
+                {
+                  "name": "Parallel lines and a transversal",
+                  "blurb": "Angles made when a line cuts two parallels."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Triangle and Its Properties",
+              "topics": [
+                {
+                  "name": "Medians and altitudes",
+                  "blurb": "Special lines drawn inside a triangle."
+                },
+                {
+                  "name": "Angle sum property",
+                  "blurb": "Why the three angles always total 180 degrees."
+                },
+                {
+                  "name": "Exterior angle property",
+                  "blurb": "Relating an outside angle to two inside ones."
+                },
+                {
+                  "name": "Pythagoras property",
+                  "blurb": "The right-angle relation between the sides."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Ratio and Applications",
+              "topics": [
+                {
+                  "name": "Equivalent ratios",
+                  "blurb": "Scaling a ratio up or down."
+                },
+                {
+                  "name": "Percentage",
+                  "blurb": "A ratio out of a hundred and its uses."
+                },
+                {
+                  "name": "Profit, loss and simple interest",
+                  "blurb": "Everyday money problems with ratios."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Data Handling",
+              "topics": [
+                {
+                  "name": "Mean, median and mode",
+                  "blurb": "Three ways to find a typical value."
+                },
+                {
+                  "name": "Bar graphs and double bar graphs",
+                  "blurb": "Comparing groups side by side."
+                },
+                {
+                  "name": "Chance and probability",
+                  "blurb": "Measuring how likely an event is."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Congruency of Triangles",
+              "topics": [
+                {
+                  "name": "Congruent figures",
+                  "blurb": "Shapes that match exactly when placed together."
+                },
+                {
+                  "name": "Criteria for congruence",
+                  "blurb": "SSS, SAS, ASA and RHS conditions."
+                },
+                {
+                  "name": "Using congruence",
+                  "blurb": "Proving parts equal through congruent triangles."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Construction of Triangles",
+              "topics": [
+                {
+                  "name": "Constructing from three sides",
+                  "blurb": "Building a triangle given SSS."
+                },
+                {
+                  "name": "Constructing from sides and angles",
+                  "blurb": "Building a triangle given SAS or ASA."
+                },
+                {
+                  "name": "Right-angled triangles",
+                  "blurb": "Constructing with the RHS condition."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Algebraic Expressions",
+              "topics": [
+                {
+                  "name": "Terms, coefficients and like terms",
+                  "blurb": "The parts that make up an expression."
+                },
+                {
+                  "name": "Adding and subtracting expressions",
+                  "blurb": "Combining like terms neatly."
+                },
+                {
+                  "name": "Finding the value of an expression",
+                  "blurb": "Substituting numbers for the letters."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "Exponents and Powers",
+              "topics": [
+                {
+                  "name": "Writing numbers with exponents",
+                  "blurb": "A short way to show repeated multiplication."
+                },
+                {
+                  "name": "Laws of exponents",
+                  "blurb": "Rules for multiplying and dividing powers."
+                },
+                {
+                  "name": "Standard form",
+                  "blurb": "Writing very large numbers compactly."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Quadrilaterals",
+              "topics": [
+                {
+                  "name": "Kinds of quadrilaterals",
+                  "blurb": "Squares, rectangles, rhombuses and more."
+                },
+                {
+                  "name": "Angle sum of a quadrilateral",
+                  "blurb": "Why the four angles total 360 degrees."
+                },
+                {
+                  "name": "Properties of special quadrilaterals",
+                  "blurb": "Sides, angles and diagonals of each."
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "name": "Area and Perimeter",
+              "topics": [
+                {
+                  "name": "Area of a parallelogram",
+                  "blurb": "Base and height give the area."
+                },
+                {
+                  "name": "Area of a triangle",
+                  "blurb": "Half of base times height."
+                },
+                {
+                  "name": "Circumference and area of a circle",
+                  "blurb": "Measuring around and inside a circle."
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "name": "Symmetry",
+              "topics": [
+                {
+                  "name": "Lines of symmetry",
+                  "blurb": "Folds that leave a figure unchanged."
+                },
+                {
+                  "name": "Rotational symmetry",
+                  "blurb": "Turning a figure onto itself."
+                },
+                {
+                  "name": "Order of rotation",
+                  "blurb": "How many times a figure matches in one turn."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "science",
+          "name": "Science",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Food Components",
+              "topics": [
+                {
+                  "name": "Nutrients we need",
+                  "blurb": "The main food components and their jobs."
+                },
+                {
+                  "name": "Testing for nutrients",
+                  "blurb": "Simple tests for starch, protein and fat."
+                },
+                {
+                  "name": "Roughage and water",
+                  "blurb": "Why fibre and water matter in a diet."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Nutrition in Plants",
+              "topics": [
+                {
+                  "name": "Photosynthesis",
+                  "blurb": "How green leaves make food from sunlight."
+                },
+                {
+                  "name": "Modes of nutrition",
+                  "blurb": "Autotrophs, parasites and insect-eating plants."
+                },
+                {
+                  "name": "Nutrients and soil",
+                  "blurb": "How plants replenish the nutrients they use."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Respiration in Organisms",
+              "topics": [
+                {
+                  "name": "Breathing and respiration",
+                  "blurb": "The difference between the two processes."
+                },
+                {
+                  "name": "Respiration in animals",
+                  "blurb": "How different animals take in oxygen."
+                },
+                {
+                  "name": "Respiration in plants",
+                  "blurb": "How roots, stems and leaves breathe."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Reproduction in Plants",
+              "topics": [
+                {
+                  "name": "Asexual reproduction",
+                  "blurb": "New plants from buds, cuttings and spores."
+                },
+                {
+                  "name": "Sexual reproduction",
+                  "blurb": "The parts of a flower and their roles."
+                },
+                {
+                  "name": "Seed dispersal",
+                  "blurb": "How seeds travel to new ground."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Temperature and Its Measurement",
+              "topics": [
+                {
+                  "name": "Hot and cold",
+                  "blurb": "Temperature as a measure of hotness."
+                },
+                {
+                  "name": "Thermometers",
+                  "blurb": "Clinical and laboratory thermometers and their use."
+                },
+                {
+                  "name": "Transfer of heat",
+                  "blurb": "Conduction, convection and radiation."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Acids and Bases",
+              "topics": [
+                {
+                  "name": "Acids and bases around us",
+                  "blurb": "Sour and bitter substances in daily life."
+                },
+                {
+                  "name": "Indicators",
+                  "blurb": "How litmus and other indicators show acidity."
+                },
+                {
+                  "name": "Neutralisation",
+                  "blurb": "When an acid and a base cancel each other."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Physical and Chemical Changes",
+              "topics": [
+                {
+                  "name": "Physical changes",
+                  "blurb": "Changes where no new substance forms."
+                },
+                {
+                  "name": "Chemical changes",
+                  "blurb": "Changes that make new substances."
+                },
+                {
+                  "name": "Rusting and crystallisation",
+                  "blurb": "Familiar chemical and physical changes."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Weather, Climate and Adaptations",
+              "topics": [
+                {
+                  "name": "Weather and climate",
+                  "blurb": "Day-to-day change versus the long-term pattern."
+                },
+                {
+                  "name": "Adaptations to climate",
+                  "blurb": "How living things suit their surroundings."
+                },
+                {
+                  "name": "Polar and tropical life",
+                  "blurb": "Animals of the cold and the hot regions."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Air, Winds and Cyclones",
+              "topics": [
+                {
+                  "name": "Air exerts pressure",
+                  "blurb": "How moving air pushes on things."
+                },
+                {
+                  "name": "Winds",
+                  "blurb": "Why air moves from high to low pressure."
+                },
+                {
+                  "name": "Storms and cyclones",
+                  "blurb": "How violent storms form and how to stay safe."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Soil",
+              "topics": [
+                {
+                  "name": "Soil profile",
+                  "blurb": "The layers that make up soil."
+                },
+                {
+                  "name": "Types of soil",
+                  "blurb": "Sandy, clayey and loamy soils and their uses."
+                },
+                {
+                  "name": "Soil and crops",
+                  "blurb": "Matching a crop to the right soil."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "Reflection of Light",
+              "topics": [
+                {
+                  "name": "Light travels straight",
+                  "blurb": "How shadows and images form."
+                },
+                {
+                  "name": "Reflection at a plane mirror",
+                  "blurb": "The image you see in a flat mirror."
+                },
+                {
+                  "name": "Spherical mirrors",
+                  "blurb": "Concave and convex mirrors and their images."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Electricity",
+              "topics": [
+                {
+                  "name": "Electric circuits",
+                  "blurb": "The path electric current follows."
+                },
+                {
+                  "name": "Heating effect of current",
+                  "blurb": "Why a wire warms when current flows."
+                },
+                {
+                  "name": "Magnetic effect and electromagnets",
+                  "blurb": "How current makes a magnet."
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "name": "Motion and Time",
+              "topics": [
+                {
+                  "name": "Slow and fast",
+                  "blurb": "Comparing how quickly things move."
+                },
+                {
+                  "name": "Speed",
+                  "blurb": "Distance covered in a unit of time."
+                },
+                {
+                  "name": "Measuring time",
+                  "blurb": "Clocks, pendulums and the units of time."
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "name": "Forests",
+              "topics": [
+                {
+                  "name": "Forest as a system",
+                  "blurb": "Trees, animals and soil working together."
+                },
+                {
+                  "name": "Products from forests",
+                  "blurb": "What forests give us beyond wood."
+                },
+                {
+                  "name": "Conserving forests",
+                  "blurb": "Why losing forests harms everyone."
+                }
+              ]
+            },
+            {
+              "index": 15,
+              "name": "Water: A Precious Resource",
+              "topics": [
+                {
+                  "name": "Forms and sources of water",
+                  "blurb": "Where the fresh water we use comes from."
+                },
+                {
+                  "name": "Groundwater and the water table",
+                  "blurb": "The water stored beneath our feet."
+                },
+                {
+                  "name": "Saving water",
+                  "blurb": "Ways to use water wisely and avoid waste."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "social",
+          "name": "Social science",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Reading Maps of Different Kinds",
+              "topics": [
+                {
+                  "name": "Physical and political maps",
+                  "blurb": "What each kind of map is built to show."
+                },
+                {
+                  "name": "Thematic maps",
+                  "blurb": "Maps that carry a single theme like rainfall."
+                },
+                {
+                  "name": "Scale and distance",
+                  "blurb": "Turning map distance into real distance."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Oceans and Fishing",
+              "topics": [
+                {
+                  "name": "The world's oceans",
+                  "blurb": "The major seas and their movements."
+                },
+                {
+                  "name": "Life in the oceans",
+                  "blurb": "The plants and animals of the sea."
+                },
+                {
+                  "name": "Fishing and its people",
+                  "blurb": "How coastal communities live from the sea."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Europe: A Continent Study",
+              "topics": [
+                {
+                  "name": "Location and relief",
+                  "blurb": "Where Europe lies and how its land is shaped."
+                },
+                {
+                  "name": "Climate and vegetation",
+                  "blurb": "The weather and plant life of Europe."
+                },
+                {
+                  "name": "People and industry",
+                  "blurb": "How Europeans live and work."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Tropical and Subtropical Regions",
+              "topics": [
+                {
+                  "name": "The tropical belt",
+                  "blurb": "The hot, wet lands near the equator."
+                },
+                {
+                  "name": "Life in the rainforest",
+                  "blurb": "People and wildlife of dense forests."
+                },
+                {
+                  "name": "Subtropical regions",
+                  "blurb": "The warm lands beyond the tropics."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "New Kings and Kingdoms",
+              "topics": [
+                {
+                  "name": "Rise of new dynasties",
+                  "blurb": "How chiefs became kings after the Guptas."
+                },
+                {
+                  "name": "Administration and land",
+                  "blurb": "How kingdoms were governed and taxed."
+                },
+                {
+                  "name": "Warfare and temples",
+                  "blurb": "Battles for land and grand temple building."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "The Kakatiyas",
+              "topics": [
+                {
+                  "name": "Rise of the Kakatiyas",
+                  "blurb": "A regional power in the Telugu land."
+                },
+                {
+                  "name": "Rule and irrigation",
+                  "blurb": "Tanks and administration under the Kakatiyas."
+                },
+                {
+                  "name": "Art and decline",
+                  "blurb": "Their temples and how the kingdom fell."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "The Kings of Vijayanagara",
+              "topics": [
+                {
+                  "name": "Founding of the empire",
+                  "blurb": "How Vijayanagara rose in the south."
+                },
+                {
+                  "name": "Hampi the capital",
+                  "blurb": "A great city of temples and markets."
+                },
+                {
+                  "name": "Trade and decline",
+                  "blurb": "Its wealth and the battle that ended it."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "The Mughal Empire",
+              "topics": [
+                {
+                  "name": "Founding and expansion",
+                  "blurb": "From Babur to the height of Mughal power."
+                },
+                {
+                  "name": "Administration",
+                  "blurb": "How the vast empire was governed."
+                },
+                {
+                  "name": "Art and architecture",
+                  "blurb": "The buildings and paintings of the Mughals."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Making of Composite Culture",
+              "topics": [
+                {
+                  "name": "Bhakti and Sufi movements",
+                  "blurb": "Saints who preached love over ritual."
+                },
+                {
+                  "name": "New languages and music",
+                  "blurb": "How cultures blended in daily life."
+                },
+                {
+                  "name": "Shared traditions",
+                  "blurb": "The common culture that grew across faiths."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Government: Why and How",
+              "topics": [
+                {
+                  "name": "Need for government",
+                  "blurb": "Why people agree to be governed."
+                },
+                {
+                  "name": "Levels of government",
+                  "blurb": "Local, state and central working together."
+                },
+                {
+                  "name": "Democratic government",
+                  "blurb": "Government chosen by and for the people."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "Media and Democracy",
+              "topics": [
+                {
+                  "name": "Kinds of media",
+                  "blurb": "Print, broadcast and digital news."
+                },
+                {
+                  "name": "Media and public opinion",
+                  "blurb": "How news shapes what people think."
+                },
+                {
+                  "name": "Being a careful reader",
+                  "blurb": "Questioning and checking what we read."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Livelihoods: Handloom and Handicrafts",
+              "topics": [
+                {
+                  "name": "Weavers and artisans",
+                  "blurb": "The skilled workers behind cloth and craft."
+                },
+                {
+                  "name": "Markets and middlemen",
+                  "blurb": "How goods reach the buyer."
+                },
+                {
+                  "name": "Challenges to craftspeople",
+                  "blurb": "Why traditional work is under strain."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "Class 8",
+      "subjects": [
+        {
+          "id": "math",
+          "name": "Mathematics",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Rational Numbers",
+              "topics": [
+                {
+                  "name": "Properties of rational numbers",
+                  "blurb": "Closure, commutativity and associativity."
+                },
+                {
+                  "name": "Rational numbers on the number line",
+                  "blurb": "Placing fractions between integers."
+                },
+                {
+                  "name": "Operations on rational numbers",
+                  "blurb": "Adding, subtracting, multiplying and dividing."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Linear Equations in One Variable",
+              "topics": [
+                {
+                  "name": "Solving simple equations",
+                  "blurb": "Isolating the unknown step by step."
+                },
+                {
+                  "name": "Variables on both sides",
+                  "blurb": "Balancing terms across the equals sign."
+                },
+                {
+                  "name": "Word problems",
+                  "blurb": "Modelling real situations as equations."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Construction of Quadrilaterals",
+              "topics": [
+                {
+                  "name": "Given sides and diagonals",
+                  "blurb": "Constructing a quadrilateral from measurements."
+                },
+                {
+                  "name": "Given sides and angles",
+                  "blurb": "Building special quadrilaterals accurately."
+                },
+                {
+                  "name": "Special cases",
+                  "blurb": "Constructing squares, rectangles and rhombuses."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Exponents and Powers",
+              "topics": [
+                {
+                  "name": "Negative exponents",
+                  "blurb": "Meaning of a power below zero."
+                },
+                {
+                  "name": "Laws of exponents",
+                  "blurb": "Rules for combining powers."
+                },
+                {
+                  "name": "Very small numbers in standard form",
+                  "blurb": "Writing tiny numbers compactly."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Comparing Quantities Using Proportion",
+              "topics": [
+                {
+                  "name": "Percentage increase and decrease",
+                  "blurb": "Measuring change as a percent."
+                },
+                {
+                  "name": "Discount, profit and loss",
+                  "blurb": "Everyday buying and selling problems."
+                },
+                {
+                  "name": "Compound interest",
+                  "blurb": "Interest earned on interest over time."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Square Roots and Cube Roots",
+              "topics": [
+                {
+                  "name": "Perfect squares",
+                  "blurb": "Numbers that are the square of an integer."
+                },
+                {
+                  "name": "Finding square roots",
+                  "blurb": "By factorisation and by long division."
+                },
+                {
+                  "name": "Cubes and cube roots",
+                  "blurb": "The third power and undoing it."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Frequency Distribution Tables and Graphs",
+              "topics": [
+                {
+                  "name": "Grouping data",
+                  "blurb": "Organising large data into class intervals."
+                },
+                {
+                  "name": "Histograms",
+                  "blurb": "Bar graphs for grouped continuous data."
+                },
+                {
+                  "name": "Pie charts",
+                  "blurb": "Showing parts of a whole as sectors."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Exploring Geometrical Figures",
+              "topics": [
+                {
+                  "name": "Similarity and congruence",
+                  "blurb": "When figures share shape or share everything."
+                },
+                {
+                  "name": "Symmetry in figures",
+                  "blurb": "Line and rotational symmetry revisited."
+                },
+                {
+                  "name": "Tessellations",
+                  "blurb": "Tiling a surface without gaps."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Area of Plane Figures",
+              "topics": [
+                {
+                  "name": "Area of a trapezium",
+                  "blurb": "Averaging the parallel sides times the height."
+                },
+                {
+                  "name": "Area of a polygon",
+                  "blurb": "Splitting a polygon into simpler parts."
+                },
+                {
+                  "name": "Area of a circle and its parts",
+                  "blurb": "Sectors and rings of a circle."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Direct and Inverse Proportions",
+              "topics": [
+                {
+                  "name": "Direct proportion",
+                  "blurb": "When one quantity rises with another."
+                },
+                {
+                  "name": "Inverse proportion",
+                  "blurb": "When one rises as the other falls."
+                },
+                {
+                  "name": "Time and work",
+                  "blurb": "Sharing a task among many workers."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "Algebraic Expressions and Identities",
+              "topics": [
+                {
+                  "name": "Multiplying expressions",
+                  "blurb": "Products of monomials and binomials."
+                },
+                {
+                  "name": "Standard identities",
+                  "blurb": "Useful patterns like the square of a sum."
+                },
+                {
+                  "name": "Using identities",
+                  "blurb": "Simplifying with the standard identities."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Factorisation",
+              "topics": [
+                {
+                  "name": "Common factors",
+                  "blurb": "Taking out what every term shares."
+                },
+                {
+                  "name": "Factorising by grouping",
+                  "blurb": "Rearranging terms to reveal factors."
+                },
+                {
+                  "name": "Factorising using identities",
+                  "blurb": "Recognising the identity patterns."
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "name": "Visualising 3-D in 2-D",
+              "topics": [
+                {
+                  "name": "Views of solids",
+                  "blurb": "Top, front and side views of an object."
+                },
+                {
+                  "name": "Faces, edges and vertices",
+                  "blurb": "Counting the parts of a solid."
+                },
+                {
+                  "name": "Euler's formula",
+                  "blurb": "The relation between faces, edges and vertices."
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "name": "Surface Areas and Volumes",
+              "topics": [
+                {
+                  "name": "Surface area of a cuboid and cube",
+                  "blurb": "The total area of all faces."
+                },
+                {
+                  "name": "Surface area of a cylinder",
+                  "blurb": "The curved and flat surfaces together."
+                },
+                {
+                  "name": "Volume of solids",
+                  "blurb": "The space inside cubes, cuboids and cylinders."
+                }
+              ]
+            },
+            {
+              "index": 15,
+              "name": "Playing with Numbers",
+              "topics": [
+                {
+                  "name": "Numbers in general form",
+                  "blurb": "Writing a number by its digits and place value."
+                },
+                {
+                  "name": "Puzzles with digits",
+                  "blurb": "Finding unknown digits in a sum."
+                },
+                {
+                  "name": "Tests of divisibility",
+                  "blurb": "Why the divisibility rules actually work."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "science",
+          "name": "Science",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Force",
+              "topics": [
+                {
+                  "name": "Force and its effects",
+                  "blurb": "How a push or pull changes motion or shape."
+                },
+                {
+                  "name": "Contact and non-contact forces",
+                  "blurb": "Forces that touch and forces that act at a distance."
+                },
+                {
+                  "name": "Pressure",
+                  "blurb": "Force spread over an area."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Friction",
+              "topics": [
+                {
+                  "name": "Force of friction",
+                  "blurb": "The force that opposes sliding."
+                },
+                {
+                  "name": "Factors affecting friction",
+                  "blurb": "Surfaces and their roughness."
+                },
+                {
+                  "name": "Friction: friend and foe",
+                  "blurb": "When friction helps and when it wastes energy."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Synthetic Fibres and Plastics",
+              "topics": [
+                {
+                  "name": "Kinds of synthetic fibres",
+                  "blurb": "Rayon, nylon, polyester and acrylic."
+                },
+                {
+                  "name": "Plastics",
+                  "blurb": "Thermoplastics and thermosetting plastics."
+                },
+                {
+                  "name": "Plastics and the environment",
+                  "blurb": "Why plastic waste is a lasting problem."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Metals and Non-Metals",
+              "topics": [
+                {
+                  "name": "Physical properties",
+                  "blurb": "Shine, malleability and conductivity of metals."
+                },
+                {
+                  "name": "Chemical properties",
+                  "blurb": "How metals and non-metals react."
+                },
+                {
+                  "name": "Uses in daily life",
+                  "blurb": "Choosing a material for its properties."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Combustion, Fuels and Flame",
+              "topics": [
+                {
+                  "name": "Conditions for combustion",
+                  "blurb": "What is needed for something to burn."
+                },
+                {
+                  "name": "Types of combustion",
+                  "blurb": "Rapid, spontaneous and explosive burning."
+                },
+                {
+                  "name": "Fuels and the flame",
+                  "blurb": "Comparing fuels and the zones of a flame."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Coal and Petroleum",
+              "topics": [
+                {
+                  "name": "Natural resources",
+                  "blurb": "Exhaustible and inexhaustible resources."
+                },
+                {
+                  "name": "Formation of coal and petroleum",
+                  "blurb": "Fossil fuels made over millions of years."
+                },
+                {
+                  "name": "Conserving fuels",
+                  "blurb": "Why we must use fossil fuels sparingly."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Sound",
+              "topics": [
+                {
+                  "name": "Sound from vibration",
+                  "blurb": "How vibrating objects make sound."
+                },
+                {
+                  "name": "Sound needs a medium",
+                  "blurb": "Why sound cannot travel through vacuum."
+                },
+                {
+                  "name": "Pitch, loudness and noise",
+                  "blurb": "The qualities of sound and noise pollution."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Chemical Effects of Electric Current",
+              "topics": [
+                {
+                  "name": "Conduction in liquids",
+                  "blurb": "Which liquids let current pass."
+                },
+                {
+                  "name": "Electrolysis",
+                  "blurb": "Chemical change caused by current."
+                },
+                {
+                  "name": "Electroplating",
+                  "blurb": "Coating one metal with another using current."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Some Natural Phenomena",
+              "topics": [
+                {
+                  "name": "Charging by rubbing",
+                  "blurb": "How objects gain static charge."
+                },
+                {
+                  "name": "Lightning",
+                  "blurb": "The giant spark between clouds and ground."
+                },
+                {
+                  "name": "Earthquakes",
+                  "blurb": "Why the ground shakes and how to stay safe."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Cell: The Basic Unit of Life",
+              "topics": [
+                {
+                  "name": "Discovery of the cell",
+                  "blurb": "How the microscope revealed the cell."
+                },
+                {
+                  "name": "Structure of a cell",
+                  "blurb": "Membrane, cytoplasm and nucleus."
+                },
+                {
+                  "name": "Plant and animal cells",
+                  "blurb": "How the two kinds of cell differ."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "Microorganisms",
+              "topics": [
+                {
+                  "name": "The world of microbes",
+                  "blurb": "Bacteria, fungi, protozoa and viruses."
+                },
+                {
+                  "name": "Friendly microbes",
+                  "blurb": "How microbes help in food and medicine."
+                },
+                {
+                  "name": "Harmful microbes",
+                  "blurb": "Diseases spread by microorganisms."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Reproduction in Animals",
+              "topics": [
+                {
+                  "name": "Modes of reproduction",
+                  "blurb": "Sexual and asexual reproduction in animals."
+                },
+                {
+                  "name": "Fertilisation",
+                  "blurb": "The joining of egg and sperm."
+                },
+                {
+                  "name": "From zygote to young one",
+                  "blurb": "Development inside and outside the body."
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "name": "Reaching the Age of Adolescence",
+              "topics": [
+                {
+                  "name": "Changes at adolescence",
+                  "blurb": "The physical changes of growing up."
+                },
+                {
+                  "name": "Role of hormones",
+                  "blurb": "The chemical messengers behind these changes."
+                },
+                {
+                  "name": "Health at adolescence",
+                  "blurb": "Nutrition and hygiene during these years."
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "name": "Crop Production and Management",
+              "topics": [
+                {
+                  "name": "Agricultural practices",
+                  "blurb": "The steps from ploughing to harvest."
+                },
+                {
+                  "name": "Irrigation and manure",
+                  "blurb": "Watering and feeding the soil."
+                },
+                {
+                  "name": "Storage of grains",
+                  "blurb": "Keeping the harvest safe from spoilage."
+                }
+              ]
+            },
+            {
+              "index": 15,
+              "name": "Conservation of Plants and Animals",
+              "topics": [
+                {
+                  "name": "Deforestation and its effects",
+                  "blurb": "What happens when forests are cleared."
+                },
+                {
+                  "name": "Biodiversity",
+                  "blurb": "The variety of life and why it matters."
+                },
+                {
+                  "name": "Protected areas",
+                  "blurb": "Sanctuaries, national parks and reserves."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "social",
+          "name": "Social science",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Reading and Analysis of Maps",
+              "topics": [
+                {
+                  "name": "Interpreting maps",
+                  "blurb": "Drawing meaning from map symbols and colour."
+                },
+                {
+                  "name": "Contours and relief",
+                  "blurb": "Showing height and slope on a map."
+                },
+                {
+                  "name": "Comparing maps",
+                  "blurb": "Reading two maps of the same place together."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Energy from the Sun",
+              "topics": [
+                {
+                  "name": "The Sun as our energy source",
+                  "blurb": "Why nearly all energy traces back to the Sun."
+                },
+                {
+                  "name": "Heating of the Earth",
+                  "blurb": "How sunlight warms land, water and air."
+                },
+                {
+                  "name": "Insolation",
+                  "blurb": "The uneven spread of the Sun's heat."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Earth Movements and Seasons",
+              "topics": [
+                {
+                  "name": "Rotation and day and night",
+                  "blurb": "The daily spin of the Earth."
+                },
+                {
+                  "name": "Revolution and the year",
+                  "blurb": "The Earth's yearly path around the Sun."
+                },
+                {
+                  "name": "Why we have seasons",
+                  "blurb": "The tilt that gives us summer and winter."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "The Polar Regions",
+              "topics": [
+                {
+                  "name": "The Arctic and Antarctic",
+                  "blurb": "The frozen ends of the Earth."
+                },
+                {
+                  "name": "Life in the cold",
+                  "blurb": "How people and animals survive there."
+                },
+                {
+                  "name": "The poles and the world",
+                  "blurb": "Why the polar regions matter to all of us."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Forests: Using and Protecting Them",
+              "topics": [
+                {
+                  "name": "Value of forests",
+                  "blurb": "What forests provide for people and nature."
+                },
+                {
+                  "name": "Loss of forests",
+                  "blurb": "Causes and costs of deforestation."
+                },
+                {
+                  "name": "Conserving forests",
+                  "blurb": "Laws and movements to save forests."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Minerals and Mining",
+              "topics": [
+                {
+                  "name": "Kinds of minerals",
+                  "blurb": "Metallic, non-metallic and fuel minerals."
+                },
+                {
+                  "name": "Mining and its impact",
+                  "blurb": "Extracting minerals and the price paid."
+                },
+                {
+                  "name": "Conserving minerals",
+                  "blurb": "Why mineral wealth is not endless."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Money and Banking",
+              "topics": [
+                {
+                  "name": "The story of money",
+                  "blurb": "From barter to coins and notes."
+                },
+                {
+                  "name": "Banks and their work",
+                  "blurb": "How banks keep and lend money."
+                },
+                {
+                  "name": "Saving and credit",
+                  "blurb": "Borrowing and saving in daily life."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Establishment of British Rule in India",
+              "topics": [
+                {
+                  "name": "Coming of the traders",
+                  "blurb": "How trading companies gained a foothold."
+                },
+                {
+                  "name": "Battles for power",
+                  "blurb": "Plassey, Buxar and the rise of the Company."
+                },
+                {
+                  "name": "From company to crown",
+                  "blurb": "How British rule was fixed over India."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Expansion and Consolidation of British Rule",
+              "topics": [
+                {
+                  "name": "Wars of expansion",
+                  "blurb": "How the Company annexed kingdom after kingdom."
+                },
+                {
+                  "name": "The doctrine of lapse",
+                  "blurb": "A policy for swallowing states."
+                },
+                {
+                  "name": "Administration of the Company",
+                  "blurb": "How the British governed what they took."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Landlordism and the Peasantry",
+              "topics": [
+                {
+                  "name": "New land settlements",
+                  "blurb": "Permanent, ryotwari and mahalwari systems."
+                },
+                {
+                  "name": "Burden on the peasants",
+                  "blurb": "How revenue demands crushed farmers."
+                },
+                {
+                  "name": "Peasant unrest",
+                  "blurb": "Revolts against the new order."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "Handicrafts and Handlooms",
+              "topics": [
+                {
+                  "name": "India's famous crafts",
+                  "blurb": "The textiles and crafts India was known for."
+                },
+                {
+                  "name": "Decline under colonial rule",
+                  "blurb": "How British policy hurt Indian craft."
+                },
+                {
+                  "name": "Artisans today",
+                  "blurb": "The struggle to keep old skills alive."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "The National Movement: The Early Phase",
+              "topics": [
+                {
+                  "name": "Birth of the Congress",
+                  "blurb": "The first organised call for rights."
+                },
+                {
+                  "name": "Moderates and extremists",
+                  "blurb": "Two ways of demanding change."
+                },
+                {
+                  "name": "Swadeshi movement",
+                  "blurb": "Boycott of foreign goods as protest."
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "name": "The National Movement: The Last Phase",
+              "topics": [
+                {
+                  "name": "Gandhi and mass movements",
+                  "blurb": "Non-cooperation, salt march and quit India."
+                },
+                {
+                  "name": "Towards independence",
+                  "blurb": "The final push for freedom."
+                },
+                {
+                  "name": "Partition and freedom",
+                  "blurb": "The joy and pain of 1947."
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "name": "The Indian Constitution",
+              "topics": [
+                {
+                  "name": "Making of the Constitution",
+                  "blurb": "The Assembly that drafted our rules."
+                },
+                {
+                  "name": "Key features",
+                  "blurb": "Rights, duties and the structure of government."
+                },
+                {
+                  "name": "Fundamental rights",
+                  "blurb": "The freedoms guaranteed to every citizen."
+                }
+              ]
+            },
+            {
+              "index": 15,
+              "name": "Parliament and Central Government",
+              "topics": [
+                {
+                  "name": "The Parliament",
+                  "blurb": "The two houses that make our laws."
+                },
+                {
+                  "name": "The executive",
+                  "blurb": "The President, Prime Minister and Council."
+                },
+                {
+                  "name": "How a law is made",
+                  "blurb": "The journey of a bill into a law."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "Class 9",
+      "subjects": [
+        {
+          "id": "math",
+          "name": "Mathematics",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Real Numbers",
+              "topics": [
+                {
+                  "name": "Rational and irrational numbers",
+                  "blurb": "Numbers that can and cannot be written as ratios."
+                },
+                {
+                  "name": "Representing numbers on the line",
+                  "blurb": "Locating surds on the number line."
+                },
+                {
+                  "name": "Laws of exponents for real numbers",
+                  "blurb": "Rules for rational powers."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Polynomials and Factorisation",
+              "topics": [
+                {
+                  "name": "Degree and kinds of polynomials",
+                  "blurb": "Classifying by degree and number of terms."
+                },
+                {
+                  "name": "Remainder and factor theorems",
+                  "blurb": "Testing for factors of a polynomial."
+                },
+                {
+                  "name": "Factorising polynomials",
+                  "blurb": "Splitting a polynomial into factors."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "The Elements of Geometry",
+              "topics": [
+                {
+                  "name": "Euclid's axioms and postulates",
+                  "blurb": "The starting truths of geometry."
+                },
+                {
+                  "name": "Definitions and proofs",
+                  "blurb": "Building geometry from agreed terms."
+                },
+                {
+                  "name": "Historical note",
+                  "blurb": "How geometry grew as a subject."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Lines and Angles",
+              "topics": [
+                {
+                  "name": "Angle relationships",
+                  "blurb": "Linear pairs and vertically opposite angles."
+                },
+                {
+                  "name": "Parallel lines",
+                  "blurb": "Angles formed by a transversal."
+                },
+                {
+                  "name": "Angle sum of a triangle",
+                  "blurb": "Proving the angles total 180 degrees."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Co-Ordinate Geometry",
+              "topics": [
+                {
+                  "name": "The Cartesian plane",
+                  "blurb": "Locating points using two axes."
+                },
+                {
+                  "name": "Plotting points",
+                  "blurb": "Reading and marking coordinates."
+                },
+                {
+                  "name": "Quadrants and signs",
+                  "blurb": "How signs place a point in a quadrant."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Linear Equations in Two Variables",
+              "topics": [
+                {
+                  "name": "Solutions of a linear equation",
+                  "blurb": "Many pairs that satisfy one equation."
+                },
+                {
+                  "name": "Graph of a linear equation",
+                  "blurb": "Drawing the straight line of solutions."
+                },
+                {
+                  "name": "Lines through the axes",
+                  "blurb": "Equations of horizontal and vertical lines."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Triangles",
+              "topics": [
+                {
+                  "name": "Congruence of triangles",
+                  "blurb": "The conditions that make triangles identical."
+                },
+                {
+                  "name": "Properties of a triangle",
+                  "blurb": "Angles and sides in an isosceles triangle."
+                },
+                {
+                  "name": "Inequalities in a triangle",
+                  "blurb": "Relating the sides to the angles."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Quadrilaterals",
+              "topics": [
+                {
+                  "name": "Properties of a parallelogram",
+                  "blurb": "Sides, angles and diagonals."
+                },
+                {
+                  "name": "The mid-point theorem",
+                  "blurb": "Joining the midpoints of two sides."
+                },
+                {
+                  "name": "Special quadrilaterals",
+                  "blurb": "Conditions for a rhombus, rectangle and square."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Statistics",
+              "topics": [
+                {
+                  "name": "Collecting and presenting data",
+                  "blurb": "Tables and graphs for raw data."
+                },
+                {
+                  "name": "Measures of central tendency",
+                  "blurb": "Mean, median and mode of data."
+                },
+                {
+                  "name": "Graphical representation",
+                  "blurb": "Bar graphs, histograms and polygons."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Surface Areas and Volumes",
+              "topics": [
+                {
+                  "name": "Surface area of solids",
+                  "blurb": "Cuboids, cylinders, cones and spheres."
+                },
+                {
+                  "name": "Volume of solids",
+                  "blurb": "The space held by common solids."
+                },
+                {
+                  "name": "Combined solids",
+                  "blurb": "Areas and volumes of composite shapes."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "Areas",
+              "topics": [
+                {
+                  "name": "Area of a triangle by Heron's formula",
+                  "blurb": "Finding area from the three sides."
+                },
+                {
+                  "name": "Areas on the same base",
+                  "blurb": "Figures between the same parallels."
+                },
+                {
+                  "name": "Applications",
+                  "blurb": "Area problems in real settings."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Circles",
+              "topics": [
+                {
+                  "name": "Chords and their properties",
+                  "blurb": "Relating chords to the centre."
+                },
+                {
+                  "name": "Angles in a circle",
+                  "blurb": "Angles subtended by an arc."
+                },
+                {
+                  "name": "Cyclic quadrilaterals",
+                  "blurb": "Four points that lie on a circle."
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "name": "Geometrical Constructions",
+              "topics": [
+                {
+                  "name": "Bisectors",
+                  "blurb": "Constructing angle and perpendicular bisectors."
+                },
+                {
+                  "name": "Constructing triangles",
+                  "blurb": "From given sides, angles and perimeter."
+                },
+                {
+                  "name": "Tangents to a circle",
+                  "blurb": "Drawing lines that just touch a circle."
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "name": "Probability",
+              "topics": [
+                {
+                  "name": "Random experiments",
+                  "blurb": "Events whose outcome is uncertain."
+                },
+                {
+                  "name": "Empirical probability",
+                  "blurb": "Estimating chance from repeated trials."
+                },
+                {
+                  "name": "Simple problems",
+                  "blurb": "Finding the probability of everyday events."
+                }
+              ]
+            },
+            {
+              "index": 15,
+              "name": "Proofs in Mathematics",
+              "topics": [
+                {
+                  "name": "Statements and reasoning",
+                  "blurb": "What makes a mathematical statement true."
+                },
+                {
+                  "name": "Deductive proof",
+                  "blurb": "Reasoning from known truths to a conclusion."
+                },
+                {
+                  "name": "Counterexamples",
+                  "blurb": "Disproving a claim with a single example."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "science",
+          "name": "Science",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Matter Around Us",
+              "topics": [
+                {
+                  "name": "States of matter",
+                  "blurb": "Solid, liquid and gas and their properties."
+                },
+                {
+                  "name": "Change of state",
+                  "blurb": "Melting, boiling and their heat exchange."
+                },
+                {
+                  "name": "Evaporation",
+                  "blurb": "Cooling by a liquid turning to vapour."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Is Matter Pure?",
+              "topics": [
+                {
+                  "name": "Mixtures and pure substances",
+                  "blurb": "Telling apart what is mixed from what is not."
+                },
+                {
+                  "name": "Solutions, colloids and suspensions",
+                  "blurb": "Kinds of mixtures by particle size."
+                },
+                {
+                  "name": "Separation techniques",
+                  "blurb": "Ways to separate the parts of a mixture."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Atoms and Molecules",
+              "topics": [
+                {
+                  "name": "Laws of chemical combination",
+                  "blurb": "The rules matter follows when it combines."
+                },
+                {
+                  "name": "Atoms and molecules",
+                  "blurb": "The tiny particles that make up matter."
+                },
+                {
+                  "name": "Mole concept",
+                  "blurb": "Counting particles by the mole."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "What Is Inside the Atom?",
+              "topics": [
+                {
+                  "name": "Sub-atomic particles",
+                  "blurb": "Electrons, protons and neutrons."
+                },
+                {
+                  "name": "Models of the atom",
+                  "blurb": "How ideas of the atom changed over time."
+                },
+                {
+                  "name": "Valency and isotopes",
+                  "blurb": "Combining power and atoms of the same element."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Motion",
+              "topics": [
+                {
+                  "name": "Distance and displacement",
+                  "blurb": "How far travelled versus how far apart."
+                },
+                {
+                  "name": "Speed, velocity and acceleration",
+                  "blurb": "Describing how motion changes."
+                },
+                {
+                  "name": "Graphs of motion",
+                  "blurb": "Reading distance-time and velocity-time graphs."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Laws of Motion",
+              "topics": [
+                {
+                  "name": "Newton's first law",
+                  "blurb": "Inertia and the tendency to stay as one is."
+                },
+                {
+                  "name": "Newton's second law",
+                  "blurb": "How force, mass and acceleration relate."
+                },
+                {
+                  "name": "Newton's third law",
+                  "blurb": "Action and reaction in pairs."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Gravitation",
+              "topics": [
+                {
+                  "name": "Universal law of gravitation",
+                  "blurb": "The force between any two masses."
+                },
+                {
+                  "name": "Free fall and weight",
+                  "blurb": "Acceleration due to gravity and weight."
+                },
+                {
+                  "name": "Thrust, pressure and buoyancy",
+                  "blurb": "Why some things float."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Floating Bodies",
+              "topics": [
+                {
+                  "name": "Archimedes' principle",
+                  "blurb": "The upward push on a submerged body."
+                },
+                {
+                  "name": "Density and relative density",
+                  "blurb": "Comparing mass in a given volume."
+                },
+                {
+                  "name": "Sink or float",
+                  "blurb": "Predicting whether an object floats."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Work and Energy",
+              "topics": [
+                {
+                  "name": "Work done by a force",
+                  "blurb": "When a force actually does work."
+                },
+                {
+                  "name": "Kinetic and potential energy",
+                  "blurb": "Energy of motion and of position."
+                },
+                {
+                  "name": "Power and conservation of energy",
+                  "blurb": "Rate of work and energy that is never lost."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Sound",
+              "topics": [
+                {
+                  "name": "Production and propagation",
+                  "blurb": "How sound is made and how it travels."
+                },
+                {
+                  "name": "Characteristics of sound",
+                  "blurb": "Pitch, loudness and timbre."
+                },
+                {
+                  "name": "Reflection of sound",
+                  "blurb": "Echoes and their uses."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "Cell: The Basic Unit of Life",
+              "topics": [
+                {
+                  "name": "Structure of the cell",
+                  "blurb": "The parts that make up a living cell."
+                },
+                {
+                  "name": "Cell organelles",
+                  "blurb": "The tiny workers inside the cell."
+                },
+                {
+                  "name": "Cell division",
+                  "blurb": "How cells multiply to grow and repair."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Tissues",
+              "topics": [
+                {
+                  "name": "Plant tissues",
+                  "blurb": "Meristematic and permanent tissues."
+                },
+                {
+                  "name": "Animal tissues",
+                  "blurb": "Epithelial, connective, muscular and nervous."
+                },
+                {
+                  "name": "Tissues and function",
+                  "blurb": "How tissues suit the work they do."
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "name": "Diversity in Living Organisms",
+              "topics": [
+                {
+                  "name": "Need for classification",
+                  "blurb": "Why we sort the living world."
+                },
+                {
+                  "name": "Hierarchy of classification",
+                  "blurb": "From kingdom down to species."
+                },
+                {
+                  "name": "The five kingdoms",
+                  "blurb": "The broad groups of all living things."
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "name": "Sense Organs",
+              "topics": [
+                {
+                  "name": "The eye and the ear",
+                  "blurb": "How we see and how we hear."
+                },
+                {
+                  "name": "Skin, tongue and nose",
+                  "blurb": "Touch, taste and smell."
+                },
+                {
+                  "name": "Care of sense organs",
+                  "blurb": "Keeping our senses healthy."
+                }
+              ]
+            },
+            {
+              "index": 15,
+              "name": "Our Environment",
+              "topics": [
+                {
+                  "name": "Biotic and abiotic factors",
+                  "blurb": "The living and non-living parts of an ecosystem."
+                },
+                {
+                  "name": "Food chains and webs",
+                  "blurb": "The flow of energy through life."
+                },
+                {
+                  "name": "Bio-geo-chemical cycles",
+                  "blurb": "How water, carbon and nitrogen circulate."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "social",
+          "name": "Social science",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Our Earth",
+              "topics": [
+                {
+                  "name": "Earth's interior",
+                  "blurb": "The layers beneath the crust."
+                },
+                {
+                  "name": "Rocks and minerals",
+                  "blurb": "How rocks form and change."
+                },
+                {
+                  "name": "Landforms and their making",
+                  "blurb": "Forces that build and wear the land."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "The Natural Regions",
+              "topics": [
+                {
+                  "name": "Basis of natural regions",
+                  "blurb": "Climate and vegetation as dividers."
+                },
+                {
+                  "name": "Major natural regions",
+                  "blurb": "From tundra to equatorial forest."
+                },
+                {
+                  "name": "Human life in each region",
+                  "blurb": "How people adapt to their region."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Hydrosphere",
+              "topics": [
+                {
+                  "name": "Oceans and their movements",
+                  "blurb": "Waves, tides and currents."
+                },
+                {
+                  "name": "Ocean resources",
+                  "blurb": "The wealth held by the seas."
+                },
+                {
+                  "name": "Importance of oceans",
+                  "blurb": "Why the oceans matter to climate and trade."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Atmosphere",
+              "topics": [
+                {
+                  "name": "Layers of the atmosphere",
+                  "blurb": "The blanket of air around the Earth."
+                },
+                {
+                  "name": "Weather elements",
+                  "blurb": "Temperature, pressure, wind and rainfall."
+                },
+                {
+                  "name": "Climate change",
+                  "blurb": "How human activity warms the planet."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Indian Geographical Diversity",
+              "topics": [
+                {
+                  "name": "Physical divisions of India",
+                  "blurb": "Mountains, plains, plateau and coasts."
+                },
+                {
+                  "name": "Drainage systems",
+                  "blurb": "The rivers that shape the land."
+                },
+                {
+                  "name": "Diversity and unity",
+                  "blurb": "How a varied land holds together."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Agriculture in India",
+              "topics": [
+                {
+                  "name": "Types of farming",
+                  "blurb": "Subsistence and commercial agriculture."
+                },
+                {
+                  "name": "Major crops",
+                  "blurb": "The food and cash crops of India."
+                },
+                {
+                  "name": "Agriculture and the economy",
+                  "blurb": "Why farming matters to the nation."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Water Resources of India",
+              "topics": [
+                {
+                  "name": "Sources of water",
+                  "blurb": "Rivers, groundwater and rainfall."
+                },
+                {
+                  "name": "Multipurpose projects",
+                  "blurb": "Dams and what they deliver and cost."
+                },
+                {
+                  "name": "Conserving water",
+                  "blurb": "Harvesting and managing scarce water."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "The People",
+              "topics": [
+                {
+                  "name": "Population growth",
+                  "blurb": "How and why India's numbers change."
+                },
+                {
+                  "name": "Distribution and density",
+                  "blurb": "Where people live and how crowded it is."
+                },
+                {
+                  "name": "Population as a resource",
+                  "blurb": "People as a source of strength."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Poverty: A Challenge",
+              "topics": [
+                {
+                  "name": "Understanding poverty",
+                  "blurb": "What it means to be poor."
+                },
+                {
+                  "name": "Measuring poverty",
+                  "blurb": "The poverty line and its limits."
+                },
+                {
+                  "name": "Fighting poverty",
+                  "blurb": "Programmes to reduce poverty."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Democracy: An Evolving Idea",
+              "topics": [
+                {
+                  "name": "What is democracy",
+                  "blurb": "Government by the people, defined."
+                },
+                {
+                  "name": "Spread of democracy",
+                  "blurb": "How democracy grew across the world."
+                },
+                {
+                  "name": "Features of democracy",
+                  "blurb": "The marks of a true democracy."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "The Constitution of India",
+              "topics": [
+                {
+                  "name": "Making of the Constitution",
+                  "blurb": "The Assembly and its long work."
+                },
+                {
+                  "name": "The Preamble",
+                  "blurb": "The values our Constitution declares."
+                },
+                {
+                  "name": "Rights and duties",
+                  "blurb": "What citizens are owed and owe."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Making of Laws in India",
+              "topics": [
+                {
+                  "name": "The legislature",
+                  "blurb": "Who makes the laws and how."
+                },
+                {
+                  "name": "Passage of a bill",
+                  "blurb": "The steps from proposal to law."
+                },
+                {
+                  "name": "Role of citizens",
+                  "blurb": "How the public shapes law-making."
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "name": "Money and Credit",
+              "topics": [
+                {
+                  "name": "Role of money",
+                  "blurb": "Why money makes exchange easy."
+                },
+                {
+                  "name": "Formal and informal credit",
+                  "blurb": "Where people borrow and at what cost."
+                },
+                {
+                  "name": "Self-help groups",
+                  "blurb": "Small groups that lend and save together."
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "name": "Trade and Globalisation",
+              "topics": [
+                {
+                  "name": "Trade between countries",
+                  "blurb": "How nations exchange goods."
+                },
+                {
+                  "name": "Globalisation",
+                  "blurb": "The tighter linking of the world's economies."
+                },
+                {
+                  "name": "Impact on India",
+                  "blurb": "Winners and losers in a global market."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "Class 10",
+      "subjects": [
+        {
+          "id": "math",
+          "name": "Mathematics",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Real Numbers",
+              "topics": [
+                {
+                  "name": "Euclid's division lemma",
+                  "blurb": "Dividing to find highest common factors."
+                },
+                {
+                  "name": "Fundamental theorem of arithmetic",
+                  "blurb": "Every number as a product of primes."
+                },
+                {
+                  "name": "Irrational numbers",
+                  "blurb": "Proving numbers like root two are irrational."
+                },
+                {
+                  "name": "Decimal expansions",
+                  "blurb": "When a fraction ends and when it repeats."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Sets",
+              "topics": [
+                {
+                  "name": "Kinds of sets",
+                  "blurb": "Finite, infinite, equal and null sets."
+                },
+                {
+                  "name": "Set operations",
+                  "blurb": "Union, intersection and difference."
+                },
+                {
+                  "name": "Venn diagrams",
+                  "blurb": "Picturing sets and their overlaps."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Polynomials",
+              "topics": [
+                {
+                  "name": "Zeroes of a polynomial",
+                  "blurb": "The values that make it zero."
+                },
+                {
+                  "name": "Zeroes and coefficients",
+                  "blurb": "Relating the roots to the coefficients."
+                },
+                {
+                  "name": "Division of polynomials",
+                  "blurb": "Dividing one polynomial by another."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Pair of Linear Equations in Two Variables",
+              "topics": [
+                {
+                  "name": "Graphical solution",
+                  "blurb": "Where two lines meet."
+                },
+                {
+                  "name": "Algebraic methods",
+                  "blurb": "Substitution and elimination."
+                },
+                {
+                  "name": "Conditions for solutions",
+                  "blurb": "When lines meet, run parallel or coincide."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Quadratic Equations",
+              "topics": [
+                {
+                  "name": "Standard form",
+                  "blurb": "Recognising a quadratic equation."
+                },
+                {
+                  "name": "Solving by factorisation",
+                  "blurb": "Splitting the middle term."
+                },
+                {
+                  "name": "The quadratic formula",
+                  "blurb": "A formula that solves any quadratic."
+                },
+                {
+                  "name": "Nature of roots",
+                  "blurb": "What the discriminant reveals."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Progressions",
+              "topics": [
+                {
+                  "name": "Arithmetic progressions",
+                  "blurb": "Sequences with a common difference."
+                },
+                {
+                  "name": "Sum of an AP",
+                  "blurb": "Adding the terms of an arithmetic progression."
+                },
+                {
+                  "name": "Geometric progressions",
+                  "blurb": "Sequences with a common ratio."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Coordinate Geometry",
+              "topics": [
+                {
+                  "name": "Distance formula",
+                  "blurb": "The length between two points."
+                },
+                {
+                  "name": "Section formula",
+                  "blurb": "Dividing a segment in a given ratio."
+                },
+                {
+                  "name": "Area of a triangle",
+                  "blurb": "From the coordinates of its vertices."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Similar Triangles",
+              "topics": [
+                {
+                  "name": "Basic proportionality theorem",
+                  "blurb": "A line parallel to one side splits the others."
+                },
+                {
+                  "name": "Criteria for similarity",
+                  "blurb": "AAA, SAS and SSS similarity."
+                },
+                {
+                  "name": "Areas of similar triangles",
+                  "blurb": "The ratio of areas to sides."
+                },
+                {
+                  "name": "Pythagoras theorem",
+                  "blurb": "Proof through similar triangles."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Tangents and Secants to a Circle",
+              "topics": [
+                {
+                  "name": "Tangent to a circle",
+                  "blurb": "A line that touches at one point."
+                },
+                {
+                  "name": "Number of tangents",
+                  "blurb": "Tangents from an external point."
+                },
+                {
+                  "name": "Segments and sectors",
+                  "blurb": "Areas cut off inside a circle."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Mensuration",
+              "topics": [
+                {
+                  "name": "Surface area of combined solids",
+                  "blurb": "Adding surfaces of joined shapes."
+                },
+                {
+                  "name": "Volume of combined solids",
+                  "blurb": "The space held by composite solids."
+                },
+                {
+                  "name": "Conversion of solids",
+                  "blurb": "Recasting one solid into another."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "Trigonometry",
+              "topics": [
+                {
+                  "name": "Trigonometric ratios",
+                  "blurb": "Sine, cosine and tangent of an angle."
+                },
+                {
+                  "name": "Ratios of specific angles",
+                  "blurb": "Values at 0, 30, 45, 60 and 90 degrees."
+                },
+                {
+                  "name": "Trigonometric identities",
+                  "blurb": "Relations that always hold."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Applications of Trigonometry",
+              "topics": [
+                {
+                  "name": "Heights and distances",
+                  "blurb": "Measuring the unreachable with angles."
+                },
+                {
+                  "name": "Angle of elevation",
+                  "blurb": "Looking up to find a height."
+                },
+                {
+                  "name": "Angle of depression",
+                  "blurb": "Looking down to find a distance."
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "name": "Probability",
+              "topics": [
+                {
+                  "name": "Theoretical probability",
+                  "blurb": "Chance worked out from equally likely outcomes."
+                },
+                {
+                  "name": "Simple events",
+                  "blurb": "Probability of a single event."
+                },
+                {
+                  "name": "Complementary events",
+                  "blurb": "The chance of an event not happening."
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "name": "Statistics",
+              "topics": [
+                {
+                  "name": "Mean of grouped data",
+                  "blurb": "Averaging data in class intervals."
+                },
+                {
+                  "name": "Median and mode of grouped data",
+                  "blurb": "Finding the middle and the most common."
+                },
+                {
+                  "name": "Ogives",
+                  "blurb": "Cumulative frequency curves."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "science",
+          "name": "Science",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Chemical Reactions and Equations",
+              "topics": [
+                {
+                  "name": "Chemical equations",
+                  "blurb": "Writing and balancing what happens in a reaction."
+                },
+                {
+                  "name": "Types of reactions",
+                  "blurb": "Combination, decomposition, displacement and more."
+                },
+                {
+                  "name": "Oxidation and reduction",
+                  "blurb": "Gain and loss of oxygen or electrons."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Acids, Bases and Salts",
+              "topics": [
+                {
+                  "name": "Properties of acids and bases",
+                  "blurb": "How they behave and how we test them."
+                },
+                {
+                  "name": "The pH scale",
+                  "blurb": "Measuring how acidic or basic a solution is."
+                },
+                {
+                  "name": "Salts and their uses",
+                  "blurb": "Common salts made from acids and bases."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Structure of Atom",
+              "topics": [
+                {
+                  "name": "Sub-atomic particles",
+                  "blurb": "Electrons, protons and neutrons."
+                },
+                {
+                  "name": "Electronic configuration",
+                  "blurb": "How electrons fill their shells."
+                },
+                {
+                  "name": "Valency",
+                  "blurb": "Combining capacity from the outer shell."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Classification of Elements",
+              "topics": [
+                {
+                  "name": "Early attempts at classification",
+                  "blurb": "Doberiener's triads and Newlands' octaves."
+                },
+                {
+                  "name": "The modern periodic table",
+                  "blurb": "Elements arranged by atomic number."
+                },
+                {
+                  "name": "Periodic trends",
+                  "blurb": "How properties change across and down the table."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Chemical Bonding",
+              "topics": [
+                {
+                  "name": "The ionic bond",
+                  "blurb": "Bonding by giving and taking electrons."
+                },
+                {
+                  "name": "The covalent bond",
+                  "blurb": "Bonding by sharing electrons."
+                },
+                {
+                  "name": "Properties of compounds",
+                  "blurb": "How bonding decides properties."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Metallurgy",
+              "topics": [
+                {
+                  "name": "Occurrence of metals",
+                  "blurb": "Where metals are found in nature."
+                },
+                {
+                  "name": "Extraction of metals",
+                  "blurb": "From ore to pure metal."
+                },
+                {
+                  "name": "Corrosion and its prevention",
+                  "blurb": "Why metals decay and how to protect them."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Carbon and Its Compounds",
+              "topics": [
+                {
+                  "name": "Bonding in carbon",
+                  "blurb": "Why carbon forms so many compounds."
+                },
+                {
+                  "name": "Hydrocarbons and functional groups",
+                  "blurb": "Chains, rings and the reactive parts."
+                },
+                {
+                  "name": "Important carbon compounds",
+                  "blurb": "Ethanol, ethanoic acid, soaps and detergents."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Reflection of Light",
+              "topics": [
+                {
+                  "name": "Laws of reflection",
+                  "blurb": "How light bounces off a surface."
+                },
+                {
+                  "name": "Images in spherical mirrors",
+                  "blurb": "Concave and convex mirror images."
+                },
+                {
+                  "name": "The mirror formula",
+                  "blurb": "Relating object, image and focal length."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Refraction of Light",
+              "topics": [
+                {
+                  "name": "Bending of light",
+                  "blurb": "Why light changes direction between media."
+                },
+                {
+                  "name": "Refraction through lenses",
+                  "blurb": "Images formed by convex and concave lenses."
+                },
+                {
+                  "name": "The lens formula and power",
+                  "blurb": "Locating images and rating a lens."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "The Human Eye and the Colourful World",
+              "topics": [
+                {
+                  "name": "The human eye",
+                  "blurb": "How the eye focuses and forms an image."
+                },
+                {
+                  "name": "Defects of vision",
+                  "blurb": "Short sight, long sight and their correction."
+                },
+                {
+                  "name": "Dispersion and scattering",
+                  "blurb": "Rainbows and the blue of the sky."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "Electric Current",
+              "topics": [
+                {
+                  "name": "Electric current and potential difference",
+                  "blurb": "Flow of charge and what drives it."
+                },
+                {
+                  "name": "Ohm's law",
+                  "blurb": "Relating current, voltage and resistance."
+                },
+                {
+                  "name": "Heating effect of current",
+                  "blurb": "Why current warms a wire and its uses."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Electromagnetism",
+              "topics": [
+                {
+                  "name": "Magnetic effect of current",
+                  "blurb": "The field around a current."
+                },
+                {
+                  "name": "Electric motor",
+                  "blurb": "Turning current into motion."
+                },
+                {
+                  "name": "Electromagnetic induction",
+                  "blurb": "Making current from a moving magnet."
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "name": "Life Processes: Nutrition",
+              "topics": [
+                {
+                  "name": "Autotrophic nutrition",
+                  "blurb": "How plants make their own food."
+                },
+                {
+                  "name": "Human digestive system",
+                  "blurb": "The path food takes through the body."
+                },
+                {
+                  "name": "Absorption of food",
+                  "blurb": "How nutrients reach the blood."
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "name": "Life Processes: Respiration and Transport",
+              "topics": [
+                {
+                  "name": "Respiration",
+                  "blurb": "Releasing energy from food."
+                },
+                {
+                  "name": "Human respiratory system",
+                  "blurb": "How we breathe and exchange gases."
+                },
+                {
+                  "name": "Transport in humans",
+                  "blurb": "The heart, blood and circulation."
+                }
+              ]
+            },
+            {
+              "index": 15,
+              "name": "Life Processes: Excretion and Coordination",
+              "topics": [
+                {
+                  "name": "Excretion in humans",
+                  "blurb": "Removing wastes through the kidneys."
+                },
+                {
+                  "name": "Nervous coordination",
+                  "blurb": "How nerves carry messages."
+                },
+                {
+                  "name": "Hormonal coordination",
+                  "blurb": "How hormones control the body."
+                }
+              ]
+            },
+            {
+              "index": 16,
+              "name": "Reproduction",
+              "topics": [
+                {
+                  "name": "Modes of reproduction",
+                  "blurb": "Asexual and sexual reproduction."
+                },
+                {
+                  "name": "Reproduction in humans",
+                  "blurb": "The male and female reproductive systems."
+                },
+                {
+                  "name": "Reproductive health",
+                  "blurb": "Caring for reproductive well-being."
+                }
+              ]
+            },
+            {
+              "index": 17,
+              "name": "Heredity and Evolution",
+              "topics": [
+                {
+                  "name": "Inheritance of traits",
+                  "blurb": "How features pass to the next generation."
+                },
+                {
+                  "name": "Mendel's laws",
+                  "blurb": "The rules of inheritance from pea plants."
+                },
+                {
+                  "name": "Evolution",
+                  "blurb": "How life changes over long spans of time."
+                }
+              ]
+            },
+            {
+              "index": 18,
+              "name": "Our Environment and Natural Resources",
+              "topics": [
+                {
+                  "name": "Ecosystems",
+                  "blurb": "Living and non-living working as one."
+                },
+                {
+                  "name": "Waste and its management",
+                  "blurb": "Biodegradable and non-biodegradable waste."
+                },
+                {
+                  "name": "Conserving natural resources",
+                  "blurb": "Using forests, water and fuels wisely."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "social",
+          "name": "Social science",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "India: Relief Features",
+              "topics": [
+                {
+                  "name": "Physical divisions",
+                  "blurb": "The great structural regions of India."
+                },
+                {
+                  "name": "Mountains and plains",
+                  "blurb": "The Himalayas and the northern plains."
+                },
+                {
+                  "name": "Plateau and coasts",
+                  "blurb": "The peninsula and its coastal fringe."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Ideas of Development",
+              "topics": [
+                {
+                  "name": "What is development",
+                  "blurb": "Different goals for different people."
+                },
+                {
+                  "name": "Measuring development",
+                  "blurb": "Income and beyond as measures."
+                },
+                {
+                  "name": "Sustainability",
+                  "blurb": "Development that does not exhaust the future."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Production and Employment",
+              "topics": [
+                {
+                  "name": "Sectors of the economy",
+                  "blurb": "Primary, secondary and tertiary work."
+                },
+                {
+                  "name": "Organised and unorganised sectors",
+                  "blurb": "Two very different work worlds."
+                },
+                {
+                  "name": "Employment and its challenges",
+                  "blurb": "The struggle for decent work."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Climate of India",
+              "topics": [
+                {
+                  "name": "The monsoon",
+                  "blurb": "The rhythm that governs Indian weather."
+                },
+                {
+                  "name": "Factors shaping climate",
+                  "blurb": "Latitude, altitude and the sea."
+                },
+                {
+                  "name": "Seasons of India",
+                  "blurb": "The cycle of the Indian year."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Indian Rivers and Water Resources",
+              "topics": [
+                {
+                  "name": "Himalayan and peninsular rivers",
+                  "blurb": "Two great river systems."
+                },
+                {
+                  "name": "Uses of river water",
+                  "blurb": "Irrigation, power and drinking water."
+                },
+                {
+                  "name": "Water disputes and sharing",
+                  "blurb": "The tension over a shared resource."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "People and Settlement",
+              "topics": [
+                {
+                  "name": "Rural and urban settlement",
+                  "blurb": "Where and how people cluster."
+                },
+                {
+                  "name": "Migration",
+                  "blurb": "Why people move and where they go."
+                },
+                {
+                  "name": "Growth of towns",
+                  "blurb": "How cities grow and strain."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Globalisation",
+              "topics": [
+                {
+                  "name": "What globalisation is",
+                  "blurb": "The tighter linking of world markets."
+                },
+                {
+                  "name": "Multinational companies",
+                  "blurb": "Firms that work across borders."
+                },
+                {
+                  "name": "Effects on India",
+                  "blurb": "How globalisation reshaped work and trade."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Food Security",
+              "topics": [
+                {
+                  "name": "Meaning of food security",
+                  "blurb": "Enough safe food for all, always."
+                },
+                {
+                  "name": "The public distribution system",
+                  "blurb": "How the state supplies grain to the poor."
+                },
+                {
+                  "name": "Role of cooperatives",
+                  "blurb": "How farmers organise to sell and store."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "The World Between the Wars",
+              "topics": [
+                {
+                  "name": "The First World War",
+                  "blurb": "Causes and consequences of the great war."
+                },
+                {
+                  "name": "Rise of Nazism and Fascism",
+                  "blurb": "Dictatorships between the wars."
+                },
+                {
+                  "name": "The Second World War",
+                  "blurb": "The wider, deadlier war and its end."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "National Liberation Movements",
+              "topics": [
+                {
+                  "name": "Colonies and their struggles",
+                  "blurb": "How colonised peoples fought for freedom."
+                },
+                {
+                  "name": "Movements in Asia and Africa",
+                  "blurb": "Freedom struggles beyond India."
+                },
+                {
+                  "name": "The end of empires",
+                  "blurb": "How colonial rule collapsed."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "The Making of the Indian Constitution",
+              "topics": [
+                {
+                  "name": "The Constituent Assembly",
+                  "blurb": "Who wrote our Constitution and how."
+                },
+                {
+                  "name": "Guiding values",
+                  "blurb": "The ideals set out in the Preamble."
+                },
+                {
+                  "name": "A living document",
+                  "blurb": "How the Constitution adapts over time."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Election Process in India",
+              "topics": [
+                {
+                  "name": "The right to vote",
+                  "blurb": "Universal adult franchise."
+                },
+                {
+                  "name": "Stages of an election",
+                  "blurb": "From nomination to counting."
+                },
+                {
+                  "name": "The Election Commission",
+                  "blurb": "The body that runs free and fair polls."
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "name": "Independent India",
+              "topics": [
+                {
+                  "name": "Challenges at independence",
+                  "blurb": "Partition, refugees and integration."
+                },
+                {
+                  "name": "Planning and development",
+                  "blurb": "The early push to build the nation."
+                },
+                {
+                  "name": "Foreign policy",
+                  "blurb": "India's place in a divided world."
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "name": "Social Movements in Our Times",
+              "topics": [
+                {
+                  "name": "Movements for rights",
+                  "blurb": "How people organise to demand change."
+                },
+                {
+                  "name": "Environmental movements",
+                  "blurb": "Struggles to protect land and water."
+                },
+                {
+                  "name": "Citizens and change",
+                  "blurb": "How ordinary people move a society."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

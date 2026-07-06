@@ -1,0 +1,35 @@
+- generic [ref=f1e2]:
+  - generic [ref=f1e234]:
+    - banner [ref=f1e235]:
+      - button "Close course" [ref=f1e236] [cursor=pointer]: ×
+    - main [ref=f1e257]:
+      - generic [ref=f1e275]:
+        - generic [ref=f1e276]: guided discovery
+        - generic [ref=f1e277]: get x alone
+        - generic [ref=f1e278]: take weights off the pans — the scale must end level.
+        - generic [ref=f1e280]: x + 3 = 8
+        - generic [ref=f1e283]:
+          - generic [ref=f1e291]:
+            - generic [ref=f1e292]: x
+            - generic "take this weight off" [ref=f1e293]: "1"
+            - generic "take this weight off" [ref=f1e294]: "1"
+            - generic "take this weight off" [ref=f1e295]: "1"
+          - generic [ref=f1e299]:
+            - generic "take this weight off" [ref=f1e300]: "1"
+            - generic "take this weight off" [ref=f1e301]: "1"
+            - generic "take this weight off" [ref=f1e302]: "1"
+            - generic "take this weight off" [ref=f1e303]: "1"
+            - generic "take this weight off" [ref=f1e304]: "1"
+            - generic "take this weight off" [ref=f1e305]: "1"
+            - generic "take this weight off" [ref=f1e306]: "1"
+            - generic "take this weight off" [ref=f1e307]: "1"
+    - button "begin continue" [active] [ref=f1e310]:
+      - generic [ref=f1e267]: begin
+      - generic [ref=f1e311]: continue
+  - generic:
+    - generic:
+      - generic: 0 xp
+      - generic: ·
+      - generic: day 1 of being a learner
+  - button "Talk to Vidya" [ref=f1e70] [cursor=pointer]:
+    - img [ref=f1e74]

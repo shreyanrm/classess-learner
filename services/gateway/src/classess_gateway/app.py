@@ -26,6 +26,7 @@ from classess_gateway.registry import (
 )
 from classess_gateway.routing import resolve, resolve_any
 from classess_gateway.telemetry import MetricsSink, TelemetryEvent, emit
+from classess_gateway.voice import register_voice
 
 
 class ConsentDenied(Exception):
@@ -183,6 +184,8 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
         if name not in set(capabilities()):
             raise HTTPException(status_code=404, detail=f"unknown capability: {name}")
         return gw.invoke(name, request)
+
+    register_voice(app)
 
     return app
 

@@ -11,8 +11,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { learner } from '../data/catalog';
 import { useRouter } from '../shell/router';
-import { Kbd, MagneticButton } from '../ui/kit';
+import { AuroraButton, Kbd, MagneticButton } from '../ui/kit';
+import { ClassessLogo } from '../ui/Logo';
 import { useVidyaChat } from '../vidya/chat';
+import { useVidyaVoice } from '../vidya/voice';
 
 /** Genuinely surprising, calm, sentence case. Rotates every single day. */
 const DID_YOU_KNOW: string[] = [
@@ -39,14 +41,25 @@ function todaysFact(): string {
 
 function greeting(name: string): string {
   const h = new Date().getHours();
-  const part = h < 5 ? 'good night' : h < 12 ? 'good morning' : h < 17 ? 'good afternoon' : 'good evening';
+  const part =
+    h < 5 ? 'good night' : h < 12 ? 'good morning' : h < 17 ? 'good afternoon' : 'good evening';
   return `${part}, ${name.toLowerCase()}`;
 }
 
 const CHIPS: { label: string; prompt: string }[] = [
-  { label: 'learn something cool', prompt: 'Tell me something genuinely cool from science or math that most people never learn in school.' },
-  { label: 'open a rabbit hole', prompt: 'Pick a fascinating question connected to what I already know and pull me into it.' },
-  { label: 'what should I do today', prompt: 'Look at where I am and tell me the one best thing to work on right now.' },
+  {
+    label: 'learn something cool',
+    prompt:
+      'Tell me something genuinely cool from science or math that most people never learn in school.',
+  },
+  {
+    label: 'open a rabbit hole',
+    prompt: 'Pick a fascinating question connected to what I already know and pull me into it.',
+  },
+  {
+    label: 'what should I do today',
+    prompt: 'Look at where I am and tell me the one best thing to work on right now.',
+  },
 ];
 
 export function Home() {
@@ -54,12 +67,27 @@ export function Home() {
   const { turns, ask, busy, mood, setMood } = useVidyaChat();
   const [draft, setDraft] = useState('');
   const [factOpen, setFactOpen] = useState(false);
+  const [voiceNote, setVoiceNote] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const fact = useMemo(todaysFact, []);
+  const voice = useVidyaVoice({ setMood });
+  const voiceOn =
+    voice.status === 'listening' || voice.status === 'speaking' || voice.status === 'connecting';
+
+  const toggleVoice = () => {
+    if (voiceOn) return voice.stop();
+    void voice.start().then((landed) => {
+      if (landed === 'unavailable') {
+        setVoiceNote(true);
+        window.setTimeout(() => setVoiceNote(false), 3000);
+      }
+    });
+  };
 
   // Only the conversation the learner actually started — the seed line renders as her greeting.
   const conversation = turns.filter((t) => t.id !== 'seed');
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the length IS the trigger — scroll on each new turn
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
@@ -83,28 +111,13 @@ export function Home() {
         padding: '0 24px',
       }}
     >
-      {/* you — a whisper, top left */}
-      <button
-        type="button"
-        onClick={() => router.navigate({ name: 'you' })}
-        style={{
-          position: 'fixed',
-          top: 20,
-          left: 24,
-          border: 'none',
-          background: 'transparent',
-          color: 'var(--clss-ink-500)',
-          fontSize: '0.85rem',
-          cursor: 'pointer',
-          fontFamily: 'inherit',
-          padding: 4,
-        }}
-      >
-        ◦ you
-      </button>
+      {/* the wordmark — quiet, top centre */}
+      <div style={{ position: 'fixed', top: 18, left: '50%', transform: 'translateX(-50%)' }}>
+        <ClassessLogo height={20} />
+      </div>
 
       {/* did you know — top right, fresh every day */}
-      <div style={{ position: 'fixed', top: 20, right: 24, textAlign: 'right', maxWidth: 300 }}>
+      <div style={{ position: 'fixed', top: 58, right: 24, textAlign: 'right', maxWidth: 300 }}>
         <button
           type="button"
           onClick={() => setFactOpen((o) => !o)}
@@ -146,13 +159,30 @@ export function Home() {
       </div>
 
       {/* Vidya, front door */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', maxWidth: 620, gap: 0 }}>
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          maxWidth: 620,
+          gap: 0,
+        }}
+      >
         <VidyaBody size={116} mood={busy ? 'thinking' : mood} gaze="pointer" label="Vidya" />
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.5, ease: [0.2, 0, 0, 1] }}
-          style={{ marginTop: 22, fontSize: '1.35rem', fontWeight: 500, color: 'var(--clss-ink-900)', letterSpacing: '-0.02em' }}
+          style={{
+            marginTop: 22,
+            fontSize: '1.35rem',
+            fontWeight: 500,
+            color: 'var(--clss-ink-900)',
+            letterSpacing: '-0.02em',
+          }}
         >
           {greeting(learner.name)}
         </motion.div>
@@ -192,7 +222,11 @@ export function Home() {
                 {t.text}
               </div>
             ))}
-            {busy && <div style={{ color: 'var(--clss-ink-500)', fontSize: '0.85rem' }}>Vidya is thinking…</div>}
+            {busy && (
+              <div style={{ color: 'var(--clss-ink-500)', fontSize: '0.85rem' }}>
+                Vidya is thinking…
+              </div>
+            )}
           </div>
         )}
 
@@ -216,13 +250,43 @@ export function Home() {
               color: 'var(--clss-ink-900)',
             }}
           />
+          <button
+            type="button"
+            onClick={toggleVoice}
+            aria-label={voiceOn ? 'Stop voice' : 'Talk by voice'}
+            style={{
+              border: 'none',
+              background: 'transparent',
+              color: voiceOn ? 'var(--clss-ink-900)' : 'var(--clss-ink-500)',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              fontSize: '0.85rem',
+              padding: '0 2px',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {voiceOn ? '● listening' : '◦ mic'}
+          </button>
           <MagneticButton variant="primary" onClick={() => {}} ariaLabel="Ask Vidya">
             ask
           </MagneticButton>
         </form>
+        {voiceNote && (
+          <div style={{ marginTop: 8, color: 'var(--clss-ink-500)', fontSize: '0.8rem' }}>
+            voice arrives with a key
+          </div>
+        )}
 
         {/* learn-something-cool chips */}
-        <div style={{ display: 'flex', gap: 8, marginTop: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: 8,
+            marginTop: 14,
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+          }}
+        >
           {CHIPS.map((c) => (
             <button
               key={c.label}
@@ -244,18 +308,35 @@ export function Home() {
           ))}
         </div>
 
-        {/* the two doors */}
-        <div style={{ display: 'flex', gap: 14, marginTop: 44 }}>
-          <MagneticButton size="lg" variant="primary" onClick={() => router.navigate({ name: 'learn' })} style={{ minWidth: 150, justifyContent: 'center' }}>
+        {/* the two doors — the product's main features carry the aurora */}
+        <div style={{ display: 'flex', gap: 16, marginTop: 48 }}>
+          <AuroraButton
+            size="lg"
+            onClick={() => router.navigate({ name: 'learn' })}
+            style={{ minWidth: 160 }}
+          >
             learn
-          </MagneticButton>
-          <MagneticButton size="lg" variant="quiet" onClick={() => router.navigate({ name: 'practice' })} style={{ minWidth: 150, justifyContent: 'center' }}>
+          </AuroraButton>
+          <AuroraButton
+            size="lg"
+            onClick={() => router.navigate({ name: 'practice' })}
+            style={{ minWidth: 160 }}
+          >
             practice
-          </MagneticButton>
+          </AuroraButton>
         </div>
       </div>
 
-      <div style={{ paddingBottom: 18, color: 'var(--clss-ink-300)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div
+        style={{
+          paddingBottom: 18,
+          color: 'var(--clss-ink-300)',
+          fontSize: '0.75rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+        }}
+      >
         <Kbd>⌘K</Kbd> anything, anywhere
       </div>
     </div>

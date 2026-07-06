@@ -31,8 +31,8 @@ import { ProgressProvider } from './store/progress';
 import { SdkProvider } from './store/sdk';
 import { ClickInk } from './ui/ClickInk';
 import { XpBloomLayer } from './ui/XpBloomLayer';
-import { type ChatTurn, VidyaChatProvider } from './vidya/chat';
 import { VidyaCompanion } from './vidya/Companion';
+import { type ChatTurn, VidyaChatProvider } from './vidya/chat';
 
 const LLM_MODE = (import.meta.env.VITE_LLM_MODE as 'mock' | 'live' | undefined) ?? 'mock';
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
@@ -50,16 +50,29 @@ export const ONBOARDED_KEY = 'clss-onboarded-v1';
 
 function Screen() {
   const { route } = useRouter();
-  // One intention per screen; transitions ease with physical logic (DESIGN.md §5).
+  // One intention per screen; transitions overlap and ease with physical logic (DESIGN.md §5) —
+  // the leaving page recedes while the arriving one springs in, so nothing ever feels like a cut.
   const key = JSON.stringify(route);
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="popLayout" initial={false}>
       <motion.div
         key={key}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-        transition={{ duration: 0.26, ease: [0.2, 0, 0, 1] }}
+        initial={{ opacity: 0, y: 16, scale: 0.992, filter: 'blur(5px)' }}
+        animate={{
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          filter: 'blur(0px)',
+          transition: { type: 'spring', stiffness: 240, damping: 30, mass: 0.9 },
+        }}
+        exit={{
+          opacity: 0,
+          y: -12,
+          scale: 0.994,
+          filter: 'blur(5px)',
+          transition: { duration: 0.2, ease: [0.3, 0, 0.8, 0.4] },
+        }}
+        style={{ willChange: 'transform, opacity, filter' }}
       >
         {route.name === 'onboarding' && <Onboarding />}
         {route.name === 'home' && <Home />}
@@ -104,7 +117,11 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       const output = result.output as { say?: string; actions?: unknown[] };
       setTurns((prev) => [
         ...prev,
-        { id: `v-${prev.length}`, role: 'vidya', text: output.say ?? 'let us look at this together.' },
+        {
+          id: `v-${prev.length}`,
+          role: 'vidya',
+          text: output.say ?? 'let us look at this together.',
+        },
       ]);
       const actions = parseActions(output.actions ?? []);
       bus.dispatch(actions);
@@ -120,6 +137,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     }
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ask is recreated with turns; tracking turns/busy/mood covers it
   const chat = useMemo(() => ({ turns, ask, busy, mood, setMood }), [turns, busy, mood]);
 
   const inFlow = route.name === 'onboarding';

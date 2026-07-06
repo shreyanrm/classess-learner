@@ -21,16 +21,31 @@ function buildCommands(): Command[] {
   const cmds: Command[] = [
     { id: 'home', label: 'home', hint: 'the front door', route: { name: 'home' } },
     { id: 'learn', label: 'learn', hint: 'your subjects', route: { name: 'learn' } },
-    { id: 'practice', label: 'practice', hint: 'sandbox and retrieval', route: { name: 'practice' } },
+    {
+      id: 'practice',
+      label: 'practice',
+      hint: 'sandbox and retrieval',
+      route: { name: 'practice' },
+    },
     { id: 'progress', label: 'progress', hint: 'your knowledge twin', route: { name: 'progress' } },
     { id: 'you', label: 'you', hint: 'profile, settings, past courses', route: { name: 'you' } },
   ];
   for (const s of subjects)
-    cmds.push({ id: `subj-${s.id}`, label: s.name.toLowerCase(), hint: 'subject', route: { name: 'subject', subjectId: s.id, intent: 'learn' } });
+    cmds.push({
+      id: `subj-${s.id}`,
+      label: s.name.toLowerCase(),
+      hint: 'subject',
+      route: { name: 'subject', subjectId: s.id, intent: 'learn' },
+    });
   for (const chapters of Object.values(chaptersBySubject))
     for (const ch of chapters)
       for (const topic of ch.topics)
-        cmds.push({ id: `topic-${topic.id}`, label: topic.name.toLowerCase(), hint: ch.name.toLowerCase(), route: { name: 'course', topicId: topic.id } });
+        cmds.push({
+          id: `topic-${topic.id}`,
+          label: topic.name.toLowerCase(),
+          hint: ch.name.toLowerCase(),
+          route: { name: 'course', topicId: topic.id },
+        });
   return cmds;
 }
 
@@ -163,12 +178,18 @@ export function CommandPalette() {
                     textAlign: 'left',
                   }}
                 >
-                  <span style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>{c.label}</span>
-                  <span style={{ fontSize: '0.78rem', color: 'var(--clss-ink-500)' }}>{c.hint}</span>
+                  <span style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>
+                    {c.label}
+                  </span>
+                  <span style={{ fontSize: '0.78rem', color: 'var(--clss-ink-500)' }}>
+                    {c.hint}
+                  </span>
                 </button>
               ))}
               {matches.length === 0 && (
-                <div style={{ padding: '14px 16px', color: 'var(--clss-ink-500)', fontSize: '0.9rem' }}>
+                <div
+                  style={{ padding: '14px 16px', color: 'var(--clss-ink-500)', fontSize: '0.9rem' }}
+                >
                   nothing by that name — ask Vidya instead
                 </div>
               )}

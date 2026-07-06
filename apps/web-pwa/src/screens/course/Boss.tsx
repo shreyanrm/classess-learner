@@ -1,0 +1,399 @@
+'use client';
+
+/**
+ * The boss battle (DESIGN.md §9) — a three-item digital workbook that closes the topic: solve,
+ * fill-the-missing-step, choose-the-error. Answered in full, evaluated at the end. Calm, no fear;
+ * a miss earns another look, never shame. Every exercise is derived arithmetically from verified
+ * seed items — nothing invented.
+ */
+
+import type { PracticeItem } from '@classess/sdk';
+import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { motion } from 'framer-motion';
+import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
+import { useSdk } from '../../store/sdk';
+import { aX, firstMove, fmt, linearize } from './equations';
+import type { BarState } from './shared';
+import { CardBody, whisper } from './shared';
+
+const ORDINALS = ['one', 'two', 'three'];
+
+interface StepExercise {
+  lines: [string, string]; // before the gap, after the gap
+  choices: string[];
+  correctIndex: number;
+}
+
+interface ErrorExercise {
+  lines: string[];
+  errorIndex: number;
+  b: number;
+}
+
+/** Fill-the-missing-step, built from the item's own linear structure. */
+function buildStep(item: PracticeItem): StepExercise | null {
+  const lin = linearize(item.equation);
+  if (!lin) return null;
+  const correct = firstMove(lin).text;
+  const distractors =
+    lin.b !== 0
+      ? [
+          lin.b > 0 ? `add ${fmt(lin.b)} to both sides` : `subtract ${fmt(-lin.b)} from both sides`,
+          `divide both sides by ${fmt(Math.abs(lin.b))}`,
+        ]
+      : Math.abs(lin.a) < 1
+        ? [`divide both sides by ${fmt(1 / lin.a)}`, `add ${fmt(1 / lin.a)} to both sides`]
+        : [`multiply both sides by ${fmt(lin.a)}`, `subtract ${fmt(lin.a)} from both sides`];
+  const first = distractors[0] ?? '';
+  const second = distractors[1] ?? '';
+  return {
+    lines: [item.equation, `x = ${fmt(lin.x)}`],
+    choices: [first, correct, second],
+    correctIndex: 1,
+  };
+}
+
+/**
+ * Choose-the-error: a worked solution with one classic slip — the constant crosses the equals
+ * sign without flipping its sign. Every later line follows honestly from the slip.
+ */
+function buildError(item: PracticeItem): ErrorExercise | null {
+  const lin = linearize(item.equation);
+  if (!lin || lin.b === 0) return null;
+  const wrongK = lin.c + lin.b; // kept its sign — the slip
+  const lines: string[] = [item.equation];
+  const norm = (s: string) => s.replace(/\s+/g, '').replace(/−/g, '-');
+  if (norm(lin.flat) !== norm(item.equation)) lines.push(lin.flat);
+  const errorIndex = lines.length;
+  lines.push(`${aX(lin.a)} = ${fmt(wrongK)}`);
+  lines.push(`x = ${fmt(wrongK / lin.a)}`);
+  return { lines, errorIndex, b: lin.b };
+}
+
+const blockStyle = (state: 'idle' | 'correct' | 'retry'): CSSProperties => ({
+  border:
+    state === 'correct'
+      ? '1px solid var(--clss-feedback-correct)'
+      : state === 'retry'
+        ? '1px solid var(--clss-feedback-retry)'
+        : '0.5px solid var(--clss-hairline-on-paper-strong)',
+  background:
+    state === 'correct'
+      ? 'var(--clss-feedback-correctSoft)'
+      : state === 'retry'
+        ? 'var(--clss-feedback-retrySoft)'
+        : 'var(--clss-paper)',
+  borderRadius: 'var(--clss-radius-md)',
+  padding: '18px 20px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 12,
+});
+
+const choiceStyle = (selected: boolean): CSSProperties => ({
+  width: '100%',
+  textAlign: 'left',
+  padding: '11px 14px',
+  fontSize: '0.95rem',
+  fontFamily: 'inherit',
+  color: selected ? 'var(--clss-paper)' : 'var(--clss-ink-900)',
+  background: selected ? 'var(--clss-ink-900)' : 'var(--clss-paper)',
+  border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+  borderRadius: 'var(--clss-radius-sm)',
+  cursor: 'pointer',
+});
+
+export function Boss({
+  nodeId,
+  items,
+  setBar,
+  setSub,
+  onAttempt,
+  onPass,
+}: {
+  nodeId: string;
+  /** Three verified items: [solve, fill-the-step, choose-the-error]. */
+  items: PracticeItem[];
+  setBar: (b: BarState | null) => void;
+  setSub: (f: number) => void;
+  onAttempt: () => void;
+  onPass: () => void;
+}) {
+  const sdk = useSdk();
+  const bus = useVidyaBus();
+  const bossRef = useRegisterTarget<HTMLDivElement>('course-boss', {
+    kind: 'workbook',
+    label: 'the boss workbook — solve, missing step, find the error',
+  });
+
+  const solveItem = items[0];
+  // memoized — the bar-setting effect depends on these identities
+  const step = useMemo(() => {
+    const source = items[1];
+    return source ? buildStep(source) : null;
+  }, [items]);
+  const error = useMemo(() => {
+    const source = items[2];
+    return source ? buildError(source) : null;
+  }, [items]);
+
+  const [solveEntry, setSolveEntry] = useState('');
+  const [stepChoice, setStepChoice] = useState<number | null>(null);
+  const [errorChoice, setErrorChoice] = useState<number | null>(null);
+  const [evaluated, setEvaluated] = useState(false);
+  const [results, setResults] = useState<[boolean, boolean, boolean] | null>(null);
+  const round = useRef(0);
+  const startedAt = useRef(Date.now());
+
+  const solveLin = solveItem ? linearize(solveItem.equation) : null;
+  const solveValid = solveEntry !== '' && Number.isFinite(Number(solveEntry.replace('−', '-')));
+  const answered =
+    (solveValid ? 1 : 0) + (stepChoice !== null ? 1 : 0) + (errorChoice !== null ? 1 : 0);
+
+  useEffect(() => setSub(answered / 3), [setSub, answered]);
+
+  useEffect(() => {
+    bus.publishCanvas({
+      nodeId,
+      equation: solveItem?.equation ?? '',
+      steps: [
+        `boss workbook: ${answered} of 3 answered`,
+        evaluated && results
+          ? `evaluated — ${results.filter(Boolean).length} of 3 correct`
+          : 'not yet evaluated',
+      ],
+      lastEditedAt: new Date().toISOString(),
+    });
+  }, [bus, nodeId, solveItem, answered, evaluated, results]);
+  useEffect(() => () => bus.publishCanvas(undefined), [bus]);
+
+  useEffect(() => {
+    if (!solveItem || !step || !error) {
+      setBar(null);
+      return;
+    }
+    if (!evaluated) {
+      setBar({
+        primary: {
+          label: 'check all three',
+          disabled: answered < 3,
+          onClick: () => {
+            const value = Number(solveEntry.replace('−', '-'));
+            const r: [boolean, boolean, boolean] = [
+              Math.abs(value - Number(solveItem.answer)) < 1e-9,
+              stepChoice === step.correctIndex,
+              errorChoice === error.errorIndex,
+            ];
+            const latency = Date.now() - startedAt.current;
+            const responses: {
+              item_id?: string;
+              response: { kind: 'numeric'; value: number } | { kind: 'choice'; selected: string[] };
+            }[] = [
+              { item_id: solveItem.id, response: { kind: 'numeric', value } },
+              { response: { kind: 'choice', selected: [step.choices[stepChoice ?? 0] ?? ''] } },
+              { response: { kind: 'choice', selected: [`line-${errorChoice}`] } },
+            ];
+            responses.forEach((resp, i) => {
+              onAttempt();
+              sdk.events.record(
+                'learn.attempt.submitted.v1',
+                {
+                  node_id: nodeId,
+                  ...(resp.item_id ? { item_id: resp.item_id } : {}),
+                  response: resp.response,
+                  correct: r[i] ?? false,
+                  aided: false,
+                  independence_signal: 0.9,
+                  latency_ms: latency,
+                  attempt_index: round.current,
+                },
+                { ontologyNodeId: nodeId },
+              );
+            });
+            round.current += 1;
+            setResults(r);
+            setEvaluated(true);
+          },
+        },
+      });
+    } else {
+      const pass = (results?.filter(Boolean).length ?? 0) >= 2;
+      setBar({
+        primary: pass
+          ? { label: 'continue', onClick: onPass }
+          : {
+              label: 'one more look',
+              onClick: () => {
+                setEvaluated(false);
+                setResults(null);
+                startedAt.current = Date.now();
+              },
+            },
+      });
+    }
+  }, [
+    setBar,
+    solveItem,
+    step,
+    error,
+    evaluated,
+    answered,
+    solveEntry,
+    stepChoice,
+    errorChoice,
+    results,
+    sdk,
+    nodeId,
+    onAttempt,
+    onPass,
+  ]);
+
+  if (!solveItem || !step || !error) return null;
+
+  const state = (i: 0 | 1 | 2): 'idle' | 'correct' | 'retry' =>
+    !evaluated || !results ? 'idle' : results[i] ? 'correct' : 'retry';
+  const passCount = results?.filter(Boolean).length ?? 0;
+
+  return (
+    <CardBody maxWidth={560} center={false}>
+      <div ref={bossRef} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={whisper}>the boss · answered together, checked together</div>
+
+        {/* one — solve */}
+        <div style={blockStyle(state(0))}>
+          <div style={whisper}>{ORDINALS[0]} · solve it</div>
+          <div
+            style={{
+              fontSize: '1.3rem',
+              fontWeight: 550,
+              fontVariantNumeric: 'tabular-nums',
+              color: 'var(--clss-ink-900)',
+            }}
+          >
+            {solveItem.equation}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ color: 'var(--clss-ink-500)' }}>x =</span>
+            <input
+              value={solveEntry}
+              onChange={(e) => setSolveEntry(e.target.value.replace(/[^0-9\-−.]/g, ''))}
+              disabled={evaluated}
+              inputMode="numeric"
+              aria-label="your answer for x"
+              style={{
+                width: 110,
+                padding: '10px 12px',
+                fontSize: '1.1rem',
+                fontFamily: 'inherit',
+                fontVariantNumeric: 'tabular-nums',
+                textAlign: 'center',
+                border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+                borderRadius: 'var(--clss-radius-sm)',
+                outline: 'none',
+                background: 'var(--clss-paper)',
+                color: 'var(--clss-ink-900)',
+              }}
+            />
+          </div>
+          {evaluated && results && !results[0] && solveLin && (
+            <div style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', lineHeight: 1.6 }}>
+              put your x back in: the sides make{' '}
+              {fmt(solveLin.lhs(Number(solveEntry.replace('−', '-'))))} and{' '}
+              {fmt(solveLin.rhs(Number(solveEntry.replace('−', '-'))))} — not level yet.
+            </div>
+          )}
+        </div>
+
+        {/* two — the missing step */}
+        <div style={blockStyle(state(1))}>
+          <div style={whisper}>{ORDINALS[1]} · one step is missing — choose it</div>
+          <div
+            style={{
+              fontSize: '1.15rem',
+              fontWeight: 550,
+              fontVariantNumeric: 'tabular-nums',
+              color: 'var(--clss-ink-900)',
+            }}
+          >
+            {step.lines[0]}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {step.choices.map((choice, i) => (
+              <motion.button
+                key={choice}
+                type="button"
+                disabled={evaluated}
+                whileTap={{ scale: 0.985 }}
+                onClick={() => setStepChoice(i)}
+                style={choiceStyle(stepChoice === i)}
+              >
+                {choice}
+              </motion.button>
+            ))}
+          </div>
+          <div
+            style={{
+              fontSize: '1.15rem',
+              fontWeight: 550,
+              fontVariantNumeric: 'tabular-nums',
+              color: 'var(--clss-ink-900)',
+            }}
+          >
+            {step.lines[1]}
+          </div>
+          {evaluated && results && !results[1] && (
+            <div style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', lineHeight: 1.6 }}>
+              the move must undo what sits around x — here that is “
+              {step.choices[step.correctIndex]}”.
+            </div>
+          )}
+        </div>
+
+        {/* three — find the error */}
+        <div style={blockStyle(state(2))}>
+          <div style={whisper}>{ORDINALS[2]} · one line below is wrong — tap it</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {error.lines.map((line, i) => (
+              <motion.button
+                key={line}
+                type="button"
+                disabled={evaluated}
+                whileTap={{ scale: 0.985 }}
+                onClick={() => setErrorChoice(i)}
+                style={{
+                  ...choiceStyle(errorChoice === i),
+                  fontVariantNumeric: 'tabular-nums',
+                  fontSize: '1.05rem',
+                  fontWeight: 550,
+                }}
+              >
+                {line}
+              </motion.button>
+            ))}
+          </div>
+          {evaluated && results && !results[2] && (
+            <div style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', lineHeight: 1.6 }}>
+              the slip is where {fmt(Math.abs(error.b))} crossed the equals sign and kept its sign —
+              crossing always flips it.
+            </div>
+          )}
+        </div>
+
+        {evaluated && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: [0.2, 0, 0, 1] }}
+            style={{ textAlign: 'center', color: 'var(--clss-ink-700)', fontSize: '0.95rem' }}
+          >
+            {passCount >= 2
+              ? passCount === 3
+                ? 'all three. clean.'
+                : 'two of three — that is a pass, earned.'
+              : 'close. the scale is still yours — take one more look.'}
+          </motion.div>
+        )}
+      </div>
+    </CardBody>
+  );
+}

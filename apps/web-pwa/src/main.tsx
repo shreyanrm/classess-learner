@@ -11,6 +11,7 @@ if (!document.getElementById(STYLE_ID)) {
   style.textContent = `${cssVariables()}
 * { box-sizing: border-box; }
 html, body { margin: 0; }
+html { scroll-behavior: smooth; interpolate-size: allow-keywords; }
 body {
   font-family: 'Google Sans Flex', 'Google Sans Text', 'Plus Jakarta Sans', system-ui, sans-serif;
   color: var(--clss-ink-900);
