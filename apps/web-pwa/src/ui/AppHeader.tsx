@@ -110,21 +110,50 @@ export function AppHeader() {
           <SparkIcon size={11} color="#CC1E7A" /> Did you know
         </motion.button>
 
-        {/* the streak */}
+        {/* the streak — a clean two-layer teardrop flame, an inner core of light */}
         <span title={`day ${streakDays} of being a learner`} style={chipStyle}>
-          <svg width="12" height="15" viewBox="0 0 15 19" aria-hidden>
+          <motion.svg
+            width="15"
+            height="19"
+            viewBox="0 0 15 19"
+            role="presentation"
+            aria-hidden
+            animate={{ scaleY: [1, 1.05, 0.97, 1], scaleX: [1, 0.97, 1.03, 1] }}
+            transition={{ duration: 2.4, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+            style={{ transformOrigin: '50% 100%', display: 'block' }}
+          >
             <defs>
               <linearGradient id="hdrFlame" x1="0.5" y1="0" x2="0.5" y2="1">
-                <stop offset="0%" stopColor="#FF9040" />
-                <stop offset="62%" stopColor="#FF5A1F" />
-                <stop offset="100%" stopColor="#D8437F" />
+                <stop offset="0%" stopColor="#FF8A3D" />
+                <stop offset="100%" stopColor="#F0461F" />
               </linearGradient>
             </defs>
+            {/* outer teardrop — tip drawn up, a full round base */}
             <path
-              d="M7.5 0.8 C8.2 4.4 12.6 6.2 12.6 10.6 C12.6 14.6 10.3 17.4 7.5 17.4 C4.7 17.4 2.4 14.6 2.4 10.6 C2.4 8.4 3.5 7 4.6 5.7 C5.8 4.3 7.1 3 7.5 0.8 Z"
+              d="M7.5 1.2
+                 C7.9 4.1 10.1 5.9 11.6 8.1
+                 C12.5 9.5 13 10.9 13 12.4
+                 C13 15.6 10.6 17.9 7.5 17.9
+                 C4.4 17.9 2 15.6 2 12.4
+                 C2 10.9 2.5 9.5 3.4 8.1
+                 C4.9 5.9 7.1 4.1 7.5 1.2 Z"
               fill="url(#hdrFlame)"
             />
-          </svg>
+            {/* the inner core — a smaller teardrop of light, breathing on its own */}
+            <motion.path
+              d="M7.5 9.4
+                 C7.8 10.9 8.9 11.8 9.6 12.9
+                 C10 13.6 10.2 14.2 10.2 14.9
+                 C10.2 16.5 9 17.6 7.5 17.6
+                 C6 17.6 4.8 16.5 4.8 14.9
+                 C4.8 14.2 5 13.6 5.4 12.9
+                 C6.1 11.8 7.2 10.9 7.5 9.4 Z"
+              fill="#FFE1B8"
+              animate={{ scaleY: [1, 1.12, 0.94, 1] }}
+              transition={{ duration: 1.7, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+              style={{ transformOrigin: '50% 92%' }}
+            />
+          </motion.svg>
           {streakDays}
         </span>
 
@@ -202,7 +231,13 @@ export function AppHeader() {
                 animate={{ opacity: 1, y: -4, scale: 1 }}
                 exit={{ opacity: 0, y: -20, scale: 0.96 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-                style={{ color: '#1F35E0', fontWeight: 650, fontSize: '1rem', textAlign: 'right' }}
+                style={{
+                  // an earned bloom takes the owning subject's hue; ultramarine is the default earn
+                  color: b.hue ?? '#1F35E0',
+                  fontWeight: 650,
+                  fontSize: '1rem',
+                  textAlign: 'right',
+                }}
               >
                 +{b.amount} xp
               </motion.div>

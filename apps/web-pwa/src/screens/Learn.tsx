@@ -9,11 +9,13 @@
 import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
 import { motion } from 'framer-motion';
 import { type CSSProperties, type ReactNode, useEffect, useState } from 'react';
-import { subjects } from '../data/catalog';
+import { chaptersBySubject, subjects } from '../data/catalog';
 import type { Subject } from '../data/model';
 import { useRouter } from '../shell/router';
-import { SubjectGlyph } from '../ui/art';
-import { SectionLabel } from '../ui/kit';
+import { EmptyConstellation, SubjectGlyph } from '../ui/art';
+import { toneForSubject } from '../ui/hues';
+import { BackIcon } from '../ui/icons';
+import { SectionLabel, TiltCard } from '../ui/kit';
 
 /** A whisper-quiet fixed affordance, top left — the register of home's "◦ you". */
 export function Whisper({
