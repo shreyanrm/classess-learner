@@ -9,7 +9,7 @@
 
 import { useReducedMotion } from '@classess/motion';
 import { VidyaBody, type VidyaMood } from '@classess/vidya';
-import { motion, useAnimationControls, useTime, useTransform } from 'framer-motion';
+import { motion, useAnimationControls, useSpring, useTime, useTransform } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 
 function hash(s: string): number {
@@ -46,6 +46,18 @@ export function FlyingVidya({
   const [flying, setFlying] = useState(false);
   const lastRoute = useRef<string>('');
 
+  // Docked responsiveness: she drifts a few px toward the cursor — alive, never in the way.
+  const px = useSpring(0, { stiffness: 60, damping: 18 });
+  const py = useSpring(0, { stiffness: 60, damping: 18 });
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      px.set(Math.max(-8, Math.min(8, (e.clientX - window.innerWidth + 60) * 0.02)));
+      py.set(Math.max(-8, Math.min(8, (e.clientY - window.innerHeight + 60) * 0.02)));
+    };
+    window.addEventListener('pointermove', onMove, { passive: true });
+    return () => window.removeEventListener('pointermove', onMove);
+  }, [px, py]);
+
   // The perpetual hover — she floats even at rest.
   const bob = useTransform(time, (ms) => (reduced ? 0 : Math.sin(ms / 900) * 3.2));
 
@@ -64,19 +76,43 @@ export function FlyingVidya({
     const w = window.innerWidth;
     const h = window.innerHeight;
     const from = ENTRIES[hash(routeKey) % ENTRIES.length]?.(w, h) ?? { x: -w * 0.5, y: -h * 0.4 };
-    // A waypoint that swings her through the open room before she settles.
-    const midX = from.x * 0.45 - w * 0.08;
-    const midY = Math.min(from.y * 0.3, -h * 0.18) - 40;
-    const leanIn = from.x < 0 ? 10 : -10;
+    // Sample a quadratic bezier through the open room — a real swooping curve, not segments.
+    const cx = from.x * 0.35 - w * 0.12;
+    const cy = Math.min(from.y * 0.25, -h * 0.3);
+    const STEPS = 14;
+    const xs: number[] = [];
+    const ys: number[] = [];
+    for (let i = 0; i <= STEPS; i++) {
+      const t = i / STEPS;
+      const u = 1 - t;
+      xs.push(u * u * from.x + 2 * u * t * cx + t * t * 0);
+      ys.push(u * u * from.y + 2 * u * t * cy + t * t * 0);
+    }
+    // Banking follows velocity — she leans into the turn like a thing with weight.
+    const rots = xs.map((x, i) => {
+      if (i === 0) return 0;
+      const dx = x - (xs[i - 1] as number);
+      const dy = (ys[i] as number) - (ys[i - 1] as number);
+      return Math.max(-24, Math.min(24, dx * 0.14 + dy * -0.03));
+    });
+    rots[STEPS] = 0;
     setFlying(true);
     void controls
       .start({
-        x: [from.x, midX, 12, 0],
-        y: [from.y, midY, -14, 0],
-        rotate: [leanIn * 1.4, leanIn, -leanIn * 0.4, 0],
-        opacity: [0, 1, 1, 1],
-        transition: { duration: 1.5, times: [0, 0.45, 0.82, 1], ease: 'easeInOut' },
+        x: xs,
+        y: ys,
+        rotate: rots,
+        opacity: [0, 1, ...Array(STEPS - 1).fill(1)],
+        transition: { duration: 1.9, ease: [0.22, 1, 0.36, 1] },
       })
+      .then(() =>
+        controls.start({
+          y: [0, -12, 0, -4, 0],
+          scaleY: [1, 0.92, 1.06, 0.97, 1],
+          scaleX: [1, 1.06, 0.96, 1.02, 1],
+          transition: { duration: 0.7, ease: 'easeOut' },
+        }),
+      )
       .then(() => setFlying(false));
   }, [routeKey, reduced, controls]);
 
@@ -92,7 +128,7 @@ export function FlyingVidya({
         pointerEvents: flying ? 'none' : 'auto',
       }}
     >
-      <motion.div style={{ y: bob }}>
+      <motion.div style={{ y: bob, x: px, translateY: py }}>
         {/* The light-beam shadow beneath her — the floating made visible. */}
         <motion.div
           aria-hidden

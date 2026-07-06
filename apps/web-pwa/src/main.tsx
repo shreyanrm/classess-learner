@@ -32,6 +32,8 @@ p, li { text-wrap: pretty; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--clss-ink-100); border-radius: 999px; border: 3px solid var(--clss-paper); }
 ::-webkit-scrollbar-thumb:hover { background: var(--clss-ink-300); }
+.clss-scroll-quiet { scrollbar-width: none; }
+.clss-scroll-quiet::-webkit-scrollbar { display: none; }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
 `;
   document.head.appendChild(style);

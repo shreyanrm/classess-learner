@@ -110,6 +110,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
 
       {/* the full-bleed card area */}
       <main
+        className="clss-scroll-quiet"
         style={{
           flex: 1,
           minHeight: 0,
