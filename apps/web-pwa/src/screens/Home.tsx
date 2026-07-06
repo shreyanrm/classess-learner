@@ -234,7 +234,8 @@ export function Home() {
         )}
 
         {/* the chat bar */}
-        <form
+        <motion.form
+          variants={rise}
           onSubmit={submit}
           style={{
             width: '100%',
@@ -258,7 +259,7 @@ export function Home() {
               fontSize: '1rem',
               fontFamily: 'inherit',
               border: '1px solid #E9E9EE',
-              borderRadius: 14,
+              borderRadius: 3,
               outline: 'none',
               background: '#FFFFFF',
               color: '#121316',
@@ -322,7 +323,7 @@ export function Home() {
                 border: 'none',
                 background: '#F1F1F5',
                 color: '#121316',
-                borderRadius: 999,
+                borderRadius: 3,
                 padding: '10px 18px',
                 fontSize: '0.87rem',
                 fontWeight: 550,

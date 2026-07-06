@@ -22,7 +22,7 @@ export const surface = {
   ink: '#121316',
   inkSoft: '#5C5E66',
   inkFaint: '#989AA4',
-  radius: { card: 16, control: 12, pill: 999 },
+  radius: { card: 3, control: 3, pill: 3 },
 } as const;
 
 export const inkText: CSSProperties = { color: surface.ink };
@@ -203,7 +203,7 @@ export function Kbd({ children }: { children: ReactNode }) {
         fontWeight: 550,
         padding: '3px 7px',
         background: surface.tonal,
-        borderRadius: 6,
+        borderRadius: 3,
         color: surface.inkSoft,
       }}
     >
@@ -326,7 +326,7 @@ export function AuroraButton({
         color: surface.ink,
         background: surface.card,
         border: `1px solid ${surface.cardBorder}`,
-        borderRadius: 14,
+        borderRadius: 3,
         cursor: 'pointer',
         overflow: 'hidden',
         display: 'inline-flex',
@@ -361,7 +361,7 @@ export function AuroraButton({
           position: 'absolute',
           inset: 2,
           background: surface.card,
-          borderRadius: 12,
+          borderRadius: 2,
           pointerEvents: 'none',
         }}
       />
