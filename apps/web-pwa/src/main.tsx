@@ -27,13 +27,10 @@ p, li { text-wrap: pretty; }
 /* Ultramarine is the signature pigment — selection and focus carry it, nothing else in chrome does. */
 ::selection { background: var(--clss-ultramarine-wash); color: var(--clss-ink-900); }
 :focus-visible { outline: 2px solid var(--clss-ultramarine-ring); outline-offset: 2px; }
-/* A quiet, modern scrollbar — never the chunky default. */
-* { scrollbar-width: thin; scrollbar-color: var(--clss-ink-300) transparent; }
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-thumb { background: var(--clss-ink-100); border-radius: 999px; border: 3px solid var(--clss-paper); }
-::-webkit-scrollbar-thumb:hover { background: var(--clss-ink-300); }
-.clss-scroll-quiet { scrollbar-width: none; }
-.clss-scroll-quiet::-webkit-scrollbar { display: none; }
+/* One scrollbar: the page's own, thin and quiet. Inner scroll areas scroll invisibly. */
+html { scrollbar-width: thin; scrollbar-color: var(--clss-ink-300) transparent; }
+body ::-webkit-scrollbar { display: none; }
+body * { scrollbar-width: none; }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
 `;
   document.head.appendChild(style);
