@@ -63,7 +63,7 @@ export function FlyingVidya({
 
   // The beam breathes with the hover: nearer the ground, tighter the pool.
   const beamPulse = useTransform(time, (ms) => (reduced ? 0.5 : 0.5 + 0.18 * Math.sin(ms / 700)));
-  const beamOpacity = useTransform(beamPulse, (v) => (flying ? 0.85 : 0.32 + v * 0.22));
+  const beamOpacity = useTransform(beamPulse, (v) => (flying ? 0.12 : 0.32 + v * 0.22));
   const beamScaleY = useTransform(beamPulse, (v) => (flying ? 1 : 0.52 + v * 0.1));
 
   useEffect(() => {
@@ -136,6 +136,60 @@ export function FlyingVidya({
       }}
     >
       <motion.div style={{ y: bob, x: px, translateY: py }}>
+        {/* The binary aura — while she flies, energy wisps lick around her whole silhouette. */}
+        <motion.div
+          aria-hidden
+          animate={{ opacity: flying ? 1 : 0 }}
+          transition={{ duration: flying ? 0.25 : 0.5 }}
+          style={{ position: 'absolute', inset: '-38%', pointerEvents: 'none' }}
+        >
+          <motion.div
+            animate={{ scale: [1, 1.12, 0.96, 1.08, 1], opacity: [0.7, 0.95, 0.75, 0.9, 0.7] }}
+            transition={{ duration: 1.1, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '50%',
+              background:
+                'radial-gradient(circle, rgba(255,158,98,0.55) 22%, rgba(255,90,31,0.35) 46%, rgba(240,97,155,0.22) 64%, rgba(240,97,155,0) 78%)',
+              filter: 'blur(13px)',
+            }}
+          />
+          {[0, 1, 2, 3, 4, 5, 6].map((i) => {
+            const a = -90 + i * 51.4; // around the rim
+            return (
+              <motion.div
+                key={i}
+                animate={{
+                  scaleY: [0.6, 1.5, 0.8, 1.3, 0.6],
+                  opacity: [0.5, 0.95, 0.6, 0.9, 0.5],
+                }}
+                transition={{
+                  duration: 0.75 + i * 0.11,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: 'easeInOut',
+                  delay: i * 0.07,
+                }}
+                style={{
+                  position: 'absolute',
+                  left: '50%',
+                  top: '50%',
+                  width: 7,
+                  height: size * 0.52,
+                  marginLeft: -3.5,
+                  marginTop: -size * 0.52,
+                  transformOrigin: '50% 100%',
+                  rotate: a,
+                  translateY: -size * 0.34,
+                  borderRadius: 999,
+                  background:
+                    'linear-gradient(to top, rgba(255,217,168,0.9), rgba(255,90,31,0.75) 40%, rgba(240,97,155,0.45) 72%, rgba(240,97,155,0) 100%)',
+                  filter: 'blur(2.5px)',
+                }}
+              />
+            );
+          })}
+        </motion.div>
         {/* The light-beam shadow beneath her — the floating made visible. */}
         <motion.div
           aria-hidden
