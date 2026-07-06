@@ -1,0 +1,42 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e380]:
+    - banner [ref=f3e381]:
+      - button "Close course" [ref=f3e382] [cursor=pointer]:
+        - img [ref=f3e383]
+    - main [ref=f3e399]:
+      - generic [ref=f3e528]:
+        - generic [ref=f3e529]: practice · 2 of 4
+        - generic [ref=f3e530]: solve for x
+        - generic [ref=f3e531]: 2x + 3 = 7
+        - generic [ref=f3e605]:
+          - generic [ref=f3e606]: you said x = 1 — watch.
+          - generic [ref=f3e607]: 2(1) + 3 → 5
+          - generic [ref=f3e609]:
+            - generic [ref=f3e610]: "5"
+            - generic [ref=f3e611]:
+              - img [ref=f3e612]
+              - generic [ref=f3e614]: ≠
+            - generic [ref=f3e615]: "7"
+          - generic [ref=f3e616]: the two sides stopped being equal — the scale tipped.
+          - generic [ref=f3e617]:
+            - generic [ref=f3e618]: the honest move
+            - generic [ref=f3e619]: subtract 3 from both sides → 2x = 4
+            - generic [ref=f3e620]: this one comes back before the end — the finish is yours.
+    - button "continue" [disabled] [ref=f3e621]:
+      - generic [ref=f3e622]: continue
+  - banner:
+    - img "Classess" [ref=f3e63]
+    - generic [ref=f3e64]:
+      - button "Did you know" [ref=f3e65] [cursor=pointer]:
+        - img [ref=f3e66]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f3e68]:
+        - img [ref=f3e69]
+        - text: "1"
+      - generic [ref=f3e563]: 40 xp
+      - button "You — profile and settings" [ref=f3e73] [cursor=pointer]: A
+  - generic [ref=f3e446]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f3e447] [cursor=pointer]:
+      - img [ref=f3e451]

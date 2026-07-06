@@ -1,0 +1,47 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e380]:
+    - banner [ref=f3e381]:
+      - button "Close course" [ref=f3e382] [cursor=pointer]:
+        - img [ref=f3e383]
+    - main [ref=f3e399]:
+      - generic [ref=f3e528]:
+        - generic [ref=f3e529]: practice · 2 of 3
+        - generic [ref=f3e530]: solve for x
+        - generic [ref=f3e531]: 2x + 3 = 7
+        - generic [ref=f3e580]:
+          - generic [ref=f3e582]: x =
+          - generic [ref=f3e584]:
+            - generic [ref=f3e585]:
+              - button "7" [ref=f3e586] [cursor=pointer]
+              - button "8" [ref=f3e587] [cursor=pointer]
+              - button "9" [ref=f3e588] [cursor=pointer]
+            - generic [ref=f3e589]:
+              - button "4" [ref=f3e590] [cursor=pointer]
+              - button "5" [ref=f3e591] [cursor=pointer]
+              - button "6" [ref=f3e592] [cursor=pointer]
+            - generic [ref=f3e593]:
+              - button "1" [ref=f3e594] [cursor=pointer]
+              - button "2" [ref=f3e595] [cursor=pointer]
+              - button "3" [ref=f3e596] [cursor=pointer]
+            - generic [ref=f3e597]:
+              - button "minus" [ref=f3e598] [cursor=pointer]: −
+              - button "0" [ref=f3e599] [cursor=pointer]
+              - button "delete" [ref=f3e600] [cursor=pointer]: ⌫
+    - button "check" [disabled] [ref=f3e601]:
+      - generic [ref=f3e602]: check
+  - banner:
+    - img "Classess" [ref=f3e63]
+    - generic [ref=f3e64]:
+      - button "Did you know" [ref=f3e65] [cursor=pointer]:
+        - img [ref=f3e66]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f3e68]:
+        - img [ref=f3e69]
+        - text: "1"
+      - generic [ref=f3e563]: 40 xp
+      - button "You — profile and settings" [ref=f3e73] [cursor=pointer]: A
+  - generic [ref=f3e446]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f3e447] [cursor=pointer]:
+      - img [ref=f3e451]

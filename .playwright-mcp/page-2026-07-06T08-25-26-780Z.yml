@@ -1,0 +1,50 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e380]:
+    - banner [ref=f3e381]:
+      - button "Close course" [ref=f3e382] [cursor=pointer]:
+        - img [ref=f3e383]
+    - main [ref=f3e399]:
+      - generic [ref=f3e528]:
+        - generic [ref=f3e529]: practice · 1 of 3
+        - generic [ref=f3e530]: solve for x
+        - generic [ref=f3e531]: x + 7 = 12
+        - generic [ref=f3e533]:
+          - generic [ref=f3e535]: x =
+          - generic [ref=f3e537]:
+            - generic [ref=f3e538]:
+              - button "7" [ref=f3e539] [cursor=pointer]
+              - button "8" [ref=f3e540] [cursor=pointer]
+              - button "9" [ref=f3e541] [cursor=pointer]
+            - generic [ref=f3e542]:
+              - button "4" [ref=f3e543] [cursor=pointer]
+              - button "5" [ref=f3e544] [cursor=pointer]
+              - button "6" [ref=f3e545] [cursor=pointer]
+            - generic [ref=f3e546]:
+              - button "1" [ref=f3e547] [cursor=pointer]
+              - button "2" [ref=f3e548] [cursor=pointer]
+              - button "3" [ref=f3e549] [cursor=pointer]
+            - generic [ref=f3e550]:
+              - button "minus" [ref=f3e551] [cursor=pointer]: −
+              - button "0" [ref=f3e552] [cursor=pointer]
+              - button "delete" [ref=f3e553] [cursor=pointer]: ⌫
+    - button "continue check" [disabled] [ref=f3e554]:
+      - generic [ref=f3e441]: continue
+      - generic [ref=f3e555]: check
+  - banner:
+    - img "Classess" [ref=f3e63]
+    - generic [ref=f3e64]:
+      - button "Did you know" [ref=f3e65] [cursor=pointer]:
+        - img [ref=f3e66]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f3e68]:
+        - img [ref=f3e69]
+        - text: "1"
+      - generic [ref=f3e556]: 30 xp
+      - button "You — profile and settings" [ref=f3e73] [cursor=pointer]: A
+      - generic:
+        - generic: +15 xp
+  - generic [ref=f3e446]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f3e447] [cursor=pointer]:
+      - img [ref=f3e451]

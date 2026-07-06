@@ -279,45 +279,49 @@ function NumberLine({ entry, solved }: { entry: string; solved: boolean }) {
           </text>
         </g>
       ))}
-      {/* the x cube walks the line as you type */}
+      {/* the x cube walks the line as you type — squash pivots on its own feet, so all motion
+          lives inside a group translated to the cube's bottom-centre (SVG scales around the
+          user-space origin) */}
       <motion.g
         animate={{ x: cx - 30 }}
         transition={{ type: 'spring', stiffness: 170, damping: 16 }}
       >
-        <motion.g
-          animate={
-            solved ? { y: [0, -16, 0], scaleY: [1, 1.06, 0.82, 1.04, 1] } : { y: [0, -4, 0] }
-          }
-          transition={
-            solved
-              ? { duration: 0.7, ease: 'easeOut' }
-              : { duration: 3.4, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }
-          }
-          style={{ transformOrigin: '30px 66px' }}
-        >
-          <rect x="14" y="34" width="32" height="32" rx="4" fill="url(#cb-cube)" />
-          <text
-            x="30"
-            y="58"
-            textAnchor="middle"
-            fontFamily="Caveat, cursive"
-            fontWeight="700"
-            fontSize="22"
-            fill="#FFFFFF"
+        <g transform="translate(30 66)">
+          <motion.g
+            animate={
+              solved ? { y: [0, -16, 0], scaleY: [1, 1.06, 0.82, 1.04, 1] } : { y: [0, -4, 0] }
+            }
+            transition={
+              solved
+                ? { duration: 0.7, ease: 'easeOut' }
+                : { duration: 3.4, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }
+            }
           >
-            x
-          </text>
-          {solved && (
-            <motion.path
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: [0, 1, 0], scale: [0, 1.3, 0.5] }}
-              transition={{ duration: 0.9, delay: 0.25 }}
-              d="M 30 14 C 31.4 19, 33 20.6, 38 22 C 33 23.4, 31.4 25, 30 30 C 28.6 25, 27 23.4, 22 22 C 27 20.6, 28.6 19, 30 14 Z"
-              fill={ULTRA}
-              style={{ transformOrigin: '30px 22px' }}
-            />
-          )}
-        </motion.g>
+            <rect x="-16" y="-32" width="32" height="32" rx="4" fill="url(#cb-cube)" />
+            <text
+              x="0"
+              y="-8"
+              textAnchor="middle"
+              fontFamily="Caveat, cursive"
+              fontWeight="700"
+              fontSize="22"
+              fill="#FFFFFF"
+            >
+              x
+            </text>
+            {solved && (
+              <g transform="translate(0 -44)">
+                <motion.path
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: [0, 1, 0], scale: [0, 1.3, 0.5] }}
+                  transition={{ duration: 0.9, delay: 0.25 }}
+                  d="M 0 -8 C 1.4 -3, 3 -1.4, 8 0 C 3 1.4, 1.4 3, 0 8 C -1.4 3, -3 1.4, -8 0 C -3 -1.4, -1.4 -3, 0 -8 Z"
+                  fill={ULTRA}
+                />
+              </g>
+            )}
+          </motion.g>
+        </g>
       </motion.g>
     </svg>
   );
@@ -792,88 +796,91 @@ export function ConceptB() {
               </g>
             )}
 
+            {/* stops — every scaled group lives inside a translate so it grows and pulses
+                around its own node, never the canvas origin */}
             {/* stop one — done */}
-            <motion.g
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ ...SPRING, delay: 0.75 }}
-              style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
-            >
-              <circle cx="330" cy="420" r="13" fill={ACID} />
-              <path
-                d="M 324 420 L 328.5 424.5 L 336.5 415.5"
-                fill="none"
-                stroke="#FFFFFF"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </motion.g>
+            <g transform="translate(330 420)">
+              <motion.g
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ ...SPRING, delay: 0.75 }}
+              >
+                <circle cx="0" cy="0" r="13" fill={ACID} />
+                <path
+                  d="M -6 0 L -1.5 4.5 L 6.5 -4.5"
+                  fill="none"
+                  stroke="#FFFFFF"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </motion.g>
+            </g>
 
             {/* stop two — current, breathing */}
-            <motion.circle
-              cx="560"
-              cy="880"
-              r="10"
-              fill={ULTRA}
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ ...SPRING, delay: 1.05 }}
-              style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
-            />
-            <motion.circle
-              cx="560"
-              cy="880"
-              r="10"
-              fill="none"
-              stroke={ULTRA}
-              strokeWidth="1.6"
-              animate={{ scale: [1, 2.2], opacity: [0.55, 0] }}
-              transition={{
-                duration: 2.1,
-                repeat: Number.POSITIVE_INFINITY,
-                ease: 'easeOut',
-                delay: 1.4,
-              }}
-              style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
-            />
+            <g transform="translate(560 880)">
+              <motion.circle
+                cx="0"
+                cy="0"
+                r="10"
+                fill={ULTRA}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ ...SPRING, delay: 1.05 }}
+              />
+              <motion.circle
+                cx="0"
+                cy="0"
+                r="10"
+                fill="none"
+                stroke={ULTRA}
+                strokeWidth="1.6"
+                animate={{ scale: [1, 2.2], opacity: [0.55, 0] }}
+                transition={{
+                  duration: 2.1,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: 'easeOut',
+                  delay: 1.4,
+                }}
+              />
+            </g>
 
             {/* stop three — the boss gate */}
-            <motion.g
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ ...SPRING, delay: 1.55 }}
-              style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
-            >
-              {solved ? (
-                <motion.g
-                  initial={{ scale: 0.4 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 14, delay: 0.9 }}
-                  style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
-                >
-                  <circle cx="420" cy="1700" r="13" fill={MAGENTA} />
-                  <path
-                    d="M 414 1700 L 418.5 1704.5 L 426.5 1695.5"
-                    fill="none"
-                    stroke="#FFFFFF"
-                    strokeWidth="2.4"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+            <g transform="translate(420 1700)">
+              <motion.g
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ ...SPRING, delay: 1.55 }}
+              >
+                {solved ? (
+                  <motion.g
+                    initial={{ scale: 0.4 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 14, delay: 0.9 }}
+                  >
+                    <circle cx="0" cy="0" r="13" fill={MAGENTA} />
+                    <path
+                      d="M -6 0 L -1.5 4.5 L 6.5 -4.5"
+                      fill="none"
+                      stroke="#FFFFFF"
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </motion.g>
+                ) : (
+                  <circle
+                    cx="0"
+                    cy="0"
+                    r="12"
+                    fill="#FFFFFF"
+                    stroke={INK_40}
+                    strokeWidth="1.8"
+                    strokeDasharray="3 4"
                   />
-                </motion.g>
-              ) : (
-                <circle
-                  cx="420"
-                  cy="1700"
-                  r="12"
-                  fill="#FFFFFF"
-                  stroke={INK_40}
-                  strokeWidth="1.8"
-                  strokeDasharray="3 4"
-                />
-              )}
-            </motion.g>
+                )}
+              </motion.g>
+            </g>
           </svg>
 
           {/* trailhead marker */}
@@ -895,11 +902,11 @@ export function ConceptB() {
           <StopCard
             x={372}
             y={382}
-            width={252}
+            width={262}
             delay={0.85}
             medallion={<SunMedallion />}
             title="Warm-up"
-            meta="fractions recap · done · 3 min"
+            meta="fractions · done · 3 min"
             metaColor={ACID}
           />
 

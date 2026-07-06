@@ -1,0 +1,59 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e380]:
+    - banner [ref=f3e381]:
+      - button "Close course" [ref=f3e382] [cursor=pointer]:
+        - img [ref=f3e383]
+    - main [ref=f3e399]:
+      - generic [ref=f3e488]:
+        - generic [ref=f3e489]: what if
+        - generic [ref=f3e490]: every number here is yours to drag
+        - generic [ref=f3e491]: pull a, b, or c sideways — the whole solution keeps up.
+        - generic [ref=f3e492]:
+          - img [ref=f3e493]
+          - generic [ref=f3e496]:
+            - slider "coefficient a" [ref=f3e497]: "2"
+            - generic [ref=f3e498]: x
+            - generic [ref=f3e499]: +
+            - slider "constant b" [ref=f3e500]: "3"
+            - generic [ref=f3e501]: =
+            - slider "right side c" [ref=f3e502]: "11"
+        - generic [ref=f3e503]:
+          - generic [ref=f3e504]:
+            - generic [ref=f3e505]: subtract 3 from both sides
+            - generic [ref=f3e506]:
+              - generic [ref=f3e507]: 2x
+              - generic [ref=f3e508]: =
+              - generic [ref=f3e509]: 11 − 3
+          - generic [ref=f3e511]:
+            - generic [ref=f3e512]: divide both sides by 2
+            - generic [ref=f3e513]:
+              - generic [ref=f3e514]: x
+              - generic [ref=f3e515]: =
+              - generic [ref=f3e516]: 8/2
+              - button "how we got here" [ref=f3e517] [cursor=pointer]: i
+          - generic [ref=f3e519]:
+            - generic [ref=f3e520]: the answer, live
+            - generic [ref=f3e521]:
+              - generic [ref=f3e522]: x
+              - generic [ref=f3e523]: =
+              - generic [ref=f3e524]: "4"
+    - button "continue" [active] [ref=f3e440] [cursor=pointer]:
+      - generic [ref=f3e441]: continue
+  - banner:
+    - img "Classess" [ref=f3e63]
+    - generic [ref=f3e64]:
+      - button "Did you know" [ref=f3e65] [cursor=pointer]:
+        - img [ref=f3e66]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f3e68]:
+        - img [ref=f3e69]
+        - text: "1"
+      - generic [ref=f3e525]: 15 xp
+      - button "You — profile and settings" [ref=f3e73] [cursor=pointer]: A
+      - generic:
+        - generic: +15 xp
+  - generic [ref=f3e446]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f3e447] [cursor=pointer]:
+      - img [ref=f3e451]

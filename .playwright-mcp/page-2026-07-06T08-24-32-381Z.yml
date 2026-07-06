@@ -1,0 +1,56 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e380]:
+    - banner [ref=f3e381]:
+      - button "Close course" [ref=f3e382] [cursor=pointer]:
+        - img [ref=f3e383]
+    - main [ref=f3e399]:
+      - generic [ref=f3e401]:
+        - generic [ref=f3e402]: guided discovery
+        - generic [ref=f3e403]: get x alone
+        - generic [ref=f3e404]: take weights off the pans — the scale must end level.
+        - generic [ref=f3e405]:
+          - generic [ref=f3e407]: x + 3 = 8
+          - generic [ref=f3e410]:
+            - img [ref=f3e412]
+            - generic [ref=f3e417]:
+              - img
+              - generic [ref=f3e420]: x
+            - generic [ref=f3e425]:
+              - img
+              - generic [ref=f3e427]:
+                - generic "take this weight off" [ref=f3e428]: "1"
+                - generic "take this weight off" [ref=f3e429]: "1"
+                - generic "take this weight off" [ref=f3e430]: "1"
+                - generic "take this weight off" [ref=f3e431]: "1"
+                - generic "take this weight off" [ref=f3e432]: "1"
+                - generic "take this weight off" [active] [ref=f3e433]: "1"
+          - generic [ref=f3e436]:
+            - generic [ref=f3e442]:
+              - generic "put this weight back" [ref=f3e443]: "1"
+              - generic "put this weight back" [ref=f3e475]: "1"
+              - generic "put this weight back" [ref=f3e476]: "1"
+            - generic [ref=f3e478]:
+              - generic "put this weight back" [ref=f3e481]: "1"
+              - generic "put this weight back" [ref=f3e480]: "1"
+              - generic "put this weight back" [ref=f3e479]: "1"
+        - generic [ref=f3e482]:
+          - text: whatever you do to one side, do to the other.
+          - generic [ref=f3e483]: you took 3 from both pans — that is all algebra ever asks.
+    - button "continue" [ref=f3e440] [cursor=pointer]:
+      - generic [ref=f3e441]: continue
+  - banner:
+    - img "Classess" [ref=f3e63]
+    - generic [ref=f3e64]:
+      - button "Did you know" [ref=f3e65] [cursor=pointer]:
+        - img [ref=f3e66]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f3e68]:
+        - img [ref=f3e69]
+        - text: "1"
+      - generic [ref=f3e72]: 0 xp
+      - button "You — profile and settings" [ref=f3e73] [cursor=pointer]: A
+  - generic [ref=f3e446]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f3e447] [cursor=pointer]:
+      - img [ref=f3e451]

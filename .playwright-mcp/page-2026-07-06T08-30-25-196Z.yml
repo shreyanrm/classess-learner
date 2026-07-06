@@ -1,0 +1,34 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e380]:
+    - banner [ref=f3e381]:
+      - button "Close course" [ref=f3e382] [cursor=pointer]:
+        - img [ref=f3e383]
+    - main [ref=f3e399]:
+      - generic [ref=f3e733]:
+        - generic [ref=f3e734]:
+          - img [ref=f3e735]
+          - generic [ref=f3e747]: something hidden unlocked
+        - generic [ref=f3e748]:
+          - generic [ref=f3e749]: the mathematics of juggling
+          - generic [ref=f3e750]: not on any syllabus. found only by finishing. two minutes, purely for the joy of it.
+    - generic [ref=f3e667]:
+      - button "done" [ref=f3e751] [cursor=pointer]
+      - button "continue open it" [active] [ref=f3e752] [cursor=pointer]:
+        - generic [ref=f3e714]: continue
+        - generic [ref=f3e753]: open it
+  - banner:
+    - img "Classess" [ref=f3e63]
+    - generic [ref=f3e64]:
+      - button "Did you know" [ref=f3e65] [cursor=pointer]:
+        - img [ref=f3e66]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f3e68]:
+        - img [ref=f3e69]
+        - text: "1"
+      - generic [ref=f3e729]: 230 xp
+      - button "You — profile and settings" [ref=f3e73] [cursor=pointer]: A
+  - generic [ref=f3e446]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f3e447] [cursor=pointer]:
+      - img [ref=f3e451]

@@ -153,19 +153,21 @@ function FigureA() {
           ease: 'easeInOut',
         }}
       />
-      <motion.circle
-        cx="200"
-        cy="34"
-        r="4.5"
-        fill={MAGENTA}
-        animate={{ opacity: [0, 0, 1, 1, 0], scale: [0.5, 0.5, 1, 1, 0.5] }}
-        transition={{
-          duration: 7,
-          times: [0, 0.35, 0.45, 0.75, 1],
-          repeat: Number.POSITIVE_INFINITY,
-        }}
-        style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
-      />
+      {/* translated group: SVG scale pivots on the user-space origin, so give it one */}
+      <g transform="translate(200 34)">
+        <motion.circle
+          cx="0"
+          cy="0"
+          r="4.5"
+          fill={MAGENTA}
+          animate={{ opacity: [0, 0, 1, 1, 0], scale: [0.5, 0.5, 1, 1, 0.5] }}
+          transition={{
+            duration: 7,
+            times: [0, 0.35, 0.45, 0.75, 1],
+            repeat: Number.POSITIVE_INFINITY,
+          }}
+        />
+      </g>
       <text x="30" y="160" fontSize="10" fontWeight="600" fill={INK_40}>
         0
       </text>
@@ -438,10 +440,15 @@ export function ConceptC() {
             <HeadlineLine delay={0.25}>
               <motion.span
                 whileHover={{ color: MAGENTA, rotate: -4 }}
-                style={{ fontStyle: 'italic', fontWeight: 400, display: 'inline-block' }}
+                style={{
+                  fontStyle: 'italic',
+                  fontWeight: 400,
+                  display: 'inline-block',
+                  marginRight: '0.22em',
+                }}
               >
                 x
-              </motion.span>{' '}
+              </motion.span>
               has been hiding.
             </HeadlineLine>
             <HeadlineLine delay={0.38}>Today it stands alone.</HeadlineLine>
