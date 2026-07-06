@@ -43,7 +43,11 @@ export function RouterProvider({ initial, children }: { initial: Route; children
 
   const navigate = useCallback((route: Route) => setStack((s) => [...s, route]), []);
   const replace = useCallback((route: Route) => setStack((s) => [...s.slice(0, -1), route]), []);
-  const back = useCallback(() => setStack((s) => (s.length > 1 ? s.slice(0, -1) : s)), []);
+  // Back never dead-ends: on an empty stack (fresh load, deep link) it goes home.
+  const back = useCallback(
+    () => setStack((s) => (s.length > 1 ? s.slice(0, -1) : [{ name: 'home' } as Route])),
+    [],
+  );
 
   const router = useMemo<Router>(
     () => ({

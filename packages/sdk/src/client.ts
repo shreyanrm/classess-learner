@@ -1,7 +1,7 @@
 import { InMemoryKgtopg, type KGtoPG } from '@classess/kgtopg-contract-seed';
 import { resolveConfig, type SdkConfig } from './config';
 import { type EventProvider, InMemoryEventProvider, SupabaseOutboxEventProvider } from './events';
-import { DevMockIdentity, type IdentityProvider } from './identity';
+import { DevMockIdentity, type IdentityProvider, SupabaseAuthIdentity } from './identity';
 import {
   type ContentProvider,
   GatewayLLMProvider,
@@ -34,28 +34,50 @@ export interface Sdk {
   state: StateProvider;
 }
 
+/** Never-uploaded placeholder for pre-sign-in live-mode events (RLS would reject them anyway). */
+const NIL_SUBJECT = '00000000-0000-0000-0000-000000000000';
+
 export function createSdk(overrides: Partial<SdkConfig> = {}): Sdk {
   const config = resolveConfig(overrides);
 
-  if (!config.devAuth) {
-    // The real Supabase identity is built at Phase 4; until then DEV_AUTH must be true.
-    throw new Error(
-      'DEV_AUTH=false requires the Phase 4 Supabase identity, which is not built yet.',
-    );
+  if (!config.devAuth && (!config.supabaseUrl || !config.supabaseAnonKey)) {
+    // Secrets/keys come from env only — live auth without them is a misconfiguration, not a mode.
+    throw new Error('DEV_AUTH=false requires SUPABASE_URL and SUPABASE_ANON_KEY from the env.');
   }
-  const identity = new DevMockIdentity(config);
+  const liveAuth =
+    !config.devAuth && config.supabaseUrl && config.supabaseAnonKey
+      ? new SupabaseAuthIdentity({
+          url: config.supabaseUrl,
+          anonKey: config.supabaseAnonKey,
+          surface: config.surface,
+        })
+      : null;
+  const identity: IdentityProvider = liveAuth ?? new DevMockIdentity(config);
+
+  // Live mode: auth.uid() IS the canonical subject, and consent stays un_elevated until verifiable
+  // parental consent exists (DPDP) — the dev knobs never leak into a real session's attribution.
+  const subjectId = liveAuth ? (liveAuth.subjectId ?? NIL_SUBJECT) : config.mockSubjectId;
+  const attribution: SdkConfig = liveAuth
+    ? { ...config, mockSubjectId: subjectId, consentTierDefault: 'un_elevated' }
+    : config;
 
   // Mock-first: the in-repo reference. The live Supabase-backed client binds at Phase 1.
-  const kgtopg = new InMemoryKgtopg({ consentTier: config.consentTierDefault });
+  const kgtopg = new InMemoryKgtopg({ consentTier: attribution.consentTierDefault });
 
   // Live persistence needs the project URL + publishable key (env only); anything less stays local,
-  // so mock mode keeps working fully keyless.
+  // so mock mode keeps working fully keyless. Under live auth it additionally needs a signed-in
+  // session — pre-sign-in the device stays on the local cache (the app re-creates the sdk after
+  // the sign-in beat completes).
   const rest =
-    config.persistMode === 'live' && config.supabaseUrl && config.supabaseAnonKey
+    config.persistMode === 'live' &&
+    config.supabaseUrl &&
+    config.supabaseAnonKey &&
+    (!liveAuth || liveAuth.isAuthenticated())
       ? new SupabaseRest({
           url: config.supabaseUrl,
           anonKey: config.supabaseAnonKey,
-          accessToken: config.supabaseAccessToken,
+          // Live auth reads the token per request so refreshes propagate; dev uses the env JWT.
+          accessToken: liveAuth ? () => liveAuth.currentAccessToken() : config.supabaseAccessToken,
         })
       : null;
 
@@ -63,11 +85,11 @@ export function createSdk(overrides: Partial<SdkConfig> = {}): Sdk {
   // (the same reference instance), so attempts flow all the way to bands and ignite on seed data.
   // In live mode they are additionally batch-appended to learner.outbox for the relay.
   const events: EventProvider = rest
-    ? new SupabaseOutboxEventProvider(config, kgtopg, rest)
-    : new InMemoryEventProvider(config, kgtopg);
+    ? new SupabaseOutboxEventProvider(attribution, kgtopg, rest)
+    : new InMemoryEventProvider(attribution, kgtopg);
 
   const state: StateProvider = rest
-    ? new SupabaseStateProvider(rest, config.mockSubjectId)
+    ? new SupabaseStateProvider(rest, subjectId)
     : new LocalStateProvider();
 
   const llm: LLMProvider =

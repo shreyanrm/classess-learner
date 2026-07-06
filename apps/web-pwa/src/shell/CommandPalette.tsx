@@ -7,7 +7,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { chaptersBySubject, subjects } from '../data/catalog';
+import { chaptersBySubject, displaySubjects } from '../data/catalog';
 import { type Route, useRouter } from './router';
 
 interface Command {
@@ -49,7 +49,8 @@ function buildCommands(): Command[] {
       route: { name: 'concept', which: 'c' },
     },
   ];
-  for (const s of subjects)
+  // the board's doors, not the canonical six — CBSE ≤10 clubs the sciences into one "Science"
+  for (const s of displaySubjects())
     cmds.push({
       id: `subj-${s.id}`,
       label: s.name,
@@ -74,7 +75,8 @@ export function CommandPalette() {
   const [query, setQuery] = useState('');
   const [index, setIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const all = useMemo(buildCommands, []);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: open IS the trigger — the doors follow the profile (board + grade), re-read from storage each open
+  const all = useMemo(buildCommands, [open]);
 
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();

@@ -13,6 +13,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import {
   EDGES,
   FAR_STARS,
+  type PathStep,
   STARS,
   type Star,
   type StarState,
@@ -120,12 +121,18 @@ export function Constellation({
   ignited,
   selectedId,
   onSelect,
+  path,
+  pathReplay = 0,
 }: {
   states: Record<string, StarState>;
   /** Star ids replaying their ignite on this mount — newly completed since last visit. */
   ignited: ReadonlySet<string>;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
+  /** The ordered study path to the selected star — lit on the sky when present. */
+  path?: readonly PathStep[];
+  /** Bump to replay the path's staggered draw. */
+  pathReplay?: number;
 }) {
   const reduced = useReducedMotion();
   const lit = (id: string) => (states[id] ?? 'unlit') !== 'unlit';
@@ -286,6 +293,15 @@ export function Constellation({
         );
       })}
 
+      {/* the study path — the ordered way to the selected star, lit on the sky in sequence */}
+      {path && path.length > 0 && (
+        <PathLayer
+          key={`path-${path[path.length - 1]?.star.id}-${pathReplay}`}
+          path={path}
+          reduced={!!reduced}
+        />
+      )}
+
       {/* constellation-ignite — a newly earned star catches light, once, ~750ms */}
       {!reduced &&
         Array.from(ignited).map((id) => {
@@ -337,3 +353,89 @@ const BREATH_LABEL: Record<StarState, string> = {
   supported: 'yours, with guidance',
   unlit: 'not started',
 };
+
+/**
+ * The study path drawn on the sky: edges illuminate in step order (staggered draw), each
+ * unmastered step wears a small numbered ultramarine badge, and mastered prerequisites are
+ * faintly ticked — already lit, quietly skipped. Keyed by the parent so a replay remounts it.
+ */
+function PathLayer({ path, reduced }: { path: readonly PathStep[]; reduced: boolean }) {
+  const inPath = new Set(path.map((p) => p.star.id));
+  return (
+    <g style={{ pointerEvents: 'none' }} aria-hidden>
+      {path.map((p) => {
+        if (p.mastered) {
+          // already yours — a faint tick beside the star, no number, no wait
+          const tx = p.star.x + 13;
+          const ty = p.star.y - 13;
+          return (
+            <motion.g
+              key={`tick-${p.star.id}`}
+              initial={reduced ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.45, delay: 0.08 }}
+            >
+              <circle
+                cx={tx}
+                cy={ty}
+                r={7}
+                style={{
+                  fill: 'rgba(255,255,255,0.85)',
+                  stroke: 'rgba(31,53,224,0.25)',
+                  strokeWidth: 1,
+                }}
+              />
+              <path
+                d={`M ${tx - 3.1} ${ty} l 2.2 2.4 l 4 -4.7`}
+                style={{ stroke: 'rgba(31,53,224,0.55)', fill: 'none' }}
+                strokeWidth={1.4}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </motion.g>
+          );
+        }
+        const n = p.step ?? 1;
+        const delay = 0.15 + (n - 1) * 0.34;
+        const incoming = EDGES.filter((e) => e.to.id === p.star.id && inPath.has(e.from.id));
+        return (
+          <g key={`step-${p.star.id}`}>
+            {incoming.map((e) => (
+              <motion.line
+                key={`path-edge-${e.from.id}-${e.to.id}`}
+                {...trimmed(e.from, e.to)}
+                style={{ stroke: GLOW }}
+                strokeWidth={1.4}
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+                initial={reduced ? false : { pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 0.7 }}
+                transition={{
+                  pathLength: { duration: 0.4, delay, ease: 'easeOut' },
+                  opacity: { duration: 0.18, delay },
+                }}
+              />
+            ))}
+            <motion.g
+              initial={reduced ? false : { scale: 0.4, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 380, damping: 26, delay: delay + 0.32 }}
+              style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+            >
+              <circle cx={p.star.x + 13} cy={p.star.y - 13} r={8} style={{ fill: GLOW }} />
+              <text
+                x={p.star.x + 13}
+                y={p.star.y - 13}
+                dy={3.4}
+                textAnchor="middle"
+                style={{ fill: '#FFFFFF', fontSize: 9.5, fontWeight: 650, fontFamily: 'inherit' }}
+              >
+                {n}
+              </text>
+            </motion.g>
+          </g>
+        );
+      })}
+    </g>
+  );
+}

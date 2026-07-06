@@ -29,6 +29,7 @@ import {
   type StarState,
   starById,
   starState,
+  studyPath,
   writeSeen,
 } from './progress/twin-data';
 

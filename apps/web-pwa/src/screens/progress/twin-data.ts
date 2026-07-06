@@ -171,6 +171,43 @@ export function starState(
   return 'unlit';
 }
 
+/** One step on the study path to a star. */
+export interface PathStep {
+  star: Star;
+  /** Already independent — rendered as a faintly ticked, skipped step. */
+  mastered: boolean;
+  /** 1-based order among the steps still to earn; absent when mastered. */
+  step?: number;
+}
+
+/**
+ * The ordered study path to a star: its prerequisite ancestors in topological order
+ * (dependencies first), ending on the star itself. Mastered ancestors stay in the list as
+ * skipped steps; only unmastered nodes carry step numbers. Empty when the star is already yours.
+ */
+export function studyPath(target: Star, states: Record<string, StarState>): PathStep[] {
+  if ((states[target.id] ?? 'unlit') === 'independent') return [];
+  // ponytail: DFS post-order is a topological order — the prereq graph is a hand-built DAG of 8 nodes
+  const order: Star[] = [];
+  const seen = new Set<string>();
+  const visit = (s: Star) => {
+    if (seen.has(s.id)) return;
+    seen.add(s.id);
+    for (const id of s.prereqIds) {
+      const p = byId.get(id);
+      if (p) visit(p);
+    }
+    order.push(s);
+  };
+  visit(target);
+  let n = 0;
+  return order.map((star) =>
+    (states[star.id] ?? 'unlit') === 'independent'
+      ? { star, mastered: true }
+      : { star, mastered: false, step: ++n },
+  );
+}
+
 /** Plain language, never a raw score or the formula (CONTEXT.md §8). */
 export const BAND_LANGUAGE: Record<StarState, string> = {
   independent: 'you can solve this independently',

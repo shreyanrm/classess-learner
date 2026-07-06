@@ -20,6 +20,7 @@ import {
 import { chapterById, topicById } from '../data/catalog';
 import type { Topic } from '../data/model';
 import { useRouter } from '../shell/router';
+import { Whisper } from './Learn';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { BossSigil } from '../ui/art';
@@ -355,25 +356,9 @@ export function You() {
         padding: '84px 24px 96px',
       }}
     >
-      {/* home — the way back, a whisper */}
-      <button
-        type="button"
-        onClick={() => (router.canGoBack ? router.back() : router.navigate({ name: 'home' }))}
-        style={{
-          position: 'fixed',
-          top: 20,
-          left: 24,
-          border: 'none',
-          background: 'transparent',
-          color: 'var(--clss-ink-500)',
-          fontSize: '0.85rem',
-          cursor: 'pointer',
-          fontFamily: 'inherit',
-          padding: 4,
-        }}
-      >
-        ← home
-      </button>
+      <Whisper onClick={() => (router.canGoBack ? router.back() : router.navigate({ name: 'home' }))}>
+        Home
+      </Whisper>
 
       <motion.div
         variants={cascade}
