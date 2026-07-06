@@ -112,8 +112,8 @@ export function Home() {
       }}
     >
       {/* the wordmark — quiet, top centre */}
-      <div style={{ position: 'fixed', top: 18, left: '50%', transform: 'translateX(-50%)' }}>
-        <ClassessLogo height={20} />
+      <div style={{ position: 'fixed', top: 16, left: 22 }}>
+        <ClassessLogo height={14} />
       </div>
 
       {/* did you know — top right, fresh every day */}

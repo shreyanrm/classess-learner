@@ -518,6 +518,30 @@ export function You() {
                 />
               ))}
             </div>
+            {/* the month at a glance — a quiet heat map, never a guilt trip */}
+            <div
+              role="img"
+              aria-label="this month's activity"
+              style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 14px)', gap: 4, marginTop: 12 }}
+            >
+              {Array.from({ length: 30 }, (_, i) => {
+                const d = new Date(Date.now() - (29 - i) * 86400000).toISOString().slice(0, 10);
+                const on = marks.includes(d);
+                return (
+                  <span
+                    key={d}
+                    title={d}
+                    style={{
+                      width: 14,
+                      height: 14,
+                      borderRadius: 3,
+                      background: on ? 'var(--clss-ultramarine)' : 'var(--clss-ink-100)',
+                      opacity: on ? 0.9 : 1,
+                    }}
+                  />
+                );
+              })}
+            </div>
             <div style={whisper}>rest is part of learning — quiet days are allowed</div>
           </Section>
         </div>
