@@ -30,7 +30,9 @@ from classess_gateway.vidya import VIDYA_PERSONA
 
 # ponytail: google-genai is not a gateway dep, so no ephemeral tokens; the relay keeps the
 # key server-side instead. Switch session to token mode if the SDK ever lands in deps.
-VOICE_MODEL = "gemini-2.5-flash-preview-native-audio-dialog"
+# The -latest alias survives Google's preview retirements — the pinned 2025 preview id died
+# and took the mic with it (relay closed instantly on upstream rejection).
+VOICE_MODEL = "gemini-2.5-flash-native-audio-latest"
 _GEMINI_LIVE_URL = (
     "wss://generativelanguage.googleapis.com/ws/"
     "google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent"

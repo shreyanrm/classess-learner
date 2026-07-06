@@ -47,7 +47,7 @@ import {
   writeArchive,
 } from './vidya/chat';
 import { resolveTurnExtras, type TurnExtras } from './vidya/paths';
-import { SpeechNarrator } from './vidya/speech';
+import { speakLine, SpeechNarrator } from './vidya/speech';
 
 const LLM_MODE = (import.meta.env.VITE_LLM_MODE as 'mock' | 'live' | undefined) ?? 'mock';
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
@@ -331,6 +331,9 @@ function WithVidya({ sdk }: { sdk: Sdk }) {
       },
       startPractice: () => router.navigate({ name: 'practice' }),
       switchModality: () => {},
+      // her 'speak' action plays aloud through the TTS path (mute-respecting); the drawer
+      // still shows the written line either way
+      onSpeak: (text: string) => void speakLine(text),
     }),
     [router],
   );

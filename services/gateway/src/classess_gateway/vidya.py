@@ -406,10 +406,18 @@ def _build_user_prompt(context: dict[str, Any], grounding: dict[str, Any] | None
     last_user = turn.get("lastUserInput") or ""
     recent = turn.get("recentTurns") or []
 
-    target_lines = (
-        "\n".join(f'  - id="{t.get("id")}" ({t.get("kind")}): {t.get("label")}' for t in targets)
-        or "  (none registered)"
-    )
+    def _target_line(t: dict[str, Any]) -> str:
+        line = f'  - id="{t.get("id")}" ({t.get("kind")}): {t.get("label")}'
+        # A target that exposes scene seams is drivable: show its live state and legal moves so
+        # she can act on it (setState) instead of only drawing over it.
+        scene = t.get("scene") or {}
+        if scene.get("drivable"):
+            state = json.dumps(scene.get("state"), default=str)[:220]
+            valid = ", ".join(str(a) for a in (scene.get("validActions") or [])[:8])
+            line += f"\n    drivable · state={state}" + (f" · actions: {valid}" if valid else "")
+        return line
+
+    target_lines = "\n".join(_target_line(t) for t in targets) or "  (none registered)"
     step_lines = "\n".join(f"  {i}: {s}" for i, s in enumerate(steps)) or "  (nothing written yet)"
     recent_lines = (
         "\n".join(f"  {r.get('role')}: {r.get('text')}" for r in recent[-4:]) or "  (none)"
