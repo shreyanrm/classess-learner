@@ -86,13 +86,13 @@ function StarCore({ star, state }: { star: Star; state: StarState }) {
         {/* the cross flare — a star that burns on its own */}
         <path
           d={`M ${star.x - 14} ${star.y} H ${star.x + 14} M ${star.x} ${star.y - 14} V ${star.y + 14}`}
-          stroke="rgba(150,164,255,0.38)"
+          stroke="rgba(31,53,224,0.3)"
           strokeWidth={0.8}
           strokeLinecap="round"
           fill="none"
         />
-        <circle cx={star.x} cy={star.y} r={4.6} style={{ fill: GLOW_CORE }} />
-        <circle cx={star.x} cy={star.y} r={1.9} style={{ fill: '#FFFFFF' }} />
+        <circle cx={star.x} cy={star.y} r={4.6} style={{ fill: GLOW }} />
+        <circle cx={star.x} cy={star.y} r={1.6} style={{ fill: 'rgba(255,255,255,0.85)' }} />
       </>
     );
   if (state === 'supported')
@@ -102,17 +102,17 @@ function StarCore({ star, state }: { star: Star; state: StarState }) {
           cx={star.x}
           cy={star.y}
           r={9.5}
-          style={{ fill: 'none', stroke: 'rgba(150,164,255,0.22)', strokeWidth: 1 }}
+          style={{ fill: 'none', stroke: 'rgba(31,53,224,0.18)', strokeWidth: 1 }}
         />
         <circle
           cx={star.x}
           cy={star.y}
           r={4.6}
-          style={{ fill: 'rgba(13,16,32,0.85)', stroke: GLOW, strokeWidth: 1.3 }}
+          style={{ fill: '#FFFFFF', stroke: GLOW, strokeWidth: 1.3 }}
         />
       </>
     );
-  return <circle cx={star.x} cy={star.y} r={3} style={{ fill: 'rgba(233,236,252,0.25)' }} />;
+  return <circle cx={star.x} cy={star.y} r={3} style={{ fill: '#E3E5EE' }} />;
 }
 
 export function Constellation({
@@ -140,8 +140,8 @@ export function Constellation({
       <title>your knowledge constellation</title>
       <defs>
         <radialGradient id="twin-halo">
-          <stop offset="0%" style={{ stopColor: GLOW, stopOpacity: 0.55 }} />
-          <stop offset="45%" style={{ stopColor: GLOW, stopOpacity: 0.16 }} />
+          <stop offset="0%" style={{ stopColor: GLOW, stopOpacity: 0.18 }} />
+          <stop offset="45%" style={{ stopColor: GLOW, stopOpacity: 0.08 }} />
           <stop offset="100%" style={{ stopColor: GLOW, stopOpacity: 0 }} />
         </radialGradient>
       </defs>
@@ -184,7 +184,7 @@ export function Constellation({
       {/* far stars — the chapters still to come (decorative, no accessible text) */}
       <g style={{ pointerEvents: 'none' }}>
         {FAR_STARS.map((f) => (
-          <circle key={f.id} cx={f.x} cy={f.y} r={1.9} style={{ fill: 'rgba(190,200,240,0.4)' }} />
+          <circle key={f.id} cx={f.x} cy={f.y} r={1.9} style={{ fill: 'rgba(31,53,224,0.16)' }} />
         ))}
       </g>
 
@@ -197,8 +197,8 @@ export function Constellation({
             <line
               key={`${e.from.id}-${e.to.id}`}
               {...t}
-              style={{ stroke: alive ? 'rgba(150,164,255,0.42)' : 'rgba(233,236,252,0.1)' }}
-              strokeWidth={alive ? 0.75 : 0.5}
+              style={{ stroke: alive ? 'rgba(31,53,224,0.35)' : '#E4E6F0' }}
+              strokeWidth={1}
               vectorEffect="non-scaling-stroke"
             />
           );
@@ -211,7 +211,7 @@ export function Constellation({
           cx={0}
           cy={150}
           r={1.4}
-          style={{ fill: 'rgba(235,238,255,0.85)' }}
+          style={{ fill: 'rgba(31,53,224,0.55)' }}
           animate={{ x: [0, VIEW_W], y: [0, -36, 24, -14, 0], opacity: [0, 0.7, 0.7, 0.7, 0] }}
           transition={{ duration: 38, repeat: Number.POSITIVE_INFINITY, ease: 'linear' }}
         />
@@ -264,7 +264,7 @@ export function Constellation({
                   cx={star.x}
                   cy={star.y}
                   r={10}
-                  style={{ fill: 'none', stroke: 'rgba(255,255,255,0.55)', strokeWidth: 0.75 }}
+                  style={{ fill: 'none', stroke: 'rgba(18,19,22,0.4)', strokeWidth: 0.75 }}
                   vectorEffect="non-scaling-stroke"
                 />
               )}
@@ -274,7 +274,7 @@ export function Constellation({
                 y={star.y + 24}
                 textAnchor="middle"
                 style={{
-                  fill: isLit ? '#C7CDEA' : 'rgba(226,230,248,0.42)',
+                  fill: isLit ? '#5C5E66' : 'rgba(92,94,102,0.5)',
                   fontSize: 11.5,
                   fontFamily: 'inherit',
                 }}

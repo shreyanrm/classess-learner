@@ -12,8 +12,8 @@ import { useEffect, useState } from 'react';
 import type { BarState } from './shared';
 import { CardBody, cardTitle, GOLD, lead, Scrubber, Stage, whisper } from './shared';
 
-/** The night sky — stars, a constellation tracing three juggled arcs, one golden star. */
-function NightSky() {
+/** The day sky — stars, a constellation tracing three juggled arcs, one golden star. */
+function DaySky() {
   const stars: [number, number, number][] = [
     [40, 40, 1.6],
     [90, 96, 1.2],
@@ -49,7 +49,7 @@ function NightSky() {
           cx={x}
           cy={y}
           r={r}
-          fill="rgba(255,255,255,0.85)"
+          fill="rgba(31,53,224,0.45)"
           animate={{ opacity: [0.3, 0.9, 0.3] }}
           transition={{
             duration: 2.8 + (i % 4) * 0.9,
@@ -62,7 +62,7 @@ function NightSky() {
       <motion.path
         d={path}
         fill="none"
-        stroke="rgba(255,255,255,0.4)"
+        stroke="rgba(31,53,224,0.3)"
         strokeWidth={1}
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
@@ -74,7 +74,7 @@ function NightSky() {
           cx={x}
           cy={y}
           r={i === 2 ? 4 : 2.4}
-          fill={i === 2 ? GOLD : 'rgba(255,255,255,0.9)'}
+          fill={i === 2 ? GOLD : '#1F35E0'}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.5 + i * 0.22 }}
@@ -102,20 +102,19 @@ export function MysteryTease({
 
   return (
     <CardBody maxWidth={620}>
-      {/* the night sky — a hidden door, discovered not assigned */}
+      {/* the day sky — a hidden door, discovered not assigned */}
       <Stage
-        dark
         minHeight={300}
         style={{
-          background: 'linear-gradient(165deg, #171B3E 0%, #0E1230 55%, #0A0C22 100%)',
+          background:
+            'radial-gradient(70% 60% at 30% 20%, rgba(49,72,255,0.12), transparent 65%), linear-gradient(165deg, #FFFFFF 0%, #F3F4FC 55%, #EDEFFA 100%)',
+          border: '1px solid #E9E9EE',
           justifyContent: 'flex-end',
           padding: '0 0 26px',
         }}
       >
-        <NightSky />
-        <div style={{ ...whisper, position: 'relative', color: 'rgba(255,255,255,0.6)' }}>
-          something hidden unlocked
-        </div>
+        <DaySky />
+        <div style={{ ...whisper, position: 'relative' }}>something hidden unlocked</div>
       </Stage>
       <div style={{ textAlign: 'center' }}>
         <motion.div

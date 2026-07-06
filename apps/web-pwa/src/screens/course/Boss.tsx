@@ -12,9 +12,12 @@ import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
 import { motion } from 'framer-motion';
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import { useSdk } from '../../store/sdk';
+import { BossSigil } from '../../ui/art';
 import { aX, firstMove, fmt, linearize } from './equations';
 import type { BarState } from './shared';
-import { CardBody, whisper } from './shared';
+import { CardBody, cardTitle, rgba, Stage, whisper } from './shared';
+
+const HUE = '#1F35E0';
 
 const ORDINALS = ['one', 'two', 'three'];
 
@@ -255,145 +258,187 @@ export function Boss({
   const passCount = results?.filter(Boolean).length ?? 0;
 
   return (
-    <CardBody maxWidth={560} center={false}>
-      <div ref={bossRef} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <div style={whisper}>the boss · answered together, checked together</div>
+    <CardBody maxWidth={600} center={false}>
+      {/* the boss's face — its sigil watching over the workbook, prompt large */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={whisper}>the boss · answered together, checked together</div>
+          <div style={{ ...cardTitle, marginTop: 8 }}>three questions, one scale</div>
+        </div>
+        <motion.div
+          animate={{ y: [0, -5, 0] }}
+          transition={{ duration: 5, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+          style={{ flexShrink: 0 }}
+        >
+          <BossSigil id={nodeId} size={72} mastered hue={HUE} />
+        </motion.div>
+      </div>
 
-        {/* one — solve */}
-        <div style={blockStyle(state(0))}>
-          <div style={whisper}>{ORDINALS[0]} · solve it</div>
-          <div
-            style={{
-              fontSize: '1.45rem',
-              fontWeight: 550,
-              fontVariantNumeric: 'tabular-nums',
-              color: 'var(--clss-ink-900)',
-            }}
-          >
-            {solveItem.equation}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ color: 'var(--clss-ink-500)' }}>x =</span>
-            <input
-              value={solveEntry}
-              onChange={(e) => setSolveEntry(e.target.value.replace(/[^0-9\-−.]/g, ''))}
-              disabled={evaluated}
-              inputMode="numeric"
-              aria-label="your answer for x"
+      {/* the workbook — three exercises on the topic's own stage */}
+      <Stage
+        hue={HUE}
+        tint={0.05}
+        minHeight={0}
+        style={{
+          alignItems: 'stretch',
+          justifyContent: 'flex-start',
+          padding: 'clamp(14px, 3vw, 22px)',
+        }}
+      >
+        {/* a whispered grid behind the work — the workbook sits on graph paper */}
+        <svg
+          role="presentation"
+          aria-hidden
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <pattern id="boss-grid" width="44" height="44" patternUnits="userSpaceOnUse">
+              <path d="M 44 0 L 0 0 0 44" fill="none" stroke={rgba(HUE, 0.06)} strokeWidth="1" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#boss-grid)" />
+        </svg>
+        <div
+          ref={bossRef}
+          style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 16 }}
+        >
+          {/* one — solve */}
+          <div style={blockStyle(state(0))}>
+            <div style={whisper}>{ORDINALS[0]} · solve it</div>
+            <div
               style={{
-                width: 110,
-                padding: '10px 12px',
-                fontSize: '1.1rem',
-                fontFamily: 'inherit',
+                fontSize: '1.45rem',
+                fontWeight: 550,
                 fontVariantNumeric: 'tabular-nums',
-                textAlign: 'center',
-                border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-                borderRadius: 'var(--clss-radius-sm)',
-                outline: 'none',
-                background: 'var(--clss-paper)',
                 color: 'var(--clss-ink-900)',
               }}
-            />
-          </div>
-          {evaluated && results && !results[0] && solveLin && (
-            <div style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', lineHeight: 1.6 }}>
-              put your x back in: the sides make{' '}
-              {fmt(solveLin.lhs(Number(solveEntry.replace('−', '-'))))} and{' '}
-              {fmt(solveLin.rhs(Number(solveEntry.replace('−', '-'))))} — not level yet.
+            >
+              {solveItem.equation}
             </div>
-          )}
-        </div>
-
-        {/* two — the missing step */}
-        <div style={blockStyle(state(1))}>
-          <div style={whisper}>{ORDINALS[1]} · one step is missing — choose it</div>
-          <div
-            style={{
-              fontSize: '1.15rem',
-              fontWeight: 550,
-              fontVariantNumeric: 'tabular-nums',
-              color: 'var(--clss-ink-900)',
-            }}
-          >
-            {step.lines[0]}
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {step.choices.map((choice, i) => (
-              <motion.button
-                key={choice}
-                type="button"
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ color: 'var(--clss-ink-500)' }}>x =</span>
+              <input
+                value={solveEntry}
+                onChange={(e) => setSolveEntry(e.target.value.replace(/[^0-9\-−.]/g, ''))}
                 disabled={evaluated}
-                whileTap={{ scale: 0.985 }}
-                onClick={() => setStepChoice(i)}
-                style={choiceStyle(stepChoice === i)}
-              >
-                {choice}
-              </motion.button>
-            ))}
-          </div>
-          <div
-            style={{
-              fontSize: '1.15rem',
-              fontWeight: 550,
-              fontVariantNumeric: 'tabular-nums',
-              color: 'var(--clss-ink-900)',
-            }}
-          >
-            {step.lines[1]}
-          </div>
-          {evaluated && results && !results[1] && (
-            <div style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', lineHeight: 1.6 }}>
-              the move must undo what sits around x — here that is “
-              {step.choices[step.correctIndex]}”.
-            </div>
-          )}
-        </div>
-
-        {/* three — find the error */}
-        <div style={blockStyle(state(2))}>
-          <div style={whisper}>{ORDINALS[2]} · one line below is wrong — tap it</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {error.lines.map((line, i) => (
-              <motion.button
-                key={line}
-                type="button"
-                disabled={evaluated}
-                whileTap={{ scale: 0.985 }}
-                onClick={() => setErrorChoice(i)}
+                inputMode="numeric"
+                aria-label="your answer for x"
                 style={{
-                  ...choiceStyle(errorChoice === i),
+                  width: 110,
+                  padding: '10px 12px',
+                  fontSize: '1.1rem',
+                  fontFamily: 'inherit',
                   fontVariantNumeric: 'tabular-nums',
-                  fontSize: '1.05rem',
-                  fontWeight: 550,
+                  textAlign: 'center',
+                  border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+                  borderRadius: 'var(--clss-radius-sm)',
+                  outline: 'none',
+                  background: 'var(--clss-paper)',
+                  color: 'var(--clss-ink-900)',
                 }}
-              >
-                {line}
-              </motion.button>
-            ))}
-          </div>
-          {evaluated && results && !results[2] && (
-            <div style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', lineHeight: 1.6 }}>
-              the slip is where {fmt(Math.abs(error.b))} crossed the equals sign and kept its sign —
-              crossing always flips it.
+              />
             </div>
+            {evaluated && results && !results[0] && solveLin && (
+              <div style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', lineHeight: 1.6 }}>
+                put your x back in: the sides make{' '}
+                {fmt(solveLin.lhs(Number(solveEntry.replace('−', '-'))))} and{' '}
+                {fmt(solveLin.rhs(Number(solveEntry.replace('−', '-'))))} — not level yet.
+              </div>
+            )}
+          </div>
+
+          {/* two — the missing step */}
+          <div style={blockStyle(state(1))}>
+            <div style={whisper}>{ORDINALS[1]} · one step is missing — choose it</div>
+            <div
+              style={{
+                fontSize: '1.15rem',
+                fontWeight: 550,
+                fontVariantNumeric: 'tabular-nums',
+                color: 'var(--clss-ink-900)',
+              }}
+            >
+              {step.lines[0]}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {step.choices.map((choice, i) => (
+                <motion.button
+                  key={choice}
+                  type="button"
+                  disabled={evaluated}
+                  whileTap={{ scale: 0.985 }}
+                  onClick={() => setStepChoice(i)}
+                  style={choiceStyle(stepChoice === i)}
+                >
+                  {choice}
+                </motion.button>
+              ))}
+            </div>
+            <div
+              style={{
+                fontSize: '1.15rem',
+                fontWeight: 550,
+                fontVariantNumeric: 'tabular-nums',
+                color: 'var(--clss-ink-900)',
+              }}
+            >
+              {step.lines[1]}
+            </div>
+            {evaluated && results && !results[1] && (
+              <div style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', lineHeight: 1.6 }}>
+                the move must undo what sits around x — here that is “
+                {step.choices[step.correctIndex]}”.
+              </div>
+            )}
+          </div>
+
+          {/* three — find the error */}
+          <div style={blockStyle(state(2))}>
+            <div style={whisper}>{ORDINALS[2]} · one line below is wrong — tap it</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {error.lines.map((line, i) => (
+                <motion.button
+                  key={line}
+                  type="button"
+                  disabled={evaluated}
+                  whileTap={{ scale: 0.985 }}
+                  onClick={() => setErrorChoice(i)}
+                  style={{
+                    ...choiceStyle(errorChoice === i),
+                    fontVariantNumeric: 'tabular-nums',
+                    fontSize: '1.05rem',
+                    fontWeight: 550,
+                  }}
+                >
+                  {line}
+                </motion.button>
+              ))}
+            </div>
+            {evaluated && results && !results[2] && (
+              <div style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', lineHeight: 1.6 }}>
+                the slip is where {fmt(Math.abs(error.b))} crossed the equals sign and kept its sign
+                — crossing always flips it.
+              </div>
+            )}
+          </div>
+
+          {evaluated && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease: [0.2, 0, 0, 1] }}
+              style={{ textAlign: 'center', color: 'var(--clss-ink-700)', fontSize: '0.95rem' }}
+            >
+              {passCount >= 2
+                ? passCount === 3
+                  ? 'all three. clean.'
+                  : 'two of three — that is a pass, earned.'
+                : 'close. the scale is still yours — take one more look.'}
+            </motion.div>
           )}
         </div>
-
-        {evaluated && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: [0.2, 0, 0, 1] }}
-            style={{ textAlign: 'center', color: 'var(--clss-ink-700)', fontSize: '0.95rem' }}
-          >
-            {passCount >= 2
-              ? passCount === 3
-                ? 'all three. clean.'
-                : 'two of three — that is a pass, earned.'
-              : 'close. the scale is still yours — take one more look.'}
-          </motion.div>
-        )}
-      </div>
+      </Stage>
     </CardBody>
   );
 }

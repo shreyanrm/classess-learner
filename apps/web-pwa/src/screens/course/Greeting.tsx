@@ -16,7 +16,7 @@ import { TopicSigil } from '../../ui/art';
 import { hueForTopic } from '../../ui/hues';
 import { useVidyaChat } from '../../vidya/chat';
 import type { BarState } from './shared';
-import { CardBody, GOLD, lead, rgba, whisper } from './shared';
+import { CardBody, GOLD, lead, rgba, Stage, whisper } from './shared';
 
 /** Floating sparks — a handful of hue and gold motes rising once, then gone. */
 function Sparks({ hue }: { hue: string }) {
@@ -135,14 +135,21 @@ export function Greeting({
           zIndex: 30,
         }}
       />
-      <div
-        style={{
-          position: 'relative',
-          overflow: 'hidden',
-          padding: '48px 8px',
-          textAlign: 'center',
-        }}
-      >
+      {/* the earned moment gets its own lit stage — glow, sparks, the sigil large */}
+      <Stage hue={hue} tint={0.07} minHeight={300}>
+        <motion.div
+          aria-hidden
+          animate={{ opacity: [0.45, 0.8, 0.45], scale: [1, 1.06, 1] }}
+          transition={{ duration: 5, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+          style={{
+            position: 'absolute',
+            width: 320,
+            height: 320,
+            borderRadius: 999,
+            background: `radial-gradient(circle, ${rgba(hue, 0.16)} 0%, transparent 62%)`,
+            pointerEvents: 'none',
+          }}
+        />
         {/* sparks drift up while the room catches light */}
         <Sparks hue={hue} />
 
@@ -151,11 +158,13 @@ export function Greeting({
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 230, damping: 24, delay: 0.2 }}
-          style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}
+          style={{ position: 'relative' }}
         >
-          <TopicSigil id={topic.id} size={96} mastered hue={hue} draw />
+          <TopicSigil id={topic.id} size={130} mastered hue={hue} draw />
         </motion.div>
+      </Stage>
 
+      <div style={{ position: 'relative', textAlign: 'center' }}>
         <div style={whisper}>the greeting</div>
         <motion.div
           initial={{ opacity: 0, y: 12 }}

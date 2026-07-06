@@ -154,19 +154,20 @@ export function SegmentedProgress({ fraction, segments }: { fraction: number; se
 
 /**
  * A subtly hue-tinted panel that holds a card's centerpiece: 3px radius, tonal fill of the
- * subject's hue, generous height. Dark stages are reserved for the boss door and the night sky.
+ * subject's hue, generous height. Tonal stages hold the boss door and the day sky — tension
+ * comes from composition, never from darkness.
  */
 export function Stage({
   hue = '#1F35E0',
   tint = 0.06,
-  dark = false,
+  tonal = false,
   minHeight = 300,
   children,
   style,
 }: {
   hue?: string;
   tint?: number;
-  dark?: boolean;
+  tonal?: boolean;
   minHeight?: number;
   children: ReactNode;
   style?: CSSProperties;
@@ -181,9 +182,7 @@ export function Stage({
         width: '100%',
         minHeight,
         borderRadius: 3,
-        background: dark
-          ? 'linear-gradient(160deg, #1A1B21 0%, #121316 60%, #0D0D10 100%)'
-          : rgba(hue, tint),
+        background: tonal ? '#F1F1F5' : rgba(hue, tint),
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',

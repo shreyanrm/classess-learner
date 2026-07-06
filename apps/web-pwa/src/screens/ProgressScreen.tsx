@@ -388,9 +388,7 @@ export function ProgressScreen() {
               <StateDot state={selectedState} />
               {BAND_LANGUAGE[selectedState]}
             </div>
-            <div style={{ marginTop: 4, fontSize: '0.8rem', color: '#989AA4' }}>
-              {evidenceLine}
-            </div>
+            <div style={{ marginTop: 4, fontSize: '0.8rem', color: '#989AA4' }}>{evidenceLine}</div>
             <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
               <MagneticButton size="sm" variant="quiet" onClick={openLearn}>
                 learn

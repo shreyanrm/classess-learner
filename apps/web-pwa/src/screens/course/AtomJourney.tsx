@@ -284,8 +284,8 @@ export function AtomJourney({
 
       {card === 'bossdoor' && (
         <CardBody maxWidth={620}>
-          {/* the one dark moment — an ink stage; the topic's sigil glowing in its ring */}
-          <Stage dark minHeight={340}>
+          {/* the weighted moment — a tonal stage; the topic's sigil glowing in its ring */}
+          <Stage tonal minHeight={340}>
             <motion.div
               aria-hidden
               animate={{ opacity: [0.5, 0.85, 0.5], scale: [1, 1.08, 1] }}
@@ -295,7 +295,7 @@ export function AtomJourney({
                 width: 300,
                 height: 300,
                 borderRadius: 999,
-                background: `radial-gradient(circle, ${rgba(hueForTopic(topic.id), 0.3)} 0%, transparent 62%)`,
+                background: `radial-gradient(circle, ${rgba(hueForTopic(topic.id), 0.16)} 0%, transparent 62%)`,
                 pointerEvents: 'none',
               }}
             />
@@ -312,7 +312,6 @@ export function AtomJourney({
                 ...whisper,
                 position: 'relative',
                 marginTop: 22,
-                color: 'rgba(255,255,255,0.6)',
               }}
             >
               no fear — just weight
