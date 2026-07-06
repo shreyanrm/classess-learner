@@ -54,23 +54,27 @@ export function XpBloomLayer() {
           <motion.svg
             width="15"
             height="19"
-            viewBox="0 0 14 18"
+            viewBox="0 0 15 19"
             aria-hidden
-            animate={{ scaleY: [1, 1.06, 0.97, 1], scaleX: [1, 0.96, 1.03, 1] }}
-            transition={{ duration: 2.2, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+            animate={{ scaleY: [1, 1.07, 0.96, 1], scaleX: [1, 0.95, 1.04, 1] }}
+            transition={{ duration: 2.4, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
             style={{ transformOrigin: '50% 100%' }}
           >
-            <path
-              d="M7 0.5 C7.5 4 11.5 5.5 11.5 10 C11.5 13.6 9.5 16.5 7 16.5 C4.5 16.5 2.5 13.6 2.5 10 C2.5 7.8 3.6 6.4 4.6 5.2 C5.6 4 6.8 2.6 7 0.5 Z"
-              fill="url(#streakGrad)"
-            />
             <defs>
               <linearGradient id="streakGrad" x1="0.5" y1="0" x2="0.5" y2="1">
                 <stop offset="0%" stopColor="#FF9040" />
-                <stop offset="60%" stopColor="#FF5A1F" />
+                <stop offset="62%" stopColor="#FF5A1F" />
                 <stop offset="100%" stopColor="#D8437F" />
               </linearGradient>
             </defs>
+            <path
+              d="M7.5 0.8 C8.2 4.4 12.6 6.2 12.6 10.6 C12.6 14.6 10.3 17.4 7.5 17.4 C4.7 17.4 2.4 14.6 2.4 10.6 C2.4 8.4 3.5 7 4.6 5.7 C5.8 4.3 7.1 3 7.5 0.8 Z"
+              fill="url(#streakGrad)"
+            />
+            <path
+              d="M7.5 9.2 C8.6 11 9.7 11.9 9.7 13.6 C9.7 15.4 8.7 16.4 7.5 16.4 C6.3 16.4 5.3 15.4 5.3 13.6 C5.3 11.9 6.4 11 7.5 9.2 Z"
+              fill="#FFD9A8"
+            />
           </motion.svg>
           <span
             style={{
