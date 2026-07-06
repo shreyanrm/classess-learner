@@ -124,6 +124,13 @@ export function ProgressScreen() {
   const selected = selectedId ? starById(selectedId) : undefined;
   const selectedState: StarState = selected ? (states[selected.id] ?? 'unlit') : 'unlit';
 
+  // The study path: the ordered prerequisite chain to the selected star, lit on the sky.
+  const pathSteps = useMemo(
+    () => (selected ? studyPath(selected, states) : []),
+    [selected, states],
+  );
+  const [pathReplay, setPathReplay] = useState(0);
+
   // She reads this page at code level: the whole constellation, star by star.
   useEffect(() => {
     publishPage({
@@ -182,10 +189,13 @@ export function ProgressScreen() {
     void ask(text);
   };
 
-  const openLearn = () => {
-    if (!selected) return;
-    if (selected.topicId) router.navigate({ name: 'course', topicId: selected.topicId });
+  const openStep = (star: Star) => {
+    if (star.topicId) router.navigate({ name: 'course', topicId: star.topicId });
     else router.navigate({ name: 'subject', subjectId: 'math', intent: 'learn' });
+  };
+
+  const openLearn = () => {
+    if (selected) openStep(selected);
   };
 
   return (
@@ -257,6 +267,8 @@ export function ProgressScreen() {
             ignited={ignited}
             selectedId={selectedId}
             onSelect={setSelectedId}
+            path={pathSteps}
+            pathReplay={pathReplay}
           />
         </div>
 
@@ -313,7 +325,9 @@ export function ProgressScreen() {
             />
           </div>
         </form>
-        <style>{'.twin-ask-input::placeholder{color:#989AA4}'}</style>
+        <style>
+          {'.twin-ask-input::placeholder{color:#989AA4}.twin-step:hover{background:#F1F1F5}'}
+        </style>
       </motion.div>
 
       {/* the star card — light glass over the daylight field, quiet, to the side */}
@@ -390,6 +404,140 @@ export function ProgressScreen() {
               {BAND_LANGUAGE[selectedState]}
             </div>
             <div style={{ marginTop: 4, fontSize: '0.8rem', color: '#989AA4' }}>{evidenceLine}</div>
+
+            {/* the study path — the ordered way in, each step a door to its course */}
+            {pathSteps.length > 0 && (
+              <div style={{ marginTop: 16 }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 8,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: '0.72rem',
+                      fontWeight: 550,
+                      letterSpacing: '0.02em',
+                      color: '#989AA4',
+                    }}
+                  >
+                    to make this yours
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setPathReplay((r) => r + 1)}
+                    style={{
+                      border: 'none',
+                      background: 'transparent',
+                      color: '#1F35E0',
+                      fontSize: '0.75rem',
+                      fontFamily: 'inherit',
+                      cursor: 'pointer',
+                      padding: '10px 6px',
+                      margin: '-10px -6px',
+                    }}
+                  >
+                    show me the path
+                  </button>
+                </div>
+                <ol
+                  style={{
+                    listStyle: 'none',
+                    margin: '6px 0 0',
+                    padding: 0,
+                    maxHeight: '28dvh',
+                    overflowY: 'auto',
+                  }}
+                >
+                  {pathSteps.map((p) => (
+                    <li key={p.star.id}>
+                      <button
+                        type="button"
+                        className="twin-step"
+                        onClick={() => openStep(p.star)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 10,
+                          width: 'calc(100% + 12px)',
+                          minHeight: 44,
+                          padding: '4px 6px',
+                          margin: '0 -6px',
+                          border: 'none',
+                          borderRadius: 3,
+                          background: 'transparent',
+                          cursor: 'pointer',
+                          fontFamily: 'inherit',
+                          textAlign: 'left',
+                        }}
+                      >
+                        {p.mastered ? (
+                          <span
+                            aria-hidden
+                            style={{
+                              width: 18,
+                              height: 18,
+                              flexShrink: 0,
+                              borderRadius: '50%',
+                              border: '1px solid rgba(31,53,224,0.25)',
+                              display: 'grid',
+                              placeItems: 'center',
+                            }}
+                          >
+                            <svg width="9" height="8" viewBox="0 0 9 8" fill="none">
+                              <title>already yours</title>
+                              <path
+                                d="M1 4l2.4 2.6L8 1"
+                                stroke="rgba(31,53,224,0.55)"
+                                strokeWidth="1.4"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </span>
+                        ) : (
+                          <span
+                            style={{
+                              width: 18,
+                              height: 18,
+                              flexShrink: 0,
+                              borderRadius: '50%',
+                              background: '#1F35E0',
+                              color: '#FFFFFF',
+                              fontSize: '0.66rem',
+                              fontWeight: 650,
+                              display: 'grid',
+                              placeItems: 'center',
+                            }}
+                          >
+                            {p.step}
+                          </span>
+                        )}
+                        <span
+                          style={{
+                            flex: 1,
+                            fontSize: '0.85rem',
+                            lineHeight: 1.35,
+                            color: p.mastered ? '#989AA4' : '#121316',
+                          }}
+                        >
+                          {nameOf(p.star)}
+                        </span>
+                        {p.mastered && (
+                          <span style={{ fontSize: '0.7rem', color: '#989AA4', flexShrink: 0 }}>
+                            already yours
+                          </span>
+                        )}
+                      </button>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
             <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
               <MagneticButton size="sm" variant="quiet" onClick={openLearn}>
                 learn

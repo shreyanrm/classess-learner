@@ -193,9 +193,12 @@ export function studyPath(target: Star, states: Record<string, StarState>): Path
   const visit = (s: Star) => {
     if (seen.has(s.id)) return;
     seen.add(s.id);
-    for (const id of s.prereqIds) {
-      const p = byId.get(id);
-      if (p) visit(p);
+    // A mastered prereq subsumes its own ancestors — the path stops at it.
+    if ((states[s.id] ?? 'unlit') !== 'independent') {
+      for (const id of s.prereqIds) {
+        const p = byId.get(id);
+        if (p) visit(p);
+      }
     }
     order.push(s);
   };

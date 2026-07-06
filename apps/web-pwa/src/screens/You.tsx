@@ -24,7 +24,15 @@ import { Whisper } from './Learn';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { BossSigil } from '../ui/art';
-import { Scene } from '../ui/cast';
+import {
+  AVATAR_IDS,
+  type AvatarChoice,
+  CastAvatar,
+  loadAvatarChoice,
+  renderAvatar,
+  saveAvatarChoice,
+} from '../ui/avatars';
+import { CAST, type CastId, Scene } from '../ui/cast';
 import { toneForSubject } from '../ui/hues';
 import { Card, cascade, Hairline, MagneticButton, rise, SectionLabel } from '../ui/kit';
 import { GradeBoardPicker } from './you/GradeBoardPicker';
@@ -194,7 +202,16 @@ export function You() {
   const [nameDraft, setNameDraft] = useState(profile.name);
   const [changingSchool, setChangingSchool] = useState(false);
   const [photo, setPhoto] = useState<string | null>(() => loadPhoto());
+  const [choice, setChoice] = useState<AvatarChoice | null>(() => loadAvatarChoice());
+  const [pickerOpen, setPickerOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
+
+  const applyChoice = (next: AvatarChoice) => {
+    saveAvatarChoice(next);
+    setChoice(next);
+    // choosing a face counts once, photo or cast — the default once-key guards repeats
+    if (next.kind !== 'initial') award('profile_photo');
+  };
 
   const commitProfile = (patch: Partial<StoredProfile>) => {
     const next = { ...profile, ...patch };
@@ -228,7 +245,8 @@ export function You() {
         const dataUrl = c.toDataURL('image/jpeg', 0.82);
         savePhoto(dataUrl);
         setPhoto(dataUrl);
-        award('profile_photo'); // first set only — the default once-key guards it
+        applyChoice({ kind: 'photo' }); // awards profile_photo once, first set of either kind
+        setPickerOpen(false);
       }
       URL.revokeObjectURL(url);
     };
@@ -367,37 +385,39 @@ export function You() {
         style={{ width: '100%', maxWidth: 600, display: 'flex', flexDirection: 'column', gap: 40 }}
       >
         {/* ---- the learner ---- */}
-        <motion.header variants={rise} style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+        <motion.header
+          variants={rise}
+          style={{ display: 'flex', alignItems: 'center', gap: 18, position: 'relative' }}
+        >
           <button
             type="button"
-            aria-label={photo ? 'change your profile photo' : 'add a profile photo'}
-            onClick={() => fileRef.current?.click()}
+            aria-label="choose your avatar"
+            aria-expanded={pickerOpen}
+            onClick={() => setPickerOpen((o) => !o)}
             style={{
               width: 64,
               height: 64,
-              borderRadius: 999,
+              borderRadius: 3,
               border: '0.5px solid var(--clss-hairline-on-paper-strong)',
               background: 'var(--clss-paper)',
               overflow: 'hidden',
               cursor: 'pointer',
               padding: 0,
               flexShrink: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: 'grid',
+              placeItems: 'center',
             }}
           >
-            {photo ? (
-              <img
-                src={photo}
-                alt={profile.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              />
-            ) : (
-              <span style={{ fontSize: '1.5rem', fontWeight: 500, color: 'var(--clss-ink-900)' }}>
-                {profile.name.charAt(0).toUpperCase()}
-              </span>
-            )}
+            {/* the small pop — a new face lands with a settle */}
+            <motion.span
+              key={`${choice?.kind ?? 'none'}-${choice?.castId ?? ''}-${photo ? 'p' : ''}`}
+              initial={{ scale: 1.16 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 340, damping: 19 }}
+              style={{ display: 'block' }}
+            >
+              {renderAvatar({ name: profile.name, photo, choice }, 62)}
+            </motion.span>
           </button>
           <input
             ref={fileRef}
@@ -407,6 +427,15 @@ export function You() {
             style={{ display: 'none' }}
             aria-hidden="true"
             tabIndex={-1}
+          />
+          <AvatarPicker
+            open={pickerOpen}
+            choice={choice}
+            hasPhoto={Boolean(photo)}
+            onPickCast={(id) => applyChoice({ kind: 'cast', castId: id })}
+            onUpload={() => fileRef.current?.click()}
+            onInitial={() => applyChoice({ kind: 'initial' })}
+            onClose={() => setPickerOpen(false)}
           />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
             <input

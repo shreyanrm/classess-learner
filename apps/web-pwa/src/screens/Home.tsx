@@ -75,6 +75,16 @@ export function Home() {
     const t = setInterval(() => setGreetShown((n) => n + 1), 28);
     return () => clearInterval(t);
   }, [landed, greetShown, greetingText.length]);
+  // Safety net: if the swoop is ever interrupted (tab hidden, HMR, dropped frame callback),
+  // the hero must still land — the page can never stay blank past the swoop's duration.
+  useEffect(() => {
+    if (landed) return;
+    const t = window.setTimeout(() => {
+      setLanded(true);
+      sessionStorage.setItem('clss-home-opened', '1');
+    }, 2200);
+    return () => window.clearTimeout(t);
+  }, [landed]);
 
   useEffect(() => {
     publishPage({

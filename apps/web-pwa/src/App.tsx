@@ -39,6 +39,8 @@ import { type ChatTurn, VidyaChatProvider } from './vidya/chat';
 
 const LLM_MODE = (import.meta.env.VITE_LLM_MODE as 'mock' | 'live' | undefined) ?? 'mock';
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
+// Live auth (Supabase phone-OTP + Google) only when explicitly flipped; dev mock stays the default.
+const DEV_AUTH = (import.meta.env.VITE_DEV_AUTH as string | undefined) !== 'false';
 // Live persistence (Supabase learner_state / learner_threads / outbox) — env only, keyless => local.
 const PERSIST_MODE = (import.meta.env.VITE_PERSIST_MODE as 'local' | 'live' | undefined) ?? 'local';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
@@ -55,6 +57,8 @@ const NAV_ROUTES: Record<string, Route> = {
 };
 
 export const ONBOARDED_KEY = 'clss-onboarded-v1';
+/** Set by the sign-in beat; the next boot records identity.subject.created.v1 fully attributed. */
+export const SIGNIN_SOURCE_KEY = 'clss-signin-source-v1';
 
 function Screen() {
   const { route } = useRouter();
@@ -177,13 +181,30 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: ask is recreated with turns; tracking turns/busy/mood covers it
   const chat = useMemo(() => ({ turns, ask, busy, mood, setMood }), [turns, busy, mood]);
 
+  // The first authenticated boot after the sign-in beat: record the subject's creation, fully
+  // attributed to the real auth.uid() through the live outbox.
+  useEffect(() => {
+    const source = localStorage.getItem(SIGNIN_SOURCE_KEY);
+    if (!source || !sdk.identity.isAuthenticated()) return;
+    localStorage.removeItem(SIGNIN_SOURCE_KEY);
+    sdk.events.record('identity.subject.created.v1', {
+      source: source === 'google' ? 'linked' : 'phone_otp',
+      age_branch: 'unknown',
+      consent_tier_initial: 'un_elevated',
+    });
+  }, [sdk]);
+
+  // The guard: unauthenticated in live mode always lands on onboarding — the sign-in beat lives
+  // there, in her flow. No route (palette, Vidya nav) can walk around it.
+  const locked = !sdk.config.devAuth && !sdk.identity.isAuthenticated();
+
   // Design concepts render standalone — no app chrome over them, they own the whole canvas.
-  const inFlow = route.name === 'onboarding' || route.name === 'concept';
+  const inFlow = locked || route.name === 'onboarding' || route.name === 'concept';
   const onHome = route.name === 'home';
 
   return (
     <VidyaChatProvider value={chat}>
-      <Screen />
+      {locked && route.name !== 'onboarding' ? <Onboarding /> : <Screen />}
       {/* Her ink over the current screen — annotations anchored to real elements. */}
       <VidyaOverlay />
       {!inFlow && <AppHeader />}
@@ -218,6 +239,7 @@ export function App() {
   const sdk = useMemo(
     () =>
       createSdk({
+        devAuth: DEV_AUTH,
         llmMode: LLM_MODE,
         gatewayUrl: GATEWAY_URL,
         persistMode: PERSIST_MODE,
@@ -227,9 +249,11 @@ export function App() {
       }),
     [],
   );
-  const initial: Route = localStorage.getItem(ONBOARDED_KEY)
-    ? { name: 'home' }
-    : { name: 'onboarding' };
+  // Unauthenticated in live mode => onboarding, always (the sign-in beat lives there).
+  const initial: Route =
+    sdk.identity.isAuthenticated() && localStorage.getItem(ONBOARDED_KEY)
+      ? { name: 'home' }
+      : { name: 'onboarding' };
   return (
     <SdkProvider value={sdk}>
       <ProgressProvider>

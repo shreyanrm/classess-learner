@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
+import { AVATAR_CHANGED_EVENT, readAvatarProfile, renderAvatar } from './avatars';
 import { SparkIcon } from './icons';
 import { ClassessLogo } from './Logo';
 
@@ -29,17 +30,6 @@ const FACTS: string[] = [
   'your bones are about five times stronger than steel of the same weight',
   'the human brain runs on roughly the power of a dim light bulb',
 ];
-
-function readProfile(): { name?: string; photo?: string } {
-  try {
-    return {
-      ...(JSON.parse(localStorage.getItem('clss-learner-profile') ?? '{}') as { name?: string }),
-      photo: localStorage.getItem('clss-profile-photo') ?? undefined,
-    };
-  } catch {
-    return {};
-  }
-}
 
 const chipStyle = {
   display: 'inline-flex',
@@ -69,15 +59,18 @@ export function AppHeader() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
-  const [profile, setProfile] = useState(readProfile);
+  const [profile, setProfile] = useState(readAvatarProfile);
   const fact = useMemo(() => FACTS[Math.floor(Date.now() / 86400000) % FACTS.length] as string, []);
 
   useEffect(() => {
-    const onFocus = () => setProfile(readProfile());
-    window.addEventListener('focus', onFocus);
-    return () => window.removeEventListener('focus', onFocus);
+    const refresh = () => setProfile(readAvatarProfile());
+    window.addEventListener('focus', refresh);
+    window.addEventListener(AVATAR_CHANGED_EVENT, refresh);
+    return () => {
+      window.removeEventListener('focus', refresh);
+      window.removeEventListener(AVATAR_CHANGED_EVENT, refresh);
+    };
   }, []);
-  const initial = (profile.name ?? 'A').trim().charAt(0).toUpperCase();
 
   return (
     <header
@@ -181,7 +174,7 @@ export function AppHeader() {
           {xp} xp
         </motion.span>
 
-        {/* the learner */}
+        {/* the learner — photo, chosen cast buddy, or initial, all through one resolver */}
         <motion.button
           type="button"
           aria-label="You — profile and settings"
@@ -193,17 +186,16 @@ export function AppHeader() {
             height: 34,
             borderRadius: 3,
             border: '1px solid #E9E9EE',
-            background: profile.photo ? `center/cover url(${profile.photo})` : '#F1F1F5',
-            color: '#5C5E66',
+            background: '#F1F1F5',
+            padding: 0,
+            overflow: 'hidden',
             fontFamily: 'inherit',
-            fontWeight: 600,
-            fontSize: '0.85rem',
             cursor: 'pointer',
             display: 'grid',
             placeItems: 'center',
           }}
         >
-          {!profile.photo && initial}
+          {renderAvatar(profile, 32)}
         </motion.button>
 
         {/* the daily fact card */}

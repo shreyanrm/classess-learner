@@ -1,0 +1,79 @@
+- generic [ref=f24e2]:
+  - generic [ref=f24e404]:
+    - button "Back — Home" [ref=f24e405] [cursor=pointer]:
+      - img [ref=f24e406]
+      - text: Home
+    - banner [ref=f24e410]:
+      - generic [ref=f24e411]: 1 of 8 concepts are yours
+      - generic [ref=f24e412]: day 3 of being a learner · tap a star to see its story
+    - generic [ref=f24e413]:
+      - img "your knowledge constellation — every star is a concept" [ref=f24e415]:
+        - button "rational numbers — not started" [ref=f24e426] [cursor=pointer]:
+          - generic [ref=f24e430]: rational numbers
+        - button "operations — not started" [ref=f24e431] [cursor=pointer]:
+          - generic [ref=f24e435]: operations
+        - button "the number line — not started" [ref=f24e436] [cursor=pointer]:
+          - generic [ref=f24e440]: the number line
+        - button "integers — not started" [ref=f24e441] [cursor=pointer]:
+          - generic [ref=f24e445]: integers
+        - button "variables — not started" [ref=f24e446] [cursor=pointer]:
+          - generic [ref=f24e450]: variables
+        - button "linear equations — yours, independently" [ref=f24e451] [cursor=pointer]:
+          - generic [ref=f24e458]: linear equations
+        - button "both sides — not started" [ref=f24e459] [cursor=pointer]:
+          - generic [ref=f24e463]: both sides
+        - button "word problems — not started" [active] [ref=f24e464] [cursor=pointer]:
+          - generic [ref=f24e468]: word problems
+        - generic:
+          - generic:
+            - generic:
+              - generic: "1"
+          - generic:
+            - generic:
+              - generic: "2"
+      - textbox "Ask your twin" [ref=f24e472]:
+        - /placeholder: "ask your twin: what am I weakest at…"
+    - complementary [ref=f24e504]:
+      - button "Close" [ref=f24e505] [cursor=pointer]:
+        - img [ref=f24e506]
+      - generic [ref=f24e509]: Word problems that become equations
+      - generic [ref=f24e510]: not started
+      - generic [ref=f24e512]: no attempts yet
+      - generic [ref=f24e513]:
+        - generic [ref=f24e514]:
+          - generic [ref=f24e515]: to make this yours
+          - button "show me the path" [ref=f24e516] [cursor=pointer]
+        - list [ref=f24e517]:
+          - listitem [ref=f24e518]:
+            - button "Solving linear equations in one variable already yours" [ref=f24e519] [cursor=pointer]:
+              - img [ref=f24e521]
+              - generic [ref=f24e523]: Solving linear equations in one variable
+              - generic [ref=f24e524]: already yours
+          - listitem [ref=f24e525]:
+            - button "1 Variables on both sides" [ref=f24e526] [cursor=pointer]:
+              - generic [ref=f24e527]: "1"
+              - generic [ref=f24e528]: Variables on both sides
+          - listitem [ref=f24e529]:
+            - button "2 Word problems that become equations" [ref=f24e530] [cursor=pointer]:
+              - generic [ref=f24e531]: "2"
+              - generic [ref=f24e532]: Word problems that become equations
+      - generic [ref=f24e533]:
+        - button "learn" [ref=f24e534] [cursor=pointer]
+        - button "practice" [ref=f24e535] [cursor=pointer]
+  - banner:
+    - img "Classess" [ref=f24e191]
+    - generic [ref=f24e192]:
+      - button "Did you know" [ref=f24e193] [cursor=pointer]:
+        - img [ref=f24e194]
+        - text: Did you know
+      - generic "day 3 of being a learner" [ref=f24e196]:
+        - img [ref=f24e197]
+        - text: "3"
+      - generic [ref=f24e200]: 710 xp
+      - button "You — profile and settings" [ref=f24e201] [cursor=pointer]:
+        - generic [ref=f24e202]: A
+  - generic [ref=f24e474]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f24e475] [cursor=pointer]:
+      - img [ref=f24e479]
