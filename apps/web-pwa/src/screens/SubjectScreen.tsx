@@ -427,11 +427,19 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
   // chapters keep canonical subjectIds underneath, so each section carries its own hue and glyph
   const group = displaySubjectById(subjectId);
   const tone = toneForSubject(subjectId);
+  const { completed, topicProgress } = useProgress();
   const sections = (group?.subjectIds ?? [subjectId]).map((id) => ({
     subject: subjectById(id),
     tone: toneForSubject(id),
     chapters: chaptersBySubject[id] ?? [],
   }));
+  // the thread picks up here too — the furthest in-flight topic gets a continue door on top
+  const inFlight = sections
+    .flatMap((s) => s.chapters.flatMap((ch) => ch.topics.map((t) => ({ chapter: ch, topic: t }))))
+    .filter(({ topic }) => !completed.has(topic.id))
+    .map((x) => ({ ...x, f: topicProgress[x.topic.id] ?? 0 }))
+    .filter((x) => x.f > 0)
+    .sort((a, b) => b.f - a.f)[0];
   const clubbed = sections.length > 1;
   const chapterTotal = sections.reduce((n, s) => n + s.chapters.length, 0);
   const [openChapter, setOpenChapter] = useState<string | null>(null);
@@ -541,7 +549,90 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
         </div>
       </motion.div>
 
-      <div ref={listRef} style={{ marginTop: 40 }}>
+      {/* continue — the open course, one tap from the top of the list */}
+      {inFlight && (
+        <motion.button
+          type="button"
+          variants={rise}
+          onClick={() => router.navigate(topicRoute(inFlight.topic.id, intent))}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.985 }}
+          style={{
+            marginTop: 22,
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 16,
+            padding: '16px 18px',
+            background: '#FFFFFF',
+            border: `1px solid ${hueForTopic(inFlight.topic.id)}33`,
+            borderRadius: 3,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            textAlign: 'left',
+          }}
+        >
+          <TopicSigil id={inFlight.topic.id} size={44} hue={hueForTopic(inFlight.topic.id)} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div
+              style={{
+                fontSize: '0.7rem',
+                fontWeight: 650,
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                color: hueForTopic(inFlight.topic.id),
+              }}
+            >
+              Continue · {inFlight.chapter.name}
+            </div>
+            <div
+              style={{
+                marginTop: 4,
+                fontSize: '1.02rem',
+                fontWeight: 600,
+                color: 'var(--clss-ink-900)',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {inFlight.topic.name}
+            </div>
+            <div
+              style={{
+                marginTop: 8,
+                height: 3,
+                borderRadius: 2,
+                background: '#F1F1F5',
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  width: `${Math.round(inFlight.f * 100)}%`,
+                  height: '100%',
+                  background: hueForTopic(inFlight.topic.id),
+                }}
+              />
+            </div>
+          </div>
+          <span
+            style={{
+              flexShrink: 0,
+              padding: '9px 16px',
+              borderRadius: 3,
+              background: '#121316',
+              color: '#FFFFFF',
+              fontSize: '0.84rem',
+              fontWeight: 600,
+            }}
+          >
+            Continue
+          </span>
+        </motion.button>
+      )}
+
+      <div ref={listRef} style={{ marginTop: inFlight ? 26 : 40 }}>
         {sections.map((sec, i) => (
           <div key={sec.subject?.id ?? subjectId}>
             {/* a clubbed door sections its chapters under the canonical disciplines */}

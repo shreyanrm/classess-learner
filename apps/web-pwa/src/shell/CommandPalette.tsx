@@ -80,7 +80,9 @@ export function CommandPalette() {
 
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const pool = q ? all.filter((c) => c.label.includes(q) || c.hint.includes(q)) : all;
+    const pool = q
+      ? all.filter((c) => c.label.toLowerCase().includes(q) || c.hint.toLowerCase().includes(q))
+      : all;
     return pool.slice(0, 8);
   }, [query, all]);
 

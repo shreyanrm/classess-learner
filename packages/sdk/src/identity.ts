@@ -370,7 +370,7 @@ export class SupabaseAuthIdentity implements IdentityProvider {
    */
   private completeOAuthRedirect(): void {
     const loc = (globalThis as { location?: LocationLike }).location;
-    if (!loc || !loc.hash.includes('access_token=')) return;
+    if (!loc?.hash.includes('access_token=')) return;
     const params = new URLSearchParams(loc.hash.slice(1));
     const access = params.get('access_token');
     const refresh = params.get('refresh_token');

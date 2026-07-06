@@ -1,156 +1,302 @@
 'use client';
 
 /**
- * The composing journey. Seed mode: an honest, beautiful state for topics whose verified course
- * is not built yet — Vidya writes the outline in ink, then runs a small structural mini-course.
- * Live mode: while the ink draws, the engines are asked for the real thing (engine.compose, then
- * engine.simulate / engine.diagram / engine.motion / engine.image per card) and the generated
- * course renders through the runtime engines. Refusal anywhere is invisible — anything that does
- * not parse, verify, or arrive falls back to the seed journey, never to an error (CONTEXT.md §6).
+ * The generated course player. Every non-atom topic is playable here with real generated
+ * content: engine.compose writes the course (cards + a mini-workbook + a boss, answers
+ * verified server-side), then each card hydrates through its own engine (engine.simulate
+ * CAS-verified, engine.diagram sanitized) and renders on the guided-discovery shell —
+ * act-to-reveal, Check/Continue, per-card XP, the boss, the greeting, the ignite.
+ *
+ * Generation states are honest: a skeleton shimmer while she composes (notification-style,
+ * never a fake spinner promise), and any refusal anywhere falls back to the structural seed
+ * course — invisible to the learner, never an error (CONTEXT.md §6).
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useVidyaBus } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
-import { type ReactNode, useEffect, useState } from 'react';
+import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
+import { topicById } from '../../data/catalog';
+import type { Topic } from '../../data/model';
 import { DiagramView, svgIsClean } from '../../engines/DiagramView';
-import { GeneratedImage, imageSrcFrom } from '../../engines/GeneratedImage';
-import { MotionPlayer, type MotionScene, parseMotionScene } from '../../engines/MotionPlayer';
-import { parseSimSpec, SimRunner, type SimSpec } from '../../engines/SimRunner';
-import { useRouter } from '../../shell/router';
+import { parseSimSpec, SimRunner, type SimSpec, simSpecFromGateway } from '../../engines/SimRunner';
+import { useProgress } from '../../store/progress';
 import { useSdk } from '../../store/sdk';
 import { TopicSigil } from '../../ui/art';
+import { hueForTopic } from '../../ui/hues';
+import { cascade, rise } from '../../ui/kit';
 import { useVidyaChat } from '../../vidya/chat';
+import { Greeting } from './Greeting';
 import type { BarState } from './shared';
-import { CardBody, cardTitle, Deck, lead, Stage, whisper } from './shared';
-
-const ATOM_TOPIC_ID = 'm2-1';
+import { CardBody, cardTitle, Deck, lead, rgba, Stage, whisper } from './shared';
 
 // --- The composed course (engine.compose output, validated before anything renders) ---------------
 
-type CardKind = 'sim' | 'diagram' | 'motion' | 'image' | 'text';
+type CardKind = 'sim' | 'diagram' | 'text';
+type ActKind = 'tap' | 'drag' | 'slide' | 'type';
 
-interface ComposedCard {
+interface GenCard {
   id: string;
   kind: CardKind;
   title: string;
-  blurb?: string;
-  /** Text cards carry their body inline. */
-  body?: string;
-  /** An artifact the composer embedded directly (spec / svg / scene / image). */
-  inline?: unknown;
+  idea: string;
+  interaction: { kind: ActKind; prompt: string };
+  reveal: string;
 }
 
-interface ComposedCourse {
+interface GenItem {
+  id: string;
+  type: 'mcq' | 'fill';
+  prompt: string;
+  options?: string[];
+  answer: string;
+}
+
+interface GenCourse {
   courseId: string;
   title: string;
-  cards: ComposedCard[];
+  cards: GenCard[];
+  workbook: GenItem[];
+  boss: GenItem[];
+  seeded: boolean;
 }
 
-const KINDS: ReadonlySet<string> = new Set(['sim', 'diagram', 'motion', 'image', 'text']);
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const CARD_KINDS: ReadonlySet<string> = new Set(['sim', 'diagram', 'text']);
+const ACT_KINDS: ReadonlySet<string> = new Set(['tap', 'drag', 'slide', 'type']);
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
 
-function parseComposedCourse(raw: unknown, fallbackTitle: string): ComposedCourse | null {
+function parseItems(raw: unknown): GenItem[] | null {
+  if (!Array.isArray(raw)) return null;
+  const items: GenItem[] = [];
+  raw.forEach((it, i) => {
+    if (!isRecord(it)) return;
+    const prompt = typeof it.prompt === 'string' ? it.prompt.trim() : '';
+    const answer = typeof it.answer === 'string' ? it.answer.trim() : '';
+    if (!prompt || !answer) return;
+    const id = typeof it.id === 'string' ? it.id : `i${i + 1}`;
+    if (it.type === 'mcq' && Array.isArray(it.options)) {
+      const options = it.options.filter(
+        (o): o is string => typeof o === 'string' && o.trim() !== '',
+      );
+      // the verifier's law, re-checked at the door: exactly one correct option present
+      if (options.length < 2 || options.filter((o) => o === answer).length !== 1) return;
+      items.push({ id, type: 'mcq', prompt, options, answer });
+    } else if (it.type === 'fill') {
+      items.push({ id, type: 'fill', prompt, answer });
+    }
+  });
+  return items.length >= 3 ? items.slice(0, 3) : null;
+}
+
+function parseGenCourse(raw: unknown, fallbackTitle: string): GenCourse | null {
   if (!isRecord(raw)) return null;
-  const src = isRecord(raw.course) ? raw.course : raw;
-  // the verifier's word is law: an explicitly unverified compilation never serves
-  if (src.all_verified === false || src.verified === false) return null;
-  const rawCards = Array.isArray(src.cards) ? src.cards : Array.isArray(src.nodes) ? src.nodes : [];
-  const cards: ComposedCard[] = [];
+  const src = isRecord(raw.artifact) ? raw.artifact : raw;
+  if (raw.verified === false || src.verified === false) return null;
+  const rawCards = Array.isArray(src.cards) ? src.cards : [];
+  const cards: GenCard[] = [];
   rawCards.forEach((c, i) => {
     if (!isRecord(c)) return;
-    const kindRaw =
-      typeof c.kind === 'string' ? c.kind : typeof c.modality === 'string' ? c.modality : 'text';
-    const kind = kindRaw === 'simulator' ? 'sim' : kindRaw;
-    const title =
-      typeof c.title === 'string' ? c.title : typeof c.name === 'string' ? c.name : null;
-    if (!KINDS.has(kind) || !title) return;
+    const interaction = isRecord(c.interaction) ? c.interaction : null;
+    const actKind = interaction && typeof interaction.kind === 'string' ? interaction.kind : '';
+    const prompt = interaction && typeof interaction.prompt === 'string' ? interaction.prompt : '';
+    const title = typeof c.title === 'string' ? c.title.trim() : '';
+    const idea = typeof c.idea === 'string' ? c.idea.trim() : '';
+    const reveal = typeof c.reveal === 'string' ? c.reveal.trim() : '';
+    const kind =
+      typeof c.kind === 'string' && CARD_KINDS.has(c.kind) ? (c.kind as CardKind) : 'text';
+    if (!title || !idea || !reveal || !prompt || !ACT_KINDS.has(actKind)) return;
     cards.push({
-      id: typeof c.id === 'string' ? c.id : `card-${i}`,
-      kind: kind as CardKind,
+      id: typeof c.id === 'string' ? c.id : `c${i + 1}`,
+      kind,
       title,
-      blurb: typeof c.blurb === 'string' ? c.blurb : undefined,
-      body: typeof c.body === 'string' ? c.body : undefined,
-      inline: c.spec ?? c.svg ?? c.scene ?? c.image ?? undefined,
+      idea,
+      interaction: { kind: actKind as ActKind, prompt },
+      reveal,
     });
   });
-  if (cards.length < 2) return null;
+  if (cards.length < 3) return null;
+  const workbook = parseItems(src.workbook);
+  const boss = parseItems(src.boss);
+  if (!workbook || !boss) return null;
   return {
-    courseId:
-      typeof src.course_id === 'string' && UUID_RE.test(src.course_id)
-        ? src.course_id
-        : crypto.randomUUID(),
-    title: typeof src.title === 'string' ? src.title : fallbackTitle,
+    courseId: crypto.randomUUID(),
+    title: typeof src.topic === 'string' ? src.topic : fallbackTitle,
     cards,
+    workbook,
+    boss,
+    seeded: raw.seeded === true,
   };
 }
 
-// --- Per-card artifacts (hydrated through the matching engine capability) --------------------------
+/** The client-side floor for mock mode or a network refusal — structural, never fabricated. */
+function seedCourse(title: string): GenCourse {
+  const n = title.toLowerCase();
+  return {
+    courseId: crypto.randomUUID(),
+    title,
+    seeded: true,
+    cards: [
+      {
+        id: 'c1',
+        kind: 'text',
+        title: `Meet ${n}`,
+        idea: `One place in the real world where ${n} quietly shows up.`,
+        interaction: { kind: 'tap', prompt: 'Tap the part that looks unknown.' },
+        reveal: 'The unknown is what we are hunting. Everything else is a clue.',
+      },
+      {
+        id: 'c2',
+        kind: 'sim',
+        title: 'Feel the rule',
+        idea: 'The idea behaves like a balance: change one side, the other follows.',
+        interaction: { kind: 'drag', prompt: 'Drag a number until the relationship balances.' },
+        reveal: 'Whatever you do to one side, you do to the other.',
+      },
+      {
+        id: 'c3',
+        kind: 'diagram',
+        title: 'Predict, then check',
+        idea: 'A claimed answer must survive the original problem.',
+        interaction: { kind: 'type', prompt: 'Type your value and test it.' },
+        reveal: 'Substitute it back. If both sides agree, the answer stands.',
+      },
+      {
+        id: 'c4',
+        kind: 'text',
+        title: 'Where it bends',
+        idea: `Every model of ${n} has an edge where it stops working.`,
+        interaction: { kind: 'slide', prompt: 'Push the setting to its extreme.' },
+        reveal: 'Knowing where the rule breaks is part of knowing the rule.',
+      },
+    ],
+    workbook: [
+      {
+        id: 'w1',
+        type: 'mcq',
+        prompt: 'What tells you a claimed answer is trustworthy?',
+        options: [
+          'it survives being tested against the original problem',
+          'it looks like the worked example',
+          'it was the first answer you found',
+        ],
+        answer: 'it survives being tested against the original problem',
+      },
+      {
+        id: 'w2',
+        type: 'mcq',
+        prompt: 'Pushing a rule to its extreme shows you…',
+        options: [
+          'where the ideal model stops matching reality',
+          'that the rule was never true',
+          'that extremes should be avoided',
+        ],
+        answer: 'where the ideal model stops matching reality',
+      },
+      {
+        id: 'w3',
+        type: 'fill',
+        prompt: 'Before trusting a result, test it against the ________ problem.',
+        answer: 'original',
+      },
+    ],
+    boss: [
+      {
+        id: 'b1',
+        type: 'mcq',
+        prompt: 'Which move is always legal while working a problem?',
+        options: [
+          'one that keeps the answer set exactly the same',
+          'one that makes the numbers smaller',
+          'one that removes the hardest part',
+        ],
+        answer: 'one that keeps the answer set exactly the same',
+      },
+      {
+        id: 'b2',
+        type: 'mcq',
+        prompt: 'You test your answer and the two sides disagree. What does that mean?',
+        options: [
+          'the answer does not survive the original problem',
+          'the original problem must be wrong',
+          'checking only works on easy problems',
+        ],
+        answer: 'the answer does not survive the original problem',
+      },
+      {
+        id: 'b3',
+        type: 'fill',
+        prompt: 'Each legal move keeps the answer set exactly the ________.',
+        answer: 'same',
+      },
+    ],
+  };
+}
+
+// --- Events: a deterministic node id per topic (the contract wants UUIDs) --------------------------
+
+function topicNodeUuid(topicId: string): string {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < topicId.length; i++) {
+    h ^= topicId.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  let h2 = 0x1000193 ^ topicId.length;
+  for (let i = topicId.length - 1; i >= 0; i--) {
+    h2 = Math.imul(h2 ^ topicId.charCodeAt(i), 0x85ebca6b) >>> 0;
+  }
+  const a = h.toString(16).padStart(8, '0');
+  const b = h2.toString(16).padStart(8, '0').slice(0, 4);
+  return `00000000-0000-7000-8000-${a}${b}`;
+}
+
+// --- Per-card artifacts (hydrated through the matching engine, refusal invisible) ------------------
 
 type Artifact =
   | { status: 'pending' }
   | { status: 'failed' }
   | { status: 'ready'; kind: 'sim'; spec: SimSpec }
-  | { status: 'ready'; kind: 'diagram'; svg: string }
-  | { status: 'ready'; kind: 'motion'; scene: MotionScene }
-  | { status: 'ready'; kind: 'image'; src: string };
+  | { status: 'ready'; kind: 'diagram'; svg: string };
 
-const ENGINE_FOR: Record<Exclude<CardKind, 'text'>, string> = {
-  sim: 'engine.simulate',
-  diagram: 'engine.diagram',
-  motion: 'engine.motion',
-  image: 'engine.image',
-};
-
-function parseArtifact(kind: CardKind, raw: unknown): Artifact | null {
-  if (kind === 'sim') {
-    const spec = parseSimSpec(raw);
-    return spec ? { status: 'ready', kind: 'sim', spec } : null;
-  }
-  if (kind === 'diagram') {
-    const svg =
-      typeof raw === 'string' ? raw : isRecord(raw) && typeof raw.svg === 'string' ? raw.svg : null;
-    return svg && svgIsClean(svg) ? { status: 'ready', kind: 'diagram', svg } : null;
-  }
-  if (kind === 'motion') {
-    const scene = parseMotionScene(raw);
-    return scene ? { status: 'ready', kind: 'motion', scene } : null;
-  }
-  if (kind === 'image') {
-    const src = imageSrcFrom(raw);
-    return src ? { status: 'ready', kind: 'image', src } : null;
-  }
-  return null;
-}
-
-function useArtifact(card: ComposedCard, topic: string, courseId: string): Artifact {
+function useArtifact(card: GenCard, topic: string, courseId: string): Artifact {
   const sdk = useSdk();
   const [artifact, setArtifact] = useState<Artifact>({ status: 'pending' });
 
   useEffect(() => {
     if (card.kind === 'text') return;
-    const inline = card.inline === undefined ? null : parseArtifact(card.kind, card.inline);
-    if (inline) {
-      setArtifact(inline);
-      return;
-    }
     let cancelled = false;
     setArtifact({ status: 'pending' });
     sdk.llm
       .invoke(
-        ENGINE_FOR[card.kind],
+        card.kind === 'sim' ? 'engine.simulate' : 'engine.diagram',
         {
+          concept: `${topic}: ${card.title}`,
           topic,
-          concept: card.title,
-          brief: card.blurb ?? '',
+          brief: card.idea,
           course_id: courseId,
           difficulty: 'core',
         },
         { consentTier: 'un_elevated' },
       )
       .then((res) => {
-        if (!cancelled) setArtifact(parseArtifact(card.kind, res.output) ?? { status: 'failed' });
+        if (cancelled) return;
+        const body =
+          isRecord(res.output) && 'artifact' in res.output ? res.output.artifact : res.output;
+        if (card.kind === 'sim') {
+          const spec = simSpecFromGateway(res.output, card.title) ?? parseSimSpec(body);
+          setArtifact(spec ? { status: 'ready', kind: 'sim', spec } : { status: 'failed' });
+        } else {
+          const svg =
+            typeof body === 'string'
+              ? body
+              : isRecord(body) && typeof body.svg === 'string'
+                ? body.svg
+                : null;
+          setArtifact(
+            svg && svgIsClean(svg)
+              ? { status: 'ready', kind: 'diagram', svg }
+              : { status: 'failed' },
+          );
+        }
       })
       .catch(() => {
         if (!cancelled) setArtifact({ status: 'failed' });
@@ -163,349 +309,514 @@ function useArtifact(card: ComposedCard, topic: string, courseId: string): Artif
   return artifact;
 }
 
-const KIND_SEAL: Record<CardKind, string> = {
-  sim: 'drag it — feel the law move',
-  diagram: 'the picture',
-  motion: 'watch it move',
-  image: 'the real thing',
-  text: 'the idea',
-};
+// --- Small chrome ----------------------------------------------------------------------------------
 
-function PendingCard() {
+/** Honest skeleton shimmer — she is composing this piece; it lands on its own. */
+function Shimmer({ lines = 3, note }: { lines?: number; note?: string }) {
+  const widths = ['82%', '64%', '74%', '58%'];
   return (
     <div
       style={{
         border: '0.5px solid var(--clss-hairline-on-paper)',
-        borderRadius: 'var(--clss-radius-md)',
-        padding: '44px 0',
-        textAlign: 'center',
+        borderRadius: 3,
+        padding: '26px 22px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
       }}
     >
-      <motion.div
-        animate={{ opacity: [0.4, 1, 0.4] }}
-        transition={{ duration: 2.2, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
-        style={whisper}
-      >
-        composing this piece
-      </motion.div>
+      {Array.from({ length: lines }, (_, i) => (
+        <motion.div
+          // biome-ignore lint/suspicious/noArrayIndexKey: skeleton lines are positional
+          key={i}
+          animate={{ opacity: [0.45, 1, 0.45] }}
+          transition={{
+            duration: 1.8,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: 'easeInOut',
+            delay: i * 0.18,
+          }}
+          style={{
+            height: 12,
+            width: widths[i % widths.length],
+            background: '#F1F1F5',
+            borderRadius: 3,
+          }}
+        />
+      ))}
+      {note && <div style={{ ...whisper, marginTop: 4 }}>{note}</div>}
     </div>
   );
 }
 
-function GeneratedCard({
-  card,
-  topic,
-  courseId,
-}: {
-  card: ComposedCard;
-  topic: string;
-  courseId: string;
-}) {
-  const artifact = useArtifact(card, topic, courseId);
+const inputStyle: CSSProperties = {
+  padding: '10px 12px',
+  fontSize: '1rem',
+  fontFamily: 'inherit',
+  border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+  borderRadius: 3,
+  outline: 'none',
+  background: 'var(--clss-paper)',
+  color: 'var(--clss-ink-900)',
+};
 
-  let surface: ReactNode = null;
-  if (card.kind === 'text') {
-    surface = card.body ? (
-      <div style={{ ...lead, color: 'var(--clss-ink-900)' }}>{card.body}</div>
-    ) : null;
-  } else if (artifact.status === 'ready') {
-    surface =
-      artifact.kind === 'sim' ? (
-        <SimRunner spec={artifact.spec} />
-      ) : artifact.kind === 'diagram' ? (
-        <DiagramView id={card.id} svg={artifact.svg} label={`diagram: ${card.title}`} />
-      ) : artifact.kind === 'motion' ? (
-        <MotionPlayer scene={artifact.scene} />
+const itemBlockStyle = (state: 'idle' | 'correct' | 'retry'): CSSProperties => ({
+  border:
+    state === 'correct'
+      ? '1px solid var(--clss-feedback-correct)'
+      : state === 'retry'
+        ? '1px solid var(--clss-feedback-retry)'
+        : '0.5px solid var(--clss-hairline-on-paper-strong)',
+  background:
+    state === 'correct'
+      ? 'var(--clss-feedback-correctSoft)'
+      : state === 'retry'
+        ? 'var(--clss-feedback-retrySoft)'
+        : 'var(--clss-paper)',
+  borderRadius: 3,
+  padding: '16px 18px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 10,
+});
+
+const choiceStyle = (selected: boolean): CSSProperties => ({
+  width: '100%',
+  textAlign: 'left',
+  padding: '11px 14px',
+  fontSize: '0.95rem',
+  lineHeight: 1.45,
+  fontFamily: 'inherit',
+  color: selected ? 'var(--clss-paper)' : 'var(--clss-ink-900)',
+  background: selected ? 'var(--clss-ink-900)' : 'var(--clss-paper)',
+  border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+  borderRadius: 3,
+  cursor: 'pointer',
+});
+
+// --- Item answering (shared by the workbook and the boss) ------------------------------------------
+
+const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
+
+function answerIsCorrect(item: GenItem, entry: string): boolean {
+  if (item.type === 'mcq') return entry === item.answer;
+  const a = norm(entry);
+  const b = norm(item.answer);
+  if (!a) return false;
+  const na = Number(a);
+  const nb = Number(b);
+  if (Number.isFinite(na) && Number.isFinite(nb)) return Math.abs(na - nb) < 1e-9;
+  return a === b;
+}
+
+function ItemBlock({
+  item,
+  index,
+  entry,
+  state,
+  disabled,
+  onEntry,
+}: {
+  item: GenItem;
+  index: number;
+  entry: string;
+  state: 'idle' | 'correct' | 'retry';
+  disabled: boolean;
+  onEntry: (v: string) => void;
+}) {
+  const ordinals = ['one', 'two', 'three'];
+  return (
+    <motion.div variants={rise} style={itemBlockStyle(state)}>
+      <div style={whisper}>
+        {ordinals[index]} · {item.type === 'mcq' ? 'choose one' : 'fill the gap'}
+      </div>
+      <div
+        style={{
+          fontSize: '1.02rem',
+          lineHeight: 1.5,
+          color: 'var(--clss-ink-900)',
+          fontWeight: 520,
+        }}
+      >
+        {item.prompt}
+      </div>
+      {item.type === 'mcq' ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {(item.options ?? []).map((choice) => (
+            <motion.button
+              key={choice}
+              type="button"
+              disabled={disabled}
+              whileTap={{ scale: 0.985 }}
+              onClick={() => onEntry(choice)}
+              style={choiceStyle(entry === choice)}
+            >
+              {choice}
+            </motion.button>
+          ))}
+        </div>
       ) : (
-        <GeneratedImage id={card.id} src={artifact.src} alt={card.title} />
-      );
-  } else if (card.kind === 'image') {
-    // the image frame waits gracefully on its own
-    surface = <GeneratedImage id={card.id} src={null} alt={card.title} />;
-  } else if (artifact.status === 'pending') {
-    surface = <PendingCard />;
-  }
-  // a failed artifact renders nothing — the title and blurb stand alone, refusal invisible
+        <input
+          value={entry}
+          disabled={disabled}
+          onChange={(e) => onEntry(e.target.value)}
+          aria-label={item.prompt}
+          placeholder="type your answer…"
+          style={{ ...inputStyle, maxWidth: 300 }}
+        />
+      )}
+      {state === 'retry' && (
+        <div style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', lineHeight: 1.55 }}>
+          not this one — the answer worth keeping is “{item.answer}”.
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
+/** A three-item set answered together and checked together — the workbook and the boss share it. */
+function ItemSet({
+  items,
+  nodeId,
+  courseId,
+  heading,
+  eyebrow,
+  hue,
+  passNeeded,
+  setBar,
+  onDone,
+  onAttempt,
+  awardCorrect,
+}: {
+  items: GenItem[];
+  nodeId: string;
+  courseId: string;
+  heading: string;
+  eyebrow: string;
+  hue: string;
+  /** Minimum correct to continue; below it the set re-opens for one more look. */
+  passNeeded: number;
+  setBar: (b: BarState | null) => void;
+  onDone: (correctCount: number) => void;
+  onAttempt: () => void;
+  awardCorrect: (item: GenItem, index: number) => void;
+}) {
+  const sdk = useSdk();
+  const bus = useVidyaBus();
+  const [entries, setEntries] = useState<string[]>(() => items.map(() => ''));
+  const [results, setResults] = useState<boolean[] | null>(null);
+  const round = useRef(0);
+  const startedAt = useRef(Date.now());
+
+  const answered = entries.filter((e) => e.trim() !== '').length;
+  const evaluated = results !== null;
+
+  useEffect(() => {
+    bus.publishCanvas({
+      nodeId,
+      steps: [
+        `${eyebrow}: ${answered} of ${items.length} answered`,
+        evaluated
+          ? `checked — ${results?.filter(Boolean).length ?? 0} of ${items.length} correct`
+          : 'not yet checked',
+      ],
+      lastEditedAt: new Date().toISOString(),
+    });
+  }, [bus, nodeId, eyebrow, answered, evaluated, results, items.length]);
+  useEffect(() => () => bus.publishCanvas(undefined), [bus]);
+
+  useEffect(() => {
+    if (!evaluated) {
+      setBar({
+        primary: {
+          label: 'check',
+          disabled: answered < items.length,
+          onClick: () => {
+            const r = items.map((item, i) => answerIsCorrect(item, entries[i] ?? ''));
+            const latency = Math.max(0, Date.now() - startedAt.current);
+            items.forEach((item, i) => {
+              onAttempt();
+              sdk.events.record(
+                'learn.attempt.submitted.v1',
+                {
+                  node_id: nodeId,
+                  response:
+                    item.type === 'mcq'
+                      ? { kind: 'choice', selected: [entries[i] ?? ''] }
+                      : { kind: 'text', text: entries[i] ?? '' },
+                  correct: r[i] ?? false,
+                  aided: false,
+                  independence_signal: 0.85,
+                  latency_ms: latency,
+                  attempt_index: round.current,
+                },
+                { ontologyNodeId: nodeId, courseId },
+              );
+              if (r[i]) awardCorrect(item, i);
+            });
+            round.current += 1;
+            setResults(r);
+          },
+        },
+      });
+    } else {
+      const correct = results?.filter(Boolean).length ?? 0;
+      setBar({
+        primary:
+          correct >= passNeeded
+            ? { label: 'continue', onClick: () => onDone(correct) }
+            : {
+                label: 'one more look',
+                onClick: () => {
+                  setResults(null);
+                  startedAt.current = Date.now();
+                },
+              },
+      });
+    }
+  }, [
+    setBar,
+    evaluated,
+    answered,
+    entries,
+    items,
+    results,
+    passNeeded,
+    onDone,
+    onAttempt,
+    awardCorrect,
+    sdk,
+    nodeId,
+    courseId,
+  ]);
+
+  const state = (i: number): 'idle' | 'correct' | 'retry' =>
+    !results ? 'idle' : results[i] ? 'correct' : 'retry';
+  const correct = results?.filter(Boolean).length ?? 0;
 
   return (
-    <CardBody maxWidth={620}>
-      <div style={whisper}>{KIND_SEAL[card.kind]}</div>
-      <div style={cardTitle}>{card.title.toLowerCase()}</div>
-      {card.blurb && <div style={lead}>{card.blurb}</div>}
-      {surface}
+    <CardBody maxWidth={620} center={false}>
+      <motion.div
+        variants={cascade}
+        initial="hidden"
+        animate="show"
+        style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
+      >
+        <motion.div
+          variants={rise}
+          style={{
+            display: 'flex',
+            alignItems: 'baseline',
+            justifyContent: 'space-between',
+            gap: 14,
+          }}
+        >
+          <div>
+            <div style={whisper}>{eyebrow}</div>
+            <div style={{ ...cardTitle, marginTop: 8 }}>{heading}</div>
+          </div>
+        </motion.div>
+        {items.map((item, i) => (
+          <ItemBlock
+            key={item.id}
+            item={item}
+            index={i}
+            entry={entries[i] ?? ''}
+            state={state(i)}
+            disabled={evaluated}
+            onEntry={(v) => setEntries((prev) => prev.map((e, j) => (j === i ? v : e)))}
+          />
+        ))}
+        <AnimatePresence>
+          {evaluated && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35, ease: [0.2, 0, 0, 1] }}
+              style={{ textAlign: 'center', color: 'var(--clss-ink-700)', fontSize: '0.95rem' }}
+            >
+              {correct === items.length
+                ? 'all of them. clean.'
+                : correct >= passNeeded
+                  ? `${correct} of ${items.length} — that is a pass, earned.`
+                  : 'close. take one more look — the answers are still yours to find.'}
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div aria-hidden style={{ height: 2, background: rgba(hue, 0.12), borderRadius: 3 }} />
+      </motion.div>
     </CardBody>
   );
 }
 
-function GeneratedJourney({
+// --- A generated content card (act first, Check reveals) --------------------------------------------
+
+function GenCardView({
+  card,
   course,
-  topic,
-  setBar,
-  setProgress,
-  onExit,
+  hue,
+  revealed,
 }: {
-  course: ComposedCourse;
-  topic: string;
-  setBar: (b: BarState | null) => void;
-  setProgress: (p: { f: number; segments: number }) => void;
-  onExit: () => void;
+  card: GenCard;
+  course: GenCourse;
+  hue: string;
+  revealed: boolean;
 }) {
-  const [idx, setIdx] = useState(0);
-  const count = course.cards.length;
-  const last = idx >= count - 1;
-  const card = course.cards[Math.min(idx, count - 1)];
+  const artifact = useArtifact(card, course.title, course.courseId);
 
-  // endowed progress — never empty, never quite full until done
-  useEffect(() => {
-    setProgress({ f: (idx + 0.6) / count, segments: count });
-  }, [idx, count, setProgress]);
+  let surface: React.ReactNode = null;
+  if (card.kind !== 'text') {
+    if (artifact.status === 'ready') {
+      surface =
+        artifact.kind === 'sim' ? (
+          <SimRunner spec={artifact.spec} />
+        ) : (
+          <Stage
+            hue={hue}
+            tint={0.05}
+            minHeight={200}
+            style={{ padding: 'clamp(14px, 3vw, 24px)' }}
+          >
+            <DiagramView id={card.id} svg={artifact.svg} label={`diagram: ${card.title}`} />
+          </Stage>
+        );
+    } else if (artifact.status === 'pending') {
+      surface = <Shimmer lines={3} note="she is composing this piece — it lands here on its own" />;
+    }
+    // failed: the idea and the act stand alone — refusal invisible
+  }
 
-  useEffect(() => {
-    setBar({
-      primary: {
-        label: last ? 'done' : 'continue',
-        onClick: () => (last ? onExit() : setIdx((i) => i + 1)),
-      },
-      ...(last ? {} : { secondary: { label: 'done', onClick: onExit } }),
-    });
-  }, [last, onExit, setBar]);
-
-  if (!card) return null;
   return (
-    <Deck id={`gen-${idx}`}>
-      <GeneratedCard card={card} topic={topic} courseId={course.courseId} />
-    </Deck>
+    <CardBody maxWidth={620}>
+      <motion.div
+        variants={cascade}
+        initial="hidden"
+        animate="show"
+        style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
+      >
+        <motion.div variants={rise} style={whisper}>
+          {card.kind === 'sim'
+            ? 'drag it — feel the law move'
+            : card.kind === 'diagram'
+              ? 'the picture'
+              : 'the idea'}
+        </motion.div>
+        <motion.div variants={rise} style={cardTitle}>
+          {card.title.toLowerCase()}
+        </motion.div>
+        <motion.div variants={rise} style={lead}>
+          {card.idea}
+        </motion.div>
+        {surface && <motion.div variants={rise}>{surface}</motion.div>}
+        <motion.div
+          variants={rise}
+          style={{
+            ...lead,
+            borderLeft: `2px solid ${hue}`,
+            paddingLeft: 14,
+            color: 'var(--clss-ink-900)',
+          }}
+        >
+          {card.interaction.prompt}
+        </motion.div>
+        <AnimatePresence>
+          {revealed && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+              style={{
+                border: '1px solid var(--clss-feedback-correct)',
+                background: 'var(--clss-feedback-correctSoft)',
+                borderRadius: 3,
+                padding: '14px 16px',
+                fontSize: '1rem',
+                lineHeight: 1.6,
+                color: 'var(--clss-ink-900)',
+              }}
+            >
+              {card.reveal}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </CardBody>
   );
 }
 
-// --- The seed journey (the honest floor — unchanged in spirit and in fact) -------------------------
+// --- The composing ink screen (skeleton first, the real outline the moment it lands) ---------------
 
-/** Structural outline — a plan, never an unverified fact. */
-function outlineFor(name: string): string[] {
-  const n = name.toLowerCase();
-  return [
-    `what ${n} is really asking`,
-    `${n}, made visible`,
-    'bend it until it breaks',
-    `where ${n} shows up around you`,
-    'the boss — prove it is yours',
-  ];
-}
-
-function revealsFor(name: string): { seal: string; text: string }[] {
-  const n = name.toLowerCase();
-  return [
-    {
-      seal: 'first',
-      text: `${n} gets made visible — something you can drag and push, never a paragraph to sit through.`,
-    },
-    {
-      seal: 'then',
-      text: 'you bend it until it breaks — the fastest way to trust a rule is to find where it stops working.',
-    },
-    {
-      seal: 'last',
-      text: 'the boss — you prove it is yours, the greeting lands, and the map lights up.',
-    },
-  ];
-}
-
-function SeedPreview({
+function InkScreen({
   topicId,
   title,
-  setBar,
-  setProgress,
-  onExit,
+  course,
+  settled,
 }: {
   topicId: string;
   title: string;
-  setBar: (b: BarState | null) => void;
-  setProgress: (p: { f: number; segments: number }) => void;
-  onExit: () => void;
+  course: GenCourse | null;
+  settled: boolean;
 }) {
-  const router = useRouter();
-  const bus = useVidyaBus();
-  const { setMood } = useVidyaChat();
-
-  const [stage, setStage] = useState(1);
-  const [reflection, setReflection] = useState('');
-  const [shared, setShared] = useState(false);
-  const [opened, setOpened] = useState<boolean[]>([false, false, false]);
-
-  const reveals = revealsFor(title);
-  const allOpen = opened.every(Boolean);
-
-  const reflectionRef = useRegisterTarget<HTMLTextAreaElement>('course-reflection', {
-    kind: 'input',
-    label: `where the learner writes what they already notice about ${title.toLowerCase()}`,
-  });
-
-  // endowed progress across the preview cards
-  useEffect(() => {
-    const f = [0.38, 0.38, 0.64, 0.92][stage] ?? 0.92;
-    setProgress({ f, segments: 4 });
-  }, [setProgress, stage]);
-
-  useEffect(() => {
-    if (!shared || reflection === '') return;
-    bus.publishCanvas({
-      nodeId: `composing-${topicId}`,
-      steps: [`the learner's own noticing about ${title.toLowerCase()}: ${reflection}`],
-      lastEditedAt: new Date().toISOString(),
-    });
-  }, [bus, topicId, title, shared, reflection]);
-  useEffect(() => () => bus.publishCanvas(undefined), [bus]);
-
-  // the action bar per card
-  useEffect(() => {
-    if (stage === 1) {
-      setBar(
-        shared
-          ? { primary: { label: 'continue', onClick: () => setStage(2) } }
-          : {
-              primary: {
-                label: 'share it',
-                disabled: reflection.trim().length < 3,
-                onClick: () => {
-                  setShared(true);
-                  setMood('correct');
-                  window.setTimeout(() => setMood('idle'), 1400);
-                },
-              },
-            },
-      );
-    } else if (stage === 2) {
-      setBar({ primary: { label: 'continue', onClick: () => setStage(3), disabled: !allOpen } });
-    } else {
-      setBar({
-        primary: {
-          label: 'open the atom',
-          onClick: () => router.replace({ name: 'course', topicId: ATOM_TOPIC_ID }),
-        },
-        secondary: { label: 'done', onClick: onExit },
-      });
-    }
-  }, [setBar, stage, shared, reflection, allOpen, router, onExit, setMood]);
-
+  const outline = course
+    ? [...course.cards.map((c) => c.title.toLowerCase()), 'the workbook', 'the boss']
+    : null;
   return (
-    <Deck id={`compose-${stage}`}>
-      {stage === 1 && (
-        <CardBody maxWidth={560}>
-          <div style={whisper}>before anything</div>
-          <div style={cardTitle}>what do you already notice about {title.toLowerCase()}?</div>
-          <div style={lead}>there is no wrong answer — your own noticing is the raw material.</div>
-          <textarea
-            ref={reflectionRef}
-            value={reflection}
-            onChange={(e) => setReflection(e.target.value)}
-            disabled={shared}
-            rows={4}
-            placeholder="write anything you have seen, guessed, or wondered…"
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              fontSize: '1rem',
-              fontFamily: 'inherit',
-              lineHeight: 1.6,
-              border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-              borderRadius: 'var(--clss-radius-sm)',
-              outline: 'none',
-              resize: 'vertical',
-              background: 'var(--clss-paper)',
-              color: 'var(--clss-ink-900)',
-            }}
-          />
-          <AnimatePresence>
-            {shared && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, ease: [0.2, 0, 0, 1] }}
-                style={{ ...lead, borderLeft: '2px solid var(--clss-ink-900)', paddingLeft: 14 }}
-              >
-                held. the finished course will take exactly this and test it against the real thing
-                — that is how the good ones start.
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </CardBody>
-      )}
-
-      {stage === 2 && (
-        <CardBody maxWidth={560}>
-          <div style={whisper}>act first — tap each seal</div>
-          <div style={cardTitle}>how this course will treat you</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 6 }}>
-            {reveals.map((r, i) => (
-              <motion.button
-                key={r.seal}
-                type="button"
-                whileTap={{ scale: 0.985 }}
-                onClick={() => setOpened((o) => o.map((v, j) => (j === i ? true : v)))}
-                aria-expanded={opened[i]}
-                style={{
-                  textAlign: 'left',
-                  padding: '16px 18px',
-                  fontFamily: 'inherit',
-                  border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-                  borderRadius: 'var(--clss-radius-md)',
-                  background: opened[i] ? 'var(--clss-paper)' : 'var(--clss-canvas)',
-                  cursor: opened[i] ? 'default' : 'pointer',
-                }}
-              >
-                <span style={whisper}>{r.seal}</span>
-                <AnimatePresence mode="wait" initial={false}>
-                  {opened[i] ? (
-                    <motion.div
-                      key="open"
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ type: 'spring', stiffness: 340, damping: 28 }}
-                      style={{
-                        marginTop: 6,
-                        fontSize: '0.98rem',
-                        lineHeight: 1.6,
-                        color: 'var(--clss-ink-900)',
-                      }}
-                    >
-                      {r.text}
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="sealed"
-                      exit={{ opacity: 0 }}
-                      style={{ marginTop: 6, fontSize: '0.98rem', color: 'var(--clss-ink-500)' }}
-                    >
-                      tap to open
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.button>
-            ))}
+    <CardBody maxWidth={560}>
+      <Stage tint={0.055} minHeight={170}>
+        <TopicSigil id={topicId} size={104} draw />
+      </Stage>
+      <div style={whisper}>
+        {course
+          ? course.seeded
+            ? 'a working course, honestly floored'
+            : 'written and verified'
+          : 'she is composing your course'}
+      </div>
+      <div style={cardTitle}>{title.toLowerCase()}</div>
+      {!outline && (
+        <>
+          <Shimmer lines={4} />
+          <div style={{ ...lead, marginTop: 2 }}>
+            every card is generated, then checked, before it reaches you — it will land here on its
+            own; no need to hold your breath.
           </div>
-        </CardBody>
+        </>
       )}
-
-      {stage === 3 && (
-        <CardBody maxWidth={520}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={whisper}>while this course is verified</div>
-            <div style={{ ...cardTitle, marginTop: 12 }}>one door is already open</div>
-            <div style={{ ...lead, marginTop: 12 }}>
-              the full {title.toLowerCase()} course is being prepared and checked line by line. the
-              atom — linear equations — is live today, end to end: the scale, the sandbox, the boss,
-              the greeting.
-            </div>
+      {outline && (
+        <motion.div
+          variants={cascade}
+          initial="hidden"
+          animate="show"
+          style={{ display: 'flex', flexDirection: 'column', gap: 13 }}
+        >
+          {outline.map((line, i) => (
+            <motion.div
+              key={line}
+              variants={rise}
+              style={{ fontSize: '1.02rem', color: 'var(--clss-ink-900)', lineHeight: 1.45 }}
+            >
+              <span style={{ ...whisper, marginRight: 10 }}>{i + 1}</span>
+              {line}
+            </motion.div>
+          ))}
+          <div style={{ ...lead, marginTop: 4 }}>
+            {course?.seeded
+              ? 'the fully generated course is still in verification — this working path is live now and follows the same grammar.'
+              : settled
+                ? 'composed and checked, line by line. it starts on the next card.'
+                : ''}
           </div>
-        </CardBody>
+        </motion.div>
       )}
-    </Deck>
+    </CardBody>
   );
 }
 
-// --- The composing shell (the ink card, then whichever journey is real) -----------------------------
+// --- The player ------------------------------------------------------------------------------------
 
-const COMPOSE_TIMEOUT_MS = 20_000;
+const COMPOSE_TIMEOUT_MS = 75_000;
 
 export function Composing({
   topicId,
@@ -522,19 +833,53 @@ export function Composing({
 }) {
   const sdk = useSdk();
   const { setMood } = useVidyaChat();
-  const live = sdk.config.llmMode === 'live';
+  const { award } = useProgress();
 
-  const [course, setCourse] = useState<ComposedCourse | null>(null);
-  const [settled, setSettled] = useState(!live);
-  const [inkDone, setInkDone] = useState(false);
+  const nodeUuid = useMemo(() => topicNodeUuid(topicId), [topicId]);
+  const hue = hueForTopic(topicId);
+  const topic: Topic = useMemo(
+    () =>
+      topicById(topicId) ?? {
+        id: topicId,
+        chapterId: '',
+        name: title,
+        blurb: '',
+        prereqTopicIds: [],
+        kind: 'syllabus',
+        xp: 150,
+      },
+    [topicId, title],
+  );
+
+  const [course, setCourse] = useState<GenCourse | null>(null);
+  const [settled, setSettled] = useState(false);
   const [entered, setEntered] = useState(false);
+  // idx walks: cards… then workbook, boss, greeting
+  const [idx, setIdx] = useState(0);
+  const [revealed, setRevealed] = useState(false);
+  const attempts = useRef(0);
+  const enteredAt = useRef(Date.now());
+  const arrivalRecorded = useRef(false);
 
-  // live mode: ask the engines for the real course while the ink draws
+  // arrival is an event — the contract is law
   useEffect(() => {
-    if (!live) return;
+    if (arrivalRecorded.current) return;
+    arrivalRecorded.current = true;
+    enteredAt.current = Date.now();
+    sdk.events.record(
+      'learn.node.entered.v1',
+      { node_id: nodeUuid, entry: 'map', initial_band: 'not_started' },
+      { ontologyNodeId: nodeUuid },
+    );
+  }, [sdk, nodeUuid]);
+
+  // ask the engines for the real course; refusal anywhere floors to the seed, never an error
+  useEffect(() => {
     let cancelled = false;
     let timer = 0;
+    setMood('thinking');
     (async () => {
+      let parsed: GenCourse | null = null;
       try {
         const timeout = new Promise<never>((_, reject) => {
           timer = window.setTimeout(() => reject(new Error('compose timeout')), COMPOSE_TIMEOUT_MS);
@@ -542,19 +887,13 @@ export function Composing({
         const res = await Promise.race([
           sdk.llm.invoke(
             'engine.compose',
-            {
-              topic_id: topicId,
-              topic: title,
-              difficulty: 'core',
-              modalities: ['sim', 'diagram', 'motion', 'image', 'text'],
-            },
+            { topic: title, topic_id: topicId, difficulty: 'core' },
             { consentTier: 'un_elevated' },
           ),
           timeout,
         ]);
-        const parsed = parseComposedCourse(res.output, title);
-        if (!cancelled && parsed) {
-          setCourse(parsed);
+        parsed = parseGenCourse(res.output, title);
+        if (parsed && !cancelled) {
           sdk.events.record(
             'create.course.compiled.v1',
             {
@@ -569,141 +908,152 @@ export function Composing({
           );
         }
       } catch {
-        // refusal invisible — the seed journey is the floor, never an error
+        // the floor below is the fallback — never an error state
       }
       window.clearTimeout(timer);
-      if (!cancelled) setSettled(true);
+      if (cancelled) return;
+      setCourse(parsed ?? seedCourse(title));
+      setSettled(true);
+      setMood('idle');
     })();
     return () => {
       cancelled = true;
       window.clearTimeout(timer);
-    };
-  }, [live, sdk, topicId, title]);
-
-  // she is visibly composing
-  useEffect(() => {
-    if (entered) return;
-    setMood('thinking');
-    const done = window.setTimeout(() => {
-      setInkDone(true);
       setMood('idle');
-    }, 3300);
-    return () => window.clearTimeout(done);
-  }, [entered, setMood]);
+    };
+  }, [sdk, topicId, title, setMood]);
 
-  // endowed progress for the ink card
+  const segments = (course?.cards.length ?? 4) + 3; // + workbook, boss, greeting
+  const stops = course ? course.cards.length : 0;
+  const stage: 'cards' | 'workbook' | 'boss' | 'greeting' = !course
+    ? 'cards'
+    : idx < stops
+      ? 'cards'
+      : idx === stops
+        ? 'workbook'
+        : idx === stops + 1
+          ? 'boss'
+          : 'greeting';
+
+  // endowed progress — never empty, eased forward as the learner travels
   useEffect(() => {
-    if (entered) return;
-    setProgress({ f: 0.08, segments: course ? course.cards.length : 4 });
-  }, [entered, course, setProgress]);
+    setProgress({ f: entered ? (idx + 0.6) / segments : 0.07, segments });
+  }, [entered, idx, segments, setProgress]);
 
   // the ink card's action bar
   useEffect(() => {
     if (entered) return;
     setBar({
       primary: {
-        label: course ? 'start the course' : 'start the preview',
+        label: course?.seeded ? 'start the working course' : 'start the course',
+        disabled: !settled,
         onClick: () => setEntered(true),
-        disabled: !(inkDone && settled),
       },
     });
-  }, [entered, course, inkDone, settled, setBar]);
+  }, [entered, settled, course, setBar]);
 
-  if (entered && course) {
+  // content cards: act → check (reveal + XP) → continue
+  const card = course && idx < stops ? course.cards[idx] : null;
+  useEffect(() => {
+    if (!entered || !card) return;
+    if (!revealed) {
+      setBar({
+        primary: {
+          label: 'check',
+          onClick: () => {
+            setRevealed(true);
+            award('bonus', { amount: 15, onceKey: `gen-${topicId}-${card.id}`, hue });
+            setMood('correct');
+            window.setTimeout(() => setMood('idle'), 1200);
+          },
+        },
+      });
+    } else {
+      setBar({
+        primary: {
+          label: 'continue',
+          onClick: () => {
+            setRevealed(false);
+            setIdx((i) => i + 1);
+          },
+        },
+      });
+    }
+  }, [entered, card, revealed, setBar, award, topicId, hue, setMood]);
+
+  if (!entered || !course) {
     return (
-      <GeneratedJourney
-        course={course}
-        topic={title}
-        setBar={setBar}
-        setProgress={setProgress}
-        onExit={onExit}
-      />
+      <Deck id="compose-ink">
+        <InkScreen topicId={topicId} title={title} course={course} settled={settled} />
+      </Deck>
     );
   }
-  if (entered) {
+
+  if (stage === 'greeting') {
     return (
-      <SeedPreview
-        topicId={topicId}
-        title={title}
-        setBar={setBar}
-        setProgress={setProgress}
-        onExit={onExit}
-      />
+      <Deck id="gen-greeting">
+        <Greeting
+          topic={topic}
+          nodeId={nodeUuid}
+          attemptsTotal={attempts.current}
+          enteredAt={enteredAt.current}
+          setBar={setBar}
+          onContinue={onExit}
+        />
+      </Deck>
     );
   }
 
-  const outline = course ? course.cards.map((c) => c.title.toLowerCase()) : outlineFor(title);
-  const inkNote = course
-    ? 'written and verified — it starts on the next card.'
-    : settled
-      ? 'the full course is in verification — nothing lands here until it passes. a working preview is ready now.'
-      : 'every line is being checked before it reaches you.';
+  if (stage === 'workbook') {
+    return (
+      <Deck id="gen-workbook">
+        <ItemSet
+          items={course.workbook}
+          nodeId={nodeUuid}
+          courseId={course.courseId}
+          eyebrow="the workbook · three quick ones"
+          heading="hold what you just built"
+          hue={hue}
+          passNeeded={0}
+          setBar={setBar}
+          onAttempt={() => {
+            attempts.current += 1;
+          }}
+          awardCorrect={(item) => award('item', { onceKey: `gen-wb-${topicId}-${item.id}`, hue })}
+          onDone={() => setIdx((i) => i + 1)}
+        />
+      </Deck>
+    );
+  }
+
+  if (stage === 'boss') {
+    return (
+      <Deck id="gen-boss">
+        <ItemSet
+          items={course.boss}
+          nodeId={nodeUuid}
+          courseId={course.courseId}
+          eyebrow="the boss · answered together, checked together"
+          heading="prove it is yours"
+          hue={hue}
+          passNeeded={2}
+          setBar={setBar}
+          onAttempt={() => {
+            attempts.current += 1;
+          }}
+          awardCorrect={() => {}}
+          onDone={() => {
+            award('boss', { onceKey: `gen-boss-${topicId}`, hue });
+            setIdx((i) => i + 1);
+          }}
+        />
+      </Deck>
+    );
+  }
 
   return (
-    <Deck id="compose-ink">
-      <CardBody maxWidth={560}>
-        {/* the course arrives with its own sigil — the topic's identity, drawing itself on stage */}
-        <Stage tint={0.055} minHeight={170}>
-          <TopicSigil id={topicId} size={104} draw />
-        </Stage>
-        <div style={whisper}>Vidya is writing your course</div>
-        <div style={cardTitle}>{title.toLowerCase()}</div>
-        <div style={{ display: 'flex', gap: 18, marginTop: 10 }}>
-          {/* the ink line, drawing itself */}
-          <svg
-            width="20"
-            height={outline.length * 54}
-            viewBox={`0 0 20 ${outline.length * 54}`}
-            role="presentation"
-            aria-hidden
-            style={{ flexShrink: 0 }}
-          >
-            <motion.path
-              d={`M 10 6 C 4 ${outline.length * 9}, 16 ${outline.length * 27}, 10 ${outline.length * 54 - 10}`}
-              fill="none"
-              stroke="var(--clss-ink-900)"
-              strokeWidth={1.5}
-              strokeLinecap="round"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 2.9, ease: [0.3, 0, 0.2, 1] }}
-            />
-          </svg>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {outline.map((line, i) => (
-              <motion.div
-                key={line}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 + i * 0.55, duration: 0.45, ease: [0.2, 0, 0, 1] }}
-                style={{
-                  fontSize: '1.02rem',
-                  color: 'var(--clss-ink-900)',
-                  lineHeight: 1.45,
-                  minHeight: 38,
-                }}
-              >
-                <span style={{ ...whisper, marginRight: 10 }}>{i + 1}</span>
-                {line}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-        <AnimatePresence mode="wait" initial={false}>
-          {inkDone && (
-            <motion.div
-              key={inkNote}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              style={{ ...lead, marginTop: 6 }}
-            >
-              {inkNote}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </CardBody>
+    <Deck id={`gen-card-${idx}`}>
+      {card && <GenCardView card={card} course={course} hue={hue} revealed={revealed} />}
     </Deck>
   );
 }

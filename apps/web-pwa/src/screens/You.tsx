@@ -267,7 +267,7 @@ function AvatarPicker({
             width: 'min(324px, calc(100vw - 48px))',
             padding: 16,
             borderRadius: 3,
-            background: 'rgba(255,255,255,0.86)',
+            background: 'rgba(255,255,255,0.93)',
             backdropFilter: 'blur(18px) saturate(1.6)',
             WebkitBackdropFilter: 'blur(18px) saturate(1.6)',
             border: '0.5px solid var(--clss-hairline-on-paper-strong)',
@@ -561,7 +561,14 @@ export function You() {
         {/* ---- the learner ---- */}
         <motion.header
           variants={rise}
-          style={{ display: 'flex', alignItems: 'center', gap: 18, position: 'relative' }}
+          // zIndex lifts the open picker above later sibling sections (their springs create stacking contexts)
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 18,
+            position: 'relative',
+            zIndex: 5,
+          }}
         >
           <button
             type="button"

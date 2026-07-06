@@ -13,6 +13,7 @@ import { createContext, type ReactNode, useCallback, useContext, useMemo, useSta
 export type Route =
   | { name: 'onboarding' }
   | { name: 'home' }
+  | { name: 'chat' }
   | { name: 'learn' }
   | { name: 'practice' }
   | { name: 'subject'; subjectId: string; intent: 'learn' | 'practice' }

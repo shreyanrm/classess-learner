@@ -54,7 +54,8 @@ function Handwritten({ text, animate }: { text: string; animate: boolean }) {
 
 export function VidyaCompanion() {
   const { turns, ask, busy, mood, setMood } = useVidyaChat();
-  const { route } = useRouter();
+  const router = useRouter();
+  const { route } = router;
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState('');
   const [voiceNote, setVoiceNote] = useState(false);
@@ -142,6 +143,28 @@ export function VidyaCompanion() {
                   {busy ? 'Thinking…' : 'Watching this page with you'}
                 </div>
               </div>
+              {/* the drawer is a window onto the one conversation — this opens the whole thing */}
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  router.navigate({ name: 'chat' });
+                }}
+                aria-label="Open the full conversation"
+                style={{
+                  border: 'none',
+                  background: 'transparent',
+                  color: 'var(--clss-ink-500)',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  fontSize: '0.78rem',
+                  fontWeight: 550,
+                  padding: 6,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                full chat ↗
+              </button>
               <button
                 type="button"
                 onClick={() => setOpen(false)}

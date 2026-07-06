@@ -34,11 +34,58 @@ MODALITIES = ("compose", "simulate", "diagram", "video")
 _DEFAULT_CONCEPT = "linear equations in one variable"
 
 _INTERACTION_KINDS = {"tap", "drag", "slide", "type"}
+_CARD_KINDS = {"sim", "diagram", "text"}
+_ITEM_TYPES = {"mcq", "fill"}
 _VISUAL_KINDS = {"svg", "sim", "diagram"}
 _MAX_SCENE_MS = 120_000
 
 
 # --- verification (every artifact passes here before caching or serving) ---------------
+
+
+def _verify_items(raw: Any, need: int = 3) -> list[dict[str, Any]] | None:
+    """Workbook / boss items with structurally verified answers.
+
+    An MCQ serves only when its answer appears exactly once, character-for-character, in
+    its options — the client grades against the verified answer, so ambiguity is refused.
+    """
+    if not isinstance(raw, list):
+        return None
+    clean: list[dict[str, Any]] = []
+    for i, item in enumerate(raw):
+        if not isinstance(item, dict) or item.get("type") not in _ITEM_TYPES:
+            continue
+        prompt = str(item.get("prompt") or "").strip()
+        answer = str(item.get("answer") or "").strip()
+        if not prompt or not answer:
+            continue
+        if item["type"] == "mcq":
+            opts = item.get("options")
+            if not isinstance(opts, list):
+                continue
+            options = [str(o).strip() for o in opts if str(o).strip()]
+            if not (2 <= len(options) <= 5) or len(set(options)) != len(options):
+                continue
+            if sum(1 for o in options if o == answer) != 1:
+                continue
+            clean.append(
+                {
+                    "id": str(item.get("id") or f"i{i + 1}"),
+                    "type": "mcq",
+                    "prompt": prompt,
+                    "options": options,
+                    "answer": answer,
+                }
+            )
+        else:  # fill — the answer must be short and unambiguous enough to type
+            if len(answer) > 60:
+                continue
+            clean.append(
+                {"id": str(item.get("id") or f"i{i + 1}"), "type": "fill", "prompt": prompt, "answer": answer}
+            )
+        if len(clean) == need:
+            return clean
+    return None
 
 
 def _verify_compose(spec: Any, concept: str, difficulty: str) -> dict[str, Any] | None:
@@ -58,18 +105,33 @@ def _verify_compose(spec: Any, concept: str, difficulty: str) -> dict[str, Any] 
         idea = str(card.get("idea") or "").strip()
         prompt = str(interaction.get("prompt") or "").strip()
         reveal = str(card.get("reveal") or "").strip()
+        kind = str(card.get("kind") or "text").strip()
+        if kind not in _CARD_KINDS:
+            kind = "text"
         if not (title and idea and prompt and reveal):
             return None
         clean.append(
             {
                 "id": str(card.get("id") or f"c{i + 1}"),
+                "kind": kind,
                 "title": title,
                 "idea": idea,
                 "interaction": {"kind": interaction["kind"], "prompt": prompt},
                 "reveal": reveal,
             }
         )
-    return {"topic": concept, "difficulty": difficulty, "cards": clean}
+    # the mini-workbook and the boss both ship WITH the outline, answers verified here
+    workbook = _verify_items(spec.get("workbook"))
+    boss = _verify_items(spec.get("boss"))
+    if workbook is None or boss is None:
+        return None
+    return {
+        "topic": concept,
+        "difficulty": difficulty,
+        "cards": clean,
+        "workbook": workbook,
+        "boss": boss,
+    }
 
 
 def _verify_sim(spec: Any) -> dict[str, Any] | None:
@@ -186,6 +248,7 @@ def _seed_compose(concept: str, difficulty: str) -> dict[str, Any]:
         "cards": [
             {
                 "id": "c1",
+                "kind": "text",
                 "title": f"Meet {concept}",
                 "idea": f"One place in the real world where {concept} quietly shows up.",
                 "interaction": {"kind": "tap", "prompt": "Tap the part that looks unknown."},
@@ -193,6 +256,7 @@ def _seed_compose(concept: str, difficulty: str) -> dict[str, Any]:
             },
             {
                 "id": "c2",
+                "kind": "sim",
                 "title": "Feel the rule",
                 "idea": "The idea behaves like a balance: change one side, the other follows.",
                 "interaction": {"kind": "drag", "prompt": "Drag the weight until it balances."},
@@ -200,6 +264,7 @@ def _seed_compose(concept: str, difficulty: str) -> dict[str, Any]:
             },
             {
                 "id": "c3",
+                "kind": "text",
                 "title": "Make a move",
                 "idea": "Undo one operation at a time to expose what is hidden.",
                 "interaction": {"kind": "slide", "prompt": "Slide to peel one layer off."},
@@ -207,6 +272,7 @@ def _seed_compose(concept: str, difficulty: str) -> dict[str, Any]:
             },
             {
                 "id": "c4",
+                "kind": "diagram",
                 "title": "Predict, then check",
                 "idea": "A claimed answer must survive the original problem.",
                 "interaction": {"kind": "type", "prompt": "Type your value and test it."},
@@ -214,10 +280,73 @@ def _seed_compose(concept: str, difficulty: str) -> dict[str, Any]:
             },
             {
                 "id": "c5",
+                "kind": "text",
                 "title": "Where it bends",
                 "idea": f"Every model of {concept} has an edge where it stops working.",
                 "interaction": {"kind": "slide", "prompt": "Push the setting to its extreme."},
                 "reveal": "Knowing where the rule breaks is part of knowing the rule.",
+            },
+        ],
+        # the honest floor: structural questions about the method itself — never fabricated
+        # facts about a topic the seed does not actually know.
+        "workbook": [
+            {
+                "id": "w1",
+                "type": "mcq",
+                "prompt": "What tells you a claimed answer is trustworthy?",
+                "options": [
+                    "it survives being tested against the original problem",
+                    "it looks like the worked example",
+                    "it was the first answer you found",
+                ],
+                "answer": "it survives being tested against the original problem",
+            },
+            {
+                "id": "w2",
+                "type": "mcq",
+                "prompt": "Pushing a rule to its extreme shows you…",
+                "options": [
+                    "where the ideal model stops matching reality",
+                    "that the rule was never true",
+                    "that extremes should be avoided",
+                ],
+                "answer": "where the ideal model stops matching reality",
+            },
+            {
+                "id": "w3",
+                "type": "fill",
+                "prompt": "Before trusting a result, test it against the ________ problem.",
+                "answer": "original",
+            },
+        ],
+        "boss": [
+            {
+                "id": "b1",
+                "type": "mcq",
+                "prompt": "Which move is always legal while working a problem?",
+                "options": [
+                    "one that keeps the answer set exactly the same",
+                    "one that makes the numbers smaller",
+                    "one that removes the hardest part",
+                ],
+                "answer": "one that keeps the answer set exactly the same",
+            },
+            {
+                "id": "b2",
+                "type": "mcq",
+                "prompt": "You substitute your answer back and the two sides disagree. What does that mean?",
+                "options": [
+                    "the answer does not survive the original problem",
+                    "the original problem must be wrong",
+                    "substitution only works on easy problems",
+                ],
+                "answer": "the answer does not survive the original problem",
+            },
+            {
+                "id": "b3",
+                "type": "fill",
+                "prompt": "Each legal move keeps the answer set exactly the ________.",
+                "answer": "same",
             },
         ],
     }
@@ -313,13 +442,28 @@ _JSON_RULES = (
 
 _SYSTEMS = {
     "compose": (
-        "You design guided-discovery lesson cards for Classess, an Indian K-12 learning "
-        "app in the spirit of Brilliant: one idea per card, act-to-reveal before any "
-        "explanation, zero lecturing.\n\n"
-        '{"topic":"...","cards":[{"id":"c1","title":"...","idea":"<the one idea>",'
+        "You design complete guided-discovery micro-courses for Classess, an Indian K-12 "
+        "learning app in the spirit of Brilliant: one idea per card, act-to-reveal before "
+        "any explanation, zero lecturing. Everything must be factually correct for an "
+        "Indian middle-school learner (NCERT framing where it fits).\n\n"
+        '{"topic":"...",'
+        '"cards":[{"id":"c1","kind":"sim|diagram|text","title":"...",'
+        '"idea":"<the one idea, one or two sentences>",'
         '"interaction":{"kind":"tap|drag|slide|type","prompt":"<what the learner does>"},'
-        '"reveal":"<what the action uncovers>"}]}\n'
-        "Include 4 to 7 cards in discovery order. " + _JSON_RULES
+        '"reveal":"<what the action uncovers>"}],'
+        '"workbook":[{"id":"w1","type":"mcq","prompt":"...",'
+        '"options":["...","...","..."],"answer":"<copied character-for-character from options>"},'
+        '{"id":"w2","type":"fill","prompt":"<a sentence with a ________ gap>",'
+        '"answer":"<one unambiguous word or short phrase>"}],'
+        '"boss":[<3 items, same shapes, noticeably harder>]}\n\n'
+        "Rules: 4 to 6 cards in discovery order. Card kind 'sim' only when the idea rests "
+        "on a real quantitative law with 1-3 parameters (at most one sim card); 'diagram' "
+        "when a labeled picture carries the idea (1 or 2 cards); otherwise 'text'. Exactly "
+        "3 workbook items and exactly 3 boss items, each testing an idea actually taught "
+        "on the cards. Every mcq has 3 or 4 distinct options and its answer string appears "
+        "exactly once among them; distractors are plausible misconceptions. Every fill "
+        "answer is a single word or short phrase a learner could reasonably type. "
+        + _JSON_RULES
     ),
     "simulate": (
         "You design interactive simulator specs for Classess. The formula must be a "
@@ -349,7 +493,7 @@ _SYSTEMS = {
     ),
 }
 
-_MAX_TOKENS = {"compose": 1600, "simulate": 900, "diagram": 1400, "video": 3000}
+_MAX_TOKENS = {"compose": 3200, "simulate": 900, "diagram": 1400, "video": 3000}
 
 
 def _complete(
@@ -459,7 +603,13 @@ def run_engine(
 
     cached = store.load(concept, modality, difficulty)
     if cached is not None and cached.get("verified"):
-        return ProviderResponse(output=_public(cached), tokens=0)
+        artifact = cached.get("artifact")
+        # compose grew workbook + boss; a pre-upgrade cache record regenerates instead of serving
+        stale = modality == "compose" and not (
+            isinstance(artifact, dict) and "workbook" in artifact and "boss" in artifact
+        )
+        if not stale:
+            return ProviderResponse(output=_public(cached), tokens=0)
 
     if live:
         artifact, model_used, tokens, seeded = _generate_live(

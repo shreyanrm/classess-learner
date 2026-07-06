@@ -54,12 +54,11 @@ const CHIPS: { label: string; prompt: string }[] = [
 
 export function Home() {
   const router = useRouter();
-  const { turns, ask, busy, mood, setMood } = useVidyaChat();
+  const { ask, busy, mood, setMood } = useVidyaChat();
   const progress = useProgress();
   const { publishPage } = useVidyaBus();
   const [draft, setDraft] = useState('');
   const [voiceNote, setVoiceNote] = useState(false);
-  const scrollRef = useRef<HTMLDivElement | null>(null);
   const voice = useVidyaVoice({ setMood });
 
   // The day, derived from real state — every stop routes somewhere real.
@@ -105,20 +104,13 @@ export function Home() {
     });
   };
 
-  // Only the conversation the learner actually started — the seed line renders as her greeting.
-  const conversation = turns.filter((t) => t.id !== 'seed');
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: the length IS the trigger — scroll on each new turn
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [conversation.length]);
-
+  // Starting to talk opens the conversation page — the same never-ending thread she carries.
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const text = draft.trim();
     if (!text || busy) return;
     setDraft('');
+    router.navigate({ name: 'chat' });
     void ask(text);
   };
 
@@ -224,48 +216,7 @@ export function Home() {
           the day is a walk, not a list
         </motion.div>
 
-        {conversation.length > 0 && (
-          <div
-            ref={scrollRef}
-            style={{
-              width: '100%',
-              maxWidth: 640,
-              maxHeight: '32vh',
-              overflowY: 'auto',
-              marginTop: fluidSpace.md,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 10,
-              padding: '2px 4px',
-            }}
-          >
-            {conversation.map((t) => (
-              <div
-                key={t.id}
-                style={{
-                  alignSelf: t.role === 'user' ? 'flex-end' : 'flex-start',
-                  maxWidth: '80%',
-                  padding: '10px 14px',
-                  borderRadius: 'var(--clss-radius-md)',
-                  fontSize: fluidType.body,
-                  lineHeight: 1.55,
-                  background: t.role === 'user' ? 'var(--clss-ink-900)' : 'var(--clss-paper)',
-                  color: t.role === 'user' ? 'var(--clss-paper)' : 'var(--clss-ink-900)',
-                  border: t.role === 'user' ? 'none' : '0.5px solid var(--clss-hairline-on-paper)',
-                }}
-              >
-                {t.text}
-              </div>
-            ))}
-            {busy && (
-              <div style={{ color: 'var(--clss-ink-500)', fontSize: fluidType.small }}>
-                Vidya is thinking…
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* the chat bar — a calm block beneath the thread's start */}
+        {/* the chat bar — the door; the conversation itself lives on its own page */}
         <motion.form
           variants={rise}
           onSubmit={submit}
@@ -373,7 +324,11 @@ export function Home() {
             <button
               key={c.label}
               type="button"
-              onClick={() => !busy && void ask(c.prompt)}
+              onClick={() => {
+                if (busy) return;
+                router.navigate({ name: 'chat' });
+                void ask(c.prompt);
+              }}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -444,37 +399,6 @@ export function Home() {
           vidya={vidyaNode}
           onGo={(route) => router.navigate(route)}
         />
-      </div>
-
-      {/* the thread's end — wander beyond today */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: fluidSpace.md,
-          padding: `0 ${fluidSpace.gutter} ${fluidSpace.sm}`,
-        }}
-      >
-        <div style={CAPS}>wander beyond today</div>
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
-          <AuroraButton
-            size="lg"
-            onClick={() => router.navigate({ name: 'learn' })}
-            style={{ minWidth: 170 }}
-            flashDelay={firstVisit ? 1.6 : undefined}
-          >
-            Learn
-          </AuroraButton>
-          <AuroraButton
-            size="lg"
-            onClick={() => router.navigate({ name: 'practice' })}
-            style={{ minWidth: 170 }}
-            flashDelay={firstVisit ? 1.95 : undefined}
-          >
-            Practice
-          </AuroraButton>
-        </div>
       </div>
 
       <div

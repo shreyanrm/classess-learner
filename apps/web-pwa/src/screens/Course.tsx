@@ -83,7 +83,8 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
           display: 'flex',
           alignItems: 'center',
           gap: 20,
-          padding: '14px 20px 10px',
+          // clears the fixed 64px app header — the close button must never sit under the logo
+          padding: '72px 20px 10px',
           minHeight: 52,
         }}
       >

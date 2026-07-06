@@ -251,6 +251,63 @@ export function parseSimSpec(raw: unknown): SimSpec | null {
   };
 }
 
+/**
+ * Adapts the gateway engine.simulate artifact (CAS-verified server-side:
+ * `{params:[{name,min,max,default,unit}], formula:"V = I*R", outputs:["V"],
+ * breakpoints:[{param,at,why}], layout}`) into a runnable SimSpec. The formula must be in
+ * solved form `OUT = expr(params)` — anything else is refused and the caller falls back.
+ */
+export function simSpecFromGateway(raw: unknown, title: string): SimSpec | null {
+  if (!isRecord(raw)) return null;
+  const src = isRecord(raw.artifact) ? raw.artifact : raw;
+  const formula = typeof src.formula === 'string' ? src.formula : '';
+  const sides = formula.split('=');
+  if (sides.length !== 2) return null;
+  const [lhs, rhs] = sides.map((s) => (s ?? '').trim());
+  const outNames = (Array.isArray(src.outputs) ? src.outputs : []).filter(
+    (o): o is string => typeof o === 'string',
+  );
+  const out = outNames[0];
+  if (!out || !lhs || !rhs) return null;
+  const expr = lhs === out ? rhs : rhs === out ? lhs : null;
+  if (!expr) return null;
+  const params = (Array.isArray(src.params) ? src.params : []).flatMap((p) => {
+    if (!isRecord(p) || typeof p.name !== 'string') return [];
+    return [
+      {
+        id: p.name,
+        label: p.name,
+        min: p.min,
+        max: p.max,
+        initial: p.default,
+        unit: typeof p.unit === 'string' && p.unit !== 'dimensionless' ? p.unit : undefined,
+      },
+    ];
+  });
+  const breakpoints = (Array.isArray(src.breakpoints) ? src.breakpoints : []).flatMap((b) => {
+    if (!isRecord(b) || typeof b.param !== 'string' || typeof b.at !== 'number') return [];
+    const start = params.find((p) => p.id === b.param);
+    const initial = typeof start?.initial === 'number' ? start.initial : 0;
+    return [
+      {
+        param: b.param,
+        // the note surfaces when the learner pushes the param past the named edge
+        op: b.at <= initial ? '<=' : '>=',
+        value: b.at,
+        note: String(b.why ?? ''),
+      },
+    ];
+  });
+  return parseSimSpec({
+    id: typeof src.id === 'string' ? src.id : 'gateway-sim',
+    title,
+    law: formula,
+    params,
+    outputs: [{ id: out, label: out, expr }],
+    breakpoints,
+  });
+}
+
 function holds(bp: SimBreakpoint, values: Record<string, number>): boolean {
   const v = values[bp.param];
   if (v === undefined) return false;

@@ -39,7 +39,7 @@ from classess_gateway.voice import register_voice
 logger = logging.getLogger("classess.gateway")
 
 _PROD_ORIGIN = "https://learner.classess.com"
-_DEV_ORIGINS = ("http://localhost:5173", "http://localhost:4173")
+_DEV_ORIGINS = ("http://localhost:5173", "http://localhost:5174", "http://localhost:4173")
 
 
 class _JsonFormatter(logging.Formatter):

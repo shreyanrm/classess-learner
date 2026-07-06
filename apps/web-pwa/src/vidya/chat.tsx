@@ -21,6 +21,41 @@ export interface VidyaChat {
   busy: boolean;
   mood: VidyaMood;
   setMood: (mood: VidyaMood) => void;
+  /** The conversation never ends — older turns wait beyond what is loaded. */
+  hasOlder: boolean;
+  /** WhatsApp-style: pull the previous page of the archive in above the current view. */
+  loadOlder: () => void;
+}
+
+// ---- the never-ending archive ----------------------------------------------------------------
+// One conversation for life, append-only, local-first. Only a tail is ever held in memory or
+// sent to the model — the archive is for the learner to scroll, not for Vidya to re-read.
+
+const ARCHIVE_KEY = 'clss-vidya-archive-v1';
+const ARCHIVE_CAP = 2000; // ponytail: localStorage quota guard; move to IndexedDB if anyone outgrows it
+export const CHAT_PAGE = 40;
+
+export function readArchive(): ChatTurn[] {
+  try {
+    const a = JSON.parse(localStorage.getItem(ARCHIVE_KEY) ?? '[]');
+    return Array.isArray(a) ? (a as ChatTurn[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function writeArchive(turns: ChatTurn[]): void {
+  try {
+    localStorage.setItem(ARCHIVE_KEY, JSON.stringify(turns.slice(-ARCHIVE_CAP)));
+  } catch {
+    // storage unavailable — the conversation lives for this session only
+  }
+}
+
+export function appendToArchive(turn: ChatTurn): void {
+  const a = readArchive();
+  a.push(turn);
+  writeArchive(a);
 }
 
 const Ctx = createContext<VidyaChat | null>(null);

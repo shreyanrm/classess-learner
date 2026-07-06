@@ -7,13 +7,32 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      // ponytail: no icons array — Phase 0 ships no binary assets. Add icons when the app installs for real.
+      // Icons are cropped from the wordmark's C-mark (public/classess-logo.png).
+      // Regenerate with the snippet in DEPLOY.md §1.4 if the logo changes.
+      includeAssets: ['classess-logo.png', 'apple-touch-icon.png', 'robots.txt'],
       manifest: {
         name: 'Classess Learner',
         short_name: 'Classess',
+        description:
+          'Learn with Vidya — mastery-first courses, practice, and a companion who knows you.',
+        id: '/',
+        start_url: '/',
+        scope: '/',
+        display: 'standalone',
         theme_color: '#0A0A0B',
         background_color: '#FFFFFF',
-        display: 'standalone',
+        lang: 'en',
+        categories: ['education'],
+        icons: [
+          { src: '/pwa-192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/pwa-512.png', sizes: '512x512', type: 'image/png' },
+          {
+            src: '/pwa-maskable-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
       },
     }),
   ],

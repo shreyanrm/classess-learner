@@ -72,6 +72,44 @@ def test_compose_outline_shape() -> None:
         assert card["interaction"]["kind"] in {"tap", "drag", "slide", "type"}
         assert card["interaction"]["prompt"]
     assert out["artifact"]["topic"] == "fractions"
+    # the mini-workbook and the boss ship with the outline, answers verified structurally
+    for pool in ("workbook", "boss"):
+        items = out["artifact"][pool]
+        assert len(items) == 3
+        for item in items:
+            assert item["type"] in {"mcq", "fill"}
+            assert item["prompt"] and item["answer"]
+            if item["type"] == "mcq":
+                assert sum(1 for o in item["options"] if o == item["answer"]) == 1
+
+
+def test_compose_refuses_ambiguous_or_missing_answers() -> None:
+    from classess_gateway.plexus.engines import _verify_items
+
+    # answer absent from options
+    assert (
+        _verify_items(
+            [{"type": "mcq", "prompt": "p", "options": ["a", "b"], "answer": "c"}] * 3
+        )
+        is None
+    )
+    # answer present twice (duplicate options are refused)
+    assert (
+        _verify_items(
+            [{"type": "mcq", "prompt": "p", "options": ["a", "a", "b"], "answer": "a"}] * 3
+        )
+        is None
+    )
+    # fewer than three sound items
+    assert _verify_items([{"type": "fill", "prompt": "p ____", "answer": "x"}] * 2) is None
+    ok = _verify_items(
+        [
+            {"type": "mcq", "prompt": "p", "options": ["a", "b"], "answer": "a"},
+            {"type": "fill", "prompt": "p ____", "answer": "x"},
+            {"type": "mcq", "prompt": "q", "options": ["c", "d", "e"], "answer": "d"},
+        ]
+    )
+    assert ok is not None and len(ok) == 3
 
 
 # --- simulate ---------------------------------------------------------------------------

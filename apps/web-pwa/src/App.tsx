@@ -17,6 +17,7 @@ import {
 } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { ChatScreen } from './screens/ChatScreen';
 import { Course } from './screens/Course';
 import { ConceptA } from './screens/concepts/ConceptA';
 import { ConceptB } from './screens/concepts/ConceptB';
@@ -35,7 +36,14 @@ import { SdkProvider } from './store/sdk';
 import { AppHeader } from './ui/AppHeader';
 import { ClickInk } from './ui/ClickInk';
 import { VidyaCompanion } from './vidya/Companion';
-import { type ChatTurn, VidyaChatProvider } from './vidya/chat';
+import {
+  appendToArchive,
+  CHAT_PAGE,
+  type ChatTurn,
+  readArchive,
+  VidyaChatProvider,
+  writeArchive,
+} from './vidya/chat';
 
 const LLM_MODE = (import.meta.env.VITE_LLM_MODE as 'mock' | 'live' | undefined) ?? 'mock';
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
@@ -50,6 +58,7 @@ const SUPABASE_DEV_JWT = import.meta.env.VITE_SUPABASE_DEV_JWT as string | undef
 /** Zero-argument destinations Vidya may offer to navigate to. */
 const NAV_ROUTES: Record<string, Route> = {
   home: { name: 'home' },
+  chat: { name: 'chat' },
   learn: { name: 'learn' },
   practice: { name: 'practice' },
   progress: { name: 'progress' },
@@ -88,6 +97,7 @@ function Screen() {
       >
         {route.name === 'onboarding' && <Onboarding />}
         {route.name === 'home' && <Home />}
+        {route.name === 'chat' && <ChatScreen />}
         {route.name === 'learn' && <Learn />}
         {route.name === 'practice' && <Practice />}
         {route.name === 'subject' && (
@@ -110,20 +120,50 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   const { route } = useRouter();
   const [busy, setBusy] = useState(false);
   const [mood, setMood] = useState<VidyaMood>('idle');
-  const [turns, setTurns] = useState<ChatTurn[]>(() => {
-    const cached = sdk.state.loadThreadCache('vidya');
-    if (cached && cached.turns.length > 0) return cached.turns;
-    return [
-      { id: 'seed', role: 'vidya', text: 'ask me anything — I can see the page you are on.' },
-    ];
+  // One conversation for life: the archive is the local source of truth; only its tail loads.
+  const [boot] = useState(() => {
+    let archive = readArchive();
+    if (archive.length === 0) {
+      // migrate the old tail-only thread cache into the archive, once
+      const cached = sdk.state.loadThreadCache('vidya');
+      if (cached && cached.turns.length > 0) {
+        archive = cached.turns
+          .filter((t) => t.id !== 'seed')
+          .map((t, i) => ({ ...t, id: `t${i}-${t.role}` }));
+        writeArchive(archive);
+      }
+    }
+    const start = Math.max(0, archive.length - CHAT_PAGE);
+    return { tail: archive.slice(start), start };
   });
-  // She never forgets: the conversation survives reloads and devices — the local cache boots the
-  // thread instantly, then learner_threads reconciles in (live mode) if another device said more.
+  const [turns, setTurns] = useState<ChatTurn[]>(() =>
+    boot.tail.length > 0
+      ? boot.tail
+      : [{ id: 'seed', role: 'vidya', text: 'ask me anything — I can see the page you are on.' }],
+  );
+  const loadedStart = useRef(boot.start);
+  const [hasOlder, setHasOlder] = useState(boot.start > 0);
+  const loadOlder = () => {
+    const from = Math.max(0, loadedStart.current - CHAT_PAGE);
+    if (from === loadedStart.current) return;
+    const older = readArchive().slice(from, loadedStart.current);
+    loadedStart.current = from;
+    setHasOlder(from > 0);
+    setTurns((prev) => [...older, ...prev]);
+  };
+  // Cross-device: learner_threads reconciles in (live mode) only when this device has nothing.
+  const emptyAtBoot = useRef(boot.tail.length === 0);
   useEffect(() => {
     let cancelled = false;
     sdk.state.hydrateThread('vidya').then((snapshot) => {
-      if (cancelled || !snapshot) return;
-      setTurns((prev) => (snapshot.turns.length > prev.length ? snapshot.turns : prev));
+      if (cancelled || !snapshot || !emptyAtBoot.current || snapshot.turns.length === 0) return;
+      const migrated = snapshot.turns
+        .filter((t) => t.id !== 'seed')
+        .map((t, i) => ({ ...t, id: `t${i}-${t.role}` }));
+      writeArchive(migrated);
+      loadedStart.current = Math.max(0, migrated.length - CHAT_PAGE);
+      setHasOlder(loadedStart.current > 0);
+      setTurns(migrated.slice(loadedStart.current));
     });
     return () => {
       cancelled = true;
@@ -142,13 +182,25 @@ function AppInner({ sdk }: { sdk: Sdk }) {
 
   // A real Vidya turn: she reasons over the page she is plugged into, then speaks and acts on it.
   const ask = async (text: string) => {
-    setTurns((prev) => [...prev, { id: `u-${prev.length}`, role: 'user', text }]);
+    const say = (t: Omit<ChatTurn, 'id'>) => {
+      const turn = { ...t, id: `t${readArchive().length}-${t.role}` };
+      appendToArchive(turn);
+      setTurns((prev) => [...prev, turn]);
+      return turn;
+    };
+    const userTurn = say({ role: 'user', text });
     setBusy(true);
     setMood('thinking');
-    bus.publishTurn({
-      recentTurns: turns.map((t) => ({ role: t.role, text: t.text })),
-      lastUserInput: text,
-    });
+    // She remembers what matters, not the transcript: a short recent window, with her own long
+    // explanations clipped — the archive is for the learner to scroll, never re-fed to the model.
+    const recent = [...turns.slice(-7), userTurn].map((t) => ({
+      role: t.role,
+      text:
+        t.role === 'vidya' && t.text.length > 220
+          ? `${t.text.slice(0, 220)}…`
+          : t.text.slice(0, 600),
+    }));
+    bus.publishTurn({ recentTurns: recent, lastUserInput: text });
     try {
       const result = await sdk.llm.invoke(
         'vidya.turn',
@@ -156,22 +208,12 @@ function AppInner({ sdk }: { sdk: Sdk }) {
         { consentTier: 'un_elevated' },
       );
       const output = result.output as { say?: string; actions?: unknown[] };
-      setTurns((prev) => [
-        ...prev,
-        {
-          id: `v-${prev.length}`,
-          role: 'vidya',
-          text: output.say ?? 'let us look at this together.',
-        },
-      ]);
+      say({ role: 'vidya', text: output.say ?? 'let us look at this together.' });
       const actions = parseActions(output.actions ?? []);
       bus.dispatch(actions);
       setMood(actions.length > 0 ? 'explaining' : 'idle');
     } catch {
-      setTurns((prev) => [
-        ...prev,
-        { id: `v-${prev.length}`, role: 'vidya', text: 'give me a moment, then ask me again.' },
-      ]);
+      say({ role: 'vidya', text: 'give me a moment, then ask me again.' });
       setMood('idle');
     } finally {
       setBusy(false);
@@ -179,7 +221,10 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: ask is recreated with turns; tracking turns/busy/mood covers it
-  const chat = useMemo(() => ({ turns, ask, busy, mood, setMood }), [turns, busy, mood]);
+  const chat = useMemo(
+    () => ({ turns, ask, busy, mood, setMood, hasOlder, loadOlder }),
+    [turns, busy, mood, hasOlder],
+  );
 
   // The first authenticated boot after the sign-in beat: record the subject's creation, fully
   // attributed to the real auth.uid() through the live outbox.
@@ -208,7 +253,8 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       {/* Her ink over the current screen — annotations anchored to real elements. */}
       <VidyaOverlay />
       {!inFlow && <AppHeader />}
-      {!inFlow && !onHome && <VidyaCompanion />}
+      {/* the chat page IS her — no docked twin over it */}
+      {!inFlow && !onHome && route.name !== 'chat' && <VidyaCompanion />}
       <CommandPalette />
       <ClickInk />
     </VidyaChatProvider>

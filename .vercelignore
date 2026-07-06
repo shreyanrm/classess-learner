@@ -1,0 +1,9 @@
+# Keep deploy uploads lean: screenshots/design junk only. Workspace dirs
+# (apps/packages/platform) must upload — bun install needs every member.
+*.png
+!apps/web-pwa/public/*.png
+*.pdf
+.playwright-mcp
+respdiag
+apps/web-pwa/test-results
+apps/web-pwa/dist
