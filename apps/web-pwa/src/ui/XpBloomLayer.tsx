@@ -131,7 +131,7 @@ export function XpBloomLayer() {
               border: '1.5px solid var(--clss-paper)',
             }}
           >
-            {xp}
+            {xp} xp
           </motion.span>
         </motion.button>
       </div>
