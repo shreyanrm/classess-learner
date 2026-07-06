@@ -116,10 +116,20 @@ export function AtomJourney({
     setProgress({ f: Math.min(1, entry[0] + sub * entry[1]), segments: SEGMENTS });
   }, [setProgress, card, sub]);
 
-  const go = useCallback((next: CardId) => {
-    setSub(0);
-    setCard(next);
-  }, []);
+  // Every content type pays out on completion — small, once per topic, felt immediately.
+  const CARD_XP: Partial<Record<CardId, number>> = useMemo(
+    () => ({ scale: 15, whatif: 15, practice: 20 }),
+    [],
+  );
+  const go = useCallback(
+    (next: CardId) => {
+      const earned = CARD_XP[card];
+      if (earned) award('bonus', { amount: earned, onceKey: `card-${topic.id}-${card}` });
+      setSub(0);
+      setCard(next);
+    },
+    [card, CARD_XP, award, topic.id],
+  );
 
   const onAttempt = useCallback(() => {
     attempts.current += 1;
