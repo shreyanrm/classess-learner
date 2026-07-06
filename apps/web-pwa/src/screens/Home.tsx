@@ -267,9 +267,11 @@ export function Home() {
           >
             {voiceOn ? '● listening' : '◦ mic'}
           </button>
-          <MagneticButton variant="primary" onClick={() => {}} ariaLabel="Ask Vidya">
-            ask
-          </MagneticButton>
+          {draft.trim() && (
+            <MagneticButton variant="primary" onClick={() => {}} ariaLabel="Ask Vidya">
+              ask
+            </MagneticButton>
+          )}
         </form>
         {voiceNote && (
           <div style={{ marginTop: 8, color: 'var(--clss-ink-500)', fontSize: '0.8rem' }}>

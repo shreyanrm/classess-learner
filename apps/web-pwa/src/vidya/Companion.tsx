@@ -248,22 +248,24 @@ export function VidyaCompanion() {
               >
                 {voiceOn ? '● listening' : '◦ mic'}
               </button>
-              <button
-                type="submit"
-                disabled={busy}
-                style={{
-                  border: 'none',
-                  background: 'var(--clss-ink-900)',
-                  color: 'var(--clss-paper)',
-                  borderRadius: 'var(--clss-radius-sm)',
-                  padding: '10px 14px',
-                  cursor: busy ? 'default' : 'pointer',
-                  fontFamily: 'inherit',
-                  fontSize: '0.9rem',
-                }}
-              >
-                ask
-              </button>
+              {draft.trim() && (
+                <button
+                  type="submit"
+                  disabled={busy}
+                  style={{
+                    border: 'none',
+                    background: 'var(--clss-ink-900)',
+                    color: 'var(--clss-paper)',
+                    borderRadius: 'var(--clss-radius-sm)',
+                    padding: '10px 14px',
+                    cursor: busy ? 'default' : 'pointer',
+                    fontFamily: 'inherit',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  ask
+                </button>
+              )}
             </form>
             {voiceNote && (
               <div
