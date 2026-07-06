@@ -25,6 +25,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from classess_gateway.cache import CacheBackend, CacheEntry, InMemoryCache, cache_key
+from classess_gateway.email import register_email
 from classess_gateway.providers import Provider, build_provider
 from classess_gateway.registry import (
     ConsentTier,
@@ -373,6 +374,7 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
         return gw.invoke(name, request)
 
     register_voice(app)
+    register_email(app)
 
     return app
 
