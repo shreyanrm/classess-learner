@@ -2146,6 +2146,8 @@
         {
           "id": "math",
           "name": "Mathematics",
+          "provenance": "cross-checked against owner-supplied NCERT catalog 2026-07-07",
+          "ncertCodes": ["iemh1"],
           "chapters": [
             {
               "index": 1,
@@ -2368,6 +2370,8 @@
         {
           "id": "science",
           "name": "Science",
+          "provenance": "cross-checked against owner-supplied NCERT catalog 2026-07-07",
+          "ncertCodes": ["iesc1"],
           "chapters": [
             {
               "index": 1,
@@ -2590,6 +2594,8 @@
         {
           "id": "social",
           "name": "Social science",
+          "provenance": "cross-checked against owner-supplied NCERT catalog 2026-07-07",
+          "ncertCodes": ["iess1", "iess2", "iess3", "iess4"],
           "chapters": [
             {
               "index": 1,
@@ -2961,6 +2967,8 @@
         {
           "id": "math",
           "name": "Mathematics",
+          "provenance": "cross-checked against owner-supplied NCERT catalog 2026-07-07",
+          "ncertCodes": ["jemh1"],
           "chapters": [
             {
               "index": 1,
@@ -3219,6 +3227,8 @@
         {
           "id": "science",
           "name": "Science",
+          "provenance": "cross-checked against owner-supplied NCERT catalog 2026-07-07",
+          "ncertCodes": ["jesc1"],
           "chapters": [
             {
               "index": 1,
@@ -3459,6 +3469,8 @@
         {
           "id": "social",
           "name": "Social science",
+          "provenance": "cross-checked against owner-supplied NCERT catalog 2026-07-07",
+          "ncertCodes": ["jess1", "jess2", "jess3", "jess4"],
           "chapters": [
             {
               "index": 1,

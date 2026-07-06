@@ -1,7 +1,7 @@
 {
   "board": "ICSE",
   "provenance": "mixed",
-  "note": "Chapter names and order fetched from secondary sources mirroring the official CISCE syllabus, because every cisce.org PDF returned HTTP 403 / geo-block on direct fetch (2026-07-06). No block is official-cisce-fetched; all fetched blocks are marked 'fetched-secondary' with the exact URL actually read (shaalaa.com, byjus.com, knowledgeboat.com, icseportal.in, pw.live, and a verbatim rehost of the official CISCE Chemistry PDF on collegedekho.com). Each subject block carries its own 'provenance' field. Topic breakdowns under each real chapter are our own plain-English decomposition where the source listed chapters without sub-topics. Subject mapping to the board's real structure: Classes 6-8 run ONE combined 'Science' subject (id 'science'); Classes 9-10 split Science into three separately examined subjects Physics/Chemistry/Biology (ids 'physics', 'chemistry', 'biology'). What other boards call 'Social Science' is examined by CISCE as TWO separate subjects, so it is stored here as 'History & Civics' (id 'history_civics') and 'Geography' (id 'geography') across all five grades. 'Computer Applications' (id 'computer') is CISCE's real subject name: for Classes 9-10 it is the official Java/OOP elective; for Classes 6-8 CISCE publishes NO official computer syllabus, so those three blocks use a commonly-used publisher/tutor compilation (Vedantu) and say so in their provenance string. Classes 6-8 Mathematics follows CISCE's official 6-unit structure (Number System, Ratio and Proportion / Commercial Arithmetic, Algebra, Geometry, Mensuration, Data Handling) with units as chapters; the previous draft had used CBSE/NCERT chapter titles. Geography Classes 6-8 were likewise fully replaced, as the previous draft had contained CBSE chapters not present in the ICSE syllabus.",
+  "note": "Chapter names and order for Class 6-8 are fetched from secondary sources mirroring the official CISCE syllabus, because cisce.org's .aspx pages return HTTP 403 to every fetcher (2026-07-06/07). On 2026-07-07 a targeted re-attempt found that cisce.org's actual syllabus PDFs, hosted under cisce.org/wp-content/uploads/, serve real content to a standard browser User-Agent even though the .aspx site shell still blocks every request. Using that path, all seven Class 9-10 subject blocks (math, physics, chemistry, biology, computer, history_civics, geography) were upgraded to genuine official provenance by downloading and reading CISCE's own 'ICSE Examination Year 2028' two-year (Class IX & X) syllabus PDF for each subject (cisce.org/wp-content/uploads/2026/01/{9.-Mathematics,10.-Physics,11.-Chemistry,12.-Biology,18.-Computer-Applications,5.-History-Civics,6.-Geography}.pdf, dated January 2026) and are now marked 'fetched:<url> (2026-07-07)'. Where the official document's own chapter grouping and order differed materially from the prior secondary-sourced version, the chapters array was rewritten to match it: Class 9 Biology now splits 'Diversity in Animal Kingdom' from 'Economic importance of Bacteria and Fungi' (previously merged) and drops the Respiratory System topic and the invented 'Waste Generation and Management' chapter, neither of which the official Class IX syllabus contains; Class 10 Biology is rebuilt from 16 finely-split chapters down to CISCE's real 6 (Basic Biology, Plant Physiology, Human Anatomy and Physiology, Genetics, Population, Environmental concerns & Pollution), dropping 'Human Evolution' and 'Physical Health and Hygiene' which are not part of the current official syllabus; Class 9 Computer Applications gains the missing official 'Basic structure of a class in java' chapter and renames two others to match CISCE's own headings ('Identifiers and Literals', 'Data processing in Java', 'Ethical computing'); Class 10 Computer Applications is reordered to CISCE's real 8-chapter sequence, gains the missing 'Disruptive technologies' chapter, drops the invented standalone 'Encapsulation' chapter (folded into 'Class as the Basis of all Computation'), and swaps the outdated 'StringBuffer' topic for 'String arrays'; History & Civics for both grades is reordered to the official paper's Civics-before-History sequence, and Class 9's invented 'Local Self Government' chapter (Panchayati Raj/Municipalities is Middle School, not Class 9-10, content) is replaced with the real official unit 'The State Legislatures'. Mathematics, Physics, Geography, and Chemistry already matched the official structure closely (Chemistry's Class 9 chapter 8 was renamed 'Atmospheric and Environmental Chemistry' per the official heading, adding its Water Pollution sub-topic); Mathematics and Physics keep their existing finer per-topic chapter breakdown (matching the standard ICSE textbook decomposition of the same official content units) rather than collapsing to CISCE's broader unit headings, since both already cover the same named topics the official document lists. Class 6-8 (Middle School) remain 'fetched-secondary' for every subject: CISCE does not publish a public examination-style syllabus PDF for Class 6-8 the way it does for the Class IX-X and XI-XII bands (repeated site and targeted searches on 2026-07-07 turned up no official cisce.org document for Middle School math, science, history & civics, or geography), so there is no official source to fetch for those grades; this includes Class 6-8 Computer Applications, for which CISCE prescribes no syllabus at all (schools choose their own), unchanged from the prior pass. Subject mapping to the board's real structure: Classes 6-8 run ONE combined 'Science' subject (id 'science'); Classes 9-10 split Science into three separately examined subjects Physics/Chemistry/Biology (ids 'physics', 'chemistry', 'biology'). What other boards call 'Social Science' is examined by CISCE as ONE subject with two papers, 'History, Civics and Geography' (H.C.G.) — Paper 1 History & Civics and Paper 2 Geography — stored here as two subject blocks (ids 'history_civics' and 'geography') across all five grades, each now ordered to match its official paper's own section order (Civics/Section A before History/Section B) for Class 9-10.",
   "grades": [
     {
       "grade": "Class 6",
@@ -2345,7 +2345,7 @@
         {
           "id": "math",
           "name": "Mathematics",
-          "provenance": "fetched-secondary:https://byjus.com/icse-class-9-maths-selina-solutions/ (2026-07-06)",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2026/01/9.-Mathematics.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -2708,7 +2708,7 @@
         {
           "id": "physics",
           "name": "Physics",
-          "provenance": "fetched-secondary:https://www.shaalaa.com/syllabus/cisce-icse-class-9-physics_8414 (2026-07-06)",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2026/01/10.-Physics.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -2867,7 +2867,7 @@
         {
           "id": "chemistry",
           "name": "Chemistry",
-          "provenance": "fetched-secondary:https://static.collegedekho.com/media/uploads/2025/10/15/14-icse-chemistry-26.pdf (2026-07-06)",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2026/01/11.-Chemistry.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -3005,7 +3005,7 @@
             },
             {
               "index": 8,
-              "name": "Atmospheric Pollution",
+              "name": "Atmospheric and Environmental Chemistry",
               "topics": [
                 {
                   "name": "Acid rain",
@@ -3018,6 +3018,10 @@
                 {
                   "name": "Ozone depletion",
                   "blurb": "The shield high above us thins under attack."
+                },
+                {
+                  "name": "Water pollution",
+                  "blurb": "Toxic metals, plastics, sewage and pesticides fouling water bodies."
                 }
               ]
             }
@@ -3026,7 +3030,7 @@
         {
           "id": "biology",
           "name": "Biology",
-          "provenance": "fetched-secondary:https://byjus.com/icse/icse-biology-class-9-syllabus/ (2026-07-06)",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2026/01/12.-Biology.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -3088,24 +3092,38 @@
             },
             {
               "index": 4,
-              "name": "Diversity in Living Organisms",
+              "name": "Diversity in Animal Kingdom",
               "topics": [
                 {
-                  "name": "Five Kingdom classification",
-                  "blurb": "Sorting all life into five great kingdoms."
+                  "name": "Non-chordates",
+                  "blurb": "Porifera through Echinodermata, animals without a backbone."
                 },
                 {
-                  "name": "Economic importance of bacteria",
-                  "blurb": "The microbes that help and harm us."
-                },
-                {
-                  "name": "Economic importance of fungi",
-                  "blurb": "Moulds and yeasts that feed, ferment, and rot."
+                  "name": "Chordates",
+                  "blurb": "Five classes united by a supporting notochord: fish to mammals."
                 }
               ]
             },
             {
               "index": 5,
+              "name": "Economic importance of Bacteria and Fungi",
+              "topics": [
+                {
+                  "name": "Useful role of bacteria",
+                  "blurb": "Antibiotics, nitrogen fixation, and fermenting food and leather."
+                },
+                {
+                  "name": "Harmful role of bacteria",
+                  "blurb": "Spoiled food and disease in plants, animals, and people."
+                },
+                {
+                  "name": "Economic importance of fungi",
+                  "blurb": "Yeasts and moulds behind bread, beer, cheese, and mushrooms."
+                }
+              ]
+            },
+            {
+              "index": 6,
               "name": "Human Anatomy and Physiology",
               "topics": [
                 {
@@ -3123,15 +3141,11 @@
                 {
                   "name": "The skin",
                   "blurb": "Structure and functions of the body's outer layer."
-                },
-                {
-                  "name": "The respiratory system",
-                  "blurb": "How we breathe in oxygen and breathe out carbon dioxide."
                 }
               ]
             },
             {
-              "index": 6,
+              "index": 7,
               "name": "Health and Hygiene",
               "topics": [
                 {
@@ -3147,27 +3161,13 @@
                   "blurb": "Bodies like the Red Cross and WHO that protect health."
                 }
               ]
-            },
-            {
-              "index": 7,
-              "name": "Waste Generation and Management",
-              "topics": [
-                {
-                  "name": "Sources of waste",
-                  "blurb": "Domestic, industrial, and agricultural waste."
-                },
-                {
-                  "name": "Safe disposal of waste",
-                  "blurb": "Segregation, composting, and incineration done right."
-                }
-              ]
             }
           ]
         },
         {
           "id": "computer",
           "name": "Computer Applications",
-          "provenance": "fetched-secondary:https://www.icseportal.in/class-09/syllabus/computer-applications (2026-07-06)",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2026/01/18.-Computer-Applications.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -3199,7 +3199,7 @@
             },
             {
               "index": 3,
-              "name": "Values and Data Types",
+              "name": "Identifiers and Literals",
               "topics": [
                 {
                   "name": "Character set and tokens",
@@ -3231,7 +3231,21 @@
             },
             {
               "index": 5,
-              "name": "Input in Java",
+              "name": "Basic structure of a class in java",
+              "topics": [
+                {
+                  "name": "The class-and-main skeleton",
+                  "blurb": "Every Java program starts from a class holding a main method."
+                },
+                {
+                  "name": "Comments and imports",
+                  "blurb": "Notes for humans, and the import line that brings in library classes."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Data processing in Java",
               "topics": [
                 {
                   "name": "The Scanner class",
@@ -3240,11 +3254,15 @@
                 {
                   "name": "Packages and streams",
                   "blurb": "Where input classes live and how data flows."
+                },
+                {
+                  "name": "Types of errors",
+                  "blurb": "Syntax, runtime, and logical mistakes a program can make."
                 }
               ]
             },
             {
-              "index": 6,
+              "index": 7,
               "name": "Mathematical Library Methods",
               "topics": [
                 {
@@ -3258,7 +3276,7 @@
               ]
             },
             {
-              "index": 7,
+              "index": 8,
               "name": "Conditional Constructs in Java",
               "topics": [
                 {
@@ -3272,7 +3290,7 @@
               ]
             },
             {
-              "index": 8,
+              "index": 9,
               "name": "Iterative Constructs in Java",
               "topics": [
                 {
@@ -3286,7 +3304,7 @@
               ]
             },
             {
-              "index": 9,
+              "index": 10,
               "name": "Nested for Loops",
               "topics": [
                 {
@@ -3300,8 +3318,8 @@
               ]
             },
             {
-              "index": 10,
-              "name": "Computing and Ethics",
+              "index": 11,
+              "name": "Ethical computing",
               "topics": [
                 {
                   "name": "Ethical use of computers",
@@ -3310,6 +3328,10 @@
                 {
                   "name": "Intellectual property",
                   "blurb": "Respecting the work and rights of others."
+                },
+                {
+                  "name": "Online safety",
+                  "blurb": "Data protection, spam, and responsible social media use."
                 }
               ]
             }
@@ -3318,150 +3340,10 @@
         {
           "id": "history_civics",
           "name": "History & Civics",
-          "provenance": "fetched-secondary:https://byjus.com/icse/icse-class-9-history-and-civics-syllabus/ (2026-07-06)",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2026/01/5.-History-Civics.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
-              "name": "The Harappan Civilisation",
-              "topics": [
-                {
-                  "name": "Town planning",
-                  "blurb": "Grid streets and drains mark careful cities."
-                },
-                {
-                  "name": "Economy and trade",
-                  "blurb": "Craft and exchange sustained the towns."
-                },
-                {
-                  "name": "Decline of the civilisation",
-                  "blurb": "The cities faded for uncertain reasons."
-                }
-              ]
-            },
-            {
-              "index": 2,
-              "name": "The Vedic Period",
-              "topics": [
-                {
-                  "name": "Early and later Vedic age",
-                  "blurb": "Society changed across the two phases."
-                },
-                {
-                  "name": "Society and life",
-                  "blurb": "Family, clan, and occupation shaped daily life."
-                },
-                {
-                  "name": "Religion",
-                  "blurb": "Nature worship and ritual defined belief."
-                }
-              ]
-            },
-            {
-              "index": 3,
-              "name": "Jainism and Buddhism",
-              "topics": [
-                {
-                  "name": "Teachings of Mahavira",
-                  "blurb": "Non-violence and self-discipline at the core."
-                },
-                {
-                  "name": "Teachings of the Buddha",
-                  "blurb": "The middle path toward ending suffering."
-                },
-                {
-                  "name": "Spread of the faiths",
-                  "blurb": "Both religions reached far beyond India."
-                }
-              ]
-            },
-            {
-              "index": 4,
-              "name": "The Mauryan Empire",
-              "topics": [
-                {
-                  "name": "Chandragupta and Ashoka",
-                  "blurb": "Founders who built and broadened the empire."
-                },
-                {
-                  "name": "Administration",
-                  "blurb": "Officials and roads held a vast realm together."
-                },
-                {
-                  "name": "Ashoka's Dhamma",
-                  "blurb": "A code of ethics carved across the land."
-                }
-              ]
-            },
-            {
-              "index": 5,
-              "name": "The Sangam Age",
-              "topics": [
-                {
-                  "name": "Sources of the age",
-                  "blurb": "Tamil poetry records southern life."
-                },
-                {
-                  "name": "Society and trade",
-                  "blurb": "A prosperous world of ports and guilds."
-                }
-              ]
-            },
-            {
-              "index": 6,
-              "name": "The Age of the Guptas",
-              "topics": [
-                {
-                  "name": "A golden age",
-                  "blurb": "Peace and prosperity spurred great works."
-                },
-                {
-                  "name": "Art and science",
-                  "blurb": "Advances in mathematics, medicine, and art."
-                },
-                {
-                  "name": "Administration",
-                  "blurb": "A lighter, decentralised style of rule."
-                }
-              ]
-            },
-            {
-              "index": 7,
-              "name": "Medieval India",
-              "topics": [
-                {
-                  "name": "The Cholas",
-                  "blurb": "A powerful southern dynasty of temples and trade."
-                },
-                {
-                  "name": "The Delhi Sultanate",
-                  "blurb": "Sultans who ruled the north for centuries."
-                },
-                {
-                  "name": "The Mughal Empire",
-                  "blurb": "A grand empire that shaped modern India."
-                }
-              ]
-            },
-            {
-              "index": 8,
-              "name": "The Modern Age in Europe",
-              "topics": [
-                {
-                  "name": "The Renaissance",
-                  "blurb": "A rebirth of art and learning."
-                },
-                {
-                  "name": "The Reformation",
-                  "blurb": "A movement that reshaped the Church."
-                },
-                {
-                  "name": "The Industrial Revolution",
-                  "blurb": "Machines transformed work and society."
-                }
-              ]
-            },
-            {
-              "index": 9,
               "name": "Our Constitution",
               "topics": [
                 {
@@ -3479,7 +3361,7 @@
               ]
             },
             {
-              "index": 10,
+              "index": 2,
               "name": "Elections",
               "topics": [
                 {
@@ -3493,16 +3375,164 @@
               ]
             },
             {
-              "index": 11,
-              "name": "Local Self Government",
+              "index": 3,
+              "name": "The State Legislatures",
               "topics": [
                 {
-                  "name": "Panchayati raj",
-                  "blurb": "Village self-government at the grassroots."
+                  "name": "The Legislative Assembly",
+                  "blurb": "The elected lower house of a state's legislature."
                 },
                 {
-                  "name": "Municipalities",
-                  "blurb": "Elected bodies that run towns and cities."
+                  "name": "The Legislative Council",
+                  "blurb": "An upper house that some, but not all, states choose to have."
+                },
+                {
+                  "name": "Unicameral and bicameral systems",
+                  "blurb": "One house or two, depending on the state."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "The Harappan Civilisation",
+              "topics": [
+                {
+                  "name": "Town planning",
+                  "blurb": "Grid streets and drains mark careful cities."
+                },
+                {
+                  "name": "Economy and trade",
+                  "blurb": "Craft and exchange sustained the towns."
+                },
+                {
+                  "name": "Decline of the civilisation",
+                  "blurb": "The cities faded for uncertain reasons."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "The Vedic Period",
+              "topics": [
+                {
+                  "name": "Early and later Vedic age",
+                  "blurb": "Society changed across the two phases."
+                },
+                {
+                  "name": "Society and life",
+                  "blurb": "Family, clan, and occupation shaped daily life."
+                },
+                {
+                  "name": "Religion",
+                  "blurb": "Nature worship and ritual defined belief."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Jainism and Buddhism",
+              "topics": [
+                {
+                  "name": "Teachings of Mahavira",
+                  "blurb": "Non-violence and self-discipline at the core."
+                },
+                {
+                  "name": "Teachings of the Buddha",
+                  "blurb": "The middle path toward ending suffering."
+                },
+                {
+                  "name": "Spread of the faiths",
+                  "blurb": "Both religions reached far beyond India."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "The Mauryan Empire",
+              "topics": [
+                {
+                  "name": "Chandragupta and Ashoka",
+                  "blurb": "Founders who built and broadened the empire."
+                },
+                {
+                  "name": "Administration",
+                  "blurb": "Officials and roads held a vast realm together."
+                },
+                {
+                  "name": "Ashoka's Dhamma",
+                  "blurb": "A code of ethics carved across the land."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "The Sangam Age",
+              "topics": [
+                {
+                  "name": "Sources of the age",
+                  "blurb": "Tamil poetry records southern life."
+                },
+                {
+                  "name": "Society and trade",
+                  "blurb": "A prosperous world of ports and guilds."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "The Age of the Guptas",
+              "topics": [
+                {
+                  "name": "A golden age",
+                  "blurb": "Peace and prosperity spurred great works."
+                },
+                {
+                  "name": "Art and science",
+                  "blurb": "Advances in mathematics, medicine, and art."
+                },
+                {
+                  "name": "Administration",
+                  "blurb": "A lighter, decentralised style of rule."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Medieval India",
+              "topics": [
+                {
+                  "name": "The Cholas",
+                  "blurb": "A powerful southern dynasty of temples and trade."
+                },
+                {
+                  "name": "The Delhi Sultanate",
+                  "blurb": "Sultans who ruled the north for centuries."
+                },
+                {
+                  "name": "The Mughal Empire",
+                  "blurb": "A grand empire that shaped modern India."
+                },
+                {
+                  "name": "Composite Culture",
+                  "blurb": "Bhakti and Sufi movements, and Christian missionaries, blending traditions."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "The Modern Age in Europe",
+              "topics": [
+                {
+                  "name": "The Renaissance",
+                  "blurb": "A rebirth of art and learning."
+                },
+                {
+                  "name": "The Reformation",
+                  "blurb": "A movement that reshaped the Church."
+                },
+                {
+                  "name": "The Industrial Revolution",
+                  "blurb": "Machines transformed work and society."
                 }
               ]
             }
@@ -3511,7 +3541,7 @@
         {
           "id": "geography",
           "name": "Geography",
-          "provenance": "fetched-secondary:https://www.shaalaa.com/syllabus/cisce-icse-class-9-geography_8887 (2026-07-06)",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2026/01/6.-Geography.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -3625,7 +3655,7 @@
         {
           "id": "math",
           "name": "Mathematics",
-          "provenance": "fetched-secondary:https://www.knowledgeboat.com/learn/class-10-icse-concise-maths-selina/content (2026-07-06)",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2026/01/9.-Mathematics.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -3960,7 +3990,7 @@
         {
           "id": "physics",
           "name": "Physics",
-          "provenance": "fetched-secondary:https://www.shaalaa.com/syllabus/cisce-icse-class-10-physics_3799 (2026-07-06)",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2026/01/10.-Physics.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -4075,7 +4105,7 @@
         {
           "id": "chemistry",
           "name": "Chemistry",
-          "provenance": "fetched-secondary:https://static.collegedekho.com/media/uploads/2025/10/15/14-icse-chemistry-26.pdf (2026-07-06)",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2026/01/11.-Chemistry.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -4256,28 +4286,84 @@
         {
           "id": "biology",
           "name": "Biology",
-          "provenance": "fetched-secondary:https://www.shaalaa.com/syllabus/cisce-icse-class-10-biology_3783 (2026-07-06)",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2026/01/12.-Biology.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
-              "name": "Cell, Cell Cycle and Cell Division",
+              "name": "Basic Biology",
               "topics": [
                 {
-                  "name": "The cell as the unit of life",
-                  "blurb": "Revisiting the cell as structure and function."
+                  "name": "Structure of chromosome",
+                  "blurb": "Chromatin, chromatid, and the gene-carrying DNA within it."
                 },
                 {
-                  "name": "Chromosomes and the cell cycle",
-                  "blurb": "The stages a cell passes through before dividing."
+                  "name": "The cell cycle",
+                  "blurb": "Interphase and the mitotic phase a cell moves through."
                 },
                 {
-                  "name": "Mitosis and meiosis",
-                  "blurb": "Two ways cells divide, for growth and for reproduction."
+                  "name": "Mitosis",
+                  "blurb": "Equal division that grows and repairs plant and animal tissue."
+                },
+                {
+                  "name": "Meiosis",
+                  "blurb": "A reduction division that halves the chromosome number for reproduction."
                 }
               ]
             },
             {
               "index": 2,
+              "name": "Plant Physiology",
+              "topics": [
+                {
+                  "name": "Absorption by roots",
+                  "blurb": "Osmosis and diffusion draw water and minerals in through root hairs."
+                },
+                {
+                  "name": "Transpiration",
+                  "blurb": "Plants lose water vapour through their leaves, pulling the sap up behind it."
+                },
+                {
+                  "name": "Photosynthesis",
+                  "blurb": "Light and dark reactions that build food from light, water, and carbon dioxide."
+                },
+                {
+                  "name": "Chemical coordination in plants",
+                  "blurb": "Growth hormones and the tropic movements they drive."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Human Anatomy and Physiology",
+              "topics": [
+                {
+                  "name": "The respiratory system",
+                  "blurb": "How we breathe in oxygen and breathe out carbon dioxide."
+                },
+                {
+                  "name": "The circulatory system",
+                  "blurb": "Blood, the heart, and the vessels that keep it moving."
+                },
+                {
+                  "name": "The excretory system",
+                  "blurb": "The kidneys filter waste from the blood and form urine."
+                },
+                {
+                  "name": "The nervous system and sense organs",
+                  "blurb": "Neurons, brain and spinal cord, reflex action, the eye and the ear."
+                },
+                {
+                  "name": "The endocrine system",
+                  "blurb": "Glands that release hormones straight into the blood."
+                },
+                {
+                  "name": "The reproductive system",
+                  "blurb": "The organs, fertilisation, and the growth of a new life."
+                }
+              ]
+            },
+            {
+              "index": 4,
               "name": "Genetics",
               "topics": [
                 {
@@ -4290,164 +4376,12 @@
                 },
                 {
                   "name": "Sex determination",
-                  "blurb": "How chromosomes decide sex."
-                }
-              ]
-            },
-            {
-              "index": 3,
-              "name": "Absorption by Roots",
-              "topics": [
-                {
-                  "name": "Osmosis and diffusion",
-                  "blurb": "Water moves across membranes toward solutes."
-                },
-                {
-                  "name": "Root pressure and ascent of sap",
-                  "blurb": "How water climbs from root to leaf."
-                }
-              ]
-            },
-            {
-              "index": 4,
-              "name": "Transpiration",
-              "topics": [
-                {
-                  "name": "Mechanism of transpiration",
-                  "blurb": "Plants lose water vapour through their leaves."
-                },
-                {
-                  "name": "Significance of transpiration",
-                  "blurb": "Why this water loss matters to the plant."
+                  "blurb": "How chromosomes decide sex, and sex-linked inheritance."
                 }
               ]
             },
             {
               "index": 5,
-              "name": "Photosynthesis",
-              "topics": [
-                {
-                  "name": "Light and dark reactions",
-                  "blurb": "The two stages that build food from light."
-                },
-                {
-                  "name": "Factors affecting photosynthesis",
-                  "blurb": "Light, carbon dioxide, water, and warmth set the pace."
-                },
-                {
-                  "name": "The carbon cycle",
-                  "blurb": "Carbon moving between air, plants, and animals."
-                }
-              ]
-            },
-            {
-              "index": 6,
-              "name": "Chemical Coordination in Plants",
-              "topics": [
-                {
-                  "name": "Plant hormones",
-                  "blurb": "Chemical messengers that shape growth."
-                },
-                {
-                  "name": "Tropic movements",
-                  "blurb": "Plants bending toward light, gravity, and touch."
-                }
-              ]
-            },
-            {
-              "index": 7,
-              "name": "The Circulatory System",
-              "topics": [
-                {
-                  "name": "Blood and its components",
-                  "blurb": "The fluid that carries oxygen, food, and defence."
-                },
-                {
-                  "name": "The heart",
-                  "blurb": "A muscular pump that keeps blood moving."
-                },
-                {
-                  "name": "Blood vessels and circulation",
-                  "blurb": "Arteries, veins, and the double loop they serve."
-                }
-              ]
-            },
-            {
-              "index": 8,
-              "name": "The Excretory System",
-              "topics": [
-                {
-                  "name": "The kidneys",
-                  "blurb": "Filtering waste from the blood."
-                },
-                {
-                  "name": "Formation of urine",
-                  "blurb": "How the nephron cleans and concentrates."
-                }
-              ]
-            },
-            {
-              "index": 9,
-              "name": "The Nervous System",
-              "topics": [
-                {
-                  "name": "Neurons",
-                  "blurb": "Cells that carry nerve signals."
-                },
-                {
-                  "name": "Brain and spinal cord",
-                  "blurb": "The command centre and its main cable."
-                },
-                {
-                  "name": "Reflex action",
-                  "blurb": "A fast, automatic response to a stimulus."
-                }
-              ]
-            },
-            {
-              "index": 10,
-              "name": "The Endocrine System",
-              "topics": [
-                {
-                  "name": "Endocrine glands",
-                  "blurb": "Glands that release hormones into the blood."
-                },
-                {
-                  "name": "Hormones and their roles",
-                  "blurb": "Chemical messengers that regulate the body."
-                }
-              ]
-            },
-            {
-              "index": 11,
-              "name": "The Reproductive System",
-              "topics": [
-                {
-                  "name": "Male and female systems",
-                  "blurb": "The organs that make reproduction possible."
-                },
-                {
-                  "name": "Fertilisation and development",
-                  "blurb": "How a new life begins and grows."
-                }
-              ]
-            },
-            {
-              "index": 12,
-              "name": "Sense Organs",
-              "topics": [
-                {
-                  "name": "The eye",
-                  "blurb": "How the eye focuses light so we can see."
-                },
-                {
-                  "name": "The ear",
-                  "blurb": "How the ear turns vibrations into sound and keeps balance."
-                }
-              ]
-            },
-            {
-              "index": 13,
               "name": "Population",
               "topics": [
                 {
@@ -4461,26 +4395,12 @@
               ]
             },
             {
-              "index": 14,
-              "name": "Human Evolution",
-              "topics": [
-                {
-                  "name": "Natural selection",
-                  "blurb": "How favourable traits spread over generations."
-                },
-                {
-                  "name": "Evidence of evolution",
-                  "blurb": "Vestigial organs and the human family tree."
-                }
-              ]
-            },
-            {
-              "index": 15,
-              "name": "Pollution",
+              "index": 6,
+              "name": "Environmental concerns & Pollution",
               "topics": [
                 {
                   "name": "Types and sources of pollution",
-                  "blurb": "Air, water, soil, and noise pollution."
+                  "blurb": "Air, water, soil, noise, and biomedical waste, and where each comes from."
                 },
                 {
                   "name": "Biodegradable and non-biodegradable waste",
@@ -4488,21 +4408,7 @@
                 },
                 {
                   "name": "Effects and control",
-                  "blurb": "Harm done and the steps that limit it."
-                }
-              ]
-            },
-            {
-              "index": 16,
-              "name": "Physical Health and Hygiene",
-              "topics": [
-                {
-                  "name": "Health organisations",
-                  "blurb": "The role of the WHO and others."
-                },
-                {
-                  "name": "Aids to health",
-                  "blurb": "First aid, antiseptics, and antibiotics."
+                  "blurb": "Greenhouse effect, acid rain, and ozone depletion, and how to limit them."
                 }
               ]
             }
@@ -4511,7 +4417,7 @@
         {
           "id": "computer",
           "name": "Computer Applications",
-          "provenance": "fetched-secondary:https://www.pw.live/school-prep/exams/icse-class-10-computer-application-syllabus (2026-07-06)",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2026/01/18.-Computer-Applications.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -4525,48 +4431,6 @@
             },
             {
               "index": 2,
-              "name": "Class as the Basis of all Computation",
-              "topics": [
-                {
-                  "name": "Objects and classes",
-                  "blurb": "How data and methods bundle together."
-                },
-                {
-                  "name": "Class as a user-defined type",
-                  "blurb": "Building your own types from scratch."
-                }
-              ]
-            },
-            {
-              "index": 3,
-              "name": "User-Defined Methods",
-              "topics": [
-                {
-                  "name": "Writing methods",
-                  "blurb": "Naming and reusing a block of code."
-                },
-                {
-                  "name": "Parameters and return values",
-                  "blurb": "Passing data in and getting a result back."
-                }
-              ]
-            },
-            {
-              "index": 4,
-              "name": "Constructors",
-              "topics": [
-                {
-                  "name": "The role of a constructor",
-                  "blurb": "Setting up an object as it is created."
-                },
-                {
-                  "name": "Types of constructors",
-                  "blurb": "Default and parameterised constructors."
-                }
-              ]
-            },
-            {
-              "index": 5,
               "name": "Library Classes",
               "topics": [
                 {
@@ -4580,21 +4444,7 @@
               ]
             },
             {
-              "index": 6,
-              "name": "Encapsulation",
-              "topics": [
-                {
-                  "name": "Access modifiers",
-                  "blurb": "Controlling what other code can reach."
-                },
-                {
-                  "name": "Data hiding",
-                  "blurb": "Keeping an object's inner workings private."
-                }
-              ]
-            },
-            {
-              "index": 7,
+              "index": 3,
               "name": "Arrays",
               "topics": [
                 {
@@ -4612,7 +4462,7 @@
               ]
             },
             {
-              "index": 8,
+              "index": 4,
               "name": "String Handling",
               "topics": [
                 {
@@ -4620,8 +4470,68 @@
                   "blurb": "Built-in ways to work with text."
                 },
                 {
-                  "name": "StringBuffer",
-                  "blurb": "Editing text that changes as the program runs."
+                  "name": "String arrays",
+                  "blurb": "A list of strings handled the same way as any array."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Class as the Basis of all Computation",
+              "topics": [
+                {
+                  "name": "Objects and classes",
+                  "blurb": "How data and methods bundle together."
+                },
+                {
+                  "name": "Class as a user-defined type",
+                  "blurb": "Building your own types from scratch."
+                },
+                {
+                  "name": "Encapsulating state and behaviour",
+                  "blurb": "Objects bundle their data and the methods that act on it, hiding the rest."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Constructors",
+              "topics": [
+                {
+                  "name": "The role of a constructor",
+                  "blurb": "Setting up an object as it is created."
+                },
+                {
+                  "name": "Types of constructors",
+                  "blurb": "Default and parameterised constructors."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Custom Methods",
+              "topics": [
+                {
+                  "name": "Writing methods",
+                  "blurb": "Naming and reusing a block of code."
+                },
+                {
+                  "name": "Parameters and return values",
+                  "blurb": "Passing data in and getting a result back."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Disruptive technologies",
+              "topics": [
+                {
+                  "name": "The emerging tech landscape",
+                  "blurb": "Artificial intelligence, blockchain, IoT, robotics, and 5G, defined and compared."
+                },
+                {
+                  "name": "Cyber hygiene and cyber laws",
+                  "blurb": "Safe habits and the legal rules that govern digital life."
                 }
               ]
             }
@@ -4630,10 +4540,64 @@
         {
           "id": "history_civics",
           "name": "History & Civics",
-          "provenance": "fetched-secondary:https://byjus.com/icse/icse-class-10-history-and-civics-syllabus/ (2026-07-06)",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2026/01/5.-History-Civics.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
+              "name": "The Union Legislature",
+              "topics": [
+                {
+                  "name": "The Parliament",
+                  "blurb": "The central law-making body of the nation."
+                },
+                {
+                  "name": "Lok Sabha and Rajya Sabha",
+                  "blurb": "The two houses and their roles."
+                },
+                {
+                  "name": "Law making",
+                  "blurb": "How a bill becomes an act."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "The Union Executive",
+              "topics": [
+                {
+                  "name": "The President",
+                  "blurb": "The constitutional head of the nation."
+                },
+                {
+                  "name": "The Prime Minister",
+                  "blurb": "The head of government and real executive."
+                },
+                {
+                  "name": "The Council of Ministers",
+                  "blurb": "The team that runs the government."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "The Judiciary",
+              "topics": [
+                {
+                  "name": "The Supreme Court",
+                  "blurb": "The highest court of the land."
+                },
+                {
+                  "name": "The High Courts",
+                  "blurb": "The top courts of each state."
+                },
+                {
+                  "name": "Subordinate courts",
+                  "blurb": "District and lower courts serve locally."
+                }
+              ]
+            },
+            {
+              "index": 4,
               "name": "The Indian National Movement (1857–1917)",
               "topics": [
                 {
@@ -4655,7 +4619,7 @@
               ]
             },
             {
-              "index": 2,
+              "index": 5,
               "name": "Mass Phase of the National Movement (1915–1947)",
               "topics": [
                 {
@@ -4677,7 +4641,7 @@
               ]
             },
             {
-              "index": 3,
+              "index": 6,
               "name": "The Contemporary World",
               "topics": [
                 {
@@ -4701,67 +4665,13 @@
                   "blurb": "Newly free nations chose a third path."
                 }
               ]
-            },
-            {
-              "index": 4,
-              "name": "The Union Legislature",
-              "topics": [
-                {
-                  "name": "The Parliament",
-                  "blurb": "The central law-making body of the nation."
-                },
-                {
-                  "name": "Lok Sabha and Rajya Sabha",
-                  "blurb": "The two houses and their roles."
-                },
-                {
-                  "name": "Law making",
-                  "blurb": "How a bill becomes an act."
-                }
-              ]
-            },
-            {
-              "index": 5,
-              "name": "The Union Executive",
-              "topics": [
-                {
-                  "name": "The President",
-                  "blurb": "The constitutional head of the nation."
-                },
-                {
-                  "name": "The Prime Minister",
-                  "blurb": "The head of government and real executive."
-                },
-                {
-                  "name": "The Council of Ministers",
-                  "blurb": "The team that runs the government."
-                }
-              ]
-            },
-            {
-              "index": 6,
-              "name": "The Judiciary",
-              "topics": [
-                {
-                  "name": "The Supreme Court",
-                  "blurb": "The highest court of the land."
-                },
-                {
-                  "name": "The High Courts",
-                  "blurb": "The top courts of each state."
-                },
-                {
-                  "name": "Subordinate courts",
-                  "blurb": "District and lower courts serve locally."
-                }
-              ]
             }
           ]
         },
         {
           "id": "geography",
           "name": "Geography",
-          "provenance": "fetched-secondary:https://www.shaalaa.com/syllabus/cisce-icse-class-10-geography_3851 (2026-07-06)",
+          "provenance": "fetched:https://cisce.org/wp-content/uploads/2026/01/6.-Geography.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,

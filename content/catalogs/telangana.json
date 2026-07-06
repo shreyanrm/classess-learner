@@ -1,7 +1,7 @@
 {
   "board": "Telangana State Board",
-  "provenance": "model-knowledge",
-  "note": "pending verification against official syllabus documents",
+  "provenance": "mixed",
+  "note": "Telangana State Board (SCERT Telangana / Board of Secondary Education, Telangana). SOURCES: scert.telangana.gov.in was reachable and hosts the actual textbook PDFs at scert.telangana.gov.in/pdf/publication/ebooks(2019)/ — every chapter list in this catalog was fetched directly from an official English-medium SCERT Telangana textbook PDF downloaded from that domain (marked 'fetched:<url>' per subject); bse.telangana.gov.in was also reached but hosts only exam-administration content, not textbooks or syllabi, so it contributed nothing directly. No secondary sources were needed for chapter titles: every subject/grade below is traced to the government's own PDF (either its printed table of contents/INDEX page or, where a table layout garbled in PDF-to-text extraction, cross-checked against the chapter-opening title printed on the book's own pages). Because this is a stronger source position than the AP catalog achieved (whose official portal was unreachable), every subject here is 'fetched:', not 'fetched-secondary:' or 'model-knowledge' — this catalog has no model-knowledge chapter lists. SUBJECT MAPPING: Telangana runs a single combined 'Science' textbook for Class 6 and Class 7 (id 'science'), then splits it from Class 8 into two separate subjects/books exactly as suspected — 'Physical Science' (Physics + Chemistry, id 'physical_science') and 'Biology' (id 'biological_science') — confirmed directly from the official Class 8, 9 and 10 Physical Science and Biology PDFs, which are printed and distributed as distinct books with their own covers. Social Studies is one combined subject (id 'social') across all grades. COMPUTER SCIENCE: Telangana does distribute a 'Digital Learning' book for Classes VI-X (coding, computational thinking, Python, Raspberry Pi/Arduino, AI, data science, digital citizenship — a real and notably more ambitious program than AP has), confirmed via SCERT-adjacent secondary coverage (teachersbadi.in per-class pages) and one official curricular-subject PDF on scert.telangana.gov.in (ICT_IX.pdf, dated 2015 and likely superseded). It is INTENTIONALLY OMITTED as a structured subject here: repeated searches turned up only thematic topic lists ('Coding', 'AI', 'Data Science' as broad areas) and never a stable, numbered chapter-by-chapter table of contents comparable in reliability to Math/Science/Social, and no source could confirm whether it is formally examined with marks (like Math or Science) versus assessed only through in-class formative activities. Rather than invent chapter titles for a subject whose own structure isn't publicly nailed down, it is left out — following the AP catalog's precedent of documenting an omission instead of fabricating content. STRUCTURAL DIVERGENCE FROM AP: Telangana's Social Studies for Classes 6, 7, 8, 9 and 10 diverge sharply from AP's NCERT-aligned Social Studies — Telangana kept the older 'position paper' structure built around Telangana-specific case-study villages (Penamakuru, Dokur, Penugolu in Class 6), Telugu-region history (the Kakatiyas, Vijayanagara), and its own Class 9-10 Political Science/Economics sequence (Parts I & II) that culminates in Class 10 with a dedicated chapter, 'The Movement for the Formation of Telangana State' — material AP's textbooks obviously do not carry. Telangana's Class 8 Social Studies book is also markedly shorter (12 chapters) than AP's Class 8 Social Studies book (24 chapters); Telangana appears to have trimmed the same base content down rather than dropped it, since its first 12 chapters are titled identically to AP's first 12. Telangana's Class 6 Science (16 chapters, fetched across two official 'part-1'/'part-2' PDFs) and Class 6 Social Studies (21 chapters, also two official parts) both run notably longer than AP's equivalents. By contrast, Class 9 Mathematics and the Class 10 Mathematics sequence (including Sets, Similar Triangles and Tangents and Secants to a Circle) are — chapter-for-chapter — identical to AP's, indicating both states still share a common, largely unrevised Mathematics curriculum post-2014 bifurcation even though their Science and Social Studies curricula have diverged. EDITION / VINTAGE CAVEATS: PDFs were fetched at whatever is the latest edition currently linked from scert.telangana.gov.in as of 2026-07-07; for subjects with a 2024-25-dated PDF (Mathematics all grades, Class 7 Science, Class 8-9 Physical Science, Class 8 Biology, Class 9 Social Studies) this is very likely the current in-use edition. For subjects where only an undated or older-dated PDF was linked (Class 6 Science/Social 2022-23, Class 7/8 Social 2020-21/2022-23, Class 8 Mathematics 2020-21, Class 9/10 Biology and Class 10 Physical Science/Social undated, printed 2019-22), no newer edition could be found via search, so these are treated as still current, but with slightly lower confidence that a very recent silent revision hasn't occurred. CONFIDENCE: high across the board given every chapter list traces to an official PDF; specific full-confidence over lower-confidence notes: Class 9 Biology chapters 5, 8 and 9 (Diversity in Living Organisms, Challenges in Improving Agricultural Products, Adaptations in Different Ecosystems) were read from the book's own INDEX table rather than cross-verified against a chapter-opening title page like the other 8 chapters in that book, because pdftotext's column extraction skipped straight past their opening pages — still official-source, just one layer less redundantly checked.",
   "grades": [
     {
       "grade": "Class 6",
@@ -9,6 +9,7 @@
         {
           "id": "math",
           "name": "Mathematics",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks2019/6%20maths%20em%202020-21.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -283,6 +284,7 @@
         {
           "id": "science",
           "name": "Science",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks2019/6%20gen%20science%20part-1%202022-23.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -430,55 +432,145 @@
             },
             {
               "index": 9,
-              "name": "Playing with Ropeways and Levers",
+              "name": "Plants: Parts and Functions",
               "topics": [
                 {
-                  "name": "Simple machines around us",
-                  "blurb": "Everyday tools that make work easier."
+                  "name": "Roots, stem and leaves",
+                  "blurb": "The main parts of a plant and their work."
                 },
                 {
-                  "name": "Levers and pulleys",
-                  "blurb": "Lifting heavy loads with less effort."
+                  "name": "Flowers and their parts",
+                  "blurb": "The parts of a flower and their roles."
                 },
                 {
-                  "name": "The inclined plane",
-                  "blurb": "Why a ramp is easier than a straight lift."
+                  "name": "Types of plants",
+                  "blurb": "Herbs, shrubs, trees, creepers and climbers."
                 }
               ]
             },
             {
               "index": 10,
-              "name": "Learning How to Measure",
+              "name": "Changes Around Us",
               "topics": [
                 {
-                  "name": "Need for standard units",
-                  "blurb": "Why a handspan is not a fair measure."
+                  "name": "Reversible and irreversible changes",
+                  "blurb": "Changes that can and cannot be undone."
                 },
                 {
-                  "name": "Measuring length",
-                  "blurb": "Using a scale and reading it correctly."
+                  "name": "Changes by heating and cooling",
+                  "blurb": "How temperature reshapes materials."
                 },
                 {
-                  "name": "Measuring mass and time",
-                  "blurb": "Balances and clocks in standard units."
+                  "name": "Everyday changes",
+                  "blurb": "Spotting change in cooking, growing and rusting."
                 }
               ]
             },
             {
               "index": 11,
+              "name": "Water in Our Life",
+              "topics": [
+                {
+                  "name": "Sources and uses of water",
+                  "blurb": "Where water comes from and why we need it."
+                },
+                {
+                  "name": "Saving water",
+                  "blurb": "Using this precious resource wisely."
+                },
+                {
+                  "name": "Water and the environment",
+                  "blurb": "How water shapes life and land."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Simple Electric Circuits",
+              "topics": [
+                {
+                  "name": "Cells, bulbs and wires",
+                  "blurb": "The parts that make a simple circuit."
+                },
+                {
+                  "name": "Open and closed circuits",
+                  "blurb": "When current flows and when it stops."
+                },
+                {
+                  "name": "Conductors and insulators",
+                  "blurb": "Materials that carry or block current."
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "name": "Learning How to Measure",
+              "topics": [
+                {
+                  "name": "Standard units of length",
+                  "blurb": "Why we need agreed units to measure."
+                },
+                {
+                  "name": "Measuring correctly",
+                  "blurb": "Using a scale and avoiding error."
+                },
+                {
+                  "name": "Measuring curved lines",
+                  "blurb": "Using thread to measure things that bend."
+                }
+              ]
+            },
+            {
+              "index": 14,
               "name": "Movements in Animals",
               "topics": [
                 {
-                  "name": "Body movements",
-                  "blurb": "How animals bend, walk, fly and swim."
-                },
-                {
                   "name": "The human skeleton",
-                  "blurb": "The bones that support and shape the body."
+                  "blurb": "Bones that give the body its frame."
                 },
                 {
-                  "name": "Joints and muscles",
-                  "blurb": "How joints and muscles work together to move."
+                  "name": "Joints",
+                  "blurb": "Where bones meet and how they move."
+                },
+                {
+                  "name": "Movement in animals",
+                  "blurb": "How different animals move and travel."
+                }
+              ]
+            },
+            {
+              "index": 15,
+              "name": "Light, Shadows and Images",
+              "topics": [
+                {
+                  "name": "Transparent, translucent and opaque",
+                  "blurb": "How materials let light through."
+                },
+                {
+                  "name": "Shadows",
+                  "blurb": "How shadows form and change."
+                },
+                {
+                  "name": "Reflections and images",
+                  "blurb": "Light bouncing back to make an image."
+                }
+              ]
+            },
+            {
+              "index": 16,
+              "name": "Living and Non-Living",
+              "topics": [
+                {
+                  "name": "Characteristics of living things",
+                  "blurb": "What sets the living apart from the non-living."
+                },
+                {
+                  "name": "Needs of living things",
+                  "blurb": "Food, air, water and space for life."
+                },
+                {
+                  "name": "Growth and response",
+                  "blurb": "How living things grow and react to change."
                 }
               ]
             }
@@ -486,11 +578,12 @@
         },
         {
           "id": "social",
-          "name": "Social science",
+          "name": "Social studies",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks2019/6th%20social%20part-1%202022-23.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
-              "name": "Reading Maps",
+              "name": "Reading and Making Maps",
               "topics": [
                 {
                   "name": "Maps and their uses",
@@ -501,104 +594,86 @@
                   "blurb": "The grammar that makes a map readable."
                 },
                 {
-                  "name": "Sketches and plans",
-                  "blurb": "The difference between a rough sketch and a scaled plan."
+                  "name": "Drawing a simple map",
+                  "blurb": "Making your own sketch of a familiar place."
                 }
               ]
             },
             {
               "index": 2,
-              "name": "The Earth in the Solar System",
+              "name": "Globe – A Model of the Earth",
               "topics": [
                 {
-                  "name": "The Sun and its family",
-                  "blurb": "Planets, moons and the star at the centre."
+                  "name": "The globe and its axis",
+                  "blurb": "A round model of a round Earth and how it tilts."
                 },
                 {
-                  "name": "Our unique Earth",
-                  "blurb": "Why Earth alone supports life as we know it."
+                  "name": "Latitudes and longitudes",
+                  "blurb": "Parallels and meridians on the globe."
                 },
                 {
-                  "name": "The Moon and stars",
-                  "blurb": "Earth's companion and the distant suns at night."
+                  "name": "Heat zones and time",
+                  "blurb": "How the lines mark climate and local time."
                 }
               ]
             },
             {
               "index": 3,
-              "name": "Globe: Latitudes and Longitudes",
-              "topics": [
-                {
-                  "name": "The globe as a model",
-                  "blurb": "A round model of a round Earth."
-                },
-                {
-                  "name": "Latitudes",
-                  "blurb": "Lines that measure distance north and south of the equator."
-                },
-                {
-                  "name": "Longitudes and time",
-                  "blurb": "Lines that fix east-west position and set the clock."
-                }
-              ]
-            },
-            {
-              "index": 4,
-              "name": "Landforms",
+              "name": "Land Forms and Penamakuru – A Village in the Krishna Delta",
               "topics": [
                 {
                   "name": "Mountains, plateaus and plains",
                   "blurb": "The major shapes of the land."
                 },
                 {
-                  "name": "How landforms are used",
-                  "blurb": "Why people settle and farm where they do."
+                  "name": "Life in a delta village",
+                  "blurb": "How Penamakuru's farmers live with the Krishna river."
                 },
                 {
-                  "name": "Weathering and erosion",
-                  "blurb": "Slow forces that reshape the land."
+                  "name": "Land use and livelihood",
+                  "blurb": "Why the shape of the land decides how people work it."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Dokur – A Village on the Plateau",
+              "topics": [
+                {
+                  "name": "A plateau village",
+                  "blurb": "Life and farming on the drier, harder ground of a plateau."
+                },
+                {
+                  "name": "Tanks and irrigation",
+                  "blurb": "How Dokur's farmers store and share scarce water."
+                },
+                {
+                  "name": "Comparing villages",
+                  "blurb": "What a plateau village shares and does not share with a delta one."
                 }
               ]
             },
             {
               "index": 5,
-              "name": "Continents and Oceans",
+              "name": "Penugolu – A Village on the Hills",
               "topics": [
                 {
-                  "name": "The seven continents",
-                  "blurb": "The great landmasses of the world."
+                  "name": "Living on a hill",
+                  "blurb": "How terrain shapes houses, fields and paths in Penugolu."
                 },
                 {
-                  "name": "The oceans",
-                  "blurb": "The vast bodies of salt water between them."
+                  "name": "Forest and farming together",
+                  "blurb": "Why hill villages depend on both trees and small farms."
                 },
                 {
-                  "name": "Locating places on the globe",
-                  "blurb": "Using continents and oceans to find your way."
+                  "name": "Three villages, three landforms",
+                  "blurb": "Drawing together what delta, plateau and hill villages teach us."
                 }
               ]
             },
             {
               "index": 6,
-              "name": "Our Country: India",
-              "topics": [
-                {
-                  "name": "Location and neighbours",
-                  "blurb": "Where India sits and who lies alongside it."
-                },
-                {
-                  "name": "Physical divisions",
-                  "blurb": "Mountains, plains, plateau, desert and coasts."
-                },
-                {
-                  "name": "States and Union Territories",
-                  "blurb": "How the country is divided for governing."
-                }
-              ]
-            },
-            {
-              "index": 7,
-              "name": "From Gathering to Growing Food",
+              "name": "From Gathering Food to Growing Food – The Earliest People",
               "topics": [
                 {
                   "name": "Life of early humans",
@@ -615,25 +690,115 @@
               ]
             },
             {
-              "index": 8,
-              "name": "The First Cities",
+              "index": 7,
+              "name": "Agriculture in Our Times",
               "topics": [
                 {
-                  "name": "The Indus Valley towns",
-                  "blurb": "Planned cities of Harappa and Mohenjodaro."
+                  "name": "Modern farming inputs",
+                  "blurb": "Seeds, fertilisers and machines on today's farms."
                 },
                 {
-                  "name": "Life in the cities",
-                  "blurb": "Houses, drains, crafts and trade of the Harappans."
+                  "name": "Irrigation today",
+                  "blurb": "How farmers water their fields now compared to the past."
                 },
                 {
-                  "name": "The end of the cities",
-                  "blurb": "Why these early cities were left behind."
+                  "name": "Farming and the market",
+                  "blurb": "Growing crops to sell, not just to eat."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Trade in Agricultural Produce",
+              "topics": [
+                {
+                  "name": "From farm to market",
+                  "blurb": "The journey a crop takes before it reaches a buyer."
+                },
+                {
+                  "name": "Middlemen and prices",
+                  "blurb": "Who stands between the farmer and the final price."
+                },
+                {
+                  "name": "Storage and transport",
+                  "blurb": "Why keeping produce fresh and moving it matters."
                 }
               ]
             },
             {
               "index": 9,
+              "name": "Community Decision Making in a Tribe",
+              "topics": [
+                {
+                  "name": "Tribal councils",
+                  "blurb": "How a tribe reaches decisions without a single ruler."
+                },
+                {
+                  "name": "Shared resources",
+                  "blurb": "Rules a community sets for land, forest and water."
+                },
+                {
+                  "name": "Elders and consensus",
+                  "blurb": "The role respected elders play in settling disputes."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Emergence of Kingdoms and Republics",
+              "topics": [
+                {
+                  "name": "Janapadas and mahajanapadas",
+                  "blurb": "The rise of early states."
+                },
+                {
+                  "name": "Kings, taxes and armies",
+                  "blurb": "How early kingdoms were run."
+                },
+                {
+                  "name": "Early republics",
+                  "blurb": "Groups that ruled without a single king."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "First Empires",
+              "topics": [
+                {
+                  "name": "The Mauryan empire",
+                  "blurb": "A vast early empire and its rule."
+                },
+                {
+                  "name": "Ashoka and dhamma",
+                  "blurb": "A king who chose peace after war."
+                },
+                {
+                  "name": "Holding a large empire together",
+                  "blurb": "The officials and roads that kept the empire working."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Democratic Government",
+              "topics": [
+                {
+                  "name": "What is government",
+                  "blurb": "Why communities need someone to decide."
+                },
+                {
+                  "name": "Levels of government",
+                  "blurb": "Local, state and national government."
+                },
+                {
+                  "name": "Democratic government",
+                  "blurb": "Choosing leaders and having a say."
+                }
+              ]
+            },
+            {
+              "index": 13,
               "name": "Village Panchayats",
               "topics": [
                 {
@@ -651,7 +816,25 @@
               ]
             },
             {
-              "index": 10,
+              "index": 14,
+              "name": "Local Self-Government in Urban Areas",
+              "topics": [
+                {
+                  "name": "Urban local bodies",
+                  "blurb": "How towns and cities are run."
+                },
+                {
+                  "name": "Municipal services",
+                  "blurb": "Water, roads, sanitation and other city services."
+                },
+                {
+                  "name": "Elected wards",
+                  "blurb": "How a city is divided so people can be represented."
+                }
+              ]
+            },
+            {
+              "index": 15,
               "name": "Diversity in Our Society",
               "topics": [
                 {
@@ -667,6 +850,114 @@
                   "blurb": "Living together with fairness and dignity."
                 }
               ]
+            },
+            {
+              "index": 16,
+              "name": "Towards Gender Equality",
+              "topics": [
+                {
+                  "name": "Unequal treatment",
+                  "blurb": "Ways girls and women have historically been treated unfairly."
+                },
+                {
+                  "name": "Changing roles",
+                  "blurb": "How opportunities for women have widened over time."
+                },
+                {
+                  "name": "Working towards fairness",
+                  "blurb": "Laws and attitudes that push society towards equality."
+                }
+              ]
+            },
+            {
+              "index": 17,
+              "name": "Religion and Society in Early Times",
+              "topics": [
+                {
+                  "name": "Early beliefs and rituals",
+                  "blurb": "How ancient communities understood the world around them."
+                },
+                {
+                  "name": "Religion and social life",
+                  "blurb": "How belief shaped the rules people lived by."
+                },
+                {
+                  "name": "New teachings",
+                  "blurb": "Thinkers who questioned the rituals of their time."
+                }
+              ]
+            },
+            {
+              "index": 18,
+              "name": "Devotion and Love towards God",
+              "topics": [
+                {
+                  "name": "The idea of bhakti",
+                  "blurb": "Devotion as a personal path to the divine."
+                },
+                {
+                  "name": "Saints and songs",
+                  "blurb": "Poet-saints who spread their message in the language of the people."
+                },
+                {
+                  "name": "A message for everyone",
+                  "blurb": "Why bhakti welcomed people regardless of birth."
+                }
+              ]
+            },
+            {
+              "index": 19,
+              "name": "Language, Script and Scriptures",
+              "topics": [
+                {
+                  "name": "How scripts developed",
+                  "blurb": "The change from spoken word to written symbol."
+                },
+                {
+                  "name": "Great books",
+                  "blurb": "Long-preserved texts that carried ideas across centuries."
+                },
+                {
+                  "name": "Language and identity",
+                  "blurb": "How a shared language binds a people together."
+                }
+              ]
+            },
+            {
+              "index": 20,
+              "name": "Sculptures and Buildings",
+              "topics": [
+                {
+                  "name": "Stone and bronze sculpture",
+                  "blurb": "How artists shaped images from hard materials."
+                },
+                {
+                  "name": "Temples and monuments",
+                  "blurb": "Buildings raised to worship, remember and impress."
+                },
+                {
+                  "name": "Reading a monument",
+                  "blurb": "What a sculpture or building tells us about its time."
+                }
+              ]
+            },
+            {
+              "index": 21,
+              "name": "Greenery in Telangana",
+              "topics": [
+                {
+                  "name": "Forests of Telangana",
+                  "blurb": "The state's tree cover and where it survives."
+                },
+                {
+                  "name": "Haritha Haram and tree planting",
+                  "blurb": "Efforts to green towns and villages with new plantations."
+                },
+                {
+                  "name": "Why greenery matters here",
+                  "blurb": "Water, shade and soil health tied to Telangana's plant cover."
+                }
+              ]
             }
           ]
         }
@@ -678,6 +969,7 @@
         {
           "id": "math",
           "name": "Mathematics",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks/7%20mathematics%20em%202024-25.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -775,7 +1067,7 @@
             },
             {
               "index": 6,
-              "name": "Ratio and Applications",
+              "name": "Ratio – Applications",
               "topics": [
                 {
                   "name": "Equivalent ratios",
@@ -865,7 +1157,7 @@
             },
             {
               "index": 11,
-              "name": "Exponents and Powers",
+              "name": "Powers and Exponents",
               "topics": [
                 {
                   "name": "Writing numbers with exponents",
@@ -919,6 +1211,24 @@
             },
             {
               "index": 14,
+              "name": "Understanding 3D and 2D Shapes",
+              "topics": [
+                {
+                  "name": "Faces, edges and vertices",
+                  "blurb": "Counting the parts of a solid."
+                },
+                {
+                  "name": "Nets of solids",
+                  "blurb": "Flat patterns that fold into solids."
+                },
+                {
+                  "name": "Views of solids",
+                  "blurb": "Front, side and top views of objects."
+                }
+              ]
+            },
+            {
+              "index": 15,
               "name": "Symmetry",
               "topics": [
                 {
@@ -940,6 +1250,7 @@
         {
           "id": "science",
           "name": "Science",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks/7%20science%20em%202024-25.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -961,78 +1272,6 @@
             },
             {
               "index": 2,
-              "name": "Nutrition in Plants",
-              "topics": [
-                {
-                  "name": "Photosynthesis",
-                  "blurb": "How green leaves make food from sunlight."
-                },
-                {
-                  "name": "Modes of nutrition",
-                  "blurb": "Autotrophs, parasites and insect-eating plants."
-                },
-                {
-                  "name": "Nutrients and soil",
-                  "blurb": "How plants replenish the nutrients they use."
-                }
-              ]
-            },
-            {
-              "index": 3,
-              "name": "Respiration in Organisms",
-              "topics": [
-                {
-                  "name": "Breathing and respiration",
-                  "blurb": "The difference between the two processes."
-                },
-                {
-                  "name": "Respiration in animals",
-                  "blurb": "How different animals take in oxygen."
-                },
-                {
-                  "name": "Respiration in plants",
-                  "blurb": "How roots, stems and leaves breathe."
-                }
-              ]
-            },
-            {
-              "index": 4,
-              "name": "Reproduction in Plants",
-              "topics": [
-                {
-                  "name": "Asexual reproduction",
-                  "blurb": "New plants from buds, cuttings and spores."
-                },
-                {
-                  "name": "Sexual reproduction",
-                  "blurb": "The parts of a flower and their roles."
-                },
-                {
-                  "name": "Seed dispersal",
-                  "blurb": "How seeds travel to new ground."
-                }
-              ]
-            },
-            {
-              "index": 5,
-              "name": "Temperature and Its Measurement",
-              "topics": [
-                {
-                  "name": "Hot and cold",
-                  "blurb": "Temperature as a measure of hotness."
-                },
-                {
-                  "name": "Thermometers",
-                  "blurb": "Clinical and laboratory thermometers and their use."
-                },
-                {
-                  "name": "Transfer of heat",
-                  "blurb": "Conduction, convection and radiation."
-                }
-              ]
-            },
-            {
-              "index": 6,
               "name": "Acids and Bases",
               "topics": [
                 {
@@ -1050,26 +1289,62 @@
               ]
             },
             {
-              "index": 7,
-              "name": "Physical and Chemical Changes",
+              "index": 3,
+              "name": "Silk – Wool",
               "topics": [
                 {
-                  "name": "Physical changes",
-                  "blurb": "Changes where no new substance forms."
+                  "name": "Wool and silk",
+                  "blurb": "Fibres that come from animals."
                 },
                 {
-                  "name": "Chemical changes",
-                  "blurb": "Changes that make new substances."
+                  "name": "Rearing and processing",
+                  "blurb": "How wool and silk are obtained."
                 },
                 {
-                  "name": "Rusting and crystallisation",
-                  "blurb": "Familiar chemical and physical changes."
+                  "name": "Uses of animal fibres",
+                  "blurb": "Turning fibre into warm, fine cloth."
                 }
               ]
             },
             {
-              "index": 8,
-              "name": "Weather, Climate and Adaptations",
+              "index": 4,
+              "name": "Motion – Time",
+              "topics": [
+                {
+                  "name": "Slow and fast",
+                  "blurb": "Comparing how quickly things move."
+                },
+                {
+                  "name": "Speed",
+                  "blurb": "Distance covered in a unit of time."
+                },
+                {
+                  "name": "Measuring time",
+                  "blurb": "Clocks, pendulums and the units of time."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Heat – Measurement",
+              "topics": [
+                {
+                  "name": "Hot and cold",
+                  "blurb": "Temperature as a measure of hotness."
+                },
+                {
+                  "name": "Thermometers",
+                  "blurb": "Clinical and laboratory thermometers and their use."
+                },
+                {
+                  "name": "Transfer of heat",
+                  "blurb": "Conduction, convection and radiation."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Weather – Climate",
               "topics": [
                 {
                   "name": "Weather and climate",
@@ -1086,7 +1361,25 @@
               ]
             },
             {
-              "index": 9,
+              "index": 7,
+              "name": "Electric Current – Its Effects",
+              "topics": [
+                {
+                  "name": "Electric circuits",
+                  "blurb": "The path electric current follows."
+                },
+                {
+                  "name": "Heating effect of current",
+                  "blurb": "Why a wire warms when current flows."
+                },
+                {
+                  "name": "Magnetic effect and electromagnets",
+                  "blurb": "How current makes a magnet."
+                }
+              ]
+            },
+            {
+              "index": 8,
               "name": "Air, Winds and Cyclones",
               "topics": [
                 {
@@ -1104,25 +1397,7 @@
               ]
             },
             {
-              "index": 10,
-              "name": "Soil",
-              "topics": [
-                {
-                  "name": "Soil profile",
-                  "blurb": "The layers that make up soil."
-                },
-                {
-                  "name": "Types of soil",
-                  "blurb": "Sandy, clayey and loamy soils and their uses."
-                },
-                {
-                  "name": "Soil and crops",
-                  "blurb": "Matching a crop to the right soil."
-                }
-              ]
-            },
-            {
-              "index": 11,
+              "index": 9,
               "name": "Reflection of Light",
               "topics": [
                 {
@@ -1140,66 +1415,84 @@
               ]
             },
             {
-              "index": 12,
-              "name": "Electricity",
+              "index": 10,
+              "name": "Nutrition in Plants",
               "topics": [
                 {
-                  "name": "Electric circuits",
-                  "blurb": "The path electric current follows."
+                  "name": "Photosynthesis",
+                  "blurb": "How green leaves make food from sunlight."
                 },
                 {
-                  "name": "Heating effect of current",
-                  "blurb": "Why a wire warms when current flows."
+                  "name": "Modes of nutrition",
+                  "blurb": "Autotrophs, parasites and insect-eating plants."
                 },
                 {
-                  "name": "Magnetic effect and electromagnets",
-                  "blurb": "How current makes a magnet."
+                  "name": "Nutrients and soil",
+                  "blurb": "How plants replenish the nutrients they use."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "Respiration in Organisms",
+              "topics": [
+                {
+                  "name": "Breathing and respiration",
+                  "blurb": "The difference between the two processes."
+                },
+                {
+                  "name": "Respiration in animals",
+                  "blurb": "How different animals take in oxygen."
+                },
+                {
+                  "name": "Respiration in plants",
+                  "blurb": "How roots, stems and leaves breathe."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Reproduction in Plants",
+              "topics": [
+                {
+                  "name": "Asexual reproduction",
+                  "blurb": "New plants from buds, cuttings and spores."
+                },
+                {
+                  "name": "Sexual reproduction",
+                  "blurb": "The parts of a flower and their roles."
+                },
+                {
+                  "name": "Pollination",
+                  "blurb": "How pollen travels from one flower to another."
                 }
               ]
             },
             {
               "index": 13,
-              "name": "Motion and Time",
+              "name": "Seed Dispersal",
               "topics": [
                 {
-                  "name": "Slow and fast",
-                  "blurb": "Comparing how quickly things move."
+                  "name": "Why seeds must travel",
+                  "blurb": "Spreading out to find room to grow."
                 },
                 {
-                  "name": "Speed",
-                  "blurb": "Distance covered in a unit of time."
+                  "name": "Agents of dispersal",
+                  "blurb": "Wind, water, animals and bursting pods."
                 },
                 {
-                  "name": "Measuring time",
-                  "blurb": "Clocks, pendulums and the units of time."
+                  "name": "Adaptations of seeds",
+                  "blurb": "Wings, hooks and floats that help seeds move."
                 }
               ]
             },
             {
               "index": 14,
-              "name": "Forests",
+              "name": "Water – Too Little to Waste",
               "topics": [
                 {
-                  "name": "Forest as a system",
-                  "blurb": "Trees, animals and soil working together."
-                },
-                {
-                  "name": "Products from forests",
-                  "blurb": "What forests give us beyond wood."
-                },
-                {
-                  "name": "Conserving forests",
-                  "blurb": "Why losing forests harms everyone."
-                }
-              ]
-            },
-            {
-              "index": 15,
-              "name": "Water: A Precious Resource",
-              "topics": [
-                {
-                  "name": "Forms and sources of water",
-                  "blurb": "Where the fresh water we use comes from."
+                  "name": "Sources of water",
+                  "blurb": "Where the water we use comes from."
                 },
                 {
                   "name": "Groundwater and the water table",
@@ -1207,7 +1500,61 @@
                 },
                 {
                   "name": "Saving water",
-                  "blurb": "Ways to use water wisely and avoid waste."
+                  "blurb": "Using and reusing water carefully."
+                }
+              ]
+            },
+            {
+              "index": 15,
+              "name": "Soil – Our Life",
+              "topics": [
+                {
+                  "name": "How soil forms",
+                  "blurb": "Rock breaking down over long years."
+                },
+                {
+                  "name": "Layers and types of soil",
+                  "blurb": "The soil profile and different soils."
+                },
+                {
+                  "name": "Soil and crops",
+                  "blurb": "Matching soils to the plants they suit."
+                }
+              ]
+            },
+            {
+              "index": 16,
+              "name": "Forest – Our Life",
+              "topics": [
+                {
+                  "name": "Layers of a forest",
+                  "blurb": "The canopy, understorey and forest floor."
+                },
+                {
+                  "name": "Forests as a system",
+                  "blurb": "How plants, animals and soil depend on each other."
+                },
+                {
+                  "name": "Why forests matter",
+                  "blurb": "Air, water, wood and shelter from the forest."
+                }
+              ]
+            },
+            {
+              "index": 17,
+              "name": "Changes Around Us",
+              "topics": [
+                {
+                  "name": "Physical and chemical changes",
+                  "blurb": "Changes that do and do not make new substances."
+                },
+                {
+                  "name": "Reversible and irreversible changes",
+                  "blurb": "Changes that can and cannot be undone."
+                },
+                {
+                  "name": "Changes in everyday life",
+                  "blurb": "Spotting change in cooking, rusting and growing."
                 }
               ]
             }
@@ -1215,7 +1562,8 @@
         },
         {
           "id": "social",
-          "name": "Social science",
+          "name": "Social studies",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks2019/7%20social%20em%202020-21.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -1237,6 +1585,42 @@
             },
             {
               "index": 2,
+              "name": "Rain and Rivers",
+              "topics": [
+                {
+                  "name": "Where rain comes from",
+                  "blurb": "The link between clouds, wind and rainfall."
+                },
+                {
+                  "name": "Rivers fed by rain",
+                  "blurb": "How rainfall feeds the rivers of a region."
+                },
+                {
+                  "name": "Living with rain patterns",
+                  "blurb": "How farmers and towns plan around the rains."
+                }
+              ]
+            },
+            {
+              "index": 3,
+              "name": "Tanks and Ground Water",
+              "topics": [
+                {
+                  "name": "Tank irrigation",
+                  "blurb": "How stored surface water is used to irrigate."
+                },
+                {
+                  "name": "Groundwater and wells",
+                  "blurb": "Water drawn from beneath the surface."
+                },
+                {
+                  "name": "Recharging water sources",
+                  "blurb": "Why tanks and wells need to be kept full and clean."
+                }
+              ]
+            },
+            {
+              "index": 4,
               "name": "Oceans and Fishing",
               "topics": [
                 {
@@ -1254,8 +1638,8 @@
               ]
             },
             {
-              "index": 3,
-              "name": "Europe: A Continent Study",
+              "index": 5,
+              "name": "Europe",
               "topics": [
                 {
                   "name": "Location and relief",
@@ -1272,25 +1656,97 @@
               ]
             },
             {
-              "index": 4,
-              "name": "Tropical and Subtropical Regions",
+              "index": 6,
+              "name": "Africa",
               "topics": [
                 {
-                  "name": "The tropical belt",
-                  "blurb": "The hot, wet lands near the equator."
+                  "name": "Location and relief",
+                  "blurb": "Where Africa lies and its major landforms."
                 },
                 {
-                  "name": "Life in the rainforest",
-                  "blurb": "People and wildlife of dense forests."
+                  "name": "Climate and vegetation belts",
+                  "blurb": "From desert to rainforest across the continent."
                 },
                 {
-                  "name": "Subtropical regions",
-                  "blurb": "The warm lands beyond the tropics."
+                  "name": "People and resources",
+                  "blurb": "The diversity of African peoples and economies."
                 }
               ]
             },
             {
-              "index": 5,
+              "index": 7,
+              "name": "Handicrafts and Handlooms",
+              "topics": [
+                {
+                  "name": "Weavers and artisans",
+                  "blurb": "The skilled workers behind cloth and craft."
+                },
+                {
+                  "name": "Markets and middlemen",
+                  "blurb": "How goods reach the buyer."
+                },
+                {
+                  "name": "Challenges to craftspeople",
+                  "blurb": "Why traditional work is under strain."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Industrial Revolution",
+              "topics": [
+                {
+                  "name": "Machines change production",
+                  "blurb": "How factories replaced hand work."
+                },
+                {
+                  "name": "New sources of power",
+                  "blurb": "Steam and coal driving new industries."
+                },
+                {
+                  "name": "Society transformed",
+                  "blurb": "Cities, workers and new ways of living."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Production in a Factory – A Paper Mill",
+              "topics": [
+                {
+                  "name": "From raw material to product",
+                  "blurb": "How a paper mill turns pulp into paper."
+                },
+                {
+                  "name": "Workers and machines",
+                  "blurb": "The people and processes inside a factory."
+                },
+                {
+                  "name": "A factory's place in the economy",
+                  "blurb": "How one factory connects to wider trade."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Importance of Transport System",
+              "topics": [
+                {
+                  "name": "Roads, rail, water and air",
+                  "blurb": "The many ways goods and people move."
+                },
+                {
+                  "name": "Transport and trade",
+                  "blurb": "Why moving things cheaply matters for the economy."
+                },
+                {
+                  "name": "Transport and daily life",
+                  "blurb": "How transport shapes where people live and work."
+                }
+              ]
+            },
+            {
+              "index": 11,
               "name": "New Kings and Kingdoms",
               "topics": [
                 {
@@ -1308,8 +1764,8 @@
               ]
             },
             {
-              "index": 6,
-              "name": "The Kakatiyas",
+              "index": 12,
+              "name": "The Kakatiyas – Emergence of a Regional Kingdom",
               "topics": [
                 {
                   "name": "Rise of the Kakatiyas",
@@ -1326,7 +1782,7 @@
               ]
             },
             {
-              "index": 7,
+              "index": 13,
               "name": "The Kings of Vijayanagara",
               "topics": [
                 {
@@ -1344,8 +1800,8 @@
               ]
             },
             {
-              "index": 8,
-              "name": "The Mughal Empire",
+              "index": 14,
+              "name": "Mughal Empire",
               "topics": [
                 {
                   "name": "Founding and expansion",
@@ -1362,74 +1818,146 @@
               ]
             },
             {
-              "index": 9,
-              "name": "Making of Composite Culture",
+              "index": 15,
+              "name": "Establishment of the British Empire in India",
               "topics": [
                 {
-                  "name": "Bhakti and Sufi movements",
-                  "blurb": "Saints who preached love over ritual."
+                  "name": "Coming of the traders",
+                  "blurb": "How trading companies gained a foothold."
                 },
                 {
-                  "name": "New languages and music",
-                  "blurb": "How cultures blended in daily life."
+                  "name": "Battles for power",
+                  "blurb": "Plassey, Buxar and the rise of the Company."
                 },
                 {
-                  "name": "Shared traditions",
-                  "blurb": "The common culture that grew across faiths."
+                  "name": "From company to crown",
+                  "blurb": "How British rule was fixed over India."
                 }
               ]
             },
             {
-              "index": 10,
-              "name": "Government: Why and How",
+              "index": 16,
+              "name": "Making of Laws in the State Assembly",
               "topics": [
                 {
-                  "name": "Need for government",
-                  "blurb": "Why people agree to be governed."
+                  "name": "The state legislature",
+                  "blurb": "Where a state's laws are made."
                 },
                 {
-                  "name": "Levels of government",
-                  "blurb": "Local, state and central working together."
+                  "name": "Passage of a bill",
+                  "blurb": "The steps a bill takes to become law."
                 },
                 {
-                  "name": "Democratic government",
-                  "blurb": "Government chosen by and for the people."
+                  "name": "Role of representatives",
+                  "blurb": "How elected members debate and vote on laws."
                 }
               ]
             },
             {
-              "index": 11,
-              "name": "Media and Democracy",
+              "index": 17,
+              "name": "Implementation of Laws in the District",
               "topics": [
                 {
-                  "name": "Kinds of media",
-                  "blurb": "Print, broadcast and digital news."
+                  "name": "The district administration",
+                  "blurb": "Who carries out laws at the district level."
                 },
                 {
-                  "name": "Media and public opinion",
-                  "blurb": "How news shapes what people think."
+                  "name": "Departments and their work",
+                  "blurb": "Revenue, police and welfare offices in a district."
                 },
                 {
-                  "name": "Being a careful reader",
-                  "blurb": "Questioning and checking what we read."
+                  "name": "Laws reaching people",
+                  "blurb": "Why implementation matters as much as making a law."
                 }
               ]
             },
             {
-              "index": 12,
-              "name": "Livelihoods: Handloom and Handicrafts",
+              "index": 18,
+              "name": "Caste Discrimination and the Struggle for Equalities",
               "topics": [
                 {
-                  "name": "Weavers and artisans",
-                  "blurb": "The skilled workers behind cloth and craft."
+                  "name": "Caste and inequality",
+                  "blurb": "How caste has been used to deny people fair treatment."
                 },
                 {
-                  "name": "Markets and middlemen",
-                  "blurb": "How goods reach the buyer."
+                  "name": "Reformers and movements",
+                  "blurb": "People who fought against caste discrimination."
                 },
                 {
-                  "name": "Challenges to craftspeople",
-                  "blurb": "Why traditional work is under strain."
+                  "name": "Constitutional safeguards",
+                  "blurb": "Laws that protect against caste-based discrimination."
+                }
+              ]
+            },
+            {
+              "index": 19,
+              "name": "Livelihood and Struggles of Urban Workers",
+              "topics": [
+                {
+                  "name": "Life of urban workers",
+                  "blurb": "How factory and daily-wage workers live in cities."
+                },
+                {
+                  "name": "Unsafe and unfair work",
+                  "blurb": "Common hardships faced by urban labourers."
+                },
+                {
+                  "name": "Organising for rights",
+                  "blurb": "Unions and laws that back workers' demands."
+                }
+              ]
+            },
+            {
+              "index": 20,
+              "name": "Folk – Religion",
+              "topics": [
+                {
+                  "name": "Local deities and festivals",
+                  "blurb": "Beliefs and worship rooted in a particular place."
+                },
+                {
+                  "name": "Folk practices",
+                  "blurb": "Rituals passed down outside formal religious texts."
+                },
+                {
+                  "name": "Folk religion and daily life",
+                  "blurb": "How everyday customs express belief."
+                }
+              ]
+            },
+            {
+              "index": 21,
+              "name": "Devotional Paths to the Divine",
+              "topics": [
+                {
+                  "name": "Many paths, one goal",
+                  "blurb": "Different ways devotees seek the divine."
+                },
+                {
+                  "name": "Songs and stories of devotion",
+                  "blurb": "How devotion is expressed and shared."
+                },
+                {
+                  "name": "Devotion across faiths",
+                  "blurb": "Common threads in how people practise devotion."
+                }
+              ]
+            },
+            {
+              "index": 22,
+              "name": "Rulers and Buildings",
+              "topics": [
+                {
+                  "name": "Palaces and forts",
+                  "blurb": "What a ruler's buildings say about their power."
+                },
+                {
+                  "name": "Temples and mosques",
+                  "blurb": "Religious buildings sponsored by rulers."
+                },
+                {
+                  "name": "Reading architecture as history",
+                  "blurb": "What style and scale of a building reveal about its age."
                 }
               ]
             }
@@ -1443,6 +1971,7 @@
         {
           "id": "math",
           "name": "Mathematics",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks2019/8%20maths%20em%202020-21.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -1626,7 +2155,7 @@
             },
             {
               "index": 11,
-              "name": "Algebraic Expressions and Identities",
+              "name": "Algebraic Expressions",
               "topics": [
                 {
                   "name": "Multiplying expressions",
@@ -1662,7 +2191,7 @@
             },
             {
               "index": 13,
-              "name": "Visualising 3-D in 2-D",
+              "name": "Visualizing 3-D in 2-D",
               "topics": [
                 {
                   "name": "Views of solids",
@@ -1717,8 +2246,9 @@
           ]
         },
         {
-          "id": "science",
-          "name": "Science",
+          "id": "physical_science",
+          "name": "Physical Science",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks/8%20physical%20science%20em%202024-25.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -1794,42 +2324,6 @@
             },
             {
               "index": 5,
-              "name": "Combustion, Fuels and Flame",
-              "topics": [
-                {
-                  "name": "Conditions for combustion",
-                  "blurb": "What is needed for something to burn."
-                },
-                {
-                  "name": "Types of combustion",
-                  "blurb": "Rapid, spontaneous and explosive burning."
-                },
-                {
-                  "name": "Fuels and the flame",
-                  "blurb": "Comparing fuels and the zones of a flame."
-                }
-              ]
-            },
-            {
-              "index": 6,
-              "name": "Coal and Petroleum",
-              "topics": [
-                {
-                  "name": "Natural resources",
-                  "blurb": "Exhaustible and inexhaustible resources."
-                },
-                {
-                  "name": "Formation of coal and petroleum",
-                  "blurb": "Fossil fuels made over millions of years."
-                },
-                {
-                  "name": "Conserving fuels",
-                  "blurb": "Why we must use fossil fuels sparingly."
-                }
-              ]
-            },
-            {
-              "index": 7,
               "name": "Sound",
               "topics": [
                 {
@@ -1847,8 +2341,62 @@
               ]
             },
             {
+              "index": 6,
+              "name": "Reflection of Light by Plane Surfaces",
+              "topics": [
+                {
+                  "name": "Laws of reflection",
+                  "blurb": "How light bounces off a flat, smooth surface."
+                },
+                {
+                  "name": "Images in a plane mirror",
+                  "blurb": "Where and how the image forms."
+                },
+                {
+                  "name": "Regular and irregular reflection",
+                  "blurb": "Why a mirror and a wall reflect light differently."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Coal and Petroleum",
+              "topics": [
+                {
+                  "name": "Natural resources",
+                  "blurb": "Exhaustible and inexhaustible resources."
+                },
+                {
+                  "name": "Formation of coal and petroleum",
+                  "blurb": "Fossil fuels made over millions of years."
+                },
+                {
+                  "name": "Conserving fuels",
+                  "blurb": "Why we must use fossil fuels sparingly."
+                }
+              ]
+            },
+            {
               "index": 8,
-              "name": "Chemical Effects of Electric Current",
+              "name": "Combustion, Fuels and Flame",
+              "topics": [
+                {
+                  "name": "Conditions for combustion",
+                  "blurb": "What is needed for something to burn."
+                },
+                {
+                  "name": "Types of combustion",
+                  "blurb": "Rapid, spontaneous and explosive burning."
+                },
+                {
+                  "name": "Fuels and the flame",
+                  "blurb": "Comparing fuels and the zones of a flame."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Electrical Conductivity of Liquids",
               "topics": [
                 {
                   "name": "Conduction in liquids",
@@ -1865,7 +2413,7 @@
               ]
             },
             {
-              "index": 9,
+              "index": 10,
               "name": "Some Natural Phenomena",
               "topics": [
                 {
@@ -1883,8 +2431,69 @@
               ]
             },
             {
-              "index": 10,
-              "name": "Cell: The Basic Unit of Life",
+              "index": 11,
+              "name": "Stars and Solar System",
+              "topics": [
+                {
+                  "name": "The moon and stars",
+                  "blurb": "Our night sky and its objects."
+                },
+                {
+                  "name": "The solar system",
+                  "blurb": "The Sun and its family of planets."
+                },
+                {
+                  "name": "Artificial satellites",
+                  "blurb": "Machines we send into orbit."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Graphs of Motion",
+              "topics": [
+                {
+                  "name": "Distance-time graphs",
+                  "blurb": "Reading how far something has travelled over time."
+                },
+                {
+                  "name": "Speed from a graph",
+                  "blurb": "Finding how fast something moves from the slope of a line."
+                },
+                {
+                  "name": "Describing motion visually",
+                  "blurb": "Why a graph can say more than a table of numbers."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "biological_science",
+          "name": "Biology",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks/8%20biology%20em%202024-25.pdf (2026-07-07)",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "What is Science?",
+              "topics": [
+                {
+                  "name": "Science as a way of thinking",
+                  "blurb": "Observing, questioning and testing ideas about nature."
+                },
+                {
+                  "name": "The scientific method",
+                  "blurb": "The steps scientists follow, from a question to a conclusion."
+                },
+                {
+                  "name": "Science process skills",
+                  "blurb": "Observing, comparing, classifying and measuring."
+                }
+              ]
+            },
+            {
+              "index": 2,
+              "name": "Cell – The Basic Unit of Life",
               "topics": [
                 {
                   "name": "Discovery of the cell",
@@ -1901,11 +2510,11 @@
               ]
             },
             {
-              "index": 11,
-              "name": "Microorganisms",
+              "index": 3,
+              "name": "The World of Microorganisms",
               "topics": [
                 {
-                  "name": "The world of microbes",
+                  "name": "Types of microorganisms",
                   "blurb": "Bacteria, fungi, protozoa and viruses."
                 },
                 {
@@ -1919,7 +2528,7 @@
               ]
             },
             {
-              "index": 12,
+              "index": 4,
               "name": "Reproduction in Animals",
               "topics": [
                 {
@@ -1937,8 +2546,8 @@
               ]
             },
             {
-              "index": 13,
-              "name": "Reaching the Age of Adolescence",
+              "index": 5,
+              "name": "The Age of Adolescence",
               "topics": [
                 {
                   "name": "Changes at adolescence",
@@ -1955,8 +2564,44 @@
               ]
             },
             {
-              "index": 14,
-              "name": "Crop Production and Management",
+              "index": 6,
+              "name": "Biodiversity – Conservation",
+              "topics": [
+                {
+                  "name": "What biodiversity means",
+                  "blurb": "The variety of life and why it matters."
+                },
+                {
+                  "name": "Threats to biodiversity",
+                  "blurb": "Deforestation and habitat loss."
+                },
+                {
+                  "name": "Protected areas",
+                  "blurb": "Sanctuaries, national parks and reserves."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Different Ecosystems",
+              "topics": [
+                {
+                  "name": "What is an ecosystem",
+                  "blurb": "Living things and their surroundings acting as one system."
+                },
+                {
+                  "name": "Kinds of ecosystems",
+                  "blurb": "Forests, ponds, grasslands and deserts."
+                },
+                {
+                  "name": "Balance within an ecosystem",
+                  "blurb": "How each part depends on the others."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Production of Food from Plants",
               "topics": [
                 {
                   "name": "Agricultural practices",
@@ -1973,20 +2618,56 @@
               ]
             },
             {
-              "index": 15,
-              "name": "Conservation of Plants and Animals",
+              "index": 9,
+              "name": "Production of Food from Animals",
               "topics": [
                 {
-                  "name": "Deforestation and its effects",
-                  "blurb": "What happens when forests are cleared."
+                  "name": "Animal husbandry",
+                  "blurb": "Rearing animals for milk, eggs and meat."
                 },
                 {
-                  "name": "Biodiversity",
-                  "blurb": "The variety of life and why it matters."
+                  "name": "Dairy, poultry and fisheries",
+                  "blurb": "The main sources of animal food."
                 },
                 {
-                  "name": "Protected areas",
-                  "blurb": "Sanctuaries, national parks and reserves."
+                  "name": "Caring for farm animals",
+                  "blurb": "Feeding, shelter and health of livestock."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Not for Breathing, Not for Drinking",
+              "topics": [
+                {
+                  "name": "Air pollution",
+                  "blurb": "What spoils the air we breathe."
+                },
+                {
+                  "name": "Water pollution",
+                  "blurb": "How water becomes unfit to drink or use."
+                },
+                {
+                  "name": "Protecting air and water",
+                  "blurb": "Steps to keep these vital resources clean."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "Why Do We Fall Ill?",
+              "topics": [
+                {
+                  "name": "Health and disease",
+                  "blurb": "What it means to be healthy."
+                },
+                {
+                  "name": "Causes of disease",
+                  "blurb": "Infectious and non-infectious causes."
+                },
+                {
+                  "name": "Prevention",
+                  "blurb": "Cleanliness, vaccines and healthy habits."
                 }
               ]
             }
@@ -1994,7 +2675,8 @@
         },
         {
           "id": "social",
-          "name": "Social science",
+          "name": "Social studies",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks2019/8th%20social%2022-23%20part1%202022-23.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -2070,7 +2752,7 @@
             },
             {
               "index": 5,
-              "name": "Forests: Using and Protecting Them",
+              "name": "Forests: Using and Protecting",
               "topics": [
                 {
                   "name": "Value of forests",
@@ -2124,145 +2806,91 @@
             },
             {
               "index": 8,
-              "name": "Establishment of British Rule in India",
+              "name": "Impact of Technology on Livelihoods",
               "topics": [
                 {
-                  "name": "Coming of the traders",
-                  "blurb": "How trading companies gained a foothold."
+                  "name": "Changing work",
+                  "blurb": "How machines reshaped jobs."
                 },
                 {
-                  "name": "Battles for power",
-                  "blurb": "Plassey, Buxar and the rise of the Company."
+                  "name": "Technology and industry",
+                  "blurb": "New tools, new ways of working."
                 },
                 {
-                  "name": "From company to crown",
-                  "blurb": "How British rule was fixed over India."
+                  "name": "Winners and losers",
+                  "blurb": "Who gains and who struggles with change."
                 }
               ]
             },
             {
               "index": 9,
-              "name": "Expansion and Consolidation of British Rule",
+              "name": "Public Health and the Government",
               "topics": [
                 {
-                  "name": "Wars of expansion",
-                  "blurb": "How the Company annexed kingdom after kingdom."
+                  "name": "Health as a right",
+                  "blurb": "Why health services matter for all."
                 },
                 {
-                  "name": "The doctrine of lapse",
-                  "blurb": "A policy for swallowing states."
+                  "name": "Government health services",
+                  "blurb": "How the state cares for public health."
                 },
                 {
-                  "name": "Administration of the Company",
-                  "blurb": "How the British governed what they took."
+                  "name": "Gaps and challenges",
+                  "blurb": "Reaching everyone with care."
                 }
               ]
             },
             {
               "index": 10,
-              "name": "Landlordism and the Peasantry",
+              "name": "Landlords and Tenants under the British and the Nizam",
               "topics": [
                 {
-                  "name": "New land settlements",
-                  "blurb": "Permanent, ryotwari and mahalwari systems."
+                  "name": "Land systems",
+                  "blurb": "How land was owned and taxed."
                 },
                 {
-                  "name": "Burden on the peasants",
-                  "blurb": "How revenue demands crushed farmers."
+                  "name": "Life of tenants",
+                  "blurb": "The burden on those who farmed the land."
                 },
                 {
-                  "name": "Peasant unrest",
-                  "blurb": "Revolts against the new order."
+                  "name": "Discontent and change",
+                  "blurb": "How unfair systems bred protest."
                 }
               ]
             },
             {
               "index": 11,
-              "name": "Handicrafts and Handlooms",
+              "name": "National Movement – The Early Phase (1885-1919)",
               "topics": [
                 {
-                  "name": "India's famous crafts",
-                  "blurb": "The textiles and crafts India was known for."
+                  "name": "Birth of the Congress",
+                  "blurb": "The start of organised national politics."
                 },
                 {
-                  "name": "Decline under colonial rule",
-                  "blurb": "How British policy hurt Indian craft."
+                  "name": "Moderates and extremists",
+                  "blurb": "Two approaches to demanding rights."
                 },
                 {
-                  "name": "Artisans today",
-                  "blurb": "The struggle to keep old skills alive."
+                  "name": "Swadeshi and partition of Bengal",
+                  "blurb": "Protest and the boycott of foreign goods."
                 }
               ]
             },
             {
               "index": 12,
-              "name": "The National Movement: The Early Phase",
-              "topics": [
-                {
-                  "name": "Birth of the Congress",
-                  "blurb": "The first organised call for rights."
-                },
-                {
-                  "name": "Moderates and extremists",
-                  "blurb": "Two ways of demanding change."
-                },
-                {
-                  "name": "Swadeshi movement",
-                  "blurb": "Boycott of foreign goods as protest."
-                }
-              ]
-            },
-            {
-              "index": 13,
-              "name": "The National Movement: The Last Phase",
+              "name": "National Movement – The Last Phase (1919-1947)",
               "topics": [
                 {
                   "name": "Gandhi and mass movements",
-                  "blurb": "Non-cooperation, salt march and quit India."
+                  "blurb": "Non-cooperation and civil disobedience."
                 },
                 {
-                  "name": "Towards independence",
+                  "name": "Quit India",
                   "blurb": "The final push for freedom."
                 },
                 {
-                  "name": "Partition and freedom",
-                  "blurb": "The joy and pain of 1947."
-                }
-              ]
-            },
-            {
-              "index": 14,
-              "name": "The Indian Constitution",
-              "topics": [
-                {
-                  "name": "Making of the Constitution",
-                  "blurb": "The Assembly that drafted our rules."
-                },
-                {
-                  "name": "Key features",
-                  "blurb": "Rights, duties and the structure of government."
-                },
-                {
-                  "name": "Fundamental rights",
-                  "blurb": "The freedoms guaranteed to every citizen."
-                }
-              ]
-            },
-            {
-              "index": 15,
-              "name": "Parliament and Central Government",
-              "topics": [
-                {
-                  "name": "The Parliament",
-                  "blurb": "The two houses that make our laws."
-                },
-                {
-                  "name": "The executive",
-                  "blurb": "The President, Prime Minister and Council."
-                },
-                {
-                  "name": "How a law is made",
-                  "blurb": "The journey of a bill into a law."
+                  "name": "Towards independence",
+                  "blurb": "The road to 1947 and partition."
                 }
               ]
             }
@@ -2276,6 +2904,7 @@
         {
           "id": "math",
           "name": "Mathematics",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks/9%20maths%20em-2024-25.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -2550,8 +3179,9 @@
           ]
         },
         {
-          "id": "science",
-          "name": "Science",
+          "id": "physical_science",
+          "name": "Physical Science",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks/9%20physical%20science%20em-2024-25.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -2559,7 +3189,7 @@
               "topics": [
                 {
                   "name": "States of matter",
-                  "blurb": "Solid, liquid and gas and their properties."
+                  "blurb": "Solids, liquids and gases and their properties."
                 },
                 {
                   "name": "Change of state",
@@ -2573,60 +3203,6 @@
             },
             {
               "index": 2,
-              "name": "Is Matter Pure?",
-              "topics": [
-                {
-                  "name": "Mixtures and pure substances",
-                  "blurb": "Telling apart what is mixed from what is not."
-                },
-                {
-                  "name": "Solutions, colloids and suspensions",
-                  "blurb": "Kinds of mixtures by particle size."
-                },
-                {
-                  "name": "Separation techniques",
-                  "blurb": "Ways to separate the parts of a mixture."
-                }
-              ]
-            },
-            {
-              "index": 3,
-              "name": "Atoms and Molecules",
-              "topics": [
-                {
-                  "name": "Laws of chemical combination",
-                  "blurb": "The rules matter follows when it combines."
-                },
-                {
-                  "name": "Atoms and molecules",
-                  "blurb": "The tiny particles that make up matter."
-                },
-                {
-                  "name": "Mole concept",
-                  "blurb": "Counting particles by the mole."
-                }
-              ]
-            },
-            {
-              "index": 4,
-              "name": "What Is Inside the Atom?",
-              "topics": [
-                {
-                  "name": "Sub-atomic particles",
-                  "blurb": "Electrons, protons and neutrons."
-                },
-                {
-                  "name": "Models of the atom",
-                  "blurb": "How ideas of the atom changed over time."
-                },
-                {
-                  "name": "Valency and isotopes",
-                  "blurb": "Combining power and atoms of the same element."
-                }
-              ]
-            },
-            {
-              "index": 5,
               "name": "Motion",
               "topics": [
                 {
@@ -2644,7 +3220,7 @@
               ]
             },
             {
-              "index": 6,
+              "index": 3,
               "name": "Laws of Motion",
               "topics": [
                 {
@@ -2662,7 +3238,25 @@
               ]
             },
             {
-              "index": 7,
+              "index": 4,
+              "name": "Refraction of Light at Plane Surfaces",
+              "topics": [
+                {
+                  "name": "Bending of light",
+                  "blurb": "Why light changes direction between media."
+                },
+                {
+                  "name": "Refractive index",
+                  "blurb": "How much a medium bends light."
+                },
+                {
+                  "name": "Everyday refraction",
+                  "blurb": "Why a straw looks bent in a glass of water."
+                }
+              ]
+            },
+            {
+              "index": 5,
               "name": "Gravitation",
               "topics": [
                 {
@@ -2674,8 +3268,44 @@
                   "blurb": "Acceleration due to gravity and weight."
                 },
                 {
-                  "name": "Thrust, pressure and buoyancy",
-                  "blurb": "Why some things float."
+                  "name": "Mass and weight",
+                  "blurb": "The difference between the two."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Is Matter Pure?",
+              "topics": [
+                {
+                  "name": "Mixtures and pure substances",
+                  "blurb": "Telling apart what is mixed from what is not."
+                },
+                {
+                  "name": "Solutions, colloids and suspensions",
+                  "blurb": "Kinds of mixtures by particle size."
+                },
+                {
+                  "name": "Separation techniques",
+                  "blurb": "Ways to separate the parts of a mixture."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Atoms and Molecules and Chemical Reactions",
+              "topics": [
+                {
+                  "name": "Laws of chemical combination",
+                  "blurb": "The rules matter follows when it combines."
+                },
+                {
+                  "name": "Atoms and molecules",
+                  "blurb": "The tiny particles that make up matter."
+                },
+                {
+                  "name": "Chemical equations",
+                  "blurb": "Writing what happens in a chemical reaction."
                 }
               ]
             },
@@ -2699,6 +3329,24 @@
             },
             {
               "index": 9,
+              "name": "What is Inside the Atom",
+              "topics": [
+                {
+                  "name": "Sub-atomic particles",
+                  "blurb": "Electrons, protons and neutrons."
+                },
+                {
+                  "name": "Models of the atom",
+                  "blurb": "How ideas of the atom changed over time."
+                },
+                {
+                  "name": "Valency and isotopes",
+                  "blurb": "Combining power and atoms of the same element."
+                }
+              ]
+            },
+            {
+              "index": 10,
               "name": "Work and Energy",
               "topics": [
                 {
@@ -2716,7 +3364,25 @@
               ]
             },
             {
-              "index": 10,
+              "index": 11,
+              "name": "Heat",
+              "topics": [
+                {
+                  "name": "Heat and temperature",
+                  "blurb": "The flow of thermal energy versus how hot something is."
+                },
+                {
+                  "name": "Specific heat capacity",
+                  "blurb": "Why different materials warm up at different rates."
+                },
+                {
+                  "name": "Transfer of heat",
+                  "blurb": "Conduction, convection and radiation."
+                }
+              ]
+            },
+            {
+              "index": 12,
               "name": "Sound",
               "topics": [
                 {
@@ -2732,72 +3398,115 @@
                   "blurb": "Echoes and their uses."
                 }
               ]
-            },
+            }
+          ]
+        },
+        {
+          "id": "biological_science",
+          "name": "Biology",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks2019/ix%20biology%20em.pdf (2026-07-07)",
+          "chapters": [
             {
-              "index": 11,
-              "name": "Cell: The Basic Unit of Life",
+              "index": 1,
+              "name": "Cell – Its Structure and Functions",
               "topics": [
                 {
-                  "name": "Structure of the cell",
-                  "blurb": "The parts that make up a living cell."
+                  "name": "The cell as the unit of life",
+                  "blurb": "Why the cell is life's basic building block."
                 },
                 {
                   "name": "Cell organelles",
-                  "blurb": "The tiny workers inside the cell."
+                  "blurb": "The tiny parts that do a cell's work."
                 },
                 {
-                  "name": "Cell division",
-                  "blurb": "How cells multiply to grow and repair."
+                  "name": "Plant and animal cells",
+                  "blurb": "How the two kinds differ."
                 }
               ]
             },
             {
-              "index": 12,
-              "name": "Tissues",
+              "index": 2,
+              "name": "Plant Tissues",
               "topics": [
                 {
-                  "name": "Plant tissues",
-                  "blurb": "Meristematic and permanent tissues."
+                  "name": "What tissues are",
+                  "blurb": "Groups of cells doing one job."
                 },
                 {
-                  "name": "Animal tissues",
-                  "blurb": "Epithelial, connective, muscular and nervous."
+                  "name": "Meristematic tissue",
+                  "blurb": "The growing tissue of plants."
                 },
                 {
-                  "name": "Tissues and function",
-                  "blurb": "How tissues suit the work they do."
+                  "name": "Permanent tissues",
+                  "blurb": "Tissues that support and transport."
                 }
               ]
             },
             {
-              "index": 13,
+              "index": 3,
+              "name": "Animal Tissues",
+              "topics": [
+                {
+                  "name": "Epithelial tissue",
+                  "blurb": "The lining and covering tissue."
+                },
+                {
+                  "name": "Connective and muscular tissue",
+                  "blurb": "Tissues that bind and move."
+                },
+                {
+                  "name": "Nervous tissue",
+                  "blurb": "The tissue that carries messages."
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "Plasma Membrane",
+              "topics": [
+                {
+                  "name": "Structure of the plasma membrane",
+                  "blurb": "The thin, selective boundary of every cell."
+                },
+                {
+                  "name": "Diffusion",
+                  "blurb": "Movement from a crowded region to a less crowded one."
+                },
+                {
+                  "name": "Osmosis",
+                  "blurb": "The movement of water across a membrane."
+                }
+              ]
+            },
+            {
+              "index": 5,
               "name": "Diversity in Living Organisms",
               "topics": [
                 {
-                  "name": "Need for classification",
-                  "blurb": "Why we sort the living world."
+                  "name": "The need for classification",
+                  "blurb": "Sorting the huge variety of life."
                 },
                 {
-                  "name": "Hierarchy of classification",
-                  "blurb": "From kingdom down to species."
+                  "name": "Basis of classification",
+                  "blurb": "Features used to group organisms."
                 },
                 {
                   "name": "The five kingdoms",
-                  "blurb": "The broad groups of all living things."
+                  "blurb": "The broad groups of living things."
                 }
               ]
             },
             {
-              "index": 14,
+              "index": 6,
               "name": "Sense Organs",
               "topics": [
                 {
                   "name": "The eye and the ear",
-                  "blurb": "How we see and how we hear."
+                  "blurb": "How we see and hear."
                 },
                 {
-                  "name": "Skin, tongue and nose",
-                  "blurb": "Touch, taste and smell."
+                  "name": "Skin, nose and tongue",
+                  "blurb": "Touch, smell and taste."
                 },
                 {
                   "name": "Care of sense organs",
@@ -2806,20 +3515,92 @@
               ]
             },
             {
-              "index": 15,
-              "name": "Our Environment",
+              "index": 7,
+              "name": "Animal Behaviour",
               "topics": [
                 {
-                  "name": "Biotic and abiotic factors",
-                  "blurb": "The living and non-living parts of an ecosystem."
+                  "name": "Instinct and learning",
+                  "blurb": "Behaviour we are born with and learn."
                 },
                 {
-                  "name": "Food chains and webs",
-                  "blurb": "The flow of energy through life."
+                  "name": "Responses to the environment",
+                  "blurb": "How animals react to their world."
                 },
                 {
-                  "name": "Bio-geo-chemical cycles",
-                  "blurb": "How water, carbon and nitrogen circulate."
+                  "name": "Social behaviour",
+                  "blurb": "How animals live together."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Challenges in Improving Agricultural Products",
+              "topics": [
+                {
+                  "name": "Improving crops",
+                  "blurb": "Better seeds and practices."
+                },
+                {
+                  "name": "Pests and diseases",
+                  "blurb": "Threats to a good harvest."
+                },
+                {
+                  "name": "Sustainable farming",
+                  "blurb": "Growing food without harming the land."
+                }
+              ]
+            },
+            {
+              "index": 9,
+              "name": "Adaptations in Different Ecosystems",
+              "topics": [
+                {
+                  "name": "What adaptation means",
+                  "blurb": "Features that fit an organism to its home."
+                },
+                {
+                  "name": "Adaptations in plants and animals",
+                  "blurb": "Ways life copes with its habitat."
+                },
+                {
+                  "name": "Habitats and survival",
+                  "blurb": "How environment shapes living things."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Soil Pollution",
+              "topics": [
+                {
+                  "name": "Causes of soil pollution",
+                  "blurb": "What spoils the soil."
+                },
+                {
+                  "name": "Effects on life",
+                  "blurb": "How polluted soil harms living things."
+                },
+                {
+                  "name": "Protecting the soil",
+                  "blurb": "Keeping soil healthy and fertile."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "Bio-geo-chemical Cycles",
+              "topics": [
+                {
+                  "name": "The water and carbon cycles",
+                  "blurb": "How key substances circulate in nature."
+                },
+                {
+                  "name": "The nitrogen and oxygen cycles",
+                  "blurb": "The recycling of vital elements."
+                },
+                {
+                  "name": "Why cycles matter",
+                  "blurb": "How nature keeps its balance."
                 }
               ]
             }
@@ -2827,7 +3608,8 @@
         },
         {
           "id": "social",
-          "name": "Social science",
+          "name": "Social studies",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks/9%20social%20studies%20em-2024-25.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -2849,19 +3631,19 @@
             },
             {
               "index": 2,
-              "name": "The Natural Regions",
+              "name": "The Natural Realms of the Earth – Lithosphere",
               "topics": [
                 {
-                  "name": "Basis of natural regions",
-                  "blurb": "Climate and vegetation as dividers."
+                  "name": "The Earth's solid shell",
+                  "blurb": "Crust, plates and the forces that move them."
                 },
                 {
-                  "name": "Major natural regions",
-                  "blurb": "From tundra to equatorial forest."
+                  "name": "Major landform regions",
+                  "blurb": "Mountains, plateaus and plains of the world."
                 },
                 {
-                  "name": "Human life in each region",
-                  "blurb": "How people adapt to their region."
+                  "name": "Weathering and erosion",
+                  "blurb": "Slow forces that reshape the land."
                 }
               ]
             },
@@ -2903,19 +3685,19 @@
             },
             {
               "index": 5,
-              "name": "Indian Geographical Diversity",
+              "name": "Biosphere",
               "topics": [
                 {
-                  "name": "Physical divisions of India",
-                  "blurb": "Mountains, plains, plateau and coasts."
+                  "name": "The web of life on Earth",
+                  "blurb": "How living things and their environment interact."
                 },
                 {
-                  "name": "Drainage systems",
-                  "blurb": "The rivers that shape the land."
+                  "name": "Major biomes",
+                  "blurb": "Forests, grasslands, deserts and tundra."
                 },
                 {
-                  "name": "Diversity and unity",
-                  "blurb": "How a varied land holds together."
+                  "name": "Human impact on the biosphere",
+                  "blurb": "How people change the living world."
                 }
               ]
             },
@@ -2939,60 +3721,204 @@
             },
             {
               "index": 7,
-              "name": "Water Resources of India",
+              "name": "Industries in India",
               "topics": [
                 {
-                  "name": "Sources of water",
-                  "blurb": "Rivers, groundwater and rainfall."
+                  "name": "Kinds of industries",
+                  "blurb": "Heavy, light and agro-based industry."
                 },
                 {
-                  "name": "Multipurpose projects",
-                  "blurb": "Dams and what they deliver and cost."
+                  "name": "Location of industries",
+                  "blurb": "Why factories cluster where they do."
                 },
                 {
-                  "name": "Conserving water",
-                  "blurb": "Harvesting and managing scarce water."
+                  "name": "Industry and development",
+                  "blurb": "The role of industry in India's economy."
                 }
               ]
             },
             {
               "index": 8,
-              "name": "The People",
+              "name": "Service Activities in India",
               "topics": [
                 {
-                  "name": "Population growth",
-                  "blurb": "How and why India's numbers change."
+                  "name": "What are services",
+                  "blurb": "Work that provides a service rather than a product."
                 },
                 {
-                  "name": "Distribution and density",
-                  "blurb": "Where people live and how crowded it is."
+                  "name": "Growth of the service sector",
+                  "blurb": "Why services now employ so many Indians."
                 },
                 {
-                  "name": "Population as a resource",
-                  "blurb": "People as a source of strength."
+                  "name": "Kinds of services",
+                  "blurb": "Trade, transport, banking and more."
                 }
               ]
             },
             {
               "index": 9,
-              "name": "Poverty: A Challenge",
+              "name": "Credit in the Financial System",
               "topics": [
                 {
-                  "name": "Understanding poverty",
-                  "blurb": "What it means to be poor."
+                  "name": "Role of credit",
+                  "blurb": "Why people and businesses borrow money."
                 },
                 {
-                  "name": "Measuring poverty",
-                  "blurb": "The poverty line and its limits."
+                  "name": "Formal and informal credit",
+                  "blurb": "Banks and moneylenders compared."
                 },
                 {
-                  "name": "Fighting poverty",
-                  "blurb": "Programmes to reduce poverty."
+                  "name": "Terms of credit",
+                  "blurb": "Interest, collateral and repayment."
                 }
               ]
             },
             {
               "index": 10,
+              "name": "Prices and Cost of Living",
+              "topics": [
+                {
+                  "name": "How prices are set",
+                  "blurb": "Supply, demand and the cost of goods."
+                },
+                {
+                  "name": "Inflation",
+                  "blurb": "Why the cost of living rises over time."
+                },
+                {
+                  "name": "Managing a household budget",
+                  "blurb": "Coping with changing prices."
+                }
+              ]
+            },
+            {
+              "index": 11,
+              "name": "The Government Budget and Taxation",
+              "topics": [
+                {
+                  "name": "What a budget is",
+                  "blurb": "Planning government income and spending."
+                },
+                {
+                  "name": "Kinds of taxes",
+                  "blurb": "Direct and indirect taxes explained."
+                },
+                {
+                  "name": "Public spending",
+                  "blurb": "Where government revenue is spent."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Democratic and Nationalist Revolutions: 17th, 18th & 19th Centuries",
+              "topics": [
+                {
+                  "name": "The English and American revolutions",
+                  "blurb": "Early challenges to absolute rule."
+                },
+                {
+                  "name": "The French Revolution",
+                  "blurb": "Liberty, equality and fraternity as a rallying cry."
+                },
+                {
+                  "name": "Rise of nationalism",
+                  "blurb": "The idea of the nation-state spreading across Europe."
+                }
+              ]
+            },
+            {
+              "index": 13,
+              "name": "Industrialisation and Social Change",
+              "topics": [
+                {
+                  "name": "The Industrial Revolution",
+                  "blurb": "Machines and factories reshape production."
+                },
+                {
+                  "name": "New social classes",
+                  "blurb": "Factory owners and industrial workers."
+                },
+                {
+                  "name": "Cities and working conditions",
+                  "blurb": "Life for workers in the new industrial towns."
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "name": "Social Protest Movements",
+              "topics": [
+                {
+                  "name": "Workers organise",
+                  "blurb": "Early unions and strikes for better conditions."
+                },
+                {
+                  "name": "Ideas of reform",
+                  "blurb": "Movements demanding fairer treatment."
+                },
+                {
+                  "name": "Impact on policy",
+                  "blurb": "How protest led to new laws and rights."
+                }
+              ]
+            },
+            {
+              "index": 15,
+              "name": "Colonialism in Latin America, Asia and Africa",
+              "topics": [
+                {
+                  "name": "Patterns of colonial rule",
+                  "blurb": "How colonial powers controlled distant lands."
+                },
+                {
+                  "name": "Resistance to colonialism",
+                  "blurb": "Local struggles against foreign rule."
+                },
+                {
+                  "name": "Legacies of colonialism",
+                  "blurb": "Lasting effects on colonised regions."
+                }
+              ]
+            },
+            {
+              "index": 16,
+              "name": "Impact of Colonialism in India",
+              "topics": [
+                {
+                  "name": "Economic impact",
+                  "blurb": "How colonial policy reshaped Indian trade and industry."
+                },
+                {
+                  "name": "Social and political impact",
+                  "blurb": "Changes to Indian society and administration."
+                },
+                {
+                  "name": "Response and resistance",
+                  "blurb": "How Indians pushed back against colonial rule."
+                }
+              ]
+            },
+            {
+              "index": 17,
+              "name": "Expansion of Democracy",
+              "topics": [
+                {
+                  "name": "Widening the right to vote",
+                  "blurb": "How more people gained a political voice."
+                },
+                {
+                  "name": "New democracies",
+                  "blurb": "Nations that adopted democratic government."
+                },
+                {
+                  "name": "Challenges to democracy",
+                  "blurb": "Obstacles democracies have had to overcome."
+                }
+              ]
+            },
+            {
+              "index": 18,
               "name": "Democracy: An Evolving Idea",
               "topics": [
                 {
@@ -3000,84 +3926,84 @@
                   "blurb": "Government by the people, defined."
                 },
                 {
-                  "name": "Spread of democracy",
-                  "blurb": "How democracy grew across the world."
+                  "name": "Democracy over time",
+                  "blurb": "How the idea of democracy has changed."
                 },
                 {
                   "name": "Features of democracy",
-                  "blurb": "The marks of a true democracy."
+                  "blurb": "The marks of a genuinely democratic government."
                 }
               ]
             },
             {
-              "index": 11,
-              "name": "The Constitution of India",
+              "index": 19,
+              "name": "Human Rights and Fundamental Rights",
               "topics": [
                 {
-                  "name": "Making of the Constitution",
-                  "blurb": "The Assembly and its long work."
+                  "name": "Universal human rights",
+                  "blurb": "Rights every person is entitled to."
                 },
                 {
-                  "name": "The Preamble",
-                  "blurb": "The values our Constitution declares."
+                  "name": "Fundamental rights in India",
+                  "blurb": "The rights guaranteed by the Constitution."
                 },
                 {
-                  "name": "Rights and duties",
-                  "blurb": "What citizens are owed and owe."
+                  "name": "Protecting rights",
+                  "blurb": "How courts and institutions safeguard rights."
                 }
               ]
             },
             {
-              "index": 12,
-              "name": "Making of Laws in India",
+              "index": 20,
+              "name": "Women Protection Acts",
               "topics": [
                 {
-                  "name": "The legislature",
-                  "blurb": "Who makes the laws and how."
+                  "name": "Laws protecting women",
+                  "blurb": "Key legislation against violence and discrimination."
                 },
                 {
-                  "name": "Passage of a bill",
-                  "blurb": "The steps from proposal to law."
+                  "name": "Access to justice",
+                  "blurb": "How women can seek help and legal protection."
                 },
                 {
-                  "name": "Role of citizens",
-                  "blurb": "How the public shapes law-making."
+                  "name": "Continuing challenges",
+                  "blurb": "Gaps between law and everyday practice."
                 }
               ]
             },
             {
-              "index": 13,
-              "name": "Money and Credit",
+              "index": 21,
+              "name": "Disaster Management",
               "topics": [
                 {
-                  "name": "Role of money",
-                  "blurb": "Why money makes exchange easy."
+                  "name": "Kinds of disasters",
+                  "blurb": "Natural and human-made disasters."
                 },
                 {
-                  "name": "Formal and informal credit",
-                  "blurb": "Where people borrow and at what cost."
+                  "name": "Preparedness",
+                  "blurb": "Planning and drills that reduce harm."
                 },
                 {
-                  "name": "Self-help groups",
-                  "blurb": "Small groups that lend and save together."
+                  "name": "Response and recovery",
+                  "blurb": "Rescue, relief and rebuilding after a disaster."
                 }
               ]
             },
             {
-              "index": 14,
-              "name": "Trade and Globalisation",
+              "index": 22,
+              "name": "Traffic Education",
               "topics": [
                 {
-                  "name": "Trade between countries",
-                  "blurb": "How nations exchange goods."
+                  "name": "Traffic rules and signs",
+                  "blurb": "The signals that keep roads safe."
                 },
                 {
-                  "name": "Globalisation",
-                  "blurb": "The tighter linking of the world's economies."
+                  "name": "Safe behaviour on the road",
+                  "blurb": "Habits that prevent accidents."
                 },
                 {
-                  "name": "Impact on India",
-                  "blurb": "Winners and losers in a global market."
+                  "name": "Responsibility of road users",
+                  "blurb": "Everyone's part in road safety."
                 }
               ]
             }
@@ -3091,6 +4017,7 @@
         {
           "id": "math",
           "name": "Mathematics",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks/10%20mathematics%20em%202024-25.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -3359,29 +4286,48 @@
           ]
         },
         {
-          "id": "science",
-          "name": "Science",
+          "id": "physical_science",
+          "name": "Physical Science",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks2019/10%20physics%20em%202021.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
-              "name": "Chemical Reactions and Equations",
+              "name": "Reflection of Light at Curved Surfaces",
               "topics": [
                 {
-                  "name": "Chemical equations",
-                  "blurb": "Writing and balancing what happens in a reaction."
+                  "name": "Concave and convex mirrors",
+                  "blurb": "How curved mirrors form images differently from flat ones."
                 },
                 {
-                  "name": "Types of reactions",
-                  "blurb": "Combination, decomposition, displacement and more."
+                  "name": "The mirror formula",
+                  "blurb": "Relating object distance, image distance and focal length."
                 },
                 {
-                  "name": "Oxidation and reduction",
-                  "blurb": "Gain and loss of oxygen or electrons."
+                  "name": "Uses of spherical mirrors",
+                  "blurb": "Why headlights, telescopes and dentist mirrors choose different curves."
                 }
               ]
             },
             {
               "index": 2,
+              "name": "Chemical Equations",
+              "topics": [
+                {
+                  "name": "Writing chemical equations",
+                  "blurb": "Showing what happens in a reaction with symbols."
+                },
+                {
+                  "name": "Balancing equations",
+                  "blurb": "Matching atoms on both sides of an equation."
+                },
+                {
+                  "name": "Types of reactions",
+                  "blurb": "Combination, decomposition, displacement and more."
+                }
+              ]
+            },
+            {
+              "index": 3,
               "name": "Acids, Bases and Salts",
               "topics": [
                 {
@@ -3399,7 +4345,43 @@
               ]
             },
             {
-              "index": 3,
+              "index": 4,
+              "name": "Refraction of Light at Curved Surfaces",
+              "topics": [
+                {
+                  "name": "Lenses",
+                  "blurb": "Convex and concave lenses and how they bend light."
+                },
+                {
+                  "name": "Image formation by lenses",
+                  "blurb": "Where and how a lens forms an image."
+                },
+                {
+                  "name": "The lens formula and power",
+                  "blurb": "Locating images and rating a lens's strength."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Human Eye and Colourful World",
+              "topics": [
+                {
+                  "name": "The human eye",
+                  "blurb": "How the eye focuses and forms an image."
+                },
+                {
+                  "name": "Defects of vision",
+                  "blurb": "Short sight, long sight and their correction."
+                },
+                {
+                  "name": "Dispersion and scattering",
+                  "blurb": "Rainbows and the blue of the sky."
+                }
+              ]
+            },
+            {
+              "index": 6,
               "name": "Structure of Atom",
               "topics": [
                 {
@@ -3417,8 +4399,8 @@
               ]
             },
             {
-              "index": 4,
-              "name": "Classification of Elements",
+              "index": 7,
+              "name": "Classification of Elements – The Periodic Table",
               "topics": [
                 {
                   "name": "Early attempts at classification",
@@ -3435,7 +4417,7 @@
               ]
             },
             {
-              "index": 5,
+              "index": 8,
               "name": "Chemical Bonding",
               "topics": [
                 {
@@ -3453,97 +4435,7 @@
               ]
             },
             {
-              "index": 6,
-              "name": "Metallurgy",
-              "topics": [
-                {
-                  "name": "Occurrence of metals",
-                  "blurb": "Where metals are found in nature."
-                },
-                {
-                  "name": "Extraction of metals",
-                  "blurb": "From ore to pure metal."
-                },
-                {
-                  "name": "Corrosion and its prevention",
-                  "blurb": "Why metals decay and how to protect them."
-                }
-              ]
-            },
-            {
-              "index": 7,
-              "name": "Carbon and Its Compounds",
-              "topics": [
-                {
-                  "name": "Bonding in carbon",
-                  "blurb": "Why carbon forms so many compounds."
-                },
-                {
-                  "name": "Hydrocarbons and functional groups",
-                  "blurb": "Chains, rings and the reactive parts."
-                },
-                {
-                  "name": "Important carbon compounds",
-                  "blurb": "Ethanol, ethanoic acid, soaps and detergents."
-                }
-              ]
-            },
-            {
-              "index": 8,
-              "name": "Reflection of Light",
-              "topics": [
-                {
-                  "name": "Laws of reflection",
-                  "blurb": "How light bounces off a surface."
-                },
-                {
-                  "name": "Images in spherical mirrors",
-                  "blurb": "Concave and convex mirror images."
-                },
-                {
-                  "name": "The mirror formula",
-                  "blurb": "Relating object, image and focal length."
-                }
-              ]
-            },
-            {
               "index": 9,
-              "name": "Refraction of Light",
-              "topics": [
-                {
-                  "name": "Bending of light",
-                  "blurb": "Why light changes direction between media."
-                },
-                {
-                  "name": "Refraction through lenses",
-                  "blurb": "Images formed by convex and concave lenses."
-                },
-                {
-                  "name": "The lens formula and power",
-                  "blurb": "Locating images and rating a lens."
-                }
-              ]
-            },
-            {
-              "index": 10,
-              "name": "The Human Eye and the Colourful World",
-              "topics": [
-                {
-                  "name": "The human eye",
-                  "blurb": "How the eye focuses and forms an image."
-                },
-                {
-                  "name": "Defects of vision",
-                  "blurb": "Short sight, long sight and their correction."
-                },
-                {
-                  "name": "Dispersion and scattering",
-                  "blurb": "Rainbows and the blue of the sky."
-                }
-              ]
-            },
-            {
-              "index": 11,
               "name": "Electric Current",
               "topics": [
                 {
@@ -3561,7 +4453,7 @@
               ]
             },
             {
-              "index": 12,
+              "index": 10,
               "name": "Electromagnetism",
               "topics": [
                 {
@@ -3579,8 +4471,51 @@
               ]
             },
             {
-              "index": 13,
-              "name": "Life Processes: Nutrition",
+              "index": 11,
+              "name": "Principles of Metallurgy",
+              "topics": [
+                {
+                  "name": "Occurrence of metals",
+                  "blurb": "Where metals are found in nature."
+                },
+                {
+                  "name": "Extraction of metals",
+                  "blurb": "From ore to pure metal."
+                },
+                {
+                  "name": "Corrosion and its prevention",
+                  "blurb": "Why metals decay and how to protect them."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "Carbon and Its Compounds",
+              "topics": [
+                {
+                  "name": "Bonding in carbon",
+                  "blurb": "Why carbon forms so many compounds."
+                },
+                {
+                  "name": "Hydrocarbons and functional groups",
+                  "blurb": "Chains, rings and the reactive parts."
+                },
+                {
+                  "name": "Important carbon compounds",
+                  "blurb": "Ethanol, ethanoic acid, soaps and detergents."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "biological_science",
+          "name": "Biology",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks2019/x%20biology%20em.pdf (2026-07-07)",
+          "chapters": [
+            {
+              "index": 1,
+              "name": "Nutrition – Food Supplying System",
               "topics": [
                 {
                   "name": "Autotrophic nutrition",
@@ -3597,92 +4532,164 @@
               ]
             },
             {
-              "index": 14,
-              "name": "Life Processes: Respiration and Transport",
+              "index": 2,
+              "name": "Respiration – The Energy Producing System",
               "topics": [
                 {
-                  "name": "Respiration",
-                  "blurb": "Releasing energy from food."
+                  "name": "Breathing and respiration",
+                  "blurb": "Taking in air and releasing energy."
+                },
+                {
+                  "name": "Aerobic and anaerobic respiration",
+                  "blurb": "Releasing energy with and without oxygen."
                 },
                 {
                   "name": "Human respiratory system",
                   "blurb": "How we breathe and exchange gases."
-                },
-                {
-                  "name": "Transport in humans",
-                  "blurb": "The heart, blood and circulation."
                 }
               ]
             },
             {
-              "index": 15,
-              "name": "Life Processes: Excretion and Coordination",
+              "index": 3,
+              "name": "Transportation – The Circulatory System",
               "topics": [
                 {
-                  "name": "Excretion in humans",
-                  "blurb": "Removing wastes through the kidneys."
+                  "name": "Transport in plants",
+                  "blurb": "Moving water, minerals and food."
                 },
                 {
-                  "name": "Nervous coordination",
-                  "blurb": "How nerves carry messages."
+                  "name": "The human circulatory system",
+                  "blurb": "The heart, blood and vessels."
                 },
                 {
-                  "name": "Hormonal coordination",
-                  "blurb": "How hormones control the body."
+                  "name": "Blood and its work",
+                  "blurb": "Carrying oxygen and nutrients."
                 }
               ]
             },
             {
-              "index": 16,
-              "name": "Reproduction",
+              "index": 4,
+              "name": "Excretion – The Wastage Disposing System",
+              "topics": [
+                {
+                  "name": "Removing wastes",
+                  "blurb": "Why the body must clear wastes."
+                },
+                {
+                  "name": "The human excretory system",
+                  "blurb": "The kidneys and how they filter."
+                },
+                {
+                  "name": "Excretion in plants",
+                  "blurb": "How plants get rid of wastes."
+                }
+              ]
+            },
+            {
+              "index": 5,
+              "name": "Coordination – The Linking System",
+              "topics": [
+                {
+                  "name": "The nervous system",
+                  "blurb": "How signals travel through the body."
+                },
+                {
+                  "name": "Reflex actions",
+                  "blurb": "Fast, automatic responses."
+                },
+                {
+                  "name": "Coordination in plants",
+                  "blurb": "How plants respond to their surroundings."
+                }
+              ]
+            },
+            {
+              "index": 6,
+              "name": "Reproduction – The Generating System",
               "topics": [
                 {
                   "name": "Modes of reproduction",
-                  "blurb": "Asexual and sexual reproduction."
+                  "blurb": "Making new life with and without partners."
+                },
+                {
+                  "name": "Reproduction in plants",
+                  "blurb": "Flowers, pollination and seeds."
                 },
                 {
                   "name": "Reproduction in humans",
-                  "blurb": "The male and female reproductive systems."
-                },
-                {
-                  "name": "Reproductive health",
-                  "blurb": "Caring for reproductive well-being."
+                  "blurb": "The systems that create new life."
                 }
               ]
             },
             {
-              "index": 17,
-              "name": "Heredity and Evolution",
+              "index": 7,
+              "name": "Coordination in Life Processes",
+              "topics": [
+                {
+                  "name": "Hormones",
+                  "blurb": "The chemical messengers of the body."
+                },
+                {
+                  "name": "Endocrine glands",
+                  "blurb": "Where hormones are made."
+                },
+                {
+                  "name": "Working together",
+                  "blurb": "How systems keep the body in balance."
+                }
+              ]
+            },
+            {
+              "index": 8,
+              "name": "Heredity – From Parent to Progeny",
               "topics": [
                 {
                   "name": "Inheritance of traits",
-                  "blurb": "How features pass to the next generation."
+                  "blurb": "How features pass from parents to children."
                 },
                 {
-                  "name": "Mendel's laws",
+                  "name": "Mendel's experiments",
                   "blurb": "The rules of inheritance from pea plants."
                 },
                 {
                   "name": "Evolution",
-                  "blurb": "How life changes over long spans of time."
+                  "blurb": "How life changes over long ages."
                 }
               ]
             },
             {
-              "index": 18,
-              "name": "Our Environment and Natural Resources",
+              "index": 9,
+              "name": "Our Environment – Our Concern",
               "topics": [
                 {
                   "name": "Ecosystems",
-                  "blurb": "Living and non-living working as one."
+                  "blurb": "Living things and their surroundings together."
                 },
                 {
-                  "name": "Waste and its management",
-                  "blurb": "Biodegradable and non-biodegradable waste."
+                  "name": "Food chains and webs",
+                  "blurb": "Who eats whom in nature."
                 },
                 {
-                  "name": "Conserving natural resources",
-                  "blurb": "Using forests, water and fuels wisely."
+                  "name": "Human impact",
+                  "blurb": "How our actions change the environment."
+                }
+              ]
+            },
+            {
+              "index": 10,
+              "name": "Natural Resources",
+              "topics": [
+                {
+                  "name": "Types of resources",
+                  "blurb": "Renewable and non-renewable resources."
+                },
+                {
+                  "name": "Managing resources",
+                  "blurb": "Using nature's gifts wisely."
+                },
+                {
+                  "name": "Conservation",
+                  "blurb": "Protecting resources for the future."
                 }
               ]
             }
@@ -3690,7 +4697,8 @@
         },
         {
           "id": "social",
-          "name": "Social science",
+          "name": "Social studies",
+          "provenance": "fetched:https://scert.telangana.gov.in/pdf/publication/ebooks2019/10th%20social%20em.pdf (2026-07-07)",
           "chapters": [
             {
               "index": 1,
@@ -3784,24 +4792,60 @@
             },
             {
               "index": 6,
-              "name": "People and Settlement",
+              "name": "India – Population",
+              "topics": [
+                {
+                  "name": "Size and distribution",
+                  "blurb": "How many people live where in India."
+                },
+                {
+                  "name": "Population growth",
+                  "blurb": "How and why India's numbers have changed."
+                },
+                {
+                  "name": "Population as a resource",
+                  "blurb": "People as a source of skill and strength."
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "Settlements – Migrations",
               "topics": [
                 {
                   "name": "Rural and urban settlement",
                   "blurb": "Where and how people cluster."
                 },
                 {
-                  "name": "Migration",
-                  "blurb": "Why people move and where they go."
+                  "name": "Why people migrate",
+                  "blurb": "Push and pull factors behind movement."
                 },
                 {
-                  "name": "Growth of towns",
-                  "blurb": "How cities grow and strain."
+                  "name": "Effects of migration",
+                  "blurb": "How migration changes both source and destination."
                 }
               ]
             },
             {
-              "index": 7,
+              "index": 8,
+              "name": "Rampur: A Village Economy",
+              "topics": [
+                {
+                  "name": "A village case study",
+                  "blurb": "Land, labour and capital in a real village economy."
+                },
+                {
+                  "name": "Farm and non-farm work",
+                  "blurb": "How villagers earn beyond the field."
+                },
+                {
+                  "name": "Lessons from Rampur",
+                  "blurb": "What one village reveals about India's rural economy."
+                }
+              ]
+            },
+            {
+              "index": 9,
               "name": "Globalisation",
               "topics": [
                 {
@@ -3819,7 +4863,7 @@
               ]
             },
             {
-              "index": 8,
+              "index": 10,
               "name": "Food Security",
               "topics": [
                 {
@@ -3837,8 +4881,26 @@
               ]
             },
             {
-              "index": 9,
-              "name": "The World Between the Wars",
+              "index": 11,
+              "name": "Sustainable Development with Equity",
+              "topics": [
+                {
+                  "name": "Balancing growth and fairness",
+                  "blurb": "Why development must reach everyone, not just some."
+                },
+                {
+                  "name": "Environmental limits",
+                  "blurb": "Growing an economy without exhausting resources."
+                },
+                {
+                  "name": "Equity across generations",
+                  "blurb": "Leaving enough behind for those who come after."
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "name": "World Between the World Wars",
               "topics": [
                 {
                   "name": "The First World War",
@@ -3855,8 +4917,8 @@
               ]
             },
             {
-              "index": 10,
-              "name": "National Liberation Movements",
+              "index": 13,
+              "name": "National Liberation Movements in the Colonies",
               "topics": [
                 {
                   "name": "Colonies and their struggles",
@@ -3873,8 +4935,26 @@
               ]
             },
             {
-              "index": 11,
-              "name": "The Making of the Indian Constitution",
+              "index": 14,
+              "name": "National Movement in India – Partition & Independence: 1939-1947",
+              "topics": [
+                {
+                  "name": "The Quit India years",
+                  "blurb": "The final mass movement against British rule."
+                },
+                {
+                  "name": "The road to partition",
+                  "blurb": "Negotiations, communal tension and the split of the subcontinent."
+                },
+                {
+                  "name": "Independence in 1947",
+                  "blurb": "The joy and the cost of freedom."
+                }
+              ]
+            },
+            {
+              "index": 15,
+              "name": "The Making of Independent India's Constitution",
               "topics": [
                 {
                   "name": "The Constituent Assembly",
@@ -3891,7 +4971,7 @@
               ]
             },
             {
-              "index": 12,
+              "index": 16,
               "name": "Election Process in India",
               "topics": [
                 {
@@ -3909,8 +4989,8 @@
               ]
             },
             {
-              "index": 13,
-              "name": "Independent India",
+              "index": 17,
+              "name": "Independent India (The First 30 Years – 1947-77)",
               "topics": [
                 {
                   "name": "Challenges at independence",
@@ -3922,12 +5002,48 @@
                 },
                 {
                   "name": "Foreign policy",
-                  "blurb": "India's place in a divided world."
+                  "blurb": "India's place in a divided Cold War world."
                 }
               ]
             },
             {
-              "index": 14,
+              "index": 18,
+              "name": "Emerging Political Trends 1977 to 2000",
+              "topics": [
+                {
+                  "name": "End of one-party dominance",
+                  "blurb": "The rise of coalition and opposition politics."
+                },
+                {
+                  "name": "Regional parties",
+                  "blurb": "The growing voice of state-level political movements."
+                },
+                {
+                  "name": "Economic reforms",
+                  "blurb": "The shift towards liberalisation from the 1990s."
+                }
+              ]
+            },
+            {
+              "index": 19,
+              "name": "Post-War World and India",
+              "topics": [
+                {
+                  "name": "A world of two blocs",
+                  "blurb": "The Cold War and India's non-aligned path."
+                },
+                {
+                  "name": "India in world affairs",
+                  "blurb": "India's growing role among newly independent nations."
+                },
+                {
+                  "name": "Changing alliances",
+                  "blurb": "How global politics shifted after the Cold War."
+                }
+              ]
+            },
+            {
+              "index": 20,
               "name": "Social Movements in Our Times",
               "topics": [
                 {
@@ -3941,6 +5057,24 @@
                 {
                   "name": "Citizens and change",
                   "blurb": "How ordinary people move a society."
+                }
+              ]
+            },
+            {
+              "index": 21,
+              "name": "The Movement for the Formation of Telangana State",
+              "topics": [
+                {
+                  "name": "Roots of the movement",
+                  "blurb": "Long-standing regional grievances behind the demand."
+                },
+                {
+                  "name": "The struggle for statehood",
+                  "blurb": "Key phases of protest and negotiation."
+                },
+                {
+                  "name": "Formation of Telangana in 2014",
+                  "blurb": "How a new state was carved out of Andhra Pradesh."
                 }
               ]
             }
