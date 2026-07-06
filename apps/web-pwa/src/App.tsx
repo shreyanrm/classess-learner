@@ -16,7 +16,7 @@ import {
   VidyaProvider,
 } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Course } from './screens/Course';
 import { ConceptA } from './screens/concepts/ConceptA';
 import { ConceptB } from './screens/concepts/ConceptB';
@@ -101,9 +101,25 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   const { route } = useRouter();
   const [busy, setBusy] = useState(false);
   const [mood, setMood] = useState<VidyaMood>('idle');
-  const [turns, setTurns] = useState<ChatTurn[]>([
-    { id: 'seed', role: 'vidya', text: 'ask me anything — I can see the page you are on.' },
-  ]);
+  const [turns, setTurns] = useState<ChatTurn[]>(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('clss-vidya-conversation-v1') ?? 'null');
+      if (Array.isArray(saved) && saved.length > 0) return saved as ChatTurn[];
+    } catch {
+      // fresh conversation below
+    }
+    return [
+      { id: 'seed', role: 'vidya', text: 'ask me anything — I can see the page you are on.' },
+    ];
+  });
+  // She never forgets: the conversation survives reloads (last 60 turns).
+  useEffect(() => {
+    try {
+      localStorage.setItem('clss-vidya-conversation-v1', JSON.stringify(turns.slice(-60)));
+    } catch {
+      // storage unavailable — session-only is fine
+    }
+  }, [turns]);
 
   // A real Vidya turn: she reasons over the page she is plugged into, then speaks and acts on it.
   const ask = async (text: string) => {
