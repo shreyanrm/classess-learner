@@ -1,0 +1,156 @@
+- generic [ref=f5e2]:
+  - generic [ref=f5e323]:
+    - button "Back — ◦ ,learn" [ref=f5e324] [cursor=pointer]:
+      - img [ref=f5e325]
+      - text: ◦ learn
+    - generic [ref=f5e328]:
+      - img [ref=f5e329]
+      - generic:
+        - generic:
+          - img
+      - generic [ref=f5e341]:
+        - heading "Science" [level=1] [ref=f5e342]
+        - generic [ref=f5e343]: how the world actually works
+        - generic [ref=f5e344]:
+          - generic [ref=f5e345]: CBSE · Class 8
+          - generic [ref=f5e346]: 13 chapters
+    - generic [ref=f5e347]:
+      - generic [ref=f5e348]:
+        - generic [ref=f5e349]:
+          - img [ref=f5e351]
+          - generic [ref=f5e360]: Physics
+          - generic [ref=f5e361]: 5 chapters
+        - button "01 Force and pressure" [ref=f5e364] [cursor=pointer]:
+          - generic [ref=f5e365]:
+            - img [ref=f5e366]
+            - generic [ref=f5e372]: "01"
+          - generic [ref=f5e373]:
+            - generic [ref=f5e374]: Force and pressure
+            - img [ref=f5e375]
+          - img [ref=f5e381]
+        - button "02 Friction" [ref=f5e389] [cursor=pointer]:
+          - generic [ref=f5e390]:
+            - img [ref=f5e391]
+            - generic [ref=f5e399]: "02"
+          - generic [ref=f5e400]:
+            - generic [ref=f5e401]: Friction
+            - img [ref=f5e402]
+          - img [ref=f5e408]
+        - button "03 Sound" [ref=f5e416] [cursor=pointer]:
+          - generic [ref=f5e417]:
+            - img [ref=f5e418]
+            - generic [ref=f5e425]: "03"
+          - generic [ref=f5e426]:
+            - generic [ref=f5e427]: Sound
+            - img [ref=f5e428]
+          - img [ref=f5e434]
+        - button "04 Some natural phenomena" [ref=f5e442] [cursor=pointer]:
+          - generic [ref=f5e443]:
+            - img [ref=f5e444]
+            - generic [ref=f5e451]: "04"
+          - generic [ref=f5e452]:
+            - generic [ref=f5e453]: Some natural phenomena
+            - img [ref=f5e454]
+          - img [ref=f5e462]
+        - button "05 Light" [ref=f5e470] [cursor=pointer]:
+          - generic [ref=f5e471]:
+            - img [ref=f5e472]
+            - generic [ref=f5e479]: "05"
+          - generic [ref=f5e480]:
+            - generic [ref=f5e481]: Light
+            - img [ref=f5e482]
+          - img [ref=f5e486]
+      - generic [ref=f5e492]:
+        - generic [ref=f5e493]:
+          - img [ref=f5e495]
+          - generic [ref=f5e504]: Chemistry
+          - generic [ref=f5e505]: 3 chapters
+        - button "01 Coal and petroleum" [ref=f5e508] [cursor=pointer]:
+          - generic [ref=f5e509]:
+            - img [ref=f5e510]
+            - generic [ref=f5e515]: "01"
+          - generic [ref=f5e516]:
+            - generic [ref=f5e517]: Coal and petroleum
+            - img [ref=f5e518]
+          - img [ref=f5e521]
+        - button "02 Combustion and flame" [ref=f5e529] [cursor=pointer]:
+          - generic [ref=f5e530]:
+            - img [ref=f5e531]
+            - generic [ref=f5e537]: "02"
+          - generic [ref=f5e538]:
+            - generic [ref=f5e539]: Combustion and flame
+            - img [ref=f5e540]
+          - img [ref=f5e546]
+        - button "03 Chemical effects of electric current" [ref=f5e554] [cursor=pointer]:
+          - generic [ref=f5e555]:
+            - img [ref=f5e556]
+            - generic [ref=f5e563]: "03"
+          - generic [ref=f5e564]:
+            - generic [ref=f5e565]: Chemical effects of electric current
+            - img [ref=f5e566]
+          - img [ref=f5e570]
+      - generic [ref=f5e576]:
+        - generic [ref=f5e577]:
+          - img [ref=f5e579]
+          - generic [ref=f5e586]: Biology
+          - generic [ref=f5e587]: 5 chapters
+        - button "01 Crop production and management" [ref=f5e590] [cursor=pointer]:
+          - generic [ref=f5e591]:
+            - img [ref=f5e592]
+            - generic [ref=f5e600]: "01"
+          - generic [ref=f5e601]:
+            - generic [ref=f5e602]: Crop production and management
+            - img [ref=f5e603]
+          - img [ref=f5e608]
+        - 'button "02 Microorganisms: friend and foe" [ref=f5e616] [cursor=pointer]':
+          - generic [ref=f5e617]:
+            - img [ref=f5e618]
+            - generic [ref=f5e623]: "02"
+          - generic [ref=f5e624]:
+            - generic [ref=f5e625]: "Microorganisms: friend and foe"
+            - img [ref=f5e626]
+          - img [ref=f5e633]
+        - button "03 Conservation of plants and animals" [ref=f5e641] [cursor=pointer]:
+          - generic [ref=f5e642]:
+            - img [ref=f5e643]
+            - generic [ref=f5e651]: "03"
+          - generic [ref=f5e652]:
+            - generic [ref=f5e653]: Conservation of plants and animals
+            - img [ref=f5e654]
+          - img [ref=f5e659]
+        - button "04 Reproduction in animals" [ref=f5e667] [cursor=pointer]:
+          - generic [ref=f5e668]:
+            - img [ref=f5e669]
+            - generic [ref=f5e677]: "04"
+          - generic [ref=f5e678]:
+            - generic [ref=f5e679]: Reproduction in animals
+            - img [ref=f5e680]
+          - img [ref=f5e687]
+        - button "05 Reaching the age of adolescence" [ref=f5e695] [cursor=pointer]:
+          - generic [ref=f5e696]:
+            - img [ref=f5e697]
+            - generic [ref=f5e704]: "05"
+          - generic [ref=f5e705]:
+            - generic [ref=f5e706]: Reaching the age of adolescence
+            - img [ref=f5e707]
+          - img [ref=f5e712]
+  - banner:
+    - img "Classess" [ref=f5e137]
+    - generic [ref=f5e138]:
+      - button "Did you know" [ref=f5e139] [cursor=pointer]:
+        - img [ref=f5e140]
+        - text: Did you know
+      - generic "day 1 of being a learner" [ref=f5e142]:
+        - img [ref=f5e143]
+        - text: "1"
+      - generic [ref=f5e146]: 0 xp
+      - button "You — profile and settings" [ref=f5e147] [cursor=pointer]:
+        - generic [ref=f5e148]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

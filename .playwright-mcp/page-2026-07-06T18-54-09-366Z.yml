@@ -1,0 +1,93 @@
+- generic [ref=e2]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: today · tuesday 7 july
+      - heading [level=1]
+      - generic [ref=e7]: the day is a walk, not a list
+      - generic [ref=e9]:
+        - textbox "Talk to Vidya…" [ref=e10]
+        - button "Talk by voice" [ref=e11] [cursor=pointer]
+      - generic [ref=e20]:
+        - button "Learn something cool" [ref=e21] [cursor=pointer]:
+          - img [ref=e22]
+          - text: Learn something cool
+        - button "Open a rabbit hole" [ref=e24] [cursor=pointer]:
+          - img [ref=e25]
+          - text: Open a rabbit hole
+        - button "What should I do today" [ref=e27] [cursor=pointer]:
+          - img [ref=e28]
+          - text: What should I do today
+      - generic [ref=e30]:
+        - button "Learn" [ref=e31] [cursor=pointer]:
+          - generic [ref=e32]: Learn
+        - button "Practice" [ref=e33] [cursor=pointer]:
+          - generic [ref=e34]: Practice
+    - generic [ref=e36]:
+      - generic [ref=e37]: +
+      - generic [ref=e38]: ·
+      - generic [ref=e39]: ·
+      - generic [ref=e40]: +
+      - generic [ref=e41]: ·
+      - generic [ref=e42]: +
+      - generic [ref=e43]: ·
+      - generic [ref=e44]: +
+      - img [ref=e45]
+      - button "Warm-up day 3 of being a learner · done" [ref=e67] [cursor=pointer]:
+        - img [ref=e68]
+        - generic [ref=e78]:
+          - generic [ref=e79]: Warm-up
+          - generic [ref=e80]: day 3 of being a learner · done
+        - img [ref=e82]
+      - button "Solving equations with the variable on one side done · revisit any time" [ref=e85] [cursor=pointer]:
+        - img [ref=e86]
+        - generic [ref=e89]:
+          - generic [ref=e90]: Solving equations with the variable on one side
+          - generic [ref=e91]: done · revisit any time
+        - img [ref=e93]
+      - button "Pressure continue · 8% walked" [ref=e96] [cursor=pointer]:
+        - img [ref=e97]
+        - generic [ref=e101]:
+          - generic [ref=e102]: Pressure
+          - generic [ref=e103]: continue · 8% walked
+        - img [ref=e107]
+      - button "What makes a number rational next up · a fresh idea" [ref=e110] [cursor=pointer]:
+        - img [ref=e111]
+        - generic [ref=e114]:
+          - generic [ref=e115]: What makes a number rational
+          - generic [ref=e116]: next up · a fresh idea
+        - img [ref=e118]
+      - button "Review refresh what’s fading" [ref=e121] [cursor=pointer]:
+        - img [ref=e122]
+        - generic [ref=e127]:
+          - generic [ref=e128]: Review
+          - generic [ref=e129]: refresh what’s fading
+        - img [ref=e131]
+      - button "Boss gate locked · finish today’s topic" [ref=e134] [cursor=pointer]:
+        - img [ref=e135]
+        - generic [ref=e138]:
+          - generic [ref=e139]: Boss gate
+          - generic [ref=e140]: locked · finish today’s topic
+        - img [ref=e142]
+      - button "Something is hiding here — open the sandbox" [ref=e145] [cursor=pointer]:
+        - img [ref=e146]
+      - generic: something is hiding here
+      - generic [ref=e150]:
+        - img "Vidya" [ref=e151]:
+          - img [ref=e155]
+        - generic [ref=e179]: right where we left it
+    - generic [ref=e180]:
+      - generic [ref=e181]: ⌘K
+      - text: Anything, anywhere
+  - banner:
+    - img "Classess" [ref=e183]
+    - generic [ref=e184]:
+      - button "Did you know" [ref=e185] [cursor=pointer]:
+        - img [ref=e186]
+        - text: Did you know
+      - generic "day 3 of being a learner" [ref=e188]:
+        - img [ref=e189]
+        - text: "3"
+      - generic [ref=e192]: 730 xp
+      - button "You — profile and settings" [ref=e193] [cursor=pointer]:
+        - generic "Ember" [ref=e194]:
+          - img [ref=e196]

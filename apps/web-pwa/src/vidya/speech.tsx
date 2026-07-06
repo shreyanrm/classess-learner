@@ -103,7 +103,7 @@ export function SpeechNarrator() {
   }
   useEffect(() => {
     const last = turns[turns.length - 1] as ChatTurn | undefined;
-    if (!last || last.role !== 'vidya' || last.id === 'seed') return;
+    if (last?.role !== 'vidya' || last.id === 'seed') return;
     if (spokenUpTo.current === last.id) return;
     spokenUpTo.current = last.id;
     void speakLine(last.text);

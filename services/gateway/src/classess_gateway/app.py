@@ -282,6 +282,8 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=_cors_origins(),
+        # Our own Vercel preview builds — ephemeral per-deploy origins, pattern-matched.
+        allow_origin_regex=r"https://classess-learner-[a-z0-9]+-depl-shreyan\.vercel\.app",
         allow_methods=["*"],
         allow_headers=["*"],
     )

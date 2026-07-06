@@ -1,0 +1,115 @@
+import { expect, test } from '@playwright/test';
+import { assertNoErrors, readXp, seedOnboarded, watchConsole } from './helpers';
+
+/**
+ * Vidya's governed capabilities, exercised end to end in the default keyless (mock) mode — the
+ * gateway is never contacted, so every turn falls to the deterministic keyword classifier
+ * (src/vidya/paths/classify.ts) and the outcomes are stable.
+ *
+ *   1 — the permission ladder's approval gate: she proposes starting practice, approve executes.
+ *   2 — teach-back (the protégé effect): the learner teaches, she plays the student, bonus lands.
+ *   3 — the proactivity dial: the learner's chosen notch survives a reload.
+ */
+
+// ---------------------------------------------------------------------------------------------
+// 1 — Approval card: Vidya proposes an action (start practice); only approving runs it.
+// ---------------------------------------------------------------------------------------------
+test('approval card: she proposes starting practice, approve executes', async ({ page }, info) => {
+  const errors = watchConsole(page);
+  await seedOnboarded(page);
+  await page.goto('/');
+
+  // the home chat bar is the door — it navigates to the chat page, then asks. "practice" routes
+  // the turn to the start_practice capability (execute_with_permission → an approval card).
+  const bar = page.getByPlaceholder('Talk to Vidya…');
+  await bar.fill('practice this');
+  await bar.press('Enter');
+
+  // her turn carries the action card: the eyebrow, the labelled offer, and the confidence band
+  await expect(page.getByText('she can do this')).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText('start practice', { exact: true })).toBeVisible();
+  await expect(page.getByText(/confidence ·/)).toBeVisible();
+
+  // the gate holds until she is approved — the proposal sits, nothing has navigated yet
+  const approve = page.getByRole('button', { name: 'approve', exact: true });
+  await expect(approve).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Practice', exact: true })).toHaveCount(0);
+
+  // approve → the capability runs and lands the learner on the practice surface
+  await approve.click();
+  await expect(page.getByRole('heading', { name: 'Practice', exact: true })).toBeVisible({
+    timeout: 10_000,
+  });
+  assertNoErrors(errors, info);
+});
+
+// ---------------------------------------------------------------------------------------------
+// 2 — Teach-back happy path: one whole explanation fills every gap; she gets it, the bonus lands.
+// ---------------------------------------------------------------------------------------------
+test('teach-back: the learner teaches the atom, she plays the student, bonus lands', async ({
+  page,
+}, info) => {
+  const errors = watchConsole(page);
+  await seedOnboarded(page);
+  await page.goto('/');
+
+  // walk to the atom course so a topic is in view — teach-back only opens where there is a topic.
+  await page.getByRole('button', { name: 'Learn', exact: true }).click();
+  await page.getByRole('button', { name: /Mathematics — open the subject/ }).click();
+  await page.getByRole('button', { name: /Linear equations in one variable/ }).click();
+  await page
+    .getByRole('button', { name: /^Solving equations with the variable on one side/ })
+    .click();
+
+  // open the docked drawer and step into teach-back
+  await page.getByRole('button', { name: 'Talk to Vidya' }).click();
+  const door = page.getByRole('button', { name: /^teach her:/ });
+  await expect(door).toBeVisible({ timeout: 10_000 });
+  await door.click();
+  await expect(page.getByText(/today you are the teacher/)).toBeVisible();
+
+  const beforeXp = await readXp(page);
+
+  // a single explanation that carries the mechanism (why it holds), a worked example (real
+  // numbers), and the boundary (where it breaks) leaves her student-self nothing to probe.
+  const input = page.getByPlaceholder('Explain it to her…');
+  await input.fill(
+    'You keep both sides equal because whatever you do to one side you undo on the other, ' +
+      'like x plus 3 equals 8 gives x equals 5 — unless you divide by zero, which breaks it.',
+  );
+  await input.press('Enter');
+
+  // she gets it: the ephemeral exchange closes ("back to chat") and the bonus blooms (+45).
+  await expect(page.getByRole('button', { name: 'back to chat' })).toBeVisible({ timeout: 8_000 });
+  await expect.poll(() => readXp(page), { timeout: 8_000 }).toBe(beforeXp + 45);
+  assertNoErrors(errors, info);
+});
+
+// ---------------------------------------------------------------------------------------------
+// 3 — The proactivity dial: the learner's chosen notch persists across a reload.
+// ---------------------------------------------------------------------------------------------
+test('proactivity dial: the chosen notch survives a reload', async ({ page }, info) => {
+  const errors = watchConsole(page);
+  await seedOnboarded(page);
+  await page.goto('/');
+
+  await page.getByRole('button', { name: 'You — profile and settings' }).click();
+
+  const proactive = page.getByRole('button', { name: /^proactive —/ });
+  await expect(proactive).toBeVisible({ timeout: 10_000 });
+  await proactive.click();
+  await expect(proactive).toHaveAttribute('aria-pressed', 'true');
+
+  // the choice is written through to storage, not just held in component state
+  expect(await page.evaluate(() => localStorage.getItem('clss-proactivity-v1'))).toBe('proactive');
+
+  // reload drops back to the home; re-open You and the notch is still the one she picked
+  await page.reload();
+  await page.getByRole('button', { name: 'You — profile and settings' }).click();
+  await expect(page.getByRole('button', { name: /^proactive —/ })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+    { timeout: 10_000 },
+  );
+  assertNoErrors(errors, info);
+});

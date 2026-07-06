@@ -15,5 +15,5 @@ const caps = await parallel([
 ])
 
 phase('Harden')
-const harden = await agent(PRE + `All files yours. Reconcile the four capability missions (${'${JSON.stringify(caps.filter(Boolean).map(r=>r.typecheck))}'}): full monorepo typecheck, biome, bun tests, gateway pytest, vite build, and extend the e2e suite with: an approval card flow (Vidya proposes starting practice → approve executes), teach-back happy path, the proactivity dial persisting. Everything green; report per gate.`, { label: 'harden4', phase: 'Harden', schema: R, effort: 'high' })
+const harden = await agent(PRE + `All files yours. Reconcile the four capability missions (${'${JSON.stringify(caps.filter(Boolean).map(r=>r.typecheck))}'}): full monorepo typecheck, biome, bun tests, gateway pytest, vite build, and extend the e2e suite with: an approval card flow (Vidya proposes starting practice → approve executes), teach-back happy path, the proactivity dial persisting. Everything green; report per gate.`, { label: 'harden4', phase: 'Harden', schema: R, effort: 'high', model: 'opus' })
 return { caps: caps.filter(Boolean), harden }

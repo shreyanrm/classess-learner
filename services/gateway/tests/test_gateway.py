@@ -162,6 +162,30 @@ def test_voice_session_is_unavailable_without_a_key(monkeypatch: pytest.MonkeyPa
     assert client.get("/v1/voice/session").json() == {"mode": "unavailable"}
 
 
+def test_cors_allows_our_vercel_preview_origins_in_prod(monkeypatch: pytest.MonkeyPatch) -> None:
+    from fastapi.testclient import TestClient
+
+    monkeypatch.setenv("ENV", "prod")
+    client = TestClient(create_app(make_gateway()))
+    r = client.options(
+        "/v1/capability/vidya.turn",
+        headers={
+            "origin": "https://classess-learner-abc123xyz-depl-shreyan.vercel.app",
+            "access-control-request-method": "POST",
+        },
+    )
+    assert r.status_code == 200
+    # arbitrary third-party vercel apps stay blocked
+    r2 = client.options(
+        "/v1/capability/vidya.turn",
+        headers={
+            "origin": "https://evil-depl-shreyan.vercel.app",
+            "access-control-request-method": "POST",
+        },
+    )
+    assert r2.status_code == 400
+
+
 def test_voice_tts_is_503_without_a_key(monkeypatch: pytest.MonkeyPatch) -> None:
     from fastapi.testclient import TestClient
 

@@ -33,14 +33,11 @@ export function ChatScreen() {
   const voiceOn =
     voice.status === 'listening' || voice.status === 'speaking' || voice.status === 'connecting';
 
-  const lastVidyaId = [...turns].reverse().find((t) => t.role === 'vidya')?.id;
-
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
   // Arrive at the newest line, instantly.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;

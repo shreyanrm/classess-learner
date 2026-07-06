@@ -16,7 +16,7 @@ import { useViewport } from '../shell/useViewport';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { CloseIcon } from '../ui/icons';
-import { MagneticButton, Reveal } from '../ui/kit';
+import { fluidType, MagneticButton, Reveal } from '../ui/kit';
 import { useVidyaChat } from '../vidya/chat';
 import { Whisper } from './Learn';
 import { Constellation } from './progress/Constellation';
@@ -214,7 +214,7 @@ export function ProgressScreen() {
         <header style={{ paddingTop: 76, textAlign: 'center' }}>
           <div
             style={{
-              fontSize: '1.45rem',
+              fontSize: fluidType.heading,
               fontWeight: 650,
               letterSpacing: '-0.03em',
               color: '#121316',
@@ -222,7 +222,7 @@ export function ProgressScreen() {
           >
             {mastered} of {STARS.length} concepts are yours
           </div>
-          <div style={{ marginTop: 5, fontSize: '0.85rem', color: '#989AA4' }}>
+          <div style={{ marginTop: 5, fontSize: fluidType.small, color: '#989AA4' }}>
             day {streakDays} of being a learner · tap a star to see its story
           </div>
         </header>
@@ -287,7 +287,7 @@ export function ProgressScreen() {
             style={{
               marginBottom: 6,
               textAlign: 'center',
-              fontSize: '0.8rem',
+              fontSize: fluidType.small,
               color: '#5C5E66',
               minHeight: 18,
             }}
@@ -315,7 +315,7 @@ export function ProgressScreen() {
                 flex: 1,
                 boxSizing: 'border-box',
                 padding: '13px 16px',
-                fontSize: '0.95rem',
+                fontSize: fluidType.body,
                 fontFamily: 'inherit',
                 border: 'none',
                 outline: 'none',
@@ -384,7 +384,7 @@ export function ProgressScreen() {
             </button>
             <div
               style={{
-                fontSize: '1rem',
+                fontSize: fluidType.body,
                 fontWeight: 550,
                 color: '#121316',
                 letterSpacing: '-0.01em',
@@ -399,14 +399,16 @@ export function ProgressScreen() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
-                fontSize: '0.9rem',
+                fontSize: fluidType.body,
                 color: '#5C5E66',
               }}
             >
               <StateDot state={selectedState} />
               {BAND_LANGUAGE[selectedState]}
             </div>
-            <div style={{ marginTop: 4, fontSize: '0.8rem', color: '#989AA4' }}>{evidenceLine}</div>
+            <div style={{ marginTop: 4, fontSize: fluidType.small, color: '#989AA4' }}>
+              {evidenceLine}
+            </div>
 
             {/* the study path — the ordered way in, each step a door to its course */}
             {pathSteps.length > 0 && (
@@ -421,7 +423,7 @@ export function ProgressScreen() {
                 >
                   <div
                     style={{
-                      fontSize: '0.72rem',
+                      fontSize: fluidType.eyebrow,
                       fontWeight: 550,
                       letterSpacing: '0.02em',
                       color: '#989AA4',
@@ -436,7 +438,7 @@ export function ProgressScreen() {
                       border: 'none',
                       background: 'transparent',
                       color: '#1F35E0',
-                      fontSize: '0.75rem',
+                      fontSize: fluidType.eyebrow,
                       fontFamily: 'inherit',
                       cursor: 'pointer',
                       padding: '10px 6px',
@@ -522,7 +524,7 @@ export function ProgressScreen() {
                         <span
                           style={{
                             flex: 1,
-                            fontSize: '0.85rem',
+                            fontSize: fluidType.small,
                             lineHeight: 1.35,
                             color: p.mastered ? '#989AA4' : '#121316',
                           }}
@@ -530,7 +532,9 @@ export function ProgressScreen() {
                           {nameOf(p.star)}
                         </span>
                         {p.mastered && (
-                          <span style={{ fontSize: '0.7rem', color: '#989AA4', flexShrink: 0 }}>
+                          <span
+                            style={{ fontSize: fluidType.eyebrow, color: '#989AA4', flexShrink: 0 }}
+                          >
                             already yours
                           </span>
                         )}
