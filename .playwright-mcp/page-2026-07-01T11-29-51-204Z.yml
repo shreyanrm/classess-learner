@@ -1,0 +1,39 @@
+- generic [ref=f20e2]:
+  - generic [ref=f20e3]:
+    - navigation "Primary" [ref=f20e4]:
+      - generic [ref=f20e7]: Classess
+      - button "Today" [ref=f20e8] [cursor=pointer]:
+        - img [ref=f20e9]
+        - generic [ref=f20e12]: Today
+      - button "Progress" [ref=f20e13] [cursor=pointer]:
+        - img [ref=f20e14]
+        - generic [ref=f20e20]: Progress
+      - button "Create" [active] [ref=f20e22] [cursor=pointer]:
+        - img [ref=f20e23]
+        - generic [ref=f20e25]: Create
+      - button "You" [ref=f20e26] [cursor=pointer]:
+        - img [ref=f20e27]
+        - generic [ref=f20e31]: You
+    - main [ref=f20e138]:
+      - generic [ref=f20e140]:
+        - heading "Tell Classess what fascinates you" [level=1] [ref=f20e141]
+        - paragraph [ref=f20e142]: Name a topic, a skill, or a question. Vidya compiles it into a path you can walk.
+        - generic [ref=f20e143]: Ooh — what are we building today?
+      - generic [ref=f20e144]:
+        - generic [ref=f20e145]: Or start from one of these
+        - generic [ref=f20e146]:
+          - button "Photosynthesis" [ref=f20e148] [cursor=pointer]:
+            - generic [ref=f20e149]: Photosynthesis
+          - button "Stoichiometry" [ref=f20e151] [cursor=pointer]:
+            - generic [ref=f20e152]: Stoichiometry
+          - button "The French Revolution" [ref=f20e154] [cursor=pointer]:
+            - generic [ref=f20e155]: The French Revolution
+          - button "Python" [ref=f20e157] [cursor=pointer]:
+            - generic [ref=f20e158]: Python
+      - generic [ref=f20e160]:
+        - textbox "What do you want to learn?" [ref=f20e161]:
+          - /placeholder: I want to understand how photosynthesis turns light into sugar…
+        - generic [ref=f20e162]: A sentence or two works best.
+      - button "Create my course" [disabled] [ref=f20e165]:
+        - generic [ref=f20e166]: Create my course
+  - button "Vidya, your tutor" [ref=f20e169] [cursor=pointer]

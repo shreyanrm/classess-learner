@@ -1,0 +1,44 @@
+- generic [ref=f14e2]:
+  - generic [ref=f14e3]:
+    - banner [ref=f14e4]:
+      - generic [ref=f14e6]: Classess
+    - main [ref=f14e8]:
+      - generic [ref=f14e9]:
+        - generic [ref=f14e10]: WEDNESDAY 1 JUL
+        - heading "Good afternoon, Aarav." [level=1] [ref=f14e11]
+      - generic [ref=f14e13]:
+        - generic [ref=f14e14]: Your next concept
+        - heading "Linear equations in one variable" [level=2] [ref=f14e15]
+        - paragraph [ref=f14e16]: "The atom: solve any single-variable linear equation, cleanly."
+        - generic [ref=f14e17]:
+          - button "Begin" [ref=f14e20] [cursor=pointer]:
+            - generic [ref=f14e21]: Begin
+          - generic [ref=f14e22]: about 15 minutes
+      - generic [ref=f14e25]:
+        - generic [ref=f14e26]: Today's practice
+        - button "3 of 5 left" [ref=f14e27] [cursor=pointer]
+      - generic [ref=f14e31]:
+        - generic [ref=f14e32]:
+          - generic [ref=f14e33]: Today's win
+          - heading "One-step equations" [level=3] [ref=f14e34]
+          - paragraph [ref=f14e35]: That one's yours now — it earned its colour.
+          - generic [ref=f14e36]: so proud of you — Vidya
+        - button "Your mind, lighting up Your learning map — 3 concepts mastered 3 mastered · 9 to go →" [ref=f14e37] [cursor=pointer]:
+          - generic [ref=f14e38]: Your mind, lighting up
+          - img "Your learning map — 3 concepts mastered" [ref=f14e39]
+          - generic [ref=f14e84]: 3 mastered · 9 to go →
+      - paragraph [ref=f14e86]: You've shown up 6 days this week. That's the whole game.
+    - navigation "Primary" [ref=f14e87]:
+      - button "Today" [ref=f14e88] [cursor=pointer]:
+        - img [ref=f14e90]
+        - generic [ref=f14e94]: Today
+      - button "Progress" [ref=f14e95] [cursor=pointer]:
+        - img [ref=f14e97]
+        - generic [ref=f14e103]: Progress
+      - button "Create" [ref=f14e104] [cursor=pointer]:
+        - img [ref=f14e106]
+        - generic [ref=f14e108]: Create
+      - button "You" [ref=f14e109] [cursor=pointer]:
+        - img [ref=f14e111]
+        - generic [ref=f14e115]: You
+  - button "Vidya, your tutor" [ref=f14e118] [cursor=pointer]

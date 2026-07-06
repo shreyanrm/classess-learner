@@ -16,7 +16,8 @@
     "@classess/ui": "workspace:*",
     "@classess/motion": "workspace:*",
     "@classess/vidya": "workspace:*",
-    "@classess/sdk": "workspace:*"
+    "@classess/sdk": "workspace:*",
+    "framer-motion": "^11.11.0"
   },
   "devDependencies": {
     "vite": "^6.0.0",

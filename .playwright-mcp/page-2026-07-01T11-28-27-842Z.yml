@@ -1,0 +1,26 @@
+- generic [ref=f19e2]:
+  - main [ref=f19e5]:
+    - generic [ref=f19e6]:
+      - generic [ref=f19e9]: Hi — I'm Vidya. Let's find where you are. It only takes a minute.
+      - generic [ref=f19e10]:
+        - heading "Where would you like to start?" [level=1] [ref=f19e11]
+        - paragraph [ref=f19e12]: Two ways in. You can switch anytime.
+      - button "Guided Follow a course A guided path for your board and grade — lit concept by concept as you master it. CBSE · Class 8 · Mathematics" [ref=f19e14] [cursor=pointer]:
+        - generic [ref=f19e15]:
+          - generic [ref=f19e17]:
+            - generic [ref=f19e18]: Guided
+            - generic [ref=f19e19]: Follow a course
+            - generic [ref=f19e20]: A guided path for your board and grade — lit concept by concept as you master it.
+          - generic [ref=f19e27]:
+            - generic [ref=f19e28]: CBSE · Class 8 · Mathematics
+            - generic [ref=f19e29]: →
+      - button "Open Learn anything Bring any curiosity. Classess builds a path around exactly what you want to understand. Any topic, any depth" [ref=f19e33] [cursor=pointer]:
+        - generic [ref=f19e34]:
+          - generic [ref=f19e35]: Open
+          - generic [ref=f19e36]: Learn anything
+          - generic [ref=f19e37]: Bring any curiosity. Classess builds a path around exactly what you want to understand.
+          - generic [ref=f19e40]: Ask anything…
+          - generic [ref=f19e43]:
+            - generic [ref=f19e44]: Any topic, any depth
+            - generic [ref=f19e45]: →
+  - button "Vidya, your tutor" [ref=f19e48] [cursor=pointer]

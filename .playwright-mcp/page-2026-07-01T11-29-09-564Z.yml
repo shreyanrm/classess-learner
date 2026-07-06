@@ -1,0 +1,51 @@
+- generic [ref=f20e2]:
+  - generic [ref=f20e3]:
+    - navigation "Primary" [ref=f20e4]:
+      - generic [ref=f20e7]: Classess
+      - button "Today" [ref=f20e8] [cursor=pointer]:
+        - img [ref=f20e9]
+        - generic [ref=f20e12]: Today
+      - button "Progress" [ref=f20e13] [cursor=pointer]:
+        - img [ref=f20e14]
+        - generic [ref=f20e20]: Progress
+      - button "Create" [ref=f20e22] [cursor=pointer]:
+        - img [ref=f20e23]
+        - generic [ref=f20e25]: Create
+      - button "You" [ref=f20e26] [cursor=pointer]:
+        - img [ref=f20e27]
+        - generic [ref=f20e31]: You
+    - main [ref=f20e34]:
+      - generic [ref=f20e35]:
+        - generic [ref=f20e36]: MATHEMATICS
+        - heading "Your learning map" [level=1] [ref=f20e37]
+        - paragraph [ref=f20e38]: 3 of 12 concepts have earned their colour — the lit ones are yours.
+      - generic [ref=f20e40]:
+        - generic [ref=f20e41]: Your mind, lighting up
+        - img "Your learning map — 3 concepts mastered" [ref=f20e42]
+        - generic [ref=f20e87]:
+          - generic [ref=f20e90]: Mastered
+          - generic [ref=f20e93]: In progress
+          - generic [ref=f20e96]: Ahead
+          - generic [ref=f20e99]: Locked
+      - paragraph [ref=f20e101]: Tap a concept to see where it stands.
+      - generic [ref=f20e103]:
+        - generic [ref=f20e104]:
+          - heading "Ask your knowledge twin" [level=2] [ref=f20e105]
+          - generic [ref=f20e106]: it knows your map — ask honestly, and you'll get honest ranges back
+        - generic [ref=f20e107]:
+          - button "What are my strengths?" [ref=f20e109] [cursor=pointer]:
+            - generic [ref=f20e110]: What are my strengths?
+          - button "Where am I stuck?" [ref=f20e112] [cursor=pointer]:
+            - generic [ref=f20e113]: Where am I stuck?
+          - button "What should I do next?" [ref=f20e115] [cursor=pointer]:
+            - generic [ref=f20e116]: What should I do next?
+          - button "Am I ready for graphing lines?" [ref=f20e118] [cursor=pointer]:
+            - generic [ref=f20e119]: Am I ready for graphing lines?
+        - generic [ref=f20e120]:
+          - generic [ref=f20e121]:
+            - generic [ref=f20e122]: Ask about your learning
+            - textbox "Ask about your learning" [ref=f20e123]:
+              - /placeholder: e.g. Which concept is holding me back?
+          - button "Ask" [disabled] [ref=f20e126]:
+            - generic [ref=f20e127]: Ask
+  - button "Vidya, your tutor" [ref=f20e130] [cursor=pointer]

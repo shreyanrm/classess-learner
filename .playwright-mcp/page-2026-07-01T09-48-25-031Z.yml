@@ -1,0 +1,8 @@
+- generic [ref=f1e2]:
+  - main [ref=f1e5]:
+    - generic [ref=f1e6]: Onboarding · door
+    - heading "Welcome to Classess" [level=1] [ref=f1e7]
+    - paragraph [ref=f1e8]: A gym for your mind. Let's find where you are.
+    - button "Continue" [ref=f1e12] [cursor=pointer]:
+      - generic [ref=f1e13]: Continue
+  - button "Vidya, your tutor" [ref=f1e15] [cursor=pointer]

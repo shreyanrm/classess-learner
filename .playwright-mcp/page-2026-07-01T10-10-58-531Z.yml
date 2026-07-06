@@ -1,0 +1,51 @@
+- generic [ref=f8e2]:
+  - generic [ref=f8e3]:
+    - banner [ref=f8e4]:
+      - generic [ref=f8e6]: Classess
+    - main [ref=f8e8]:
+      - generic [ref=f8e9]:
+        - heading "Good afternoon, Aarav" [level=1] [ref=f8e10]
+        - paragraph [ref=f8e11]: One concept, done well, is plenty for today.
+      - generic [ref=f8e16]:
+        - generic [ref=f8e17]: Your next concept
+        - heading "Linear equations in one variable" [level=2] [ref=f8e18]
+        - paragraph [ref=f8e19]: "The atom: solve any single-variable linear equation, cleanly."
+        - generic [ref=f8e20]:
+          - button "Start" [ref=f8e23] [cursor=pointer]:
+            - img [ref=f8e24]
+            - generic [ref=f8e26]: Start
+          - generic [ref=f8e27]: About 15 minutes
+      - generic [ref=f8e29]:
+        - generic [ref=f8e30]:
+          - generic [ref=f8e31]:
+            - generic [ref=f8e32]: 2 of 5 concepts today
+            - generic [ref=f8e33]: 3 more whenever you want them.
+          - button "Details" [ref=f8e35] [cursor=pointer]:
+            - generic [ref=f8e36]: Details
+        - progressbar [ref=f8e39]
+      - generic [ref=f8e43]:
+        - img [ref=f8e45]
+        - generic [ref=f8e47]:
+          - generic [ref=f8e48]: You mastered One-step equations today
+          - generic [ref=f8e49]: That one's yours now — it just earned its colour.
+          - generic [ref=f8e50]: so proud of you
+      - button "Open your full learning map — 3 concepts mastered" [ref=f8e51] [cursor=pointer]:
+        - generic [ref=f8e53]:
+          - generic [ref=f8e54]: Your mind, lighting up — 3 mastered
+          - img "Your learning map — 3 concepts mastered" [ref=f8e55]
+          - generic [ref=f8e99]: Open your full map →
+      - paragraph [ref=f8e100]: 6 days learning this week — no need to be perfect.
+    - navigation "Primary" [ref=f8e101]:
+      - button "Today" [ref=f8e102] [cursor=pointer]:
+        - img [ref=f8e104]
+        - generic [ref=f8e108]: Today
+      - button "Progress" [ref=f8e109] [cursor=pointer]:
+        - img [ref=f8e111]
+        - generic [ref=f8e117]: Progress
+      - button "Create" [ref=f8e118] [cursor=pointer]:
+        - img [ref=f8e120]
+        - generic [ref=f8e122]: Create
+      - button "You" [ref=f8e123] [cursor=pointer]:
+        - img [ref=f8e125]
+        - generic [ref=f8e129]: You
+  - button "Vidya, your tutor" [ref=f8e132] [cursor=pointer]

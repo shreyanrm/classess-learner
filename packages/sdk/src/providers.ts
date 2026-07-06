@@ -54,6 +54,18 @@ function mockOutputFor(capability: string, _input: CapabilityInput): unknown {
         grounded: true,
         handed_answer: false,
       };
+    case 'generate.course':
+      return {
+        title: 'Your course',
+        estMinutes: 90,
+        nodes: [
+          { id: 'n1', name: 'Getting oriented', blurb: 'Where we start and why.' },
+          { id: 'n2', name: 'The core idea', blurb: 'The one concept everything rests on.' },
+          { id: 'n3', name: 'Working it out', blurb: 'Try it step by step, unhurried.' },
+          { id: 'n4', name: 'Common snags', blurb: 'Where learners slip, and how to catch it.' },
+          { id: 'n5', name: 'Putting it together', blurb: 'Bring the pieces into one whole.' },
+        ],
+      };
     case 'grade.attempt':
       return { correct: true, rationale: 'mock grade' };
     case 'verify.math':

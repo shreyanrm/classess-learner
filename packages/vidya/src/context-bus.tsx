@@ -14,6 +14,7 @@ import {
 import {
   type ActiveAnnotation,
   type ActiveHighlight,
+  type ActiveNote,
   type ConsequentialAction,
   reduceActions,
   type VidyaAction,
@@ -109,12 +110,19 @@ export interface VidyaBus {
   mood: VidyaMood;
   highlights: ActiveHighlight[];
   annotations: ActiveAnnotation[];
+  notes: ActiveNote[];
+  /** performance.now() when the current marks were drawn; the overlay fades each by its own ttl. */
+  marksBornAt: number;
   pendingOffer: ConsequentialAction | null;
   dispatch(actions: VidyaAction[]): void;
   acceptOffer(): void;
   dismissOffer(): void;
   clearMarks(): void;
 }
+
+/** Default mark lifetime + fade window, when Vidya doesn't name a ttl. Marks are always transient. */
+const DEFAULT_MARK_TTL = 6000;
+const MARK_FADE_MS = 500;
 
 const BusContext = createContext<VidyaBus | null>(null);
 
@@ -130,19 +138,41 @@ export interface VidyaProviderProps {
 }
 
 export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
-  const [page, setPage] = useState<PageContext>({ route: 'today', state: {} });
-  const [curriculum, setCurriculum] = useState<CurriculumContext>({});
-  const [session, setSession] = useState<SessionContext>({
-    sessionId: 'dev-session',
-    recentEvents: [],
-  });
-  const [turn, setTurn] = useState<TurnContext>({ recentTurns: [] });
-  const [lifetime, setLifetime] = useState<LifetimeContext>({});
-  const [canvas, setCanvas] = useState<CanvasWorking | undefined>(undefined);
+  // Perception fields are refs, not state: publishing them must NOT recreate the bus object, or every
+  // consumer effect that publishes page/canvas would re-run and loop. They are read on demand when
+  // Vidya assembles her context. Only expression state (mood/marks/offer) drives re-renders.
+  const pageRef = useRef<PageContext>({ route: 'today', state: {} });
+  const curriculumRef = useRef<CurriculumContext>({});
+  const sessionRef = useRef<SessionContext>({ sessionId: 'dev-session', recentEvents: [] });
+  const turnRef = useRef<TurnContext>({ recentTurns: [] });
+  const lifetimeRef = useRef<LifetimeContext>({});
+  const canvasRef = useRef<CanvasWorking | undefined>(undefined);
+
+  const publishPage = useCallback((v: PageContext) => {
+    pageRef.current = v;
+  }, []);
+  const publishCurriculum = useCallback((v: CurriculumContext) => {
+    curriculumRef.current = v;
+  }, []);
+  const publishSession = useCallback((v: SessionContext) => {
+    sessionRef.current = v;
+  }, []);
+  const publishTurn = useCallback((v: TurnContext) => {
+    turnRef.current = v;
+  }, []);
+  const publishLifetime = useCallback((v: LifetimeContext) => {
+    lifetimeRef.current = v;
+  }, []);
+  const publishCanvas = useCallback((v: CanvasWorking | undefined) => {
+    canvasRef.current = v;
+  }, []);
 
   const [mood, setMood] = useState<VidyaMood>('idle');
   const [highlights, setHighlights] = useState<ActiveHighlight[]>([]);
   const [annotations, setAnnotations] = useState<ActiveAnnotation[]>([]);
+  const [notes, setNotes] = useState<ActiveNote[]>([]);
+  const [marksBornAt, setMarksBornAt] = useState(0);
+  const clearTimer = useRef<number | undefined>(undefined);
   const [pendingOffer, setPendingOffer] = useState<ConsequentialAction | null>(null);
 
   const targetsRef = useRef<Map<string, AnnotatableTarget>>(new Map());
@@ -163,12 +193,12 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
 
   const assembleContext = useCallback(
     (): VidyaAssembledContext => ({
-      page,
-      curriculum,
-      session,
-      turn,
-      lifetime,
-      canvas,
+      page: pageRef.current,
+      curriculum: curriculumRef.current,
+      session: sessionRef.current,
+      turn: turnRef.current,
+      lifetime: lifetimeRef.current,
+      canvas: canvasRef.current,
       targets: getTargets().map((t) => ({
         id: t.id,
         kind: t.kind,
@@ -176,12 +206,13 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
         meaning: t.meaning,
       })),
     }),
-    [page, curriculum, session, turn, lifetime, canvas, getTargets],
+    [getTargets],
   );
 
   const clearMarks = useCallback(() => {
     setHighlights([]);
     setAnnotations([]);
+    setNotes([]);
   }, []);
 
   const dispatch = useCallback((actions: VidyaAction[]) => {
@@ -190,11 +221,28 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
     const h = handlersRef.current;
     setHighlights(effects.highlights);
     setAnnotations(effects.annotations);
+    setNotes(effects.notes);
+    setMarksBornAt(performance.now());
     if (effects.mood) setMood(effects.mood);
     setPendingOffer(effects.offer);
     for (const text of effects.says) h?.onSay?.(text);
     for (const level of effects.revealHints) h?.onRevealHint?.(level);
     for (let i = 0; i < effects.escalateHints; i += 1) h?.onEscalateHint?.();
+
+    // Marks are ephemeral: clear them once the longest ttl elapses (each fades by its own ttl in the
+    // overlay). Vidya decides the ttl per mark; nothing lingers permanently.
+    if (clearTimer.current !== undefined) window.clearTimeout(clearTimer.current);
+    const marks = [...effects.highlights, ...effects.annotations, ...effects.notes];
+    if (marks.length > 0) {
+      const maxTtl = Math.max(...marks.map((m) => m.ttl ?? DEFAULT_MARK_TTL));
+      clearTimer.current = window.setTimeout(() => {
+        setHighlights([]);
+        setAnnotations([]);
+        setNotes([]);
+      }, maxTtl + MARK_FADE_MS);
+    } else {
+      clearTimer.current = undefined;
+    }
   }, []);
 
   const acceptOffer = useCallback(() => {
@@ -214,18 +262,20 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
   const bus = useMemo<VidyaBus>(
     () => ({
       registerTarget,
-      publishPage: setPage,
-      publishCurriculum: setCurriculum,
-      publishSession: setSession,
-      publishTurn: setTurn,
-      publishLifetime: setLifetime,
-      publishCanvas: setCanvas,
+      publishPage,
+      publishCurriculum,
+      publishSession,
+      publishTurn,
+      publishLifetime,
+      publishCanvas,
       assembleContext,
       getTargets,
       targetsVersion,
       mood,
       highlights,
       annotations,
+      notes,
+      marksBornAt,
       pendingOffer,
       dispatch,
       acceptOffer,
@@ -234,12 +284,20 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
     }),
     [
       registerTarget,
+      publishPage,
+      publishCurriculum,
+      publishSession,
+      publishTurn,
+      publishLifetime,
+      publishCanvas,
       assembleContext,
       getTargets,
       targetsVersion,
       mood,
       highlights,
       annotations,
+      notes,
+      marksBornAt,
       pendingOffer,
       dispatch,
       acceptOffer,
