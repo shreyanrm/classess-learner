@@ -55,64 +55,36 @@ export function Whisper({
         ...style,
       }}
     >
-      <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden style={{ display: 'block' }}>
-        <path
-          d="M9.5 3 L4.5 8 L9.5 13 M4.8 8 L13 8"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={1.8}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+      <BackIcon size={15} />
       {children}
     </motion.button>
   );
 }
 
-export const SUBJECT_HUES: Record<string, { hue: string; wash: string }> = {
-  math: { hue: '#1F35E0', wash: 'rgba(31,53,224,0.06)' },
-  science: { hue: '#0FA3B1', wash: 'rgba(15,163,177,0.07)' },
-  social: { hue: '#B26A00', wash: 'rgba(178,106,0,0.07)' },
-};
-
 function SubjectCard({ subject, onOpen }: { subject: Subject; onOpen: () => void }) {
-  const [hover, setHover] = useState(false);
-  const tone = SUBJECT_HUES[subject.id] ?? SUBJECT_HUES.math;
+  const [lit, setLit] = useState(false);
+  const tone = toneForSubject(subject.id);
+  const chapterCount = (chaptersBySubject[subject.id] ?? []).length;
   return (
-    <motion.button
-      type="button"
+    <TiltCard
       onClick={onOpen}
-      onHoverStart={() => setHover(true)}
-      onHoverEnd={() => setHover(false)}
-      onFocus={() => setHover(true)}
-      onBlur={() => setHover(false)}
-      whileHover={{ y: -4 }}
-      whileTap={{ scale: 0.985 }}
-      transition={{ type: 'spring', stiffness: 360, damping: 26 }}
+      ariaLabel={`${subject.name} — open the subject`}
+      onLitChange={setLit}
+      spotlight={tone.wash}
       style={{
-        textAlign: 'left',
-        background: hover
-          ? `linear-gradient(150deg, ${tone?.wash} 0%, var(--clss-paper) 62%)`
-          : 'var(--clss-paper)',
-        border: `0.5px solid ${hover ? (tone?.hue ?? 'var(--clss-ink-300)') : 'var(--clss-hairline-on-paper-strong)'}`,
-        transition: 'border-color 0.3s ease, background 0.3s ease',
-        borderRadius: 'var(--clss-radius-md)',
-        padding: '24px 22px 20px',
-        cursor: 'pointer',
-        fontFamily: 'inherit',
+        padding: '26px 24px 22px',
         display: 'flex',
         flexDirection: 'column',
         gap: 10,
-        minHeight: 190,
+        minHeight: 200,
       }}
     >
       <motion.span
-        animate={hover ? { scale: 1.06, rotate: -2 } : { scale: 1, rotate: 0 }}
+        animate={lit ? { scale: 1.06, rotate: -2 } : { scale: 1, rotate: 0 }}
         transition={{ type: 'spring', stiffness: 260, damping: 18 }}
         style={{ display: 'block', width: 72, height: 72 }}
       >
-        <SubjectGlyph subjectId={subject.id} size={72} accent={hover} />
+        <SubjectGlyph subjectId={subject.id} size={72} accent={lit} />
       </motion.span>
       <span style={{ fontSize: '1.05rem', fontWeight: 550, color: 'var(--clss-ink-900)' }}>
         {subject.name}
@@ -123,15 +95,16 @@ function SubjectCard({ subject, onOpen }: { subject: Subject; onOpen: () => void
       <span
         style={{
           marginTop: 'auto',
+          paddingTop: 8,
           fontSize: '0.78rem',
           fontWeight: 550,
-          color: hover ? (tone?.hue ?? 'var(--clss-ink-500)') : 'var(--clss-ink-300)',
+          color: lit ? tone.hue : 'var(--clss-ink-300)',
           transition: 'color 0.3s ease',
         }}
       >
-        13 chapters →
+        {chapterCount} chapters →
       </span>
-    </motion.button>
+    </TiltCard>
   );
 }
 
@@ -143,7 +116,7 @@ export function SubjectGrid({ intent }: { intent: 'learn' | 'practice' }) {
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
-        gap: 14,
+        gap: 16,
       }}
     >
       {subjects.map((s) => (
@@ -206,7 +179,7 @@ export function Learn() {
           <SubjectGrid intent="learn" />
         </div>
 
-        <SectionLabel style={{ marginTop: 64, marginBottom: 16 }}>courses</SectionLabel>
+        <SectionLabel style={{ marginTop: 72, marginBottom: 18 }}>courses</SectionLabel>
         <motion.button
           ref={coursesRef}
           type="button"
@@ -216,23 +189,27 @@ export function Learn() {
           transition={{ type: 'spring', stiffness: 360, damping: 26 }}
           style={{
             width: '100%',
-            textAlign: 'left',
             background: 'transparent',
             border: '0.5px solid var(--clss-hairline-on-paper)',
             borderRadius: 'var(--clss-radius-sm)',
-            padding: '22px 22px',
+            padding: '30px 22px 26px',
             cursor: 'pointer',
             fontFamily: 'inherit',
             display: 'flex',
             flexDirection: 'column',
-            gap: 6,
+            alignItems: 'center',
+            gap: 14,
           }}
         >
-          <span style={{ fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>
-            ask Vidya for a course on anything
-          </span>
-          <span style={{ fontSize: '0.8rem', color: 'var(--clss-ink-300)' }}>
-            your custom courses will live here
+          {/* an empty shelf is a promise, not a void */}
+          <EmptyConstellation size={110} />
+          <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>
+              ask Vidya for a course on anything
+            </span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--clss-ink-300)' }}>
+              your custom courses will live here
+            </span>
           </span>
         </motion.button>
 

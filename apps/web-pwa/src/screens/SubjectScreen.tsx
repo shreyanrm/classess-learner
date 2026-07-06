@@ -14,9 +14,11 @@ import { chaptersBySubject, learner, subjectById, unmetPrereqs } from '../data/c
 import type { Chapter, Topic } from '../data/model';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
-import { SubjectGlyph, TopicSigil } from '../ui/art';
+import { ChapterFiligree, SubjectGlyph, TopicSigil } from '../ui/art';
+import { hueForTopic, toneForSubject } from '../ui/hues';
+import { ChevronIcon } from '../ui/icons';
 import { MagneticButton } from '../ui/kit';
-import { SUBJECT_HUES, Whisper } from './Learn';
+import { Whisper } from './Learn';
 
 const EXPAND_SPRING = { type: 'spring', stiffness: 320, damping: 32 } as const;
 
@@ -77,7 +79,8 @@ function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
         }}
       >
         <span style={{ flexShrink: 0, opacity: mastered ? 1 : 0.8 }}>
-          <TopicSigil id={topic.id} size={34} mastered={mastered} />
+          {/* the concept's own geometry — ignited in the subject's hue once mastered */}
+          <TopicSigil id={topic.id} size={34} mastered={mastered} hue={hueForTopic(topic.id)} />
         </span>
         <span style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, flex: 1 }}>
           <span style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--clss-ink-900)' }}>
@@ -95,12 +98,30 @@ function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              color: 'var(--clss-feedback-correct)',
+              // the earned tick takes the owning subject's hue
+              color: hueForTopic(topic.id),
               fontSize: '0.82rem',
               fontWeight: 600,
             }}
           >
-            ✓ mastered
+            <svg
+              width="11"
+              height="11"
+              viewBox="0 0 12 12"
+              role="presentation"
+              aria-hidden
+              style={{ display: 'block' }}
+            >
+              <path
+                d="M2 6.4 L4.6 9 L10 3.2"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.4}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            mastered
           </span>
         ) : gated ? (
           <span
@@ -117,7 +138,9 @@ function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
             builds on {unmet[0]?.name}
           </span>
         ) : (
-          <span style={{ flexShrink: 0, color: 'var(--clss-ink-300)', fontSize: '0.9rem' }}>›</span>
+          <span style={{ flexShrink: 0, color: 'var(--clss-ink-300)' }}>
+            <ChevronIcon size={14} />
+          </span>
         )}
       </motion.button>
 
@@ -169,7 +192,7 @@ function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
  * Endowed progress (CONTEXT.md §9): the filament never renders empty — an unstarted chapter
  * still shows a 4% thread of ink; the earned portion turns ultramarine only when it is real.
  */
-function Filament({ done, total }: { done: number; total: number }) {
+function Filament({ done, total, hue }: { done: number; total: number; hue: string }) {
   const pct = Math.max(4, total > 0 ? (done / total) * 100 : 0);
   return (
     <div style={{ height: 2, background: 'var(--clss-hairline-on-paper)', overflow: 'hidden' }}>
@@ -179,7 +202,8 @@ function Filament({ done, total }: { done: number; total: number }) {
         transition={{ type: 'spring', stiffness: 120, damping: 26 }}
         style={{
           height: '100%',
-          background: done > 0 ? 'var(--clss-ultramarine)' : 'var(--clss-ink-100)',
+          // the earned stretch carries the subject's hue; the endowed thread stays ink
+          background: done > 0 ? hue : 'var(--clss-ink-100)',
         }}
       />
     </div>
@@ -198,7 +222,7 @@ function ChapterRow({
   onToggle: () => void;
 }) {
   const router = useRouter();
-  const tone = SUBJECT_HUES[chapter.subjectId] ?? SUBJECT_HUES.math;
+  const tone = toneForSubject(chapter.subjectId);
   const { completed } = useProgress();
   const total = chapter.topics.length;
   const done = chapter.topics.filter((t) => completed.has(t.id)).length;
@@ -214,11 +238,11 @@ function ChapterRow({
           textAlign: 'left',
           background: 'transparent',
           border: 'none',
-          padding: '18px 4px 16px',
+          padding: '20px 4px 16px',
           cursor: 'pointer',
           fontFamily: 'inherit',
           display: 'flex',
-          alignItems: 'baseline',
+          alignItems: 'center',
           gap: 18,
         }}
       >
@@ -239,8 +263,20 @@ function ChapterRow({
         >
           {String(chapter.index).padStart(2, '0')}
         </span>
-        <span style={{ flex: 1, fontSize: '1rem', fontWeight: 500, color: 'var(--clss-ink-900)' }}>
-          {chapter.name}
+        <span
+          style={{
+            flex: 1,
+            minWidth: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 7,
+          }}
+        >
+          <span style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--clss-ink-900)' }}>
+            {chapter.name}
+          </span>
+          {/* the chapter's own filigree — generative, derived from its id */}
+          <ChapterFiligree id={chapter.id} width={104} height={8} />
         </span>
         {done > 0 && (
           <span
@@ -257,14 +293,14 @@ function ChapterRow({
         <motion.span
           animate={{ rotate: open ? 90 : 0 }}
           transition={{ type: 'spring', stiffness: 380, damping: 26 }}
-          style={{ color: 'var(--clss-ink-300)', fontSize: '0.9rem', flexShrink: 0 }}
+          style={{ color: 'var(--clss-ink-300)', flexShrink: 0 }}
         >
-          ›
+          <ChevronIcon size={14} />
         </motion.span>
       </button>
 
       <div style={{ margin: '0 4px' }}>
-        <Filament done={done} total={total} />
+        <Filament done={done} total={total} hue={tone.hue} />
       </div>
 
       <AnimatePresence initial={false}>
@@ -314,7 +350,9 @@ function ChapterRow({
                     >
                       compose
                     </span>
-                    <span style={{ color: 'var(--clss-ink-300)', fontSize: '0.9rem' }}>›</span>
+                    <span style={{ color: 'var(--clss-ink-300)' }}>
+                      <ChevronIcon size={14} />
+                    </span>
                   </motion.button>
                 </>
               ) : (

@@ -69,6 +69,16 @@ export function Home() {
   const [voiceNote, setVoiceNote] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const voice = useVidyaVoice({ setMood });
+  // The opening — once per session, Vidya arrives before anything else exists.
+  const [firstVisit] = useState(() => sessionStorage.getItem('clss-home-opened') !== '1');
+  const [landed, setLanded] = useState(!firstVisit);
+  const [greetShown, setGreetShown] = useState(!firstVisit ? 999 : 0);
+  const greetingText = greeting(learner.name);
+  useEffect(() => {
+    if (!landed || greetShown >= greetingText.length) return;
+    const t = setInterval(() => setGreetShown((n) => n + 1), 28);
+    return () => clearInterval(t);
+  }, [landed, greetShown, greetingText.length]);
   const voiceOn =
     voice.status === 'listening' || voice.status === 'speaking' || voice.status === 'connecting';
 
@@ -113,7 +123,7 @@ export function Home() {
       <motion.div
         variants={cascade}
         initial="hidden"
-        animate="show"
+        animate={landed ? 'show' : 'hidden'}
         style={{
           flex: 1,
           display: 'flex',
@@ -125,7 +135,28 @@ export function Home() {
           gap: 0,
         }}
       >
-        <motion.div variants={rise}>
+        <motion.div
+          initial={firstVisit ? { x: '36vw', y: '-62vh', rotate: 16, opacity: 0 } : false}
+          animate={{
+            x: ['36vw', '10vw', '-3vw', '0vw'],
+            y: ['-62vh', '-30vh', '-5vh', '0vh'],
+            rotate: [16, 9, -7, 0],
+            opacity: [0, 1, 1, 1],
+          }}
+          transition={
+            firstVisit
+              ? { duration: 1.5, times: [0, 0.45, 0.8, 1], ease: [0.3, 0.9, 0.4, 1] }
+              : { duration: 0 }
+          }
+          onAnimationComplete={() => {
+            if (!landed) {
+              setLanded(true);
+              sessionStorage.setItem('clss-home-opened', '1');
+              setMood('celebrate');
+              window.setTimeout(() => setMood('idle'), 1100);
+            }
+          }}
+        >
           <VidyaBody size={116} mood={busy ? 'thinking' : mood} gaze="pointer" label="Vidya" />
         </motion.div>
         <motion.div
@@ -138,7 +169,10 @@ export function Home() {
             letterSpacing: '-0.035em',
           }}
         >
-          {greeting(learner.name)}
+          {greetingText.slice(0, greetShown)}
+          {greetShown < greetingText.length && landed && (
+            <span style={{ color: '#989AA4' }}>|</span>
+          )}
         </motion.div>
         <motion.div
           variants={rise}
@@ -200,49 +234,62 @@ export function Home() {
             alignItems: 'center',
           }}
         >
-          <input
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onFocus={() => setMood('listening')}
-            onBlur={() => setMood('idle')}
-            placeholder="Talk to Vidya…"
-            style={{
-              flex: 1,
-              height: 52,
-              padding: '0 18px',
-              fontSize: '1rem',
-              fontFamily: 'inherit',
-              border: '1px solid #E9E9EE',
-              borderRadius: 3,
-              outline: 'none',
-              background: '#FFFFFF',
-              color: '#121316',
-              transition: 'border-color 0.2s ease',
-            }}
-            onFocusCapture={(e) => {
-              e.currentTarget.style.borderColor = '#B9BBC6';
-            }}
-            onBlurCapture={(e) => {
-              e.currentTarget.style.borderColor = '#E9E9EE';
-            }}
-          />
-          <button
-            type="button"
-            onClick={toggleVoice}
-            aria-label={voiceOn ? 'Stop voice' : 'Talk by voice'}
-            style={{
-              border: 'none',
-              background: 'transparent',
-              color: voiceOn ? 'var(--clss-ink-900)' : 'var(--clss-ink-500)',
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-              fontSize: '0.85rem',
-              padding: '0 2px',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            <MicBloomIcon active={voiceOn} size={18} />
-          </button>
+          <div style={{ position: 'relative', flex: 1, display: 'flex' }}>
+            <input
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onFocus={() => setMood('listening')}
+              onBlur={() => setMood('idle')}
+              placeholder="Talk to Vidya…"
+              style={{
+                flex: 1,
+                height: 52,
+                padding: '0 52px 0 18px',
+                fontSize: '1rem',
+                fontFamily: 'inherit',
+                border: '1px solid #E9E9EE',
+                borderRadius: 3,
+                outline: 'none',
+                background: '#FFFFFF',
+                color: '#121316',
+                transition: 'border-color 0.2s ease',
+              }}
+              onFocusCapture={(e) => {
+                e.currentTarget.style.borderColor = '#B9BBC6';
+              }}
+              onBlurCapture={(e) => {
+                e.currentTarget.style.borderColor = '#E9E9EE';
+              }}
+            />
+            <button
+              type="button"
+              onClick={toggleVoice}
+              aria-label={voiceOn ? 'Stop voice' : 'Talk by voice'}
+              style={{
+                position: 'absolute',
+                right: 6,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: 40,
+                height: 40,
+                display: 'grid',
+                placeItems: 'center',
+                border: 'none',
+                background: 'transparent',
+                color: voiceOn ? '#FF5A1F' : '#989AA4',
+                cursor: 'pointer',
+                transition: 'color 0.25s ease',
+              }}
+              onMouseEnter={(e) => {
+                if (!voiceOn) e.currentTarget.style.color = '#121316';
+              }}
+              onMouseLeave={(e) => {
+                if (!voiceOn) e.currentTarget.style.color = '#989AA4';
+              }}
+            >
+              <MicBloomIcon active={voiceOn} size={19} />
+            </button>
+          </div>
           {draft.trim() && (
             <MagneticButton variant="primary" onClick={() => {}} ariaLabel="Ask Vidya">
               ask
@@ -308,6 +355,7 @@ export function Home() {
             size="lg"
             onClick={() => router.navigate({ name: 'learn' })}
             style={{ minWidth: 170 }}
+            flashDelay={firstVisit ? 1.1 : undefined}
           >
             Learn
           </AuroraButton>
@@ -315,6 +363,7 @@ export function Home() {
             size="lg"
             onClick={() => router.navigate({ name: 'practice' })}
             style={{ minWidth: 170 }}
+            flashDelay={firstVisit ? 1.45 : undefined}
           >
             Practice
           </AuroraButton>

@@ -9,7 +9,14 @@
  */
 
 import { motion, useMotionTemplate, useMotionValue, useSpring } from 'framer-motion';
-import { type CSSProperties, type ReactNode, useCallback, useRef, useState } from 'react';
+import {
+  type CSSProperties,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 // --- The surface language (cool neutrals) ----------------------------------------------------------
 export const surface = {
@@ -322,13 +329,27 @@ export function AuroraButton({
   onClick,
   size = 'lg',
   style,
+  flashDelay,
 }: {
   children: ReactNode;
   onClick?: () => void;
   size?: 'md' | 'lg';
   style?: CSSProperties;
+  /** One-shot aurora sweep on entrance (seconds); then it rests until hover. */
+  flashDelay?: number;
 }) {
   const [lit, setLit] = useState(false);
+  const [flashing, setFlashing] = useState(false);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: one-shot on mount
+  useEffect(() => {
+    if (flashDelay === undefined) return;
+    const t1 = setTimeout(() => setFlashing(true), flashDelay * 1000);
+    const t2 = setTimeout(() => setFlashing(false), flashDelay * 1000 + 1400);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, []);
   const height = size === 'lg' ? 54 : 42;
   const font = size === 'lg' ? '1.05rem' : '0.95rem';
   const aurora = 'conic-gradient(from 0deg, #1F35E0, #CC1E7A, #FF5A1F, #66B300, #0FA3B1, #1F35E0)';
@@ -361,14 +382,18 @@ export function AuroraButton({
     >
       <motion.span
         aria-hidden
-        animate={lit ? { opacity: 1, rotate: 360 } : { opacity: 0, rotate: 0 }}
+        animate={lit || flashing ? { opacity: 1, rotate: 360 } : { opacity: 0, rotate: 0 }}
         transition={
-          lit
+          lit || flashing
             ? {
-                opacity: { duration: 0.25 },
-                rotate: { duration: 6, repeat: Number.POSITIVE_INFINITY, ease: 'linear' },
+                opacity: { duration: 0.3 },
+                rotate: {
+                  duration: flashing ? 1.6 : 6,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: 'linear',
+                },
               }
-            : { duration: 0.3 }
+            : { duration: 0.5 }
         }
         style={{
           position: 'absolute',

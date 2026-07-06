@@ -15,6 +15,8 @@ import { chapterById } from '../../data/catalog';
 import type { Topic } from '../../data/model';
 import { useProgress } from '../../store/progress';
 import { useSdk } from '../../store/sdk';
+import { BossSigil, TopicSigil } from '../../ui/art';
+import { hueForTopic } from '../../ui/hues';
 import { BalanceScale } from './BalanceScale';
 import { Boss } from './Boss';
 import { Greeting } from './Greeting';
@@ -184,6 +186,10 @@ export function AtomJourney({
       {card === 'arrival' && (
         <CardBody maxWidth={560}>
           <div style={{ textAlign: 'center' }}>
+            {/* the concept's own sigil, drawing itself — this course's identity */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}>
+              <TopicSigil id={topic.id} size={76} draw />
+            </div>
             <div style={whisper}>{(chapter?.name ?? 'mathematics').toLowerCase()}</div>
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -230,6 +236,10 @@ export function AtomJourney({
       {card === 'bossdoor' && (
         <CardBody maxWidth={520}>
           <div style={{ textAlign: 'center' }}>
+            {/* the boss door carries the topic's sigil set in its ring — it ignites once mastered */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+              <BossSigil id={topic.id} size={92} hue={hueForTopic(topic.id)} />
+            </div>
             <div style={whisper}>no fear — just weight</div>
             <motion.div
               initial={{ opacity: 0, y: 10 }}

@@ -12,9 +12,17 @@ import { useEffect, useRef } from 'react';
 import type { Topic } from '../../data/model';
 import { useProgress } from '../../store/progress';
 import { useSdk } from '../../store/sdk';
+import { TopicSigil } from '../../ui/art';
+import { hueForTopic } from '../../ui/hues';
 import { useVidyaChat } from '../../vidya/chat';
 import type { BarState } from './shared';
 import { CardBody, lead, whisper } from './shared';
+
+/** `rgba()` from a hex hue — the ignite sweep needs translucent stops of the subject's hue. */
+function rgba(hex: string, alpha: number): string {
+  const n = Number.parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${alpha})`;
+}
 
 export function Greeting({
   topic,
@@ -79,6 +87,8 @@ export function Greeting({
     setBar({ primary: { label: 'continue', onClick: onContinue } });
   }, [setBar, onContinue]);
 
+  const hue = hueForTopic(topic.id);
+
   return (
     <CardBody maxWidth={560}>
       <div
@@ -89,7 +99,7 @@ export function Greeting({
           textAlign: 'center',
         }}
       >
-        {/* the ignite — one region catching light, once, under a second */}
+        {/* the ignite — one region catching light, once, under a second, in the subject's hue */}
         <motion.div
           aria-hidden
           initial={{ x: '-130%' }}
@@ -101,11 +111,15 @@ export function Greeting({
             bottom: '-30%',
             left: 0,
             width: '42%',
-            background:
-              'linear-gradient(100deg, transparent 0%, rgba(31,53,224,0.16) 45%, rgba(31,53,224,0.24) 50%, rgba(31,53,224,0.16) 55%, transparent 100%)',
+            background: `linear-gradient(100deg, transparent 0%, ${rgba(hue, 0.16)} 45%, ${rgba(hue, 0.24)} 50%, ${rgba(hue, 0.16)} 55%, transparent 100%)`,
             pointerEvents: 'none',
           }}
         />
+
+        {/* the sigil, mastered — the same geometry from the row and the door, now lit */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+          <TopicSigil id={topic.id} size={68} mastered hue={hue} draw />
+        </div>
 
         <div style={whisper}>the greeting</div>
         <motion.div
@@ -129,9 +143,7 @@ export function Greeting({
           transition={{ delay: 0.55, duration: 0.5, ease: [0.2, 0, 0, 1] }}
           style={{ ...lead, marginTop: 14 }}
         >
-          <span style={{ color: 'var(--clss-ultramarine)', fontWeight: 550 }}>
-            {topic.name.toLowerCase()}
-          </span>{' '}
+          <span style={{ color: hue, fontWeight: 550 }}>{topic.name.toLowerCase()}</span>{' '}
           is yours now — not memorised, understood.
         </motion.div>
         <motion.div
