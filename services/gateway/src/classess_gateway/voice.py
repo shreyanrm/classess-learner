@@ -23,7 +23,8 @@ import secrets
 import time
 from typing import Any
 
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, HTTPException, WebSocket
+from pydantic import BaseModel, Field
 
 from classess_gateway.vidya import VIDYA_PERSONA
 
@@ -74,10 +75,28 @@ def _setup_message() -> dict[str, Any]:
     }
 
 
+class TtsBody(BaseModel):
+    """One spoken line — capped so the TTS bill is bounded per call."""
+
+    text: str = Field(min_length=1, max_length=600)
+
+
 def register_voice(app: FastAPI) -> None:
     @app.get("/v1/voice/session")
     def session() -> dict[str, str]:
         return voice_session()
+
+    @app.post("/v1/voice/tts")
+    def tts(body: TtsBody) -> dict[str, str]:
+        """Her spoken line for a typed turn — same voice as the live relay, key server-side."""
+        if not (os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY")):
+            raise HTTPException(status_code=503, detail="voice unavailable")
+        from classess_gateway.plexus.media import synthesize_narration
+
+        audio = synthesize_narration(body.text)
+        if audio is None:
+            raise HTTPException(status_code=502, detail="tts failed")
+        return audio
 
     @app.websocket("/v1/voice/relay")
     async def relay(client: WebSocket) -> None:

@@ -162,6 +162,23 @@ def test_voice_session_is_unavailable_without_a_key(monkeypatch: pytest.MonkeyPa
     assert client.get("/v1/voice/session").json() == {"mode": "unavailable"}
 
 
+def test_voice_tts_is_503_without_a_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    from fastapi.testclient import TestClient
+
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.delenv("GOOGLE_AI_API_KEY", raising=False)
+    client = TestClient(create_app(make_gateway()))
+    assert client.post("/v1/voice/tts", json={"text": "hello"}).status_code == 503
+
+
+def test_voice_tts_rejects_oversized_text(monkeypatch: pytest.MonkeyPatch) -> None:
+    from fastapi.testclient import TestClient
+
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key")
+    client = TestClient(create_app(make_gateway()))
+    assert client.post("/v1/voice/tts", json={"text": "x" * 601}).status_code == 422
+
+
 # --- boot posture: env validation, CORS lockdown, rate limiting ------------------------
 def test_live_mode_without_anthropic_key_fails_fast(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("LLM_MODE", "live")

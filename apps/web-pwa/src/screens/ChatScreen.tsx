@@ -14,6 +14,7 @@ import { useRouter } from '../shell/router';
 import { SendIcon, WaveformIcon } from '../ui/icons';
 import { fluidType, MagneticButton } from '../ui/kit';
 import { useVidyaChat } from '../vidya/chat';
+import { MuteButton } from '../vidya/speech';
 import { useVidyaVoice } from '../vidya/voice';
 import { Whisper } from './Learn';
 
@@ -115,6 +116,7 @@ export function ChatScreen() {
             {busy ? 'thinking…' : 'one conversation, always'}
           </div>
         </div>
+        <MuteButton />
       </div>
 
       {/* the thread — the page's one scroll, the past paging in above */}
@@ -145,25 +147,42 @@ export function ChatScreen() {
               where we began
             </div>
           )}
-          {turns.map((t) => (
-            <div
-              key={t.id}
-              style={{
-                alignSelf: t.role === 'user' ? 'flex-end' : 'flex-start',
-                maxWidth: '84%',
-                padding: '10px 14px',
-                borderRadius: 'var(--clss-radius-md)',
-                fontSize: fluidType.body,
-                lineHeight: 1.55,
-                background: t.role === 'user' ? '#121316' : '#FFFFFF',
-                color: t.role === 'user' ? '#FFFFFF' : '#121316',
-                border: t.role === 'user' ? 'none' : '1px solid #E9E9EE',
-                whiteSpace: 'pre-wrap',
-              }}
-            >
-              {t.text}
-            </div>
-          ))}
+          {/* her words sit on the page itself — the outline belongs to the learner's side only */}
+          {turns.map((t) =>
+            t.role === 'user' ? (
+              <div
+                key={t.id}
+                style={{
+                  alignSelf: 'flex-end',
+                  maxWidth: '84%',
+                  padding: '10px 14px',
+                  borderRadius: 'var(--clss-radius-md)',
+                  fontSize: fluidType.body,
+                  lineHeight: 1.55,
+                  background: '#121316',
+                  color: '#FFFFFF',
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
+                {t.text}
+              </div>
+            ) : (
+              <div
+                key={t.id}
+                style={{
+                  alignSelf: 'flex-start',
+                  maxWidth: '84%',
+                  padding: '2px 2px',
+                  fontSize: fluidType.body,
+                  lineHeight: 1.6,
+                  color: '#121316',
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
+                {t.text}
+              </div>
+            ),
+          )}
           {busy && (
             <motion.div
               initial={{ opacity: 0 }}
