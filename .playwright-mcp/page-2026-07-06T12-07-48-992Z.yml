@@ -1,0 +1,48 @@
+- generic [ref=f24e2]:
+  - generic [ref=f24e1351]:
+    - button "Back — Home" [ref=f24e1352] [cursor=pointer]:
+      - img [ref=f24e1353]
+      - text: Home
+    - banner [ref=f24e1357]:
+      - generic [ref=f24e1358]: 1 of 8 concepts are yours
+      - generic [ref=f24e1359]: day 3 of being a learner · tap a star to see its story
+    - generic [ref=f24e1360]:
+      - img "your knowledge constellation — every star is a concept" [ref=f24e1362]:
+        - button "rational numbers — not started" [ref=f24e1373] [cursor=pointer]:
+          - generic [ref=f24e1377]: rational numbers
+        - button "operations — not started" [ref=f24e1378] [cursor=pointer]:
+          - generic [ref=f24e1382]: operations
+        - button "the number line — not started" [ref=f24e1383] [cursor=pointer]:
+          - generic [ref=f24e1387]: the number line
+        - button "integers — not started" [ref=f24e1388] [cursor=pointer]:
+          - generic [ref=f24e1392]: integers
+        - button "variables — not started" [ref=f24e1393] [cursor=pointer]:
+          - generic [ref=f24e1397]: variables
+        - button "linear equations — yours, independently" [ref=f24e1398] [cursor=pointer]:
+          - generic [ref=f24e1405]: linear equations
+        - button "both sides — not started" [ref=f24e1406] [cursor=pointer]:
+          - generic [ref=f24e1410]: both sides
+        - button "word problems — not started" [ref=f24e1411] [cursor=pointer]:
+          - generic [ref=f24e1415]: word problems
+      - textbox "Ask your twin" [ref=f24e1419]:
+        - /placeholder: "ask your twin: what am I weakest at…"
+  - banner:
+    - img "Classess" [ref=f24e191]
+    - generic [ref=f24e192]:
+      - button "Did you know" [ref=f24e193] [cursor=pointer]:
+        - img [ref=f24e194]
+        - text: Did you know
+      - generic "day 3 of being a learner" [ref=f24e196]:
+        - img [ref=f24e197]
+        - text: "3"
+      - generic [ref=f24e200]: 710 xp
+      - button "You — profile and settings" [ref=f24e201] [cursor=pointer]:
+        - generic [ref=f24e202]: A
+  - generic:
+    - generic:
+      - generic:
+        - img
+      - button "Talk to Vidya":
+        - generic:
+          - generic:
+            - img

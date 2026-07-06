@@ -20,7 +20,6 @@ import {
 import { chapterById, topicById } from '../data/catalog';
 import type { Topic } from '../data/model';
 import { useRouter } from '../shell/router';
-import { Whisper } from './Learn';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { BossSigil } from '../ui/art';
@@ -35,6 +34,7 @@ import {
 import { CAST, type CastId, Scene } from '../ui/cast';
 import { toneForSubject } from '../ui/hues';
 import { Card, cascade, Hairline, MagneticButton, rise, SectionLabel } from '../ui/kit';
+import { Whisper } from './Learn';
 import { GradeBoardPicker } from './you/GradeBoardPicker';
 import {
   boardName,
@@ -485,6 +485,13 @@ export function You() {
   const [voice, setVoice] = useState(() => getFlag(VOICE_KEY));
   const [sound, setSound] = useState(() => getFlag(SOUND_KEY));
   const [confirmingReset, setConfirmingReset] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+  const signOut = () => {
+    setSigningOut(true);
+    // End the session, then boot fresh: the live-mode guard lands on onboarding's sign-in beat.
+    // Local progress stays cached on-device and reconciles when this account signs back in.
+    void sdk.identity.auth.signOut().finally(() => window.location.assign('/'));
+  };
   const startOver = () => {
     const keys: string[] = [];
     for (let i = 0; i < localStorage.length; i += 1) {
@@ -539,7 +546,9 @@ export function You() {
         padding: '84px 24px 96px',
       }}
     >
-      <Whisper onClick={() => (router.canGoBack ? router.back() : router.navigate({ name: 'home' }))}>
+      <Whisper
+        onClick={() => (router.canGoBack ? router.back() : router.navigate({ name: 'home' }))}
+      >
         Home
       </Whisper>
 
@@ -1063,6 +1072,34 @@ export function You() {
                   setFlag(SOUND_KEY, v);
                 }}
               />
+              {/* sign out — live mode only; the dev-mock learner has no session to end */}
+              {!sdk.config.devAuth && (
+                <>
+                  <Hairline />
+                  <div style={{ padding: '13px 0' }}>
+                    <button
+                      type="button"
+                      onClick={signOut}
+                      disabled={signingOut}
+                      style={{
+                        border: 'none',
+                        background: 'transparent',
+                        fontFamily: 'inherit',
+                        cursor: signingOut ? 'default' : 'pointer',
+                        padding: 0,
+                        textAlign: 'left',
+                      }}
+                    >
+                      <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>
+                        {signingOut ? 'signing out…' : 'sign out'}
+                      </div>
+                      <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
+                        your page stays safe with your account — sign back in any time
+                      </div>
+                    </button>
+                  </div>
+                </>
+              )}
               <Hairline />
               <div style={{ padding: '13px 0' }}>
                 {confirmingReset ? (

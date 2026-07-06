@@ -36,14 +36,18 @@ function Handwritten({ text, animate }: { text: string; animate: boolean }) {
   return (
     <span
       style={{
-        fontFamily: "'Caveat', cursive",
-        fontSize: '1.3rem',
-        lineHeight: 1.35,
-        color: 'var(--clss-ink-900)',
+        display: 'inline-block',
+        padding: '8px 13px',
+        borderRadius: 'var(--clss-radius-md)',
+        background: '#FFFFFF',
+        border: '1px solid #E9E9EE',
+        fontSize: '0.92rem',
+        lineHeight: 1.55,
+        color: '#121316',
       }}
     >
       {text.slice(0, shown)}
-      {shown < text.length && <span style={{ opacity: 0.4 }}>✎</span>}
+      {shown < text.length && <span style={{ opacity: 0.4 }}>|</span>}
     </span>
   );
 }

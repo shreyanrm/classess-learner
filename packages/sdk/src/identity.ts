@@ -158,6 +158,18 @@ interface TokenResponse {
   user?: { id?: string };
 }
 
+/** Structural stand-ins for DOM globals — the sdk compiles without the DOM lib (node runtimes). */
+interface LocationLike {
+  hash: string;
+  origin: string;
+  pathname: string;
+  search: string;
+  assign(url: string): void;
+}
+interface HistoryLike {
+  replaceState(data: unknown, unused: string, url?: string): void;
+}
+
 class MemoryKV implements KVStorage {
   private readonly map = new Map<string, string>();
   getItem(key: string): string | null {
@@ -284,7 +296,7 @@ export class SupabaseAuthIdentity implements IdentityProvider {
   }
 
   private async signInWithGoogle(redirectTo?: string): Promise<void> {
-    const loc = (globalThis as { location?: Location }).location;
+    const loc = (globalThis as { location?: LocationLike }).location;
     if (!loc) throw new Error('Google sign-in needs a browser (redirect flow)');
     const dest = redirectTo ?? loc.origin;
     loc.assign(
@@ -296,11 +308,15 @@ export class SupabaseAuthIdentity implements IdentityProvider {
     const token = this.session?.access_token;
     this.clear();
     if (!token) return;
-    // Best-effort server-side revoke — local sign-out already happened either way.
-    await fetch(`${this.cfg.url}/auth/v1/logout`, {
-      method: 'POST',
-      headers: { apikey: this.cfg.anonKey, authorization: `Bearer ${token}` },
-    }).catch(() => {});
+    try {
+      // Best-effort server-side revoke — local sign-out already happened either way.
+      await fetch(`${this.cfg.url}/auth/v1/logout`, {
+        method: 'POST',
+        headers: { apikey: this.cfg.anonKey, authorization: `Bearer ${token}` },
+      });
+    } catch {
+      // unreachable network — the revoke retries never; the refresh token dies at expiry
+    }
   }
 
   // --- Session plumbing -----------------------------------------------------
@@ -353,7 +369,7 @@ export class SupabaseAuthIdentity implements IdentityProvider {
    * Adopt them, then scrub the fragment so tokens never sit in history.
    */
   private completeOAuthRedirect(): void {
-    const loc = (globalThis as { location?: Location }).location;
+    const loc = (globalThis as { location?: LocationLike }).location;
     if (!loc || !loc.hash.includes('access_token=')) return;
     const params = new URLSearchParams(loc.hash.slice(1));
     const access = params.get('access_token');
@@ -369,7 +385,7 @@ export class SupabaseAuthIdentity implements IdentityProvider {
     } catch {
       return; // malformed fragment — stay signed out
     }
-    (globalThis as { history?: History }).history?.replaceState(
+    (globalThis as { history?: HistoryLike }).history?.replaceState(
       null,
       '',
       loc.pathname + loc.search,

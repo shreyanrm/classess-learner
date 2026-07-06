@@ -1,0 +1,99 @@
+- generic [ref=f25e2]:
+  - generic [ref=f25e4]:
+    - generic [ref=f25e5]:
+      - generic [ref=f25e6]: today · monday 6 july
+      - heading "Good evening, Aanya" [level=1] [ref=f25e7]
+      - generic [ref=f25e8]: the day is a walk, not a list
+      - generic [ref=f25e10]:
+        - textbox "Talk to Vidya…" [ref=f25e11]
+        - button "Talk by voice" [ref=f25e12] [cursor=pointer]
+      - generic [ref=f25e21]:
+        - button "Learn something cool" [ref=f25e22] [cursor=pointer]:
+          - img [ref=f25e23]
+          - text: Learn something cool
+        - button "Open a rabbit hole" [ref=f25e25] [cursor=pointer]:
+          - img [ref=f25e26]
+          - text: Open a rabbit hole
+        - button "What should I do today" [ref=f25e28] [cursor=pointer]:
+          - img [ref=f25e29]
+          - text: What should I do today
+      - generic [ref=f25e31]:
+        - button "Learn" [ref=f25e32] [cursor=pointer]:
+          - generic [ref=f25e33]: Learn
+        - button "Practice" [ref=f25e34] [cursor=pointer]:
+          - generic [ref=f25e35]: Practice
+    - generic [ref=f25e37]:
+      - generic [ref=f25e38]: +
+      - generic [ref=f25e39]: ·
+      - generic [ref=f25e40]: ·
+      - generic [ref=f25e41]: +
+      - generic [ref=f25e42]: ·
+      - generic [ref=f25e43]: +
+      - generic [ref=f25e44]: ·
+      - generic [ref=f25e45]: +
+      - img [ref=f25e46]
+      - button "Warm-up day 3 of being a learner · done" [ref=f25e68] [cursor=pointer]:
+        - img [ref=f25e69]
+        - generic [ref=f25e79]:
+          - generic [ref=f25e80]: Warm-up
+          - generic [ref=f25e81]: day 3 of being a learner · done
+        - img [ref=f25e83]
+      - button "Solving equations with the variable on one side done · revisit any time" [ref=f25e86] [cursor=pointer]:
+        - img [ref=f25e87]
+        - generic [ref=f25e90]:
+          - generic [ref=f25e91]: Solving equations with the variable on one side
+          - generic [ref=f25e92]: done · revisit any time
+        - img [ref=f25e94]
+      - button "What makes a number rational continue · 8% walked" [ref=f25e97] [cursor=pointer]:
+        - img [ref=f25e98]
+        - generic [ref=f25e102]:
+          - generic [ref=f25e103]: What makes a number rational
+          - generic [ref=f25e104]: continue · 8% walked
+        - img [ref=f25e108]
+      - button "Operations on rational numbers next up · a fresh idea" [ref=f25e111] [cursor=pointer]:
+        - img [ref=f25e112]
+        - generic [ref=f25e115]:
+          - generic [ref=f25e116]: Operations on rational numbers
+          - generic [ref=f25e117]: next up · a fresh idea
+        - img [ref=f25e119]
+      - button "Review refresh what’s fading" [ref=f25e122] [cursor=pointer]:
+        - img [ref=f25e123]
+        - generic [ref=f25e128]:
+          - generic [ref=f25e129]: Review
+          - generic [ref=f25e130]: refresh what’s fading
+        - img [ref=f25e132]
+      - button "Boss gate locked · finish today’s topic" [ref=f25e135] [cursor=pointer]:
+        - img [ref=f25e136]
+        - generic [ref=f25e139]:
+          - generic [ref=f25e140]: Boss gate
+          - generic [ref=f25e141]: locked · finish today’s topic
+        - img [ref=f25e143]
+      - button "Something is hiding here — open the sandbox" [ref=f25e146] [cursor=pointer]:
+        - img [ref=f25e147]
+      - generic: something is hiding here
+      - generic [ref=f25e151]:
+        - img "Vidya" [ref=f25e152]:
+          - img [ref=f25e156]
+        - generic [ref=f25e180]: right where we left it
+    - generic [ref=f25e181]:
+      - generic [ref=f25e182]: wander beyond today
+      - generic [ref=f25e183]:
+        - button "Learn" [ref=f25e184] [cursor=pointer]:
+          - generic [ref=f25e185]: Learn
+        - button "Practice" [ref=f25e186] [cursor=pointer]:
+          - generic [ref=f25e187]: Practice
+    - generic [ref=f25e188]:
+      - generic [ref=f25e189]: ⌘K
+      - text: Anything, anywhere
+  - banner:
+    - img "Classess" [ref=f25e191]
+    - generic [ref=f25e192]:
+      - button "Did you know" [ref=f25e193] [cursor=pointer]:
+        - img [ref=f25e194]
+        - text: Did you know
+      - generic "day 3 of being a learner" [ref=f25e196]:
+        - img [ref=f25e197]
+        - text: "3"
+      - generic [ref=f25e200]: 710 xp
+      - button "You — profile and settings" [ref=f25e201] [cursor=pointer]:
+        - generic [ref=f25e202]: A

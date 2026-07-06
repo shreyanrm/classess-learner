@@ -343,7 +343,10 @@ export function ProgressScreen() {
               position: 'fixed',
               ...(isDesktop
                 ? {
-                    right: 'clamp(30px, 4.5vw, 64px)',
+                    // sit on the side away from the star so the lit path stays visible
+                    ...(selected.x > 500
+                      ? { left: 'clamp(30px, 4.5vw, 64px)' }
+                      : { right: 'clamp(30px, 4.5vw, 64px)' }),
                     top: 0,
                     bottom: 0,
                     margin: 'auto 0',

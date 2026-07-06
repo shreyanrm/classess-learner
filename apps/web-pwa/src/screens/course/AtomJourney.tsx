@@ -103,7 +103,16 @@ export function AtomJourney({
   const bus = useVidyaBus();
   const { award } = useProgress();
 
-  const [card, setCard] = useState<CardId>('arrival');
+  const [card, setCard] = useState<CardId>(() => {
+    // Resume where they left off — a course remembers its place (cliffhanger-friendly).
+    try {
+      const saved = (JSON.parse(localStorage.getItem('clss-course-pos-v1') ?? '{}') as Record<string, CardId>)[topic.id];
+      if (saved && saved !== 'greeting' && saved !== 'tease' && saved !== 'mystery') return saved;
+    } catch {
+      // fresh start below
+    }
+    return 'arrival';
+  });
   const [sub, setSub] = useState(0);
   const [items, setItems] = useState<PracticeItem[]>([]);
   const enteredAt = useRef(Date.now());
@@ -160,6 +169,14 @@ export function AtomJourney({
   );
   const go = useCallback(
     (next: CardId) => {
+      try {
+        const key = 'clss-course-pos-v1';
+        const pos = JSON.parse(localStorage.getItem(key) ?? '{}') as Record<string, CardId>;
+        pos[topic.id] = next;
+        localStorage.setItem(key, JSON.stringify(pos));
+      } catch {
+        // storage unavailable — session-only resume
+      }
       const earned = CARD_XP[card];
       if (earned) award('bonus', { amount: earned, onceKey: `card-${topic.id}-${card}` });
       setSub(0);
