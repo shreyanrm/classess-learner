@@ -11,7 +11,10 @@ if (!document.getElementById(STYLE_ID)) {
   style.textContent = `${cssVariables()}
 * { box-sizing: border-box; }
 html, body { margin: 0; }
-html { scroll-behavior: smooth; interpolate-size: allow-keywords; }
+/* No interpolate-size: Chrome implements it, Safari ignores it — any effect it ever has is a
+   Chrome-only divergence (auto-size transitions animating in Chrome, snapping in Safari).
+   All auto-height choreography is framer-motion, which never needs it. */
+html { scroll-behavior: smooth; }
 body {
   font-family: 'Google Sans Flex', 'Google Sans Text', 'Plus Jakarta Sans', system-ui, sans-serif;
   color: var(--clss-ink-900);
