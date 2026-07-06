@@ -1,10 +1,15 @@
-"""Plexus content engines.
+"""Plexus — the content engines behind the ``engine.*`` capabilities.
 
-Each engine generates one content modality (image, diagram, sim, ...), verifies it,
-and caches the verified artifact with provenance. Engines self-describe via an ``ENGINE``
-descriptor so the Plexus registry can wire them without importing internals.
+Four engines on the capability router: compose (guided-discovery card outlines),
+simulate (CAS-verified sim specs), diagram (sanitized inline SVG), video
+(motion-scene JSON with optional Gemini TTS narration).
 
-ponytail: kept an empty package marker — the skeleton (engine registry, shared base) is
-built in parallel. Engines are imported directly (``classess_gateway.plexus.image``) until
-that lands; nothing here to collide over.
+Every artifact is verified before serving; a live refusal or failed verification
+falls back to a deterministic seed (invisible to the learner). Every artifact is
+cached under ``content/cache/`` keyed (concept x modality x difficulty) and carries
+provenance ``{engine, model, prompt_version}``.
 """
+
+from classess_gateway.plexus.engines import run_engine
+
+__all__ = ["run_engine"]

@@ -47,6 +47,10 @@ def sanitize_svg(text: str) -> str | None:
     """Return a clean inline SVG string, or ``None`` if the input is unusable."""
     if not text:
         return None
+    # No DTDs, ever: kills XXE and entity-expansion (billion laughs) before parsing.
+    lowered = text.lower()
+    if "<!doctype" in lowered or "<!entity" in lowered:
+        return None
     start, end = text.find("<svg"), text.rfind("</svg>")
     if start < 0 or end < 0:
         return None

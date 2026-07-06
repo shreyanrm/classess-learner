@@ -31,7 +31,6 @@ function topicRoute(topicId: string, intent: Intent) {
 
 function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
   const router = useRouter();
-  const tone = SUBJECT_HUES[chapter.subjectId] ?? SUBJECT_HUES.math;
   const { completed, topicProgress } = useProgress();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [hover, setHover] = useState(false);
@@ -199,6 +198,7 @@ function ChapterRow({
   onToggle: () => void;
 }) {
   const router = useRouter();
+  const tone = SUBJECT_HUES[chapter.subjectId] ?? SUBJECT_HUES.math;
   const { completed } = useProgress();
   const total = chapter.topics.length;
   const done = chapter.topics.filter((t) => completed.has(t.id)).length;
