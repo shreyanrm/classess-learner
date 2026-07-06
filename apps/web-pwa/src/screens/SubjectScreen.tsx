@@ -31,6 +31,7 @@ function topicRoute(topicId: string, intent: Intent) {
 
 function TopicRow({ topic, intent }: { topic: Topic; intent: Intent }) {
   const router = useRouter();
+  const tone = SUBJECT_HUES[chapter.subjectId] ?? SUBJECT_HUES.math;
   const { completed, topicProgress } = useProgress();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [hover, setHover] = useState(false);
@@ -223,8 +224,6 @@ function ChapterRow({
       >
         <span
           style={{
-            fontSize: '0.8rem',
-            color: 'var(--clss-ink-300)',
             fontVariantNumeric: 'tabular-nums',
             flexShrink: 0,
             width: 30,

@@ -1217,13 +1217,9 @@ export const mathChapters10: Chapter[] = [
         'How roots and coefficients connect.',
         ['x10-m2-1'],
       ),
-      t(
-        'x10-m2',
-        'x10-m2-3',
-        'Division of polynomials',
-        'Dividing one polynomial by another.',
-        ['x10-m2-2'],
-      ),
+      t('x10-m2', 'x10-m2-3', 'Division of polynomials', 'Dividing one polynomial by another.', [
+        'x10-m2-2',
+      ]),
     ],
   },
   {
@@ -1256,13 +1252,9 @@ export const mathChapters10: Chapter[] = [
     name: 'Quadratic Equations',
     topics: [
       t('x10-m4', 'x10-m4-1', 'Standard form', 'Recognising a quadratic equation.'),
-      t(
-        'x10-m4',
-        'x10-m4-2',
-        'Solving quadratics',
-        'By factorisation and the quadratic formula.',
-        ['x10-m4-1'],
-      ),
+      t('x10-m4', 'x10-m4-2', 'Solving quadratics', 'By factorisation and the quadratic formula.', [
+        'x10-m4-1',
+      ]),
       t('x10-m4', 'x10-m4-3', 'Nature of roots', 'What the discriminant reveals.', ['x10-m4-2']),
     ],
   },
@@ -1273,9 +1265,7 @@ export const mathChapters10: Chapter[] = [
     name: 'Arithmetic Progressions',
     topics: [
       t('x10-m5', 'x10-m5-1', 'The nth term', 'Finding any term of a sequence.'),
-      t('x10-m5', 'x10-m5-2', 'Sum of n terms', 'Adding the terms of a progression.', [
-        'x10-m5-1',
-      ]),
+      t('x10-m5', 'x10-m5-2', 'Sum of n terms', 'Adding the terms of a progression.', ['x10-m5-1']),
       t('x10-m5', 'x10-m5-3', 'Applications of AP', 'Using patterns to solve problems.', [
         'x10-m5-2',
       ]),
@@ -1295,7 +1285,7 @@ export const mathChapters10: Chapter[] = [
         'x10-m6',
         'x10-m6-3',
         'Areas of similar triangles',
-        "How area relates to the ratio of sides.",
+        'How area relates to the ratio of sides.',
         ['x10-m6-2'],
       ),
     ],
@@ -1308,13 +1298,9 @@ export const mathChapters10: Chapter[] = [
     topics: [
       t('x10-m7', 'x10-m7-1', 'Distance formula', 'Length between two points.'),
       t('x10-m7', 'x10-m7-2', 'Section formula', 'Dividing a segment in a ratio.', ['x10-m7-1']),
-      t(
-        'x10-m7',
-        'x10-m7-3',
-        'Area of a triangle',
-        'From the coordinates of its vertices.',
-        ['x10-m7-2'],
-      ),
+      t('x10-m7', 'x10-m7-3', 'Area of a triangle', 'From the coordinates of its vertices.', [
+        'x10-m7-2',
+      ]),
     ],
   },
   {
@@ -1331,13 +1317,9 @@ export const mathChapters10: Chapter[] = [
         'Values at 0, 30, 45, 60 and 90 degrees.',
         ['x10-m8-1'],
       ),
-      t(
-        'x10-m8',
-        'x10-m8-3',
-        'Trigonometric identities',
-        'Relationships that always hold.',
-        ['x10-m8-2'],
-      ),
+      t('x10-m8', 'x10-m8-3', 'Trigonometric identities', 'Relationships that always hold.', [
+        'x10-m8-2',
+      ]),
     ],
   },
   {
@@ -1347,12 +1329,8 @@ export const mathChapters10: Chapter[] = [
     name: 'Some Applications of Trigonometry',
     topics: [
       t('x10-m9', 'x10-m9-1', 'Heights and distances', 'Measuring the unreachable with angles.'),
-      t('x10-m9', 'x10-m9-2', 'Angle of elevation', 'Looking up to a distant point.', [
-        'x10-m9-1',
-      ]),
-      t('x10-m9', 'x10-m9-3', 'Angle of depression', 'Looking down from a height.', [
-        'x10-m9-2',
-      ]),
+      t('x10-m9', 'x10-m9-2', 'Angle of elevation', 'Looking up to a distant point.', ['x10-m9-1']),
+      t('x10-m9', 'x10-m9-3', 'Angle of depression', 'Looking down from a height.', ['x10-m9-2']),
     ],
   },
   {
@@ -1390,13 +1368,9 @@ export const mathChapters10: Chapter[] = [
         'Perimeter and area of a circle',
         'The circumference and area recalled.',
       ),
-      t(
-        'x10-m11',
-        'x10-m11-2',
-        'Areas of sectors and segments',
-        "Parts of a circle's area.",
-        ['x10-m11-1'],
-      ),
+      t('x10-m11', 'x10-m11-2', 'Areas of sectors and segments', "Parts of a circle's area.", [
+        'x10-m11-1',
+      ]),
       t('x10-m11', 'x10-m11-3', 'Combined figures', 'Areas of shapes made with circles.', [
         'x10-m11-2',
       ]),
@@ -1456,13 +1430,9 @@ export const mathChapters10: Chapter[] = [
       t('x10-m14', 'x10-m14-2', 'Simple events', 'Finding the probability of one event.', [
         'x10-m14-1',
       ]),
-      t(
-        'x10-m14',
-        'x10-m14-3',
-        'Complementary events',
-        'The chance of an event not happening.',
-        ['x10-m14-2'],
-      ),
+      t('x10-m14', 'x10-m14-3', 'Complementary events', 'The chance of an event not happening.', [
+        'x10-m14-2',
+      ]),
     ],
   },
 ];
@@ -1476,9 +1446,13 @@ export const scienceChapters10: Chapter[] = [
     name: 'Chemical Reactions and Equations',
     topics: [
       t('x10-s1', 'x10-s1-1', 'Chemical equations', 'Writing and balancing reactions.'),
-      t('x10-s1', 'x10-s1-2', 'Types of reactions', 'Combination, decomposition and displacement.', [
-        'x10-s1-1',
-      ]),
+      t(
+        'x10-s1',
+        'x10-s1-2',
+        'Types of reactions',
+        'Combination, decomposition and displacement.',
+        ['x10-s1-1'],
+      ),
       t('x10-s1', 'x10-s1-3', 'Oxidation and reduction', 'Gain and loss of oxygen or electrons.', [
         'x10-s1-2',
       ]),
@@ -1505,7 +1479,12 @@ export const scienceChapters10: Chapter[] = [
     index: 3,
     name: 'Metals and Non-metals',
     topics: [
-      t('x10-s3', 'x10-s3-1', 'Physical and chemical properties', 'How metals and non-metals differ.'),
+      t(
+        'x10-s3',
+        'x10-s3-1',
+        'Physical and chemical properties',
+        'How metals and non-metals differ.',
+      ),
       t('x10-s3', 'x10-s3-2', 'The reactivity series', 'Ranking metals by how they react.', [
         'x10-s3-1',
       ]),
@@ -1540,9 +1519,13 @@ export const scienceChapters10: Chapter[] = [
     name: 'Life Processes',
     topics: [
       t('x10-s5', 'x10-s5-1', 'Nutrition', 'How organisms obtain and use food.'),
-      t('x10-s5', 'x10-s5-2', 'Respiration and transport', 'Releasing energy and moving materials.', [
-        'x10-s5-1',
-      ]),
+      t(
+        'x10-s5',
+        'x10-s5-2',
+        'Respiration and transport',
+        'Releasing energy and moving materials.',
+        ['x10-s5-1'],
+      ),
       t('x10-s5', 'x10-s5-3', 'Excretion', 'Removing waste from the body.', ['x10-s5-2']),
     ],
   },
@@ -1604,9 +1587,13 @@ export const scienceChapters10: Chapter[] = [
       t('x10-s9', 'x10-s9-2', 'Refraction of light', 'How light bends between media.', [
         'x10-s9-1',
       ]),
-      t('x10-s9', 'x10-s9-3', 'Lenses and their formulae', 'Image formation and the lens equation.', [
-        'x10-s9-2',
-      ]),
+      t(
+        'x10-s9',
+        'x10-s9-3',
+        'Lenses and their formulae',
+        'Image formation and the lens equation.',
+        ['x10-s9-2'],
+      ),
     ],
   },
   {
@@ -1640,12 +1627,20 @@ export const scienceChapters10: Chapter[] = [
         'Electric current and potential difference',
         'What drives charge through a circuit.',
       ),
-      t('x10-s11', 'x10-s11-2', "Ohm's law and resistance", 'Relating current, voltage and resistance.', [
-        'x10-s11-1',
-      ]),
-      t('x10-s11', 'x10-s11-3', 'Heating effect of current', 'Power and heat in electrical circuits.', [
+      t(
+        'x10-s11',
         'x10-s11-2',
-      ]),
+        "Ohm's law and resistance",
+        'Relating current, voltage and resistance.',
+        ['x10-s11-1'],
+      ),
+      t(
+        'x10-s11',
+        'x10-s11-3',
+        'Heating effect of current',
+        'Power and heat in electrical circuits.',
+        ['x10-s11-2'],
+      ),
     ],
   },
   {
@@ -1678,12 +1673,20 @@ export const scienceChapters10: Chapter[] = [
     name: 'Our Environment',
     topics: [
       t('x10-s13', 'x10-s13-1', 'Ecosystems', 'The web of living and non-living things.'),
-      t('x10-s13', 'x10-s13-2', 'Food chains and food webs', 'How energy flows through an ecosystem.', [
-        'x10-s13-1',
-      ]),
-      t('x10-s13', 'x10-s13-3', 'Waste and its management', 'Handling waste to protect the environment.', [
+      t(
+        'x10-s13',
         'x10-s13-2',
-      ]),
+        'Food chains and food webs',
+        'How energy flows through an ecosystem.',
+        ['x10-s13-1'],
+      ),
+      t(
+        'x10-s13',
+        'x10-s13-3',
+        'Waste and its management',
+        'Handling waste to protect the environment.',
+        ['x10-s13-2'],
+      ),
     ],
   },
 ];
@@ -1697,9 +1700,13 @@ export const socialChapters10: Chapter[] = [
     name: 'The Rise of Nationalism in Europe',
     topics: [
       t('x10-h1', 'x10-h1-1', 'The making of nationalism', 'How the idea of the nation grew.'),
-      t('x10-h1', 'x10-h1-2', 'Unification of Germany and Italy', 'Nations forged from many states.', [
-        'x10-h1-1',
-      ]),
+      t(
+        'x10-h1',
+        'x10-h1-2',
+        'Unification of Germany and Italy',
+        'Nations forged from many states.',
+        ['x10-h1-1'],
+      ),
       t('x10-h1', 'x10-h1-3', 'Nationalism and imperialism', 'How nationalism turned outward.', [
         'x10-h1-2',
       ]),
@@ -1712,9 +1719,13 @@ export const socialChapters10: Chapter[] = [
     name: 'Nationalism in India',
     topics: [
       t('x10-h2', 'x10-h2-1', 'The First World War and Khilafat', 'The stir of mass nationalism.'),
-      t('x10-h2', 'x10-h2-2', 'Movements led by Gandhi', 'Non-cooperation and civil disobedience.', [
-        'x10-h2-1',
-      ]),
+      t(
+        'x10-h2',
+        'x10-h2-2',
+        'Movements led by Gandhi',
+        'Non-cooperation and civil disobedience.',
+        ['x10-h2-1'],
+      ),
       t('x10-h2', 'x10-h2-3', 'Towards a collective identity', 'Symbols that united the nation.', [
         'x10-h2-2',
       ]),
@@ -1749,9 +1760,13 @@ export const socialChapters10: Chapter[] = [
       t('x10-h4', 'x10-h4-2', 'The coming of the factory', 'Machines and the industrial city.', [
         'x10-h4-1',
       ]),
-      t('x10-h4', 'x10-h4-3', 'Industrialisation in India', 'Factories and workers in the colony.', [
-        'x10-h4-2',
-      ]),
+      t(
+        'x10-h4',
+        'x10-h4-3',
+        'Industrialisation in India',
+        'Factories and workers in the colony.',
+        ['x10-h4-2'],
+      ),
     ],
   },
   {
@@ -1761,9 +1776,7 @@ export const socialChapters10: Chapter[] = [
     name: 'Print Culture and the Modern World',
     topics: [
       t('x10-h5', 'x10-h5-1', 'The coming of print', 'From manuscripts to the printing press.'),
-      t('x10-h5', 'x10-h5-2', 'Print and society', 'How reading changed the world.', [
-        'x10-h5-1',
-      ]),
+      t('x10-h5', 'x10-h5-2', 'Print and society', 'How reading changed the world.', ['x10-h5-1']),
       t('x10-h5', 'x10-h5-3', 'Print in colonial India', 'The press and Indian society.', [
         'x10-h5-2',
       ]),
@@ -1779,9 +1792,13 @@ export const socialChapters10: Chapter[] = [
       t('x10-g1', 'x10-g1-2', 'Resource planning', 'Using resources wisely and fairly.', [
         'x10-g1-1',
       ]),
-      t('x10-g1', 'x10-g1-3', 'Land and soil resources', 'Caring for land and preventing degradation.', [
-        'x10-g1-2',
-      ]),
+      t(
+        'x10-g1',
+        'x10-g1-3',
+        'Land and soil resources',
+        'Caring for land and preventing degradation.',
+        ['x10-g1-2'],
+      ),
     ],
   },
   {
@@ -1807,9 +1824,13 @@ export const socialChapters10: Chapter[] = [
     topics: [
       t('x10-g3', 'x10-g3-1', 'Water scarcity', 'Why fresh water is under strain.'),
       t('x10-g3', 'x10-g3-2', 'Dams and irrigation', 'Storing and sharing water.', ['x10-g3-1']),
-      t('x10-g3', 'x10-g3-3', 'Rainwater harvesting', 'Traditional and modern ways to save water.', [
-        'x10-g3-2',
-      ]),
+      t(
+        'x10-g3',
+        'x10-g3-3',
+        'Rainwater harvesting',
+        'Traditional and modern ways to save water.',
+        ['x10-g3-2'],
+      ),
     ],
   },
   {
@@ -1819,9 +1840,13 @@ export const socialChapters10: Chapter[] = [
     name: 'Agriculture',
     topics: [
       t('x10-g4', 'x10-g4-1', 'Types of farming', 'Subsistence and commercial agriculture.'),
-      t('x10-g4', 'x10-g4-2', 'Cropping patterns and major crops', 'The seasons and staples of India.', [
-        'x10-g4-1',
-      ]),
+      t(
+        'x10-g4',
+        'x10-g4-2',
+        'Cropping patterns and major crops',
+        'The seasons and staples of India.',
+        ['x10-g4-1'],
+      ),
       t('x10-g4', 'x10-g4-3', 'Agriculture and the economy', "Farming's place in national life.", [
         'x10-g4-2',
       ]),
@@ -1894,9 +1919,7 @@ export const socialChapters10: Chapter[] = [
     name: 'Federalism',
     topics: [
       t('x10-c2', 'x10-c2-1', 'What is federalism', 'Dividing power between centre and states.'),
-      t('x10-c2', 'x10-c2-2', 'Federalism in India', 'How power is shared in India.', [
-        'x10-c2-1',
-      ]),
+      t('x10-c2', 'x10-c2-2', 'Federalism in India', 'How power is shared in India.', ['x10-c2-1']),
       t('x10-c2', 'x10-c2-3', 'Decentralisation', 'Bringing government closer to people.', [
         'x10-c2-2',
       ]),
@@ -1909,9 +1932,7 @@ export const socialChapters10: Chapter[] = [
     name: 'Gender, Religion and Caste',
     topics: [
       t('x10-c3', 'x10-c3-1', 'Gender and politics', "Women's roles in public life."),
-      t('x10-c3', 'x10-c3-2', 'Religion and politics', 'Communalism and secularism.', [
-        'x10-c3-1',
-      ]),
+      t('x10-c3', 'x10-c3-2', 'Religion and politics', 'Communalism and secularism.', ['x10-c3-1']),
       t('x10-c3', 'x10-c3-3', 'Caste and politics', 'How caste shapes and is shaped by politics.', [
         'x10-c3-2',
       ]),
@@ -1937,12 +1958,14 @@ export const socialChapters10: Chapter[] = [
     name: 'Outcomes of Democracy',
     topics: [
       t('x10-c5', 'x10-c5-1', 'Accountable government', 'Democracy and responsive rule.'),
-      t('x10-c5', 'x10-c5-2', 'Economic and social outcomes', 'What democracy delivers for people.', [
-        'x10-c5-1',
-      ]),
-      t('x10-c5', 'x10-c5-3', 'Dignity and freedom', 'The promise democracy holds.', [
+      t(
+        'x10-c5',
         'x10-c5-2',
-      ]),
+        'Economic and social outcomes',
+        'What democracy delivers for people.',
+        ['x10-c5-1'],
+      ),
+      t('x10-c5', 'x10-c5-3', 'Dignity and freedom', 'The promise democracy holds.', ['x10-c5-2']),
     ],
   },
   {
@@ -1953,9 +1976,13 @@ export const socialChapters10: Chapter[] = [
     topics: [
       t('x10-e1', 'x10-e1-1', 'Ideas of development', 'Different goals for different people.'),
       t('x10-e1', 'x10-e1-2', 'Measuring development', 'Income and beyond.', ['x10-e1-1']),
-      t('x10-e1', 'x10-e1-3', 'Sustainability of development', 'Keeping development going for the future.', [
-        'x10-e1-2',
-      ]),
+      t(
+        'x10-e1',
+        'x10-e1-3',
+        'Sustainability of development',
+        'Keeping development going for the future.',
+        ['x10-e1-2'],
+      ),
     ],
   },
   {
@@ -2000,9 +2027,13 @@ export const socialChapters10: Chapter[] = [
     name: 'Globalisation and the Indian Economy',
     topics: [
       t('x10-e4', 'x10-e4-1', 'What is globalisation', "The world's economies growing connected."),
-      t('x10-e4', 'x10-e4-2', 'Factors enabling globalisation', 'Technology, trade and investment.', [
-        'x10-e4-1',
-      ]),
+      t(
+        'x10-e4',
+        'x10-e4-2',
+        'Factors enabling globalisation',
+        'Technology, trade and investment.',
+        ['x10-e4-1'],
+      ),
       t('x10-e4', 'x10-e4-3', 'Impact on India', 'How globalisation reshaped the economy.', [
         'x10-e4-2',
       ]),
