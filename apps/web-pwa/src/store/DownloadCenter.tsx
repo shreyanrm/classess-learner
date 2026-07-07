@@ -169,8 +169,8 @@ export function DownloadCenter() {
               </span>
               <span style={{ fontSize: '0.8rem', opacity: 0.82, lineHeight: 1.35 }}>
                 {d.status === 'ready'
-                  ? 'your course is ready — tap to dive in'
-                  : 'that one slipped away — tap to try again'}
+                  ? 'Your course is ready — tap to dive in'
+                  : 'That one slipped away — tap to try again'}
               </span>
             </span>
             <span
@@ -182,7 +182,7 @@ export function DownloadCenter() {
                 whiteSpace: 'nowrap',
               }}
             >
-              {d.status === 'ready' ? 'open' : 'retry'}
+              {d.status === 'ready' ? 'Open' : 'Retry'}
             </span>
           </motion.button>
         ))}

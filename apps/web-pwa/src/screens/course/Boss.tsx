@@ -168,7 +168,7 @@ export function Boss({
     if (!evaluated) {
       setBar({
         primary: {
-          label: 'check all three',
+          label: 'Check all three',
           disabled: answered < 3,
           onClick: () => {
             const value = Number(solveEntry.replace('−', '-'));
@@ -223,9 +223,9 @@ export function Boss({
       const pass = correct >= 2;
       setBar({
         primary: pass
-          ? { label: 'continue', onClick: () => onPass(correct) }
+          ? { label: 'Continue', onClick: () => onPass(correct) }
           : {
-              label: 'one more look',
+              label: 'One more look',
               onClick: () => {
                 setEvaluated(false);
                 setResults(null);
@@ -263,10 +263,10 @@ export function Boss({
       <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            <div style={whisper}>the boss · answered together, checked together</div>
+            <div style={whisper}>The boss · answered together, checked together</div>
             <ComboMeter hue={HUE} />
           </div>
-          <div style={{ ...cardTitle, marginTop: 8 }}>three questions, one scale</div>
+          <div style={{ ...cardTitle, marginTop: 8 }}>Three questions, one scale</div>
         </div>
         <motion.div
           animate={{ y: [0, -5, 0] }}
@@ -437,9 +437,9 @@ export function Boss({
             >
               {passCount >= 2
                 ? passCount === 3
-                  ? 'all three. clean.'
-                  : 'two of three — that is a pass, earned.'
-                : 'close. the scale is still yours — take one more look.'}
+                  ? 'All three. Clean.'
+                  : 'Two of three — that is a pass, earned.'
+                : 'Close. The scale is still yours — take one more look.'}
             </motion.div>
           )}
         </div>

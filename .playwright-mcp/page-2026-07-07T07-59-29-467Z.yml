@@ -1,0 +1,24 @@
+- generic [ref=f20e2]:
+  - generic [ref=f20e3]:
+    - main [ref=f20e4]:
+      - generic [ref=f20e6]:
+        - img "an atom is almost entirely empty space. tap where nearly all of its mass is hiding." [ref=f20e13]
+        - generic [ref=f20e26]: an atom is almost entirely empty space. tap where nearly all of its mass is hiding.
+    - button "continue" [disabled] [ref=f20e29]:
+      - generic [ref=f20e30]: continue
+  - banner:
+    - img "Classess" [ref=f20e32]
+    - generic [ref=f20e33]:
+      - button "Did you know" [ref=f20e34] [cursor=pointer]:
+        - img [ref=f20e35]
+        - text: Did you know
+      - generic "day 3 of being a learner" [ref=f20e37]:
+        - img [ref=f20e39]
+        - text: "3"
+      - generic [ref=f20e42]: 420 xp
+      - generic [ref=f20e43]:
+        - img [ref=f20e44]
+        - button "You — level 4, profile and settings" [ref=f20e47] [cursor=pointer]:
+          - generic "Ace" [ref=f20e48]:
+            - img [ref=f20e50]
+        - generic [ref=f20e79]: "4"

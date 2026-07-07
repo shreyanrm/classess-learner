@@ -269,7 +269,7 @@ export function TrophyNote({ hue }: { hue: string }) {
       style={style}
     >
       <Trophy hue={hue} />
-      boss cleared
+      Boss cleared
     </motion.span>
   );
 }
@@ -388,7 +388,7 @@ export function LevelUpMoment({ level, reduced }: { level: number; reduced: bool
           transition={{ delay: reduced ? 0 : 0.75, duration: 0.5, ease: [0.2, 0, 0, 1] }}
           style={{ ...whisper, color: hue }}
         >
-          new level
+          New level
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}

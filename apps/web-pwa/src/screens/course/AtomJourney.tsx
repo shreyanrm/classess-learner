@@ -80,12 +80,19 @@ export function AtomJourney({
 }) {
   const sdk = useSdk();
   const bus = useVidyaBus();
-  const { award } = useProgress();
+  const { award, completed, setReplay } = useProgress();
+
+  // Owner replay law: a completed course can be redone freely, but earns no xp. Captured once at
+  // mount (completeTopic flips `completed` at the greeting, so a live read would mislabel the very
+  // first run as a replay).
+  const replay = useRef(completed.has(topic.id)).current;
 
   const [card, setCard] = useState<CardId>(() => {
-    // Resume where they left off — a course remembers its place (cliffhanger-friendly).
+    // Resume where they left off — a course remembers its place (cliffhanger-friendly). A completed
+    // course never resumes a stale end state: a replay always begins at the first card.
     const saved = readCoursePos(topic.id);
     if (
+      !replay &&
       typeof saved === 'string' &&
       saved !== 'arrival' &&
       saved !== 'greeting' &&
@@ -115,18 +122,18 @@ export function AtomJourney({
     const lines: Partial<Record<CardId, [text: string, gate: boolean]>> = {
       arrival: [`${name}. one idea — a scale that cannot lie, and a boss at the end.`, true],
       scale: [
-        'here is a scale that cannot lie. whatever you do to one side, do to the other, and it stays balanced.',
+        'Here is a scale that cannot lie. Whatever you do to one side, do to the other, and it stays balanced.',
         true,
       ],
-      whatif: ['now play. change a number, and watch the whole equation answer back.', true],
+      whatif: ['Now play. Change a number, and watch the whole equation answer back.', true],
       bossdoor: [
         'the boss. three questions — everything you just did, once more with weight. two of three closes the topic.',
         true,
       ],
-      boss: ['take your time. solve it, fill in the missing step, and spot the error.', false],
-      greeting: ['you did it. you can move a whole equation now, and keep it true.', false],
-      tease: ['one more thing before you go — a small mystery.', false],
-      mystery: ['here is the twist that makes it all click.', false],
+      boss: ['Take your time. Solve it, fill in the missing step, and spot the error.', false],
+      greeting: ['You did it. You can move a whole equation now, and keep it true.', false],
+      tease: ['One more thing before you go — a small mystery.', false],
+      mystery: ['Here is the twist that makes it all click.', false],
     };
     const entry = lines[card];
     if (entry) announceCard(`atom-${topic.id}-${card}`, entry[0], entry[1]);
@@ -137,6 +144,13 @@ export function AtomJourney({
   useEffect(() => {
     if (resumedRef.current) onResume?.();
   }, []);
+
+  // hold the store's replay guard open for as long as this completed course is on screen — every
+  // award and completion inside then no-ops (no xp, no bloom, no level math).
+  useEffect(() => {
+    setReplay(replay);
+    return () => setReplay(false);
+  }, [setReplay, replay]);
 
   // arrival: the entered event, with the band the evidence plane currently holds
   useEffect(() => {
@@ -243,9 +257,9 @@ export function AtomJourney({
   // static cards set their own bar here
   useEffect(() => {
     if (card === 'arrival') {
-      setBar({ primary: { label: 'begin', onClick: () => go('scale') } });
+      setBar({ primary: { label: 'Begin', onClick: () => go('scale') } });
     } else if (card === 'bossdoor') {
-      setBar({ primary: { label: 'step in', onClick: () => go('boss') } });
+      setBar({ primary: { label: 'Step in', onClick: () => go('boss') } });
     }
   }, [card, setBar, go]);
 
@@ -304,10 +318,11 @@ export function AtomJourney({
             setSub={setSub}
             onAttempt={onAttempt}
             onDone={toBossdoor}
+            replay={replay}
           />
         ) : (
           <CardBody>
-            <div style={{ ...whisper, textAlign: 'center' }}>fetching your three…</div>
+            <div style={{ ...whisper, textAlign: 'center' }}>Fetching your three…</div>
           </CardBody>
         ))}
 
@@ -397,6 +412,7 @@ export function AtomJourney({
           bossCorrect={bossCorrect}
           bossTotal={bossItems.length}
           itemsTotal={practiceItems.length + bossItems.length}
+          replay={replay}
         />
       )}
 

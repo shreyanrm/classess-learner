@@ -18,6 +18,7 @@ import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState }
 import { topicById } from '../../data/catalog';
 import type { Topic } from '../../data/model';
 import { DiagramView, svgIsClean } from '../../engines/DiagramView';
+import { Discovery, type DiscoverySpec, parseDiscoverySpec } from '../../engines/Discovery';
 import { MotionPlayer, type MotionScene, parseMotionScene } from '../../engines/MotionPlayer';
 import { parseSimSpec, SimRunner, type SimSpec, simSpecFromGateway } from '../../engines/SimRunner';
 import { useProgress } from '../../store/progress';
@@ -53,6 +54,8 @@ interface GenCard {
   idea: string;
   interaction: { kind: ActKind; prompt: string };
   reveal: string;
+  /** When present, this card renders on the guided-discovery shell instead of the act/check flow. */
+  discovery?: DiscoverySpec;
 }
 
 interface GenItem {
@@ -124,6 +127,7 @@ function parseGenCourse(raw: unknown, fallbackTitle: string): GenCourse | null {
       idea,
       interaction: { kind: actKind as ActKind, prompt },
       reveal,
+      discovery: parseDiscoverySpec(c.discovery) ?? undefined,
     });
   });
   if (cards.length < 3) return null;
@@ -187,22 +191,22 @@ function seedCourse(title: string): GenCourse {
         type: 'mcq',
         prompt: 'What tells you a claimed answer is trustworthy?',
         options: [
-          'it survives being tested against the original problem',
-          'it looks like the worked example',
-          'it was the first answer you found',
+          'It survives being tested against the original problem',
+          'It looks like the worked example',
+          'It was the first answer you found',
         ],
-        answer: 'it survives being tested against the original problem',
+        answer: 'It survives being tested against the original problem',
       },
       {
         id: 'w2',
         type: 'mcq',
         prompt: 'Pushing a rule to its extreme shows you…',
         options: [
-          'where the ideal model stops matching reality',
-          'that the rule was never true',
-          'that extremes should be avoided',
+          'Where the ideal model stops matching reality',
+          'That the rule was never true',
+          'That extremes should be avoided',
         ],
-        answer: 'where the ideal model stops matching reality',
+        answer: 'Where the ideal model stops matching reality',
       },
       {
         id: 'w3',
@@ -217,11 +221,11 @@ function seedCourse(title: string): GenCourse {
         type: 'mcq',
         prompt: 'Which move is always legal while working a problem?',
         options: [
-          'one that keeps the answer set exactly the same',
-          'one that makes the numbers smaller',
-          'one that removes the hardest part',
+          'One that keeps the answer set exactly the same',
+          'One that makes the numbers smaller',
+          'One that removes the hardest part',
         ],
-        answer: 'one that keeps the answer set exactly the same',
+        answer: 'One that keeps the answer set exactly the same',
       },
       {
         id: 'b2',
@@ -230,7 +234,7 @@ function seedCourse(title: string): GenCourse {
         options: [
           'the answer does not survive the original problem',
           'the original problem must be wrong',
-          'checking only works on easy problems',
+          'Checking only works on easy problems',
         ],
         answer: 'the answer does not survive the original problem',
       },
@@ -426,7 +430,7 @@ function ItemBlock({
   return (
     <motion.div variants={rise} style={itemBlockStyle(state)}>
       <div style={whisper}>
-        {ordinals[index]} · {item.type === 'mcq' ? 'choose one' : 'fill the gap'}
+        {ordinals[index]} · {item.type === 'mcq' ? 'Choose one' : 'Fill the gap'}
       </div>
       <div
         style={{
@@ -460,7 +464,7 @@ function ItemBlock({
           disabled={disabled}
           onChange={(e) => onEntry(e.target.value)}
           aria-label={item.prompt}
-          placeholder="type your answer…"
+          placeholder="Type your answer…"
           style={{ ...inputStyle, maxWidth: 300 }}
         />
       )}
@@ -516,8 +520,8 @@ function ItemSet({
       steps: [
         `${eyebrow}: ${answered} of ${items.length} answered`,
         evaluated
-          ? `checked — ${results?.filter(Boolean).length ?? 0} of ${items.length} correct`
-          : 'not yet checked',
+          ? `Checked — ${results?.filter(Boolean).length ?? 0} of ${items.length} correct`
+          : 'Not yet checked',
       ],
       lastEditedAt: new Date().toISOString(),
     });
@@ -528,7 +532,7 @@ function ItemSet({
     if (!evaluated) {
       setBar({
         primary: {
-          label: 'check',
+          label: 'Check',
           disabled: answered < items.length,
           onClick: () => {
             const r = items.map((item, i) => answerIsCorrect(item, entries[i] ?? ''));
@@ -563,9 +567,9 @@ function ItemSet({
       setBar({
         primary:
           correct >= passNeeded
-            ? { label: 'continue', onClick: () => onDone(correct) }
+            ? { label: 'Continue', onClick: () => onDone(correct) }
             : {
-                label: 'one more look',
+                label: 'One more look',
                 onClick: () => {
                   setResults(null);
                   startedAt.current = Date.now();
@@ -636,10 +640,10 @@ function ItemSet({
               style={{ textAlign: 'center', color: 'var(--clss-ink-700)', fontSize: '0.95rem' }}
             >
               {correct === items.length
-                ? 'all of them. clean.'
+                ? 'All of them. Clean.'
                 : correct >= passNeeded
                   ? `${correct} of ${items.length} — that is a pass, earned.`
-                  : 'close. take one more look — the answers are still yours to find.'}
+                  : 'Close. Take one more look — the answers are still yours to find.'}
             </motion.div>
           )}
         </AnimatePresence>
@@ -684,7 +688,7 @@ function GenCardView({
       surface = (
         <Shimmer
           lines={3}
-          note="she is composing this piece just for you — it will land here on its own"
+          note="She is composing this piece just for you — it will land here on its own"
         />
       );
     }
@@ -701,7 +705,7 @@ function GenCardView({
       >
         <motion.div variants={rise} style={whisper}>
           {card.kind === 'sim'
-            ? 'drag it — feel the law move'
+            ? 'Drag it — feel the law move'
             : card.kind === 'diagram'
               ? 'the picture'
               : 'the idea'}
@@ -778,8 +782,8 @@ function InkScreen({
         {course
           ? course.seeded
             ? 'a working course, honestly floored'
-            : 'written and verified'
-          : 'she is composing your course'}
+            : 'Written and verified'
+          : 'She is composing your course'}
       </div>
       <div style={cardTitle}>{title.toLowerCase()}</div>
       {!outline && (
@@ -812,7 +816,7 @@ function InkScreen({
             {course?.seeded
               ? 'the fully generated course is still in verification — this working path is live now and follows the same grammar.'
               : settled
-                ? 'composed and checked, line by line. it starts on the next card.'
+                ? 'Composed and checked, line by line. It starts on the next card.'
                 : ''}
           </div>
         </motion.div>
@@ -924,7 +928,7 @@ function VideoBeat({
   const video = useVideoScene(title, courseId);
   useEffect(() => {
     setBar({
-      primary: { label: 'continue', disabled: video.status === 'pending', onClick: onDone },
+      primary: { label: 'Continue', disabled: video.status === 'pending', onClick: onDone },
     });
   }, [setBar, video.status, onDone]);
   return (
@@ -949,7 +953,7 @@ function VideoBeat({
         {video.status === 'pending' && (
           <Shimmer
             lines={4}
-            note="she is animating this one by hand — it will land here on its own"
+            note="She is animating this one by hand — it will land here on its own"
           />
         )}
         {video.status === 'failed' && (
@@ -984,7 +988,11 @@ export function Composing({
 }) {
   const sdk = useSdk();
   const { setMood } = useVidyaChat();
-  const { award } = useProgress();
+  const { award, completed, setReplay } = useProgress();
+
+  // Owner replay law: a completed course replays freely but earns no xp. Captured once at mount —
+  // completeTopic flips `completed` at the greeting, so a live read would mislabel a first run.
+  const replay = useRef(completed.has(topicId)).current;
 
   const nodeUuid = useMemo(() => topicNodeUuid(topicId), [topicId]);
   const hue = hueForTopic(topicId);
@@ -1023,6 +1031,13 @@ export function Composing({
       { ontologyNodeId: nodeUuid },
     );
   }, [sdk, nodeUuid]);
+
+  // hold the store's replay guard open while a completed course is on screen — every award and
+  // completion inside no-ops (no xp, no bloom, no level math); events + evidence still record.
+  useEffect(() => {
+    setReplay(replay);
+    return () => setReplay(false);
+  }, [setReplay, replay]);
 
   // ask the engines for the real course; refusal anywhere floors to the seed, never an error
   // biome-ignore lint/correctness/useExhaustiveDependencies: compose runs once on mount; onResume is a stable callback
@@ -1069,9 +1084,10 @@ export function Composing({
       setSettled(true);
       setMood('idle');
       // resume where they left off — a course never restarts (mission 1). The stored value is a
-      // card index; restore only into content/workbook/boss, never the finished greeting.
+      // card index; restore only into content/workbook/boss, never the finished greeting. A
+      // completed course never resumes a stale end state: a replay always begins at card 0.
       const saved = readCoursePos(topicId);
-      if (typeof saved === 'number' && saved >= 1 && saved <= built.cards.length + 1) {
+      if (!replay && typeof saved === 'number' && saved >= 1 && saved <= built.cards.length + 1) {
         setIdx(saved);
         setEntered(true);
         onResume?.();
@@ -1132,7 +1148,7 @@ export function Composing({
     if (entered) return;
     setBar({
       primary: {
-        label: course?.seeded ? 'start the working course' : 'start the course',
+        label: course?.seeded ? 'Start the working course' : 'Start the course',
         disabled: !settled,
         onClick: () => setEntered(true),
       },
@@ -1142,11 +1158,12 @@ export function Composing({
   // content cards: act → check (reveal + XP) → continue
   const card = course && idx < stops ? course.cards[idx] : null;
   useEffect(() => {
-    if (!entered || !card) return;
+    // a discovery card runs on the guided-discovery shell, which owns its own action bar
+    if (!entered || !card || card.discovery) return;
     if (!revealed) {
       setBar({
         primary: {
-          label: 'check',
+          label: 'Check',
           onClick: () => {
             setRevealed(true);
             award('bonus', { amount: 15, onceKey: `gen-${topicId}-${card.id}`, hue });
@@ -1158,7 +1175,7 @@ export function Composing({
     } else {
       setBar({
         primary: {
-          label: 'continue',
+          label: 'Continue',
           onClick: () => {
             setRevealed(false);
             setIdx((i) => i + 1);
@@ -1186,6 +1203,7 @@ export function Composing({
           enteredAt={enteredAt.current}
           setBar={setBar}
           onContinue={onExit}
+          replay={replay}
         />
       </Deck>
     );
@@ -1211,8 +1229,8 @@ export function Composing({
           items={course.workbook}
           nodeId={nodeUuid}
           courseId={course.courseId}
-          eyebrow="the workbook · three quick ones"
-          heading="hold what you just built"
+          eyebrow="The workbook · three quick ones"
+          heading="Hold what you just built"
           hue={hue}
           passNeeded={0}
           setBar={setBar}
@@ -1231,8 +1249,8 @@ export function Composing({
           items={course.boss}
           nodeId={nodeUuid}
           courseId={course.courseId}
-          eyebrow="the boss · answered together, checked together"
-          heading="prove it is yours"
+          eyebrow="The boss · answered together, checked together"
+          heading="Prove it is yours"
           hue={hue}
           passNeeded={2}
           setBar={setBar}
@@ -1240,6 +1258,14 @@ export function Composing({
           awardCorrect={awardNothing}
           onDone={bossDone}
         />
+      </Deck>
+    );
+  }
+
+  if (card?.discovery) {
+    return (
+      <Deck id={`gen-discovery-${idx}`}>
+        <Discovery spec={card.discovery} hue={hue} setBar={setBar} onDone={advance} />
       </Deck>
     );
   }

@@ -17,6 +17,8 @@ import {
 } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Discovery, DISCOVERY_DEMO } from './engines/Discovery';
+import { ActionBar, type BarState } from './screens/course/shared';
 import { ChatScreen } from './screens/ChatScreen';
 import { Course } from './screens/Course';
 import { ConceptA } from './screens/concepts/ConceptA';
@@ -137,8 +139,29 @@ const screenVariants = {
           : { opacity: 0, transition: { duration: 0.12 } },
 } as const;
 
+// TEMP demo hatch (#discovery-demo) — proves the guided-discovery shell live; removed after capture.
+function DiscoveryDemoHatch() {
+  const [bar, setBar] = DemoBarState();
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      <main
+        style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}
+      >
+        <Discovery spec={DISCOVERY_DEMO} hue="#FF5A1F" setBar={setBar} onDone={() => {}} />
+      </main>
+      <ActionBar bar={bar} />
+    </div>
+  );
+}
+function DemoBarState() {
+  return useState<BarState | null>(null);
+}
+
 function Screen() {
   const { route, depth } = useRouter();
+  if (typeof window !== 'undefined' && window.location.hash === '#discovery-demo') {
+    return <DiscoveryDemoHatch />;
+  }
   const key = JSON.stringify(route);
   const prevRef = useRef<{ name: string; depth: number } | null>(null);
   const dir = classifyTransition(prevRef.current, route.name, depth);

@@ -1,0 +1,52 @@
+- generic [ref=f19e2]:
+  - generic [ref=f19e3309]:
+    - banner [ref=f19e3310]:
+      - button "Close course" [ref=f19e3311] [cursor=pointer]:
+        - img [ref=f19e3312]
+      - generic [ref=f19e3336]:
+        - button "Replay Vidya" [ref=f19e3337] [cursor=pointer]:
+          - img [ref=f19e3338]
+        - button "Mute Vidya" [ref=f19e3341] [cursor=pointer]:
+          - img [ref=f19e3342]
+    - main [ref=f19e3346]:
+      - generic [ref=f19e3348]:
+        - generic [ref=f19e3349]:
+          - generic:
+            - img
+          - generic [ref=f19e3350]:
+            - img
+          - img [ref=f19e3352]
+        - generic [ref=f19e3359]: written and verified
+        - generic [ref=f19e3360]: refraction of light
+        - generic [ref=f19e3361]:
+          - generic [ref=f19e3362]: 1the bent straw
+          - generic [ref=f19e3363]: 2crossing the boundary
+          - generic [ref=f19e3364]: 3fast to slow, and back
+          - generic [ref=f19e3365]: 4naming it
+          - generic [ref=f19e3366]: 5when it does not bend
+          - generic [ref=f19e3367]: 6the workbook
+          - generic [ref=f19e3368]: 7the boss
+          - generic [ref=f19e3369]: composed and checked, line by line. it starts on the next card.
+    - button "start the course" [ref=f19e3372] [cursor=pointer]:
+      - generic [ref=f19e3373]: start the course
+  - banner:
+    - img "Classess" [ref=f19e221]
+    - generic [ref=f19e222]:
+      - button "Did you know" [ref=f19e223] [cursor=pointer]:
+        - img [ref=f19e224]
+        - text: Did you know
+      - generic "day 12 of being a learner" [ref=f19e226]:
+        - img [ref=f19e228]
+        - text: "12"
+      - generic [ref=f19e231]: 590 xp
+      - generic [ref=f19e232]:
+        - img [ref=f19e233]
+        - button "You — level 5, profile and settings" [ref=f19e236] [cursor=pointer]:
+          - generic "fox" [ref=f19e237]:
+            - img [ref=f19e239]
+        - generic [ref=f19e254]: "5"
+  - generic [ref=f19e2382]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f19e2383] [cursor=pointer]:
+      - img [ref=f19e2387]

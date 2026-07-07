@@ -226,7 +226,7 @@ export function ChatScreen() {
                 padding: '18px 0 6px',
               }}
             >
-              where we began
+              Where we began
             </div>
           )}
           {/* her words sit on the page itself — the outline belongs to the learner's side only */}
@@ -298,7 +298,7 @@ export function ChatScreen() {
             >
               {q.text}
               <span style={{ display: 'block', fontSize: fluidType.small, opacity: 0.8 }}>
-                sending when you're back…
+                Sending when you're back…
               </span>
             </div>
           ))}
@@ -409,7 +409,7 @@ export function ChatScreen() {
             fontSize: fluidType.small,
           }}
         >
-          voice arrives with a key
+          Voice arrives with a key
         </div>
       )}
     </div>

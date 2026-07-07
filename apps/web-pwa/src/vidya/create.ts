@@ -92,7 +92,7 @@ export function seedFormulaCard(concept: string): FormulaCardSpec {
     title: concept.length > 1 ? concept : 'your revision card',
     formulas: METHOD_FLOOR,
     seeded: true,
-    note: "the method holds for anything — I'll pull this chapter's own formulas when we're online.",
+    note: "The method holds for anything — I'll pull this chapter's own formulas when we're online.",
   };
 }
 

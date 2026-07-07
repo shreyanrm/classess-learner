@@ -347,7 +347,7 @@ export function ReplayButton({ onReplay, size = 17 }: { onReplay: () => void; si
       type="button"
       onClick={onReplay}
       aria-label="Replay Vidya"
-      title="hear this again"
+      title="Hear this again"
       style={{
         border: 'none',
         background: 'transparent',

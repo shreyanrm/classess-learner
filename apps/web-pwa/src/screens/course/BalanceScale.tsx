@@ -249,7 +249,7 @@ export function BalanceScale({
   }, [revealed, onReveal]);
 
   useEffect(() => {
-    setBar({ primary: { label: 'continue', onClick: onDone, disabled: !revealed } });
+    setBar({ primary: { label: 'Continue', onClick: onDone, disabled: !revealed } });
   }, [setBar, onDone, revealed]);
 
   const leftOff = ['l1', 'l2', 'l3'].filter((id) => !leftOn.includes(id));
@@ -259,9 +259,9 @@ export function BalanceScale({
 
   return (
     <CardBody maxWidth={680}>
-      <div style={whisper}>guided discovery</div>
-      <div style={cardTitle}>get x alone</div>
-      <div style={lead}>take weights off the pans — the scale must end level.</div>
+      <div style={whisper}>Guided discovery</div>
+      <div style={cardTitle}>Get x alone</div>
+      <div style={lead}>Take weights off the pans — the scale must end level.</div>
 
       <Stage hue={HUE} tint={0.055} minHeight={340} style={{ padding: '20px 16px 12px' }}>
         {/* the equation, morphing at the reveal */}
@@ -451,7 +451,7 @@ export function BalanceScale({
             </AnimatePresence>
           </div>
           {(leftOff.length > 0 || rightOff.length > 0) && !revealed && (
-            <div style={{ ...whisper, textAlign: 'center' }}>off the scale — tap to put back</div>
+            <div style={{ ...whisper, textAlign: 'center' }}>Off the scale — tap to put back</div>
           )}
           <div style={{ display: 'flex', gap: 5, minHeight: 26 }}>
             <AnimatePresence>

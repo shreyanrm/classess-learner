@@ -224,7 +224,7 @@ export function seedSimSpec(concept: string): Record<string, unknown> {
     id: 'seed-line',
     title: concept,
     law: 'y = m·x + c',
-    caption: 'drag m, x and c — the line answers instantly',
+    caption: 'Drag m, x and c — the line answers instantly',
     params: [
       { id: 'm', label: 'm', min: -5, max: 5, initial: 2 },
       { id: 'x', label: 'x', min: -10, max: 10, initial: 3 },
@@ -236,7 +236,7 @@ export function seedSimSpec(concept: string): Record<string, unknown> {
         param: 'm',
         op: '==',
         value: 0,
-        note: 'at m = 0 the line goes flat — x stops mattering. that is what slope means.',
+        note: 'At m = 0 the line goes flat — x stops mattering. That is what slope means.',
       },
     ],
   };
@@ -283,22 +283,22 @@ export function seedFlashcards(concept: string): Record<string, unknown> {
     cards: [
       {
         front: `Meet ${concept}`,
-        hint: 'where it quietly shows up',
+        hint: 'Where it quietly shows up',
         back: 'The unknown is what we are hunting. Everything else is a clue.',
       },
       {
         front: 'Feel the rule',
-        hint: 'it behaves like a balance',
+        hint: 'It behaves like a balance',
         back: 'Whatever you do to one side, you do to the other.',
       },
       {
         front: 'Predict, then check',
-        hint: 'a claimed answer must survive',
+        hint: 'A claimed answer must survive',
         back: 'Substitute it back. If both sides agree, the answer stands.',
       },
       {
         front: 'Where it bends',
-        hint: 'every model has an edge',
+        hint: 'Every model has an edge',
         back: 'Knowing where the rule breaks is part of knowing the rule.',
       },
     ],

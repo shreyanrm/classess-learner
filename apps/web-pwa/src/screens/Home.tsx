@@ -212,7 +212,6 @@ export function Home() {
   // Just the date — it's obviously today, saying so is noise.
   const dateLine = now
     .toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
-    .toLowerCase()
     .replace(/,/g, '');
 
   const currentKind = stops[currentIndex]?.kind;
@@ -406,7 +405,7 @@ export function Home() {
         </motion.form>
         {voiceNote && (
           <div style={{ marginTop: 8, color: 'var(--clss-ink-500)', fontSize: fluidType.small }}>
-            voice arrives with a key
+            Voice arrives with a key
           </div>
         )}
 

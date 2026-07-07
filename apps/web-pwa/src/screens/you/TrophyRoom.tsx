@@ -118,7 +118,7 @@ export function TrophyRoom({
       form="shield"
       tier="gold"
       hue={XP_HUE}
-      title="a concept you master next"
+      title="A concept you master next"
       sub="finish any course"
     />,
   );

@@ -906,7 +906,7 @@ export function ConceptB() {
             delay={0.85}
             medallion={<SunMedallion />}
             title="Warm-up"
-            meta="fractions · done · 3 min"
+            meta="Fractions · done · 3 min"
             metaColor={ACID}
           />
 
@@ -936,7 +936,7 @@ export function ConceptB() {
               lineHeight: 1.1,
             }}
           >
-            something is hiding here
+            Something is hiding here
           </motion.div>
 
           <Board practice={practice} />

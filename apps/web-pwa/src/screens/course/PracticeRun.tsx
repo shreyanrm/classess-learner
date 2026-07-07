@@ -163,7 +163,7 @@ function Detonation({ item, theirs }: { item: PracticeItem; theirs: number }) {
           background: 'var(--clss-paper)',
         }}
       >
-        <div style={{ ...whisper, marginBottom: 6 }}>the honest move</div>
+        <div style={{ ...whisper, marginBottom: 6 }}>The honest move</div>
         <div style={{ fontSize: '1rem', color: 'var(--clss-ink-900)' }}>
           {move.text}
           {move.result ? ` → ${move.result}` : ''}
@@ -183,6 +183,7 @@ export function PracticeRun({
   setSub,
   onAttempt,
   onDone,
+  replay = false,
 }: {
   nodeId: string;
   items: PracticeItem[];
@@ -190,6 +191,8 @@ export function PracticeRun({
   setSub: (f: number) => void;
   onAttempt: () => void;
   onDone: () => void;
+  /** A replay of a completed course — the correct-answer +xp chip is suppressed (no xp is earned). */
+  replay?: boolean;
 }) {
   const sdk = useSdk();
   const bus = useVidyaBus();
@@ -465,20 +468,20 @@ export function PracticeRun({
     if (phase === 'answer') {
       const invalid = entry === '' || entry === '-' || !Number.isFinite(Number(entry));
       setBar({
-        primary: { label: 'check', onClick: () => checkRef.current(), disabled: invalid },
+        primary: { label: 'Check', onClick: () => checkRef.current(), disabled: invalid },
         secondary:
           hintLevel < maxHintDepth(mode)
-            ? { label: hintLevel === 0 ? 'hint' : 'another hint', onClick: giveHint }
+            ? { label: hintLevel === 0 ? 'Hint' : 'Another hint', onClick: giveHint }
             : undefined,
       });
     } else if (phase === 'correct') {
       setBar({
-        primary: { label: 'continue', onClick: advance },
-        secondary: { label: 'why?', onClick: () => setWhyOpen((o) => !o) },
+        primary: { label: 'Continue', onClick: advance },
+        secondary: { label: 'Why?', onClick: () => setWhyOpen((o) => !o) },
       });
     } else {
       setBar({
-        primary: { label: 'continue', onClick: advance, disabled: !detReady },
+        primary: { label: 'Continue', onClick: advance, disabled: !detReady },
         secondary:
           contest === 'idle' && detReady
             ? { label: 'I think I’m right', onClick: () => void doContest() }
@@ -529,7 +532,7 @@ export function PracticeRun({
         </div>
         <ComboMeter hue={HUE} />
       </div>
-      <div style={cardTitle}>solve for x</div>
+      <div style={cardTitle}>Solve for x</div>
 
       <div
         ref={equationRef}
@@ -577,7 +580,7 @@ export function PracticeRun({
                     color: 'var(--clss-ink-700)',
                   }}
                 >
-                  {contest === 'checking' ? 'asking the verifier to look again…' : contestNote}
+                  {contest === 'checking' ? 'Asking the verifier to look again…' : contestNote}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -622,9 +625,10 @@ export function PracticeRun({
               >
                 <span style={{ color: 'var(--clss-ink-500)', fontWeight: 500 }}>x =</span>
                 <span>{entry === '' ? ' ' : entry.replace('-', '−')}</span>
-                {/* the earned burst — small, hue-true, once — with the real +xp riding up beside it */}
+                {/* the earned burst — small, hue-true, once — with the real +xp riding up beside it.
+                    the +xp chip is suppressed on a replay: the combo still runs, but nothing is earned. */}
                 {phase === 'correct' && <ParticlePop hue={HUE} />}
-                {phase === 'correct' && <XpTick amount={XP_AWARDS.item} hue={HUE} />}
+                {phase === 'correct' && !replay && <XpTick amount={XP_AWARDS.item} hue={HUE} />}
               </motion.div>
 
               {phase === 'correct' && (

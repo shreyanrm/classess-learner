@@ -965,7 +965,7 @@ export function Thread({
           pointerEvents: 'none',
         }}
       >
-        something is hiding here
+        Something is hiding here
       </motion.div>
 
       {/* Vidya walks the thread — she sits beside the current stop */}

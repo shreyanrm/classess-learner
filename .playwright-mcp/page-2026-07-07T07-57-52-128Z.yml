@@ -1,0 +1,47 @@
+- generic [ref=f19e2]:
+  - generic [ref=f19e3309]:
+    - banner [ref=f19e3310]:
+      - button "Close course" [ref=f19e3311] [cursor=pointer]:
+        - img [ref=f19e3312]
+      - generic [ref=f19e3336]:
+        - button "Replay Vidya" [ref=f19e3337] [cursor=pointer]:
+          - img [ref=f19e3338]
+        - button "Mute Vidya" [ref=f19e3341] [cursor=pointer]:
+          - img [ref=f19e3342]
+    - main [ref=f19e3346]:
+      - generic [ref=f19e3376]:
+        - generic [ref=f19e3377]: the picture
+        - generic [ref=f19e3378]: the bent straw
+        - generic [ref=f19e3379]: A straw in a glass of water looks broken at the surface. Nothing touched it — only the light path changed as it crossed into water.
+        - figure [ref=f19e3390]:
+          - 'img "diagram: The bent straw" [ref=f19e3392]':
+            - img [ref=f19e3393]:
+              - generic [ref=f19e3399]: air
+              - generic [ref=f19e3400]: water
+              - generic [ref=f19e3401]: The Bent Straw
+              - generic [ref=f19e3402]: Light bends (refracts) — straw looks broken
+        - generic [ref=f19e3386]: Tap the exact spot on the straw where it appears to bend.
+        - generic [ref=f19e3403]: You tapped the water surface. Light bends there because it enters a new medium, and your eye traces it back to the wrong place.
+    - button "Continue" [ref=f19e3404] [cursor=pointer]:
+      - generic [ref=f19e3405]: Continue
+  - banner:
+    - img "Classess" [ref=f19e221]
+    - generic [ref=f19e222]:
+      - button "Did you know" [ref=f19e223] [cursor=pointer]:
+        - img [ref=f19e224]
+        - text: Did you know
+      - generic "day 12 of being a learner" [ref=f19e226]:
+        - img [ref=f19e228]
+        - text: "12"
+      - generic [ref=f19e3406]: 605 xp
+      - generic [ref=f19e232]:
+        - img [ref=f19e233]
+        - button "You — level 5, profile and settings" [ref=f19e236] [cursor=pointer]:
+          - generic "fox" [ref=f19e237]:
+            - img [ref=f19e239]
+        - generic [ref=f19e254]: "5"
+  - generic [ref=f19e2382]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f19e2383] [cursor=pointer]:
+      - img [ref=f19e2387]

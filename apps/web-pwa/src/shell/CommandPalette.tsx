@@ -556,7 +556,7 @@ export function CommandPalette() {
                     color: surface.inkFaint,
                   }}
                 >
-                  nothing here yet — try “algebra”, or just ask me
+                  Nothing here yet — try “algebra”, or just ask me
                 </div>
               )}
 
@@ -608,7 +608,7 @@ export function CommandPalette() {
                       <span
                         style={{ fontSize: fluidType.body, color: surface.ink, fontWeight: 450 }}
                       >
-                        ask Vidya
+                        Ask Vidya
                       </span>
                       <span
                         style={{
@@ -641,15 +641,15 @@ export function CommandPalette() {
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <Kbd>↑</Kbd>
                 <Kbd>↓</Kbd>
-                navigate
+                Navigate
               </span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <Kbd>↵</Kbd>
-                open
+                Open
               </span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <Kbd>esc</Kbd>
-                close
+                Close
               </span>
             </div>
           </motion.div>

@@ -151,15 +151,17 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
             {topic.name}
           </span>
           <span style={{ fontSize: '0.82rem', color: 'var(--clss-ink-500)', lineHeight: 1.5 }}>
-            {downloading
-              ? position > 1
-                ? `${position - 1} ahead in line — she composes one at a time`
-                : 'vidya is composing this for you — it will land on its own'
-              : ready
-                ? 'ready when you are — tap to dive in'
-                : slipped
-                  ? 'that one slipped away — tap to try again'
-                  : topic.blurb}
+            {mastered
+              ? 'you own this — walk it again anytime, just for the joy of it'
+              : downloading
+                ? position > 1
+                  ? `${position - 1} ahead in line — she composes one at a time`
+                  : 'vidya is composing this for you — it will land on its own'
+                : ready
+                  ? 'ready when you are — tap to dive in'
+                  : slipped
+                    ? 'that one slipped away — tap to try again'
+                    : topic.blurb}
           </span>
         </span>
 
@@ -193,7 +195,38 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
                 strokeLinejoin="round"
               />
             </svg>
-            mastered
+            {/* a playful replay affordance — a completed course is always walkable again (no xp) */}
+            {hover ? (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 12 12"
+                  role="presentation"
+                  aria-hidden
+                  style={{ display: 'block' }}
+                >
+                  <path
+                    d="M9.5 3.2 A4 4 0 1 0 10 6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.4}
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M9.7 1.4 L9.7 3.4 L7.7 3.4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.4}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                replay
+              </span>
+            ) : (
+              'mastered'
+            )}
           </span>
         ) : gated ? (
           <span

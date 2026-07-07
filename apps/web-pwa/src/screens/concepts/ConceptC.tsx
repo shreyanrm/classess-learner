@@ -529,11 +529,11 @@ export function ConceptC() {
               <IndexRow
                 no="01"
                 label="Learn"
-                note="your subjects, chapter by chapter"
+                note="Your subjects, chapter by chapter"
                 delay={0.8}
               />
-              <IndexRow no="02" label="Practice" note="sandbox and boss battles" delay={0.88} />
-              <IndexRow no="03" label="Progress" note="your knowledge twin" delay={0.96} />
+              <IndexRow no="02" label="Practice" note="Sandbox and boss battles" delay={0.88} />
+              <IndexRow no="03" label="Progress" note="Your knowledge twin" delay={0.96} />
             </div>
           </motion.div>
 

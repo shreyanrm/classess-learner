@@ -50,6 +50,34 @@ export function writeCoursePos(topicId: string, pos: string | number): void {
   }
 }
 
+// The stars a topic earned on its FIRST completion — a replay shows these, never a fresh tally
+// (owner replay law: the walk is real, but the reward was already banked).
+const STARS_KEY = 'clss-course-stars-v1';
+
+export function readCourseStars(topicId: string): 1 | 2 | 3 | undefined {
+  try {
+    const v = (JSON.parse(localStorage.getItem(STARS_KEY) ?? '{}') as Record<string, number>)[
+      topicId
+    ];
+    return v === 1 || v === 2 || v === 3 ? v : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function writeCourseStars(topicId: string, stars: number): void {
+  try {
+    const all = JSON.parse(localStorage.getItem(STARS_KEY) ?? '{}') as Record<string, number>;
+    // only ever record the original earn — a later replay must not overwrite it
+    if (all[topicId] === undefined) {
+      all[topicId] = stars;
+      localStorage.setItem(STARS_KEY, JSON.stringify(all));
+    }
+  } catch {
+    // storage unavailable — a replay falls back to the run's own stars
+  }
+}
+
 /** The one golden accent of the art system. */
 export const GOLD = '#FFC93C';
 

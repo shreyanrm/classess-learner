@@ -204,6 +204,12 @@ export interface ProgressStore {
   /** Award XP with a bloom. One-time reasons (account, invites, photo) only ever grant once. */
   award: (reason: XpReason, opts?: { amount?: number; onceKey?: string; hue?: string }) => number;
   completeTopic: (topicId: string, xp?: number) => void;
+  /**
+   * Owner law: a completed course can be redone freely, but a replay earns NO xp. While a
+   * completed course is open the player flips this on; every award/completion then no-ops
+   * silently — no grant, no bloom, no level math (events + mastery evidence still record).
+   */
+  setReplay: (active: boolean) => void;
   dismissBloom: (id: number) => void;
   /** Milestone trophies earned this session, awaiting their ceremony (the head shows first). */
   trophies: TrophyAward[];
@@ -230,6 +236,12 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   // The already-celebrated milestone set — null until the first settle adopts (or silently backfills)
   // it, so shipping this never dumps a pile of ceremonies for milestones passed long ago.
   const celebrated = useRef<Set<string> | null>(null);
+  // True while a *completed* course is open (a replay). A ref so toggling it never re-renders and
+  // the award closures read it live — no XP is earned twice for the same course.
+  const replaying = useRef(false);
+  const setReplay = useCallback((active: boolean) => {
+    replaying.current = active;
+  }, []);
 
   // The ceremony trigger: whenever xp or the streak lands on a new milestone tier, queue its trophy.
   // First-EVER run silently adopts the current earned set (never a retroactive pile on ship). Every
@@ -303,6 +315,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const award = useCallback(
     (reason: XpReason, opts?: { amount?: number; onceKey?: string; hue?: string }) => {
       const amount = opts?.amount ?? XP_AWARDS[reason];
+      if (replaying.current) return 0; // replay earns nothing — no grant, no bloom, no level math
       let granted = 0;
       let fromXp = 0;
       setState((prev) => {
@@ -328,6 +341,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
   const completeTopic = useCallback(
     (topicId: string, xp?: number) => {
+      if (replaying.current) return; // re-completing a course grants nothing (owner replay law)
       let fromXp = 0;
       let granted = false;
       setState((prev) => {
@@ -409,6 +423,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       blooms,
       award,
       completeTopic,
+      setReplay,
       dismissBloom,
       trophies,
       dismissTrophy,
@@ -418,6 +433,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       blooms,
       award,
       completeTopic,
+      setReplay,
       dismissBloom,
       reportProgress,
       repairStreak,

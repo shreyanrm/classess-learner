@@ -378,7 +378,7 @@ export function Ceremony({ award, onDismiss }: { award: TrophyAward; onDismiss: 
               color: 'rgba(255,255,255,0.66)',
             }}
           >
-            visit your shelf
+            Visit your shelf
           </motion.div>
         )}
       </AnimatePresence>

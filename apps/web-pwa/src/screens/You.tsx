@@ -396,7 +396,7 @@ function InviteCard({
       <div style={{ ...bodyLine, flex: 1 }}>{line}</div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 32 }}>
         <MagneticButton size="sm" variant="quiet" onClick={onCopy}>
-          copy link
+          Copy link
         </MagneticButton>
         <AnimatePresence>
           {copied && (
@@ -406,7 +406,7 @@ function InviteCard({
               exit={{ opacity: 0 }}
               style={{ fontSize: '0.8rem', color: 'var(--clss-ink-500)' }}
             >
-              link copied
+              Link copied
             </motion.span>
           )}
         </AnimatePresence>
@@ -569,7 +569,7 @@ function AvatarPicker({
             style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
           >
             <motion.div variants={tilePop} style={whisper}>
-              pick your look
+              Pick your look
             </motion.div>
             {(
               [
@@ -603,14 +603,14 @@ function AvatarPicker({
                   ...(choice?.kind === 'photo' && hasPhoto ? ring : undefined),
                 }}
               >
-                upload a picture
+                Upload a picture
               </button>
               <button
                 type="button"
                 onClick={onInitial}
                 style={{ ...quietTile, ...(choice?.kind === 'initial' ? ring : undefined) }}
               >
-                use my initial
+                Use my initial
               </button>
             </motion.div>
           </motion.div>
@@ -1124,7 +1124,7 @@ export function You() {
 
         {/* ---- the ledger ---- */}
         <motion.div variants={rise} ref={ledgerRef}>
-          <Section label="the ledger">
+          <Section label="The ledger">
             {/* the earned record sits on its own ultramarine-tinted stage */}
             <div
               style={{
@@ -1303,7 +1303,7 @@ export function You() {
                           value={repairReason}
                           onChange={(e) => setRepairReason(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && doRepair()}
-                          placeholder="what got in the way?"
+                          placeholder="What got in the way?"
                           aria-label="the reason for the missed days"
                           style={{
                             flex: 1,
@@ -1324,7 +1324,7 @@ export function You() {
                           onClick={doRepair}
                           disabled={!repairReason.trim()}
                         >
-                          repair my streak
+                          Repair my streak
                         </MagneticButton>
                       </div>
                     )}
@@ -1339,7 +1339,7 @@ export function You() {
 
         {/* ---- invite ---- */}
         <motion.div variants={rise}>
-          <Section label="learning is better shared">
+          <Section label="Learning is better shared">
             {/* the cast gathers — the world that learns beside you */}
             <Scene
               height={150}
@@ -1363,14 +1363,14 @@ export function You() {
               }}
             >
               <InviteCard
-                title="invite a friend"
-                line="when your friend finishes their first topic, you both unlock a bonus lesson."
+                title="Invite a friend"
+                line="When your friend finishes their first topic, you both unlock a bonus lesson."
                 copied={copied === 'friend'}
                 onCopy={() => copyInvite('friend')}
               />
               <InviteCard
-                title="invite a parent"
-                line="give them a window into your learning — the weekly note shows them what you can now do."
+                title="Invite a parent"
+                line="Give them a window into your learning — the weekly note shows them what you can now do."
                 copied={copied === 'parent'}
                 onCopy={() => copyInvite('parent')}
               />
@@ -1382,7 +1382,7 @@ export function You() {
 
         {/* ---- the trophy room ---- */}
         <motion.div variants={rise} ref={shelfRef}>
-          <Section label="your trophy room">
+          <Section label="Your trophy room">
             <TrophyRoom mastered={mastered} xp={xp} streakDays={streakDays} />
           </Section>
         </motion.div>
@@ -1391,7 +1391,7 @@ export function You() {
 
         {/* ---- the note home ---- */}
         <motion.div variants={rise} ref={noteRef}>
-          <Section label="the note home">
+          <Section label="The note home">
             <Card style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}
@@ -1403,7 +1403,7 @@ export function You() {
                     letterSpacing: '0.06em',
                   }}
                 >
-                  the weekly note
+                  The weekly note
                 </span>
                 <span style={whisper}>preview</span>
               </div>
@@ -1426,7 +1426,7 @@ export function You() {
                 {strengthLine(profile.name, mastered, xp)}
               </div>
               <div style={{ ...whisper, marginTop: 6 }}>
-                arrives on WhatsApp, in your language — pride first, always
+                Arrives on WhatsApp, in your language — pride first, always
               </div>
             </Card>
 
@@ -1442,7 +1442,7 @@ export function You() {
                     value={phoneDraft}
                     onChange={(e) => setPhoneDraft(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && linkParent()}
-                    placeholder="a parent's phone number"
+                    placeholder="A parent's phone number"
                     aria-label="a parent's phone number"
                     style={{
                       flex: 1,
@@ -1473,7 +1473,7 @@ export function You() {
 
         {/* ---- the plan — the one card allowed a permanent quiet glow ---- */}
         <motion.div variants={rise} ref={planRef}>
-          <Section label="your plan">
+          <Section label="Your plan">
             <style>{PLAN_JEWEL_CSS}</style>
             <div className="plan-jewel">
               <Card
@@ -1522,7 +1522,7 @@ export function You() {
 
         {/* ---- what Vidya knows about you ---- */}
         <motion.div variants={rise} ref={mindRef}>
-          <Section label="what Vidya knows about you">
+          <Section label="What Vidya knows about you">
             <Card style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 12 }}>
               {knownItems.length === 0 && observations.length === 0 ? (
                 <div style={bodyLine}>
@@ -1613,11 +1613,11 @@ export function You() {
 
         {/* ---- settings ---- */}
         <motion.div variants={rise}>
-          <Section label="settings">
+          <Section label="Settings">
             <div>
               <DialRow
                 title="Vidya's voice"
-                line="she speaks her replies out loud"
+                line="She speaks her replies out loud"
                 on={voice}
                 onChange={(v) => {
                   setVoice(v);
@@ -1626,8 +1626,8 @@ export function You() {
               />
               <Hairline />
               <DialRow
-                title="the ignite sound"
-                line="a sub-second note when something is genuinely mastered"
+                title="The ignite sound"
+                line="A sub-second note when something is genuinely mastered"
                 on={sound}
                 onChange={(v) => {
                   setSound(v);
@@ -1636,8 +1636,8 @@ export function You() {
               />
               <Hairline />
               <DialRow
-                title="adventure roadmap"
-                line="see each subject's chapters as a journey through biomes, not a list"
+                title="Adventure roadmap"
+                line="See each subject's chapters as a journey through biomes, not a list"
                 on={adventure}
                 onChange={(v) => {
                   setAdventure(v);
@@ -1658,15 +1658,15 @@ export function You() {
               {/* durable accessibility — larger text and high contrast apply for real and ride her
                   dossier so she honors them every turn */}
               <DialRow
-                title="larger text"
-                line="bump the type size across the whole app"
+                title="Larger text"
+                line="Bump the type size across the whole app"
                 on={Boolean(profile.largeText)}
                 onChange={(v) => patchProfile({ largeText: v })}
               />
               <Hairline />
               <DialRow
-                title="high contrast"
-                line="stronger text and lines, easier to read"
+                title="High contrast"
+                line="Stronger text and lines, easier to read"
                 on={Boolean(profile.highContrast)}
                 onChange={(v) => patchProfile({ highContrast: v })}
               />

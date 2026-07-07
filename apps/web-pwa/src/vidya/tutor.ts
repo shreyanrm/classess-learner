@@ -30,7 +30,7 @@ export type AssistMode = (typeof LADDER)[number];
 const WHISPERS: Record<AssistMode, string> = {
   learn: 'learn mode · I show, you watch',
   coach: 'coach mode · I nudge, you move',
-  hint: 'hint mode · one clue at a time',
+  hint: 'Hint mode · one clue at a time',
   work_with_me: 'work-with-me mode · we take turns',
   check_my_work: 'check-my-work mode · you finish, I verify',
   challenge: 'challenge mode · almost all yours',

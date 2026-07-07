@@ -319,7 +319,7 @@ export function ProgressScreen() {
                 className="twin-ask-input"
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
-                placeholder="ask your twin: what am I weakest at…"
+                placeholder="Ask your twin: what am I weakest at…"
                 aria-label="Ask your twin"
                 style={{
                   flex: 1,

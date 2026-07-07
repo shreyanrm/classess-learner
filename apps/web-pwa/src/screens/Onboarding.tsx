@@ -499,7 +499,7 @@ export function Onboarding() {
                     onFocus={() => setMood('listening')}
                     onBlur={() => setMood('idle')}
                     onKeyDown={(e) => e.key === 'Enter' && submitName()}
-                    placeholder="type your name"
+                    placeholder="Type your name"
                     aria-label="your name"
                     style={{ ...fieldStyle, textAlign: 'center' }}
                   />
@@ -550,7 +550,7 @@ export function Onboarding() {
                     onFocus={() => setMood('listening')}
                     onBlur={() => setMood('idle')}
                     onKeyDown={(e) => e.key === 'Enter' && submitBirthdate()}
-                    placeholder="a year, or your birthday"
+                    placeholder="A year, or your birthday"
                     aria-label="when you were born"
                     style={{ ...fieldStyle, textAlign: 'center' }}
                   />
@@ -701,7 +701,7 @@ export function Onboarding() {
                         onFocus={() => setMood('listening')}
                         onBlur={() => setMood('idle')}
                         onKeyDown={(e) => e.key === 'Enter' && !authBusy && void sendCode()}
-                        placeholder="your phone number"
+                        placeholder="Your phone number"
                         aria-label="your phone number"
                         style={fieldStyle}
                       />

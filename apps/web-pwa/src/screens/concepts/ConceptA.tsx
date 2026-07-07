@@ -945,13 +945,13 @@ export function ConceptA() {
           <div style={{ display: 'flex', gap: 16, marginTop: 20 }}>
             <Door
               title="Learn"
-              line="your subjects, chapter by chapter"
+              line="Your subjects, chapter by chapter"
               delay={0.55}
               art={LearnGlyph}
             />
             <Door
               title="Practice"
-              line="sandbox, retrieval, boss battles"
+              line="Sandbox, retrieval, boss battles"
               delay={0.62}
               art={PracticeGlyph}
             />

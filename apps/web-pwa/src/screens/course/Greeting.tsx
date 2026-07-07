@@ -29,7 +29,16 @@ import {
 import { hueForTopic } from '../../ui/hues';
 import { useVidyaChat } from '../../vidya/chat';
 import type { BarState } from './shared';
-import { CardBody, GOLD, lead, rgba, Stage, whisper } from './shared';
+import {
+  CardBody,
+  GOLD,
+  lead,
+  readCourseStars,
+  rgba,
+  Stage,
+  whisper,
+  writeCourseStars,
+} from './shared';
 
 /** Floating sparks — a handful of hue and gold motes rising once, then gone. */
 function Sparks({ hue }: { hue: string }) {
@@ -77,6 +86,7 @@ export function Greeting({
   bossCorrect,
   bossTotal,
   itemsTotal = 6,
+  replay = false,
 }: {
   topic: Topic;
   nodeId: string;
@@ -91,6 +101,8 @@ export function Greeting({
   bossTotal?: number;
   /** Baseline count of graded items in the run, so extra attempts read as stumbles. */
   itemsTotal?: number;
+  /** A replay of an already-completed course: warm, but no xp tally / re-award theatrics. */
+  replay?: boolean;
 }) {
   const sdk = useSdk();
   const bus = useVidyaBus();
@@ -107,7 +119,9 @@ export function Greeting({
   const levelAfter = levelInfo(startXp.current + gained).level;
   const leveledUp = levelAfter > levelBefore;
 
-  const stars = performanceStars({ bossCorrect, bossTotal, attemptsTotal, itemsTotal });
+  // A replay shows the ORIGINAL earned stars (banked at first completion), never a fresh grade.
+  const runStars = performanceStars({ bossCorrect, bossTotal, attemptsTotal, itemsTotal });
+  const stars = replay ? (readCourseStars(topic.id) ?? runStars) : runStars;
 
   // victory first; if the earn crossed a level, a distinct level beat follows before moving on
   const [phase, setPhase] = useState<'victory' | 'levelup'>('victory');
@@ -117,6 +131,8 @@ export function Greeting({
     fired.current = true;
 
     completeTopic(topic.id, topic.xp);
+    // bank the stars once, on the genuine first completion — every later replay reads these back
+    if (!replay) writeCourseStars(topic.id, runStars);
     setMood('celebrate');
     const settle = window.setTimeout(() => setMood('idle'), 1600);
 
@@ -148,16 +164,16 @@ export function Greeting({
 
     bus.publishCanvas(undefined);
     return () => window.clearTimeout(settle);
-  }, [completeTopic, setMood, sdk, bus, topic, nodeId, attemptsTotal, enteredAt]);
+  }, [completeTopic, setMood, sdk, bus, topic, nodeId, attemptsTotal, enteredAt, replay, runStars]);
 
   // victory bar advances to the level beat when the earn crossed a threshold; otherwise onward.
   useEffect(() => {
     if (phase === 'levelup') {
-      setBar({ primary: { label: 'continue', onClick: onContinue } });
+      setBar({ primary: { label: 'Continue', onClick: onContinue } });
     } else {
       setBar({
         primary: {
-          label: 'continue',
+          label: 'Continue',
           onClick: leveledUp ? () => setPhase('levelup') : onContinue,
         },
       });
@@ -172,21 +188,24 @@ export function Greeting({
 
   return (
     <CardBody maxWidth={560}>
-      {/* the full-screen ignite — one hue wave sweeping the whole viewport, once, sub-second */}
-      <motion.div
-        aria-hidden
-        initial={{ x: '-45%' }}
-        animate={{ x: '145%', opacity: [1, 1, 0] }}
-        transition={{ duration: 0.9, ease: [0.2, 0, 0.2, 1], delay: 0.25 }}
-        style={{
-          position: 'fixed',
-          inset: 0,
-          width: '55vw',
-          background: `linear-gradient(100deg, transparent 0%, ${rgba(hue, 0.14)} 42%, ${rgba(hue, 0.26)} 50%, ${rgba(hue, 0.14)} 58%, transparent 100%)`,
-          pointerEvents: 'none',
-          zIndex: 30,
-        }}
-      />
+      {/* the full-screen ignite — one hue wave sweeping the whole viewport, once, sub-second.
+          skipped on a replay: the map already caught light the first time. */}
+      {!replay && (
+        <motion.div
+          aria-hidden
+          initial={{ x: '-45%' }}
+          animate={{ x: '145%', opacity: [1, 1, 0] }}
+          transition={{ duration: 0.9, ease: [0.2, 0, 0.2, 1], delay: 0.25 }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            width: '55vw',
+            background: `linear-gradient(100deg, transparent 0%, ${rgba(hue, 0.14)} 42%, ${rgba(hue, 0.26)} 50%, ${rgba(hue, 0.14)} 58%, transparent 100%)`,
+            pointerEvents: 'none',
+            zIndex: 30,
+          }}
+        />
+      )}
       {/* the earned moment gets its own lit stage — glow, sparks, the sigil large */}
       <Stage hue={hue} tint={0.07} minHeight={300}>
         <motion.div
@@ -204,8 +223,9 @@ export function Greeting({
         />
         {/* sparks drift up while the room catches light */}
         <Sparks hue={hue} />
-        {/* the reward arriving as stars — bigger for a boss-closed topic (stars law, §5) */}
-        <Starburst hue={hue} reduced={reduced} big={boss} />
+        {/* the reward arriving as stars — bigger for a boss-closed topic (stars law, §5).
+            a replay skips the re-award burst; the sigil still lights, warm as ever. */}
+        {!replay && <Starburst hue={hue} reduced={reduced} big={boss} />}
 
         {/* the sigil, mastered — the same geometry from the row and the door, now lit large */}
         <motion.div
@@ -258,12 +278,13 @@ export function Greeting({
         }}
       >
         <PerformanceStars stars={stars} hue={hue} reduced={reduced} />
-        <XpTally amount={gained} hue={hue} reduced={reduced} />
-        {boss && <TrophyNote hue={hue} />}
+        {/* no fresh xp on a replay — the currency was banked the first time */}
+        {!replay && <XpTally amount={gained} hue={hue} reduced={reduced} />}
+        {boss && !replay && <TrophyNote hue={hue} />}
       </div>
 
       <div style={{ position: 'relative', textAlign: 'center' }}>
-        <div style={whisper}>the greeting</div>
+        <div style={whisper}>{replay ? 'You came back' : 'The greeting'}</div>
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -277,7 +298,7 @@ export function Greeting({
             color: 'var(--clss-ink-900)',
           }}
         >
-          you kept the scale level, every single time.
+          {replay ? 'You walked it again.' : 'You kept the scale level, every single time.'}
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -285,17 +306,28 @@ export function Greeting({
           transition={{ delay: 0.55, duration: 0.5, ease: [0.2, 0, 0, 1] }}
           style={{ ...lead, marginTop: 14 }}
         >
-          <span style={{ color: hue, fontWeight: 550 }}>{topic.name.toLowerCase()}</span> is yours
-          now — not memorised, understood.
+          {replay ? (
+            <>
+              <span style={{ color: hue, fontWeight: 550 }}>{topic.name.toLowerCase()}</span> is
+              still yours — the reps are real, the xp already banked.
+            </>
+          ) : (
+            <>
+              <span style={{ color: hue, fontWeight: 550 }}>{topic.name.toLowerCase()}</span> is
+              yours now — not memorised, understood.
+            </>
+          )}
         </motion.div>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.1, duration: 0.5 }}
-          style={{ marginTop: 18, fontSize: '0.88rem', color: 'var(--clss-ink-500)' }}
-        >
-          the map just caught light.
-        </motion.div>
+        {!replay && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.1, duration: 0.5 }}
+            style={{ marginTop: 18, fontSize: '0.88rem', color: 'var(--clss-ink-500)' }}
+          >
+            the map just caught light.
+          </motion.div>
+        )}
       </div>
     </CardBody>
   );

@@ -35,12 +35,18 @@
 
 import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  type PointerEvent as ReactPointerEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import type { BarState } from '../screens/course/shared';
+import { CardBody, lead, rgba, Stage } from '../screens/course/shared';
 import { hueForTopic } from '../ui/hues';
 import { sfx } from '../ui/sound';
 import { useVidyaChat } from '../vidya/chat';
-import type { BarState } from '../screens/course/shared';
-import { CardBody, cardTitle, lead, rgba, Stage, whisper } from '../screens/course/shared';
 
 // --- The spec ------------------------------------------------------------------------------------
 
@@ -126,7 +132,9 @@ function parseInteraction(raw: unknown, markIds: Set<string>): Interaction | nul
       (t): t is string => typeof t === 'string' && markIds.has(t),
     );
     if (targets.length === 0) return null;
-    const need = num(raw.need) ? Math.max(1, Math.min(targets.length, Math.round(raw.need))) : targets.length;
+    const need = num(raw.need)
+      ? Math.max(1, Math.min(targets.length, Math.round(raw.need)))
+      : targets.length;
     return { kind: 'tap', prompt: raw.prompt, targets, need };
   }
   if (raw.kind === 'drag') {
@@ -148,7 +156,12 @@ function parseInteraction(raw: unknown, markIds: Set<string>): Interaction | nul
     if (isRecord(raw.bind) && str(raw.bind.mark) && markIds.has(raw.bind.mark)) {
       const prop = raw.bind.prop;
       const range = raw.bind.at;
-      if ((prop === 'x' || prop === 'y' || prop === 'r') && Array.isArray(range) && num(range[0]) && num(range[1])) {
+      if (
+        (prop === 'x' || prop === 'y' || prop === 'r') &&
+        Array.isArray(range) &&
+        num(range[0]) &&
+        num(range[1])
+      ) {
         bind = { mark: raw.bind.mark, prop, at: [range[0], range[1]] };
       }
     }
@@ -221,18 +234,19 @@ function MarkShape({
   onTap?: () => void;
 }) {
   const stroke = lit || chosen ? hue : toneStroke(mark.tone ?? 'ink', hue);
-  const strokeW = mark.tone === 'muted' ? 0.8 : 1.4;
+  const strokeW = lit ? 1.6 : mark.tone === 'muted' ? 0.8 : 1.4;
   const common = {
     stroke,
     strokeWidth: strokeW,
     fill: 'none',
     style: {
       cursor: tappable ? 'pointer' : 'default',
-      transition: 'stroke 0.3s ease',
+      transition: 'stroke 0.3s ease, fill 0.4s ease',
     } as const,
     onClick: onTap,
   };
-  const filledLit = lit || chosen ? { fill: rgba(hue, 0.16) } : {};
+  // the reveal ignites the constellation: solid pigment where the idea landed, a wash on a tapped pick
+  const filledLit = lit ? { fill: rgba(hue, 0.85) } : chosen ? { fill: rgba(hue, 0.22) } : {};
 
   const inner = (() => {
     switch (mark.shape) {
@@ -462,7 +476,12 @@ function DiscoveryStageView({
   useEffect(() => {
     bus.publishCanvas({
       nodeId: `discovery-${specId}-${index}`,
-      steps: [`stage ${index + 1}/${total}`, it.prompt, didText, state.done ? 'revealed' : 'exploring'],
+      steps: [
+        `stage ${index + 1}/${total}`,
+        it.prompt,
+        didText,
+        state.done ? 'revealed' : 'exploring',
+      ],
       lastEditedAt: new Date().toISOString(),
     });
   }, [bus, specId, index, total, it.prompt, didText, state.done]);
@@ -497,7 +516,12 @@ function DiscoveryStageView({
 
         {/* the stage — the visual subject, large */}
         <div ref={stageRef}>
-          <Stage hue={hue} tint={0.05} minHeight={280} style={{ padding: 'clamp(16px, 4vw, 30px)' }}>
+          <Stage
+            hue={hue}
+            tint={0.05}
+            minHeight={280}
+            style={{ padding: 'clamp(16px, 4vw, 30px)' }}
+          >
             <svg
               ref={svgRef}
               viewBox={`0 0 ${VB_W} ${VB_H}`}
@@ -597,7 +621,14 @@ function DiscoveryStageView({
         )}
 
         {/* the one interaction prompt — the only instruction on screen */}
-        <div style={{ ...lead, borderLeft: `2px solid ${hue}`, paddingLeft: 14, color: 'var(--clss-ink-900)' }}>
+        <div
+          style={{
+            ...lead,
+            borderLeft: `2px solid ${hue}`,
+            paddingLeft: 14,
+            color: 'var(--clss-ink-900)',
+          }}
+        >
           {it.prompt}
         </div>
 
@@ -607,7 +638,12 @@ function DiscoveryStageView({
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 26, delay: reduced ? 0 : 0.12 }}
+              transition={{
+                type: 'spring',
+                stiffness: 300,
+                damping: 26,
+                delay: reduced ? 0 : 0.12,
+              }}
               style={{ display: 'flex', flexDirection: 'column', gap: 10 }}
             >
               <div
@@ -676,7 +712,7 @@ export function Discovery({
         },
       },
     });
-  }, [idx, stageDone, last, setBar, onDone]);
+  }, [stageDone, last, setBar, onDone]);
 
   const stage = spec.stages[idx];
   if (!stage) return null;
@@ -713,7 +749,8 @@ export const DISCOVERY_DEMO: DiscoverySpec = {
       },
       interaction: {
         kind: 'tap',
-        prompt: 'an atom is almost entirely empty space. tap where nearly all of its mass is hiding.',
+        prompt:
+          'an atom is almost entirely empty space. tap where nearly all of its mass is hiding.',
         targets: ['nucleus'],
       },
       reveal:
@@ -726,7 +763,15 @@ export const DISCOVERY_DEMO: DiscoverySpec = {
         marks: [
           { id: 'ring', shape: 'ring', x: 50, y: 31, r: 24, tone: 'muted' },
           { id: 'core', shape: 'circle', x: 50, y: 31, r: 4, tone: 'ink' },
-          { id: 'cap', shape: 'text', x: 50, y: 56, r: 6, text: 'protons decide the element', tone: 'muted' },
+          {
+            id: 'cap',
+            shape: 'text',
+            x: 50,
+            y: 56,
+            r: 6,
+            text: 'protons decide the element',
+            tone: 'muted',
+          },
         ],
       },
       interaction: {

@@ -96,8 +96,8 @@ export function MysteryTease({
 }) {
   useEffect(() => {
     setBar({
-      primary: { label: 'open it', onClick: onOpen },
-      secondary: { label: 'done', onClick: onSkip },
+      primary: { label: 'Open it', onClick: onOpen },
+      secondary: { label: 'Done', onClick: onSkip },
     });
   }, [setBar, onOpen, onSkip]);
 
@@ -125,7 +125,7 @@ export function MysteryTease({
         >
           <Sage size={64} mood="curious" />
         </motion.div>
-        <div style={{ ...whisper, position: 'relative' }}>something hidden unlocked</div>
+        <div style={{ ...whisper, position: 'relative' }}>Something hidden unlocked</div>
       </Stage>
       <div style={{ textAlign: 'center' }}>
         <motion.div
@@ -197,7 +197,7 @@ function ThrowToy() {
           color: 'var(--clss-ink-900)',
         }}
       >
-        <span style={{ ...whisper, fontWeight: 500 }}>drag the throw</span>
+        <span style={{ ...whisper, fontWeight: 500 }}>Drag the throw</span>
         <Scrubber value={n} min={1} max={9} onChange={setN} label="throw number" />
       </div>
       <svg
@@ -255,13 +255,13 @@ export function MysteryLesson({
   const bus = useVidyaBus();
   useEffect(() => () => bus.publishCanvas(undefined), [bus]);
   useEffect(() => {
-    setBar({ primary: { label: 'done', onClick: onDone } });
+    setBar({ primary: { label: 'Done', onClick: onDone } });
   }, [setBar, onDone]);
 
   return (
     <CardBody maxWidth={560} center={false}>
-      <div style={whisper}>mystery lesson · out of syllabus, in on the secret</div>
-      <div style={cardTitle}>the mathematics of juggling</div>
+      <div style={whisper}>Mystery lesson · out of syllabus, in on the secret</div>
+      <div style={cardTitle}>The mathematics of juggling</div>
 
       <div style={lead}>
         jugglers write their patterns as numbers. each throw is named by how many beats it stays in

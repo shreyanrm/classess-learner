@@ -219,7 +219,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
               pointerEvents: 'none',
             }}
           >
-            picking up where you left off
+            Picking up where you left off
           </motion.div>
         )}
       </AnimatePresence>

@@ -177,7 +177,7 @@ function QuizCard({ items }: { items: QuizItem[] }) {
             value={answered ? (picked ?? '') : typed}
             onChange={(e) => setTyped(e.target.value)}
             disabled={answered}
-            placeholder="type your answer"
+            placeholder="Type your answer"
             style={{
               flex: 1,
               padding: '10px 12px',
@@ -446,10 +446,10 @@ function MakerPlanView({ plan }: { plan: MakerPlanSpec }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div style={{ fontSize: '1.02rem', fontWeight: 650, lineHeight: 1.3 }}>{plan.title}</div>
-      <MakerSection label="you'll need" items={plan.materials} />
-      <MakerSection label="steps" items={plan.steps} ordered />
-      <MakerSection label="stay safe" items={plan.safety} />
-      <MakerSection label="timeline" items={plan.timeline} />
+      <MakerSection label="You'll need" items={plan.materials} />
+      <MakerSection label="Steps" items={plan.steps} ordered />
+      <MakerSection label="Stay safe" items={plan.safety} />
+      <MakerSection label="Timeline" items={plan.timeline} />
     </div>
   );
 }
@@ -581,7 +581,7 @@ function ActionCard({ turnId, action }: { turnId: string; action: ActionAttachme
   if (!capability) return null;
 
   return (
-    <Shell eyebrow="she can do this">
+    <Shell eyebrow="She can do this">
       <div style={{ fontSize: '0.98rem', fontWeight: 600, lineHeight: 1.4 }}>
         {capability.label(action.params)}
       </div>
@@ -646,7 +646,7 @@ export function TurnAttachments({ turn }: { turn: ChatTurn }) {
     if (kind === 'sim') {
       const parsed = simSpecFromGateway(spec, concept || 'simulation') ?? parseSimSpec(spec);
       return parsed ? (
-        <Shell eyebrow="a sim, made for this">
+        <Shell eyebrow="A sim, made for this">
           <SimRunner spec={parsed} />
         </Shell>
       ) : null;
@@ -662,7 +662,7 @@ export function TurnAttachments({ turn }: { turn: ChatTurn }) {
     if (kind === 'formula') {
       const card = parseFormulaCard(spec);
       return card ? (
-        <Shell eyebrow="a one-page formula card">
+        <Shell eyebrow="A one-page formula card">
           <FormulaCardView card={card} />
         </Shell>
       ) : null;
@@ -670,7 +670,7 @@ export function TurnAttachments({ turn }: { turn: ChatTurn }) {
     if (kind === 'maker') {
       const plan = parseMakerPlan(spec);
       return plan ? (
-        <Shell eyebrow="a build, planned out">
+        <Shell eyebrow="A build, planned out">
           <MakerPlanView plan={plan} />
         </Shell>
       ) : null;
@@ -678,7 +678,7 @@ export function TurnAttachments({ turn }: { turn: ChatTurn }) {
     if (kind === 'doodle') {
       const doodle = parseDoodle(spec);
       return doodle ? (
-        <Shell eyebrow="drawn just for fun">
+        <Shell eyebrow="Drawn just for fun">
           <DoodleView doodle={doodle} />
         </Shell>
       ) : null;
@@ -693,7 +693,7 @@ export function TurnAttachments({ turn }: { turn: ChatTurn }) {
 
   if (extras.path === 'visualization' && extras.viz) {
     return (
-      <Shell eyebrow="drawn for you">
+      <Shell eyebrow="Drawn for you">
         <DiagramView
           id={turn.id}
           svg={extras.viz.spec.svg}

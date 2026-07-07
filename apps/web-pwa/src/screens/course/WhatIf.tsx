@@ -206,14 +206,14 @@ export function WhatIf({
       setBar(null);
       return;
     }
-    setBar({ primary: { label: 'continue', onClick: onDone } });
+    setBar({ primary: { label: 'Continue', onClick: onDone } });
   }, [setBar, onDone, freePlay]);
 
   return (
     <CardBody maxWidth={620}>
-      <div style={whisper}>{freePlay ? 'no task, no clock' : 'what if'}</div>
-      <div style={cardTitle}>every number here is yours to drag</div>
-      <div style={lead}>pull a, b, or c sideways — the whole solution keeps up.</div>
+      <div style={whisper}>{freePlay ? 'No task, no clock' : 'What if'}</div>
+      <div style={cardTitle}>Every number here is yours to drag</div>
+      <div style={lead}>Pull a, b, or c sideways — the whole solution keeps up.</div>
 
       {/* the editable equation, staged over its own living graph */}
       <Stage hue={HUE} tint={0.05} minHeight={280}>
