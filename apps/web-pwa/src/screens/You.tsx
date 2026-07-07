@@ -37,6 +37,7 @@ import { FREEZE_BUDGET, levelInfo, useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { LevelBadge } from '../ui/AppHeader';
 import { paintAccess } from '../ui/access';
+import { rng } from '../ui/art';
 import {
   ANIMAL_IDS,
   type AvatarChoice,
@@ -77,6 +78,96 @@ const bodyLine: CSSProperties = {
   color: 'var(--clss-ink-500)',
   lineHeight: 1.55,
 };
+
+// --- the plan jewel — the ONE place a gentle permanent glow is allowed (owner directive) ----------
+// A breathing aurora ring, a shimmer through "free forever", three seeded motes, a hover glint.
+// Reduced motion: static border, no motes, no shimmer, no glint. Dark theme reads slightly stronger.
+const PLAN_JEWEL_CSS = `
+.plan-jewel { position: relative; padding: 1px; border-radius: 4px; }
+.plan-jewel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background: linear-gradient(120deg, #1F35E0, #CC1E7A, #FF5A1F, #66B300, #1F35E0);
+  background-size: 300% 300%;
+  opacity: 0.5;
+  animation: plan-breathe 9s ease-in-out infinite;
+}
+[data-theme="dark"] .plan-jewel::before { opacity: 0.78; }
+.plan-forever {
+  font-family: 'Caveat', cursive;
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1;
+  background: linear-gradient(100deg, var(--clss-ink-900) 20%, #1F35E0 40%, #CC1E7A 50%, #FF5A1F 60%, var(--clss-ink-900) 80%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: plan-shimmer 9s linear infinite;
+}
+.plan-mote {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--clss-ultramarine);
+  opacity: 0;
+  pointer-events: none;
+  animation: plan-mote ease-in-out infinite;
+}
+.plan-upgrade button { position: relative; overflow: hidden; }
+.plan-upgrade button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 40%;
+  transform: skewX(-18deg);
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,0.4), transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+.plan-upgrade button:hover::after { animation: plan-glint 0.9s ease; }
+@keyframes plan-breathe {
+  0%, 100% { background-position: 0% 50%; filter: saturate(0.9); }
+  50% { background-position: 100% 50%; filter: saturate(1.2) brightness(1.12); }
+}
+@keyframes plan-shimmer {
+  from { background-position: 250% 0; }
+  to { background-position: -150% 0; }
+}
+@keyframes plan-mote {
+  0%, 100% { opacity: 0; transform: translate3d(0, 4px, 0) scale(0.6); }
+  35% { opacity: 0.8; }
+  50% { opacity: 0.3; transform: translate3d(2px, -5px, 0) scale(1); }
+  70% { opacity: 0.7; }
+}
+@keyframes plan-glint {
+  from { left: -60%; opacity: 1; }
+  to { left: 120%; opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .plan-jewel::before, .plan-forever { animation: none; }
+  .plan-mote { display: none; }
+  .plan-upgrade button:hover::after { animation: none; }
+}
+`;
+
+/** Seeded (ui/art mulberry32) so the motes rest in the same spots every visit. */
+const PLAN_MOTES = (() => {
+  const r = rng(41);
+  return [0, 1, 2].map((id) => ({
+    id,
+    left: `${(10 + r() * 80).toFixed(1)}%`,
+    top: `${(18 + r() * 60).toFixed(1)}%`,
+    delay: `${(r() * 6).toFixed(2)}s`,
+    dur: `${(7 + r() * 4).toFixed(2)}s`,
+  }));
+})();
 
 function Section({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -1362,24 +1453,49 @@ export function You() {
 
         <Hairline />
 
-        {/* ---- the plan ---- */}
+        {/* ---- the plan — the one card allowed a permanent quiet glow ---- */}
         <motion.div variants={rise} ref={planRef}>
           <Section label="your plan">
-            <Card
-              style={{
-                padding: 22,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 16,
-                flexWrap: 'wrap',
-              }}
-            >
-              <span style={whisper}>free tier</span>
-              <MagneticButton size="sm" variant="primary" onClick={() => setSuperstarOpen(true)}>
-                upgrade to superstar
-              </MagneticButton>
-            </Card>
+            <style>{PLAN_JEWEL_CSS}</style>
+            <div className="plan-jewel">
+              <Card
+                style={{
+                  border: 'none',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  padding: 22,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 16,
+                  flexWrap: 'wrap',
+                }}
+              >
+                {PLAN_MOTES.map((m) => (
+                  <span
+                    key={m.id}
+                    aria-hidden
+                    className="plan-mote"
+                    style={{
+                      left: m.left,
+                      top: m.top,
+                      animationDelay: m.delay,
+                      animationDuration: m.dur,
+                    }}
+                  />
+                ))}
+                <span className="plan-forever">free forever</span>
+                <div className="plan-upgrade">
+                  <MagneticButton
+                    size="sm"
+                    variant="primary"
+                    onClick={() => setSuperstarOpen(true)}
+                  >
+                    upgrade to superstar
+                  </MagneticButton>
+                </div>
+              </Card>
+            </div>
           </Section>
         </motion.div>
         <SuperstarSoon open={superstarOpen} onClose={() => setSuperstarOpen(false)} />
