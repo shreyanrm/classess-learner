@@ -172,7 +172,7 @@ export function CastAvatar({
       style={{
         width: size,
         height: size,
-        borderRadius: 3,
+        borderRadius: '50%', // owner law: avatars are circles (the 3px law is for chrome, not faces)
         background: hexWash(frame.hue, 0.13),
         overflow: 'hidden',
         position: 'relative',
@@ -219,7 +219,7 @@ export function renderAvatar(
         style={{
           width: size,
           height: size,
-          borderRadius: 3,
+          borderRadius: '50%', // owner law: avatars are circles (the 3px law is for chrome, not faces)
           background: `center/cover url(${profile.photo})`,
           display: 'block',
           flexShrink: 0,
@@ -233,7 +233,7 @@ export function renderAvatar(
       style={{
         width: size,
         height: size,
-        borderRadius: 3,
+        borderRadius: '50%', // owner law: avatars are circles (the 3px law is for chrome, not faces)
         background: '#F1F1F5',
         color: '#5C5E66',
         fontWeight: 600,
