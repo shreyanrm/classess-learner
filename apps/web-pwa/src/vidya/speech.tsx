@@ -352,6 +352,16 @@ export function SpeechNarrator() {
     if (anchored) void performTurn(last.text, anchored, bus, { onMood: setMood });
     else void speakLine(last.text);
   }, [turns, bus, setMood]);
+  // Dev-only verification seam: lets a live check drive a controlled choreographed turn against the
+  // real app and measure the beats. Never compiled into a production build (import.meta.env.DEV).
+  useEffect(() => {
+    if (!import.meta.env.DEV || typeof window === 'undefined') return;
+    (window as unknown as { __vidyaConductor?: unknown }).__vidyaConductor = {
+      performTurn,
+      bus,
+      setMood,
+    };
+  }, [bus, setMood]);
   return null;
 }
 

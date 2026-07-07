@@ -105,11 +105,22 @@ for (const { width, height } of SIZES) {
       await page.getByRole('button', { name: 'Back to the chapter list' }).click();
       await expect(page.getByRole('heading', { name: 'Mathematics' })).toBeVisible();
 
-      // 5 — course entry: expand the atom chapter, open the topic, land on the arrival card
-      await page.getByRole('button', { name: /Linear equations in one variable/ }).click();
-      await page
-        .getByRole('button', { name: /^Solving equations with the variable on one side/ })
-        .click();
+      // 5 — course entry: expand the atom chapter, open the topic, land on the arrival card.
+      // The expand is animated; if the topic hasn't appeared, click the chapter once more
+      // (webkit occasionally swallows the first click right after the expedition portal exits).
+      const chapter = page.getByRole('button', { name: /Linear equations in one variable/ });
+      const topic = page.getByRole('button', {
+        name: /^Solving equations with the variable on one side/,
+      });
+      await chapter.scrollIntoViewIfNeeded();
+      await chapter.click();
+      try {
+        await expect(topic).toBeVisible({ timeout: 4_000 });
+      } catch {
+        await chapter.click();
+        await expect(topic).toBeVisible();
+      }
+      await topic.click();
       await expect(page.getByRole('button', { name: /^begin$/i }).last()).toBeVisible({
         timeout: 15_000,
       });
@@ -147,10 +158,9 @@ for (const { width, height } of SIZES) {
       await seedTheme(page, theme);
       await page.setViewportSize({ width, height });
       await page.goto('/');
-      await expect(page.getByText("hi — I'm Vidya")).toBeVisible({ timeout: 15_000 });
-      await expect(page.getByRole('button', { name: "let's begin" })).toBeVisible({
-        timeout: 15_000,
-      });
+      // the redesigned flow opens directly on the name beat: her body, the field, the skip door
+      await expect(page.getByLabel('your name')).toBeVisible({ timeout: 15_000 });
+      await expect(page.getByRole('button', { name: 'Skip for now' })).toBeVisible();
       await checkCell(page, {
         engine: browserName,
         width,

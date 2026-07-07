@@ -1,0 +1,99 @@
+- generic [ref=f4e2]:
+  - generic [ref=f4e4]:
+    - generic [ref=f4e5]:
+      - generic [ref=f4e6]: Tuesday 7 July
+      - heading "Good afternoon, Arya" [level=1] [ref=f4e7]
+      - generic [ref=f4e8]: Mistakes are just data with feelings
+      - generic [ref=f4e10]:
+        - textbox "Talk to Vidya…" [ref=f4e11]
+        - button "Talk by voice" [ref=f4e12] [cursor=pointer]
+      - generic [ref=f4e21]:
+        - button "Learn something cool" [ref=f4e22] [cursor=pointer]:
+          - img [ref=f4e23]
+          - text: Learn something cool
+        - button "Open a rabbit hole" [ref=f4e25] [cursor=pointer]:
+          - img [ref=f4e26]
+          - text: Open a rabbit hole
+        - button "What should I do today" [ref=f4e28] [cursor=pointer]:
+          - img [ref=f4e29]
+          - text: What should I do today
+      - generic [ref=f4e31]:
+        - button "Learn" [ref=f4e32] [cursor=pointer]:
+          - generic [ref=f4e33]: Learn
+        - button "Practice" [ref=f4e34] [cursor=pointer]:
+          - generic [ref=f4e35]: Practice
+    - generic [ref=f4e37]:
+      - generic [ref=f4e38]: +
+      - generic [ref=f4e39]: ·
+      - generic [ref=f4e40]: ·
+      - generic [ref=f4e41]: +
+      - generic [ref=f4e42]: ·
+      - generic [ref=f4e43]: +
+      - generic [ref=f4e44]: ·
+      - generic [ref=f4e45]: +
+      - img [ref=f4e46]
+      - button "Warm-up Day 1 of being a learner · done" [ref=f4e65] [cursor=pointer]:
+        - img [ref=f4e66]
+        - generic [ref=f4e76]:
+          - generic [ref=f4e77]: Warm-up
+          - generic [ref=f4e78]: Day 1 of being a learner · done
+        - img [ref=f4e80]
+      - button "Nutrition Continue · 40% walked +120" [ref=f4e83] [cursor=pointer]:
+        - img [ref=f4e84]
+        - generic [ref=f4e88]:
+          - generic [ref=f4e89]: Nutrition
+          - generic [ref=f4e90]: Continue · 40% walked
+        - generic [ref=f4e93]: "+120"
+        - img [ref=f4e95]
+      - button "Euclid's division lemma Next up · a fresh idea +120" [ref=f4e98] [cursor=pointer]:
+        - img [ref=f4e99]
+        - generic [ref=f4e102]:
+          - generic [ref=f4e103]: Euclid's division lemma
+          - generic [ref=f4e104]: Next up · a fresh idea
+        - generic [ref=f4e105]: "+120"
+        - img [ref=f4e107]
+      - button "Boss gate Locked · finish today’s topic +120" [ref=f4e110] [cursor=pointer]:
+        - img [ref=f4e111]
+        - generic [ref=f4e114]:
+          - generic [ref=f4e115]: Boss gate
+          - generic [ref=f4e116]: Locked · finish today’s topic
+        - generic [ref=f4e117]: "+120"
+        - img [ref=f4e119]
+      - button "Ask Vidya something Daily quest · one good question +45" [ref=f4e122] [cursor=pointer]:
+        - img [ref=f4e123]
+        - generic [ref=f4e128]:
+          - generic [ref=f4e129]: Ask Vidya something
+          - generic [ref=f4e130]: Daily quest · one good question
+        - generic [ref=f4e131]: "+45"
+        - img [ref=f4e133]
+      - button "Something is hiding here — open the sandbox" [ref=f4e136] [cursor=pointer]:
+        - img [ref=f4e137]
+      - generic: Something is hiding here
+      - generic [ref=f4e141]:
+        - img "Vidya" [ref=f4e143]:
+          - img [ref=f4e147]
+        - generic [ref=f4e171]: Right where we left it
+    - generic [ref=f4e172]:
+      - generic [ref=f4e173]: ⌘K
+      - text: Anything, anywhere
+  - banner:
+    - img "Classess" [ref=f4e175]
+    - generic [ref=f4e176]:
+      - button "Did you know" [ref=f4e177] [cursor=pointer]:
+        - img [ref=f4e178]
+        - text: Did you know
+      - generic "Day 1 of being a learner" [ref=f4e180]:
+        - img [ref=f4e182]
+        - text: "1"
+      - generic [ref=f4e185]: 45 xp
+      - generic [ref=f4e186]:
+        - img [ref=f4e187]
+        - button "You — level 1, profile and settings" [ref=f4e190] [cursor=pointer]:
+          - generic "Indi" [ref=f4e191]:
+            - img [ref=f4e193]
+        - generic [ref=f4e227]: "1"
+  - button "Nutrition Your course is ready — tap to dive in Open" [ref=f4e228] [cursor=pointer]:
+    - generic [ref=f4e230]:
+      - generic [ref=f4e231]: Nutrition
+      - generic [ref=f4e232]: Your course is ready — tap to dive in
+    - generic [ref=f4e233]: Open

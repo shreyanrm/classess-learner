@@ -1,0 +1,528 @@
+- generic [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - generic [ref=f4e4]:
+      - generic [ref=f4e5]:
+        - generic [ref=f4e6]: Tuesday 7 July
+        - heading "Good afternoon, Arya" [level=1] [ref=f4e7]
+        - generic [ref=f4e8]: Mistakes are just data with feelings
+        - generic [ref=f4e10]:
+          - textbox "Talk to Vidya…" [ref=f4e11]
+          - button "Talk by voice" [ref=f4e12] [cursor=pointer]
+        - generic [ref=f4e21]:
+          - button "Learn something cool" [ref=f4e22] [cursor=pointer]:
+            - img [ref=f4e23]
+            - text: Learn something cool
+          - button "Open a rabbit hole" [ref=f4e25] [cursor=pointer]:
+            - img [ref=f4e26]
+            - text: Open a rabbit hole
+          - button "What should I do today" [ref=f4e28] [cursor=pointer]:
+            - img [ref=f4e29]
+            - text: What should I do today
+        - generic [ref=f4e31]:
+          - button "Learn" [ref=f4e32] [cursor=pointer]:
+            - generic [ref=f4e33]: Learn
+          - button "Practice" [ref=f4e34] [cursor=pointer]:
+            - generic [ref=f4e35]: Practice
+      - generic [ref=f4e37]:
+        - generic [ref=f4e38]: +
+        - generic [ref=f4e39]: ·
+        - generic [ref=f4e40]: ·
+        - generic [ref=f4e41]: +
+        - generic [ref=f4e42]: ·
+        - generic [ref=f4e43]: +
+        - generic [ref=f4e44]: ·
+        - generic [ref=f4e45]: +
+        - img [ref=f4e46]
+        - button "Warm-up Day 1 of being a learner · done" [ref=f4e65] [cursor=pointer]:
+          - img [ref=f4e66]
+          - generic [ref=f4e76]:
+            - generic [ref=f4e77]: Warm-up
+            - generic [ref=f4e78]: Day 1 of being a learner · done
+          - img [ref=f4e80]
+        - button "Nutrition Continue · 40% walked +120" [ref=f4e83] [cursor=pointer]:
+          - img [ref=f4e84]
+          - generic [ref=f4e88]:
+            - generic [ref=f4e89]: Nutrition
+            - generic [ref=f4e90]: Continue · 40% walked
+          - generic [ref=f4e93]: "+120"
+          - img [ref=f4e95]
+        - button "Euclid's division lemma Next up · a fresh idea +120" [ref=f4e98] [cursor=pointer]:
+          - img [ref=f4e99]
+          - generic [ref=f4e102]:
+            - generic [ref=f4e103]: Euclid's division lemma
+            - generic [ref=f4e104]: Next up · a fresh idea
+          - generic [ref=f4e105]: "+120"
+          - img [ref=f4e107]
+        - button "Boss gate Locked · finish today’s topic +120" [ref=f4e110] [cursor=pointer]:
+          - img [ref=f4e111]
+          - generic [ref=f4e114]:
+            - generic [ref=f4e115]: Boss gate
+            - generic [ref=f4e116]: Locked · finish today’s topic
+          - generic [ref=f4e117]: "+120"
+          - img [ref=f4e119]
+        - button "Ask Vidya something Daily quest · one good question +45" [ref=f4e122] [cursor=pointer]:
+          - img [ref=f4e123]
+          - generic [ref=f4e128]:
+            - generic [ref=f4e129]: Ask Vidya something
+            - generic [ref=f4e130]: Daily quest · one good question
+          - generic [ref=f4e131]: "+45"
+          - img [ref=f4e133]
+        - button "Something is hiding here — open the sandbox" [ref=f4e136] [cursor=pointer]:
+          - img [ref=f4e137]
+        - generic: Something is hiding here
+        - generic [ref=f4e141]:
+          - img "Vidya" [ref=f4e143]:
+            - img [ref=f4e147]
+          - generic [ref=f4e171]: Right where we left it
+      - generic [ref=f4e172]:
+        - generic [ref=f4e173]: ⌘K
+        - text: Anything, anywhere
+    - generic [ref=f4e244]:
+      - banner [ref=f4e245]:
+        - button "choose your avatar" [expanded] [active] [ref=f4e246] [cursor=pointer]:
+          - generic "Indi" [ref=f4e248]:
+            - img [ref=f4e250]
+        - dialog "choose your avatar" [ref=f4e729]:
+          - generic [ref=f4e730]:
+            - generic [ref=f4e731]: Pick your look
+            - generic [ref=f4e732]:
+              - generic [ref=f4e733]: buddies
+              - generic [ref=f4e734]:
+                - button "be Pip" [ref=f4e735] [cursor=pointer]:
+                  - generic "Pip" [ref=f4e736]:
+                    - img [ref=f4e738]
+                  - generic [ref=f4e767]: Pip
+                - button "be Sage" [ref=f4e768] [cursor=pointer]:
+                  - generic "Sage" [ref=f4e769]:
+                    - img [ref=f4e771]
+                  - generic [ref=f4e788]: Sage
+                - button "be Sprout" [ref=f4e789] [cursor=pointer]:
+                  - generic "Sprout" [ref=f4e790]:
+                    - img [ref=f4e792]
+                  - generic [ref=f4e811]: Sprout
+                - button "be Volt" [ref=f4e812] [cursor=pointer]:
+                  - generic "Volt" [ref=f4e813]:
+                    - img [ref=f4e815]
+                  - generic [ref=f4e839]: Volt
+                - button "be Ember" [ref=f4e840] [cursor=pointer]:
+                  - generic "Ember" [ref=f4e841]:
+                    - img [ref=f4e843]
+                  - generic [ref=f4e863]: Ember
+                - button "be Pico" [ref=f4e864] [cursor=pointer]:
+                  - generic "Pico" [ref=f4e865]:
+                    - img [ref=f4e867]
+                  - generic [ref=f4e888]: Pico
+                - button "be Juni" [ref=f4e889] [cursor=pointer]:
+                  - generic "Juni" [ref=f4e890]:
+                    - img [ref=f4e892]
+                  - generic [ref=f4e905]: Juni
+                - button "be Torto" [ref=f4e906] [cursor=pointer]:
+                  - generic "Torto" [ref=f4e907]:
+                    - img [ref=f4e909]
+                  - generic [ref=f4e927]: Torto
+                - button "be Ace" [ref=f4e928] [cursor=pointer]:
+                  - generic "Ace" [ref=f4e929]:
+                    - img [ref=f4e931]
+                  - generic [ref=f4e960]: Ace
+                - button "be Iris" [ref=f4e961] [cursor=pointer]:
+                  - generic "Iris" [ref=f4e962]:
+                    - img [ref=f4e964]
+                  - generic [ref=f4e994]: Iris
+                - button "be Theo" [ref=f4e995] [cursor=pointer]:
+                  - generic "Theo" [ref=f4e996]:
+                    - img [ref=f4e998]
+                  - generic [ref=f4e1031]: Theo
+                - button "be Maya" [ref=f4e1032] [cursor=pointer]:
+                  - generic "Maya" [ref=f4e1033]:
+                    - img [ref=f4e1035]
+                  - generic [ref=f4e1065]: Maya
+                - button "be Sol" [ref=f4e1066] [cursor=pointer]:
+                  - generic "Sol" [ref=f4e1067]:
+                    - img [ref=f4e1069]
+                  - generic [ref=f4e1098]: Sol
+                - button "be Wren" [ref=f4e1099] [cursor=pointer]:
+                  - generic "Wren" [ref=f4e1100]:
+                    - img [ref=f4e1102]
+                  - generic [ref=f4e1134]: Wren
+                - button "be Juno" [ref=f4e1135] [cursor=pointer]:
+                  - generic "Juno" [ref=f4e1136]:
+                    - img [ref=f4e1138]
+                  - generic [ref=f4e1168]: Juno
+                - button "be Pax" [ref=f4e1169] [cursor=pointer]:
+                  - generic "Pax" [ref=f4e1170]:
+                    - img [ref=f4e1172]
+                  - generic [ref=f4e1202]: Pax
+                - button "be Remy" [ref=f4e1203] [cursor=pointer]:
+                  - generic "Remy" [ref=f4e1204]:
+                    - img [ref=f4e1206]
+                  - generic [ref=f4e1237]: Remy
+                - button "be Nova" [ref=f4e1238] [cursor=pointer]:
+                  - generic "Nova" [ref=f4e1239]:
+                    - img [ref=f4e1241]
+                  - generic [ref=f4e1269]: Nova
+                - button "be Indi" [pressed] [ref=f4e1270] [cursor=pointer]:
+                  - generic "Indi" [ref=f4e1271]:
+                    - img [ref=f4e1273]
+                  - generic [ref=f4e1307]: Indi
+                - button "be Bo" [ref=f4e1308] [cursor=pointer]:
+                  - generic "Bo" [ref=f4e1309]:
+                    - img [ref=f4e1311]
+                  - generic [ref=f4e1341]: Bo
+                - button "be Vera" [ref=f4e1342] [cursor=pointer]:
+                  - generic "Vera" [ref=f4e1343]:
+                    - img [ref=f4e1345]
+                  - generic [ref=f4e1379]: Vera
+                - button "be Otis" [ref=f4e1380] [cursor=pointer]:
+                  - generic "Otis" [ref=f4e1381]:
+                    - img [ref=f4e1383]
+                  - generic [ref=f4e1415]: Otis
+                - button "be Lumi" [ref=f4e1416] [cursor=pointer]:
+                  - generic "Lumi" [ref=f4e1417]:
+                    - img [ref=f4e1419]
+                  - generic [ref=f4e1449]: Lumi
+                - button "be Dev" [ref=f4e1450] [cursor=pointer]:
+                  - generic "Dev" [ref=f4e1451]:
+                    - img [ref=f4e1453]
+                  - generic [ref=f4e1482]: Dev
+                - button "be Robin" [ref=f4e1483] [cursor=pointer]:
+                  - generic "Robin" [ref=f4e1484]:
+                    - img [ref=f4e1486]
+                  - generic [ref=f4e1515]: Robin
+                - button "be Suri" [ref=f4e1516] [cursor=pointer]:
+                  - generic "Suri" [ref=f4e1517]:
+                    - img [ref=f4e1519]
+                  - generic [ref=f4e1549]: Suri
+            - generic [ref=f4e1550]:
+              - generic [ref=f4e1551]: animals
+              - generic [ref=f4e1552]:
+                - button "be dog" [ref=f4e1553] [cursor=pointer]:
+                  - generic "dog" [ref=f4e1554]:
+                    - img [ref=f4e1556]
+                  - generic [ref=f4e1574]: dog
+                - button "be cat" [ref=f4e1575] [cursor=pointer]:
+                  - generic "cat" [ref=f4e1576]:
+                    - img [ref=f4e1578]
+                  - generic [ref=f4e1597]: cat
+                - button "be rabbit" [ref=f4e1598] [cursor=pointer]:
+                  - generic "rabbit" [ref=f4e1599]:
+                    - img [ref=f4e1601]
+                  - generic [ref=f4e1616]: rabbit
+                - button "be sheep" [ref=f4e1617] [cursor=pointer]:
+                  - generic "sheep" [ref=f4e1618]:
+                    - img [ref=f4e1620]
+                  - generic [ref=f4e1638]: sheep
+                - button "be goat" [ref=f4e1639] [cursor=pointer]:
+                  - generic "goat" [ref=f4e1640]:
+                    - img [ref=f4e1642]
+                  - generic [ref=f4e1658]: goat
+                - button "be cow" [ref=f4e1659] [cursor=pointer]:
+                  - generic "cow" [ref=f4e1660]:
+                    - img [ref=f4e1662]
+                  - generic [ref=f4e1686]: cow
+                - button "be horse" [ref=f4e1687] [cursor=pointer]:
+                  - generic "horse" [ref=f4e1688]:
+                    - img [ref=f4e1690]
+                  - generic [ref=f4e1707]: horse
+                - button "be pig" [ref=f4e1708] [cursor=pointer]:
+                  - generic "pig" [ref=f4e1709]:
+                    - img [ref=f4e1711]
+                  - generic [ref=f4e1728]: pig
+                - button "be bird" [ref=f4e1729] [cursor=pointer]:
+                  - generic "bird" [ref=f4e1730]:
+                    - img [ref=f4e1732]
+                  - generic [ref=f4e1745]: bird
+                - button "be duck" [ref=f4e1746] [cursor=pointer]:
+                  - generic "duck" [ref=f4e1747]:
+                    - img [ref=f4e1749]
+                  - generic [ref=f4e1760]: duck
+                - button "be hen" [ref=f4e1761] [cursor=pointer]:
+                  - generic "hen" [ref=f4e1762]:
+                    - img [ref=f4e1764]
+                  - generic [ref=f4e1778]: hen
+                - button "be koi" [ref=f4e1779] [cursor=pointer]:
+                  - generic "koi" [ref=f4e1780]:
+                    - img [ref=f4e1782]
+                  - generic [ref=f4e1791]: koi
+                - button "be butterfly" [ref=f4e1792] [cursor=pointer]:
+                  - generic "butterfly" [ref=f4e1793]:
+                    - img [ref=f4e1795]
+                  - generic [ref=f4e1804]: butterfly
+                - button "be bee" [ref=f4e1805] [cursor=pointer]:
+                  - generic "bee" [ref=f4e1806]:
+                    - img [ref=f4e1808]
+                  - generic [ref=f4e1820]: bee
+                - button "be turtle" [ref=f4e1821] [cursor=pointer]:
+                  - generic "turtle" [ref=f4e1822]:
+                    - img [ref=f4e1824]
+                  - generic [ref=f4e1836]: turtle
+                - button "be fox" [ref=f4e1837] [cursor=pointer]:
+                  - generic "fox" [ref=f4e1838]:
+                    - img [ref=f4e1840]
+                  - generic [ref=f4e1855]: fox
+                - button "be bear" [ref=f4e1856] [cursor=pointer]:
+                  - generic "bear" [ref=f4e1857]:
+                    - img [ref=f4e1859]
+                  - generic [ref=f4e1875]: bear
+                - button "be panda" [ref=f4e1876] [cursor=pointer]:
+                  - generic "panda" [ref=f4e1877]:
+                    - img [ref=f4e1879]
+                  - generic [ref=f4e1895]: panda
+                - button "be owl" [ref=f4e1896] [cursor=pointer]:
+                  - generic "owl" [ref=f4e1897]:
+                    - img [ref=f4e1899]
+                  - generic [ref=f4e1916]: owl
+                - button "be frog" [ref=f4e1917] [cursor=pointer]:
+                  - generic "frog" [ref=f4e1918]:
+                    - img [ref=f4e1920]
+                  - generic [ref=f4e1936]: frog
+                - button "be penguin" [ref=f4e1937] [cursor=pointer]:
+                  - generic "penguin" [ref=f4e1938]:
+                    - img [ref=f4e1940]
+                  - generic [ref=f4e1955]: penguin
+                - button "be deer" [ref=f4e1956] [cursor=pointer]:
+                  - generic "deer" [ref=f4e1957]:
+                    - img [ref=f4e1959]
+                  - generic [ref=f4e1976]: deer
+                - button "be elephant" [ref=f4e1977] [cursor=pointer]:
+                  - generic "elephant" [ref=f4e1978]:
+                    - img [ref=f4e1980]
+                  - generic [ref=f4e1994]: elephant
+                - button "be squirrel" [ref=f4e1995] [cursor=pointer]:
+                  - generic "squirrel" [ref=f4e1996]:
+                    - img [ref=f4e1998]
+                  - generic [ref=f4e2012]: squirrel
+                - button "be hedgehog" [ref=f4e2013] [cursor=pointer]:
+                  - generic "hedgehog" [ref=f4e2014]:
+                    - img [ref=f4e2016]
+                  - generic [ref=f4e2035]: hedgehog
+                - button "be snail" [ref=f4e2036] [cursor=pointer]:
+                  - generic "snail" [ref=f4e2037]:
+                    - img [ref=f4e2039]
+                  - generic [ref=f4e2051]: snail
+                - button "be ladybug" [ref=f4e2052] [cursor=pointer]:
+                  - generic "ladybug" [ref=f4e2053]:
+                    - img [ref=f4e2055]
+                  - generic [ref=f4e2071]: ladybug
+            - generic [ref=f4e2073]:
+              - button "Upload a picture" [ref=f4e2074] [cursor=pointer]
+              - button "Use my initial" [ref=f4e2075] [cursor=pointer]
+        - generic [ref=f4e284]:
+          - textbox "your name" [ref=f4e285]: Arya
+          - button "Class 10 · CBSE · change" [ref=f4e286] [cursor=pointer]:
+            - text: Class 10 · CBSE
+            - generic [ref=f4e287]: · change
+      - generic [ref=f4e289]:
+        - generic [ref=f4e290]: The ledger
+        - generic [ref=f4e291]:
+          - generic [ref=f4e292]:
+            - generic [ref=f4e293]:
+              - generic [ref=f4e294]: "45"
+              - generic [ref=f4e295]: xp
+            - generic [ref=f4e296]:
+              - generic [ref=f4e297]:
+                - generic [ref=f4e298]: level 1
+                - generic [ref=f4e299]: 35 xp to level 2
+              - generic "level 1 · 45/80 xp to level 2" [ref=f4e300]:
+                - img [ref=f4e301]
+                - generic [ref=f4e304]: "1"
+          - generic [ref=f4e305]: Day 1 of being a learner
+          - img "active on 1 of the last 7 days" [ref=f4e306]
+          - generic [ref=f4e314]: ACTIVITY · 30 DAYS
+          - img "this month's activity intensity" [ref=f4e315]:
+            - generic "2026-06-08 — 0 moments" [ref=f4e316]
+            - generic "2026-06-09 — 0 moments" [ref=f4e317]
+            - generic "2026-06-10 — 0 moments" [ref=f4e318]
+            - generic "2026-06-11 — 0 moments" [ref=f4e319]
+            - generic "2026-06-12 — 0 moments" [ref=f4e320]
+            - generic "2026-06-13 — 0 moments" [ref=f4e321]
+            - generic "2026-06-14 — 0 moments" [ref=f4e322]
+            - generic "2026-06-15 — 0 moments" [ref=f4e323]
+            - generic "2026-06-16 — 0 moments" [ref=f4e324]
+            - generic "2026-06-17 — 0 moments" [ref=f4e325]
+            - generic "2026-06-18 — 0 moments" [ref=f4e326]
+            - generic "2026-06-19 — 0 moments" [ref=f4e327]
+            - generic "2026-06-20 — 0 moments" [ref=f4e328]
+            - generic "2026-06-21 — 0 moments" [ref=f4e329]
+            - generic "2026-06-22 — 0 moments" [ref=f4e330]
+            - generic "2026-06-23 — 0 moments" [ref=f4e331]
+            - generic "2026-06-24 — 0 moments" [ref=f4e332]
+            - generic "2026-06-25 — 0 moments" [ref=f4e333]
+            - generic "2026-06-26 — 0 moments" [ref=f4e334]
+            - generic "2026-06-27 — 0 moments" [ref=f4e335]
+            - generic "2026-06-28 — 0 moments" [ref=f4e336]
+            - generic "2026-06-29 — 0 moments" [ref=f4e337]
+            - generic "2026-06-30 — 0 moments" [ref=f4e338]
+            - generic "2026-07-01 — 0 moments" [ref=f4e339]
+            - generic "2026-07-02 — 0 moments" [ref=f4e340]
+            - generic "2026-07-03 — 0 moments" [ref=f4e341]
+            - generic "2026-07-04 — 0 moments" [ref=f4e342]
+            - generic "2026-07-05 — 0 moments" [ref=f4e343]
+            - generic "2026-07-06 — 0 moments" [ref=f4e344]
+            - generic "2026-07-07 — 3 moments" [ref=f4e345]
+          - generic [ref=f4e346]: Rest is part of learning — quiet days are allowed
+      - generic [ref=f4e349]:
+        - generic [ref=f4e350]: Learning is better shared
+        - generic [ref=f4e351]:
+          - img [ref=f4e353]
+          - img [ref=f4e372]
+          - img [ref=f4e401]
+          - img [ref=f4e413]
+          - img [ref=f4e431]
+          - img [ref=f4e456]
+          - img [ref=f4e470]
+        - generic [ref=f4e489]:
+          - generic [ref=f4e490]:
+            - generic [ref=f4e491]: Invite a friend
+            - generic [ref=f4e492]: When your friend finishes their first topic, you both unlock a bonus lesson.
+            - button "Copy link" [ref=f4e494] [cursor=pointer]
+          - generic [ref=f4e495]:
+            - generic [ref=f4e496]: Invite a parent
+            - generic [ref=f4e497]: Give them a window into your learning — the weekly note shows them what you can now do.
+            - button "Copy link" [ref=f4e499] [cursor=pointer]
+      - generic [ref=f4e502]:
+        - generic [ref=f4e503]: Your trophy room
+        - generic [ref=f4e504]:
+          - generic [ref=f4e505]:
+            - generic [ref=f4e506]:
+              - img [ref=f4e509]:
+                - generic [ref=f4e522]:
+                  - generic [ref=f4e523]: 3 days
+                  - generic [ref=f4e524]: 3 days
+              - generic [ref=f4e526]:
+                - generic [ref=f4e527]: 3-day streak
+                - generic [ref=f4e528]: 2 days to go
+            - generic [ref=f4e529]:
+              - img [ref=f4e532]:
+                - generic [ref=f4e548]:
+                  - generic [ref=f4e549]: 250 xp
+                  - generic [ref=f4e550]: 250 xp
+              - generic [ref=f4e552]:
+                - generic [ref=f4e553]: 250 xp
+                - generic [ref=f4e554]: 205 xp to go
+            - generic [ref=f4e555]:
+              - img [ref=f4e558]
+              - generic [ref=f4e571]:
+                - generic [ref=f4e572]: A concept you master next
+                - generic [ref=f4e573]: finish any course
+          - generic [ref=f4e575]: The room is waiting — your first trophy is one finished course, a three-day streak, or 250 XP away.
+      - generic [ref=f4e578]:
+        - generic [ref=f4e579]: The note home
+        - generic [ref=f4e580]:
+          - generic [ref=f4e581]:
+            - generic [ref=f4e582]: The weekly note
+            - generic [ref=f4e583]: preview
+          - generic [ref=f4e584]: Arya showed up 1 of 7 days this week
+          - generic [ref=f4e585]: 0 topics mastered · 45 xp earned
+          - generic [ref=f4e586]: Arya is building a steady rhythm — the first mastery is close
+          - generic [ref=f4e587]: Arrives on WhatsApp, in your language — pride first, always
+        - generic [ref=f4e589]:
+          - textbox "a parent's phone number" [ref=f4e590]:
+            - /placeholder: A parent's phone number
+          - button "link a parent" [ref=f4e591] [cursor=pointer]
+      - generic [ref=f4e594]:
+        - generic [ref=f4e595]: Your plan
+        - generic [ref=f4e597]:
+          - generic [ref=f4e598]: Free forever
+          - button "upgrade to superstar" [ref=f4e600] [cursor=pointer]
+      - generic [ref=f4e603]:
+        - generic [ref=f4e604]: What Vidya knows about you
+        - generic [ref=f4e605]:
+          - generic [ref=f4e606]:
+            - generic [ref=f4e607]: 1 recent wrong answer she is keeping an eye on
+            - generic [ref=f4e608]: you linger longest on the learn map
+            - generic [ref=f4e609]: you showed up 1 of the last 7 days
+          - generic [ref=f4e611]: this stays on your device and shapes how she helps you. remove any one, or clear it all — she will not mind.
+          - button "clear everything she knows" [ref=f4e613] [cursor=pointer]
+      - generic [ref=f4e616]:
+        - generic [ref=f4e617]: Settings
+        - generic [ref=f4e618]:
+          - generic [ref=f4e619]:
+            - generic [ref=f4e620]:
+              - generic [ref=f4e621]: Vidya's voice
+              - generic [ref=f4e622]: She speaks her replies out loud
+            - switch "Vidya's voice" [checked] [ref=f4e623] [cursor=pointer]
+          - generic [ref=f4e626]:
+            - generic [ref=f4e627]:
+              - generic [ref=f4e628]: The ignite sound
+              - generic [ref=f4e629]: A sub-second note when something is genuinely mastered
+            - switch "The ignite sound" [checked] [ref=f4e630] [cursor=pointer]
+          - generic [ref=f4e633]:
+            - generic [ref=f4e634]:
+              - generic [ref=f4e635]: Adventure roadmap
+              - generic [ref=f4e636]: See each subject's chapters as a journey through biomes, not a list
+            - switch "Adventure roadmap" [checked] [ref=f4e637] [cursor=pointer]
+          - generic [ref=f4e640]:
+            - generic [ref=f4e641]:
+              - generic [ref=f4e642]: How forward she is
+              - generic [ref=f4e643]: gentle suggestion chips at the right moments
+            - generic [ref=f4e644]:
+              - button "quiet — she waits to be asked — no suggestions, no nudges" [ref=f4e645] [cursor=pointer]: quiet
+              - button "balanced — gentle suggestion chips at the right moments" [pressed] [ref=f4e646] [cursor=pointer]: balanced
+              - button "proactive — she speaks up when she sees something worth your time" [ref=f4e647] [cursor=pointer]: proactive
+          - generic [ref=f4e649]:
+            - generic [ref=f4e650]:
+              - generic [ref=f4e651]: appearance
+              - generic [ref=f4e652]: follows your device, light by day and dark by night
+            - generic [ref=f4e653]:
+              - button "light — the paper canvas — bright and open" [ref=f4e654] [cursor=pointer]: light
+              - button "dark — soft graphite — subtle, easy at night" [ref=f4e655] [cursor=pointer]: dark
+              - button "system — follows your device, light by day and dark by night" [pressed] [ref=f4e656] [cursor=pointer]: system
+          - generic [ref=f4e658]:
+            - generic [ref=f4e659]:
+              - generic [ref=f4e660]: Larger text
+              - generic [ref=f4e661]: Bump the type size across the whole app
+            - switch "Larger text" [ref=f4e662] [cursor=pointer]
+          - generic [ref=f4e665]:
+            - generic [ref=f4e666]:
+              - generic [ref=f4e667]: High contrast
+              - generic [ref=f4e668]: Stronger text and lines, easier to read
+            - switch "High contrast" [ref=f4e669] [cursor=pointer]
+          - generic [ref=f4e672]:
+            - generic [ref=f4e673]:
+              - generic [ref=f4e674]: the language I learn in
+              - generic [ref=f4e675]: Vidya teaches and replies in this language until you change it — English by default
+            - textbox "the language I learn in" [ref=f4e676]:
+              - /placeholder: e.g. Hindi, Tamil, English
+          - button "redo my setup walk through the intro with Vidya again — your xp, streak, and mastery all stay" [ref=f4e679] [cursor=pointer]:
+            - generic [ref=f4e680]: redo my setup
+            - generic [ref=f4e681]: walk through the intro with Vidya again — your xp, streak, and mastery all stay
+          - generic [ref=f4e683]:
+            - generic [ref=f4e684]:
+              - generic [ref=f4e685]: keep this page safe
+              - generic [ref=f4e686]: sign in with Google so your progress follows you to any device — nothing you have now is lost
+            - button "continue with Google" [ref=f4e688] [cursor=pointer]
+          - button "start over erase everything on this device and begin again" [ref=f4e691] [cursor=pointer]:
+            - generic [ref=f4e692]: start over
+            - generic [ref=f4e693]: erase everything on this device and begin again
+    - generic:
+      - img
+      - generic: subtract 3 from both sides
+    - banner:
+      - img "Classess" [ref=f4e175]
+      - generic [ref=f4e176]:
+        - button "Did you know" [ref=f4e177] [cursor=pointer]:
+          - img [ref=f4e178]
+          - text: Did you know
+        - generic "Day 1 of being a learner" [ref=f4e180]:
+          - img [ref=f4e182]
+          - text: "1"
+        - generic [ref=f4e185]: 45 xp
+        - generic [ref=f4e186]:
+          - img [ref=f4e187]
+          - button "You — level 1, profile and settings" [ref=f4e190] [cursor=pointer]:
+            - generic "Indi" [ref=f4e191]:
+              - img [ref=f4e193]
+          - generic [ref=f4e227]: "1"
+    - generic [ref=f4e696]:
+      - generic:
+        - img
+      - button "Talk to Vidya" [ref=f4e697] [cursor=pointer]:
+        - img [ref=f4e701]
+    - button "Nutrition Your course is ready — tap to dive in Open" [ref=f4e228] [cursor=pointer]:
+      - generic [ref=f4e230]:
+        - generic [ref=f4e231]: Nutrition
+        - generic [ref=f4e232]: Your course is ready — tap to dive in
+      - generic [ref=f4e233]: Open
+  - generic [ref=f4e236]: 2x + 3 = 7
+  - button "Back — Home" [ref=f4e725] [cursor=pointer]:
+    - img [ref=f4e726]
