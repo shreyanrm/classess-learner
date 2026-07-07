@@ -79,7 +79,7 @@ export function DownloadCenter() {
     for (const d of items) {
       if (d.status !== 'ready' || d.seen || notified.current.has(d.topicId)) continue;
       notified.current.add(d.topicId);
-      sfx.tap(); // the soft tick — mute-aware inside sound.ts
+      sfx.ding(); // a soft notification ding — mute-aware inside sound.ts
       void speakLine(readyLine(d.title)); // she says it aloud — mute-aware inside speech.ts
     }
   }, [items]);

@@ -93,6 +93,73 @@ export const sfx = {
   },
 
   /**
+   * Gentle low blip — a wrong answer. Kind, never punishing: a soft sine eases down a minor third
+   * with a little body underneath. A quiet "not quite", never a buzzer (sines only, low peak).
+   */
+  wrong() {
+    const ac = audio();
+    if (!ac) return;
+    tone(ac, { freq: 330, type: 'sine', dur: 0.2, peak: 0.045, attack: 0.012, glideTo: 262 });
+    tone(ac, { freq: 165, type: 'sine', at: 0.02, dur: 0.22, peak: 0.02, attack: 0.012 });
+  },
+
+  /** Soft ding — a toast/notification landing. Two clear glassy notes lifting, brief and quiet. */
+  ding() {
+    const ac = audio();
+    if (!ac) return;
+    tone(ac, { freq: 783.99, type: 'sine', dur: 0.16, peak: 0.04, attack: 0.005 }); // G5
+    tone(ac, { freq: 1046.5, type: 'sine', at: 0.1, dur: 0.28, peak: 0.035, attack: 0.006 }); // C6
+  },
+
+  /**
+   * Reward glint — a chest opening, a daily bonus paid. A quick jewel-like arpeggio (E5·B5·E6)
+   * over a warm low body: brighter and sparklier than the routine XP chord, so a bonus reads apart.
+   */
+  reward() {
+    const ac = audio();
+    if (!ac) return;
+    tone(ac, { freq: 392, type: 'sine', dur: 0.5, peak: 0.035, attack: 0.02 }); // G4 body
+    [659.25, 987.77, 1318.5].forEach((f, i) => {
+      tone(ac, {
+        freq: f,
+        type: 'sine',
+        at: 0.06 + i * 0.07,
+        dur: 0.4,
+        peak: 0.03 - i * 0.004,
+        attack: 0.006,
+      });
+    });
+  },
+
+  /**
+   * Soft breath — a drawer sliding open or closed. An airy filtered-noise swell, felt more than
+   * heard; the bandpass rises for open and falls for close, so the direction is audible.
+   */
+  breath(open: boolean) {
+    const ac = audio();
+    if (!ac) return;
+    const t0 = ac.currentTime;
+    const dur = 0.3;
+    const frames = Math.floor(ac.sampleRate * dur);
+    const buf = ac.createBuffer(1, frames, ac.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < frames; i++)
+      data[i] = (Math.random() * 2 - 1) * Math.sin((i / frames) * Math.PI);
+    const src = ac.createBufferSource();
+    src.buffer = buf;
+    const bp = ac.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.setValueAtTime(open ? 320 : 820, t0);
+    bp.frequency.exponentialRampToValueAtTime(open ? 820 : 320, t0 + dur);
+    bp.Q.value = 0.8;
+    const g = ac.createGain();
+    g.gain.value = 0.035 * MASTER;
+    src.connect(bp).connect(g).connect(ac.destination);
+    src.start(t0);
+    src.stop(t0 + dur + 0.02);
+  },
+
+  /**
    * Combo rise — consecutive correct answers, from the third on. A quick two-note lift whose
    * pitch climbs a semitone with each step of the chain, so a longer streak literally sounds
    * higher. Quieter than a routine bloom (it rides alongside it) and capped so it never shrills.

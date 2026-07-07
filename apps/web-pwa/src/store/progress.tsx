@@ -292,8 +292,9 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     const after = levelInfo(fromXp + amount).level;
     const crossedTo = after > before ? after : undefined;
     setBlooms((b) => [...b, { id, amount, reason, hue, crossedTo }]);
-    // a small bloom for a routine correct item, a warm chord for the earned moments
+    // a small bloom for a routine correct item, a bright glint for a bonus chest, a warm chord else
     if (reason === 'item' && !crossedTo) sfx.bloom();
+    else if (reason === 'bonus' && !crossedTo) sfx.reward();
     else sfx.chord();
     // the level-up beat lingers a touch longer than a routine bloom
     setTimeout(() => setBlooms((b) => b.filter((x) => x.id !== id)), crossedTo ? 3000 : 2400);

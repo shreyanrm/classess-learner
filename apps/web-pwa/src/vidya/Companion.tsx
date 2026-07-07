@@ -15,6 +15,7 @@ import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { CloseIcon, SendIcon, WaveformIcon } from '../ui/icons';
+import { sfx } from '../ui/sound';
 import { appendToArchive, type ChatTurn, readArchive, useVidyaChat } from './chat';
 import { FlyingVidya } from './Flight';
 import { TurnAttachments } from './paths';
@@ -229,6 +230,7 @@ export function VidyaCompanion() {
   // when idle). Both close affordances route through here.
   const close = () => {
     voice.stop();
+    sfx.breath(false); // a soft breath as the drawer slides shut
     setOpen(false);
   };
 
@@ -287,7 +289,10 @@ export function VidyaCompanion() {
         <FlyingVidya
           routeKey={route.name}
           mood={busy ? 'thinking' : mood}
-          onTap={() => setOpen(true)}
+          onTap={() => {
+            sfx.breath(true); // a soft breath as her drawer slides open
+            setOpen(true);
+          }}
           onHoldStart={holdStart}
           onHoldEnd={holdEnd}
         />

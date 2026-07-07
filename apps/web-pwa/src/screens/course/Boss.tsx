@@ -14,6 +14,7 @@ import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react'
 import { useSdk } from '../../store/sdk';
 import { BossSigil } from '../../ui/art';
 import { ComboMeter, comboBreak, comboHit } from '../../ui/combo';
+import { sfx } from '../../ui/sound';
 import { aX, firstMove, fmt, linearize } from './equations';
 import type { BarState } from './shared';
 import { CardBody, ChoiceButton, cardTitle, rgba, Stage, whisper } from './shared';
@@ -209,6 +210,9 @@ export function Boss({
               if (ok) comboHit(true);
               else comboBreak();
             }
+            // one tone for the whole evaluation: a soft bloom on a pass, a gentle blip otherwise
+            if (r.filter(Boolean).length >= 2) sfx.bloom();
+            else sfx.wrong();
             setResults(r);
             setEvaluated(true);
           },

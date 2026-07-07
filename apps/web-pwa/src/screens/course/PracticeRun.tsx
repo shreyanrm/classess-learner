@@ -14,6 +14,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useProgress, XP_AWARDS } from '../../store/progress';
 import { useSdk } from '../../store/sdk';
 import { ComboMeter, comboBreak, comboHit, XpTick } from '../../ui/combo';
+import { sfx } from '../../ui/sound';
 import { useVidyaChat } from '../../vidya/chat';
 import { announceCard } from '../../vidya/speech';
 import { hintFor, maxHintDepth, noteCorrect, noteMiss, regrade, useTutor } from '../../vidya/tutor';
@@ -407,6 +408,7 @@ export function PracticeRun({
     } else {
       noteMiss();
       comboBreak();
+      sfx.wrong(); // a gentle low blip — kind, never punishing (correct blooms via award)
       // FSRS framing: a lapse, due again soon — and it literally returns later in this run
       const card = reviewCard(null, false, Date.now());
       sdk.events.record(

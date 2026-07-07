@@ -1,0 +1,53 @@
+- generic [ref=f14e2]:
+  - generic [ref=f14e256]:
+    - banner [ref=f14e257]:
+      - button "Close course" [ref=f14e258] [cursor=pointer]:
+        - img [ref=f14e259]
+      - generic [ref=f14e275]:
+        - button "Replay Vidya" [ref=f14e276] [cursor=pointer]:
+          - img [ref=f14e277]
+        - button "Mute Vidya" [ref=f14e280] [cursor=pointer]:
+          - img [ref=f14e281]
+    - main [ref=f14e285]:
+      - generic [ref=f14e346]:
+        - generic [ref=f14e347]: the picture
+        - generic [ref=f14e348]: a balanced scale
+        - generic [ref=f14e349]: A pan balance holds 3x + 2 on the left and x + 8 on the right, resting level. Both sides are equal.
+        - figure [ref=f14e352]:
+          - 'img "diagram: A balanced scale" [ref=f14e354]':
+            - img [ref=f14e355]:
+              - generic [ref=f14e356]: Variables on Both Sides
+              - generic [ref=f14e357]: 2x + 3 = x + 5
+              - generic [ref=f14e363]: x
+              - generic [ref=f14e365]: x
+              - generic [ref=f14e366]: "+3"
+              - generic [ref=f14e368]: x
+              - generic [ref=f14e369]: "+5"
+              - generic [ref=f14e370]: 2x + 3
+              - generic [ref=f14e371]: x + 5
+              - generic [ref=f14e372]: Remove same from both sides → keep balance
+              - generic [ref=f14e373]: x = 2
+        - generic [ref=f14e374]: Tap the pan that carries more x blocks
+    - button "check" [active] [ref=f14e375] [cursor=pointer]:
+      - generic [ref=f14e376]: check
+  - banner:
+    - img "Classess" [ref=f14e221]
+    - generic [ref=f14e222]:
+      - button "Did you know" [ref=f14e223] [cursor=pointer]:
+        - img [ref=f14e224]
+        - text: Did you know
+      - generic "day 12 of being a learner" [ref=f14e226]:
+        - img [ref=f14e228]
+        - text: "12"
+      - generic [ref=f14e231]: 590 xp
+      - generic [ref=f14e232]:
+        - img [ref=f14e233]
+        - button "You — level 5, profile and settings" [ref=f14e236] [cursor=pointer]:
+          - generic "fox" [ref=f14e237]:
+            - img [ref=f14e239]
+        - generic [ref=f14e254]: "5"
+  - generic [ref=f14e315]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f14e316] [cursor=pointer]:
+      - img [ref=f14e320]
