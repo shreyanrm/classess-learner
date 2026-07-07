@@ -159,6 +159,10 @@ describe('LocalStateProvider', () => {
 
 describe('SupabaseStateProvider hydration', () => {
   const SUBJECT = '00000000-0000-7000-8000-000000000001';
+  // Live mode scopes the local cache to the account so two users on one browser never share a
+  // bucket — the provider reads/writes under these per-subject keys, not the bare legacy keys.
+  const SCOPED_STATE = `${STATE_CACHE_KEY}:${SUBJECT}`;
+  const SCOPED_VIDYA = `clss-vidya-conversation-v1:${SUBJECT}`;
 
   function fakeRest(remoteRow: Record<string, unknown> | null) {
     const upserts: { table: string; row: Record<string, unknown> }[] = [];
@@ -176,7 +180,7 @@ describe('SupabaseStateProvider hydration', () => {
   it('merges the remote row over the local cache and pushes the merged truth back', async () => {
     const storage = new FakeStorage();
     storage.setItem(
-      STATE_CACHE_KEY,
+      SCOPED_STATE,
       JSON.stringify(state({ xp: 100, completedTopics: ['m1-1'], lastActiveDay: '2026-07-06' })),
     );
     const { rest, upserts } = fakeRest({
@@ -196,14 +200,14 @@ describe('SupabaseStateProvider hydration', () => {
     expect(merged.completedTopics.sort()).toEqual(['m1-1', 'm2-1']);
     expect(merged.streakDays).toBe(7); // remote chain through yesterday continues today
     // Cache now holds the merged truth; the merged row went back up.
-    expect(JSON.parse(storage.map.get(STATE_CACHE_KEY) ?? '{}').xp).toBe(250);
+    expect(JSON.parse(storage.map.get(SCOPED_STATE) ?? '{}').xp).toBe(250);
     expect(upserts).toHaveLength(1);
     expect(upserts[0]?.row.xp).toBe(250);
   });
 
   it('degrades to the local cache when the network is down', async () => {
     const storage = new FakeStorage();
-    storage.setItem(STATE_CACHE_KEY, JSON.stringify(state({ xp: 77 })));
+    storage.setItem(SCOPED_STATE, JSON.stringify(state({ xp: 77 })));
     const provider = new SupabaseStateProvider(
       {
         selectOne: async () => {
@@ -223,7 +227,7 @@ describe('SupabaseStateProvider hydration', () => {
   it('prefers the fresher remote conversation on thread hydrate', async () => {
     const storage = new FakeStorage();
     storage.setItem(
-      'clss-vidya-conversation-v1',
+      SCOPED_VIDYA,
       JSON.stringify({
         turns: [{ id: 'a', role: 'vidya', text: 'old' }],
         updatedAt: '2026-07-06T08:00:00Z',
@@ -243,7 +247,7 @@ describe('SupabaseStateProvider hydration', () => {
     expect(merged?.turns).toHaveLength(2);
     // The cache was reconciled too.
     expect(
-      (JSON.parse(storage.map.get('clss-vidya-conversation-v1') ?? '{}') as ThreadSnapshot).turns,
+      (JSON.parse(storage.map.get(SCOPED_VIDYA) ?? '{}') as ThreadSnapshot).turns,
     ).toHaveLength(2);
   });
 });

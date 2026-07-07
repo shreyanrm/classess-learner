@@ -14,7 +14,7 @@
  */
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { claimNextForge, settleForge, useForged } from '../screens/practice/forge-store';
 import { composeWorkbook } from '../screens/practice/pools';
 import { useRouter } from '../shell/router';
@@ -34,6 +34,22 @@ import { useSdk } from './sdk';
 
 const COMPOSE_TIMEOUT_MS = 75_000;
 
+// Honest staged progress while a course composes. The gateway genuinely moves through these stages
+// (write the lesson → draw the visuals → verify the answers), so the label reflects real work rather
+// than a fabricated percentage — no fake number, just where she is. Time-based because the client
+// can't see per-stage gateway events; tuned to a typical live compose (~30-45s).
+const COMPOSE_STAGES: readonly { readonly until: number; readonly label: string }[] = [
+  { until: 9_000, label: 'Writing the lesson' },
+  { until: 20_000, label: 'Drawing the visuals' },
+  { until: 34_000, label: 'Checking every answer' },
+  { until: Number.POSITIVE_INFINITY, label: 'Almost ready' },
+];
+
+function composeStage(elapsedMs: number): string {
+  for (const s of COMPOSE_STAGES) if (elapsedMs < s.until) return s.label;
+  return 'Almost ready';
+}
+
 /** Playful-cute, sentence case, no emoji, no exclamation (DESIGN.md copy law). */
 function readyLine(title: string): string {
   return `your course on ${title.toLowerCase()} is ready — tap to dive in whenever you like.`;
@@ -50,6 +66,18 @@ export function DownloadCenter() {
   const forgeInit = useRef(false);
   // Notifications fire exactly once per topic even though items re-renders many times.
   const notified = useRef<Set<string>>(new Set());
+
+  // A gentle clock so the composing toast's staged label advances while she works. Only ticks while
+  // something is actually composing, then stops — no idle timers.
+  const [now, setNow] = useState(() => Date.now());
+  const composingCount = items.filter(
+    (d) => d.status === 'downloading' || d.status === 'queued',
+  ).length;
+  useEffect(() => {
+    if (composingCount === 0) return;
+    const t = setInterval(() => setNow(Date.now()), 1200);
+    return () => clearInterval(t);
+  }, [composingCount]);
 
   // The runner loop: self-driving. Claiming flips a course to `downloading` and fans a store event,
   // which re-runs this effect; the running ref plus claimNext's one-in-flight guard keep it to a
@@ -168,6 +196,7 @@ export function DownloadCenter() {
       <AnimatePresence>
         {toasts.map((d) => {
           const composing = d.status === 'downloading' || d.status === 'queued';
+          const stage = composing ? composeStage(Math.max(0, now - d.at)) : '';
           return (
             <motion.button
               key={d.topicId}
@@ -180,6 +209,8 @@ export function DownloadCenter() {
               onClick={() => open(d)}
               whileTap={{ scale: 0.985 }}
               style={{
+                position: 'relative',
+                overflow: 'hidden',
                 pointerEvents: 'auto',
                 width: '100%',
                 textAlign: 'left',
@@ -197,6 +228,29 @@ export function DownloadCenter() {
                 border: '0.5px solid color-mix(in srgb, var(--clss-ink) 14%, transparent)',
               }}
             >
+              {/* honest indeterminate track along the bottom — she is actively working, no fake % */}
+              {composing && (
+                <motion.span
+                  aria-hidden
+                  initial={{ x: '-60%' }}
+                  animate={{ x: '160%' }}
+                  transition={{
+                    duration: 1.6,
+                    repeat: Number.POSITIVE_INFINITY,
+                    ease: 'easeInOut',
+                  }}
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    bottom: 0,
+                    height: 2,
+                    width: '40%',
+                    borderRadius: 999,
+                    background: 'var(--clss-ultramarine)',
+                    opacity: 0.85,
+                  }}
+                />
+              )}
               {/* a small breathing dot in the mastery pigment — ready glows, a slip is muted */}
               <motion.span
                 aria-hidden
@@ -225,7 +279,7 @@ export function DownloadCenter() {
                 </span>
                 <span style={{ fontSize: '0.8rem', opacity: 0.82, lineHeight: 1.35 }}>
                   {composing
-                    ? "Vidya is composing this — she'll let you know the moment it's ready"
+                    ? `${stage}… she'll let you know the moment it's ready`
                     : d.status === 'ready'
                       ? 'Your course is ready — tap to dive in'
                       : 'That one slipped away — tap to try again'}
@@ -240,7 +294,7 @@ export function DownloadCenter() {
                   whiteSpace: 'nowrap',
                 }}
               >
-                {composing ? 'Composing…' : d.status === 'ready' ? 'Open' : 'Retry'}
+                {composing ? `${stage}…` : d.status === 'ready' ? 'Open' : 'Retry'}
               </span>
             </motion.button>
           );

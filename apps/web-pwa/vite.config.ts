@@ -14,6 +14,13 @@ export default defineConfig({
       // Regenerate with the snippet in DEPLOY.md §1.4 if the logo changes.
       includeAssets: ['classess-logo.png', 'apple-touch-icon.png', 'robots.txt'],
       workbox: {
+        // A new deploy must take over IMMEDIATELY, not after every tab closes. Without these, the
+        // old service worker keeps serving its cached (stale) bundle — so a shipped feature looks
+        // "missing" until the user manually hard-refreshes. skipWaiting activates the new SW at once;
+        // clientsClaim + autoUpdate's client-side reload then swap the page to the fresh build.
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
         // The entry chunk is ~2.1 MB raw (~640 KB gzipped: react + framer + mafs + the non-lazy
         // engines). It loads on first visit regardless, so precaching it is the right PWA call —
         // raise the ceiling above workbox's 2 MiB default. Three.js/3Dmol/RDKit already lazy-split.

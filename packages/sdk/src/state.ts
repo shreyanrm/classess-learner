@@ -189,11 +189,26 @@ export interface StateProvider {
 
 /** localStorage-only persistence — mock/local mode, fully working keyless. */
 export class LocalStateProvider implements StateProvider {
-  constructor(protected readonly storage: KVStorage = defaultStorage()) {}
+  constructor(
+    protected readonly storage: KVStorage = defaultStorage(),
+    // Scopes the cache to one account so two learners on the same browser never share a bucket.
+    // Empty = legacy single-user local build (keeps the historical key so existing devices carry
+    // over). Live mode passes the per-user subjectId, so a different account reads an empty bucket.
+    protected readonly scope = '',
+  ) {}
+
+  protected stateKey(): string {
+    return this.scope ? `${STATE_CACHE_KEY}:${this.scope}` : STATE_CACHE_KEY;
+  }
+
+  protected threadKey(thread: string): string {
+    const base = threadCacheKey(thread);
+    return this.scope ? `${base}:${this.scope}` : base;
+  }
 
   loadCache(): LearnerState {
     try {
-      const raw = this.storage.getItem(STATE_CACHE_KEY);
+      const raw = this.storage.getItem(this.stateKey());
       return normalizeLearnerState(raw ? (JSON.parse(raw) as Partial<LearnerState>) : null);
     } catch {
       return emptyLearnerState();
@@ -206,7 +221,7 @@ export class LocalStateProvider implements StateProvider {
 
   save(state: LearnerState): void {
     try {
-      this.storage.setItem(STATE_CACHE_KEY, JSON.stringify(state));
+      this.storage.setItem(this.stateKey(), JSON.stringify(state));
     } catch {
       // storage unavailable — session-only state is fine
     }
@@ -214,7 +229,7 @@ export class LocalStateProvider implements StateProvider {
 
   loadThreadCache(thread: string): ThreadSnapshot | null {
     try {
-      const raw = this.storage.getItem(threadCacheKey(thread));
+      const raw = this.storage.getItem(this.threadKey(thread));
       if (!raw) return null;
       const parsed = JSON.parse(raw) as ThreadSnapshot | ThreadTurn[];
       // The pre-live cache stored the bare turns array.
@@ -232,7 +247,7 @@ export class LocalStateProvider implements StateProvider {
   saveThread(thread: string, turns: ThreadTurn[]): void {
     try {
       const snapshot: ThreadSnapshot = { turns, updatedAt: new Date().toISOString() };
-      this.storage.setItem(threadCacheKey(thread), JSON.stringify(snapshot));
+      this.storage.setItem(this.threadKey(thread), JSON.stringify(snapshot));
     } catch {
       // storage unavailable — session-only is fine
     }
@@ -285,7 +300,9 @@ export class SupabaseStateProvider extends LocalStateProvider {
     storage?: KVStorage,
     private readonly debounceMs = 1500,
   ) {
-    super(storage ?? defaultStorage());
+    // Scope the local cache to this account so a second signed-in user on the same browser starts
+    // from an empty bucket (then hydrates their own remote row), never the previous user's progress.
+    super(storage ?? defaultStorage(), subjectId);
   }
 
   override async hydrate(): Promise<LearnerState> {
@@ -330,7 +347,7 @@ export class SupabaseStateProvider extends LocalStateProvider {
         : null;
       const merged = local && remote ? mergeThread(local, remote) : (remote ?? local);
       if (merged) {
-        this.storage.setItem(threadCacheKey(thread), JSON.stringify(merged));
+        this.storage.setItem(this.threadKey(thread), JSON.stringify(merged));
       }
       return merged;
     } catch {
