@@ -1,0 +1,6 @@
+node_modules/
+public/
+bun.lock
+package-lock.json
+*.mp4
+*.render-manifest.json

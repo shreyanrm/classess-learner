@@ -1,0 +1,25 @@
+{
+  "name": "@classess/render-worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Remotion render worker — turns a cached video scene-plan artifact into an MP4 (beat-synced to measured narration audio). Deliberately NOT a workspace member: Remotion's heavy deps + company license stay isolated in this package's own node_modules.",
+  "scripts": {
+    "render": "node src/render.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@remotion/bundler": "^4.0.0",
+    "@remotion/renderer": "^4.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "remotion": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.7.3"
+  }
+}
