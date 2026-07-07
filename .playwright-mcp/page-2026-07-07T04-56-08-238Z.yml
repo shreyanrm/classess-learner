@@ -1,0 +1,83 @@
+- generic [ref=f15e1]:
+  - generic [ref=f15e2]:
+    - generic [ref=f15e234]:
+      - generic [ref=f15e235]:
+        - img "Vidya" [ref=f15e236]:
+          - img [ref=f15e240]
+        - generic [ref=f15e264]:
+          - generic [ref=f15e265]: Vidya
+          - generic [ref=f15e266]: one conversation, always
+        - button "Unmute Vidya" [pressed] [ref=f15e267] [cursor=pointer]:
+          - img [ref=f15e268]
+      - generic [ref=f15e272]:
+        - generic [ref=f15e273]: what's on my screen right now?
+        - generic [ref=f15e275]: You're on your home screen — today's walk through linear equations. You've already knocked out the warm-up and rational numbers on the number line, and next up is solving equations with the variable on one side.
+        - generic [ref=f15e276]: hello Vidya
+        - generic [ref=f15e278]: Hey Shreyan, good to see you back. Ready to tackle equations with the variable on one side, or do you want to warm up with something else first?
+        - generic [ref=f15e279]: what's my name?
+        - generic [ref=f15e281]: Your name is Shreyan — and I've got you down as someone who loves cricket and space, so I'm always thinking about how to make math feel as sharp as a perfect cover drive.
+        - generic [ref=f15e282]: give me an example
+        - generic [ref=f15e284]: "Shreyan, imagine you're setting a field placement in cricket — you've got to balance your bowlers and batsmen on each side of the pitch to win the match. Linear equations work the same way: you're balancing both sides of an equation to find where the variable 'lands.' For instance, if 2x + 5 = 13, you'd subtract 5 from both sides (like moving a fielder) to get 2x = 8, then divide by 2 to isolate x. The trick is: whatever you do to one side, you do to the other, or the balance breaks."
+        - generic [ref=f15e285]: take me to practice
+        - generic [ref=f15e287]: taking you to practice.
+        - generic [ref=f15e288]: show my progress
+        - generic [ref=f15e290]: here is your progress.
+        - generic [ref=f15e291]: open the atom
+        - generic [ref=f15e293]: opening Solving equations with the variable on one side.
+        - generic [ref=f15e294]: open the atom
+        - generic [ref=f15e296]: opening Solving equations with the variable on one side.
+        - generic [ref=f15e297]: what's on my screen right now?
+        - generic [ref=f15e299]: You're looking at a balance scale showing x + 3 on the left side and 8 on the right side — it's perfectly level right now, which means both sides are equal. That's your equation x + 3 = 8 set up as a scale.
+        - generic [ref=f15e300]: open the atom
+        - generic [ref=f15e302]: opening Solving equations with the variable on one side.
+        - generic [ref=f15e303]: circle the x on the left pan
+        - generic [ref=f15e305]: Done — I've circled the x on the left pan. Now, what do you think we need to do to get x by itself on that side?
+        - generic [ref=f15e306]: open the atom
+        - generic [ref=f15e308]: opening Solving equations with the variable on one side.
+        - generic [ref=f15e309]: I'm stuck, just point at the x for me please
+        - generic [ref=f15e311]: I've got you — look at the scale right now. The x is on the left pan with the 3. To get x alone, what's in the way?
+        - generic [ref=f15e312]: explain this
+        - generic [ref=f15e314]: Right, let me break it down. You've got x and 3 sitting together on the left side of the balance. To isolate x — to get it alone — you need to remove the 3. What operation would undo adding 3?
+        - generic [ref=f15e315]: can you point that out?
+        - generic [ref=f15e317]: I'd love to, but I can't see the balance scale you're working with right now — it sounds like you're in a course. Can you tell me what you see on the left pan, and I'll walk you through it from here?
+        - generic [ref=f15e318]: take me to learn
+        - generic [ref=f15e320]: opening your library.
+        - generic [ref=f15e321]: Tell me something genuinely cool from science or math that most people never learn in school.
+        - generic [ref=f15e323]: give me a moment, then ask me again.
+        - generic [ref=f15e324]: draw me a dragon
+        - generic [ref=f15e325]:
+          - generic [ref=f15e326]: Here's your dragon—and one true thing riding with it.
+          - generic [ref=f15e327]:
+            - generic [ref=f15e328]: drawn just for fun
+            - generic [ref=f15e329]:
+              - img "a drawing of a dragon" [ref=f15e330]
+              - generic [ref=f15e338]: a little a dragon, just for you.
+              - generic [ref=f15e339]: "and one true thing: The Komodo dragon is the largest lizard alive — up to 3 metres, and it can smell carrion kilometres away."
+        - generic [ref=f15e340]: forget that I like cricket
+        - generic [ref=f15e342]: "Hold on—before I forget that, just want to check: you're sure you want me to drop it from what I remember about you?"
+        - generic [ref=f15e343]: yes, forget it
+        - generic [ref=f15e345]: forgotten — I let go of “likes cricket”.
+        - generic [ref=f15e346]: explain linear equations to me
+        - generic [ref=f15e348]: give me a moment, then ask me again.
+      - generic [ref=f15e350]:
+        - textbox "Talk to Vidya…" [active] [ref=f15e351]
+        - button "Talk by voice" [ref=f15e352] [cursor=pointer]
+    - banner:
+      - img "Classess" [ref=f15e199]
+      - generic [ref=f15e200]:
+        - button "Did you know" [ref=f15e201] [cursor=pointer]:
+          - img [ref=f15e202]
+          - text: Did you know
+        - generic "day 3 of being a learner" [ref=f15e204]:
+          - img [ref=f15e205]
+          - text: "3"
+        - generic [ref=f15e208]: 420 xp
+        - generic [ref=f15e209]:
+          - generic "level 4 · 60/200 xp to level 5" [ref=f15e210]:
+            - img [ref=f15e211]
+            - generic [ref=f15e214]: "4"
+          - button "You — level 4, profile and settings" [ref=f15e215] [cursor=pointer]:
+            - generic "fox" [ref=f15e216]:
+              - img [ref=f15e218]
+  - button "Back — ◦ back" [ref=f15e361] [cursor=pointer]:
+    - img [ref=f15e362]

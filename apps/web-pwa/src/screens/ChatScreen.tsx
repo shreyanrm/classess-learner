@@ -10,6 +10,7 @@
 import { useRegisterTarget, useVidyaBus, VidyaBody } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { OFFLINE_LINE, useConnectivity } from '../shell/resilience';
 import { useRouter } from '../shell/router';
 import { SendIcon, WaveformIcon } from '../ui/icons';
 import { fluidType, MagneticButton } from '../ui/kit';
@@ -45,6 +46,12 @@ export function ChatScreen() {
     bus.publishCanvas(undefined);
   }, [bus, turns.length]);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  // Family N — offline resilience. When they send with no connection we don't drop it on the floor:
+  // it queues, shows as a pending bubble, and fires once when the connection returns (retry-once).
+  const { offline } = useConnectivity();
+  const [pending, setPending] = useState<{ id: string; text: string }[]>([]);
+  const askRef = useRef(ask);
+  askRef.current = ask;
   // scroll bookkeeping: keep the reader's place when the past prepends, follow the newest line
   const restore = useRef<{ height: number; top: number } | null>(null);
   const lastLen = useRef(turns.length);
@@ -89,10 +96,27 @@ export function ChatScreen() {
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const text = draft.trim();
-    if (!text || busy) return;
+    if (!text) return;
     setDraft('');
+    if (offline) {
+      // hold it — the reconnect effect will send it
+      setPending((q) => [...q, { id: crypto.randomUUID(), text }]);
+      return;
+    }
+    if (busy) return;
     void ask(text);
   };
+
+  // Reconnect: drain the queue once, in order. askRef keeps us off the latest closure without
+  // re-running this effect every time a turn lands.
+  useEffect(() => {
+    if (offline || pending.length === 0) return;
+    const queued = pending;
+    setPending([]);
+    void (async () => {
+      for (const q of queued) await askRef.current(q.text);
+    })();
+  }, [offline, pending]);
 
   const toggleVoice = () => {
     if (voiceOn) return voice.stop();
@@ -135,6 +159,25 @@ export function ChatScreen() {
         </div>
         <MuteButton />
       </div>
+
+      {/* offline: one plain line telling them what still works (family N, the dead-end rule) */}
+      {offline && (
+        <div
+          role="status"
+          style={{
+            textAlign: 'center',
+            margin: '0 20px 6px',
+            padding: '8px 14px',
+            fontSize: fluidType.small,
+            lineHeight: 1.5,
+            color: 'var(--clss-ink)',
+            background: 'var(--clss-tonal)',
+            borderRadius: 'var(--clss-radius-md)',
+          }}
+        >
+          {OFFLINE_LINE}
+        </div>
+      )}
 
       {/* the thread — the page's one scroll, the past paging in above */}
       <div
@@ -215,6 +258,30 @@ export function ChatScreen() {
               </div>
             ),
           )}
+          {/* queued while offline — shown so nothing they typed silently vanishes */}
+          {pending.map((q) => (
+            <div
+              key={q.id}
+              style={{
+                alignSelf: 'flex-end',
+                maxWidth: '78%',
+                padding: '11px 16px',
+                borderRadius: 'var(--clss-radius-md)',
+                fontSize: fluidType.body,
+                lineHeight: 1.6,
+                background: 'var(--clss-ink)',
+                color: 'var(--clss-on-ink)',
+                opacity: 0.5,
+                whiteSpace: 'pre-wrap',
+                overflowWrap: 'anywhere',
+              }}
+            >
+              {q.text}
+              <span style={{ display: 'block', fontSize: fluidType.small, opacity: 0.8 }}>
+                sending when you're back…
+              </span>
+            </div>
+          ))}
           {busy && (
             <motion.div
               initial={{ opacity: 0 }}

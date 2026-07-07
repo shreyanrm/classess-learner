@@ -8,10 +8,18 @@
  */
 
 import { CAPABILITY_IDS } from '../capabilities';
+import { seedDoodle, seedFormulaCard, seedMakerPlan } from '../create';
 import type { ActionAttachment, ComponentKind, ConfidenceBand, TurnExtras, VizKind } from './types';
 
 const PATHS = new Set(['inline', 'component', 'visualization', 'action', 'route']);
-const COMPONENT_KINDS = new Set<string>(['sim', 'quiz', 'flashcards']);
+const COMPONENT_KINDS = new Set<string>([
+  'sim',
+  'quiz',
+  'flashcards',
+  'formula',
+  'maker',
+  'doodle',
+]);
 const VIZ_KINDS = new Set<string>(['diagram', 'chart', 'conceptmap']);
 const ROUTE_NAMES = new Set(['home', 'chat', 'learn', 'practice', 'progress', 'you']);
 
@@ -147,6 +155,42 @@ export function classifyLocal(text: string, nodeName?: string): LocalClassificat
     }
   }
 
+  // create — real artifacts she MAKES in the thread (family C). These sit on the component path.
+  // Each grabs its own subject from the tail after the trigger, since it may not use on/of/for/about.
+  const grab = (re: RegExp): string => {
+    const m = t.match(re);
+    const c = (m?.[1] ?? '')
+      .trim()
+      .replace(/^(a|an|the|me|of|for|about|on)\s+/, '')
+      .replace(/^["']|["'.?!,]+$/g, '')
+      .slice(0, 120);
+    return c || concept;
+  };
+  if (
+    /\bformula (sheet|card)\b|\bcheat ?sheet\b|\brevision (card|sheet)\b|\bformula sheet\b/.test(t)
+  ) {
+    const c = grab(
+      /(?:formula (?:sheet|card)|cheat ?sheet|revision (?:card|sheet))\s*(?:for|on|of|about)?\s*(.*)/,
+    );
+    return { path: 'component', componentKind: 'formula', concept: c };
+  }
+  if (
+    /\b(maker project|project plan|science project|let'?s build)\b/.test(t) ||
+    /\bhelp me (build|make)\b/.test(t) ||
+    /\bhow (do i|to) (build|make)\b/.test(t) ||
+    /\bbuild (a|an|me)\b/.test(t)
+  ) {
+    const c = grab(/(?:build|make|project(?: plan)?)\s+(?:a|an|the|me)?\s*(.*)/);
+    return { path: 'component', componentKind: 'maker', concept: c };
+  }
+  if (
+    /\b(doodle|draw me|sketch me|make me a drawing)\b/.test(t) &&
+    !/\b(diagram|chart|graph|plot|concept map|mind map)\b/.test(t)
+  ) {
+    const c = grab(/(?:doodle|draw me|sketch me|make me a drawing)\s*(?:of|a|an|the|me)?\s*(.*)/);
+    return { path: 'component', componentKind: 'doodle', concept: c };
+  }
+
   // component — an interactive surface summoned into the thread
   if (/\b(sim|simulate|simulation|play with|interactive)\b/.test(t)) {
     return { path: 'component', componentKind: 'sim', concept };
@@ -261,6 +305,24 @@ export function seedFlashcards(concept: string): Record<string, unknown> {
   };
 }
 
+/** Pick the honest client-side floor spec for a component kind — used when the gateway sent none. */
+function seedComponentSpec(kind: ComponentKind, concept: string): Record<string, unknown> {
+  switch (kind) {
+    case 'sim':
+      return seedSimSpec(concept);
+    case 'quiz':
+      return seedQuizItems();
+    case 'flashcards':
+      return seedFlashcards(concept);
+    case 'formula':
+      return seedFormulaCard(concept) as unknown as Record<string, unknown>;
+    case 'maker':
+      return seedMakerPlan(concept) as unknown as Record<string, unknown>;
+    case 'doodle':
+      return seedDoodle(concept) as unknown as Record<string, unknown>;
+  }
+}
+
 const esc = (s: string) =>
   s.replace(
     /[&<>"']/g,
@@ -361,13 +423,7 @@ export function resolveTurnExtras(
     ) as ComponentKind | undefined;
     if (!kind) return { path: 'inline' };
     const concept = (typeof gw.concept === 'string' && gw.concept) || local.concept || 'this idea';
-    const spec =
-      gw.spec ??
-      (kind === 'sim'
-        ? seedSimSpec(concept)
-        : kind === 'quiz'
-          ? seedQuizItems()
-          : seedFlashcards(concept));
+    const spec = gw.spec ?? seedComponentSpec(kind, concept);
     return { path: 'component', component: { kind, concept, spec } };
   }
 

@@ -65,6 +65,9 @@ export function VidyaOverlay() {
   if (!active) return null;
 
   const age = performance.now() - bus.marksBornAt;
+  // When she re-inks a faded set, the nonce reseeds every stroke so the redraw is genuinely fresh
+  // (a new hand-drawn pass), not a pixel-identical copy of what faded.
+  const reink = bus.reinkNonce ? String(bus.reinkNonce) : '';
   const rectOf = (targetId: string): DOMRect | null =>
     bus
       .getTargets()
@@ -90,7 +93,7 @@ export function VidyaOverlay() {
         const pad = 6;
         const w = rect.width + pad * 2;
         const hh = rect.height + pad * 2;
-        const rng = inkRng(h.targetId, 'highlight', h.level);
+        const rng = inkRng(h.targetId, 'highlight', h.level + reink);
         const d = highlighterSwipe(w, hh, rng);
         return (
           <svg
@@ -124,7 +127,7 @@ export function VidyaOverlay() {
         if (!rect) return null;
         const opacity = fadeOpacity(age, a.ttl ?? DEFAULT_TTL);
         if (opacity <= 0) return null;
-        const rng = inkRng(a.targetId, a.mark, a.level);
+        const rng = inkRng(a.targetId, a.mark, a.level + reink);
         const d = markPath(a.mark as Mark, rect.width, rect.height, rng);
         return (
           <svg
@@ -162,7 +165,7 @@ export function VidyaOverlay() {
         // Type the note on, letter by letter, like a hand writing it.
         const shown = Math.min(n.text.length, Math.max(0, Math.floor(age / MS_PER_CHAR)));
         const typing = shown < n.text.length && age < ttl - FADE;
-        const rng = inkRng(n.targetId, 'note', n.level);
+        const rng = inkRng(n.targetId, 'note', n.level + reink);
         const tilt = reduced ? 0 : noteRotation(rng);
         const nudgeX = Math.round((rng() * 2 - 1) * 6); // a small margin drift, not pinned to the edge
         return (

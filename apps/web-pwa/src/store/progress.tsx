@@ -100,16 +100,55 @@ function today(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-/** Streak roll-forward: yesterday keeps it, today keeps it, older resets honestly (no guilt). */
+/** How many streak-freezes a learner gets per month, and how long a break stays repairable. */
+export const FREEZE_BUDGET = 4;
+const REPAIR_WINDOW_DAYS = 5;
+
+const monthKey = (day: string): string => day.slice(0, 7);
+
+/**
+ * Streak roll-forward: yesterday keeps it, today keeps it, an older last-active day is a real
+ * break. Rather than silently zeroing a hard-won chain (family P: illness, exams, travel), stash
+ * it as `brokenStreak` so a logged streak-freeze can repair it within the window. A 1-day "streak"
+ * isn't worth a freeze, so it just resets.
+ */
 function rollForward(p: LearnerState): LearnerState {
   const t = today();
   if (p.lastActiveDay === t) return p;
   const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-  return {
-    ...p,
-    streakDays: p.lastActiveDay === yesterday ? p.streakDays + 1 : 1,
-    lastActiveDay: t,
-  };
+  if (p.lastActiveDay === yesterday)
+    return { ...p, streakDays: p.streakDays + 1, lastActiveDay: t };
+  const brokenStreak =
+    p.streakDays >= 2 ? { days: p.streakDays, brokenOn: p.lastActiveDay } : p.brokenStreak;
+  return { ...p, streakDays: 1, lastActiveDay: t, brokenStreak };
+}
+
+/** Freezes still available this month (a new month resets the count without a write). */
+function freezesLeftOf(s: LearnerState): number {
+  const used = s.streakFreezes.month === monthKey(today()) ? s.streakFreezes.used : 0;
+  return Math.max(0, FREEZE_BUDGET - used);
+}
+
+/** The pending repair the learner can spend a freeze on — null once it's too stale to be honest. */
+function pendingRepair(s: LearnerState): { brokenDays: number; brokenOn: string } | null {
+  const b = s.brokenStreak;
+  if (!b) return null;
+  const ageDays = Math.floor((Date.parse(today()) - Date.parse(b.brokenOn)) / 86400000);
+  if (ageDays > REPAIR_WINDOW_DAYS) return null;
+  return { brokenDays: b.days, brokenOn: b.brokenOn };
+}
+
+// ponytail: one runnable check for the break/repair math — dev-only, never throws.
+if (import.meta.env.DEV) {
+  const y = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const old = new Date(Date.now() - 3 * 86400000).toISOString().slice(0, 10);
+  const base = { ...({} as LearnerState), streakDays: 7, lastActiveDay: old } as LearnerState;
+  console.assert(rollForward(base).streakDays === 1, 'break resets to 1');
+  console.assert(rollForward(base).brokenStreak?.days === 7, 'break stashes the lost chain');
+  console.assert(
+    rollForward({ ...base, lastActiveDay: y }).streakDays === 8,
+    'yesterday continues the chain',
+  );
 }
 
 function bumpToday() {
@@ -127,6 +166,12 @@ function bumpToday() {
 export interface ProgressStore {
   xp: number;
   streakDays: number;
+  /** A broken streak still inside the repair window, or null — drives the You repair card. */
+  streakRepair: { brokenDays: number; brokenOn: string } | null;
+  /** Streak-freezes still available this month. */
+  freezesLeft: number;
+  /** Spend a freeze to repair the pending break (with a logged reason). Returns true on success. */
+  repairStreak: (reason: string) => boolean;
   completed: ReadonlySet<string>;
   /** Furthest fraction reached inside each topic's course (0..1). */
   topicProgress: Record<string, number>;
@@ -245,6 +290,32 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     [pushBloom, persist],
   );
 
+  const repairStreak = useCallback(
+    // reason is the honesty gate — a freeze is spent against a stated cause, not tapped for free.
+    // ponytail: no dedicated event type in the contracts registry; the You card is the honest record.
+    (reason: string): boolean => {
+      if (!reason.trim()) return false;
+      let ok = false;
+      setState((prev) => {
+        const pend = pendingRepair(prev);
+        if (!pend) return prev;
+        const m = monthKey(today());
+        const used = prev.streakFreezes.month === m ? prev.streakFreezes.used : 0;
+        if (used >= FREEZE_BUDGET) return prev;
+        ok = true;
+        return persist({
+          ...prev,
+          // the chain continues through the frozen gap; showing up today is the next day of it
+          streakDays: pend.brokenDays + 1,
+          streakFreezes: { month: m, used: used + 1 },
+          brokenStreak: undefined,
+        });
+      });
+      return ok;
+    },
+    [persist],
+  );
+
   const reportProgress = useCallback(
     (topicId: string, fraction: number) => {
       setState((prev) => {
@@ -268,6 +339,9 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     () => ({
       xp: state.xp,
       streakDays: state.streakDays,
+      streakRepair: pendingRepair(state),
+      freezesLeft: freezesLeftOf(state),
+      repairStreak,
       completed: new Set(state.completedTopics),
       topicProgress: state.topicProgress,
       reportProgress,
@@ -276,7 +350,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       completeTopic,
       dismissBloom,
     }),
-    [state, blooms, award, completeTopic, dismissBloom, reportProgress],
+    [state, blooms, award, completeTopic, dismissBloom, reportProgress, repairStreak],
   );
 
   return <Ctx.Provider value={store}>{children}</Ctx.Provider>;

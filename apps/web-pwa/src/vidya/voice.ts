@@ -85,6 +85,8 @@ interface LiveSession {
   processor: ScriptProcessorNode;
   /** After a push-to-talk release: capture is closed, we are only awaiting her reply. */
   finishing: boolean;
+  /** Any audio played back this session — so an empty push-to-talk hold doesn't hang on the timeout. */
+  spoke: boolean;
   /** Accumulated transcripts for the current turn, flushed on turnComplete / close. */
   inTxt: string;
   outTxt: string;
@@ -194,6 +196,7 @@ export function useVidyaVoice(options?: {
       source,
       processor,
       finishing: false,
+      spoke: false,
       inTxt: '',
       outTxt: '',
     };
@@ -231,6 +234,7 @@ export function useVidyaVoice(options?: {
       node.start(state.playhead);
       state.playhead += buf.duration;
       state.sources.add(node);
+      state.spoke = true;
       setStatus('speaking');
       setMood?.('explaining');
       node.onended = () => {
@@ -268,10 +272,17 @@ export function useVidyaVoice(options?: {
       // Transcripts stream in incrementally; accumulate, then flush the pair on turnComplete.
       if (content?.inputTranscription?.text) state.inTxt += content.inputTranscription.text;
       if (content?.outputTranscription?.text) state.outTxt += content.outputTranscription.text;
-      if (content?.turnComplete) flush(state);
+      // Audio first, so `spoke` is set before the empty-turn check (a message can carry both).
       for (const part of content?.modelTurn?.parts ?? []) {
         const data = part.inlineData?.data;
         if (typeof data === 'string') playChunk(data);
+      }
+      if (content?.turnComplete) {
+        const heardNothing = state.inTxt.trim() === '';
+        flush(state);
+        // Empty push-to-talk hold — a mic mis-tap that captured only silence, and she has no reply
+        // to stream. Close gracefully now instead of leaving her hanging until the 12s safety timeout.
+        if (state.finishing && heardNothing && !state.spoke) stop();
       }
     };
 

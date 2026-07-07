@@ -8,8 +8,14 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { currentFidelity, isOffline } from '../shell/resilience';
 import { type ChatTurn, useVidyaChat } from './chat';
 import { base64ToFloat32 } from './voice';
+
+// Family N: a stalled 2G link must never leave the narration gate hanging on a fetch that never
+// resolves. Bound every TTS request; on timeout it aborts → synth returns null → the words already
+// on screen carry the turn and any gate waiting on us releases on its own clock.
+const TTS_TIMEOUT_MS = 8000;
 
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
 const MUTE_KEY = 'clss-voice-muted-v1';
@@ -97,21 +103,28 @@ function sentences(text: string): string[] {
 async function synth(
   text: string,
 ): Promise<{ samples: Float32Array<ArrayBuffer>; rate: number } | null> {
-  if (!GATEWAY_URL || !text.trim()) return null;
+  // Offline (or keyless): don't burn the timeout on a fetch that can't land — fall straight to
+  // text. The reply is already on screen; her voice is the grace, not the help.
+  if (!GATEWAY_URL || !text.trim() || isOffline()) return null;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), TTS_TIMEOUT_MS);
   try {
     const res = await fetch(`${GATEWAY_URL}/v1/voice/tts`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ text: text.slice(0, 600) }),
+      signal: ctrl.signal,
     });
-    if (!res.ok) return null;
+    if (!res.ok) return null; // quota 502 / any non-ok → silent-safe, gate releases via onDone
     const audio = (await res.json()) as { mime?: string; b64?: string };
     if (!audio.b64) return null;
     const rate = Number(/rate=(\d+)/.exec(audio.mime ?? '')?.[1] ?? 24000);
     const samples = base64ToFloat32(audio.b64);
     return samples.length === 0 ? null : { samples, rate };
   } catch {
-    return null;
+    return null; // abort (stall) or network error — same graceful text-first fallback
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -172,7 +185,10 @@ export async function speakLine(text: string, opts?: { onDone?: () => void }): P
   stopSpeaking();
   const gen = ++speechGen;
   try {
-    const parts = sentences(text);
+    // Low-fi (reduced-motion / Data Saver / 2G): shorter TTS — voice the first couple of sentences,
+    // the rest stays on screen. Grace degrades, the words don't.
+    const all = sentences(text);
+    const parts = currentFidelity() === 'low' ? all.slice(0, 2) : all;
     let pending = synth(parts[0] as string);
     for (let i = 0; i < parts.length; i++) {
       const cur = await pending;

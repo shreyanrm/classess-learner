@@ -18,6 +18,10 @@ export interface LearnerState {
   topicProgress: Record<string, number>;
   /** One-time award keys already granted (account, profile_photo, …). */
   awardedOnce: string[];
+  /** Streak-freeze budget: repairs of a broken streak against a monthly allowance (family P). */
+  streakFreezes: { month: string; used: number };
+  /** A recently-broken streak awaiting a possible freeze-repair (within the repair window). */
+  brokenStreak?: { days: number; brokenOn: string };
   /** The per-learner mind snapshot (preferences, profile touches, twin marks) — free-form, no PII. */
   mind: Record<string, unknown>;
   /** ISO stamp of the last local mutation — latest-wins fields reconcile on it. */
@@ -47,6 +51,7 @@ export function emptyLearnerState(): LearnerState {
     completedTopics: [],
     topicProgress: {},
     awardedOnce: [],
+    streakFreezes: { month: todayISO().slice(0, 7), used: 0 },
     mind: {},
     updatedAt: new Date().toISOString(),
   };
@@ -63,6 +68,16 @@ export function normalizeLearnerState(raw: Partial<LearnerState> | null | undefi
     completedTopics: raw.completedTopics ?? [],
     topicProgress: raw.topicProgress ?? {},
     awardedOnce: raw.awardedOnce ?? [],
+    streakFreezes:
+      raw.streakFreezes && typeof raw.streakFreezes.month === 'string'
+        ? { month: raw.streakFreezes.month, used: Math.max(0, raw.streakFreezes.used || 0) }
+        : empty.streakFreezes,
+    brokenStreak:
+      raw.brokenStreak &&
+      typeof raw.brokenStreak.days === 'number' &&
+      typeof raw.brokenStreak.brokenOn === 'string'
+        ? { days: raw.brokenStreak.days, brokenOn: raw.brokenStreak.brokenOn }
+        : undefined,
     mind: raw.mind ?? {},
     updatedAt: raw.updatedAt ?? empty.updatedAt,
   };
@@ -99,6 +114,14 @@ export function mergeLearnerState(a: LearnerState, b: LearnerState): LearnerStat
 
   const [staler, fresher] = a.updatedAt <= b.updatedAt ? [a, b] : [b, a];
 
+  // Streak-freeze budget: within one month keep the higher spend; a newer month resets naturally.
+  const [fa, fb] = [a.streakFreezes, b.streakFreezes];
+  const streakFreezes =
+    fa.month === fb.month ? { month: fa.month, used: Math.max(fa.used, fb.used) } : fa.month > fb.month ? fa : fb;
+  // ponytail: the fresher write wins on the pending break, so a repair (which clears it) propagates;
+  // freeze state is local-first (not in the remote row) so this only matters across real devices.
+  const brokenStreak = fresher.brokenStreak;
+
   return {
     xp: Math.max(a.xp, b.xp),
     streakDays,
@@ -106,6 +129,8 @@ export function mergeLearnerState(a: LearnerState, b: LearnerState): LearnerStat
     completedTopics: [...new Set([...a.completedTopics, ...b.completedTopics])],
     topicProgress,
     awardedOnce: [...new Set([...a.awardedOnce, ...b.awardedOnce])],
+    streakFreezes,
+    brokenStreak,
     mind: { ...staler.mind, ...fresher.mind },
     updatedAt: fresher.updatedAt,
   };

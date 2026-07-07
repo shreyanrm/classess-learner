@@ -22,15 +22,21 @@ import type { Topic } from '../data/model';
 import { useRouter } from '../shell/router';
 import {
   clearMind,
+  type KnownItem,
+  lifetimeSnapshot,
   loadMind,
   loadProactivity,
-  mindLines,
+  observationLines,
   type Proactivity,
+  removableItems,
+  removeFact,
+  removeInterest,
   saveProactivity,
 } from '../store/mind';
-import { levelInfo, useProgress } from '../store/progress';
+import { FREEZE_BUDGET, levelInfo, useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { LevelBadge } from '../ui/AppHeader';
+import { paintAccess } from '../ui/access';
 import {
   ANIMAL_IDS,
   type AvatarChoice,
@@ -520,7 +526,8 @@ export function You() {
   const router = useRouter();
   const sdk = useSdk();
   const bus = useVidyaBus();
-  const { xp, streakDays, completed, award } = useProgress();
+  const { xp, streakDays, completed, award, streakRepair, freezesLeft, repairStreak } =
+    useProgress();
   const level = levelInfo(xp);
 
   // --- who you are -------------------------------------------------------
@@ -546,6 +553,39 @@ export function You() {
     // Completing identity from here still counts — silent if onboarding already granted it.
     award('account');
   };
+
+  // Preference edits (accessibility, language) don't award XP; they persist, repaint the real
+  // display effects, and refresh her dossier so the next turn already honors them.
+  const patchProfile = (patch: Partial<StoredProfile>) => {
+    const next = { ...profile, ...patch };
+    setProfile(next);
+    saveProfile(next);
+    paintAccess({ largeText: next.largeText, highContrast: next.highContrast });
+    bus.publishLifetime(lifetimeSnapshot());
+  };
+
+  // The grade/board a session opened on — a change from it shows the honest migration note.
+  const schoolBaseline = useRef({ grade: profile.grade, boardId: profile.boardId });
+  const schoolChanged =
+    profile.grade !== schoolBaseline.current.grade ||
+    profile.boardId !== schoolBaseline.current.boardId;
+
+  // Streak-freeze repair (family P): a broken chain repairs against the monthly budget with a
+  // stated reason. She confirms what she did and what remains; the confirmation lingers this session.
+  const [repairReason, setRepairReason] = useState('');
+  const [repaired, setRepaired] = useState<{ days: number; left: number } | null>(null);
+  const doRepair = () => {
+    if (!streakRepair) return;
+    const days = streakRepair.brokenDays;
+    if (repairStreak(repairReason)) {
+      setRepaired({ days, left: freezesLeft - 1 });
+      setRepairReason('');
+    }
+  };
+
+  // Re-onboard door: walk the intro again without wiping mastery (progress lives in learner_state,
+  // not the profile onboarding rewrites). Just re-enter the flow — finishing re-sets the flag.
+  const redoSetup = () => router.navigate({ name: 'onboarding' });
 
   const commitName = () => {
     const trimmed = nameDraft.trim();
@@ -642,12 +682,25 @@ export function You() {
     });
   };
 
-  // --- her memory of you (steerable) --------------------------------------
-  const [knownLines, setKnownLines] = useState<string[]>(() => mindLines(loadMind()));
+  // --- her memory of you (steerable, per-item — the forget verb's visual twin) ----------
+  const [mind, setMind] = useState(() => loadMind());
   const [mindCleared, setMindCleared] = useState(false);
+  const knownItems = useMemo(() => removableItems(mind), [mind]);
+  const observations = useMemo(() => observationLines(mind), [mind]);
+  // Every removal re-reads storage, then refreshes her live lifetime slot so the very next turn
+  // carries the corrected dossier (MindObserver also republishes on its pulse).
+  const refreshMind = () => {
+    setMind(loadMind());
+    bus.publishLifetime(lifetimeSnapshot());
+  };
+  const removeItem = (item: KnownItem) => {
+    if (item.kind === 'fact') removeFact(item.text);
+    else removeInterest(item.text);
+    refreshMind();
+  };
   const forgetMind = () => {
     clearMind();
-    setKnownLines([]);
+    setMind(loadMind());
     setMindCleared(true);
     // the lifetime slot empties immediately — her next call carries nothing about you
     bus.publishLifetime({});
@@ -856,6 +909,29 @@ export function You() {
                 onGrade={(g) => commitProfile({ grade: g })}
                 onBoard={(b) => commitProfile({ boardId: b })}
               />
+              {/* the honest migration note — what carries over when they move class/board */}
+              {schoolChanged && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+                  style={{
+                    marginTop: 14,
+                    padding: '12px 14px',
+                    borderRadius: 3,
+                    background: 'rgba(31,53,224,0.05)',
+                    border: '1px solid rgba(31,53,224,0.1)',
+                    ...bodyLine,
+                    fontSize: '0.85rem',
+                    color: 'var(--clss-ink-700)',
+                  }}
+                >
+                  moving to {profile.grade} · {boardName(profile.boardId)}. your{' '}
+                  {xp.toLocaleString('en-IN')} xp, your day-{streakDays} streak, and the{' '}
+                  {mastered.length} {mastered.length === 1 ? 'topic' : 'topics'} you've mastered all
+                  carry over — I'll refit the course map to the new class and board.
+                </motion.div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -998,6 +1074,80 @@ export function You() {
             </div>
           </Section>
         </motion.div>
+
+        {/* ---- the streak-freeze repair (family P) ---- */}
+        <AnimatePresence>
+          {(streakRepair || repaired) && (
+            <motion.div
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+            >
+              <Card style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {repaired ? (
+                  <>
+                    <div
+                      style={{ fontSize: '1.05rem', fontWeight: 500, color: 'var(--clss-ink-900)' }}
+                    >
+                      done — your {repaired.days}-day streak is back
+                    </div>
+                    <div style={bodyLine}>
+                      I froze the gap you told me about. {repaired.left} of {FREEZE_BUDGET} freezes
+                      left this month — they refresh on the 1st.
+                    </div>
+                  </>
+                ) : streakRepair ? (
+                  <>
+                    <div
+                      style={{ fontSize: '1.05rem', fontWeight: 500, color: 'var(--clss-ink-900)' }}
+                    >
+                      your {streakRepair.brokenDays}-day streak broke
+                    </div>
+                    <div style={bodyLine}>
+                      life happens — illness, exams, a trip. tell me why and I'll freeze that gap so
+                      your streak stands.{' '}
+                      {freezesLeft > 0
+                        ? `${freezesLeft} of ${FREEZE_BUDGET} freezes left this month.`
+                        : 'no freezes left this month — they refresh on the 1st.'}
+                    </div>
+                    {freezesLeft > 0 && (
+                      <div style={{ display: 'flex', gap: 10 }}>
+                        <input
+                          value={repairReason}
+                          onChange={(e) => setRepairReason(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && doRepair()}
+                          placeholder="what got in the way?"
+                          aria-label="the reason for the missed days"
+                          style={{
+                            flex: 1,
+                            padding: '10px 14px',
+                            fontSize: '0.95rem',
+                            fontFamily: 'inherit',
+                            border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+                            borderRadius: 'var(--clss-radius-sm)',
+                            outline: 'none',
+                            background: 'var(--clss-paper)',
+                            color: 'var(--clss-ink-900)',
+                            minWidth: 0,
+                          }}
+                        />
+                        <MagneticButton
+                          size="sm"
+                          variant="quiet"
+                          onClick={doRepair}
+                          disabled={!repairReason.trim()}
+                        >
+                          repair my streak
+                        </MagneticButton>
+                      </div>
+                    )}
+                  </>
+                ) : null}
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <Hairline />
 
@@ -1167,31 +1317,85 @@ export function You() {
         {/* ---- what Vidya knows about you ---- */}
         <motion.div variants={rise} ref={mindRef}>
           <Section label="what Vidya knows about you">
-            <Card style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {knownLines.length === 0 ? (
+            <Card style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {knownItems.length === 0 && observations.length === 0 ? (
                 <div style={bodyLine}>
                   {mindCleared
                     ? 'cleared — she starts fresh from your next answer'
                     : 'she is still getting to know you — how you answer, where you linger, when you show up. it gathers here as you learn.'}
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {knownLines.map((line) => (
-                    <div key={line} style={{ ...bodyLine, fontSize: '0.9rem' }}>
-                      {line}
+                <>
+                  {/* the things she remembers — each one removable on its own */}
+                  {knownItems.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                      <AnimatePresence initial={false}>
+                        {knownItems.map((item) => (
+                          <motion.span
+                            key={`${item.kind}:${item.text}`}
+                            layout
+                            initial={{ opacity: 0, scale: 0.82 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.82 }}
+                            transition={{ type: 'spring', stiffness: 380, damping: 26 }}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 7,
+                              padding: '6px 8px 6px 13px',
+                              borderRadius: 999,
+                              background: 'var(--clss-tonal)',
+                              fontSize: '0.85rem',
+                              color: 'var(--clss-ink-900)',
+                            }}
+                          >
+                            {item.kind === 'interest' ? `into ${item.text}` : item.text}
+                            <button
+                              type="button"
+                              aria-label={`forget ${item.text}`}
+                              onClick={() => removeItem(item)}
+                              style={{
+                                border: 'none',
+                                background: 'transparent',
+                                cursor: 'pointer',
+                                color: 'var(--clss-ink-300)',
+                                fontSize: '1.05rem',
+                                lineHeight: 1,
+                                padding: 0,
+                                width: 18,
+                                height: 18,
+                                display: 'grid',
+                                placeItems: 'center',
+                              }}
+                            >
+                              ×
+                            </button>
+                          </motion.span>
+                        ))}
+                      </AnimatePresence>
                     </div>
-                  ))}
-                </div>
+                  )}
+                  {/* what she has inferred from watching — read-only, it regenerates as she learns */}
+                  {observations.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {observations.map((line) => (
+                        <div key={line} style={{ ...bodyLine, fontSize: '0.9rem' }}>
+                          {line}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
               <Hairline style={{ margin: '6px 0' }} />
               <div style={{ ...whisper }}>
-                this stays on your device and shapes how she helps you. you can clear it any time —
-                she will not mind.
+                this stays on your device and shapes how she helps you. remove any one, or clear it
+                all — she will not mind.
               </div>
-              {knownLines.length > 0 && (
+              {(knownItems.length > 0 || observations.length > 0) && (
                 <div>
                   <MagneticButton size="sm" variant="quiet" onClick={forgetMind}>
-                    clear what she knows
+                    clear everything she knows
                   </MagneticButton>
                 </div>
               )}
@@ -1244,6 +1448,78 @@ export function You() {
               />
               <Hairline />
               <AppearanceRow />
+              <Hairline />
+              {/* durable accessibility — larger text and high contrast apply for real and ride her
+                  dossier so she honors them every turn */}
+              <DialRow
+                title="larger text"
+                line="bump the type size across the whole app"
+                on={Boolean(profile.largeText)}
+                onChange={(v) => patchProfile({ largeText: v })}
+              />
+              <Hairline />
+              <DialRow
+                title="high contrast"
+                line="stronger text and lines, easier to read"
+                on={Boolean(profile.highContrast)}
+                onChange={(v) => patchProfile({ highContrast: v })}
+              />
+              <Hairline />
+              <div style={{ padding: '13px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div>
+                  <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>
+                    the language I learn in
+                  </div>
+                  <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
+                    Vidya teaches and replies in this language until you change it — English by
+                    default
+                  </div>
+                </div>
+                <input
+                  defaultValue={profile.language ?? ''}
+                  onBlur={(e) => {
+                    const v = e.target.value.trim();
+                    if (v !== (profile.language ?? '')) patchProfile({ language: v || undefined });
+                  }}
+                  onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
+                  placeholder="e.g. Hindi, Tamil, English"
+                  aria-label="the language I learn in"
+                  style={{
+                    maxWidth: 340,
+                    padding: '10px 14px',
+                    fontSize: '0.95rem',
+                    fontFamily: 'inherit',
+                    border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+                    borderRadius: 'var(--clss-radius-sm)',
+                    outline: 'none',
+                    background: 'var(--clss-paper)',
+                    color: 'var(--clss-ink-900)',
+                  }}
+                />
+              </div>
+              <Hairline />
+              {/* re-onboard door — walk the intro again, mastery intact */}
+              <div style={{ padding: '13px 0' }}>
+                <button
+                  type="button"
+                  onClick={redoSetup}
+                  style={{
+                    border: 'none',
+                    background: 'transparent',
+                    fontFamily: 'inherit',
+                    cursor: 'pointer',
+                    padding: 0,
+                    textAlign: 'left',
+                  }}
+                >
+                  <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>
+                    redo my setup
+                  </div>
+                  <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
+                    walk through the intro with Vidya again — your xp, streak, and mastery all stay
+                  </div>
+                </button>
+              </div>
               {/* sign out — live mode only; the dev-mock learner has no session to end */}
               {!sdk.config.devAuth && (
                 <>

@@ -21,6 +21,11 @@ export interface StoredProfile {
   age?: number;
   /** What they're into — folded into Vidya's analogies/examples. */
   interests?: string[];
+  /** Durable accessibility profile — rides the dossier so she honors it every turn. */
+  largeText?: boolean;
+  highContrast?: boolean;
+  /** Persistent instruction language — she teaches in this until it's changed. */
+  language?: string;
 }
 
 const FALLBACK: StoredProfile = { name: learner.name, grade: learner.grade, boardId: 'cbse' };
@@ -36,6 +41,10 @@ export function loadProfile(): StoredProfile {
         boardId: p.boardId || FALLBACK.boardId,
         age: typeof p.age === 'number' ? p.age : undefined,
         interests: Array.isArray(p.interests) ? p.interests : undefined,
+        largeText: p.largeText === true,
+        highContrast: p.highContrast === true,
+        language:
+          typeof p.language === 'string' && p.language.trim() ? p.language.trim() : undefined,
       };
     }
   } catch {

@@ -178,6 +178,44 @@ def test_dossier_is_empty_when_nothing_is_known() -> None:
     assert "Who you are teaching" not in prompt
 
 
+def test_machine_room_renders_internal_state() -> None:
+    from classess_gateway.vidya import _build_user_prompt
+
+    context = {
+        "machine": {
+            "progress": {"xp": 100, "level": 2, "intoLevel": 20, "toNext": 100, "streakDays": 4},
+            "masteryBands": {"developing": 3, "secure": 2},
+            "reviews": {
+                "dueCount": 3,
+                "scheduled": 5,
+                "next": [{"node": "linear-equations", "inMinutes": 0}],
+            },
+            "generating": {"what": "a course on photosynthesis"},
+            "eventTail": ["practice.item.answered (wrong, hesitated)", "learn.node.completed"],
+        }
+    }
+    prompt = _build_user_prompt(context, None)
+    assert "Machine room" in prompt
+    # how far to level N, answered exactly
+    assert "level 2 (20 xp in, 100 to level 3)" in prompt
+    assert "4-day streak" in prompt
+    # the mastery snapshot, secure before developing (band priority)
+    assert "2 secure, 3 developing" in prompt
+    # the due queue with a time estimate
+    assert "3 due now of 5 scheduled" in prompt
+    assert "linear-equations now" in prompt
+    # in-flight generation and the hesitation signal
+    assert "photosynthesis" in prompt
+    assert "hesitated" in prompt
+
+
+def test_machine_room_is_empty_when_nothing_is_known() -> None:
+    from classess_gateway.vidya import _build_user_prompt
+
+    prompt = _build_user_prompt({}, None)
+    assert "Machine room" not in prompt
+
+
 def test_mock_turn_answers_the_name_question() -> None:
     from classess_gateway.vidya import mock_vidya_turn
 

@@ -16,6 +16,13 @@ import { useSdk } from '../../store/sdk';
 import { MagneticButton } from '../../ui/kit';
 import { capabilityById } from '../capabilities';
 import { type ChatTurn, useVidyaChat } from '../chat';
+import {
+  buildDoodle,
+  type DoodleSpec,
+  type Formula,
+  type FormulaCardSpec,
+  type MakerPlanSpec,
+} from '../create';
 import { freshOffers } from './classify';
 import type { ActionAttachment, Flashcard, QuizItem, TurnExtras } from './types';
 
@@ -321,6 +328,200 @@ function FlashcardsCard({ cards }: { cards: Flashcard[] }) {
   );
 }
 
+// --- one-page formula card (a real cram artifact, printable) ----------------------------------------
+
+function parseFormulaCard(spec: unknown): FormulaCardSpec | null {
+  if (!isRecord(spec) || !Array.isArray(spec.formulas)) return null;
+  const formulas = spec.formulas.flatMap((raw): Formula[] => {
+    if (!isRecord(raw)) return [];
+    const { name, expr, when } = raw;
+    if (typeof name !== 'string' || typeof expr !== 'string' || !name || !expr) return [];
+    return [{ name, expr, when: typeof when === 'string' ? when : undefined }];
+  });
+  if (formulas.length === 0) return null;
+  return {
+    title: typeof spec.title === 'string' && spec.title ? spec.title : 'your formula card',
+    formulas,
+    seeded: spec.seeded === true,
+    note: typeof spec.note === 'string' ? spec.note : undefined,
+  };
+}
+
+function FormulaCardView({ card }: { card: FormulaCardSpec }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ fontSize: '1.02rem', fontWeight: 650, lineHeight: 1.3 }}>{card.title}</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+        {card.formulas.map((f) => (
+          <div
+            key={f.name}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+              paddingBottom: 8,
+              borderBottom: '0.5px solid var(--clss-hairline-on-paper)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+              <span style={{ fontSize: '0.82rem', color: 'var(--clss-ink-500)' }}>{f.name}</span>
+              {f.when && <span style={{ ...whisper, fontSize: '0.72rem' }}>{f.when}</span>}
+            </div>
+            <span
+              style={{
+                fontSize: '1rem',
+                fontWeight: 550,
+                color: 'var(--clss-ink-900)',
+                letterSpacing: '0.01em',
+              }}
+            >
+              {f.expr}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}
+      >
+        {card.note ? (
+          <span style={whisper}>{card.note}</span>
+        ) : (
+          <span style={whisper}>one page — keep it for the morning.</span>
+        )}
+        <MagneticButton variant="quiet" size="sm" onClick={() => window.print()}>
+          print
+        </MagneticButton>
+      </div>
+    </div>
+  );
+}
+
+// --- maker-project plan (materials · steps · safety · timeline) --------------------------------------
+
+function parseMakerPlan(spec: unknown): MakerPlanSpec | null {
+  if (!isRecord(spec)) return null;
+  const strList = (v: unknown): string[] =>
+    Array.isArray(v) ? v.filter((s): s is string => typeof s === 'string' && s.length > 0) : [];
+  const steps = strList(spec.steps);
+  if (steps.length === 0) return null;
+  return {
+    title: typeof spec.title === 'string' && spec.title ? spec.title : 'your build',
+    materials: strList(spec.materials),
+    steps,
+    safety: strList(spec.safety),
+    timeline: strList(spec.timeline),
+  };
+}
+
+function MakerSection({
+  label,
+  items,
+  ordered,
+}: {
+  label: string;
+  items: string[];
+  ordered?: boolean;
+}) {
+  if (items.length === 0) return null;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+      <span style={{ ...whisper, textTransform: 'lowercase', letterSpacing: '0.04em' }}>
+        {label}
+      </span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {items.map((item, i) => (
+          <div key={item} style={{ display: 'flex', gap: 8, fontSize: '0.9rem', lineHeight: 1.5 }}>
+            <span style={{ color: 'var(--clss-ink-500)', minWidth: ordered ? 16 : 8 }}>
+              {ordered ? `${i + 1}.` : '·'}
+            </span>
+            <span style={{ color: 'var(--clss-ink-900)' }}>{item}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MakerPlanView({ plan }: { plan: MakerPlanSpec }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ fontSize: '1.02rem', fontWeight: 650, lineHeight: 1.3 }}>{plan.title}</div>
+      <MakerSection label="you'll need" items={plan.materials} />
+      <MakerSection label="steps" items={plan.steps} ordered />
+      <MakerSection label="stay safe" items={plan.safety} />
+      <MakerSection label="timeline" items={plan.timeline} />
+    </div>
+  );
+}
+
+// --- a small drawn delight (a seeded critter in her hand, one true fact hooked on) -------------------
+
+function parseDoodle(spec: unknown): DoodleSpec | null {
+  if (!isRecord(spec) || typeof spec.concept !== 'string' || !spec.concept) return null;
+  return {
+    concept: spec.concept,
+    fact: typeof spec.fact === 'string' ? spec.fact : undefined,
+    seed: typeof spec.seed === 'number' ? spec.seed : undefined,
+  };
+}
+
+function DoodleView({ doodle }: { doodle: DoodleSpec }) {
+  const art = buildDoodle(doodle.seed ?? 1);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center' }}>
+      <svg
+        viewBox={art.viewBox}
+        width="72%"
+        role="img"
+        aria-label={`a drawing of ${doodle.concept}`}
+        style={{ maxWidth: 220, display: 'block' }}
+      >
+        <path
+          d={art.body}
+          fill="var(--clss-card)"
+          stroke="var(--clss-ink-900)"
+          strokeWidth={2.2}
+          strokeLinejoin="round"
+        />
+        <path d={art.belly} fill="none" stroke="var(--clss-ink-300)" strokeWidth={1.4} />
+        <path
+          d={art.spikes}
+          fill="none"
+          stroke="var(--clss-ink-900)"
+          strokeWidth={2}
+          strokeLinejoin="round"
+        />
+        <path
+          d={art.tail}
+          fill="none"
+          stroke="var(--clss-ink-900)"
+          strokeWidth={2.2}
+          strokeLinecap="round"
+        />
+        {art.legs.map((d) => (
+          <path
+            key={d}
+            d={d}
+            fill="var(--clss-card)"
+            stroke="var(--clss-ink-900)"
+            strokeWidth={2}
+            strokeLinejoin="round"
+          />
+        ))}
+        <circle cx={art.eye.cx} cy={art.eye.cy} r={3} fill="var(--clss-ink-900)" />
+      </svg>
+      <span style={{ fontSize: '0.9rem', color: 'var(--clss-ink-700)', textAlign: 'center' }}>
+        a little {doodle.concept}, just for you.
+      </span>
+      {doodle.fact && (
+        <span style={{ ...whisper, textAlign: 'center', lineHeight: 1.5 }}>
+          and one true thing: {doodle.fact}
+        </span>
+      )}
+    </div>
+  );
+}
+
 // --- the action card (approval + explainability + outcome) ------------------------------------------
 
 const CONFIDENCE_COPY: Record<ActionAttachment['confidence'], string> = {
@@ -455,6 +656,30 @@ export function TurnAttachments({ turn }: { turn: ChatTurn }) {
       return items.length > 0 ? (
         <Shell eyebrow={concept ? `a quick quiz · ${concept}` : 'a quick quiz'}>
           <QuizCard items={items} />
+        </Shell>
+      ) : null;
+    }
+    if (kind === 'formula') {
+      const card = parseFormulaCard(spec);
+      return card ? (
+        <Shell eyebrow="a one-page formula card">
+          <FormulaCardView card={card} />
+        </Shell>
+      ) : null;
+    }
+    if (kind === 'maker') {
+      const plan = parseMakerPlan(spec);
+      return plan ? (
+        <Shell eyebrow="a build, planned out">
+          <MakerPlanView plan={plan} />
+        </Shell>
+      ) : null;
+    }
+    if (kind === 'doodle') {
+      const doodle = parseDoodle(spec);
+      return doodle ? (
+        <Shell eyebrow="drawn just for fun">
+          <DoodleView doodle={doodle} />
         </Shell>
       ) : null;
     }

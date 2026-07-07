@@ -1,0 +1,72 @@
+- generic [ref=f14e1]:
+  - generic [ref=f14e2]:
+    - generic [ref=f14e234]:
+      - generic [ref=f14e235]:
+        - img "Vidya" [ref=f14e236]:
+          - img [ref=f14e240]
+        - generic [ref=f14e264]:
+          - generic [ref=f14e265]: Vidya
+          - generic [ref=f14e266]: thinking…
+        - button "Unmute Vidya" [pressed] [ref=f14e267] [cursor=pointer]:
+          - img [ref=f14e268]
+      - generic [ref=f14e272]:
+        - generic [ref=f14e273]: where we began
+        - generic [ref=f14e274]: Tell me something genuinely cool from science or math that most people never learn in school.
+        - generic [ref=f14e275]: what's on my screen right now?
+        - generic [ref=f14e277]: You're on your home screen — today's walk through linear equations. You've already knocked out the warm-up and rational numbers on the number line, and next up is solving equations with the variable on one side.
+        - generic [ref=f14e278]: hello Vidya
+        - generic [ref=f14e280]: Hey Shreyan, good to see you back. Ready to tackle equations with the variable on one side, or do you want to warm up with something else first?
+        - generic [ref=f14e281]: what's my name?
+        - generic [ref=f14e283]: Your name is Shreyan — and I've got you down as someone who loves cricket and space, so I'm always thinking about how to make math feel as sharp as a perfect cover drive.
+        - generic [ref=f14e284]: give me an example
+        - generic [ref=f14e286]: "Shreyan, imagine you're setting a field placement in cricket — you've got to balance your bowlers and batsmen on each side of the pitch to win the match. Linear equations work the same way: you're balancing both sides of an equation to find where the variable 'lands.' For instance, if 2x + 5 = 13, you'd subtract 5 from both sides (like moving a fielder) to get 2x = 8, then divide by 2 to isolate x. The trick is: whatever you do to one side, you do to the other, or the balance breaks."
+        - generic [ref=f14e287]: take me to practice
+        - generic [ref=f14e289]: taking you to practice.
+        - generic [ref=f14e290]: show my progress
+        - generic [ref=f14e292]: here is your progress.
+        - generic [ref=f14e293]: open the atom
+        - generic [ref=f14e295]: opening Solving equations with the variable on one side.
+        - generic [ref=f14e296]: open the atom
+        - generic [ref=f14e298]: opening Solving equations with the variable on one side.
+        - generic [ref=f14e299]: what's on my screen right now?
+        - generic [ref=f14e301]: You're looking at a balance scale showing x + 3 on the left side and 8 on the right side — it's perfectly level right now, which means both sides are equal. That's your equation x + 3 = 8 set up as a scale.
+        - generic [ref=f14e302]: open the atom
+        - generic [ref=f14e304]: opening Solving equations with the variable on one side.
+        - generic [ref=f14e305]: circle the x on the left pan
+        - generic [ref=f14e307]: Done — I've circled the x on the left pan. Now, what do you think we need to do to get x by itself on that side?
+        - generic [ref=f14e308]: open the atom
+        - generic [ref=f14e310]: opening Solving equations with the variable on one side.
+        - generic [ref=f14e311]: I'm stuck, just point at the x for me please
+        - generic [ref=f14e313]: I've got you — look at the scale right now. The x is on the left pan with the 3. To get x alone, what's in the way?
+        - generic [ref=f14e314]: explain this
+        - generic [ref=f14e316]: Right, let me break it down. You've got x and 3 sitting together on the left side of the balance. To isolate x — to get it alone — you need to remove the 3. What operation would undo adding 3?
+        - generic [ref=f14e317]: can you point that out?
+        - generic [ref=f14e319]: I'd love to, but I can't see the balance scale you're working with right now — it sounds like you're in a course. Can you tell me what you see on the left pan, and I'll walk you through it from here?
+        - generic [ref=f14e320]: take me to learn
+        - generic [ref=f14e322]: opening your library.
+        - generic [ref=f14e323]: Tell me something genuinely cool from science or math that most people never learn in school.
+        - generic [ref=f14e325]: give me a moment, then ask me again.
+        - generic [ref=f14e326]: draw me a dragon
+        - generic [ref=f14e327]: Vidya is thinking…
+      - generic [ref=f14e329]:
+        - textbox "Talk to Vidya…" [active] [ref=f14e330]
+        - button "Talk by voice" [ref=f14e331] [cursor=pointer]
+    - banner:
+      - img "Classess" [ref=f14e199]
+      - generic [ref=f14e200]:
+        - button "Did you know" [ref=f14e201] [cursor=pointer]:
+          - img [ref=f14e202]
+          - text: Did you know
+        - generic "day 3 of being a learner" [ref=f14e204]:
+          - img [ref=f14e205]
+          - text: "3"
+        - generic [ref=f14e208]: 420 xp
+        - generic [ref=f14e209]:
+          - generic "level 4 · 60/200 xp to level 5" [ref=f14e210]:
+            - img [ref=f14e211]
+            - generic [ref=f14e214]: "4"
+          - button "You — level 4, profile and settings" [ref=f14e215] [cursor=pointer]:
+            - generic "fox" [ref=f14e216]:
+              - img [ref=f14e218]
+  - button "Back — ◦ back" [ref=f14e340] [cursor=pointer]:
+    - img [ref=f14e341]

@@ -88,6 +88,8 @@ export interface SessionContext {
 export interface TurnContext {
   recentTurns: { role: 'user' | 'vidya'; text: string }[];
   lastUserInput?: string;
+  /** The learner's local wall-clock, so wellbeing turns (late-night, sleep) ride the real time. */
+  localTime?: string;
 }
 export interface LifetimeContext {
   twinSummary?: string;
@@ -96,6 +98,30 @@ export interface LifetimeContext {
   learner?: { name: string; age?: number; grade?: string; board?: string };
   /** Durable facts she has learned in conversation — the concierge's notepad. */
   facts?: string[];
+  /** Durable accessibility profile — she honors these every turn (family P). */
+  accessibility?: { readAloud?: boolean; largeText?: boolean; highContrast?: boolean };
+  /** Persistent instruction language — she teaches in this until it's changed. */
+  language?: string;
+}
+
+/**
+ * The machine room (VIDYA-CAPABILITIES.md family J) — the system's internal truth for the turn:
+ * a mastery-band snapshot, the spaced-review due queue, XP/level/streak, the recent event-stream
+ * tail, and any in-flight content generation. Digests, never dumps — the app assembles it each turn
+ * and the gateway renders it compactly so she references it naturally ("3 reviews due, two minutes
+ * each", "how far to level 5" answered exactly).
+ */
+export interface MachineRoomContext {
+  /** How many nodes sit in each mastery band right now, e.g. { developing: 3, secure: 2 }. */
+  masteryBands?: Record<string, number>;
+  /** Spaced-review queue: how many are due now, how many scheduled, and the soonest few. */
+  reviews?: { dueCount: number; scheduled: number; next?: { node: string; inMinutes: number }[] };
+  /** Gamification state — enough to answer "how far to level N" exactly. */
+  progress?: { xp: number; level: number; intoLevel: number; toNext: number; streakDays: number };
+  /** The event-stream tail, richest last (~8): what they clicked, answered, hesitated on. */
+  eventTail?: string[];
+  /** In-flight content generation — the one composing right now, if any. */
+  generating?: { what: string };
 }
 
 /** The full, serializable context Vidya reasons over — her perception of the app. */
@@ -106,6 +132,8 @@ export interface VidyaAssembledContext {
   turn: TurnContext;
   lifetime: LifetimeContext;
   canvas?: CanvasWorking;
+  /** The system's live internal state (family J) — assembled by the app each turn. */
+  machine?: MachineRoomContext;
   targets: { id: string; kind: string; label: string; meaning?: string; scene?: TargetScene }[];
 }
 
@@ -136,6 +164,7 @@ export interface VidyaBus {
   publishTurn(turn: TurnContext): void;
   publishLifetime(lifetime: LifetimeContext): void;
   publishCanvas(canvas: CanvasWorking | undefined): void;
+  publishMachine(machine: MachineRoomContext | undefined): void;
   // perception (read)
   assembleContext(): VidyaAssembledContext;
   getTargets(): AnnotatableTarget[];
@@ -152,8 +181,16 @@ export interface VidyaBus {
   notes: ActiveNote[];
   /** performance.now() when the current marks were drawn; the overlay fades each by its own ttl. */
   marksBornAt: number;
+  /** Bumped each time she re-inks a faded mark set, so the overlay reseeds the strokes fresh. */
+  reinkNonce: number;
   pendingOffer: ConsequentialAction | null;
   dispatch(actions: VidyaAction[]): void;
+  /**
+   * Re-ink the marks she last drew (family M): her ink is transient and fades, so this brings the
+   * last set back — freshly drawn — when the learner refers to a drawing no longer on screen.
+   * Returns false when she has drawn nothing to bring back.
+   */
+  redrawLastMarks(): boolean;
   acceptOffer(): void;
   dismissOffer(): void;
   clearMarks(): void;
@@ -186,6 +223,7 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
   const turnRef = useRef<TurnContext>({ recentTurns: [] });
   const lifetimeRef = useRef<LifetimeContext>({});
   const canvasRef = useRef<CanvasWorking | undefined>(undefined);
+  const machineRef = useRef<MachineRoomContext | undefined>(undefined);
 
   const publishPage = useCallback((v: PageContext) => {
     pageRef.current = v;
@@ -205,13 +243,23 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
   const publishCanvas = useCallback((v: CanvasWorking | undefined) => {
     canvasRef.current = v;
   }, []);
+  const publishMachine = useCallback((v: MachineRoomContext | undefined) => {
+    machineRef.current = v;
+  }, []);
 
   const [mood, setMood] = useState<VidyaMood>('idle');
   const [highlights, setHighlights] = useState<ActiveHighlight[]>([]);
   const [annotations, setAnnotations] = useState<ActiveAnnotation[]>([]);
   const [notes, setNotes] = useState<ActiveNote[]>([]);
   const [marksBornAt, setMarksBornAt] = useState(0);
+  const [reinkNonce, setReinkNonce] = useState(0);
   const clearTimer = useRef<number | undefined>(undefined);
+  // The last non-empty mark set she drew — kept so she can re-ink it after it has faded (family M).
+  const lastMarksRef = useRef<{
+    highlights: ActiveHighlight[];
+    annotations: ActiveAnnotation[];
+    notes: ActiveNote[];
+  }>({ highlights: [], annotations: [], notes: [] });
   const [pendingOffer, setPendingOffer] = useState<ConsequentialAction | null>(null);
 
   const targetsRef = useRef<Map<string, AnnotatableTarget>>(new Map());
@@ -238,6 +286,7 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
       turn: turnRef.current,
       lifetime: lifetimeRef.current,
       canvas: canvasRef.current,
+      machine: machineRef.current,
       targets: getTargets().map((t) => {
         const drivable = typeof t.applyTutorAction === 'function';
         const hasScene = drivable || t.getSceneState || t.getValidActions;
@@ -272,6 +321,34 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
     setNotes([]);
   }, []);
 
+  // Arm the fade timer for a set of live marks — each fades by its own ttl; this clears the residue.
+  const scheduleClear = useCallback((marks: { ttl?: number }[]) => {
+    if (clearTimer.current !== undefined) window.clearTimeout(clearTimer.current);
+    if (marks.length > 0) {
+      const maxTtl = Math.max(...marks.map((m) => m.ttl ?? DEFAULT_MARK_TTL));
+      clearTimer.current = window.setTimeout(() => {
+        setHighlights([]);
+        setAnnotations([]);
+        setNotes([]);
+      }, maxTtl + MARK_FADE_MS);
+    } else {
+      clearTimer.current = undefined;
+    }
+  }, []);
+
+  const redrawLastMarks = useCallback((): boolean => {
+    const last = lastMarksRef.current;
+    const marks = [...last.highlights, ...last.annotations, ...last.notes];
+    if (marks.length === 0) return false;
+    setHighlights(last.highlights);
+    setAnnotations(last.annotations);
+    setNotes(last.notes);
+    setMarksBornAt(performance.now());
+    setReinkNonce((n) => n + 1); // reseed the strokes so the re-ink is fresh, not a photocopy
+    scheduleClear(marks);
+    return true;
+  }, [scheduleClear]);
+
   const dispatch = useCallback(
     (actions: VidyaAction[]) => {
       // Each dispatch is Vidya's fresh focus: replace the marks, keep the mood unless she changes it.
@@ -300,20 +377,22 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
 
       // Marks are ephemeral: clear them once the longest ttl elapses (each fades by its own ttl in the
       // overlay). Vidya decides the ttl per mark; nothing lingers permanently.
-      if (clearTimer.current !== undefined) window.clearTimeout(clearTimer.current);
       const marks = [...effects.highlights, ...effects.annotations, ...effects.notes];
-      if (marks.length > 0) {
-        const maxTtl = Math.max(...marks.map((m) => m.ttl ?? DEFAULT_MARK_TTL));
-        clearTimer.current = window.setTimeout(() => {
-          setHighlights([]);
-          setAnnotations([]);
-          setNotes([]);
-        }, maxTtl + MARK_FADE_MS);
+      if (effects.redrawMarks && marks.length === 0) {
+        // she asked to bring her last drawing back and drew nothing new this turn — re-ink it fresh
+        redrawLastMarks();
       } else {
-        clearTimer.current = undefined;
+        if (marks.length > 0) {
+          lastMarksRef.current = {
+            highlights: effects.highlights,
+            annotations: effects.annotations,
+            notes: effects.notes,
+          };
+        }
+        scheduleClear(marks);
       }
     },
-    [applyTutorAction],
+    [applyTutorAction, redrawLastMarks, scheduleClear],
   );
 
   const acceptOffer = useCallback(() => {
@@ -339,6 +418,7 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
       publishTurn,
       publishLifetime,
       publishCanvas,
+      publishMachine,
       assembleContext,
       getTargets,
       targetsVersion,
@@ -348,8 +428,10 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
       annotations,
       notes,
       marksBornAt,
+      reinkNonce,
       pendingOffer,
       dispatch,
+      redrawLastMarks,
       acceptOffer,
       dismissOffer,
       clearMarks,
@@ -362,6 +444,7 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
       publishTurn,
       publishLifetime,
       publishCanvas,
+      publishMachine,
       assembleContext,
       getTargets,
       targetsVersion,
@@ -371,8 +454,10 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
       annotations,
       notes,
       marksBornAt,
+      reinkNonce,
       pendingOffer,
       dispatch,
+      redrawLastMarks,
       acceptOffer,
       dismissOffer,
       clearMarks,

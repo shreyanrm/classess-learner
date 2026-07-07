@@ -10,7 +10,7 @@
 
 export type VidyaPath = 'inline' | 'component' | 'visualization' | 'action' | 'route';
 
-export type ComponentKind = 'sim' | 'quiz' | 'flashcards';
+export type ComponentKind = 'sim' | 'quiz' | 'flashcards' | 'formula' | 'maker' | 'doodle';
 export type VizKind = 'diagram' | 'chart' | 'conceptmap';
 export type ConfidenceBand = 'high' | 'medium' | 'low';
 

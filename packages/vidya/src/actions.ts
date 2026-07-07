@@ -55,8 +55,21 @@ export const VidyaActionSchema = z.discriminatedUnion('type', [
   // Learn a durable fact the learner just shared — a preferred name, a goal, an exam date. Persisted
   // to the mind and rendered into every future dossier (VIDYA.md §7). Never for transient chatter.
   z.object({ type: z.literal('remember'), text: z.string() }),
+  // The data-rights twin of remember (VIDYA-CAPABILITIES.md family E, the forget verb): show, correct,
+  // or delete what she remembers. scope 'show' reads the real dossier back; 'fact' drops what they name
+  // (target); 'all' wipes the mind. Deleting is confirm-before-execute (capability ladder) — the app
+  // purges from the real on-device mind and she reports exactly what was removed. Never a guess.
+  z.object({
+    type: z.literal('forget'),
+    scope: z.enum(['show', 'fact', 'all']),
+    target: z.string().optional(),
+  }),
   z.object({ type: z.literal('revealHint'), level: z.number().int().nonnegative() }),
   z.object({ type: z.literal('escalateHint') }),
+  // Re-ink the marks she last drew (VIDYA-CAPABILITIES.md family M): her ink is transient and fades by
+  // ttl, so "that diagram you drew earlier" is gone from the screen. This redraws her last mark set
+  // fresh — the bus keeps it — instead of asking the learner to re-describe what she already drew.
+  z.object({ type: z.literal('redrawMarks') }),
   // Consequential — offered, never forced.
   z.object({ type: z.literal('navigate'), route: z.string(), reason: z.string().optional() }),
   z.object({ type: z.literal('startPractice'), nodeId: z.string(), reason: z.string().optional() }),
@@ -133,6 +146,12 @@ export interface TutorStatePatch {
   patch: Record<string, unknown>;
 }
 
+/** A data-rights request (the forget action): show the dossier, or purge a fact / the whole mind. */
+export interface ForgetEffect {
+  scope: 'show' | 'fact' | 'all';
+  target?: string;
+}
+
 export interface ActionEffects {
   highlights: ActiveHighlight[];
   annotations: ActiveAnnotation[];
@@ -144,10 +163,14 @@ export interface ActionEffects {
   speaks: string[];
   /** Durable facts she learned this turn — persisted to the mind, fed into future dossiers. */
   remembers: string[];
+  /** Data-rights requests this turn — the app renders the dossier or purges the mind, grounded. */
+  forgets: ForgetEffect[];
   /** setState demonstrations, routed to each target's applyTutorAction seam. */
   setStates: TutorStatePatch[];
   revealHints: number[];
   escalateHints: number;
+  /** She asked to re-ink her last mark set (family M) — the bus redraws what has since faded. */
+  redrawMarks: boolean;
 }
 
 /** Fold a list of actions into the marks/mood/offer to apply and the side-effects to fire. Pure. */
@@ -161,9 +184,11 @@ export function reduceActions(actions: VidyaAction[]): ActionEffects {
     says: [],
     speaks: [],
     remembers: [],
+    forgets: [],
     setStates: [],
     revealHints: [],
     escalateHints: 0,
+    redrawMarks: false,
   };
   for (const action of actions) {
     switch (action.type) {
@@ -211,6 +236,12 @@ export function reduceActions(actions: VidyaAction[]): ActionEffects {
       case 'remember':
         effects.remembers.push(action.text);
         break;
+      case 'forget':
+        effects.forgets.push({
+          scope: action.scope,
+          ...(action.target ? { target: action.target } : {}),
+        });
+        break;
       case 'setState':
         effects.setStates.push({ targetId: action.targetId, patch: action.patch });
         break;
@@ -219,6 +250,9 @@ export function reduceActions(actions: VidyaAction[]): ActionEffects {
         break;
       case 'escalateHint':
         effects.escalateHints += 1;
+        break;
+      case 'redrawMarks':
+        effects.redrawMarks = true;
         break;
       default:
         if (isConsequential(action)) effects.offer = action;
@@ -242,8 +276,10 @@ export function describeActionVocabulary(): string {
     '- setState: {"type":"setState","targetId":"<id>","patch":{...}} — demonstrate by doing: drive an interactive by patching its own state. Only for targets whose scene state is listed; the patch keys must match that state.',
     '- speak: {"type":"speak","text":"..."} — say it in your voice when voice is live; otherwise it appears as your handwritten line. Short, warm, never the final answer.',
     '- remember: {"type":"remember","text":"<a durable fact the learner just shared — a preferred name, a goal, a fear, an exam date>"} — save something worth carrying across sessions; use sparingly, never for transient chatter.',
+    '- forget: {"type":"forget","scope":"show|fact|all","target":"<the fact to drop, for scope \'fact\'>"} — data rights: "show" reads back everything you remember about them, "fact" deletes the one they name, "all" wipes it. Deleting is confirm-before-execute — ask "want me to forget that?" and only emit a delete after they say yes. When they ask what you remember, offer that you can forget any of it.',
     '- setMood: {"type":"setMood","mood":"thinking|hint|correct|celebrate|waiting|idle"}.',
     '- revealHint: {"type":"revealHint","level":<n>} / escalateHint: {"type":"escalateHint"}.',
+    '- redrawMarks: {"type":"redrawMarks"} — re-ink the marks you last drew when the learner refers back to a drawing/diagram/marks that have since faded ("that diagram you drew earlier", "draw it again"). Pair it with a say line owning that it faded. Only use it to bring your own past ink back — not as a first draw.',
     '- navigate/startPractice/switchModality — consequential; these are OFFERED to the learner, not forced.',
     'ttl (milliseconds) sets how long a mark stays before it fades — YOU decide per mark: a quick point ~2500, a note you want read ~6000, a lasting circle ~9000. Keep the screen uncluttered; marks are transient, not permanent.',
     'Only reference targetId values that appear in the provided target registry.',

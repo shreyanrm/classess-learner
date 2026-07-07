@@ -32,8 +32,17 @@ import { You } from './screens/You';
 import { CommandPalette } from './shell/CommandPalette';
 import { resolveDestination } from './shell/destinations';
 import { type Route, RouterProvider, useRouter } from './shell/router';
-import { MindObserver, rememberFact } from './store/mind';
-import { ProgressProvider } from './store/progress';
+import { machineRoomSnapshot } from './store/machine-room';
+import {
+  clearMind,
+  forgetMatching,
+  lifetimeSnapshot,
+  loadMind,
+  MindObserver,
+  mindLines,
+  rememberFact,
+} from './store/mind';
+import { ProgressProvider, useProgress } from './store/progress';
 import { SdkProvider } from './store/sdk';
 import { AppHeader } from './ui/AppHeader';
 import { ClickInk } from './ui/ClickInk';
@@ -135,6 +144,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   const bus = useVidyaBus();
   const router = useRouter();
   const { route } = router;
+  const { xp, streakDays } = useProgress();
   const [busy, setBusy] = useState(false);
   const [mood, setMood] = useState<VidyaMood>('idle');
   // One conversation for life: the archive is the local source of truth; only its tail loads.
@@ -224,7 +234,16 @@ function AppInner({ sdk }: { sdk: Sdk }) {
           ? `${t.text.slice(0, 220)}…`
           : t.text.slice(0, 600),
     }));
-    bus.publishTurn({ recentTurns: recent, lastUserInput: text });
+    // The clock rides the context (VIDYA-CAPABILITIES.md family O): a human-readable local
+    // wall-clock so wellbeing turns — late-night on a school night, "I'm exhausted" — reason about
+    // the real time, not a guess. Weekday + time is all she needs to sanction rest.
+    const now = new Date();
+    const localTime = now.toLocaleString(undefined, {
+      weekday: 'long',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+    bus.publishTurn({ recentTurns: recent, lastUserInput: text, localTime });
     // What the learner has actually been doing — the last few backbone events, compacted. Carries
     // her interaction history into the assembled context so Vidya grounds in real activity, not just
     // the static page (context-bus SessionContext.recentEvents; rendered by the gateway).
@@ -242,6 +261,25 @@ function AppInner({ sdk }: { sdk: Sdk }) {
         return `${e.event_type.replace(/\.v1$/, '')}${tail}`;
       });
     bus.publishSession({ sessionId: 'dev-session', recentEvents });
+    // The machine room (VIDYA-CAPABILITIES.md family J — the total-context law): the system's live
+    // internal truth for this turn — the mastery-band snapshot, the FSRS due queue, XP/level/streak,
+    // the event-stream tail, and any in-flight generation. The selector digests it; the gateway
+    // renders it compactly so she references it naturally ("3 reviews due", "how far to level 5").
+    let bands: { band: string }[] = [];
+    try {
+      bands = await sdk.kgtopg.mastery.getBands(sdk.config.mockSubjectId);
+    } catch {
+      // the mastery view is unavailable — the rest of the machine room still rides
+    }
+    bus.publishMachine(
+      machineRoomSnapshot({
+        bands,
+        eventLog: sdk.events.getLog(),
+        xp,
+        streakDays,
+        nowMs: Date.now(),
+      }),
+    );
     try {
       const context = bus.assembleContext();
       const result = await sdk.llm.invoke(
@@ -291,18 +329,65 @@ function AppInner({ sdk }: { sdk: Sdk }) {
         return;
       }
 
-      // The five-path orchestrator (VIDYA.md §6): the gateway's classification wins; unclassified
-      // turns fall to the deterministic keyword classifier so every mode works keyless.
-      const extras = resolveTurnExtras(
-        output as Record<string, unknown>,
-        text,
-        context.curriculum?.nodeName,
-      );
-      say({
-        role: 'vidya',
-        text: output.say ?? 'let us look at this together.',
-        ...(extras.path !== 'inline' ? { extras } : {}),
-      });
+      const actions = parseActions(output.actions ?? []);
+      // Data rights (VIDYA-CAPABILITIES.md family E, the forget verb): show or purge her memory,
+      // grounded in the real on-device dossier — never the model's guess. Deleting is honest: she
+      // reports exactly what left (or that there was nothing), so no fake confirmation ever lands.
+      // The forget action is destructive; the gateway prompt gates it (confirm-before-execute) so
+      // she only emits a delete after the learner says yes.
+      const forgets = actions.filter((a) => a.type === 'forget');
+      if (forgets.length > 0) {
+        for (const a of forgets) {
+          if (a.type !== 'forget') continue; // narrow the discriminated union
+          if (a.scope === 'show') {
+            const lines = mindLines(loadMind());
+            say({
+              role: 'vidya',
+              text:
+                lines.length > 0
+                  ? `here is everything I am keeping about you:\n${lines
+                      .map((l) => `· ${l}`)
+                      .join('\n')}\n\nsay the word and I will forget any of it.`
+                  : 'I have not saved anything about you yet — tell me what matters and I will keep it.',
+            });
+          } else if (a.scope === 'all') {
+            clearMind();
+            bus.publishLifetime({});
+            say({
+              role: 'vidya',
+              text: 'done — I cleared everything I was keeping about you. we start fresh from here.',
+            });
+          } else {
+            const removed = forgetMatching(a.target ?? '');
+            bus.publishLifetime(lifetimeSnapshot());
+            say({
+              role: 'vidya',
+              text:
+                removed.length > 0
+                  ? `forgotten — I let go of “${removed.join('”, “')}”.`
+                  : 'I could not find that in what I remember — nothing to forget there.',
+            });
+          }
+        }
+      } else {
+        // The five-path orchestrator (VIDYA.md §6): the gateway's classification wins; unclassified
+        // turns fall to the deterministic keyword classifier so every mode works keyless.
+        const extras = resolveTurnExtras(
+          output as Record<string, unknown>,
+          text,
+          context.curriculum?.nodeName,
+        );
+        say({
+          role: 'vidya',
+          text: output.say ?? 'let us look at this together.',
+          ...(extras.path !== 'inline' ? { extras } : {}),
+        });
+        // the route path: she takes you there herself, docked — after her line lands
+        if (extras.route) {
+          const dest = NAV_ROUTES[extras.route.to];
+          if (dest) window.setTimeout(() => router.navigate(dest), 650);
+        }
+      }
       // her turn on the event backbone — attributed, grounded, accountable
       sdk.events.record('vidya.turn.assistant.v1', {
         turn_id: crypto.randomUUID(),
@@ -312,14 +397,8 @@ function AppInner({ sdk }: { sdk: Sdk }) {
         track: result.track,
         handed_answer: false,
       });
-      const actions = parseActions(output.actions ?? []);
       bus.dispatch(actions);
       setMood(actions.length > 0 ? 'explaining' : 'idle');
-      // the route path: she takes you there herself, docked — after her line lands
-      if (extras.route) {
-        const dest = NAV_ROUTES[extras.route.to];
-        if (dest) window.setTimeout(() => router.navigate(dest), 650);
-      }
     } catch {
       say({ role: 'vidya', text: 'give me a moment, then ask me again.' });
       setMood('idle');

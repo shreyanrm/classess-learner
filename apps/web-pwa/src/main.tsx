@@ -2,6 +2,7 @@ import { cssVariables } from '@classess/config/css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { initAccess } from './ui/access';
 import { ensureDefaultAvatar } from './ui/avatars';
 import { initTheme } from './ui/theme';
 
@@ -43,6 +44,7 @@ html { scrollbar-width: none; }
 }
 
 initTheme();
+initAccess();
 ensureDefaultAvatar();
 
 const root = document.getElementById('root');

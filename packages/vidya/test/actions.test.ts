@@ -21,6 +21,22 @@ describe('parseActions', () => {
     ]);
   });
 
+  it('keeps forget actions and drops ones with an unknown scope', () => {
+    const raw = [
+      { type: 'forget', scope: 'show' },
+      { type: 'forget', scope: 'fact', target: 'exam on Friday' },
+      { type: 'forget', scope: 'all' },
+      { type: 'forget', scope: 'everything' }, // invalid scope -> dropped
+      { type: 'forget' }, // missing scope -> dropped
+    ];
+    const actions = parseActions(raw);
+    expect(actions.map((a) => (a.type === 'forget' ? a.scope : a.type))).toEqual([
+      'show',
+      'fact',
+      'all',
+    ]);
+  });
+
   it('returns [] for non-arrays', () => {
     expect(parseActions(null)).toEqual([]);
     expect(parseActions({ type: 'say', text: 'x' })).toEqual([]);
@@ -82,6 +98,22 @@ describe('reduceActions', () => {
     expect(e.highlights[0]?.level).toBe('primary');
   });
 
+  it('folds forget actions into forgets, carrying scope and target — never an offer', () => {
+    const actions: VidyaAction[] = [
+      { type: 'forget', scope: 'show' },
+      { type: 'forget', scope: 'fact', target: 'exam on Friday' },
+      { type: 'forget', scope: 'all' },
+    ];
+    const e = reduceActions(actions);
+    expect(e.forgets).toEqual([
+      { scope: 'show' },
+      { scope: 'fact', target: 'exam on Friday' },
+      { scope: 'all' },
+    ]);
+    expect(e.offer).toBeNull();
+    expect(isConsequential(actions[0] as VidyaAction)).toBe(false);
+  });
+
   it('folds speak into speaks and setState into setStates — both immediate, never offered', () => {
     const actions: VidyaAction[] = [
       { type: 'speak', text: 'here, let me show you' },
@@ -97,5 +129,18 @@ describe('reduceActions', () => {
     expect(e.offer).toBeNull();
     expect(e.says).toEqual([]); // speak is the voice-locked channel, not say
     expect(isConsequential(actions[1] as VidyaAction)).toBe(false);
+  });
+
+  it('parses redrawMarks and folds it into the redrawMarks flag (family M re-ink)', () => {
+    const parsed = parseActions([
+      { type: 'redrawMarks' },
+      { type: 'say', text: 'it faded — here it is again' },
+    ]);
+    expect(parsed.map((a) => a.type)).toEqual(['redrawMarks', 'say']);
+    const e = reduceActions(parsed);
+    expect(e.redrawMarks).toBe(true);
+    expect(e.says).toEqual(['it faded — here it is again']);
+    // default is false when she draws normally
+    expect(reduceActions([{ type: 'say', text: 'x' }]).redrawMarks).toBe(false);
   });
 });

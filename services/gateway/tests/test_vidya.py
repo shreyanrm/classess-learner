@@ -109,3 +109,68 @@ def test_mock_inline_turn_stays_prose() -> None:
     out = _mock_turn("I am stuck on this step")
     assert out["path"] == "inline"
     assert "component" not in out and "viz" not in out
+
+
+# --- the voice-and-lines tiers (prompt-level doctrine: K guardianship, O wellbeing, G affect,
+# F/L/Q/H truth & warmth) — assert her system prompt carries each tier's load-bearing line ---------
+
+
+def test_system_prompt_carries_guardianship_tier() -> None:
+    from classess_gateway.vidya import VIDYA_SYSTEM
+
+    p = VIDYA_SYSTEM
+    assert "live exam" in p  # exam-hall hard line
+    assert "what a parent can see" in p  # parent-deception refusal WITH transparency
+    assert "no shame for asking" in p  # mature-topic curiosity middle band
+    assert "tongue-twister" in p  # limit-testing dare → bounded redirect, never flat refusal
+    assert "not a substitute for real people" in p  # attachment bid, honestly bounded
+    assert "no other\n  child's data" in p or "no other child's data" in p  # peer-privacy wall
+
+
+def test_system_prompt_carries_wellbeing_tier() -> None:
+    from classess_gateway.vidya import VIDYA_SYSTEM
+
+    p = VIDYA_SYSTEM
+    assert "The local time rides every turn" in p  # the clock rides the context
+    assert "name rest as the higher-yield move" in p  # late-night school-night → sanction sleep
+    assert "Sanction\n  a real break" in p or "sanction a real break" in p.lower()  # body signals
+
+
+def test_system_prompt_carries_affect_tiers() -> None:
+    from classess_gateway.vidya import VIDYA_SYSTEM
+
+    p = VIDYA_SYSTEM
+    assert "ONE true reassurance" in p  # acute panic → one data-grounded reassurance
+    assert "trusted adult" in p  # sub-crisis life disclosure → bridge to an adult
+    assert "one timed micro-sprint" in p  # focus sprint
+    assert "half-open" in p  # restless topic-hop response
+
+
+def test_system_prompt_carries_truth_and_warmth_tier() -> None:
+    from classess_gateway.vidya import VIDYA_SYSTEM
+
+    p = VIDYA_SYSTEM
+    assert "Grade the CONCEPT, never the language" in p  # grade concept, not spelling
+    assert "highest-yield" in p and "what to skip" in p  # cram triage
+    assert "5-mark CBSE" in p  # board answer-format coaching
+    assert "without undermining the teacher" in p  # teacher-conflict reconciliation
+    assert "favourite" in p  # parasocial warmth, no fabricated human life
+    assert "check the claim itself" in p  # secondhand claim-checking
+    assert "20 questions" in p  # reciprocal play
+    assert "draw me a dragon" in p  # play-and-make create widening
+
+
+def test_prompt_carries_local_time_when_present() -> None:
+    ctx = {
+        "turn": {"lastUserInput": "one more chapter", "localTime": "Tuesday, 11:52 PM"},
+        "curriculum": {"nodeName": "linear equations"},
+    }
+    prompt = _build_user_prompt(ctx, None)
+    assert "Tuesday, 11:52 PM" in prompt
+    assert "Local time for the learner" in prompt
+
+
+def test_prompt_omits_clock_line_when_no_time() -> None:
+    ctx = {"turn": {"lastUserInput": "help"}, "curriculum": {"nodeName": "x"}}
+    prompt = _build_user_prompt(ctx, None)
+    assert "Local time for the learner" not in prompt

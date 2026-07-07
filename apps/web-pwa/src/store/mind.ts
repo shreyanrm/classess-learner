@@ -11,7 +11,7 @@
 import type { Sdk } from '@classess/sdk';
 import { type LifetimeContext, useVidyaBus } from '@classess/vidya';
 import { useCallback, useEffect, useRef } from 'react';
-import { boardName, loadProfile } from '../screens/you/profile';
+import { boardName, getFlag, loadProfile, VOICE_KEY } from '../screens/you/profile';
 import { useRouter } from '../shell/router';
 import { useSdk } from './sdk';
 
@@ -56,6 +56,9 @@ const MAX_LATENCIES = 60;
 const MAX_SLIPS = 12;
 const MAX_DAYS = 30;
 const MAX_FACTS = 12;
+// A wrong answer overturned by a correct one for the same item within this window is a mis-tap
+// (fat-finger self-correct), not a misconception — it never earns a detonation or an FSRS flag.
+const SELF_CORRECT_MS = 1500;
 
 export function loadMind(): MindState {
   try {
@@ -110,6 +113,57 @@ export function saveMind(mind: MindState): void {
   }
 }
 
+/**
+ * Pure fact purge (the forget verb, VIDYA-CAPABILITIES.md family E): drop every fact matching `target`
+ * (case-insensitive, substring in either direction, so "exam" forgets "exam on Friday" and vice versa).
+ * Returns the kept facts and exactly what was removed — so she can confirm the removal honestly.
+ */
+export function forgetFacts(
+  facts: string[],
+  target: string,
+): { facts: string[]; removed: string[] } {
+  const q = target.trim().toLowerCase();
+  const removed: string[] = [];
+  if (!q) return { facts, removed };
+  const kept = facts.filter((f) => {
+    const lf = f.toLowerCase();
+    const hit = lf.includes(q) || q.includes(lf);
+    if (hit) removed.push(f);
+    return !hit;
+  });
+  return { facts: kept, removed };
+}
+
+/** She forgets a fact on the learner's word (the forget action). Storage-truth; returns what left. */
+export function forgetMatching(target: string): string[] {
+  const mind = loadMind();
+  const { facts, removed } = forgetFacts(mind.facts, target);
+  if (removed.length === 0) return [];
+  mind.facts = facts;
+  saveMind(mind);
+  return removed;
+}
+
+/** Remove one exact remembered fact (the You screen's per-item delete). Storage-truth. */
+export function removeFact(fact: string): void {
+  const mind = loadMind();
+  const next = mind.facts.filter((f) => f !== fact);
+  if (next.length !== mind.facts.length) {
+    mind.facts = next;
+    saveMind(mind);
+  }
+}
+
+/** Remove one exact interest (the You screen's per-item delete). Storage-truth. */
+export function removeInterest(interest: string): void {
+  const mind = loadMind();
+  const next = mind.interests.filter((i) => i !== interest);
+  if (next.length !== mind.interests.length) {
+    mind.interests = next;
+    saveMind(mind);
+  }
+}
+
 /** The learner clears what she knows — steerable memory, honestly erased. */
 export function clearMind(): void {
   try {
@@ -149,6 +203,19 @@ export function foldEvents(mind: MindState, events: LoggedEvent[], seen: Set<str
     if (latency !== undefined && latency > 0) {
       mind.latenciesMs = [...mind.latenciesMs, latency].slice(-MAX_LATENCIES);
       changed = true;
+    }
+    // Mis-tap discrimination: a correct answer landing within ~1.5s of a wrong one on the SAME item
+    // is an instant self-correct — the learner fixed a slip of the thumb, not a hole in their model.
+    // Retroactively un-log that slip so she never detonates or FSRS-flags a mistake that never was.
+    // (Robust across fold pulses because slips persist; the "I think I'm right" contest can't misfire
+    // here — its re-grade only appears after the ~2.6s detonation, well outside the window.)
+    if (correct && typeof p.item_id === 'string') {
+      const last = mind.slips[mind.slips.length - 1];
+      const gap = last ? Date.parse(e.occurred_at) - Date.parse(last.at) : Number.NaN;
+      if (last && last.itemId === p.item_id && gap >= 0 && gap <= SELF_CORRECT_MS) {
+        mind.slips = mind.slips.slice(0, -1);
+        changed = true;
+      }
     }
     if (p.correct === false) {
       const response = asRecord(p.response);
@@ -223,10 +290,13 @@ export function activeDaysOfLastSeven(mind: MindState): number {
   return n;
 }
 
-/** The disclosure lines — exactly what the You card shows the learner. */
-export function mindLines(mind: MindState): string[] {
+/**
+ * Derived behavioural observations — how they answer, where they linger, when they show up. These are
+ * inferred from the event stream (not things they told her), so the You screen shows them read-only;
+ * they regenerate as she watches. The removable things she remembers are interests + facts (below).
+ */
+export function observationLines(mind: MindState): string[] {
   const lines: string[] = [];
-  if (mind.interests.length > 0) lines.push(`you're into ${mind.interests.join(', ')}`);
   const median = medianLatencyMs(mind);
   if (median !== undefined)
     lines.push(
@@ -241,8 +311,30 @@ export function mindLines(mind: MindState): string[] {
   }
   const format = preferredFormat(mind);
   if (format) lines.push(`you linger longest on ${format}`);
-  const active = activeDaysOfLastSeven(mind);
-  if (mind.sessionDays.length > 0) lines.push(`you showed up ${active} of the last 7 days`);
+  if (mind.sessionDays.length > 0)
+    lines.push(`you showed up ${activeDaysOfLastSeven(mind)} of the last 7 days`);
+  return lines;
+}
+
+/** One thing she remembers that the learner can remove on its own — a stated interest or a durable fact. */
+export interface KnownItem {
+  kind: 'interest' | 'fact';
+  text: string;
+}
+
+/** The individually-removable memories (the forget verb's visual twin, You screen). */
+export function removableItems(mind: MindState): KnownItem[] {
+  return [
+    ...mind.interests.map((text): KnownItem => ({ kind: 'interest', text })),
+    ...mind.facts.map((text): KnownItem => ({ kind: 'fact', text })),
+  ];
+}
+
+/** Everything she is holding, as plain lines — the in-thread "show me what you remember" dossier. */
+export function mindLines(mind: MindState): string[] {
+  const lines: string[] = [];
+  if (mind.interests.length > 0) lines.push(`you're into ${mind.interests.join(', ')}`);
+  lines.push(...observationLines(mind));
   for (const fact of mind.facts) lines.push(`she remembers: ${fact}`);
   return lines;
 }
@@ -255,6 +347,12 @@ export function mindLines(mind: MindState): string[] {
 export function lifetimeSnapshot(): LifetimeContext {
   const p = loadProfile();
   const mind = loadMind();
+  // The durable accessibility profile rides every turn so she honors it (larger text/high contrast
+  // shape how much she puts on screen; read-aloud reuses the existing voice flag — one source).
+  const accessibility =
+    p.largeText || p.highContrast || getFlag(VOICE_KEY)
+      ? { readAloud: getFlag(VOICE_KEY), largeText: p.largeText, highContrast: p.highContrast }
+      : undefined;
   return {
     twinSummary: summarizeMind(mind),
     learner: {
@@ -264,6 +362,8 @@ export function lifetimeSnapshot(): LifetimeContext {
       board: boardName(p.boardId),
     },
     facts: mind.facts,
+    accessibility,
+    language: p.language,
   };
 }
 
@@ -349,7 +449,7 @@ export function MindObserver() {
     const mind = freshMind();
     if (markSessionDay(mind)) saveMind(mind);
     bus.publishLifetime(lifetimeSnapshot());
-  }, [bus]);
+  }, [bus, freshMind]);
 
   // fold the event log on a slow pulse, and refresh the dossier every pulse — so a fact she just
   // learned (rememberFact writes localStorage out-of-band) and any profile edit ride within ~4s.
@@ -370,7 +470,7 @@ export function MindObserver() {
       fold();
       window.clearInterval(t);
     };
-  }, [sdk, bus]);
+  }, [sdk, bus, freshMind]);
 
   // dwell: how long each surface holds them
   useEffect(() => {
@@ -381,7 +481,7 @@ export function MindObserver() {
       addDwell(mind, name, (Date.now() - started) / 1000);
       saveMind(mind);
     };
-  }, [route.name]);
+  }, [route.name, freshMind]);
 
   return null;
 }
