@@ -1,0 +1,18 @@
+# Railway build context = repo root (the gateway Dockerfile builds from here). The image only
+# COPYs pyproject.toml, uv.lock, services/*/{pyproject,src}, content/atom/pyproject.toml — so
+# everything else is dead upload weight. Excluding it drops the upload from ~630 MB to a few MB
+# (the reason `railway up` was timing out mid-upload).
+node_modules
+**/node_modules
+.git
+**/dist
+.vercel
+.vercel/output
+apps
+packages
+content/cache
+content/catalogs
+.playwright-mcp
+*.png
+*.log
+scratchpad
