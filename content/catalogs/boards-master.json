@@ -1,0 +1,383 @@
+{
+  "_header": {
+    "purpose": "Master list of school/pre-university boards worldwide, for the board picker (apps/web-pwa/src/data/catalog.ts 'boards' array feeds apps/web-pwa/src/screens/you/GradeBoardPicker.tsx and BoardPicker). Extends the hand-picked 13-board list already there (CBSE, ICSE, Telangana, AP, Maharashtra, Karnataka, Tamil Nadu, Kerala, UP, IB, Cambridge, Common Core, UK National Curriculum) with every Indian state board plus the major international pre-university qualifications, so the picker can show a real board instead of only the free-text 'my board isn't here' escape hatch.",
+    "provenance": "owner-supplied spreadsheet School_Boards_Syllabus_Catalog.xlsx, 2026-07-07, unverified. Board names/countries/categories are common-knowledge facts (easy to spot-check, low fabrication risk) — this file carries ONLY that board-identity metadata, not curriculum content.",
+    "integration": "Each entry: id/name/type(national|state|international)/country/region (country and region are currently identical — both pass through the spreadsheet's 'Country/Region' column; a future pass may want to split them, e.g. region='India' vs country='India' for state boards but region='International' for AP-USA). 'existingCatalogId' points at a board id already wired into content/catalogs/*.json + apps/web-pwa/src/data/frame.ts CATALOG_LOADERS when one exists; null means no chapter/topic catalog exists yet and the board should route through the same fetch-on-arrival / unsourceable path as any unlisted board today (see frame.ts ensureFrame). 'tier' flags boards that are Class 11-12 / pre-university only (all International Board rows, plus three Indian boards that split SSC and Intermediate into separate boards). This file does NOT replace apps/web-pwa/src/data/catalog.ts boards array — the universal-frame picker work should read from here and decide seeding/ordering; this file only supplies the raw board facts.",
+    "excluded": "The spreadsheet's second sheet ('Full Syllabus', 4232 rows of chapter/topic/subtopic per board+subject) was deliberately NOT ingested into any catalog. Reasons: (1) no source URL or provenance on any row, unlike every file in this directory which carries fetched:<url> or an explicit model-knowledge flag; (2) roughly a quarter of all topic cells are one generic 4-item template ('Core Concepts'/'Advanced Concepts'/'Applied Topics'/'Examination Preparation') copy-pasted across unrelated subjects and boards (100% of rows for AP-USA, German Abitur, Singapore-Cambridge GCE A-Level, American HS Diploma, and NIOS Vocational are this template, nothing else); (3) even the more detailed rows (e.g. Andhra Pradesh Intermediate Physics/Chemistry, which do look like real NCERT-aligned Class 11-12 content) have internally inconsistent chapter numbering (two unrelated chapters both labelled chapter 1); (4) 27 of the 44 boards have zero chapter/topic/subtopic rows at all — just a subject-per-stream list that duplicates the Boards Overview sheet already captured here. It fails this project's sourcing bar and would need full re-verification against each board's real syllabus PDF before it could go anywhere near content/catalogs/*.json chapter data."
+  },
+  "boards": [
+    {
+      "id": "australian-senior-secondary-certificate",
+      "name": "Australian Senior Secondary Certificate (HSC/VCE/QCE)",
+      "type": "international",
+      "country": "Australia",
+      "region": "Australia",
+      "tier": "senior-secondary (pre-university / Class 11-12 equivalent)",
+      "existingCatalogId": null
+    },
+    {
+      "id": "canadian-secondary-school-diploma",
+      "name": "Canadian Secondary School Diploma (OSSD and provincial equivalents)",
+      "type": "international",
+      "country": "Canada",
+      "region": "Canada",
+      "tier": "senior-secondary (pre-university / Class 11-12 equivalent)",
+      "existingCatalogId": null
+    },
+    {
+      "id": "european-baccalaureate-french-baccalaureate",
+      "name": "European Baccalaureate (EB) / French Baccalaureate",
+      "type": "international",
+      "country": "Europe",
+      "region": "Europe",
+      "tier": "senior-secondary (pre-university / Class 11-12 equivalent)",
+      "existingCatalogId": null
+    },
+    {
+      "id": "german-abitur",
+      "name": "German Abitur",
+      "type": "international",
+      "country": "Germany",
+      "region": "Germany",
+      "tier": "senior-secondary (pre-university / Class 11-12 equivalent)",
+      "existingCatalogId": null
+    },
+    {
+      "id": "cambridge-international",
+      "name": "Cambridge International (A Level / AS Level)",
+      "type": "international",
+      "country": "Global",
+      "region": "Global",
+      "tier": "senior-secondary (pre-university / Class 11-12 equivalent)",
+      "existingCatalogId": null
+    },
+    {
+      "id": "edexcel-international-a-level",
+      "name": "Edexcel International A Level (Pearson)",
+      "type": "international",
+      "country": "Global",
+      "region": "Global",
+      "tier": "senior-secondary (pre-university / Class 11-12 equivalent)",
+      "existingCatalogId": null
+    },
+    {
+      "id": "ib-diploma-programme",
+      "name": "IB Diploma Programme (IBDP)",
+      "type": "international",
+      "country": "Global",
+      "region": "Global",
+      "tier": "senior-secondary (pre-university / Class 11-12 equivalent)",
+      "existingCatalogId": null
+    },
+    {
+      "id": "indian-school-certificate-vocational-stream",
+      "name": "Indian School Certificate (Senior NIOS/State Open Schools) - Vocational Stream",
+      "type": "international",
+      "country": "India",
+      "region": "India",
+      "tier": "senior-secondary (pre-university / Class 11-12 equivalent)",
+      "existingCatalogId": null
+    },
+    {
+      "id": "singapore-cambridge-gce-a-level",
+      "name": "Singapore-Cambridge GCE A-Level",
+      "type": "international",
+      "country": "Singapore",
+      "region": "Singapore",
+      "tier": "senior-secondary (pre-university / Class 11-12 equivalent)",
+      "existingCatalogId": null
+    },
+    {
+      "id": "american-high-school-diploma",
+      "name": "American High School Diploma (US Common Core)",
+      "type": "international",
+      "country": "USA",
+      "region": "USA",
+      "tier": "senior-secondary (pre-university / Class 11-12 equivalent)",
+      "existingCatalogId": null
+    },
+    {
+      "id": "advanced-placement-usa",
+      "name": "Advanced Placement (AP) - USA",
+      "type": "international",
+      "country": "USA / Global",
+      "region": "USA / Global",
+      "tier": "senior-secondary (pre-university / Class 11-12 equivalent)",
+      "existingCatalogId": null
+    },
+    {
+      "id": "gce-a-level",
+      "name": "GCE A-Level (UK National)",
+      "type": "international",
+      "country": "United Kingdom",
+      "region": "United Kingdom",
+      "tier": "senior-secondary (pre-university / Class 11-12 equivalent)",
+      "existingCatalogId": null
+    },
+    {
+      "id": "cbse",
+      "name": "CBSE",
+      "type": "national",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": "cbse",
+      "note": "Matches content/catalogs/cbse.json (Class 4-12) directly."
+    },
+    {
+      "id": "icse-isc",
+      "name": "ICSE/ISC (CISCE)",
+      "type": "national",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": "icse",
+      "note": "CISCE runs both ICSE (Class 10) and ISC (Class 12). Covered here by two separate catalogs: content/catalogs/icse.json (Class 6-10) and content/catalogs/isc.json (Class 11-12)."
+    },
+    {
+      "id": "nios",
+      "name": "NIOS",
+      "type": "national",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "ap-intermediate",
+      "name": "Andhra Pradesh Board of Intermediate Education (BIEAP)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "tier": "senior-secondary (Class 11-12 / Intermediate)",
+      "existingCatalogId": null,
+      "note": "Distinct board from content/catalogs/ap.json ('Andhra Pradesh State Board', id 'ap', SSC tier Class 6-10) — same state, different board for Class 11-12. Not yet sourced."
+    },
+    {
+      "id": "arunachal-pradesh-board-of-secondary-education",
+      "name": "Arunachal Pradesh Board of Secondary Education (APBSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "assam-higher-secondary-education-council",
+      "name": "Assam Higher Secondary Education Council (AHSEC)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "bihar-school-examination-board",
+      "name": "Bihar School Examination Board (BSEB)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "chhattisgarh-board-of-secondary-education",
+      "name": "Chhattisgarh Board of Secondary Education (CGBSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "goa-board-of-secondary-and-higher-secondary-education",
+      "name": "Goa Board of Secondary and Higher Secondary Education (GBSHSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "gujarat-secondary-and-higher-secondary-education-board",
+      "name": "Gujarat Secondary and Higher Secondary Education Board (GSHSEB)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "haryana-board-of-school-education",
+      "name": "Haryana Board of School Education (HBSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "himachal-pradesh-board-of-school-education",
+      "name": "Himachal Pradesh Board of School Education (HPBOSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "jammu-and-kashmir-state-board",
+      "name": "Jammu and Kashmir State Board (JKBOSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "jharkhand-academic-council",
+      "name": "Jharkhand Academic Council (JAC)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "karnataka-puc",
+      "name": "Karnataka Department of Pre-University Education (KSEAB/PUC)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "tier": "senior-secondary (Class 11-12 / PUC)",
+      "existingCatalogId": null,
+      "note": "Distinct board from content/catalogs/karnataka.json (id 'karnataka', SSLC tier Class 6-10) — same state, different board for Class 11-12. Not yet sourced."
+    },
+    {
+      "id": "kerala-higher-secondary-examination-board",
+      "name": "Kerala Higher Secondary Examination Board (DHSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "madhya-pradesh-board-of-secondary-education",
+      "name": "Madhya Pradesh Board of Secondary Education (MPBSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "maharashtra",
+      "name": "Maharashtra State Board (MSBSHSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": "maharashtra",
+      "note": "content/catalogs/maharashtra.json ('Maharashtra State Board (SSC)') covers Class 6-10 under this same board; this spreadsheet row's rows also span HSC (Class 11-12) stream subjects (Science/Commerce/Arts), which are not yet sourced."
+    },
+    {
+      "id": "manipur-board-of-secondary-education",
+      "name": "Manipur Board of Secondary Education (COHSEM)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "meghalaya-board-of-school-education",
+      "name": "Meghalaya Board of School Education (MBOSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "mizoram-board-of-school-education",
+      "name": "Mizoram Board of School Education (MBSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "nagaland-board-of-school-education",
+      "name": "Nagaland Board of School Education (NBSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "odisha-council-of-higher-secondary-education",
+      "name": "Odisha Council of Higher Secondary Education (CHSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "punjab-school-education-board",
+      "name": "Punjab School Education Board (PSEB)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "rajasthan-board-of-secondary-education",
+      "name": "Rajasthan Board of Secondary Education (RBSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "sikkim-human-resource-development-department",
+      "name": "Sikkim Human Resource Development Department (HRDD)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "tamil-nadu-state-board",
+      "name": "Tamil Nadu State Board (DGE/TNHSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "telangana-intermediate",
+      "name": "Telangana State Board of Intermediate Education (TSBIE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "tier": "senior-secondary (Class 11-12 / Intermediate)",
+      "existingCatalogId": null,
+      "note": "Distinct board from content/catalogs/telangana.json (id 'telangana', SSC tier Class 6-10) — same state, different board for Class 11-12. Not yet sourced."
+    },
+    {
+      "id": "tripura-board-of-secondary-education",
+      "name": "Tripura Board of Secondary Education (TBSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "uttar-pradesh-madhyamik-shiksha-parishad",
+      "name": "Uttar Pradesh Madhyamik Shiksha Parishad (UP Board)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "uttarakhand-board-of-school-education",
+      "name": "Uttarakhand Board of School Education (UBSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    },
+    {
+      "id": "west-bengal-council-of-higher-secondary-education",
+      "name": "West Bengal Council of Higher Secondary Education (WBCHSE)",
+      "type": "state",
+      "country": "India",
+      "region": "India",
+      "existingCatalogId": null
+    }
+  ]
+}
