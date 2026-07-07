@@ -1,0 +1,143 @@
+- generic [active] [ref=f19e1]:
+  - generic [ref=f19e2]:
+    - generic [ref=f19e463]:
+      - generic [ref=f19e464]:
+        - img [ref=f19e465]
+        - generic:
+          - generic:
+            - img
+        - generic [ref=f19e477]:
+          - heading "Science" [level=1] [ref=f19e478]
+          - generic [ref=f19e479]: how the world actually works
+          - generic [ref=f19e480]:
+            - generic [ref=f19e481]: CBSE · Class 10
+            - generic [ref=f19e482]: 13 chapters
+      - button "Continue · Electricity Ohm's law and resistance Continue" [ref=f19e483] [cursor=pointer]:
+        - img [ref=f19e484]
+        - generic [ref=f19e491]:
+          - generic [ref=f19e492]: Continue · Electricity
+          - generic [ref=f19e493]: Ohm's law and resistance
+        - generic [ref=f19e496]: Continue
+      - generic [ref=f19e497]:
+        - generic [ref=f19e498]: the adventure
+        - tablist "how to view chapters" [ref=f19e499]:
+          - tab "list" [ref=f19e500] [cursor=pointer]
+          - tab "roadmap" [selected] [ref=f19e501] [cursor=pointer]
+    - banner:
+      - img "Classess" [ref=f19e221]
+      - generic [ref=f19e222]:
+        - button "Did you know" [ref=f19e223] [cursor=pointer]:
+          - img [ref=f19e224]
+          - text: Did you know
+        - generic "day 12 of being a learner" [ref=f19e226]:
+          - img [ref=f19e228]
+          - text: "12"
+        - generic [ref=f19e231]: 590 xp
+        - generic [ref=f19e232]:
+          - img [ref=f19e233]
+          - button "You — level 5, profile and settings" [ref=f19e236] [cursor=pointer]:
+            - generic "fox" [ref=f19e237]:
+              - img [ref=f19e239]
+          - generic [ref=f19e254]: "5"
+    - generic [ref=f19e429]:
+      - generic:
+        - img
+      - button "Talk to Vidya" [ref=f19e430] [cursor=pointer]:
+        - img [ref=f19e434]
+  - button "Back — ◦ ,learn" [ref=f19e502] [cursor=pointer]:
+    - img [ref=f19e503]
+  - generic "Science expedition map" [ref=f19e506]:
+    - generic [ref=f19e507]:
+      - img [ref=f19e509]
+      - img [ref=f19e511]
+      - img [ref=f19e513]
+    - generic:
+      - img
+    - generic [ref=f19e517]:
+      - img [ref=f19e518]
+      - button "Reflection by spherical mirrors — checkpoint 1, in progress, you are here" [ref=f19e1248] [cursor=pointer]:
+        - generic [ref=f19e1250]: "1"
+        - img [ref=f19e1252]
+        - generic [ref=f19e1272]: Reflection by spherical mirrors
+      - button "Refraction of light — checkpoint 2, not started" [ref=f19e1273] [cursor=pointer]:
+        - generic [ref=f19e1274]: "2"
+      - button "Lenses and their formulae — checkpoint 3, not started" [ref=f19e1275] [cursor=pointer]:
+        - generic [ref=f19e1276]: "3"
+      - button "The human eye — checkpoint 4, not started" [ref=f19e1277] [cursor=pointer]:
+        - generic [ref=f19e1278]: "4"
+      - button "Defects of vision — checkpoint 5, not started" [ref=f19e1279] [cursor=pointer]:
+        - generic [ref=f19e1280]: "5"
+      - button "Refraction through a prism — checkpoint 6, not started" [ref=f19e1281] [cursor=pointer]:
+        - generic [ref=f19e1282]: "6"
+      - button "Electric current and potential difference — checkpoint 7, not started" [ref=f19e1283] [cursor=pointer]:
+        - generic [ref=f19e1284]: "7"
+      - button "Ohm's law and resistance — checkpoint 8, not started" [ref=f19e1285] [cursor=pointer]:
+        - generic [ref=f19e1286]: "8"
+      - button "Heating effect of current — checkpoint 9, not started" [ref=f19e1287] [cursor=pointer]:
+        - generic [ref=f19e1288]: "9"
+      - button "Magnetic field of a current — checkpoint 10, not started" [ref=f19e1289] [cursor=pointer]:
+        - generic [ref=f19e1290]: "10"
+      - button "Force on a conductor and the motor — checkpoint 11, not started" [ref=f19e1291] [cursor=pointer]:
+        - generic [ref=f19e1292]: "11"
+      - button "Electromagnetic induction — checkpoint 12, not started" [ref=f19e1293] [cursor=pointer]:
+        - generic [ref=f19e1294]: "12"
+      - button "Chemical equations — checkpoint 13, not started" [ref=f19e1295] [cursor=pointer]:
+        - generic [ref=f19e1296]: "13"
+      - button "Types of reactions — checkpoint 14, not started" [ref=f19e1297] [cursor=pointer]:
+        - generic [ref=f19e1298]: "14"
+      - button "Oxidation and reduction — checkpoint 15, not started" [ref=f19e1299] [cursor=pointer]:
+        - generic [ref=f19e1300]: "15"
+      - button "Properties of acids and bases — checkpoint 16, not started" [ref=f19e1301] [cursor=pointer]:
+        - generic [ref=f19e1302]: "16"
+      - button "The pH scale — checkpoint 17, not started" [ref=f19e1303] [cursor=pointer]:
+        - generic [ref=f19e1304]: "17"
+      - button "Salts and their uses — checkpoint 18, not started" [ref=f19e1305] [cursor=pointer]:
+        - generic [ref=f19e1306]: "18"
+      - button "Physical and chemical properties — checkpoint 19, not started" [ref=f19e1307] [cursor=pointer]:
+        - generic [ref=f19e1308]: "19"
+      - button "The reactivity series — checkpoint 20, not started" [ref=f19e1309] [cursor=pointer]:
+        - generic [ref=f19e1310]: "20"
+      - button "Extraction and corrosion — checkpoint 21, not started" [ref=f19e1311] [cursor=pointer]:
+        - generic [ref=f19e1312]: "21"
+      - button "Covalent bonding in carbon — checkpoint 22, not started" [ref=f19e1313] [cursor=pointer]:
+        - generic [ref=f19e1314]: "22"
+      - button "Hydrocarbons and functional groups — checkpoint 23, not started" [ref=f19e1315] [cursor=pointer]:
+        - generic [ref=f19e1316]: "23"
+      - button "Important carbon compounds — checkpoint 24, not started" [ref=f19e1317] [cursor=pointer]:
+        - generic [ref=f19e1318]: "24"
+      - button "Nutrition — checkpoint 25, not started" [ref=f19e1319] [cursor=pointer]:
+        - generic [ref=f19e1320]: "25"
+      - button "Respiration and transport — checkpoint 26, not started" [ref=f19e1321] [cursor=pointer]:
+        - generic [ref=f19e1322]: "26"
+      - button "Excretion — checkpoint 27, not started" [ref=f19e1323] [cursor=pointer]:
+        - generic [ref=f19e1324]: "27"
+      - button "The nervous system — checkpoint 28, not started" [ref=f19e1325] [cursor=pointer]:
+        - generic [ref=f19e1326]: "28"
+      - button "Reflex action — checkpoint 29, not started" [ref=f19e1327] [cursor=pointer]:
+        - generic [ref=f19e1328]: "29"
+      - button "Hormones in animals and plants — checkpoint 30, not started" [ref=f19e1329] [cursor=pointer]:
+        - generic [ref=f19e1330]: "30"
+      - button "Asexual reproduction — checkpoint 31, not started" [ref=f19e1331] [cursor=pointer]:
+        - generic [ref=f19e1332]: "31"
+      - button "Sexual reproduction in plants — checkpoint 32, not started" [ref=f19e1333] [cursor=pointer]:
+        - generic [ref=f19e1334]: "32"
+      - button "Reproduction in humans — checkpoint 33, not started" [ref=f19e1335] [cursor=pointer]:
+        - generic [ref=f19e1336]: "33"
+      - button "Inheritance of traits — checkpoint 34, not started" [ref=f19e1337] [cursor=pointer]:
+        - generic [ref=f19e1338]: "34"
+      - button "Mendel's experiments — checkpoint 35, not started" [ref=f19e1339] [cursor=pointer]:
+        - generic [ref=f19e1340]: "35"
+      - button "Sex determination — checkpoint 36, not started" [ref=f19e1341] [cursor=pointer]:
+        - generic [ref=f19e1342]: "36"
+      - button "Ecosystems — checkpoint 37, not started" [ref=f19e1343] [cursor=pointer]:
+        - generic [ref=f19e1344]: "37"
+      - button "Food chains and food webs — checkpoint 38, not started" [ref=f19e1345] [cursor=pointer]:
+        - generic [ref=f19e1346]: "38"
+      - button "Waste and its management — checkpoint 39, not started" [ref=f19e1347] [cursor=pointer]:
+        - generic [ref=f19e1348]: "39"
+    - generic:
+      - button "Back to the chapter list" [ref=f19e1349] [cursor=pointer]:
+        - img [ref=f19e1350]
+      - generic [ref=f19e1352]:
+        - generic [ref=f19e1353]: Science
+        - generic [ref=f19e1354]: 0 of 39 checkpoints · learning trail

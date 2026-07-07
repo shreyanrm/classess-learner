@@ -43,34 +43,34 @@ function greeting(name: string): string {
 
 // Her line under the greeting — one per day (days-since-epoch rotation), never a poster slogan.
 const DAILY_LINES = [
-  'the day is a walk, not a list',
-  'curiosity first — the rest follows',
-  'one good question beats ten answers',
-  'today bends to the curious',
-  'the hard part is only new once',
-  'mistakes are just data with feelings',
-  'begin anywhere; it all connects',
-  'nothing clicks until something snags',
-  'confusion is the start of knowing',
-  'stay for the aha, not the marks',
-  'a little every day outruns a lot someday',
-  'questions are doors left ajar',
-  'practice makes patterns, not perfect',
-  'what you notice, you never lose',
-  'thinking slow is still thinking',
-  'the good stuff hides one step past easy',
-  'today has one idea with your name on it',
-  'almost right is halfway home',
-  'let the problem talk first',
-  'ten quiet minutes can move a mountain',
-  'the pencil remembers what the eye forgets',
-  'wonder is a muscle — warm it up',
-  'every expert was once this lost',
-  'small steps count double here',
-  'we build the bridge as we cross it',
-  'slow is smooth, smooth is fast',
-  'follow the itch in the question',
-  'learning is remembering forward',
+  'The day is a walk, not a list',
+  'Curiosity first — the rest follows',
+  'One good question beats ten answers',
+  'Today bends to the curious',
+  'The hard part is only new once',
+  'Mistakes are just data with feelings',
+  'Begin anywhere; it all connects',
+  'Nothing clicks until something snags',
+  'Confusion is the start of knowing',
+  'Stay for the aha, not the marks',
+  'A little every day outruns a lot someday',
+  'Questions are doors left ajar',
+  'Practice makes patterns, not perfect',
+  'What you notice, you never lose',
+  'Thinking slow is still thinking',
+  'The good stuff hides one step past easy',
+  'Today has one idea with your name on it',
+  'Almost right is halfway home',
+  'Let the problem talk first',
+  'Ten quiet minutes can move a mountain',
+  'The pencil remembers what the eye forgets',
+  'Wonder is a muscle — warm it up',
+  'Every expert was once this lost',
+  'Small steps count double here',
+  'We build the bridge as we cross it',
+  'Slow is smooth, smooth is fast',
+  'Follow the itch in the question',
+  'Learning is remembering forward',
 ];
 
 const CAPS = {
@@ -218,11 +218,11 @@ export function Home() {
   const currentKind = stops[currentIndex]?.kind;
   // Under the quiet dial she never volunteers a line — presence without a nudge.
   const vidyaLine = busy
-    ? 'thinking…'
+    ? 'Thinking…'
     : dial === 'quiet'
-      ? 'here when you need me'
+      ? 'Here when you need me'
       : currentKind === 'continue'
-        ? 'right where we left it'
+        ? 'Right where we left it'
         : 'I marked today’s walk for you';
 
   // Vidya, on the journey — the Thread seats her beside the current stop.

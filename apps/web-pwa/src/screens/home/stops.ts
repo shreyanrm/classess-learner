@@ -118,7 +118,7 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
       id: 'landing',
       kind: 'landing',
       title: 'Warm-up',
-      meta: `day ${streakDays} of being a learner · done`,
+      meta: `Day ${streakDays} of being a learner · done`,
       done: true,
       route: { name: 'progress' },
     },
@@ -127,7 +127,7 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
         id: `done-${t.id}`,
         kind: 'done',
         title: t.name,
-        meta: 'done · revisit any time',
+        meta: 'Done · revisit any time',
         done: true,
         hue: hueForTopic(t.id),
         route: { name: 'course', topicId: t.id },
@@ -140,7 +140,7 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
       id: `continue-${continueTopic.id}`,
       kind: 'continue',
       title: continueTopic.name,
-      meta: `continue · ${Math.round(continueF * 100)}% walked`,
+      meta: `Continue · ${Math.round(continueF * 100)}% walked`,
       bounty: continueTopic.xp,
       hue: hueForTopic(continueTopic.id),
       progress: continueF,
@@ -152,7 +152,7 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
       id: `next-${nextTopic.id}`,
       kind: 'next',
       title: nextTopic.name,
-      meta: 'next up · a fresh idea',
+      meta: 'Next up · a fresh idea',
       bounty: nextTopic.xp,
       hue: hueForTopic(nextTopic.id),
       route: { name: 'course', topicId: nextTopic.id },
@@ -163,7 +163,7 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
       id: 'review',
       kind: 'review',
       title: 'Review',
-      meta: 'refresh what’s fading',
+      meta: 'Refresh what’s fading',
       bounty: XP_AWARDS.item,
       route: { name: 'practice' },
     });
@@ -173,7 +173,7 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
       id: `boss-${gate.id}`,
       kind: 'boss',
       title: 'Boss gate',
-      meta: gateDone ? 'unlocked · ready when you are' : 'locked · finish today’s topic',
+      meta: gateDone ? 'Unlocked · ready when you are' : 'Locked · finish today’s topic',
       bounty: gate.xp,
       hue: hueForTopic(gate.id),
       done: gateDone,
@@ -192,13 +192,13 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
   const quests = {
     reviews: {
       title: 'Clear your reviews',
-      meta: 'daily quest · refresh what is fading',
+      meta: 'Daily quest · refresh what is fading',
       bounty: XP_AWARDS.bonus,
       route: { name: 'practice' } as Route,
     },
     mystery: {
       title: 'Explore a mystery',
-      meta: 'daily quest · something out of syllabus',
+      meta: 'Daily quest · something out of syllabus',
       bounty: XP_AWARDS.mystery,
       route: (mysteryTopic
         ? { name: 'course', topicId: mysteryTopic.id }
@@ -206,7 +206,7 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
     },
     ask: {
       title: 'Ask Vidya something',
-      meta: 'daily quest · one good question',
+      meta: 'Daily quest · one good question',
       bounty: XP_AWARDS.bonus,
       route: { name: 'chat' } as Route,
     },

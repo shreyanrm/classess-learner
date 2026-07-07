@@ -50,7 +50,16 @@ import {
   saveAvatarChoice,
 } from '../ui/avatars';
 import { Scene } from '../ui/cast';
-import { Card, cascade, FROST, Hairline, MagneticButton, rise, SectionLabel } from '../ui/kit';
+import {
+  AmbientWash,
+  Card,
+  cascade,
+  FROST,
+  Hairline,
+  MagneticButton,
+  rise,
+  SectionLabel,
+} from '../ui/kit';
 import { setThemePref, type ThemePref, useThemePref } from '../ui/theme';
 import { loadViewPref, saveViewPref } from '../ui/viewPref';
 import { Whisper } from './Learn';
@@ -71,6 +80,12 @@ import {
   VOICE_KEY,
 } from './you/profile';
 import { TrophyRoom } from './you/TrophyRoom';
+
+// The "you" atmosphere (§1 ambient depth) — a quiet brand dawn behind the profile, the same calm
+// wash that greets the learner on home. Token-driven; both themes.
+const YOU_WASH =
+  'radial-gradient(58% 34% at 50% -2%, var(--clss-ultramarine-soft) 0%, transparent 68%),' +
+  ' radial-gradient(46% 26% at 50% 22%, rgba(255,201,60,0.04) 0%, transparent 72%)';
 
 const whisper: CSSProperties = { fontSize: '0.8rem', color: 'var(--clss-ink-300)' };
 const bodyLine: CSSProperties = {
@@ -944,8 +959,11 @@ export function You() {
         flexDirection: 'column',
         alignItems: 'center',
         padding: '84px 24px 96px',
+        position: 'relative',
+        isolation: 'isolate',
       }}
     >
+      <AmbientWash gradient={YOU_WASH} />
       <Whisper
         onClick={() => (router.canGoBack ? router.back() : router.navigate({ name: 'home' }))}
       >

@@ -1,0 +1,159 @@
+- generic [ref=f15e1]:
+  - generic [ref=f15e2]:
+    - generic [ref=f15e715]:
+      - generic [ref=f15e716]:
+        - img [ref=f15e717]
+        - generic:
+          - generic:
+            - img
+        - generic [ref=f15e727]:
+          - heading "Mathematics" [level=1] [ref=f15e728]
+          - generic [ref=f15e729]: patterns, structure, and certainty
+          - generic [ref=f15e730]:
+            - generic [ref=f15e731]: CBSE · Class 8
+            - generic [ref=f15e732]: 13 chapters
+      - button "Continue · Linear equations in one variable Variables on both sides Continue" [ref=f15e733] [cursor=pointer]:
+        - img [ref=f15e734]
+        - generic [ref=f15e741]:
+          - generic [ref=f15e742]: Continue · Linear equations in one variable
+          - generic [ref=f15e743]: Variables on both sides
+        - generic [ref=f15e746]: Continue
+      - generic [ref=f15e747]:
+        - generic [ref=f15e748]: the adventure
+        - tablist "how to view chapters" [ref=f15e749]:
+          - tab "list" [ref=f15e750] [cursor=pointer]
+          - tab "roadmap" [active] [selected] [ref=f15e751] [cursor=pointer]
+    - banner:
+      - img "Classess" [ref=f15e473]
+      - generic [ref=f15e474]:
+        - button "Did you know" [ref=f15e475] [cursor=pointer]:
+          - img [ref=f15e476]
+          - text: Did you know
+        - generic "day 12 of being a learner" [ref=f15e478]:
+          - img [ref=f15e480]
+          - text: "12"
+        - generic [ref=f15e483]: 590 xp
+        - generic [ref=f15e484]:
+          - img [ref=f15e485]
+          - button "You — level 5, profile and settings" [ref=f15e488] [cursor=pointer]:
+            - generic "fox" [ref=f15e489]:
+              - img [ref=f15e491]
+          - generic [ref=f15e506]: "5"
+    - generic [ref=f15e681]:
+      - generic:
+        - img
+      - button "Talk to Vidya" [ref=f15e682] [cursor=pointer]:
+        - img [ref=f15e686]
+  - button "Back — ◦ ,learn" [ref=f15e1196] [cursor=pointer]:
+    - img [ref=f15e1197]
+  - generic "Mathematics expedition map" [ref=f15e1200]:
+    - generic [ref=f15e1201]:
+      - img [ref=f15e1203]
+      - img [ref=f15e1205]
+      - img [ref=f15e1207]
+    - generic:
+      - img
+    - generic [ref=f15e1211]:
+      - img [ref=f15e1212]
+      - button "What makes a number rational — checkpoint 1, completed" [ref=f15e2012] [cursor=pointer]:
+        - img [ref=f15e2014]
+        - generic [ref=f15e2016]: What makes a number rational
+      - button "Operations on rational numbers — checkpoint 2, completed" [ref=f15e2017] [cursor=pointer]:
+        - img [ref=f15e2019]
+        - generic [ref=f15e2021]: Operations on rational numbers
+      - button "Rational numbers on the number line — checkpoint 3, completed" [ref=f15e2022] [cursor=pointer]:
+        - img [ref=f15e2024]
+        - generic [ref=f15e2026]: Rational numbers on the number line
+      - button "Solving equations with the variable on one side — checkpoint 4, completed" [ref=f15e2027] [cursor=pointer]:
+        - img [ref=f15e2029]
+        - generic [ref=f15e2031]: Solving equations with the variable on one side
+      - button "Variables on both sides — checkpoint 5, in progress, you are here" [ref=f15e2032] [cursor=pointer]:
+        - generic [ref=f15e2034]: "5"
+        - img [ref=f15e2036]
+        - generic [ref=f15e2056]: Variables on both sides
+      - button "Word problems that become equations — checkpoint 6, not started" [ref=f15e2057] [cursor=pointer]:
+        - generic [ref=f15e2058]: "6"
+      - button "Polygons and their angle sums — checkpoint 7, not started" [ref=f15e2059] [cursor=pointer]:
+        - generic [ref=f15e2060]: "7"
+      - button "Kinds of quadrilaterals — checkpoint 8, not started" [ref=f15e2061] [cursor=pointer]:
+        - generic [ref=f15e2062]: "8"
+      - button "Properties of a parallelogram — checkpoint 9, not started" [ref=f15e2063] [cursor=pointer]:
+        - generic [ref=f15e2064]: "9"
+      - button "Special parallelograms — checkpoint 10, not started" [ref=f15e2065] [cursor=pointer]:
+        - generic [ref=f15e2066]: "10"
+      - button "Organising and grouping data — checkpoint 11, not started" [ref=f15e2067] [cursor=pointer]:
+        - generic [ref=f15e2068]: "11"
+      - button "Bar graphs and histograms — checkpoint 12, not started" [ref=f15e2069] [cursor=pointer]:
+        - generic [ref=f15e2070]: "12"
+      - button "Pie charts — checkpoint 13, not started" [ref=f15e2071] [cursor=pointer]:
+        - generic [ref=f15e2072]: "13"
+      - button "Chance and probability — checkpoint 14, not started" [ref=f15e2073] [cursor=pointer]:
+        - generic [ref=f15e2074]: "14"
+      - button "Perfect squares and their patterns — checkpoint 15, not started" [ref=f15e2075] [cursor=pointer]:
+        - generic [ref=f15e2076]: "15"
+      - button "Properties of square numbers — checkpoint 16, not started" [ref=f15e2077] [cursor=pointer]:
+        - generic [ref=f15e2078]: "16"
+      - button "Finding square roots — checkpoint 17, not started" [ref=f15e2079] [cursor=pointer]:
+        - generic [ref=f15e2080]: "17"
+      - button "Square roots of decimals — checkpoint 18, not started" [ref=f15e2081] [cursor=pointer]:
+        - generic [ref=f15e2082]: "18"
+      - button "Cubes and their patterns — checkpoint 19, not started" [ref=f15e2083] [cursor=pointer]:
+        - generic [ref=f15e2084]: "19"
+      - button "Perfect cubes — checkpoint 20, not started" [ref=f15e2085] [cursor=pointer]:
+        - generic [ref=f15e2086]: "20"
+      - button "Finding cube roots — checkpoint 21, not started" [ref=f15e2087] [cursor=pointer]:
+        - generic [ref=f15e2088]: "21"
+      - button "Ratios and percentages — checkpoint 22, not started" [ref=f15e2089] [cursor=pointer]:
+        - generic [ref=f15e2090]: "22"
+      - button "Discount, profit and loss — checkpoint 23, not started" [ref=f15e2091] [cursor=pointer]:
+        - generic [ref=f15e2092]: "23"
+      - button "Tax and everyday buying — checkpoint 24, not started" [ref=f15e2093] [cursor=pointer]:
+        - generic [ref=f15e2094]: "24"
+      - button "Compound interest — checkpoint 25, not started" [ref=f15e2095] [cursor=pointer]:
+        - generic [ref=f15e2096]: "25"
+      - button "Terms, factors and coefficients — checkpoint 26, not started" [ref=f15e2097] [cursor=pointer]:
+        - generic [ref=f15e2098]: "26"
+      - button "Adding and subtracting expressions — checkpoint 27, not started" [ref=f15e2099] [cursor=pointer]:
+        - generic [ref=f15e2100]: "27"
+      - button "Multiplying expressions — checkpoint 28, not started" [ref=f15e2101] [cursor=pointer]:
+        - generic [ref=f15e2102]: "28"
+      - button "Standard identities — checkpoint 29, not started" [ref=f15e2103] [cursor=pointer]:
+        - generic [ref=f15e2104]: "29"
+      - button "Area of trapezium and polygons — checkpoint 30, not started" [ref=f15e2105] [cursor=pointer]:
+        - generic [ref=f15e2106]: "30"
+      - button "Surface area of solids — checkpoint 31, not started" [ref=f15e2107] [cursor=pointer]:
+        - generic [ref=f15e2108]: "31"
+      - button "Volume of solids — checkpoint 32, not started" [ref=f15e2109] [cursor=pointer]:
+        - generic [ref=f15e2110]: "32"
+      - button "Volume and capacity — checkpoint 33, not started" [ref=f15e2111] [cursor=pointer]:
+        - generic [ref=f15e2112]: "33"
+      - button "Powers with negative exponents — checkpoint 34, not started" [ref=f15e2113] [cursor=pointer]:
+        - generic [ref=f15e2114]: "34"
+      - button "Laws of exponents — checkpoint 35, not started" [ref=f15e2115] [cursor=pointer]:
+        - generic [ref=f15e2116]: "35"
+      - button "Standard form for small numbers — checkpoint 36, not started" [ref=f15e2117] [cursor=pointer]:
+        - generic [ref=f15e2118]: "36"
+      - button "Direct proportion — checkpoint 37, not started" [ref=f15e2119] [cursor=pointer]:
+        - generic [ref=f15e2120]: "37"
+      - button "Inverse proportion — checkpoint 38, not started" [ref=f15e2121] [cursor=pointer]:
+        - generic [ref=f15e2122]: "38"
+      - button "Proportions in daily life — checkpoint 39, not started" [ref=f15e2123] [cursor=pointer]:
+        - generic [ref=f15e2124]: "39"
+      - button "Common factors and grouping — checkpoint 40, not started" [ref=f15e2125] [cursor=pointer]:
+        - generic [ref=f15e2126]: "40"
+      - button "Factorising with identities — checkpoint 41, not started" [ref=f15e2127] [cursor=pointer]:
+        - generic [ref=f15e2128]: "41"
+      - button "Dividing algebraic expressions — checkpoint 42, not started" [ref=f15e2129] [cursor=pointer]:
+        - generic [ref=f15e2130]: "42"
+      - button "Reading bar, pie and line graphs — checkpoint 43, not started" [ref=f15e2131] [cursor=pointer]:
+        - generic [ref=f15e2132]: "43"
+      - button "Coordinates and the plane — checkpoint 44, not started" [ref=f15e2133] [cursor=pointer]:
+        - generic [ref=f15e2134]: "44"
+      - button "Plotting and reading line graphs — checkpoint 45, not started" [ref=f15e2135] [cursor=pointer]:
+        - generic [ref=f15e2136]: "45"
+    - generic:
+      - button "Back to the chapter list" [ref=f15e2137] [cursor=pointer]:
+        - img [ref=f15e2138]
+      - generic [ref=f15e2140]:
+        - generic [ref=f15e2141]: Mathematics
+        - generic [ref=f15e2142]: 4 of 45 checkpoints · learning trail

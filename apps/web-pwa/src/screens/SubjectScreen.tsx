@@ -762,14 +762,15 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
     >
       <Whisper onClick={() => router.back()}>◦ {intent}</Whisper>
 
-      {/* the poster band — the subject's stage, its scene behind, the glyph XL afloat */}
+      {/* the poster band — the subject's stage, its scene behind, the glyph XL afloat. The flat
+          wash gains depth (§1 ambient): the hue pools behind the glyph and settles to the wash. */}
       <motion.div
         variants={rise}
         style={{
           position: 'relative',
           minHeight: isDesktop ? 300 : 260,
           borderRadius: 3,
-          background: tone.wash,
+          background: `radial-gradient(90% 130% at ${isDesktop ? '84%' : '78%'} 34%, color-mix(in srgb, ${tone.hue} 11%, transparent) 0%, ${tone.wash} 46%, ${tone.wash} 100%)`,
           overflow: 'hidden',
           display: 'flex',
           alignItems: 'flex-end',

@@ -17,7 +17,13 @@ import { SubjectGlyph } from '../ui/art';
 import { Scene } from '../ui/cast';
 import { toneForSubject } from '../ui/hues';
 import { BackIcon } from '../ui/icons';
-import { cascade, rise, TiltCard } from '../ui/kit';
+import { AmbientWash, cascade, rise, TiltCard } from '../ui/kit';
+
+// The subjects door's atmospheric layer — a quiet brand dawn (§1 ambient depth): ultramarine
+// soft at the crown, a faint warm bloom below it. Token-driven, so dark theme lifts it a touch.
+const LEARN_WASH =
+  'radial-gradient(64% 40% at 50% -6%, var(--clss-ultramarine-soft) 0%, transparent 68%),' +
+  ' radial-gradient(48% 26% at 50% 30%, rgba(255,201,60,0.045) 0%, transparent 72%)';
 
 const INK = 'var(--clss-ink-900)';
 const GOLD = '#FFC93C';
@@ -473,8 +479,14 @@ export function Learn() {
       variants={cascade}
       initial="hidden"
       animate="show"
-      style={{ minHeight: '100dvh', padding: '108px 6vw 96px' }}
+      style={{
+        minHeight: '100dvh',
+        padding: '108px 6vw 96px',
+        position: 'relative',
+        isolation: 'isolate',
+      }}
     >
+      <AmbientWash gradient={LEARN_WASH} />
       <Whisper onClick={() => router.navigate({ name: 'home' })}>Home</Whisper>
 
       <motion.div variants={rise}>
@@ -490,19 +502,19 @@ export function Learn() {
           Learn
         </h1>
         <div style={{ marginTop: 6, fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>
-          pick a subject — a topic is a course, composed for you
+          Pick a subject — a topic is a course, composed for you
         </div>
       </motion.div>
 
       <motion.div variants={rise} style={{ marginTop: 54, marginBottom: 20 }}>
-        <GridHero prompt="Where to today?" support="your subjects, one tap each" />
+        <GridHero prompt="Where to today?" support="Your subjects, one tap each" />
       </motion.div>
       <div ref={gridRef}>
         <SubjectGrid intent="learn" />
       </div>
 
       <motion.div variants={rise} style={{ marginTop: 84, marginBottom: 20 }}>
-        <GridHero prompt="Courses of your own" support="composed the moment you ask" />
+        <GridHero prompt="Courses of your own" support="Composed the moment you ask" />
       </motion.div>
       <motion.button
         ref={coursesRef}
@@ -571,7 +583,7 @@ export function Learn() {
             Ask Vidya for a course on anything
           </span>
           <span style={{ fontSize: '0.88rem', color: 'var(--clss-ink-500)', lineHeight: 1.55 }}>
-            black holes, cricket physics, the history of zero — your custom courses will live here
+            Black holes, cricket physics, the history of zero — your custom courses will live here
           </span>
         </span>
       </motion.button>
@@ -591,7 +603,7 @@ export function Learn() {
             padding: 4,
           }}
         >
-          past courses ›
+          Past courses ›
         </button>
       </motion.div>
     </motion.div>

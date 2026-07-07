@@ -336,7 +336,7 @@ def classify_intent(text: str, node_name: str = "") -> dict[str, Any]:
     if re.search(r"\b(take me|go to|go back|open the)\b", t):
         for word, to in _ROUTE_WORDS.items():
             if word in t:
-                return {"path": "route", "route": {"to": to, "why": f"you asked to go to {word}"}}
+                return {"path": "route", "route": {"to": to, "why": f"You asked to go to {word}"}}
 
     # action — she does something in the product, through the governed registry
     if "parent" in t and re.search(r"\b(note|update|digest|tell|message)\b", t):
@@ -345,7 +345,7 @@ def classify_intent(text: str, node_name: str = "") -> dict[str, Any]:
             "action": {
                 "capability": "prepare_parent_note",
                 "params": {},
-                "why": "you asked me to prepare a note for your parent",
+                "why": "You asked me to prepare a note for your parent",
                 "confidence": "high",
             },
         }
@@ -355,7 +355,7 @@ def classify_intent(text: str, node_name: str = "") -> dict[str, Any]:
             "action": {
                 "capability": "start_boss",
                 "params": {"query": concept if concept != fallback else ""},
-                "why": "you asked for the boss — it is how a topic is truly closed",
+                "why": "You asked for the boss — it is how a topic is truly closed",
                 "confidence": "medium",
             },
         }
@@ -365,7 +365,7 @@ def classify_intent(text: str, node_name: str = "") -> dict[str, Any]:
             "action": {
                 "capability": "go_to_twin",
                 "params": {},
-                "why": "your knowledge twin is the honest map of what you asked about",
+                "why": "Your knowledge twin is the honest map of what you asked about",
                 "confidence": "high",
             },
         }
@@ -375,7 +375,7 @@ def classify_intent(text: str, node_name: str = "") -> dict[str, Any]:
             "action": {
                 "capability": "start_practice",
                 "params": {},
-                "why": "a short unaided run is the fastest way to make this stick",
+                "why": "A short unaided run is the fastest way to make this stick",
                 "confidence": "medium",
             },
         }
@@ -385,7 +385,7 @@ def classify_intent(text: str, node_name: str = "") -> dict[str, Any]:
             "action": {
                 "capability": "open_course",
                 "params": {"query": concept if concept != fallback else ""},
-                "why": "you asked to open this course",
+                "why": "You asked to open this course",
                 "confidence": "medium",
             },
         }
@@ -404,7 +404,7 @@ def classify_intent(text: str, node_name: str = "") -> dict[str, Any]:
                 "action": {
                     "capability": "open_course",
                     "params": {"query": c},
-                    "why": f"you want to learn {c} — I will compose a course for it",
+                    "why": f"You want to learn {c} — I will compose a course for it",
                     "confidence": "medium",
                 },
             }
@@ -559,7 +559,7 @@ def _apply_classification(
             out["action"] = {
                 "capability": action["capability"],
                 "params": action.get("params") if isinstance(action.get("params"), dict) else {},
-                "why": str(action.get("why") or "this looked like the right next move"),
+                "why": str(action.get("why") or "This looked like the right next move"),
                 "confidence": action.get("confidence")
                 if action.get("confidence") in ("high", "medium", "low")
                 else "medium",
@@ -579,11 +579,11 @@ def _apply_classification(
 # --- the mock turn (keyless: deterministic classification over verified seed artifacts) -----------
 
 _MOCK_SAY = {
-    "inline": "peek at the step where you moved a term across — something's hiding there.",
-    "component": "here — I made this just for you. give it a poke and watch what happens.",
-    "visualization": "let me draw it instead — this one is easier to show than to say.",
-    "action": "ooh, I can do that for you — here is what I have in mind.",
-    "route": "come on, I will take you there.",
+    "inline": "Peek at the step where you moved a term across — something's hiding there.",
+    "component": "Here — I made this just for you. Give it a poke and watch what happens.",
+    "visualization": "Let me draw it instead — this one is easier to show than to say.",
+    "action": "Ooh, I can do that for you — here is what I have in mind.",
+    "route": "Come on, I will take you there.",
 }
 
 
@@ -625,7 +625,7 @@ def mock_vidya_turn(payload: dict[str, Any]) -> dict[str, Any]:
     if name and re.search(r"\b(my name|who am i)\b", text, re.IGNORECASE):
         return {
             "path": "inline",
-            "say": f"you're {name} — of course I remember.",
+            "say": f"You're {name} — of course I remember.",
             "actions": [{"type": "setMood", "mood": "idle"}],
             "grounded": True,
             "handed_answer": False,
@@ -636,7 +636,7 @@ def mock_vidya_turn(payload: dict[str, Any]) -> dict[str, Any]:
     if re.search(r"\b(what|everything)\s+(do\s+)?you\s+(remember|know)\b", text, re.IGNORECASE):
         return {
             "path": "inline",
-            "say": "here is everything I am keeping about you — say the word and I will forget any of it.",
+            "say": "Here is everything I am keeping about you — say the word and I will forget any of it.",
             "actions": [{"type": "forget", "scope": "show"}],
             "grounded": True,
             "handed_answer": False,
@@ -644,7 +644,7 @@ def mock_vidya_turn(payload: dict[str, Any]) -> dict[str, Any]:
     if re.search(r"\b(forget|delete|clear|wipe)\s+(everything|it\s+all|all of it)\b", text, re.IGNORECASE):
         return {
             "path": "inline",
-            "say": "done — I cleared everything I was keeping about you.",
+            "say": "Done — I cleared everything I was keeping about you.",
             "actions": [{"type": "forget", "scope": "all"}],
             "grounded": True,
             "handed_answer": False,
@@ -655,7 +655,7 @@ def mock_vidya_turn(payload: dict[str, Any]) -> dict[str, Any]:
         if target:
             return {
                 "path": "inline",
-                "say": "okay — letting that go.",
+                "say": "Okay — letting that go.",
                 "actions": [{"type": "forget", "scope": "fact", "target": target}],
                 "grounded": True,
                 "handed_answer": False,
@@ -669,7 +669,7 @@ def mock_vidya_turn(payload: dict[str, Any]) -> dict[str, Any]:
             if fact:
                 return {
                     "path": "inline",
-                    "say": "got it — I'll remember that.",
+                    "say": "Got it — I'll remember that.",
                     "actions": [
                         {"type": "remember", "text": fact},
                         {"type": "setMood", "mood": "correct"},

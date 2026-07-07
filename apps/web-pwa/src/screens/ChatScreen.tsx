@@ -13,12 +13,18 @@ import { type FormEvent, useEffect, useLayoutEffect, useRef, useState } from 're
 import { OFFLINE_LINE, useConnectivity } from '../shell/resilience';
 import { useRouter } from '../shell/router';
 import { SendIcon, WaveformIcon } from '../ui/icons';
-import { FROST, fluidType, MagneticButton } from '../ui/kit';
+import { AmbientWash, FROST, fluidType, MagneticButton } from '../ui/kit';
 import { useVidyaChat } from '../vidya/chat';
 import { TurnAttachments } from '../vidya/paths';
 import { MuteButton } from '../vidya/speech';
 import { useVidyaVoice } from '../vidya/voice';
 import { Whisper } from './Learn';
+
+// The conversation's atmosphere (§1 ambient depth) — paper warmth at the crown, Vidya's warm
+// molten pool rising at the composer's foot, so the thread sits inside her light. One layer.
+const CHAT_WASH =
+  'radial-gradient(72% 32% at 50% 0%, rgba(255,201,60,0.05) 0%, transparent 66%),' +
+  ' radial-gradient(64% 30% at 50% 100%, var(--clss-molten-soft) 0%, transparent 72%)';
 
 export function ChatScreen() {
   const router = useRouter();
@@ -136,8 +142,11 @@ export function ChatScreen() {
         flexDirection: 'column',
         paddingTop: 64,
         background: 'var(--clss-card)',
+        position: 'relative',
+        isolation: 'isolate',
       }}
     >
+      <AmbientWash gradient={CHAT_WASH} />
       <Whisper onClick={() => router.back()}>◦ back</Whisper>
 
       {/* her presence — small, alive, floating on frosted glass above the thread */}
@@ -164,7 +173,7 @@ export function ChatScreen() {
           <div>
             <div style={{ fontWeight: 600, color: 'var(--clss-ink)', lineHeight: 1.1 }}>Vidya</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--clss-ink-faint)' }}>
-              {busy ? 'thinking…' : 'one conversation, always'}
+              {busy ? 'Thinking…' : 'One conversation, always'}
             </div>
           </div>
           <MuteButton />

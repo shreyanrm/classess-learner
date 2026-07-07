@@ -99,8 +99,25 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
         display: 'flex',
         flexDirection: 'column',
         background: 'var(--clss-paper)',
+        position: 'relative',
+        isolation: 'isolate',
       }}
     >
+      {/* a whisper of paper warmth behind the chrome only (§1 ambient depth) — a soft light source
+          for the header, fading out well before the full-bleed content so the card stays content-first */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          insetInline: 0,
+          top: 0,
+          height: 200,
+          zIndex: -1,
+          pointerEvents: 'none',
+          background:
+            'radial-gradient(64% 100% at 50% 0%, rgba(255,201,60,0.05) 0%, transparent 72%)',
+        }}
+      />
       {/* the shell chrome: close, and the endowed progress line */}
       <header
         style={{

@@ -1,0 +1,132 @@
+- generic [ref=f19e1]:
+  - generic [ref=f19e2]:
+    - generic [ref=f19e1388]:
+      - banner [ref=f19e1389]:
+        - button "Close course" [ref=f19e1390] [cursor=pointer]:
+          - img [ref=f19e1391]
+        - generic [ref=f19e1413]:
+          - button "Replay Vidya" [ref=f19e1414] [cursor=pointer]:
+            - img [ref=f19e1415]
+          - button "Mute Vidya" [ref=f19e1418] [cursor=pointer]:
+            - img [ref=f19e1419]
+      - main [ref=f19e1423]:
+        - generic [ref=f19e1425]:
+          - generic [ref=f19e1426]:
+            - generic:
+              - img
+            - generic [ref=f19e1427]:
+              - img
+            - img [ref=f19e1429]
+          - generic [ref=f19e1436]: she is composing your course
+          - generic [ref=f19e1437]: refraction of light
+          - generic [ref=f19e1443]: every card is generated, then checked, before it reaches you — it will land here on its own; no need to hold your breath.
+      - button "start the course" [disabled] [ref=f19e1446]:
+        - generic [ref=f19e1447]: start the course
+    - generic [ref=f19e1449]:
+      - generic [ref=f19e1450]:
+        - banner [ref=f19e1452]:
+          - generic [ref=f19e1453]: 4 of 8 concepts are yours
+          - generic [ref=f19e1454]: day 12 of being a learner · tap a star, or scroll for your report
+        - generic [ref=f19e1455]:
+          - img "your knowledge constellation — every star is a concept" [ref=f19e1458]:
+            - button "rational numbers — yours, independently" [ref=f19e1469] [cursor=pointer]:
+              - generic [ref=f19e1476]: rational numbers
+            - button "operations — yours, independently" [ref=f19e1477] [cursor=pointer]:
+              - generic [ref=f19e1484]: operations
+            - button "the number line — yours, independently" [ref=f19e1485] [cursor=pointer]:
+              - generic [ref=f19e1492]: the number line
+            - button "integers — not started" [ref=f19e1493] [cursor=pointer]:
+              - generic [ref=f19e1497]: integers
+            - button "variables — not started" [ref=f19e1498] [cursor=pointer]:
+              - generic [ref=f19e1502]: variables
+            - button "linear equations — yours, independently" [ref=f19e1503] [cursor=pointer]:
+              - generic [ref=f19e1510]: linear equations
+            - button "both sides — not started" [ref=f19e1511] [cursor=pointer]:
+              - generic [ref=f19e1515]: both sides
+            - button "word problems — not started" [ref=f19e1516] [cursor=pointer]:
+              - generic [ref=f19e1520]: word problems
+          - textbox "Ask your twin" [ref=f19e1524]:
+            - /placeholder: "ask your twin: what am I weakest at…"
+      - generic [ref=f19e1525]:
+        - generic [ref=f19e1527]:
+          - generic [ref=f19e1528]: your report
+          - generic [ref=f19e1529]: drawn from what you have actually done — not a guess
+        - generic [ref=f19e1531]:
+          - generic [ref=f19e1532]: trajectory
+          - generic [ref=f19e1533]: at this pace, all 8 concepts are yours by around 14 Jul 2026.
+          - generic [ref=f19e1534]: based on 4 mastered across 2 active days · a straight-line estimate, it moves as you do
+        - generic [ref=f19e1535]:
+          - generic [ref=f19e1537]:
+            - generic [ref=f19e1538]: strengths
+            - generic [ref=f19e1539]:
+              - generic [ref=f19e1542]: What makes a number rational
+              - generic [ref=f19e1545]: Operations on rational numbers
+              - generic [ref=f19e1548]: Rational numbers on the number line
+              - generic [ref=f19e1551]: Solving linear equations in one variable
+          - generic [ref=f19e1553]:
+            - generic [ref=f19e1554]: where to grow
+            - generic [ref=f19e1555]: nothing shaky right now — practice a little to surface your next edge.
+        - generic [ref=f19e1557]:
+          - generic [ref=f19e1558]:
+            - generic [ref=f19e1559]: last 30 days
+            - generic [ref=f19e1560]: ~4s per answer
+          - img "your last thirty days of activity" [ref=f19e1561]
+          - generic [ref=f19e1565]: quiet days are part of it — the line only needs to keep coming back.
+    - banner:
+      - img "Classess" [ref=f19e221]
+      - generic [ref=f19e222]:
+        - button "Did you know" [ref=f19e223] [cursor=pointer]:
+          - img [ref=f19e224]
+          - text: Did you know
+        - generic "day 12 of being a learner" [ref=f19e226]:
+          - img [ref=f19e228]
+          - text: "12"
+        - generic [ref=f19e231]: 590 xp
+        - generic [ref=f19e232]:
+          - img [ref=f19e233]
+          - button "You — level 5, profile and settings" [ref=f19e236] [cursor=pointer]:
+            - generic "fox" [ref=f19e237]:
+              - img [ref=f19e239]
+          - generic [ref=f19e254]: "5"
+    - generic [ref=f19e429]:
+      - generic:
+        - img
+      - button "Talk to Vidya" [ref=f19e430] [cursor=pointer]:
+        - img [ref=f19e434]
+    - combobox [expanded] [ref=f19e1356]:
+      - textbox "Search surfaces, subjects, and actions, or ask Vidya" [ref=f19e1357]:
+        - /placeholder: where to, or what…
+      - listbox "results" [ref=f19e1358]:
+        - generic [ref=f19e1359]:
+          - generic [ref=f19e1360]: go to
+          - option "home the front door" [ref=f19e1361] [cursor=pointer]:
+            - generic [ref=f19e1362]: home
+            - generic [ref=f19e1363]: the front door
+          - option "learn your subjects" [ref=f19e1364] [cursor=pointer]:
+            - generic [ref=f19e1365]: learn
+            - generic [ref=f19e1366]: your subjects
+          - option "practice sandbox & retrieval" [ref=f19e1367] [cursor=pointer]:
+            - generic [ref=f19e1368]: practice
+            - generic [ref=f19e1369]: sandbox & retrieval
+          - option "progress your knowledge twin" [active] [selected] [ref=f19e1370] [cursor=pointer]:
+            - generic [ref=f19e1371]: progress
+            - generic [ref=f19e1372]: your knowledge twin
+          - option "you profile & settings" [ref=f19e1373] [cursor=pointer]:
+            - generic [ref=f19e1374]: you
+            - generic [ref=f19e1375]: profile & settings
+          - option "chat talk to Vidya" [ref=f19e1376] [cursor=pointer]:
+            - generic [ref=f19e1377]: chat
+            - generic [ref=f19e1378]: talk to Vidya
+      - generic [ref=f19e1379]:
+        - generic [ref=f19e1380]:
+          - generic [ref=f19e1381]: ↑
+          - generic [ref=f19e1382]: ↓
+          - text: navigate
+        - generic [ref=f19e1383]:
+          - generic [ref=f19e1384]: ↵
+          - text: open
+        - generic [ref=f19e1385]:
+          - generic [ref=f19e1386]: esc
+          - text: close
+  - button "Back — Home" [ref=f19e1566] [cursor=pointer]:
+    - img [ref=f19e1567]

@@ -119,54 +119,54 @@ export function CommandPalette() {
   const corpus = useMemo<Item[]>(() => {
     const goto = (route: Route) => () => router.navigate(route);
     const items: Item[] = [
-      { id: 'home', label: 'home', hint: 'the front door', section: 'go', route: { name: 'home' } },
-      { id: 'chat', label: 'chat', hint: 'talk to Vidya', section: 'go', route: { name: 'chat' } },
+      { id: 'home', label: 'Home', hint: 'The front door', section: 'go', route: { name: 'home' } },
+      { id: 'chat', label: 'Chat', hint: 'Talk to Vidya', section: 'go', route: { name: 'chat' } },
       {
         id: 'learn',
-        label: 'learn',
-        hint: 'your subjects',
+        label: 'Learn',
+        hint: 'Your subjects',
         section: 'go',
         route: { name: 'learn' },
       },
       {
         id: 'practice',
-        label: 'practice',
-        hint: 'sandbox & retrieval',
+        label: 'Practice',
+        hint: 'Sandbox & retrieval',
         section: 'go',
         route: { name: 'practice' },
       },
       {
         id: 'progress',
-        label: 'progress',
-        hint: 'your knowledge twin',
+        label: 'Progress',
+        hint: 'Your knowledge twin',
         section: 'go',
         route: { name: 'progress' },
       },
       {
         id: 'you',
-        label: 'you',
-        hint: 'profile & settings',
+        label: 'You',
+        hint: 'Profile & settings',
         section: 'go',
         route: { name: 'you' },
       },
       {
         id: 'concept-a',
-        label: 'concept a',
-        hint: 'stage & rail',
+        label: 'Concept A',
+        hint: 'Stage & rail',
         section: 'go',
         route: { name: 'concept', which: 'a' },
       },
       {
         id: 'concept-b',
-        label: 'concept b',
-        hint: 'the thread',
+        label: 'Concept B',
+        hint: 'The thread',
         section: 'go',
         route: { name: 'concept', which: 'b' },
       },
       {
         id: 'concept-c',
-        label: 'concept c',
-        hint: 'the broadsheet',
+        label: 'Concept C',
+        hint: 'The broadsheet',
         section: 'go',
         route: { name: 'concept', which: 'c' },
       },
@@ -184,7 +184,7 @@ export function CommandPalette() {
       items.push({
         id: `subj-${s.id}`,
         label: s.name,
-        hint: 'subject',
+        hint: 'Subject',
         section: 'subjects',
         search: `${s.name} ${s.line}`.toLowerCase(),
         run: goto({ name: 'subject', subjectId: s.id, intent: 'learn' }),
@@ -195,7 +195,7 @@ export function CommandPalette() {
         items.push({
           id: `chap-${ch.id}`,
           label: ch.name,
-          hint: 'chapter',
+          hint: 'Chapter',
           section: 'library',
           search: ch.name.toLowerCase(),
           run: goto({ name: 'subject', subjectId: ch.subjectId, intent: 'learn' }),
@@ -221,24 +221,24 @@ export function CommandPalette() {
     items.push(
       {
         id: 'act-theme',
-        label: isDark ? 'switch to light' : 'switch to dark',
-        hint: 'appearance',
+        label: isDark ? 'Switch to light' : 'Switch to dark',
+        hint: 'Appearance',
         section: 'actions',
         search: 'theme appearance light dark mode',
         run: () => setThemePref(isDark ? 'light' : 'dark'),
       },
       {
         id: 'act-mute',
-        label: muted ? "unmute Vidya's voice" : "mute Vidya's voice",
-        hint: 'sound',
+        label: muted ? "Unmute Vidya's voice" : "Mute Vidya's voice",
+        hint: 'Sound',
         section: 'actions',
         search: 'mute unmute sound voice audio',
         run: () => setMuted(!muted),
       },
       {
         id: 'act-view',
-        label: adventure ? 'switch to list view' : 'switch to adventure view',
-        hint: 'subjects view',
+        label: adventure ? 'Switch to list view' : 'Switch to adventure view',
+        hint: 'Subjects view',
         section: 'actions',
         search: 'view list adventure roadmap map layout',
         run: () => saveViewPref(adventure ? 'list' : 'adventure'),
@@ -249,8 +249,8 @@ export function CommandPalette() {
     if (account?.isAuthenticated())
       items.push({
         id: 'act-signout',
-        label: 'sign out',
-        hint: 'account',
+        label: 'Sign out',
+        hint: 'Account',
         section: 'actions',
         search: 'sign out log out account',
         run: () => void account.signOut().finally(() => window.location.assign('/')),
@@ -258,8 +258,8 @@ export function CommandPalette() {
     else if (account)
       items.push({
         id: 'act-signin',
-        label: 'sign in with Google',
-        hint: 'account',
+        label: 'Sign in with Google',
+        hint: 'Account',
         section: 'actions',
         search: 'sign in log in google account',
         run: () => void account.signInWithGoogle(window.location.origin),
@@ -503,7 +503,7 @@ export function CommandPalette() {
                   runAt(index);
                 }
               }}
-              placeholder="where to, or what…"
+              placeholder="Where to, or what…"
               aria-label="Search surfaces, subjects, and actions, or ask Vidya"
               autoComplete="off"
               spellCheck={false}

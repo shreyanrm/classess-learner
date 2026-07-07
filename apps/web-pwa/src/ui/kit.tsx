@@ -117,6 +117,30 @@ export const FROST: CSSProperties = {
   borderRadius: surface.radius.card,
 };
 
+// --- AmbientWash — one quiet atmospheric layer per surface (richness law §1: ambient depth) --------
+/**
+ * The single ambient-depth recipe: a soft radial wash in the surface's context hue, sitting behind
+ * everything. Drop it as the first child of an `isolation: isolate; position: relative` root — it
+ * paints above the root's own background and beneath every content element (z-index -1), never
+ * intercepts the pointer, and rides both themes through whatever token-driven `gradient` you hand
+ * it. One layer, never noise — richness from light and depth, not from spraying hue (DESIGN §4).
+ */
+export function AmbientWash({ gradient, style }: { gradient: string; style?: CSSProperties }) {
+  return (
+    <div
+      aria-hidden
+      style={{
+        position: 'absolute',
+        inset: 0,
+        zIndex: -1,
+        pointerEvents: 'none',
+        background: gradient,
+        ...style,
+      }}
+    />
+  );
+}
+
 // --- Parallax — the three depths (MOTION.md §1) ---------------------------------------------------
 /** Scroll rates for the three depth planes. Content is always 1.0 — never parallax what you touch. */
 export const PARALLAX = { sky: 0.08, context: 0.16, content: 1 } as const;

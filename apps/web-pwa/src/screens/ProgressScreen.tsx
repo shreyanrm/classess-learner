@@ -17,6 +17,7 @@ import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { CloseIcon } from '../ui/icons';
 import {
+  AmbientWash,
   CountUp,
   FROST,
   fluidType,
@@ -255,7 +256,8 @@ export function ProgressScreen() {
           </header>
         </Reveal>
 
-        {/* the constellation, drawn straight on the page — no panel, no wash, stars on white */}
+        {/* the constellation, drawn straight on the page — deep-space coolness pooled behind the
+            stars (§1 ambient depth), an ultramarine void the twin ignites out of, both themes */}
         <motion.div
           initial={reduced ? false : { opacity: 0, y: 26, filter: 'blur(8px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
@@ -267,6 +269,12 @@ export function ProgressScreen() {
             margin: '18px clamp(14px, 3vw, 44px) clamp(14px, 2.5vh, 26px)',
           }}
         >
+          <AmbientWash
+            gradient={
+              'radial-gradient(58% 62% at 50% 42%, var(--clss-ultramarine-soft) 0%, transparent 60%),' +
+              ' radial-gradient(120% 120% at 50% 46%, transparent 46%, var(--clss-ultramarine-soft) 140%)'
+            }
+          />
           <div ref={mapRef} style={{ position: 'absolute', inset: 0 }}>
             <div
               ref={skyParallax}

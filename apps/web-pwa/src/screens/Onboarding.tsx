@@ -20,10 +20,16 @@ import { lifetimeSnapshot, rememberInterests } from '../store/mind';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { Pip, Sprout } from '../ui/cast';
-import { fluidSpace, MagneticButton } from '../ui/kit';
+import { AmbientWash, fluidSpace, MagneticButton } from '../ui/kit';
 import { MuteButton, speakLine } from '../vidya/speech';
 import { GradeBoardPicker } from './you/GradeBoardPicker';
 import { ageFromBirthdate, boardName, boardSeeded, loadProfile, saveProfile } from './you/profile';
+
+// The first-run atmosphere (§1 ambient depth) — a soft brand dawn blooming from where Vidya
+// settles at the centre, so she arrives inside her own light. Token-driven; both themes.
+const ONBOARDING_WASH =
+  'radial-gradient(46% 40% at 50% 38%, var(--clss-ultramarine-soft) 0%, transparent 66%),' +
+  ' radial-gradient(60% 44% at 50% 40%, rgba(255,201,60,0.04) 0%, transparent 74%)';
 
 /** Survives the Google round-trip in this tab: on return, restore the flow at the ready beat. */
 const ONB_RETURN_KEY = 'clss-onb-return';
@@ -395,9 +401,11 @@ export function Onboarding() {
         width: '100%',
         padding: `${fluidSpace.xl} ${fluidSpace.gutter}`,
         position: 'relative',
+        isolation: 'isolate',
         gap: fluidSpace.md,
       }}
     >
+      <AmbientWash gradient={ONBOARDING_WASH} />
       {/* the one control on the page — she speaks every line, so muting is always within reach */}
       <div style={{ position: 'fixed', top: fluidSpace.sm, right: fluidSpace.sm, zIndex: 2 }}>
         <MuteButton />

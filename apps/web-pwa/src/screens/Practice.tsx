@@ -13,8 +13,14 @@ import { type ReactNode, useEffect, useId, useState } from 'react';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
 import { ChevronIcon } from '../ui/icons';
-import { cascade, rise } from '../ui/kit';
+import { AmbientWash, cascade, rise } from '../ui/kit';
 import { GridHero, SubjectGrid, Whisper } from './Learn';
+
+// The practice door's atmospheric layer (§1 ambient depth) — the same quiet brand dawn as learn,
+// so the two doors read as one calm world. Token-driven; both themes.
+const PRACTICE_WASH =
+  'radial-gradient(64% 40% at 50% -6%, var(--clss-ultramarine-soft) 0%, transparent 68%),' +
+  ' radial-gradient(48% 26% at 50% 30%, rgba(255,201,60,0.045) 0%, transparent 72%)';
 
 const INK = 'var(--clss-ink-900)';
 const GOLD = '#FFC93C';
@@ -286,8 +292,14 @@ export function Practice() {
       variants={cascade}
       initial="hidden"
       animate="show"
-      style={{ minHeight: '100dvh', padding: '108px 6vw 96px' }}
+      style={{
+        minHeight: '100dvh',
+        padding: '108px 6vw 96px',
+        position: 'relative',
+        isolation: 'isolate',
+      }}
     >
+      <AmbientWash gradient={PRACTICE_WASH} />
       <Whisper onClick={() => router.navigate({ name: 'home' })}>Home</Whisper>
 
       <motion.div variants={rise}>
@@ -303,7 +315,7 @@ export function Practice() {
           Practice
         </h1>
         <div style={{ marginTop: 6, fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>
-          memory fades on a real curve — practice keeps it honest
+          Memory fades on a real curve — practice keeps it honest
         </div>
       </motion.div>
 
@@ -312,7 +324,7 @@ export function Practice() {
           <Door
             targetRef={sandboxRef}
             title="Free play sandbox"
-            line="an open canvas on any topic — no task, Vidya watching"
+            line="An open canvas on any topic — no task, Vidya watching"
             scene={<SandboxScene />}
             wash="rgba(31,53,224,0.05)"
             onOpen={() => router.navigate({ name: 'sandbox' })}
@@ -325,7 +337,7 @@ export function Practice() {
               title="Due for review"
               line={
                 due === 1
-                  ? 'one concept is fading — refresh it'
+                  ? 'One concept is fading — refresh it'
                   : `${due} concepts are fading — refresh them`
               }
               scene={<CurveScene />}
@@ -336,8 +348,8 @@ export function Practice() {
             <Door
               targetRef={reviewRef}
               title="Due for review"
-              line="nothing is fading yet — learn something first"
-              hint="learn"
+              line="Nothing is fading yet — learn something first"
+              hint="Learn"
               scene={<CurveScene />}
               wash="rgba(204,30,122,0.05)"
               onOpen={() => router.navigate({ name: 'learn' })}
@@ -347,7 +359,7 @@ export function Practice() {
       </div>
 
       <motion.div variants={rise} style={{ marginTop: 76, marginBottom: 20 }}>
-        <GridHero prompt="What needs sharpening?" support="the same worlds, practice intent" />
+        <GridHero prompt="What needs sharpening?" support="The same worlds, practice intent" />
       </motion.div>
       <SubjectGrid intent="practice" />
     </motion.div>

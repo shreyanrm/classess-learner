@@ -228,7 +228,7 @@ function CampSmoke({ x, y, reduced }: { x: number; y: number; reduced: boolean }
             cx={0}
             r={3 + i}
             fill="rgba(160,168,182,0.5)"
-            initial={{ cy: -8, opacity: 0 }}
+            initial={{ cx: 0, cy: -8, opacity: 0 }}
             animate={{ cy: -34 - i * 8, opacity: [0, 0.55, 0], cx: [0, i % 2 ? 6 : -5] }}
             transition={{
               duration: 4.4,
