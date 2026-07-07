@@ -23,10 +23,19 @@ import secrets
 import time
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, WebSocket
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 
 from classess_gateway.vidya import VIDYA_PERSONA
+
+# The typed-turn streaming voice reads her EXACT line aloud (verified verbatim against Gemini Live),
+# so playback starts at the first ~200ms chunk instead of waiting on the whole clip — ~4s faster to
+# first sound than the buffered /v1/voice/tts. This instruction keeps it reading, never replying.
+_READ_VERBATIM = (
+    "You are Vidya's text-to-speech voice. Read the user's message aloud EXACTLY as written — word "
+    "for word, verbatim, in a warm, natural voice. Do NOT answer it, add to it, or rephrase it. "
+    "Speak only the given text."
+)
 
 # ponytail: google-genai is not a gateway dep, so no ephemeral tokens; the relay keeps the
 # key server-side instead. Switch session to token mode if the SDK ever lands in deps.
@@ -79,6 +88,17 @@ def _setup_message() -> dict[str, Any]:
             # (same thread law) — the browser reads these off serverContent, never the audio.
             "inputAudioTranscription": {},
             "outputAudioTranscription": {},
+        }
+    }
+
+
+def _tts_setup_message() -> dict[str, Any]:
+    """Setup for the read-aloud streaming voice — verbatim persona, audio out only."""
+    return {
+        "setup": {
+            "model": f"models/{VOICE_MODEL}",
+            "generationConfig": {"responseModalities": ["AUDIO"]},
+            "systemInstruction": {"parts": [{"text": _READ_VERBATIM}]},
         }
     }
 
@@ -155,5 +175,64 @@ def register_voice(app: FastAPI) -> None:
         finally:
             _active_relays -= 1
         # suppress RuntimeError: already closed by the disconnect that ended the pumps
+        with contextlib.suppress(RuntimeError):
+            await client.close()
+
+    @app.websocket("/v1/voice/tts/stream")
+    async def tts_stream(client: WebSocket) -> None:
+        """Stream a typed line's audio: the client sends one text, the gateway opens Gemini Live
+        with the read-verbatim persona and pipes audio chunks straight back, so playback starts at
+        the first chunk (~4s sooner than the buffered clip). Key stays server-side; one line per
+        socket, capped like the relay. Any upstream failure just closes — the client falls back to
+        the buffered /v1/voice/tts, so voice can never regress."""
+        global _active_relays
+        key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY")
+        if not key or _active_relays >= _MAX_CONCURRENT_RELAYS:
+            await client.close(code=1008, reason="voice unavailable")
+            return
+        await client.accept()
+        try:
+            text = (await client.receive_text())[:600]
+        except (WebSocketDisconnect, RuntimeError):
+            return
+        if not text.strip():
+            with contextlib.suppress(RuntimeError):
+                await client.close()
+            return
+
+        import aiohttp  # lazy: already installed via litellm; mock-mode tests never touch it
+
+        _active_relays += 1
+        try:
+            async with (
+                aiohttp.ClientSession() as http,
+                http.ws_connect(f"{_GEMINI_LIVE_URL}?key={key}") as gemini,
+            ):
+                await gemini.send_str(json.dumps(_tts_setup_message()))
+                await gemini.send_str(
+                    json.dumps(
+                        {
+                            "clientContent": {
+                                "turns": [{"role": "user", "parts": [{"text": text}]}],
+                                "turnComplete": True,
+                            }
+                        }
+                    )
+                )
+                async for msg in gemini:
+                    if msg.type == aiohttp.WSMsgType.TEXT:
+                        frame = msg.data
+                    elif msg.type == aiohttp.WSMsgType.BINARY:
+                        # Gemini frames JSON as binary; the browser wants text.
+                        frame = msg.data.decode()
+                    else:
+                        break
+                    await client.send_text(frame)
+                    if '"turnComplete"' in frame or '"turn_complete"' in frame:
+                        break
+        except (aiohttp.ClientError, WebSocketDisconnect, RuntimeError, OSError):
+            pass  # upstream/socket failure — client falls back to buffered TTS on a chunkless close
+        finally:
+            _active_relays -= 1
         with contextlib.suppress(RuntimeError):
             await client.close()
