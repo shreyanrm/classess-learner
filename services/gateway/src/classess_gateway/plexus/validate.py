@@ -1,12 +1,13 @@
-"""Post-serve validation gate + GPT-5.5 (openai.frontier) escalation.
+"""Post-serve validation gate + Opus (frontier.reason) quality-backup escalation.
 
-An artifact serves immediately as ``status="provisional"`` — the first learner never waits
-on a judge. A background thread (spawned after serve, in :mod:`engines`) then scores the
-provisional artifact with an LLM judge (``frontier.reason``) against the quality bars:
+MODEL-ORDER FLIP (owner law, 2026-07-07): the content primary is GPT-5.5 (openai.frontier); OPUS
+is the quality-backup. An artifact serves immediately as ``status="provisional"`` — the first
+learner never waits on a judge. A background thread (spawned after serve, in :mod:`engines`) then
+scores the provisional GPT-5.5 artifact with an LLM judge (Opus) against the quality bars:
 correctness, interactivity, visual-heaviness, guided-discovery register, and
-grammar/sentence-case. On a quality-fail (score below the bar, or a critical/factual error)
-the SAME spec is regenerated on ``openai.frontier`` (GPT-5.5); both artifacts are re-scored
-and the BEST-OF is promoted to ``status="canonical"``.
+grammar/sentence-case. On a quality-fail (score below the bar, or a critical/factual error) the
+SAME spec is regenerated on the escalation model (Opus); both artifacts are re-scored and the
+BEST-OF is promoted to ``status="canonical"``.
 
 Validation ALWAYS terminates in a canonical record, so a provisional is validated exactly
 once and every later learner reuses the canonical core. When the judge is unreachable the
@@ -16,6 +17,10 @@ blocks a serve on a flaky judge.
 Provenance on the promoted artifact records ``{model, prompt_version, validation:{model,
 validatedAt, score}}`` — ``model`` is the model that actually produced the canonical
 artifact (the escalation model when best-of chose it), so telemetry reports the real model.
+
+Owner law — every version is kept FOREVER: the winner is saved canonical, and the losing
+candidate (the GPT-5.5 provisional an Opus rebuild supersedes, or an Opus rebuild that lost
+best-of) is appended to the immutable version ledger as SUPERSEDED / REJECTED — never deleted.
 """
 
 from __future__ import annotations
@@ -125,6 +130,13 @@ def validate_and_promote(
     verdict = _judge(judge_model, modality, concept, artifact)
     best_artifact, best_model, best_verdict = artifact, base_model, verdict
 
+    # Escalation candidate (the Opus rebuild), if the gate fires. Kept in scope so its version — win
+    # or lose — is persisted to the immutable ledger below.
+    alt: Any = None
+    alt_model = escalation_model
+    alt_verdict: dict[str, Any] | None = None
+    alt_seeded = False
+
     if not _passes(verdict) and escalation_model:
         logger.info(
             "validate: quality-fail (score=%s critical=%s) — escalating %s to %s",
@@ -134,15 +146,16 @@ def validate_and_promote(
             escalation_model,
         )
         try:
-            # regenerate the SAME spec (concept x difficulty) on GPT-5.5; empty payload (no raster)
-            alt, alt_model, _tokens, seeded = _generate_live(
+            # regenerate the SAME spec (concept x difficulty) on the quality-backup (Opus); empty
+            # payload (no raster)
+            alt, alt_model, _tokens, alt_seeded = _generate_live(
                 modality, concept, difficulty, escalation_model, fallbacks, {}
             )
         except Exception:
             logger.warning("validate: escalation regeneration raised", exc_info=True)
-            alt, alt_model, seeded = None, escalation_model, True
+            alt, alt_seeded = None, True
         # a seeded escalation is the honest floor, not a real regeneration — never best-of a seed
-        if alt is not None and not seeded:
+        if alt is not None and not alt_seeded:
             alt_verdict = _judge(judge_model, modality, concept, alt)
             if _rank(alt_verdict) > _rank(verdict):
                 best_artifact, best_model, best_verdict = alt, alt_model, alt_verdict
@@ -151,21 +164,47 @@ def validate_and_promote(
                     _score_of(alt_verdict),
                 )
 
+    now = datetime.now(UTC).isoformat(timespec="seconds")
+
+    def _provenance(model: str, ver: dict[str, Any] | None) -> dict[str, Any]:
+        return {
+            **record.get("provenance", {}),
+            "model": model,
+            "validation": {
+                "model": judge_model,
+                "validatedAt": now,
+                "score": None if ver is None else ver["score"],
+            },
+        }
+
     canonical = {
         **record,
         "status": store.CANONICAL,
         "artifact": best_artifact,
-        "provenance": {
-            **record.get("provenance", {}),
-            "model": best_model,
-            "validation": {
-                "model": judge_model,
-                "validatedAt": datetime.now(UTC).isoformat(timespec="seconds"),
-                "score": None if best_verdict is None else best_verdict["score"],
-            },
-        },
+        "provenance": _provenance(best_model, best_verdict),
     }
     store.save(concept, modality, difficulty, canonical, scope)
+    # Owner law: keep every version forever. The canonical winner is a ledger record; and if an Opus
+    # rebuild actually ran, the LOSER of best-of is kept too — SUPERSEDED when the rebuild replaced
+    # the served provisional, REJECTED when the rebuild itself lost. Never deleted.
+    store.save_version(concept, modality, difficulty, canonical, scope)
+    if alt is not None and not alt_seeded:
+        if best_artifact is alt:  # the Opus rebuild won → the GPT-5.5 provisional is superseded
+            loser = {
+                **record,
+                "status": store.SUPERSEDED,
+                "artifact": artifact,
+                "provenance": _provenance(base_model, verdict),
+            }
+        else:  # the Opus rebuild lost best-of → rejected, but still kept as a record
+            loser = {
+                **record,
+                "status": store.REJECTED,
+                "artifact": alt,
+                "provenance": _provenance(alt_model, alt_verdict),
+            }
+        store.save_version(concept, modality, difficulty, loser, scope)
+
     logger.info(
         "validate: promoted %s/%r to canonical (model=%s score=%s)",
         modality,
@@ -184,14 +223,17 @@ def validate_and_promote(
 if __name__ == "__main__":  # runnable self-check — no framework, no network
     _rec = {
         "artifact": {"cards": ["base"]},
-        "provenance": {"engine": "engine.compose", "model": "anthropic/x", "prompt_version": "v"},
+        "provenance": {"engine": "engine.compose", "model": "openai/gpt-5.5", "prompt_version": "v"},  # noqa: E501
     }
+    _saved: list[dict] = []
     store.save = lambda c, m, d, r, s: None  # type: ignore[assignment]
+    store.save_version = lambda c, m, d, r, s: (_saved.append(r), store.artifact_path(c, m, d, s))[1]  # type: ignore[assignment] # noqa: E501
 
-    # fail-then-escalate: base scores low, alt scores high → best-of promotes the alt on GPT-5.5.
-    # Run as `python -m ...validate`: this module IS __main__, so rebinding the global `_judge`
-    # here is what validate_and_promote (also in __main__) resolves. _generate_live is imported
-    # fresh from the real engines module, so patch it there.
+    # fail-then-escalate: GPT-5.5 base scores low, the Opus rebuild scores high → best-of promotes
+    # the Opus rebuild, and the superseded GPT base survives in the version ledger. Run as
+    # `python -m ...validate`: this module IS __main__, so rebinding the global `_judge` here is
+    # what validate_and_promote (also in __main__) resolves. _generate_live is imported fresh from
+    # the real engines module, so patch it there.
     _judge = lambda jm, mo, co, art: {  # type: ignore[assignment] # noqa: E731
         "score": 90.0 if art == {"cards": ["alt"]} else 40.0,
         "critical": False,
@@ -200,7 +242,7 @@ if __name__ == "__main__":  # runnable self-check — no framework, no network
     }
     import classess_gateway.plexus.engines as _eng
 
-    _eng._generate_live = lambda *a: ({"cards": ["alt"]}, "openai/gpt-5.5", 1, False)  # type: ignore[assignment]
+    _eng._generate_live = lambda *a: ({"cards": ["alt"]}, "anthropic/claude-opus-4-8", 1, False)  # type: ignore[assignment]
     out = validate_and_promote(
         concept="c",
         modality="compose",
@@ -208,10 +250,14 @@ if __name__ == "__main__":  # runnable self-check — no framework, no network
         scope={},
         record=_rec,
         judge_model="anthropic/claude-opus-4-8",
-        escalation_model="openai/gpt-5.5",
+        escalation_model="anthropic/claude-opus-4-8",
     )
     assert out["status"] == "canonical", out
     assert out["artifact"] == {"cards": ["alt"]}, out
-    assert out["provenance"]["model"] == "openai/gpt-5.5", out
+    assert out["provenance"]["model"] == "anthropic/claude-opus-4-8", out
     assert out["provenance"]["validation"]["score"] == 90.0, out
+    # every version kept forever: the canonical winner AND the superseded GPT base both persist
+    _statuses = {r["status"]: r["artifact"] for r in _saved}
+    assert _statuses.get("canonical") == {"cards": ["alt"]}, _saved
+    assert _statuses.get("superseded") == {"cards": ["base"]}, _saved
     print("validate self-check ok")

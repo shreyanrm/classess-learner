@@ -616,19 +616,20 @@ def _video_routing():
     from classess_gateway.routing import resolve, resolve_any
 
     pol = policy("engine.video")
-    sonnet = resolve(pol.primary, pol.track).provider_model
+    primary = resolve(pol.primary, pol.track).provider_model
     fallbacks = tuple(resolve_any(n).provider_model for n in pol.fallback)
-    return sonnet, fallbacks
+    return primary, fallbacks
 
 
-def test_video_defaults_to_sonnet_and_escalates_to_reason() -> None:
-    """engine.video storyboards on the sonnet tier and escalates to the frontier reasoner."""
+def test_video_defaults_to_gpt_and_escalates_to_opus() -> None:
+    """engine.video storyboards on GPT-5.5 (the primary post model-order flip) and escalates to the
+    frontier reasoner (Opus) as its first fallback."""
     from classess_gateway.registry import policy
     from classess_gateway.routing import resolve, resolve_any
 
     pol = policy("engine.video")
-    assert pol.primary == "frontier.sonnet"
-    assert resolve(pol.primary, pol.track).provider_model == "anthropic/claude-sonnet-5"
+    assert pol.primary == "openai.frontier"
+    assert resolve(pol.primary, pol.track).provider_model == "openai/gpt-5.5"
     # the escalation target is the FIRST fallback: the frontier reasoner (Opus)
     assert pol.fallback[0] == "frontier.reason"
     assert resolve_any(pol.fallback[0]).provider_model == "anthropic/claude-opus-4-8"
@@ -651,16 +652,16 @@ def _patch_complete(monkeypatch, plans: dict[str, str]) -> list[str]:
 def test_video_escalates_when_scene_plan_flags_complex(monkeypatch) -> None:
     from classess_gateway.plexus.engines import _generate_video_live
 
-    sonnet, fallbacks = _video_routing()
+    primary, fallbacks = _video_routing()
     opus = fallbacks[0]
-    # sonnet returns a perfectly valid plan, but it self-declares complex -> escalate anyway
+    # the primary returns a perfectly valid plan, but it self-declares complex -> escalate anyway
     calls = _patch_complete(
-        monkeypatch, {sonnet: _VALID_PLAN % "complex", opus: _VALID_PLAN % "simple"}
+        monkeypatch, {primary: _VALID_PLAN % "complex", opus: _VALID_PLAN % "simple"}
     )
     artifact, model_used, _tokens, seeded = _generate_video_live(
-        "orbital motion", "core", sonnet, fallbacks, "user"
+        "orbital motion", "core", primary, fallbacks, "user"
     )
-    assert calls == [sonnet, opus]  # tried sonnet, then escalated to the reasoner
+    assert calls == [primary, opus]  # tried the primary, then escalated to the reasoner
     assert model_used == opus
     assert seeded is False
     assert artifact["scenes"]
@@ -669,29 +670,29 @@ def test_video_escalates_when_scene_plan_flags_complex(monkeypatch) -> None:
 def test_video_escalates_when_sonnet_draft_fails_verification(monkeypatch) -> None:
     from classess_gateway.plexus.engines import _generate_video_live
 
-    sonnet, fallbacks = _video_routing()
+    primary, fallbacks = _video_routing()
     opus = fallbacks[0]
-    # sonnet returns junk (fails structural verification) -> escalate to the reasoner
-    calls = _patch_complete(monkeypatch, {sonnet: '{"scenes":[]}', opus: _VALID_PLAN % "simple"})
+    # the primary returns junk (fails structural verification) -> escalate to the reasoner
+    calls = _patch_complete(monkeypatch, {primary: '{"scenes":[]}', opus: _VALID_PLAN % "simple"})
     artifact, model_used, _tokens, _seeded = _generate_video_live(
-        "orbital motion", "core", sonnet, fallbacks, "user"
+        "orbital motion", "core", primary, fallbacks, "user"
     )
-    assert calls == [sonnet, opus]
+    assert calls == [primary, opus]
     assert model_used == opus
     assert artifact["scenes"]
 
 
-def test_video_stays_on_sonnet_for_a_simple_valid_plan(monkeypatch) -> None:
+def test_video_stays_on_primary_for_a_simple_valid_plan(monkeypatch) -> None:
     from classess_gateway.plexus.engines import _generate_video_live
 
-    sonnet, fallbacks = _video_routing()
+    primary, fallbacks = _video_routing()
     # a simple, valid plan never escalates — the reasoner is reserved for when it is needed
-    calls = _patch_complete(monkeypatch, {sonnet: _VALID_PLAN % "simple"})
+    calls = _patch_complete(monkeypatch, {primary: _VALID_PLAN % "simple"})
     _artifact, model_used, _tokens, _seeded = _generate_video_live(
-        "a falling apple", "core", sonnet, fallbacks, "user"
+        "a falling apple", "core", primary, fallbacks, "user"
     )
-    assert calls == [sonnet]
-    assert model_used == sonnet
+    assert calls == [primary]
+    assert model_used == primary
 
 
 def test_pcm_narration_wrapped_as_playable_wav() -> None:

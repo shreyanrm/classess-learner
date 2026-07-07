@@ -12,8 +12,11 @@ dev = ["pytest>=8.2", "ruff>=0.6"]
 # Members are added as each Python package is created. Globbing avoids editing this on every add.
 # content/catalogs is data (board catalog JSON) and content/cache is the Plexus artifact
 # cache (written at runtime by the gateway) — neither is a Python package.
+# services/render-worker has no pyproject.toml (a Node/TS render service with a Python queue
+# consumer), so the Python workspace glob must skip it — otherwise every `uv run` fails trying to
+# resolve it as a member. Drop this exclude if it later becomes a real uv package (adds pyproject).
 members = ["services/*", "content/*"]
-exclude = ["content/catalogs", "content/cache"]
+exclude = ["content/catalogs", "content/cache", "services/render-worker"]
 
 [tool.ruff]
 line-length = 100

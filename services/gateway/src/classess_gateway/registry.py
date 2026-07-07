@@ -139,13 +139,18 @@ _POLICIES: dict[str, RoutingPolicy] = {
             cost_ceiling=0.03,
             cache_tier=CacheTier.EXACT,
         ),
-        # Plexus engines: heavy content generation on the anthropic frontier path,
-        # warm-cached under content/cache/ so the first learner pays and the rest reuse.
+        # Plexus engines: heavy content generation, warm-cached under content/cache/ so the first
+        # learner pays and the rest reuse.
+        # MODEL-ORDER FLIP (owner law, 2026-07-07): content engines route PRIMARY to GPT-5.5
+        # via the logical openai.frontier; OPUS (frontier.reason) is the QUALITY-BACKUP — a GPT
+        # draft that fails the post-serve validation gate is rebuilt on Opus, best-of promoted
+        # (plexus.validate). The fallback chain here is litellm's on-ERROR failover (a GPT outage
+        # still yields content): GPT-5.5 -> Opus -> Haiku. Vidya's turn routing is UNTOUCHED.
         RoutingPolicy(
             capability="engine.compose",
             track=Track.TRACK_1,
-            primary="frontier.reason",
-            fallback=("frontier.fast",),
+            primary="openai.frontier",
+            fallback=("frontier.reason", "frontier.fast"),
             max_latency_ms=12000,
             cost_ceiling=0.08,
             cache_tier=CacheTier.EXACT,
@@ -153,8 +158,8 @@ _POLICIES: dict[str, RoutingPolicy] = {
         RoutingPolicy(
             capability="engine.simulate",
             track=Track.TRACK_1,
-            primary="frontier.reason",
-            fallback=("frontier.fast",),
+            primary="openai.frontier",
+            fallback=("frontier.reason", "frontier.fast"),
             max_latency_ms=12000,
             cost_ceiling=0.08,
             cache_tier=CacheTier.EXACT,
@@ -162,21 +167,21 @@ _POLICIES: dict[str, RoutingPolicy] = {
         RoutingPolicy(
             capability="engine.diagram",
             track=Track.TRACK_1,
-            primary="frontier.reason",
-            fallback=("frontier.fast",),
+            primary="openai.frontier",
+            fallback=("frontier.reason", "frontier.fast"),
             max_latency_ms=10000,
             cost_ceiling=0.05,
             cache_tier=CacheTier.EXACT,
         ),
-        # Video routing law (owner, 2026-07-07): scene plans are storyboarded on the sonnet
-        # tier by DEFAULT and escalate to the frontier reasoner (Opus) ONLY when necessary —
-        # a complexity flag in the scene plan or a failed structural/quality validation. The
-        # escalation target is the FIRST fallback, which the engine calls explicitly (not just
-        # an error-fallback): frontier.reason. See plexus.engines._generate_video_live.
+        # Video routing law (owner, 2026-07-07, post model-order flip): scene plans are storyboarded
+        # on GPT-5.5 (openai.frontier) by DEFAULT and escalate to the frontier reasoner (Opus) ONLY
+        # when necessary — a complexity flag in the scene plan or a failed structural/quality
+        # validation. The escalation target is the FIRST fallback, which the engine calls explicitly
+        # (not just an error-fallback): frontier.reason. See plexus.engines._generate_video_live.
         RoutingPolicy(
             capability="engine.video",
             track=Track.TRACK_1,
-            primary="frontier.sonnet",
+            primary="openai.frontier",
             fallback=("frontier.reason", "frontier.fast"),
             max_latency_ms=30000,
             cost_ceiling=0.15,

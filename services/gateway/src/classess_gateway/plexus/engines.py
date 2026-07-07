@@ -1372,10 +1372,11 @@ def _generate_video_live(
     fallbacks: tuple[str, ...],
     user: str,
 ) -> tuple[Any, str, int, bool]:
-    """engine.video routing law (owner, 2026-07-07): storyboard on the sonnet tier by DEFAULT,
-    escalate to the frontier reasoner (Opus — the first fallback) ONLY when necessary: the scene
-    plan flags itself complex, or the sonnet draft fails structural verification. Returns the
-    Opus draft only when it actually verifies, so an escalation never degrades the result."""
+    """engine.video routing law (owner, 2026-07-07, post model-order flip): storyboard on GPT-5.5
+    (the primary) by DEFAULT, escalate to the frontier reasoner (Opus — the first fallback) ONLY
+    when necessary: the scene plan flags itself complex, or the GPT draft fails structural
+    verification. Returns the Opus draft only when it actually verifies, so an escalation never
+    degrades the result."""
     from classess_gateway.vidya import _extract_json
 
     text, tokens = _complete(provider_model, "video", user, fallbacks)
@@ -1588,13 +1589,16 @@ def _spawn_validation(
     fallbacks: tuple[str, ...],
 ) -> None:
     """Fire the post-serve validation gate in a background thread — the learner never waits on it.
-    Resolves the judge (frontier.reason) and escalation (openai.frontier) models; if either is
-    unregistered we skip validation (the provisional stays served, never blocks)."""
+    MODEL-ORDER FLIP (owner law): the content primary is now GPT-5.5, so OPUS (frontier.reason) is
+    the QUALITY-BACKUP — it both judges the provisional and rebuilds it on a quality-fail (best-of
+    promoted). If either model is unregistered we skip validation (the provisional stays served,
+    never blocks)."""
     from classess_gateway.routing import Track, resolve
 
     try:
         judge = resolve("frontier.reason", Track.TRACK_1).provider_model
-        escalation = resolve("openai.frontier", Track.TRACK_1).provider_model
+        # Opus is the quality-backup: a GPT-5.5 draft that fails the gate is rebuilt on Opus.
+        escalation = resolve("frontier.reason", Track.TRACK_1).provider_model
     except KeyError:
         logger.warning("validate: judge/escalation model unresolved — skipping validation")
         return
@@ -1692,5 +1696,8 @@ def run_engine(
         store.save(concept, modality, difficulty, record, scope)
         # Serve the first learner immediately, THEN validate off the request path (never blocks).
         if provisional:
+            # Owner law: keep every version forever. The GPT-5.5 provisional lands in the immutable
+            # ledger before the gate runs, so the attempt survives even if Opus later supersedes it.
+            store.save_version(concept, modality, difficulty, record, scope)
             _spawn_validation(record, concept, modality, difficulty, scope, fallbacks)
         return ProviderResponse(output=_public(record), tokens=tokens, model=model_used)
