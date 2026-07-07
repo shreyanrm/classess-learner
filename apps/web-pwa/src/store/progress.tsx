@@ -20,10 +20,12 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { hueForTopic } from '../ui/hues';
 import { sfx } from '../ui/sound';
+import { earnedTrophyKeys, type TrophyAward, topTrophyKey, trophyAwardFor } from '../ui/trophies';
 import { useSdk } from './sdk';
 
 export type XpReason =
@@ -151,6 +153,27 @@ if (import.meta.env.DEV) {
   );
 }
 
+// Which milestone trophies have already had their ceremony — a local guard so a tier is celebrated
+// exactly once, and never retroactively. Cross-device double-celebration isn't worth syncing.
+const CELEBRATED_KEY = 'clss-trophies-celebrated-v1';
+
+function loadCelebrated(): Set<string> | null {
+  try {
+    const raw = localStorage.getItem(CELEBRATED_KEY);
+    return raw ? new Set(JSON.parse(raw) as string[]) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveCelebrated(set: Set<string>): void {
+  try {
+    localStorage.setItem(CELEBRATED_KEY, JSON.stringify([...set]));
+  } catch {
+    // storage unavailable — the ceremony still fires this session, just isn't remembered
+  }
+}
+
 function bumpToday() {
   try {
     const key = 'clss-activity-counts-v1';
@@ -182,6 +205,10 @@ export interface ProgressStore {
   award: (reason: XpReason, opts?: { amount?: number; onceKey?: string; hue?: string }) => number;
   completeTopic: (topicId: string, xp?: number) => void;
   dismissBloom: (id: number) => void;
+  /** Milestone trophies earned this session, awaiting their ceremony (the head shows first). */
+  trophies: TrophyAward[];
+  /** Retire a trophy once its ceremony has played. */
+  dismissTrophy: (id: number) => void;
 }
 
 const Ctx = createContext<ProgressStore | null>(null);
@@ -193,11 +220,44 @@ export function useProgress(): ProgressStore {
 }
 
 let bloomSeq = 1;
+let trophySeq = 1;
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
   const sdk = useSdk();
   const [state, setState] = useState<LearnerState>(() => rollForward(sdk.state.loadCache()));
   const [blooms, setBlooms] = useState<XpBloom[]>([]);
+  const [trophies, setTrophies] = useState<TrophyAward[]>([]);
+  // The already-celebrated milestone set — null until the first settle adopts (or silently backfills)
+  // it, so shipping this never dumps a pile of ceremonies for milestones passed long ago.
+  const celebrated = useRef<Set<string> | null>(null);
+
+  // The ceremony trigger: whenever xp or the streak lands on a new milestone tier, queue its trophy.
+  // First-EVER run silently adopts the current earned set (never a retroactive pile on ship). Every
+  // later boot still checks against the persisted set — so a streak tier reached today (the streak
+  // ticks up at boot via rollForward, not mid-session) still gets its moment. Only the single most
+  // significant fresh key fires when several land at once, keeping the ceremony scarce.
+  useEffect(() => {
+    const earned = earnedTrophyKeys(state.xp, state.streakDays);
+    if (celebrated.current === null) {
+      const stored = loadCelebrated();
+      if (stored === null) {
+        celebrated.current = new Set(earned);
+        saveCelebrated(celebrated.current);
+        return;
+      }
+      celebrated.current = stored;
+    }
+    const fresh = earned.filter((k) => !celebrated.current?.has(k));
+    if (fresh.length === 0) return;
+    for (const k of fresh) celebrated.current.add(k);
+    saveCelebrated(celebrated.current);
+    const award: TrophyAward = { ...trophyAwardFor(topTrophyKey(fresh)), id: trophySeq++ };
+    setTrophies((q) => [...q, award]);
+  }, [state.xp, state.streakDays]);
+
+  const dismissTrophy = useCallback((id: number) => {
+    setTrophies((q) => q.filter((t) => t.id !== id));
+  }, []);
 
   // Hydrate on boot: reconcile the local cache with learner_state (a no-op in local mode) so a
   // session on another device carries over — union of topics, max XP, the streak chain intact.
@@ -349,8 +409,20 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       award,
       completeTopic,
       dismissBloom,
+      trophies,
+      dismissTrophy,
     }),
-    [state, blooms, award, completeTopic, dismissBloom, reportProgress, repairStreak],
+    [
+      state,
+      blooms,
+      award,
+      completeTopic,
+      dismissBloom,
+      reportProgress,
+      repairStreak,
+      trophies,
+      dismissTrophy,
+    ],
   );
 
   return <Ctx.Provider value={store}>{children}</Ctx.Provider>;

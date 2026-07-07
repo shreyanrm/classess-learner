@@ -5,7 +5,7 @@
  * centre of the screen and asks one thing at a time, aloud (voice + a line that types itself).
  * There is no thread, no dots, no chrome: the last beat fades out as the next fades in, so it
  * reads as one continuous conversation. She learns your name first ("what can I call you?") and
- * every line after is yours by name; she gathers your age (mandatory — drives the age-branch),
+ * every line after is yours by name; she asks when you were born (mandatory — age is derived from it),
  * class + board, and what you're into (grounds her analogies from lesson one), then — in live
  * mode — offers to keep it safe across devices with a single Google sign-in (phone code as the
  * quiet alternate). She seals it with your name and a personalised-plan promise, and you step in.
@@ -23,15 +23,12 @@ import { Pip, Sprout } from '../ui/cast';
 import { fluidSpace, MagneticButton } from '../ui/kit';
 import { MuteButton, speakLine } from '../vidya/speech';
 import { GradeBoardPicker } from './you/GradeBoardPicker';
-import { boardName, boardSeeded, loadProfile, saveProfile } from './you/profile';
+import { ageFromBirthdate, boardName, boardSeeded, loadProfile, saveProfile } from './you/profile';
 
 /** Survives the Google round-trip in this tab: on return, restore the flow at the ready beat. */
 const ONB_RETURN_KEY = 'clss-onb-return';
 const spring = { type: 'spring', stiffness: 320, damping: 30 } as const;
 const softSpring = { type: 'spring', stiffness: 220, damping: 24 } as const;
-
-/** The ages our grades actually span, offered as one-tap chips (mandatory). */
-const AGES = Array.from({ length: 10 }, (_, i) => i + 9); // 9…18
 
 /** Framed as fun, gathered as signal — Vidya's analogies reach for these. */
 const LIKES = [
@@ -155,6 +152,8 @@ export function Onboarding() {
   const [mood, setMood] = useState<VidyaMood>('idle');
 
   const [name, setName] = useState('');
+  // She asks when they were born (free text — a year or a full date); age is derived, not asked.
+  const [birthdate, setBirthdate] = useState('');
   const [age, setAge] = useState<number | null>(null);
   const [grade, setGrade] = useState<string | null>(null);
   const [boardId, setBoardId] = useState<string | null>(null);
@@ -191,7 +190,9 @@ export function Onboarding() {
   };
   const toAge = (who: string) => {
     setPhase('age');
-    say(`lovely to meet you, ${who}. and how old are you these days?`);
+    say(
+      `lovely to meet you, ${who}. so — when did you land on this planet? a year's plenty, or your whole birthday.`,
+    );
   };
   const toSchool = () => {
     setPhase('school');
@@ -222,6 +223,7 @@ export function Onboarding() {
       sessionStorage.removeItem(ONB_RETURN_KEY);
       const p = loadProfile();
       setName(p.name);
+      setBirthdate(p.birthdate ?? '');
       setAge(p.age ?? null);
       setGrade(p.grade);
       setBoardId(p.boardId);
@@ -262,8 +264,11 @@ export function Onboarding() {
     window.setTimeout(() => setMood('idle'), 800);
     toAge(n);
   };
-  const pickAge = (a: number) => {
-    setAge(a);
+  const submitBirthdate = () => {
+    const b = birthdate.trim();
+    if (!b) return; // capture stays mandatory — but whatever they give, we take it (no value gate)
+    setBirthdate(b);
+    setAge(ageFromBirthdate(b) ?? null);
     setMood('celebrate');
     window.setTimeout(() => setMood('idle'), 600);
     toSchool();
@@ -321,7 +326,14 @@ export function Onboarding() {
   const withGoogle = async () => {
     // The redirect leaves the page: keep what she has learned so far, mark the return path.
     if (grade && boardId) {
-      saveProfile({ name: finalName, grade, boardId, age: age ?? undefined, interests });
+      saveProfile({
+        name: finalName,
+        grade,
+        boardId,
+        birthdate: birthdate || undefined,
+        age: age ?? undefined,
+        interests,
+      });
     }
     rememberInterests(interests);
     sessionStorage.setItem(ONB_RETURN_KEY, '1');
@@ -338,7 +350,14 @@ export function Onboarding() {
   // --- the finish ------------------------------------------------------------------------------
   const finish = () => {
     if (grade && boardId) {
-      saveProfile({ name: finalName, grade, boardId, age: age ?? undefined, interests });
+      saveProfile({
+        name: finalName,
+        grade,
+        boardId,
+        birthdate: birthdate || undefined,
+        age: age ?? undefined,
+        interests,
+      });
     }
     rememberInterests(interests);
     // Publish the full dossier now (identity + interests) so home greets by name without waiting.
@@ -503,21 +522,51 @@ export function Onboarding() {
               {promptReady && phase === 'age' && (
                 <motion.div
                   key="i-age"
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 14, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={spring}
                   style={{
                     display: 'flex',
-                    gap: 8,
-                    flexWrap: 'wrap',
-                    justifyContent: 'center',
-                    maxWidth: 440,
+                    gap: 10,
+                    alignItems: 'center',
+                    width: '100%',
+                    maxWidth: 380,
                   }}
                 >
-                  {AGES.map((a) => (
-                    <Chip key={a} label={`${a}`} selected={age === a} onClick={() => pickAge(a)} />
-                  ))}
+                  <input
+                    // biome-ignore lint/a11y/noAutofocus: the input is this beat's single intention
+                    autoFocus
+                    value={birthdate}
+                    onChange={(e) => setBirthdate(e.target.value)}
+                    onFocus={() => setMood('listening')}
+                    onBlur={() => setMood('idle')}
+                    onKeyDown={(e) => e.key === 'Enter' && submitBirthdate()}
+                    placeholder="a year, or your birthday"
+                    aria-label="when you were born"
+                    style={{ ...fieldStyle, textAlign: 'center' }}
+                  />
+                  {/* the continue affordance bubbles in only once there is something to send */}
+                  <AnimatePresence>
+                    {birthdate.trim().length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.6, x: -6 }}
+                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                        exit={{ opacity: 0, scale: 0.6 }}
+                        transition={{ type: 'spring', stiffness: 480, damping: 24 }}
+                      >
+                        <MagneticButton
+                          size="lg"
+                          variant="primary"
+                          onClick={submitBirthdate}
+                          ariaLabel="continue"
+                          style={{ minWidth: 52, justifyContent: 'center', padding: '0 18px' }}
+                        >
+                          →
+                        </MagneticButton>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               )}
 

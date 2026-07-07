@@ -47,6 +47,7 @@ import { ProgressProvider, useProgress } from './store/progress';
 import { SdkProvider } from './store/sdk';
 import { AppHeader } from './ui/AppHeader';
 import { ClickInk } from './ui/ClickInk';
+import { CeremonyHost } from './ui/ceremony';
 import { sfx } from './ui/sound';
 import { VidyaCompanion } from './vidya/Companion';
 import {
@@ -511,6 +512,8 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       {/* the chat page IS her — no docked twin over it */}
       {!inFlow && !onHome && route.name !== 'chat' && <VidyaCompanion />}
       <CommandPalette />
+      {/* the award ceremony for a milestone crossing — blur, descend, confetti, fanfare, her jump */}
+      <CeremonyHost />
       <ClickInk />
       {/* the per-learner mind — folds behavioural signals into her lifetime context */}
       <MindObserver />

@@ -681,7 +681,12 @@ function GenCardView({
           </Stage>
         );
     } else if (artifact.status === 'pending') {
-      surface = <Shimmer lines={3} note="she is composing this piece — it lands here on its own" />;
+      surface = (
+        <Shimmer
+          lines={3}
+          note="she is composing this piece just for you — it will land here on its own"
+        />
+      );
     }
     // failed: the idea and the act stand alone — refusal invisible
   }
@@ -937,7 +942,10 @@ function VideoBeat({
           </motion.div>
         )}
         {video.status === 'pending' && (
-          <Shimmer lines={4} note="she is animating this — it lands here on its own" />
+          <Shimmer
+            lines={4}
+            note="she is animating this one by hand — it will land here on its own"
+          />
         )}
         {video.status === 'failed' && (
           <motion.div variants={rise} style={lead}>

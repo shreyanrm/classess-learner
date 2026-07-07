@@ -17,7 +17,9 @@ export interface StoredProfile {
   name: string;
   grade: string;
   boardId: string;
-  /** Mandatory in onboarding (drives the age-branch); optional here for older saved profiles. */
+  /** When they were born — a bare year or any date string they gave. Source of truth for age. */
+  birthdate?: string;
+  /** Derived from birthdate (drives the age-branch); may be stored on older saved profiles. */
   age?: number;
   /** What they're into — folded into Vidya's analogies/examples. */
   interests?: string[];
@@ -32,6 +34,31 @@ export interface StoredProfile {
 
 const FALLBACK: StoredProfile = { name: learner.name, grade: learner.grade, boardId: 'cbse' };
 
+/**
+ * Whole-year age from a birthdate — a bare 4-digit year, or any date the browser can parse.
+ * Best-effort by design (owner law: take whatever they gave); unparseable input yields undefined,
+ * it never rejects the value itself. A full date adjusts for whether this year's birthday passed.
+ */
+export function ageFromBirthdate(birthdate: string | undefined): number | undefined {
+  if (!birthdate) return undefined;
+  const s = birthdate.trim();
+  const now = new Date();
+  const bareYear = /^\d{4}$/.test(s);
+  const year = bareYear ? Number(s) : new Date(s).getFullYear();
+  if (!Number.isFinite(year) || year < 1900 || year > now.getFullYear()) return undefined;
+  let age = now.getFullYear() - year;
+  if (!bareYear) {
+    const d = new Date(s);
+    if (!Number.isNaN(d.getTime())) {
+      const passed =
+        now.getMonth() > d.getMonth() ||
+        (now.getMonth() === d.getMonth() && now.getDate() >= d.getDate());
+      if (!passed) age -= 1;
+    }
+  }
+  return age;
+}
+
 export function loadProfile(): StoredProfile {
   try {
     const raw = localStorage.getItem(PROFILE_KEY);
@@ -41,7 +68,9 @@ export function loadProfile(): StoredProfile {
         name: p.name?.trim() || FALLBACK.name,
         grade: p.grade || FALLBACK.grade,
         boardId: p.boardId || FALLBACK.boardId,
-        age: typeof p.age === 'number' ? p.age : undefined,
+        birthdate: typeof p.birthdate === 'string' && p.birthdate.trim() ? p.birthdate : undefined,
+        // Birthdate is the source of truth; fall back to a stored age on older profiles.
+        age: ageFromBirthdate(p.birthdate) ?? (typeof p.age === 'number' ? p.age : undefined),
         interests: Array.isArray(p.interests) ? p.interests : undefined,
         largeText: p.largeText === true,
         highContrast: p.highContrast === true,

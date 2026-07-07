@@ -81,7 +81,7 @@ const CAPABILITIES: Record<CapabilityId, VidyaCapability> = {
       }
       if (query) {
         router.navigate({ name: 'course', topicId: `custom:${query}` });
-        return `nothing in the syllabus matched, so I am composing a fresh course on ${query} — give me a moment.`;
+        return `nothing in the syllabus matched that one — so I am dreaming up a fresh course on ${query}, just for you. give me a moment.`;
       }
       router.navigate({ name: 'course', topicId: ATOM_TOPIC_ID });
       return 'let us start where the whole idea clicks — I am right here with you.';
@@ -94,7 +94,7 @@ const CAPABILITIES: Record<CapabilityId, VidyaCapability> = {
     label: () => 'start practice',
     run: async ({ router }) => {
       router.navigate({ name: 'practice' });
-      return 'practice is open — unaided, so every answer counts as real evidence.';
+      return 'practice is open — no hints from me this time, so every answer counts as the real thing.';
     },
   },
 
@@ -107,7 +107,8 @@ const CAPABILITIES: Record<CapabilityId, VidyaCapability> = {
     },
     run: async ({ router }, p) => {
       const topic = resolveTopic(p);
-      if (!topic) return 'no boss to face yet — open a course first.';
+      if (!topic)
+        return 'no boss to face just yet — open a course, and one will be waiting at the finish.';
       // land the journey at the boss door (the course player resumes from this position)
       try {
         const key = 'clss-course-pos-v1';

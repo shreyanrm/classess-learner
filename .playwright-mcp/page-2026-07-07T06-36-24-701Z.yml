@@ -1,0 +1,50 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e2]: "engine.video probe â€” \"Solving linear equations\" (model: anthropic/claude-sonnet-5, live)"
+  - generic [ref=f1e3]: "SYNC-LAW VIOLATION: single narration blob = 39.2s Â· authored scene timeline = 32s Â· drift 7.2s (>>300ms). Renderer advances on fixed authored durationMs, caps at 32s, cuts final 7.2s of narration."
+  - generic [ref=f1e4]: 5 scenes, each with per-beat narration text (PASS). One combined audio/wav (2450KB b64), NOT per-beat. SVGs self-animate via SMIL.
+  - generic [ref=f1e5]:
+    - generic [ref=f1e6]:
+      - generic [ref=f1e7]: s1 Â· authored 6s
+      - generic [ref=f1e8]: the question an equation asks
+      - img [ref=f1e10]:
+        - generic [ref=f1e12]: 2x + 3 = 11
+        - generic [ref=f1e13]: find the value of x that makes this true
+      - generic [ref=f1e14]: "Every linear equation asks one question: what value of x makes both sides equal?"
+    - generic [ref=f1e15]:
+      - generic [ref=f1e16]: s2 Â· authored 7s
+      - generic [ref=f1e17]: the balance scale
+      - img [ref=f1e19]:
+        - generic [ref=f1e24]: 2x
+        - generic [ref=f1e26]: "+3"
+        - generic [ref=f1e29]: "11"
+        - generic [ref=f1e30]: both sides are equal
+      - generic [ref=f1e31]: Think of it as a balance scale, the left pan holds two x's and three units, the right pan holds eleven units, and both sides balance perfectly.
+    - generic [ref=f1e32]:
+      - generic [ref=f1e33]: s3 Â· authored 6s
+      - generic [ref=f1e34]: remove the same amount from both sides
+      - img [ref=f1e36]:
+        - generic [ref=f1e38]: subtract 3 from both sides to keep balance
+        - generic [ref=f1e39]: 2x + 3 = 11
+        - generic [ref=f1e40]: "-3"
+        - generic [ref=f1e41]: "-3"
+        - generic [ref=f1e42]: 2x = 8
+      - generic [ref=f1e43]: To keep the balance, whatever we remove from one side, we must remove from the other. Subtract three from both sides, leaving two x equal to eight.
+    - generic [ref=f1e44]:
+      - generic [ref=f1e45]: s4 Â· authored 6s
+      - generic [ref=f1e46]: share both sides equally
+      - img [ref=f1e48]:
+        - generic [ref=f1e50]: divide both sides equally by 2
+        - generic [ref=f1e51]: 2x = 8
+        - generic [ref=f1e52]: Ã·2
+        - generic [ref=f1e53]: Ã·2
+        - generic [ref=f1e54]: x = 4
+      - generic [ref=f1e55]: Now divide both sides equally into two parts. Each x turns out to be four.
+    - generic [ref=f1e56]:
+      - generic [ref=f1e57]: s5 Â· authored 7s
+      - generic [ref=f1e58]: verify the answer
+      - img [ref=f1e60]:
+        - generic [ref=f1e62]: "check: substitute x = 4"
+        - generic [ref=f1e63]: 2(4) + 3 = 11
+        - generic [ref=f1e64]: 8 + 3 = 11
+        - generic [ref=f1e65]: 11 = 11
+      - generic [ref=f1e67]: "Check by substituting x equals four back into the original equation: two times four is eight, plus three is eleven, exactly right."

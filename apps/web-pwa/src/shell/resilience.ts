@@ -69,7 +69,8 @@ export function isOffline(): boolean {
 // --- her plain lines (dead-end rule: she says what still works, never just "error") --------------
 
 /** Mid-turn network stall/failure — one plain line, then we fall back to the lightest thing. */
-export const WOBBLY_LINE = "network's wobbly — here's the light version.";
+export const WOBBLY_LINE =
+  "network's being a bit wobbly — here's the nimble version, help still lands.";
 /** Offline: tell them plainly what still works without a connection. */
 export const OFFLINE_LINE =
   "you're offline — your saved lessons, practice, and our whole conversation still work. I'll catch up the moment you're back.";
