@@ -1,0 +1,10 @@
+- generic [ref=f50e4]:
+  - button "Unmute Vidya" [pressed] [ref=f50e6] [cursor=pointer]:
+    - img [ref=f50e7]
+  - button "Vidya" [ref=f50e11] [cursor=pointer]:
+    - img [ref=f50e15]
+  - generic [ref=f50e45]:
+    - generic [ref=f50e46]: Hey there, what can I call you?
+    - textbox "your name" [active] [ref=f50e48]:
+      - /placeholder: Type your name
+  - button "Skip for now" [ref=f50e43] [cursor=pointer]

@@ -1,0 +1,38 @@
+- generic [ref=f45e4]:
+  - button "Unmute Vidya" [pressed] [ref=f45e6] [cursor=pointer]:
+    - img [ref=f45e7]
+  - button "Vidya" [ref=f45e11] [cursor=pointer]:
+    - img [ref=f45e15]
+  - generic [ref=f45e95]:
+    - generic [ref=f45e96]: Which board are you on, Aarav?
+    - generic [ref=f45e110]:
+      - generic [ref=f45e111]:
+        - generic [ref=f45e112]: Your board
+        - generic [ref=f45e113]:
+          - generic [ref=f45e114]:
+            - button "CBSE" [ref=f45e115] [cursor=pointer]
+            - button "ICSE" [ref=f45e116] [cursor=pointer]
+            - button "Telangana State Board" [active] [pressed] [ref=f45e117] [cursor=pointer]
+          - generic [ref=f45e118]:
+            - generic [ref=f45e119]: India
+            - generic [ref=f45e120]:
+              - button "Andhra Pradesh State Board" [ref=f45e121] [cursor=pointer]
+              - button "Maharashtra State Board" [ref=f45e122] [cursor=pointer]
+              - button "Karnataka State Board" [ref=f45e123] [cursor=pointer]
+              - button "Tamil Nadu State Board" [ref=f45e124] [cursor=pointer]
+              - button "Kerala State Board" [ref=f45e125] [cursor=pointer]
+              - button "UP Board" [ref=f45e126] [cursor=pointer]
+          - generic [ref=f45e127]:
+            - generic [ref=f45e128]: International
+            - generic [ref=f45e129]:
+              - button "IB" [ref=f45e130] [cursor=pointer]
+              - button "Cambridge (IGCSE)" [ref=f45e131] [cursor=pointer]
+          - generic [ref=f45e132]:
+            - generic [ref=f45e133]: United States
+            - button "Common Core" [ref=f45e135] [cursor=pointer]
+          - generic [ref=f45e136]:
+            - generic [ref=f45e137]: United Kingdom
+            - button "National Curriculum" [ref=f45e139] [cursor=pointer]
+        - button "My board isn't here" [ref=f45e140] [cursor=pointer]
+      - button "Next" [ref=f45e142] [cursor=pointer]
+  - button "Skip for now" [ref=f45e43] [cursor=pointer]

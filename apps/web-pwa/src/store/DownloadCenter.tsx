@@ -125,9 +125,20 @@ export function DownloadCenter() {
     }
   }, [forged]);
 
-  const toasts = items.filter((d) => (d.status === 'ready' || d.status === 'failed') && !d.seen);
+  // The toast carries the learner through the whole journey wherever they now are: composing (they
+  // just tapped an ungenerated course and were bounced back per the content law), then ready (tap to
+  // dive in) or a slip (tap to retry). downloading/queued carry seen=true, so they surface by status
+  // alone; ready/failed surface until acknowledged. This is the visible downloading pill the bounce
+  // relies on — no matter which screen the learner landed back on.
+  const toasts = items.filter(
+    (d) =>
+      d.status === 'downloading' ||
+      d.status === 'queued' ||
+      ((d.status === 'ready' || d.status === 'failed') && !d.seen),
+  );
 
   const open = (d: Download) => {
+    if (d.status === 'downloading' || d.status === 'queued') return; // still composing — nothing to open yet
     acknowledge(d.topicId);
     if (d.status === 'ready') {
       router.navigate({ name: 'course', topicId: d.topicId });
@@ -155,78 +166,85 @@ export function DownloadCenter() {
       }}
     >
       <AnimatePresence>
-        {toasts.map((d) => (
-          <motion.button
-            key={d.topicId}
-            type="button"
-            layout
-            initial={{ opacity: 0, y: 16, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 12, scale: 0.98 }}
-            transition={{ type: 'spring', stiffness: 340, damping: 30 }}
-            onClick={() => open(d)}
-            whileTap={{ scale: 0.985 }}
-            style={{
-              pointerEvents: 'auto',
-              width: '100%',
-              textAlign: 'left',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 14,
-              padding: '13px 15px',
-              borderRadius: 3,
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-              color: 'var(--clss-paper)',
-              background: 'var(--clss-frost-on-paper)',
-              backdropFilter: 'blur(var(--clss-frost-blur)) saturate(1.2)',
-              WebkitBackdropFilter: 'blur(var(--clss-frost-blur)) saturate(1.2)',
-              border: '0.5px solid color-mix(in srgb, var(--clss-ink) 14%, transparent)',
-            }}
-          >
-            {/* a small breathing dot in the mastery pigment — ready glows, a slip is muted */}
-            <motion.span
-              aria-hidden
-              animate={
-                d.status === 'ready'
-                  ? { scale: [1, 1.35, 1], opacity: [0.9, 0.5, 0.9] }
-                  : { opacity: 0.6 }
-              }
-              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+        {toasts.map((d) => {
+          const composing = d.status === 'downloading' || d.status === 'queued';
+          return (
+            <motion.button
+              key={d.topicId}
+              type="button"
+              layout
+              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 12, scale: 0.98 }}
+              transition={{ type: 'spring', stiffness: 340, damping: 30 }}
+              onClick={() => open(d)}
+              whileTap={{ scale: 0.985 }}
               style={{
-                flexShrink: 0,
-                width: 9,
-                height: 9,
-                borderRadius: 999,
-                background:
-                  d.status === 'ready' ? 'var(--clss-ultramarine)' : 'var(--clss-ink-300)',
-              }}
-            />
-            <span
-              style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}
-            >
-              <span style={{ fontSize: '0.94rem', fontWeight: 600, lineHeight: 1.25 }}>
-                {d.title}
-              </span>
-              <span style={{ fontSize: '0.8rem', opacity: 0.82, lineHeight: 1.35 }}>
-                {d.status === 'ready'
-                  ? 'Your course is ready — tap to dive in'
-                  : 'That one slipped away — tap to try again'}
-              </span>
-            </span>
-            <span
-              style={{
-                flexShrink: 0,
-                fontSize: '0.8rem',
-                fontWeight: 600,
-                opacity: 0.9,
-                whiteSpace: 'nowrap',
+                pointerEvents: 'auto',
+                width: '100%',
+                textAlign: 'left',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 14,
+                padding: '13px 15px',
+                borderRadius: 3,
+                cursor: composing ? 'default' : 'pointer',
+                fontFamily: 'inherit',
+                color: 'var(--clss-paper)',
+                background: 'var(--clss-frost-on-paper)',
+                backdropFilter: 'blur(var(--clss-frost-blur)) saturate(1.2)',
+                WebkitBackdropFilter: 'blur(var(--clss-frost-blur)) saturate(1.2)',
+                border: '0.5px solid color-mix(in srgb, var(--clss-ink) 14%, transparent)',
               }}
             >
-              {d.status === 'ready' ? 'Open' : 'Retry'}
-            </span>
-          </motion.button>
-        ))}
+              {/* a small breathing dot in the mastery pigment — ready glows, a slip is muted */}
+              <motion.span
+                aria-hidden
+                animate={
+                  d.status === 'ready' || composing
+                    ? { scale: [1, 1.35, 1], opacity: [0.9, 0.5, 0.9] }
+                    : { opacity: 0.6 }
+                }
+                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+                style={{
+                  flexShrink: 0,
+                  width: 9,
+                  height: 9,
+                  borderRadius: 999,
+                  background:
+                    d.status === 'ready' || composing
+                      ? 'var(--clss-ultramarine)'
+                      : 'var(--clss-ink-300)',
+                }}
+              />
+              <span
+                style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}
+              >
+                <span style={{ fontSize: '0.94rem', fontWeight: 600, lineHeight: 1.25 }}>
+                  {d.title}
+                </span>
+                <span style={{ fontSize: '0.8rem', opacity: 0.82, lineHeight: 1.35 }}>
+                  {composing
+                    ? "Vidya is composing this — she'll let you know the moment it's ready"
+                    : d.status === 'ready'
+                      ? 'Your course is ready — tap to dive in'
+                      : 'That one slipped away — tap to try again'}
+                </span>
+              </span>
+              <span
+                style={{
+                  flexShrink: 0,
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  opacity: 0.9,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {composing ? 'Composing…' : d.status === 'ready' ? 'Open' : 'Retry'}
+              </span>
+            </motion.button>
+          );
+        })}
       </AnimatePresence>
     </div>
   );

@@ -1,0 +1,52 @@
+- generic [ref=f46e2]:
+  - generic [ref=f46e320]:
+    - banner [ref=f46e321]:
+      - button "Close course" [ref=f46e322] [cursor=pointer]:
+        - img [ref=f46e323]
+      - generic [ref=f46e340]:
+        - button "Replay Vidya" [ref=f46e341] [cursor=pointer]:
+          - img [ref=f46e342]
+        - button "Unmute Vidya" [pressed] [ref=f46e345] [cursor=pointer]:
+          - img [ref=f46e346]
+    - main [ref=f46e349]:
+      - generic [ref=f46e351]:
+        - generic [ref=f46e352]:
+          - generic:
+            - img
+          - generic [ref=f46e353]:
+            - img
+          - img [ref=f46e355]
+        - generic [ref=f46e362]: Written and verified
+        - generic [ref=f46e363]: variables on both sides
+        - generic [ref=f46e364]:
+          - generic [ref=f46e365]: 1a balanced scale
+          - generic [ref=f46e366]: 2move the x blocks together
+          - generic [ref=f46e367]: 3isolate x
+          - generic [ref=f46e368]: 4the rule
+          - generic [ref=f46e369]: 5when it flips
+          - generic [ref=f46e370]: 6the workbook
+          - generic [ref=f46e371]: 7the boss
+          - generic [ref=f46e372]: Composed and checked, line by line. It starts on the next card.
+    - button "Start the course" [ref=f46e375] [cursor=pointer]:
+      - generic [ref=f46e376]: Start the course
+  - banner:
+    - img "Classess" [ref=f46e221]
+    - generic [ref=f46e222]:
+      - button "Did you know" [ref=f46e223] [cursor=pointer]:
+        - img [ref=f46e224]
+        - text: Did you know
+      - generic "Day 3 of being a learner" [ref=f46e226]:
+        - img [ref=f46e228]
+        - text: "3"
+      - generic [ref=f46e231]: 320 xp
+      - generic [ref=f46e232]:
+        - img [ref=f46e233]
+        - button "You — level 3, profile and settings" [ref=f46e236] [cursor=pointer]:
+          - generic "Remy" [ref=f46e237]:
+            - img [ref=f46e239]
+        - generic [ref=f46e270]: "3"
+  - generic [ref=f46e379]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f46e380] [cursor=pointer]:
+      - img [ref=f46e384]

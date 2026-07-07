@@ -115,6 +115,10 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
     );
   }, [sandbox, nodeId, sdk]);
 
+  // Gated: hold a plain paper screen for the single frame before router.back() lands — no cold
+  // skeleton, no white flash. The learner returns to where they were, download in flight.
+  if (needsDownload) return <div style={{ height: '100dvh', background: 'var(--clss-paper)' }} />;
+
   return (
     <div
       style={{
