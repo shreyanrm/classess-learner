@@ -47,6 +47,10 @@ _TRACK_1: dict[str, str] = {
     "frontier.sonnet": "anthropic/claude-sonnet-5",
     "gemini.voice": "gemini/gemini-2.5-flash",
     "openai.crosscheck": "openai/gpt-4.1",
+    # The cross-family escalation target for the content validation gate: a quality-failed
+    # artifact regenerates on GPT-5.5 and the best-of is promoted to canonical. Track 1
+    # (a frontier model), OPENAI_API_KEY. See plexus.validate.validate_and_promote.
+    "openai.frontier": "openai/gpt-5.5",
 }
 
 # --- Track 2: proprietary fine-tuned + edge SLMs (the margin and the moat) ------------

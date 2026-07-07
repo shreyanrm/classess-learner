@@ -621,7 +621,8 @@ export function MiniWorkbook({
   nodeId: string;
   courseId?: string;
   setBar: (b: BarState | null) => void;
-  onDone: () => void;
+  /** Called on continue; carries how many of the items were correct (the forge reads it for scores). */
+  onDone: (result?: { correct: number; total: number }) => void;
 }) {
   const sdk = useSdk();
   const bus = useVidyaBus();
@@ -702,7 +703,7 @@ export function MiniWorkbook({
       setBar({
         primary: {
           label: right === spec.items.length ? 'Continue' : 'Got it, continue',
-          onClick: onDone,
+          onClick: () => onDone({ correct: right, total: spec.items.length }),
         },
       });
     }

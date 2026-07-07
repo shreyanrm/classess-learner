@@ -25,6 +25,18 @@ from typing import Any
 # guided-discovery spec and imageSpec; a bump regenerates pre-doctrine caches into richer courses.
 PROMPT_VERSION = "plexus-v3"
 
+# Validation lifecycle. A live artifact serves immediately as PROVISIONAL (its first learner never
+# waits on the judge); a post-serve validation gate promotes it to CANONICAL (best-of after a
+# possible GPT-5.5 escalation). Cache load prefers canonical and never blocks on provisional.
+PROVISIONAL = "provisional"
+CANONICAL = "canonical"
+
+
+def status(record: dict[str, Any]) -> str:
+    """A record with no status is a legacy, pre-validation artifact — treat it as canonical
+    (already verified and stable), never provisional (which would re-trigger validation)."""
+    return record.get("status") or CANONICAL
+
 
 def cache_dir() -> Path:
     override = os.getenv("PLEXUS_CACHE_DIR")

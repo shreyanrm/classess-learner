@@ -318,7 +318,7 @@ function seedCourse(title: string): GenCourse {
 
 // --- Events: a deterministic node id per topic (the contract wants UUIDs) --------------------------
 
-function topicNodeUuid(topicId: string): string {
+export function topicNodeUuid(topicId: string): string {
   let h = 0x811c9dc5;
   for (let i = 0; i < topicId.length; i++) {
     h ^= topicId.charCodeAt(i);
