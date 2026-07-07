@@ -49,7 +49,7 @@ import {
   saveAvatarChoice,
 } from '../ui/avatars';
 import { Scene } from '../ui/cast';
-import { Card, cascade, Hairline, MagneticButton, rise, SectionLabel } from '../ui/kit';
+import { Card, cascade, FROST, Hairline, MagneticButton, rise, SectionLabel } from '../ui/kit';
 import { setThemePref, type ThemePref, useThemePref } from '../ui/theme';
 import { loadViewPref, saveViewPref } from '../ui/viewPref';
 import { Whisper } from './Learn';
@@ -514,6 +514,76 @@ function AvatarPicker({
   );
 }
 
+/** The superstar teaser — a frosted popup, dismiss-only, no pricing lives here yet. */
+function SuperstarSoon({ open, onClose }: { open: boolean; onClose: () => void }) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.16 }}
+          onClick={onClose}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 1200,
+            background: 'color-mix(in srgb, var(--clss-ink) 28%, transparent)',
+            backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 24,
+          }}
+        >
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="superstar mode — coming soon"
+            initial={{ opacity: 0, y: 16, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              ...FROST,
+              width: 'min(360px, 100%)',
+              padding: 26,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 16,
+              textAlign: 'center',
+            }}
+          >
+            <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)', lineHeight: 1.55 }}>
+              superstar mode is still in the workshop — soon.
+            </div>
+            <MagneticButton
+              size="sm"
+              variant="quiet"
+              onClick={onClose}
+              style={{ alignSelf: 'center' }}
+            >
+              got it
+            </MagneticButton>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 /** One strength line for the note home, composed from real data — pride first, always. */
 function strengthLine(name: string, mastered: Topic[], xp: number): string {
   const last = mastered[mastered.length - 1];
@@ -537,6 +607,7 @@ export function You() {
   const [photo, setPhoto] = useState<string | null>(() => loadPhoto());
   const [choice, setChoice] = useState<AvatarChoice | null>(() => loadAvatarChoice());
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [superstarOpen, setSuperstarOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   const applyChoice = (next: AvatarChoice) => {
@@ -817,7 +888,7 @@ export function You() {
             style={{
               width: 64,
               height: 64,
-              borderRadius: 3,
+              borderRadius: '50%', // owner law: avatars are circles — the frame matches the face
               border: '0.5px solid var(--clss-hairline-on-paper-strong)',
               background: 'var(--clss-paper)',
               overflow: 'hidden',
@@ -1294,29 +1365,24 @@ export function You() {
         {/* ---- the plan ---- */}
         <motion.div variants={rise} ref={planRef}>
           <Section label="your plan">
-            <Card style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}
-              >
-                <span
-                  style={{ fontSize: '1.05rem', fontWeight: 500, color: 'var(--clss-ink-900)' }}
-                >
-                  free
-                </span>
-                <span style={whisper}>your plan today</span>
-              </div>
-              <div style={bodyLine}>everything you need to learn well, every single day.</div>
-              <Hairline style={{ margin: '10px 0' }} />
-              <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>
-                superstar — ₹999/mo · ₹8,999/yr
-              </div>
-              <div style={bodyLine}>
-                for when you're ready to push your limits. we never discount — learners who show up
-                get gifted superstar weeks instead.
-              </div>
+            <Card
+              style={{
+                padding: 22,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 16,
+                flexWrap: 'wrap',
+              }}
+            >
+              <span style={whisper}>free tier</span>
+              <MagneticButton size="sm" variant="primary" onClick={() => setSuperstarOpen(true)}>
+                upgrade to superstar
+              </MagneticButton>
             </Card>
           </Section>
         </motion.div>
+        <SuperstarSoon open={superstarOpen} onClose={() => setSuperstarOpen(false)} />
 
         <Hairline />
 
