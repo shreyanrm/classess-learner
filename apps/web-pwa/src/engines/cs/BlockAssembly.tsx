@@ -276,10 +276,9 @@ export function BlockAssembly({
   const timer = useRef<number | null>(null);
 
   const sim = useMemo(() => simulate(program, spec), [program, spec]);
-  const pose =
-    (playIndex === null
-      ? undefined
-      : sim.frames[Math.min(playIndex, sim.frames.length - 1)]) ?? { ...spec.start };
+  const pose = (playIndex === null
+    ? undefined
+    : sim.frames[Math.min(playIndex, sim.frames.length - 1)]) ?? { ...spec.start };
   const running = playIndex !== null && playIndex < sim.frames.length - 1;
 
   // any edit to the program (add, remove, retime, or drag-reorder) invalidates the last run

@@ -1,0 +1,190 @@
+{
+  "type": "FeatureCollection",
+  "note": "india-lite — hand-authored, deliberately simplified polygons of 8 Indian states (SUBJECTS.md §5-social geography). NOT pixel-accurate: envelopes are non-overlapping so every point is inside at most one state (d3.geoContains testable). Exterior rings wound counter-clockwise for d3-geo spherical containment. Bundled so MapScene needs no tile server / API key / network — CSP-safe, offline.",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "rajasthan",
+        "name": "Rajasthan"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [70, 25],
+            [69.6, 26.2],
+            [71, 28],
+            [73.5, 29.4],
+            [76, 28.5],
+            [77, 26],
+            [75, 24.7],
+            [72.5, 24.6],
+            [70, 25]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gujarat",
+        "name": "Gujarat"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [68.7, 22.6],
+            [68.6, 23],
+            [69.3, 23.4],
+            [70.8, 24],
+            [73, 24.2],
+            [74, 23.4],
+            [72.6, 22.9],
+            [72.9, 22],
+            [72, 21.5],
+            [70.2, 21.5],
+            [68.7, 22.6]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "maharashtra",
+        "name": "Maharashtra"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [72.8, 17],
+            [72.7, 18.6],
+            [73.5, 20.5],
+            [76, 21.2],
+            [79, 21],
+            [80.3, 19],
+            [80, 16.5],
+            [77, 15.7],
+            [74.5, 16],
+            [72.8, 17]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "madhya-pradesh",
+        "name": "Madhya Pradesh"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [74.3, 22.2],
+            [74.2, 23.4],
+            [76.5, 24.2],
+            [79, 24.3],
+            [81.5, 23.8],
+            [81.8, 22.5],
+            [80, 21.7],
+            [77, 21.6],
+            [74.3, 22.2]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "uttar-pradesh",
+        "name": "Uttar Pradesh"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [77.4, 26],
+            [77.3, 27],
+            [78.5, 28],
+            [80.5, 29.3],
+            [83, 28.2],
+            [83.9, 26],
+            [82.5, 24.9],
+            [80, 24.8],
+            [77.4, 26]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "karnataka",
+        "name": "Karnataka"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [74.2, 13.8],
+            [74.3, 14.7],
+            [75.3, 15.3],
+            [76.8, 15.2],
+            [77, 14],
+            [76.5, 13],
+            [75.2, 12.9],
+            [74.2, 13.8]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "kerala",
+        "name": "Kerala"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [74.9, 9],
+            [75, 10.6],
+            [75.6, 12.2],
+            [76.7, 12.5],
+            [77, 10.5],
+            [76.3, 8.9],
+            [75.6, 8.3],
+            [74.9, 9]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tamil-nadu",
+        "name": "Tamil Nadu"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [77.4, 9.5],
+            [77.3, 11.5],
+            [78.5, 13],
+            [80, 13.3],
+            [80.2, 11.5],
+            [79.5, 9.5],
+            [78.5, 8.2],
+            [77.4, 9.5]
+          ]
+        ]
+      }
+    }
+  ]
+}

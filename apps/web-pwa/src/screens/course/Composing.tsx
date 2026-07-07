@@ -18,7 +18,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { topicById } from '../../data/catalog';
 import type { Topic } from '../../data/model';
+import { AnatomyScene, parseAnatomyScene } from '../../engines/AnatomyScene';
 import { ArcadeShell, type ArcadeSpec, parseArcade } from '../../engines/ArcadeShell';
+import { BioScene, type BioSceneSpec, parseBioScene } from '../../engines/BioScene';
 import { ChemScene, type ChemSceneSpec, parseChemScene } from '../../engines/ChemScene';
 import {
   CompareInteractive,
@@ -34,6 +36,7 @@ import {
 import { DiagramView, svgIsClean } from '../../engines/DiagramView';
 import { Discovery, type DiscoverySpec, parseDiscoverySpec } from '../../engines/Discovery';
 import { Flashcards, type FlashcardsSpec, parseFlashcards } from '../../engines/Flashcards';
+import { MapScene, type MapSpec, parseMapScene } from '../../engines/MapScene';
 import { MathScene, type MathSceneSpec, parseMathScene } from '../../engines/MathScene';
 import { MiniWorkbook, type MiniWorkbookSpec, parseMiniWorkbook } from '../../engines/MiniWorkbook';
 import { MotionPlayer, type MotionScene, parseMotionScene } from '../../engines/MotionPlayer';
@@ -45,6 +48,7 @@ import {
 import { PhysicsScene, parsePhysicsScene } from '../../engines/PhysicsScene';
 import { PodcastPlayer, type PodcastSpec, parsePodcast } from '../../engines/PodcastPlayer';
 import { parseSimSpec, SimRunner, type SimSpec, simSpecFromGateway } from '../../engines/SimRunner';
+import { parseSocialScene, SocialScene, type SocialSceneSpec } from '../../engines/SocialScene';
 import { parseWhatIfSpec, WhatIfNumerical, type WhatIfSpec } from '../../engines/WhatIfNumerical';
 import {
   parseWordProblem,
@@ -93,7 +97,11 @@ type CardActivity =
   // the substrate — subject-true scenes (math axes, exact physics, real chemistry)
   | { type: 'mathScene'; spec: MathSceneSpec }
   | { type: 'physics'; spec: PhysicsScene }
-  | { type: 'chemScene'; spec: ChemSceneSpec };
+  | { type: 'chemScene'; spec: ChemSceneSpec }
+  | { type: 'bioScene'; spec: BioSceneSpec }
+  | { type: 'socialScene'; spec: SocialSceneSpec }
+  | { type: 'map'; spec: MapSpec }
+  | { type: 'anatomy'; spec: AnatomyScene };
 
 /** Try each activity parser in turn; the first field that yields a valid spec wins (refusal → none). */
 function parseActivity(c: Record<string, unknown>): CardActivity | undefined {
@@ -123,6 +131,14 @@ function parseActivity(c: Record<string, unknown>): CardActivity | undefined {
   if (physics) return { type: 'physics', spec: physics };
   const chemScene = parseChemScene(c.chemScene);
   if (chemScene) return { type: 'chemScene', spec: chemScene };
+  const bioScene = parseBioScene(c.bioScene);
+  if (bioScene) return { type: 'bioScene', spec: bioScene };
+  const socialScene = parseSocialScene(c.socialScene);
+  if (socialScene) return { type: 'socialScene', spec: socialScene };
+  const map = parseMapScene(c.mapScene);
+  if (map) return { type: 'map', spec: map };
+  const anatomy = parseAnatomyScene(c.anatomyScene);
+  if (anatomy) return { type: 'anatomy', spec: anatomy };
   return undefined;
 }
 
@@ -1411,6 +1427,16 @@ export function Composing({
         )}
         {a.type === 'chemScene' && (
           <ChemScene spec={a.spec} hue={hue} setBar={setBar} onDone={advance} />
+        )}
+        {a.type === 'bioScene' && (
+          <BioScene spec={a.spec} hue={hue} setBar={setBar} onDone={advance} />
+        )}
+        {a.type === 'socialScene' && (
+          <SocialScene spec={a.spec} hue={hue} setBar={setBar} onDone={advance} />
+        )}
+        {a.type === 'map' && <MapScene spec={a.spec} hue={hue} setBar={setBar} onDone={advance} />}
+        {a.type === 'anatomy' && (
+          <AnatomyScene spec={a.spec} hue={hue} setBar={setBar} onDone={advance} />
         )}
       </Deck>
     );

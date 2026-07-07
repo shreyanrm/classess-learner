@@ -6,7 +6,9 @@
  * and screenshotted outside a generated course. Not part of the learner flow — a workshop bench.
  */
 
+import { ANATOMY_DEMOS, AnatomyScene } from '../../engines/AnatomyScene';
 import { ARCADE_DEMO, ArcadeShell } from '../../engines/ArcadeShell';
+import { BIO_DEMOS, BioScene } from '../../engines/BioScene';
 import {
   CHEM_BALANCE_DEMO,
   CHEM_STRUCTURE_DEMO,
@@ -19,6 +21,7 @@ import { CsRampDemos } from '../../engines/cs/gallery';
 import { DERIVATION_DEMO, DerivationCard } from '../../engines/DerivationDepth';
 import { DISCOVERY_DEMO, Discovery } from '../../engines/Discovery';
 import { FLASHCARDS_DEMO, Flashcards } from '../../engines/Flashcards';
+import { MAP_DEMOS, MapScene } from '../../engines/MapScene';
 import { MATHSCENE_DEMOS, MathScene } from '../../engines/MathScene';
 import { MiniWorkbook, WORKBOOK_DEMO } from '../../engines/MiniWorkbook';
 import { PERTURB_DEMO, PerturbationSandbox } from '../../engines/PerturbationSandbox';
@@ -29,6 +32,7 @@ import {
   PhysicsScene,
 } from '../../engines/PhysicsScene';
 import { PODCAST_DEMO, PodcastPlayer } from '../../engines/PodcastPlayer';
+import { SOCIAL_DEMOS, SocialScene } from '../../engines/SocialScene';
 import { WHATIF_DEMO, WhatIfNumerical } from '../../engines/WhatIfNumerical';
 import { WORDPROBLEM_DEMO, WordProblemBreakdown } from '../../engines/WordProblemBreakdown';
 import { hueForTopic } from '../../ui/hues';
@@ -155,6 +159,54 @@ export function EnginesGallery() {
           onDone={noop}
         />
       </Bench>
+
+      <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
+        <div style={{ ...whisper }}>
+          biology engines · drag-label, punnett (3:1), food web, taxonomy
+        </div>
+      </div>
+      {BIO_DEMOS.map((spec) => (
+        <Bench
+          key={spec.id}
+          id={`engine-bio-${spec.kind}`}
+          name={`biology · ${spec.kind} — ${spec.title}`}
+        >
+          <BioScene spec={spec} hue={hueForTopic('bio')} setBar={noop} onDone={noop} />
+        </Bench>
+      ))}
+      {ANATOMY_DEMOS.map((spec) => (
+        <Bench
+          key={spec.id}
+          id={`engine-anatomy-${spec.id}`}
+          name={`anatomy 3d — ${spec.title}, rotatable + tappable labelled parts`}
+        >
+          <AnatomyScene spec={spec} hue={hueForTopic('bio')} setBar={noop} onDone={noop} />
+        </Bench>
+      ))}
+
+      <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
+        <div style={{ ...whisper }}>
+          social engines · timelines, event-ordering, supply/demand, India maps
+        </div>
+      </div>
+      {SOCIAL_DEMOS.map((spec) => (
+        <Bench
+          key={spec.id}
+          id={`engine-social-${spec.kind}`}
+          name={`social · ${spec.kind} — ${spec.title}`}
+        >
+          <SocialScene spec={spec} hue={hueForTopic('social')} setBar={noop} onDone={noop} />
+        </Bench>
+      ))}
+      {MAP_DEMOS.map((spec) => (
+        <Bench
+          key={spec.id}
+          id={`engine-map-${spec.interaction.mode}`}
+          name={`map · ${spec.interaction.mode} — ${spec.title}`}
+        >
+          <MapScene spec={spec} hue={hueForTopic('social')} setBar={noop} onDone={noop} />
+        </Bench>
+      ))}
 
       <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
         <div style={{ ...whisper }}>cs ramp · blocks → parsons → real python, Pyodide-run</div>

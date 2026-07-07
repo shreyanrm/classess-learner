@@ -37,6 +37,10 @@ select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
 "services/gateway/src/classess_gateway/vidya.py" = ["E501"]
 # engine prompts + inline SVG/JSON string literals: legitimately long lines, E501 is noise
 "services/gateway/src/classess_gateway/plexus/engines.py" = ["E501"]
+# subject validators: doctrine docstrings + inline self-check data (same justification as engines.py)
+"services/gateway/src/classess_gateway/plexus/bio.py" = ["E501"]
+"services/gateway/src/classess_gateway/plexus/social.py" = ["E501"]
+"services/gateway/src/classess_gateway/plexus/maps.py" = ["E501"]
 # email templates are inline-styled HTML string literals — long lines are the format, not slop
 "services/gateway/src/classess_gateway/email_templates.py" = ["E501"]
 "services/gateway/tests/test_vidya.py" = ["E501"]

@@ -50,7 +50,10 @@ export function CsRampDemos() {
       <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
         <div style={whisper}>the cs ramp · teach the thinking, typing is a late reward</div>
       </div>
-      <CsBench id="engine-block" name="block assembly — snap blocks, walk the robot, zero syntax" render={(setBar) => (
+      <CsBench
+        id="engine-block"
+        name="block assembly — snap blocks, walk the robot, zero syntax"
+        render={(setBar) => (
           <BlockAssembly
             spec={BLOCK_DEMO}
             hue={CS_HUE}
@@ -63,7 +66,7 @@ export function CsRampDemos() {
       <CsBench
         id="engine-parsons"
         name="parsons — shuffled correct lines + a distractor, drag to order, run to verify"
-       render={(setBar) => (
+        render={(setBar) => (
           <Parsons
             spec={PARSONS_DEMO}
             hue={CS_HUE}
@@ -76,7 +79,7 @@ export function CsRampDemos() {
       <CsBench
         id="engine-execviz"
         name="execution visualizer (the jewel) — python + pyodide, step/scrub the machine's mind"
-       render={(setBar) => (
+        render={(setBar) => (
           <ExecViz
             spec={EXECVIZ_DEMO}
             hue={CS_HUE}

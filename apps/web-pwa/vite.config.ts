@@ -14,6 +14,11 @@ export default defineConfig({
       // Regenerate with the snippet in DEPLOY.md §1.4 if the logo changes.
       includeAssets: ['classess-logo.png', 'apple-touch-icon.png', 'robots.txt'],
       workbox: {
+        // The entry chunk is ~2.1 MB raw (~640 KB gzipped: react + framer + mafs + the non-lazy
+        // engines). It loads on first visit regardless, so precaching it is the right PWA call —
+        // raise the ceiling above workbox's 2 MiB default. Three.js/3Dmol/RDKit already lazy-split.
+        // ponytail: if the entry ever needs to shrink, code-split mafs + the CS ramp behind React.lazy.
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         // RDKit's 6.9 MB wasm is lazy-loaded only when a chem structure card renders —
         // never precache it on every visit; cache it on first real use instead.
         globIgnores: ['**/RDKit_minimal*.wasm'],

@@ -400,6 +400,58 @@ def _valid_activities() -> dict:
             ],
             "products": [{"formula": "H2O", "coefficient": 2}],
         },
+        "bioScene": {
+            "id": "bio",
+            "kind": "punnett",
+            "title": "eye colour cross",
+            "parentA": "Bb",
+            "parentB": "Bb",
+            "cells": ["BB", "Bb", "Bb", "bb"],
+            "traitDominant": "brown",
+            "traitRecessive": "blue",
+        },
+        "socialScene": {
+            "id": "soc",
+            "kind": "supplyDemand",
+            "title": "a simple market",
+            "supply": {"label": "supply", "intercept": 0, "slope": 1},
+            "demand": {"label": "demand", "intercept": 10, "slope": -1},
+        },
+        "mapScene": {
+            "id": "map",
+            "kind": "map",
+            "title": "name the state",
+            "regions": ["maharashtra", "gujarat"],
+            "interaction": {
+                "mode": "label",
+                "prompt": "tap Maharashtra",
+                "targetId": "maharashtra",
+            },
+        },
+        "anatomyScene": {
+            "id": "ana",
+            "kind": "anatomy",
+            "title": "the heart",
+            "parts": [
+                {
+                    "id": "left_ventricle",
+                    "label": "left ventricle",
+                    "shape": "sphere",
+                    "position": [0, 0, 0],
+                    "scale": 1,
+                    "color": "#cc4444",
+                },
+                {
+                    "id": "aorta",
+                    "label": "aorta",
+                    "shape": "cylinder",
+                    "position": [0, 1, 0],
+                    "scale": [0.4, 1, 0.4],
+                    "color": "#dd6666",
+                },
+            ],
+            "quiz": [{"partId": "aorta", "prompt": "tap the aorta"}],
+        },
     }
 
 

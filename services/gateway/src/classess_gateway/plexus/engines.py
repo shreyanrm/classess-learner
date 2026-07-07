@@ -34,7 +34,7 @@ from xml.sax.saxutils import quoteattr
 import sympy as sp
 from classess_verifier.cas import parse_equation
 
-from classess_gateway.plexus import chem, image, physics, store
+from classess_gateway.plexus import bio, chem, image, maps, physics, social, store
 from classess_gateway.plexus.media import synthesize_narration, wav_duration_ms
 from classess_gateway.plexus.sanitize import sanitize_svg
 from classess_gateway.providers import ProviderResponse
@@ -622,6 +622,68 @@ def _ok_chemscene(raw: Any) -> dict[str, Any] | None:
     return None
 
 
+# --- §5-biology 3D anatomy scene (renderer: AnatomyScene.tsx) — structural gate only -----
+_ANATOMY_HEX_RE = re.compile(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
+_ANATOMY_SHAPES = {"sphere", "cylinder", "box", "torus", "lathe"}
+
+
+def _anatomy_vec3(v: Any) -> bool:
+    return isinstance(v, list) and len(v) == 3 and all(_fnum(n) for n in v)
+
+
+def _ok_anatomy_part(raw: Any) -> bool:
+    r = _as_dict(raw)
+    if not r:
+        return False
+    if not (_ident(r.get("id")) and _nes(r.get("label"))):
+        return False
+    if r.get("shape") not in _ANATOMY_SHAPES:
+        return False
+    color = r.get("color")
+    if not (isinstance(color, str) and _ANATOMY_HEX_RE.match(color.strip())):
+        return False
+    if not _anatomy_vec3(r.get("position")):
+        return False
+    scale = r.get("scale")
+    scale_ok = (_fnum(scale) and float(scale) > 0) or (
+        _anatomy_vec3(scale) and all(float(n) > 0 for n in scale)
+    )
+    if not scale_ok:
+        return False
+    if r.get("rotation") is not None and not _anatomy_vec3(r.get("rotation")):
+        return False
+    if r["shape"] == "lathe":
+        prof = r.get("profile")
+        if not (isinstance(prof, list) and len(prof) >= 2):
+            return False
+        for p in prof:
+            if not (isinstance(p, list) and len(p) == 2 and _fnum(p[0]) and _fnum(p[1])):
+                return False
+    return True
+
+
+def _ok_anatomy(raw: Any) -> dict[str, Any] | None:
+    """Accept a 3D anatomy scene verbatim, or None if it cannot render (client parity with
+    parseAnatomyScene): >=1 well-formed primitive part, unique ids, quiz items reference real parts."""
+    r = _as_dict(raw)
+    if not r or r.get("kind") != "anatomy":
+        return None
+    parts = [p for p in _as_list(r.get("parts")) if _ok_anatomy_part(p)]
+    if not parts or len(parts) > 24:
+        return None
+    ids = [p["id"] for p in parts]
+    if len(set(ids)) != len(ids):
+        return None
+    id_set = set(ids)
+    for q in _as_list(r.get("quiz")):
+        qd = _as_dict(q)
+        if not qd or not _nes(qd.get("partId")) or not _nes(qd.get("prompt")):
+            return None
+        if qd["partId"] not in id_set:
+            return None
+    return raw
+
+
 # field name (as the client reads it off a card) -> its accept/preserve gate
 _CARD_ACTIVITIES = {
     "perturbation": _ok_perturbation,
@@ -637,6 +699,10 @@ _CARD_ACTIVITIES = {
     "mathScene": _ok_mathscene,
     "physicsScene": physics.verify_physics_scene,
     "chemScene": _ok_chemscene,
+    "bioScene": bio.verify_bio_scene,
+    "socialScene": social.verify_social_scene,
+    "mapScene": maps.verify_map_scene,
+    "anatomyScene": _ok_anatomy,
 }
 
 
@@ -1189,7 +1255,8 @@ _SYSTEMS = {
         '"imageSpec":<OPTIONAL {"subject":"...","caption":"..."} for organic/complex visuals>,'
         "<OPTIONAL: at most ONE rich activity field — perturbation | whatIf | compare | conceptMap | "
         "workbook | flashcards | derivation | wordProblem | podcast | arcade | mathScene | "
-        "physicsScene | chemScene, schemas below>}],"
+        "physicsScene | chemScene | bioScene | socialScene | mapScene | anatomyScene, "
+        "schemas below>}],"
         '"workbook":[{"id":"w1","type":"mcq","prompt":"...",'
         '"options":["...","...","..."],"answer":"<copied character-for-character from options>"},'
         '{"id":"w2","type":"fill","prompt":"<a sentence with a ________ gap>",'
@@ -1232,6 +1299,21 @@ _SYSTEMS = {
         "  • CHEMSCENE ('chemScene') for a CHEMISTRY beat — an equation the learner balances "
         "coefficient-by-coefficient (element conservation live), a drop-by-drop titration with an "
         "indicator colour law, or a 2D molecular structure from SMILES.\n"
+        "  • BIOSCENE ('bioScene') for a BIOLOGY beat — a labelled diagram the learner drags labels "
+        "onto (dragLabel), a Punnett square the learner fills and the engine proves (punnett), a food "
+        "web where removing an organism collapses everything downstream (foodWeb), or a "
+        "kingdom→species classification tree (taxonomy).\n"
+        "  • ANATOMYSCENE ('anatomyScene') for a BIOLOGY STRUCTURE beat — a small set of labelled 3D "
+        "primitive parts (heart chambers, cell organelles, a simple skeleton) the learner rotates and "
+        "taps to name; add an optional 'quiz' to ask 'tap the aorta'. Use it where the SPATIAL "
+        "ARRANGEMENT is the lesson.\n"
+        "  • SOCIALSCENE ('socialScene') for a HISTORY/CIVICS/ECONOMICS beat — a dated 'timeline' "
+        "(optionally drag an event to its year), an 'eventOrder' the learner sorts into chronological "
+        "order, or a 'supplyDemand' market whose equilibrium is EXACT line intersection (a real "
+        "crossing in the visible quadrant is machine-checked; parallel lines are refused).\n"
+        "  • MAPSCENE ('mapScene') for a GEOGRAPHY beat — an interactive map of Indian states: tap the "
+        "named state (label), place a city/river (locate), or read a choropleth's shaded legend and "
+        "tap the extreme. Region ids and point-in-polygon are machine-checked.\n"
         "  • SIM ('kind':'sim') stays the card kind for a simple perturbable law; DIAGRAM "
         "('kind':'diagram', + 'imageSpec' {'subject': a precise noun phrase} when the subject is "
         "ORGANIC — a plant cell, the human eye — so the app renders a real image). TEXT is the "
@@ -1298,7 +1380,39 @@ _SYSTEMS = {
         '{"id","kind":"titration","title","analyte":{"name","kind":"acid|base","concentrationM",'
         '"volumeMl"},"titrant":{"name","kind":"acid|base","concentrationM"},"indicator"?:'
         '"phenolphthalein|methyl-orange|bromothymol-blue"} | '
-        '{"id","kind":"structure","title","smiles":"CCO","label"?:"ethanol"}\n\n'
+        '{"id","kind":"structure","title","smiles":"CCO","label"?:"ethanol"}\n'
+        '  bioScene: {"id","kind":"dragLabel","title","figure":[{"id","shape":"ellipse|circle|rect|'
+        'line|polygon|path",<geometry: cx,cy,r,rx,ry,x,y,w,h,x1,y1,x2,y2,points,d>}],"labels":'
+        '[{"id","text","x":<0..100>,"y":<0..62>,"r":<zone radius>}]} (>=1 figure mark, >=2 labels; '
+        "each label drags to its own (x,y,r) zone) | "
+        '{"id","kind":"punnett","title","parentA":"Bb","parentB":"Bb","cells"?:["BB","Bb","Bb","bb"],'
+        '"traitDominant"?,"traitRecessive"?} (single-gene genotypes, same letter; cells OPTIONAL — if '
+        "given they MUST equal the true cross, machine-checked) | "
+        '{"id","kind":"foodWeb","title","nodes":[{"id","label","x"?:<0..100>,"y"?:<0..62>}],"edges":'
+        '[{"from":"<node id>","to":"<node id>"}]} (>=2 nodes, >=1 edge, energy flows from->to, no '
+        "self-loops) | "
+        '{"id","kind":"taxonomy","title","organism"?,"ranks":[{"rank":"kingdom|phylum|class|order|'
+        'family|genus|species","answer","options":["..",".."]}]} (>=2 ranks in DESCENDING order, '
+        "answer in options, >=2 options)\n"
+        '  anatomyScene: {"id","kind":"anatomy","title","model"?,"caption"?,"parts":[{"id","label",'
+        '"description"?,"shape":"sphere|cylinder|box|torus|lathe","position":[x,y,z],"scale":<number '
+        'OR [x,y,z]>,"rotation"?:[x,y,z],"color":"#rrggbb","profile"?:[[x,y],...] (lathe only, >=2 '
+        'pts)}],"quiz"?:[{"partId","prompt"}]} (>=1 part, unique ids, model fits a ~4-unit cube at '
+        "origin; every quiz partId MUST name a part that exists)\n"
+        '  socialScene: {"id","kind":"timeline|eventOrder|supplyDemand","title","caption"?,"events":'
+        '[{"id","year":<number>,"label"}] (timeline+eventOrder, >=2; eventOrder years MUST be '
+        'DISTINCT),"place"?:{"id","year","label","tolerance"} (timeline drag target),"supply":'
+        '{"label","intercept","slope":>0},"demand":{"label","intercept","slope":<0},"shift"?:'
+        '{"target":"supply|demand","min","max"},"qMax"?,"pMax"?,"qUnit"?,"pUnit"? (supplyDemand — '
+        "supply & demand MUST cross at a real point inside the positive quadrant, checked)}\n"
+        '  mapScene: {"id","kind":"map","title","regions":["maharashtra","gujarat","karnataka",'
+        '"tamil-nadu","kerala","rajasthan","madhya-pradesh","uttar-pradesh"] (subset, 1..8),'
+        '"interaction": ONE of {"mode":"label","prompt":"tap Maharashtra","targetId":"maharashtra"} | '
+        '{"mode":"locate","prompt":"place Mumbai","label":"Mumbai","lon":73.0,"lat":19.05,'
+        '"toleranceKm"?:150,"inRegionId"?:"maharashtra"} | {"mode":"choropleth","prompt":"tap the '
+        'most populous state","extreme":"max|min","unit"?:"crore","values":[{"id":"uttar-pradesh",'
+        '"value":20}]}} (region ids from the fixed 8-state catalog; choropleth answer DERIVED, '
+        ">=2 values)\n\n"
         "GUIDED-DISCOVERY SPEC — a card's optional 'discovery' object, rendered on the discovery shell "
         "(a large reactive SVG the learner acts on). 1 to 6 stages, ONE idea each:\n"
         '{"id":"...","title":"...","stages":[{'
