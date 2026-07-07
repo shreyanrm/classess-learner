@@ -28,8 +28,12 @@ export type MotionVisual =
 
 export interface MotionStep {
   id: string;
+  /** Beat length: the measured narration-audio duration when this step has audio, else the
+   * authored fallback. The player advances on this, or on the audio's own `ended` event. */
   durationMs: number;
   caption?: string;
+  /** This beat's own narration track (data:/https URL). Present => audio drives the beat. */
+  audioSrc?: string;
   visual: MotionVisual;
 }
 
@@ -76,10 +80,12 @@ export function parseMotionScene(raw: unknown): MotionScene | null {
     if (!Number.isFinite(durationMs) || durationMs <= 0 || durationMs > 300_000) return;
     const visual = parseVisual(s);
     if (!visual) return;
+    const audioRaw = typeof s.audioSrc === 'string' ? s.audioSrc : null;
     steps.push({
       id: typeof s.id === 'string' ? s.id : `step-${i}`,
       durationMs,
       caption: typeof s.caption === 'string' ? s.caption : undefined,
+      audioSrc: audioRaw && isSafeMediaSrc(audioRaw) ? audioRaw : undefined,
       visual,
     });
   });
@@ -196,10 +202,23 @@ function ScrubBar({ fraction, onSeek }: { fraction: number; onSeek: (f: number) 
 // --- The player -----------------------------------------------------------------------------------
 
 export function MotionPlayer({ scene }: { scene: MotionScene }) {
-  const total = useMemo(() => scene.steps.reduce((sum, s) => sum + s.durationMs, 0), [scene]);
-  const [elapsed, setElapsed] = useState(0);
+  const steps = scene.steps;
+  const durations = useMemo(() => steps.map((s) => s.durationMs), [steps]);
+  const total = useMemo(() => durations.reduce((a, b) => a + b, 0), [durations]);
+  const starts = useMemo(() => {
+    const out: number[] = [];
+    let acc = 0;
+    for (const d of durations) {
+      out.push(acc);
+      acc += d;
+    }
+    return out;
+  }, [durations]);
+
+  const [index, setIndex] = useState(0);
+  const [inStep, setInStep] = useState(0); // ms elapsed within the current beat (scrub read-out)
   const [playing, setPlaying] = useState(false);
-  const elapsedRef = useRef(0);
+  const inStepRef = useRef(0);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const stageRef = useRegisterTarget<HTMLDivElement>(`motion-${scene.id}`, {
@@ -209,41 +228,86 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
       : 'the motion explainer playing on this card',
   });
 
-  // the clock: rAF-driven; when narration exists and is playing, audio time is the truth
+  const step = steps[index] ?? steps[steps.length - 1];
+  const elapsed = (starts[index] ?? 0) + Math.min(inStep, step?.durationMs ?? 0);
+
+  // One beat plays, then hands to the next ON ITS NARRATION BOUNDARY (MOTION.md §5): the beat's
+  // OWN audio `ended` event, or — muted / no audio — a timer of its measured duration. There is no
+  // total-length cap: each beat runs to its own end, so the final beat's narration is never cut.
   useEffect(() => {
     if (!playing) return;
+    const s = steps[index];
+    if (!s) return;
     const audio = audioRef.current;
-    if (audio) {
-      audio.currentTime = elapsedRef.current / 1000;
+    const usingAudio = Boolean(s.audioSrc) && audio != null;
+    const base = inStepRef.current; // resume point within this beat
+    const startedAt = performance.now();
+    let raf = 0;
+    let handled = false;
+
+    const finish = () => {
+      if (handled) return;
+      handled = true;
+      cancelAnimationFrame(raf);
+      if (index + 1 >= steps.length) {
+        inStepRef.current = s.durationMs;
+        setInStep(s.durationMs);
+        setPlaying(false);
+      } else {
+        inStepRef.current = 0;
+        setInStep(0);
+        setIndex(index + 1);
+      }
+    };
+
+    if (usingAudio && audio) {
+      audio.currentTime = base / 1000;
+      audio.addEventListener('ended', finish);
+      // autoplay blocked / decode fail: the timer branch below takes over silently
       void audio.play().catch(() => {});
     }
-    let last = performance.now();
-    let raf = requestAnimationFrame(function tick(now: number) {
+
+    const tick = (now: number) => {
       const a = audioRef.current;
-      const next =
-        a && !a.paused && !a.ended ? a.currentTime * 1000 : elapsedRef.current + (now - last);
-      last = now;
-      elapsedRef.current = Math.min(next, total);
-      setElapsed(elapsedRef.current);
-      if (elapsedRef.current >= total) {
-        setPlaying(false);
-        a?.pause();
+      const audioLive = usingAudio && a != null && !a.paused && !a.ended;
+      const within = audioLive ? a.currentTime * 1000 : base + (now - startedAt);
+      inStepRef.current = within;
+      setInStep(within);
+      // a live audio beat ends via its own `ended` event; only the muted/timer path advances here
+      if (!audioLive && within >= s.durationMs) {
+        finish();
         return;
       }
       raf = requestAnimationFrame(tick);
-    });
+    };
+    raf = requestAnimationFrame(tick);
+
     return () => {
       cancelAnimationFrame(raf);
-      audioRef.current?.pause();
+      if (usingAudio && audio) {
+        audio.removeEventListener('ended', finish);
+        audio.pause();
+      }
     };
-  }, [playing, total]);
+  }, [playing, index, steps]);
 
+  // ponytail: seek is exact when paused (and for audio beats while playing, via currentTime);
+  // a muted beat seeked mid-play snaps back on the next tick — acceptable for a scrub.
   const seekTo = (fraction: number) => {
-    const ms = Math.max(0, Math.min(total, fraction * total));
-    elapsedRef.current = ms;
-    setElapsed(ms);
+    const target = Math.max(0, Math.min(total, fraction * total));
+    let i = starts.length - 1;
+    for (let k = 0; k < starts.length; k++) {
+      if (target < (starts[k] ?? 0) + (durations[k] ?? 0)) {
+        i = k;
+        break;
+      }
+    }
+    const within = target - (starts[i] ?? 0);
+    inStepRef.current = within;
+    setInStep(within);
+    setIndex(i);
     const audio = audioRef.current;
-    if (audio) audio.currentTime = ms / 1000;
+    if (audio && steps[i]?.audioSrc) audio.currentTime = within / 1000;
   };
 
   const toggle = () => {
@@ -251,20 +315,16 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
       setPlaying(false);
       return;
     }
-    if (elapsedRef.current >= total) seekTo(0);
+    if (index >= steps.length - 1 && inStepRef.current >= (step?.durationMs ?? 0)) {
+      inStepRef.current = 0; // at the very end -> restart from the first beat
+      setInStep(0);
+      setIndex(0);
+    }
     setPlaying(true);
   };
 
-  const current = useMemo(() => {
-    let acc = 0;
-    for (const step of scene.steps) {
-      acc += step.durationMs;
-      if (elapsed < acc) return step;
-    }
-    return scene.steps[scene.steps.length - 1];
-  }, [scene, elapsed]);
-
-  if (!current) return null;
+  if (!step) return null;
+  const current = step;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -353,10 +413,10 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
         </span>
       </div>
 
-      {scene.narration && (
-        // ponytail: sync is rAF-vs-audio-clock; drift is imperceptible at these durations
+      {current.audioSrc && (
+        // this beat's own narration; the player advances when it ends (MOTION.md §5)
         // biome-ignore lint/a11y/useMediaCaption: the narration text renders on-screen as the scene captions, in sync
-        <audio ref={audioRef} src={scene.narration.src} preload="auto" />
+        <audio ref={audioRef} src={current.audioSrc} preload="auto" />
       )}
     </div>
   );

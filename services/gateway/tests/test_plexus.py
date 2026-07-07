@@ -298,6 +298,42 @@ def test_pcm_narration_wrapped_as_playable_wav() -> None:
     assert passthrough == {"mime": "audio/mp3", "b64": "abc"}
 
 
+def test_wav_duration_ms_measures_beat_length() -> None:
+    """The measured WAV length is the authoritative beat duration (MOTION.md §5)."""
+    import base64
+
+    from classess_gateway.plexus.media import _as_playable, wav_duration_ms
+
+    # 24000 frames (2 bytes each) at 24 kHz mono == exactly one second
+    wav = _as_playable("audio/pcm;rate=24000", base64.b64encode(b"\x00\x01" * 24000).decode())
+    assert wav_duration_ms(wav["b64"]) == 1000
+    assert wav_duration_ms("not a wav at all") is None
+
+
+def test_video_attaches_per_scene_audio(monkeypatch) -> None:
+    """Live video synthesizes narration PER SCENE and attaches {mime,b64,durationMs} to each —
+    never one joined blob (MOTION.md §5 sync law)."""
+    import base64
+
+    from classess_gateway.plexus import engines
+    from classess_gateway.plexus.media import _as_playable
+
+    sonnet, fallbacks = _video_routing()
+    _patch_complete(monkeypatch, {sonnet: _VALID_PLAN % "simple"})
+    wav = _as_playable("audio/pcm;rate=24000", base64.b64encode(b"\x00\x01" * 24000).decode())
+    monkeypatch.setattr(
+        engines, "synthesize_narration", lambda text: dict(wav) if text.strip() else None
+    )
+    artifact, _model, _tokens, seeded = engines._generate_video_live(
+        "sound waves", "core", sonnet, fallbacks, "user"
+    )
+    assert seeded is False
+    assert artifact["scenes"]
+    for scene in artifact["scenes"]:
+        assert scene["audio"]["mime"] == "audio/wav"
+        assert scene["audio"]["durationMs"] == 1000  # measured, not the plan's authored value
+
+
 def test_seed_video_is_genuinely_animated() -> None:
     from classess_gateway.plexus.engines import _seed_video
 

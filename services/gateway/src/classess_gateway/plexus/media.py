@@ -86,3 +86,19 @@ def _as_playable(mime: str, b64: str) -> dict[str, str]:
         len(pcm),
     )
     return {"mime": "audio/wav", "b64": base64.b64encode(header + pcm).decode("ascii")}
+
+
+def wav_duration_ms(b64: str) -> int | None:
+    """Measured beat length (ms) of a base64 WAV — the authoritative length the renderer
+    advances on (MOTION.md §5 sync law). ``None`` for anything not a parseable WAV (a
+    pass-through container we don't decode); the renderer then falls back to authored durationMs."""
+    import io
+    import wave
+
+    try:
+        data = base64.b64decode(b64)
+        with wave.open(io.BytesIO(data), "rb") as w:
+            frames, rate = w.getnframes(), w.getframerate()
+        return round(frames * 1000 / rate) if rate else None
+    except (ValueError, TypeError, wave.Error, EOFError):
+        return None

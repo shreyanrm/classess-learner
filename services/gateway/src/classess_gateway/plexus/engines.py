@@ -26,7 +26,7 @@ import sympy as sp
 from classess_verifier.cas import parse_equation
 
 from classess_gateway.plexus import image, store
-from classess_gateway.plexus.media import synthesize_narration
+from classess_gateway.plexus.media import synthesize_narration, wav_duration_ms
 from classess_gateway.plexus.sanitize import sanitize_svg
 from classess_gateway.providers import ProviderResponse
 
@@ -560,6 +560,45 @@ _SYSTEMS = {
         "calm and precise, one or two sentences per scene, matched to what moves on screen.\n\n"
         "When a topic naturally teaches in bits, use MORE, SHORTER scenes — one clean idea "
         "per scene, each as long as it needs (a few seconds to ~30s). Do not pad.\n\n"
+        # visual-quality bar (VIDEO-QUALITY.md) — the owner's reference-film standard, verbatim
+        'VISUAL BAR — every PAUSED frame must read as a premium editorial diagram, not a slide: '
+        "ink line-work on white, ONE hue, deep margins, at most 7 marks, one focal subject. If a "
+        'frame reads as "title + bullets", redraw it.\n'
+        "Two type voices only, set as presentation attributes (no <style>): an editorial serif for "
+        'the ONE headline (font-family="Fraunces, Georgia, serif", sentence case, at most 2 lines, '
+        "at most one italic emphasis word, fill #0D0D10); UPPERCASE tracked mono for every "
+        "label/eyebrow/readout (font-family=\"'JetBrains Mono', ui-monospace, monospace\", "
+        "letter-spacing 0.12em, fill #6E6E76).\n"
+        "Colour law: white ground; strokes #0D0D10 and #6E6E76 at ONE hairline weight "
+        "(stroke-width 1.5). Exactly ONE subject hue carries the meaningful moving quantity and its "
+        "label — chemistry #CC1E7A, biology #66B300, physics/maths/mastery #1F35E0; NEVER molten "
+        "#FF5A1F. No gradients, shadows, glows, bevels, glass; a reactive tint is that hue at "
+        "0.12–0.25 opacity, never a saturated fill.\n"
+        'Layout on viewBox="0 0 640 360": headline upper third (~30px), one focal subject on a '
+        "vertical third, at most one live readout in a fixed top-right corner (big tabular figure "
+        "~38px + small unit ~12px), at most 2 annotations each on a thin leader line to the margin "
+        "(~10px mono). Never two ideas in one scene.\n"
+        "Each scene is ONE beat of this arc, in order, using only the beats the idea needs: POSE (a "
+        "question alone) → SET (subject draws itself in) → ACT (the quantity moves / readout steps) "
+        "→ FLASH (the charged aha: the hue blooms then settles, once per film) → DATA (a plot draws "
+        "left-to-right, endpoint marked with crosshair + labeled dot) → NAME (concept resolves in "
+        "the serif, low-contrast fade).\n"
+        'Motion is physics: SMIL with calcMode="spline" keySplines="0.2 0 0 1" on anything the eye '
+        "follows; draw line-work on with stroke-dashoffset→0; sweep curves and rise fills; nothing "
+        "pops in at opacity 1; nothing linear.\n"
+        "A live number STEPS through its key values (start · mid · end) via timed <set> opacity on "
+        "stacked <text> — never a smooth glyph counter; a graph DRAWS, never snaps in whole.\n"
+        "Every element enters and leaves inside its narration sentence (≤300ms slack); the frame "
+        "holds only what the current sentence is about.\n"
+        "BANNED (reads cheap): more than one hue; gradients/shadows/glows/glass; system or novelty "
+        "fonts; emoji/clip-art/mascots; centered-everything, bullet slides, title-over-content; "
+        "bouncy/spin/wipe/carousel transitions; everything moving at once; inconsistent stroke "
+        "weights; floating unlabeled leaders; UI chrome inside the scene.\n"
+        "Aim for the reference bar: a calm, spacious, instrument-precise film where one hue and one "
+        "idea carry each frame — never a decorated slideshow.\n\n"
+        "durationMs is a FALLBACK hint only: the real beat length is measured from each scene's "
+        "narration audio, so the player advances on the narration, not this number. Still give a "
+        "sensible value (roughly how long the sentence takes to read) for the muted case.\n\n"
         '{"complexity":"simple|complex",'
         '"scenes":[{"id":"s1","durationMs":6000,"title":"...","narration":"...",'
         '"visual":{"kind":"svg|diagram|sim","payload":"<self-animating svg with viewBox> or '
@@ -661,8 +700,15 @@ def _generate_video_live(
 
     if artifact is None:
         raise ValueError("video verification failed on both tiers")
-    narration = " ".join(s["narration"] for s in artifact["scenes"])
-    artifact["narrationAudio"] = synthesize_narration(narration)
+    # Per-scene synthesis (MOTION.md §5): each beat gets its OWN audio, and the measured WAV
+    # length becomes that beat's authoritative duration — never one joined blob, never the
+    # LLM-guessed durationMs (which stays only as the muted-mode fallback). Keyless -> no audio.
+    for scene in artifact["scenes"]:
+        audio = synthesize_narration(scene["narration"])
+        if audio is None:
+            continue
+        measured = wav_duration_ms(audio["b64"])
+        scene["audio"] = {**audio, "durationMs": measured} if measured else audio
     return artifact, model_used, tokens, False
 
 

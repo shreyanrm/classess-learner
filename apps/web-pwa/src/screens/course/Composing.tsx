@@ -823,14 +823,16 @@ function InkScreen({
 
 // --- The topic's motion video (engine.video, one per course, placed after discovery) --------------
 
-const VIDEO_TIMEOUT_MS = 90_000;
+const VIDEO_TIMEOUT_MS = 150_000;
 
 type VideoState =
   | { status: 'pending' }
   | { status: 'ready'; scene: MotionScene }
   | { status: 'failed' };
 
-/** Bridge engine.video's {scenes:[{visual:{kind,payload}}],narrationAudio} into a MotionScene. */
+/** Bridge engine.video's {scenes:[{visual:{kind,payload},audio:{mime,b64,durationMs}}]} into a
+ * MotionScene. Per-scene audio drives timing (MOTION.md §5); authored durationMs is the muted
+ * fallback for scenes that never got audio (keyless synthesis, or an older cached artifact). */
 function motionSceneFromVideo(raw: unknown, title: string): MotionScene | null {
   if (!isRecord(raw)) return null;
   const src = isRecord(raw.artifact) ? raw.artifact : raw;
@@ -845,7 +847,14 @@ function motionSceneFromVideo(raw: unknown, title: string): MotionScene | null {
       if (!v || (v.kind !== 'svg' && v.kind !== 'diagram') || typeof payload !== 'string') {
         return null;
       }
-      const durationMs = typeof s.durationMs === 'number' ? s.durationMs : 6000;
+      const a = isRecord(s.audio) ? s.audio : null;
+      const audioSrc =
+        a && typeof a.b64 === 'string' && typeof a.mime === 'string'
+          ? `data:${a.mime};base64,${a.b64}`
+          : undefined;
+      // measured audio length is the authoritative beat; authored durationMs only when muted
+      const measured = a && typeof a.durationMs === 'number' ? a.durationMs : null;
+      const fallback = typeof s.durationMs === 'number' ? s.durationMs : 6000;
       const caption =
         typeof s.title === 'string' && s.title
           ? s.title
@@ -854,19 +863,15 @@ function motionSceneFromVideo(raw: unknown, title: string): MotionScene | null {
             : undefined;
       return {
         id: typeof s.id === 'string' ? s.id : `s${i + 1}`,
-        durationMs,
+        durationMs: measured ?? fallback,
         caption,
+        audioSrc,
         visual: { svg: payload },
       };
     })
     .filter((x): x is NonNullable<typeof x> => x !== null);
   if (steps.length === 0) return null;
-  const audio = isRecord(src.narrationAudio) ? src.narrationAudio : null;
-  const narration =
-    audio && typeof audio.b64 === 'string' && typeof audio.mime === 'string'
-      ? { src: `data:${audio.mime};base64,${audio.b64}` }
-      : undefined;
-  return parseMotionScene({ id: 'video', title, steps, narration });
+  return parseMotionScene({ id: 'video', title, steps });
 }
 
 function useVideoScene(title: string, courseId: string): VideoState {
