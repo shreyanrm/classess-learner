@@ -870,8 +870,14 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
       </motion.div>
 
       {view === 'adventure' ? (
-        <div ref={listRef} style={{ marginTop: 8 }}>
-          <AdventureRoadmap chapters={roadmapChapters} intent={intent} />
+        // The expedition takes the whole viewport through a portal — a world, not a section.
+        <div ref={listRef}>
+          <AdventureRoadmap
+            chapters={roadmapChapters}
+            intent={intent}
+            title={group?.name ?? subjectId}
+            onExit={() => setViewPref('list')}
+          />
         </div>
       ) : (
         <div ref={listRef} style={{ marginTop: 20 }}>
