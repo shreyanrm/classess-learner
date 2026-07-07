@@ -27,11 +27,16 @@ export function FlyingVidya({
   routeKey,
   mood,
   onTap,
+  onHoldStart,
+  onHoldEnd,
   size = 68,
 }: {
   routeKey: string;
   mood: VidyaMood;
   onTap: () => void;
+  /** Push-to-talk on her docked body — forwarded straight to VidyaBody. */
+  onHoldStart?: () => void;
+  onHoldEnd?: () => void;
   size?: number;
 }) {
   const reduced = useReducedMotion();
@@ -235,6 +240,9 @@ export function FlyingVidya({
             mood={flying ? 'hint' : mood}
             gaze={flying ? undefined : 'pointer'}
             onTap={onTap}
+            // Push-to-talk only once she has landed — a hold during the arrival would fight it.
+            onHoldStart={flying ? undefined : onHoldStart}
+            onHoldEnd={flying ? undefined : onHoldEnd}
             label="Talk to Vidya"
           />
         </motion.div>

@@ -7,6 +7,7 @@
  * nothing she draws is saved.
  */
 
+import { useReducedMotion } from '@classess/motion';
 import { useVidyaBus, VidyaBody } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
@@ -14,10 +15,10 @@ import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { CloseIcon, SendIcon, WaveformIcon } from '../ui/icons';
-import { type ChatTurn, useVidyaChat } from './chat';
+import { appendToArchive, type ChatTurn, readArchive, useVidyaChat } from './chat';
 import { FlyingVidya } from './Flight';
 import { TurnAttachments } from './paths';
-import { MuteButton } from './speech';
+import { isMuted, MuteButton } from './speech';
 import {
   modeWhisper,
   probeTeachBack,
@@ -84,8 +85,19 @@ export function VidyaCompanion() {
   const [draft, setDraft] = useState('');
   const [voiceNote, setVoiceNote] = useState(false);
   const [tb, setTb] = useState<TeachBack | null>(null);
+  // Push-to-talk on her docked body: the live-voice halo, and a docked note when she can't answer.
+  const [ptt, setPtt] = useState(false);
+  const [pttNote, setPttNote] = useState<string | null>(null);
+  const reduced = useReducedMotion();
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const voice = useVidyaVoice({ setMood });
+  // A push-to-talk exchange is spoken, not typed — but the same thread law holds, so each
+  // transcribed side lands in the one chat archive (it surfaces in the thread on next load).
+  const voice = useVidyaVoice({
+    setMood,
+    onTranscript: ({ role, text }) => {
+      appendToArchive({ id: `t${readArchive().length}-${role}`, role, text } as ChatTurn);
+    },
+  });
   const voiceOn =
     voice.status === 'listening' || voice.status === 'speaking' || voice.status === 'connecting';
 
@@ -178,6 +190,40 @@ export function VidyaCompanion() {
     });
   };
 
+  // A brief note beside the docked orb — she can't hold a voice conversation right now.
+  const flashPttNote = (msg: string) => {
+    setPttNote(msg);
+    window.setTimeout(() => setPttNote(null), 2600);
+  };
+
+  // Hold her docked body to talk (owner law): the mic opens, she listens; release completes the
+  // utterance and she replies aloud, docked — no drawer opens. A quick tap stays the poke.
+  const holdStart = () => {
+    if (open || voiceOn) return; // the drawer has its own mic; never run two sessions
+    if (isMuted()) {
+      flashPttNote('unmute to talk with her'); // the mute law governs sound
+      return;
+    }
+    setPtt(true);
+    setMood('listening');
+    void voice.start().then((landed) => {
+      if (landed !== 'listening') {
+        setPtt(false);
+        setMood('idle');
+        if (landed === 'unavailable') flashPttNote('voice arrives with a key');
+      }
+    });
+  };
+  const holdEnd = () => {
+    if (!ptt) return;
+    voice.finishTurn(); // stop capturing, let her spoken reply stream back, then the session closes
+  };
+
+  // The session can end on its own — her reply finishing, an abort, a drop. Retire the halo with it.
+  useEffect(() => {
+    if (voice.status === 'idle' || voice.status === 'unavailable') setPtt(false);
+  }, [voice.status]);
+
   // Closing the drawer only contracts her — she stays docked (FlyingVidya never unmounts). And a
   // live mic must not outlive the drawer, so any voice session is stopped on close (stop() no-ops
   // when idle). Both close affordances route through here.
@@ -210,13 +256,65 @@ export function VidyaCompanion() {
       {/* She is always docked and mounted — the drawer only overlays her. Closing it must never
           remove her (the owner's complaint); hiding via visibility keeps her in place with no
           re-fly, and the fixed drawer (higher z) covers her while open. */}
+      {/* The push-to-talk halo — a soft molten pulse ring around her while she is on a live hold,
+          visible without any drawer. Reduced motion: a calm static ring. */}
+      {ptt && (
+        <motion.div
+          aria-hidden
+          animate={reduced ? undefined : { scale: [1, 1.16, 1], opacity: [0.55, 0.3, 0.55] }}
+          transition={
+            reduced
+              ? undefined
+              : { duration: 1.9, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }
+          }
+          style={{
+            position: 'fixed',
+            right: 4,
+            bottom: 8,
+            width: 104,
+            height: 104,
+            borderRadius: '50%',
+            background:
+              'radial-gradient(circle at 50% 50%, rgba(255,90,31,0.22), rgba(255,90,31,0) 68%)',
+            border: '1.5px solid rgba(255,120,60,0.5)',
+            opacity: reduced ? 0.5 : undefined,
+            zIndex: 'var(--clss-z-vidyaPresence)' as unknown as number,
+            pointerEvents: 'none',
+          }}
+        />
+      )}
       <div style={{ visibility: open ? 'hidden' : 'visible' }}>
         <FlyingVidya
           routeKey={route.name}
           mood={busy ? 'thinking' : mood}
           onTap={() => setOpen(true)}
+          onHoldStart={holdStart}
+          onHoldEnd={holdEnd}
         />
       </div>
+      {pttNote && (
+        <div
+          style={{
+            position: 'fixed',
+            right: 18,
+            bottom: 100,
+            maxWidth: 210,
+            padding: '6px 10px',
+            borderRadius: 'var(--clss-radius-sm)',
+            background: 'var(--clss-frost-on-paper)',
+            backdropFilter: 'blur(var(--clss-frost-blur))',
+            WebkitBackdropFilter: 'blur(var(--clss-frost-blur))',
+            border: '0.5px solid var(--clss-hairline-on-paper)',
+            color: 'var(--clss-ink-500)',
+            fontSize: '0.78rem',
+            textAlign: 'right',
+            zIndex: 'var(--clss-z-panel)' as unknown as number,
+            pointerEvents: 'none',
+          }}
+        >
+          {pttNote}
+        </div>
+      )}
       <AnimatePresence>
         {open && (
           <motion.aside

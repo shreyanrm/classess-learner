@@ -14,7 +14,13 @@
 
 import { useReducedMotion } from '@classess/motion';
 import { motion, useAnimationControls, useSpring, useTime, useTransform } from 'framer-motion';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  type PointerEvent as ReactPointerEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { flameForMood, MOLTEN, type VidyaMood } from '../identity';
 
 export interface VidyaBodyProps {
@@ -26,6 +32,12 @@ export interface VidyaBodyProps {
   /** For 'explaining': the direction she gestures toward, in radians (0 = right). */
   gestureAngle?: number;
   onTap?: () => void;
+  /** Push-to-talk: fires when a press crosses the hold threshold (a poke stays a poke below it). */
+  onHoldStart?: () => void;
+  /** Push-to-talk: fires on release/cancel after a hold began — the utterance is complete. */
+  onHoldEnd?: () => void;
+  /** How long a press must be held before it becomes push-to-talk rather than a poke (ms). */
+  holdThresholdMs?: number;
   label?: string;
   className?: string;
 }
@@ -313,6 +325,9 @@ export function VidyaBody({
   gaze,
   gestureAngle,
   onTap,
+  onHoldStart,
+  onHoldEnd,
+  holdThresholdMs = 300,
   label = 'Vidya',
   className,
 }: VidyaBodyProps) {
@@ -324,6 +339,11 @@ export function VidyaBody({
   const [pokeFace, setPokeFace] = useState<Partial<Pose> | null>(null);
   const pokePressed = useRef(false);
   const pokeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  // Hold-vs-poke: a press starts a timer; crossing it becomes push-to-talk, releasing before it
+  // stays a poke. `held` = the threshold was crossed; `didHold` suppresses the click a hold trails.
+  const holdTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const held = useRef(false);
+  const didHold = useRef(false);
   const face: Pose = pokeFace ? { ...pose, ...pokeFace } : pose;
   const flameState = flameForMood(mood);
   const time = useTime();
@@ -414,8 +434,10 @@ export function VidyaBody({
   const controls = useAnimationControls();
 
   // --- Poke choreography: squash back on press, bouncy comeback on release ------------------------
-  const pokeDown = () => {
+  const pokeDown = (e: ReactPointerEvent) => {
     pokePressed.current = true;
+    held.current = false;
+    didHold.current = false;
     clearTimeout(pokeTimer.current);
     setPokeFace({ eyes: 'open', eyeOpen: 1, mouth: 'o', browLift: 3.2 });
     if (!reduced) {
@@ -426,10 +448,45 @@ export function VidyaBody({
         transition: { type: 'spring', stiffness: 640, damping: 30 },
       });
     }
+    // Push-to-talk arm: capture the pointer so a slight drag can't cancel the hold, then wait out
+    // the threshold. Crossing it hands the face to the mood (listening) and opens the mic.
+    if (onHoldStart) {
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch {
+        // capture unsupported (or already released) — the hold still works, just less drag-proof
+      }
+      clearTimeout(holdTimer.current);
+      holdTimer.current = setTimeout(() => {
+        if (!pokePressed.current) return;
+        held.current = true;
+        setPokeFace(null);
+        onHoldStart();
+      }, holdThresholdMs);
+    }
   };
   const pokeUp = () => {
     if (!pokePressed.current) return;
     pokePressed.current = false;
+    clearTimeout(holdTimer.current);
+    if (held.current) {
+      // It was a hold, not a poke: end the utterance, suppress the trailing click (no drawer), and
+      // settle to the mood pose rather than the delighted poke grin.
+      held.current = false;
+      didHold.current = true;
+      setPokeFace(null);
+      if (!reduced) {
+        void controls.start({
+          scaleX: pose.scaleX,
+          scaleY: pose.scaleY,
+          y: pose.lift,
+          rotate: pose.lean,
+          transition: { type: 'spring', stiffness: 300, damping: 20 },
+        });
+      }
+      onHoldEnd?.();
+      return;
+    }
     setPokeFace({ eyes: 'happy', mouth: 'grin', browLift: 2.2 });
     if (!reduced) {
       // low damping on purpose — she overshoots forward and wobbles back, delighted
@@ -443,7 +500,19 @@ export function VidyaBody({
     }
     pokeTimer.current = setTimeout(() => setPokeFace(null), 950);
   };
-  useEffect(() => () => clearTimeout(pokeTimer.current), []);
+  // A drift off her body must not cancel a live hold (the pointer is captured); it only resets the
+  // poke visual when no hold is in progress.
+  const pokeLeave = () => {
+    if (held.current) return;
+    pokeUp();
+  };
+  useEffect(
+    () => () => {
+      clearTimeout(pokeTimer.current);
+      clearTimeout(holdTimer.current);
+    },
+    [],
+  );
   useEffect(() => {
     if ((mood === 'celebrate' || mood === 'correct') && !reduced) {
       const big = mood === 'celebrate';
@@ -560,12 +629,24 @@ export function VidyaBody({
       role={onTap ? 'button' : 'img'}
       aria-label={label}
       tabIndex={onTap ? 0 : undefined}
-      onClick={onTap}
+      onClick={
+        onTap
+          ? () => {
+              // A hold trails a click on release — swallow it once so a talk never opens the drawer.
+              if (didHold.current) {
+                didHold.current = false;
+                return;
+              }
+              onTap();
+            }
+          : undefined
+      }
       onKeyDown={onTap ? (e) => (e.key === 'Enter' || e.key === ' ') && onTap() : undefined}
       onPointerDown={pokeDown}
       onPointerUp={pokeUp}
-      onPointerLeave={pokeUp}
+      onPointerLeave={pokeLeave}
       onPointerCancel={pokeUp}
+      onContextMenu={onHoldStart ? (e) => e.preventDefault() : undefined}
       whileHover={onTap ? { scale: 1.04 } : undefined}
       style={{
         width: size,
@@ -574,6 +655,12 @@ export function VidyaBody({
         display: 'inline-block',
         cursor: onTap ? 'pointer' : 'default',
         WebkitTapHighlightColor: 'transparent',
+        // Guard the hold: no touch scroll/pan stealing the gesture, no text selection, no iOS
+        // long-press callout artifact on her body.
+        touchAction: onTap || onHoldStart ? 'none' : undefined,
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        WebkitTouchCallout: 'none',
       }}
     >
       {/* The flame-glow beneath her — replaces any drop shadow, always present. */}

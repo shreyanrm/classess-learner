@@ -75,6 +75,10 @@ def _setup_message() -> dict[str, Any]:
             "model": f"models/{VOICE_MODEL}",
             "generationConfig": {"responseModalities": ["AUDIO"]},
             "systemInstruction": {"parts": [{"text": VIDYA_PERSONA}]},
+            # Transcribe both sides so a spoken turn can land in the one chat archive
+            # (same thread law) — the browser reads these off serverContent, never the audio.
+            "inputAudioTranscription": {},
+            "outputAudioTranscription": {},
         }
     }
 

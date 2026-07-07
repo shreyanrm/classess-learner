@@ -16,15 +16,22 @@ export interface VidyaVoice {
   status: VoiceStatus;
   /** Resolves to the status the attempt landed on ('listening' when voice is live). */
   start: () => Promise<VoiceStatus>;
+  /** Push-to-talk release: stop capturing the learner and tell Gemini the utterance ended, but
+   *  keep the session alive so her spoken reply streams back — then close when she finishes (or a
+   *  safety timeout fires). The one end-of-utterance seam; plain stop() cuts her off mid-word. */
+  finishTurn: () => void;
   stop: () => void;
 }
 
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
 
-/** The Gemini Live server frames we care about: her audio, and the interruption signal. */
+/** The Gemini Live server frames we care about: her audio, transcripts, and control signals. */
 interface LiveServerMessage {
   serverContent?: {
     interrupted?: boolean;
+    turnComplete?: boolean;
+    inputTranscription?: { text?: string };
+    outputTranscription?: { text?: string };
     modelTurn?: { parts?: { inlineData?: { data?: string } }[] };
   };
 }
@@ -74,17 +81,43 @@ interface LiveSession {
   playback: AudioContext;
   sources: Set<AudioBufferSourceNode>;
   playhead: number;
+  source: MediaStreamAudioSourceNode;
+  processor: ScriptProcessorNode;
+  /** After a push-to-talk release: capture is closed, we are only awaiting her reply. */
+  finishing: boolean;
+  /** Accumulated transcripts for the current turn, flushed on turnComplete / close. */
+  inTxt: string;
+  outTxt: string;
+  safety?: ReturnType<typeof setTimeout>;
 }
 
-export function useVidyaVoice(options?: { setMood?: (mood: VidyaMood) => void }): VidyaVoice {
+export function useVidyaVoice(options?: {
+  setMood?: (mood: VidyaMood) => void;
+  /** A spoken turn, once transcribed — the caller lands it in the one chat archive. */
+  onTranscript?: (turn: { role: 'user' | 'vidya'; text: string }) => void;
+}): VidyaVoice {
   const [status, setStatus] = useState<VoiceStatus>('idle');
   const setMood = options?.setMood;
+  // Held in a ref so start/stop/message closures see the latest callback without churning identity.
+  const opts = useRef(options);
+  opts.current = options;
   const live = useRef<LiveSession | null>(null);
+
+  const flush = useCallback((l: LiveSession) => {
+    const i = l.inTxt.trim();
+    const o = l.outTxt.trim();
+    l.inTxt = '';
+    l.outTxt = '';
+    if (i) opts.current?.onTranscript?.({ role: 'user', text: i });
+    if (o) opts.current?.onTranscript?.({ role: 'vidya', text: o });
+  }, []);
 
   const stop = useCallback(() => {
     const l = live.current;
     live.current = null;
     if (l) {
+      if (l.safety) clearTimeout(l.safety);
+      flush(l); // persist any un-flushed words before the session tears down
       l.ws.onclose = null;
       l.ws.onerror = null;
       l.ws.close();
@@ -95,7 +128,7 @@ export function useVidyaVoice(options?: { setMood?: (mood: VidyaMood) => void })
       setStatus('idle');
       setMood?.('idle');
     }
-  }, [setMood]);
+  }, [setMood, flush]);
 
   // Never leave the mic open past unmount.
   useEffect(() => stop, [stop]);
@@ -147,13 +180,25 @@ export function useVidyaVoice(options?: { setMood?: (mood: VidyaMood) => void })
     // A user gesture opened this call, but Safari still starts contexts suspended.
     await capture.resume().catch(() => {});
     await playback.resume().catch(() => {});
-    const state: LiveSession = { ws, stream, capture, playback, sources: new Set(), playhead: 0 };
-    live.current = state;
-
     // ponytail: ScriptProcessor over an AudioWorklet — one file, ~64 ms chunks; swap in a
     // worklet module if capture jitter ever becomes audible.
     const source = capture.createMediaStreamSource(stream);
     const processor = capture.createScriptProcessor(1024, 1, 1);
+    const state: LiveSession = {
+      ws,
+      stream,
+      capture,
+      playback,
+      sources: new Set(),
+      playhead: 0,
+      source,
+      processor,
+      finishing: false,
+      inTxt: '',
+      outTxt: '',
+    };
+    live.current = state;
+
     const inRate = capture.sampleRate; // 16000 on Chrome, 44100/48000 on Safari
     processor.onaudioprocess = (e) => {
       if (ws.readyState === WebSocket.OPEN) {
@@ -191,6 +236,11 @@ export function useVidyaVoice(options?: { setMood?: (mood: VidyaMood) => void })
       node.onended = () => {
         state.sources.delete(node);
         if (state.sources.size === 0 && live.current === state) {
+          // Push-to-talk: her reply has finished playing, so close the session cleanly.
+          if (state.finishing) {
+            stop();
+            return;
+          }
           setStatus('listening');
           setMood?.('listening');
         }
@@ -215,6 +265,10 @@ export function useVidyaVoice(options?: { setMood?: (mood: VidyaMood) => void })
         }
         return;
       }
+      // Transcripts stream in incrementally; accumulate, then flush the pair on turnComplete.
+      if (content?.inputTranscription?.text) state.inTxt += content.inputTranscription.text;
+      if (content?.outputTranscription?.text) state.outTxt += content.outputTranscription.text;
+      if (content?.turnComplete) flush(state);
       for (const part of content?.modelTurn?.parts ?? []) {
         const data = part.inlineData?.data;
         if (typeof data === 'string') playChunk(data);
@@ -235,7 +289,32 @@ export function useVidyaVoice(options?: { setMood?: (mood: VidyaMood) => void })
     setStatus('listening');
     setMood?.('listening');
     return 'listening';
-  }, [setMood, stop]);
+  }, [setMood, stop, flush]);
 
-  return { status, start, stop };
+  const finishTurn = useCallback(() => {
+    const l = live.current;
+    if (!l || l.finishing) return;
+    l.finishing = true;
+    // Stop capturing the moment she lets go — nothing said after release should reach Gemini.
+    try {
+      l.source.disconnect();
+      l.processor.disconnect();
+    } catch {
+      // already torn down — nothing to do
+    }
+    for (const t of l.stream.getTracks()) t.stop();
+    // Signal end-of-utterance so the model finalizes and replies (automatic VAD flushes on this).
+    // ponytail: automatic VAD + audioStreamEnd — good enough for hold-to-talk. Switch to manual
+    // activity markers only if background noise triggers premature replies (needs a relay VAD-config
+    // change that would break the open-mic callers, so left alone).
+    if (l.ws.readyState === WebSocket.OPEN) {
+      l.ws.send(JSON.stringify({ realtimeInput: { audioStreamEnd: true } }));
+    }
+    // If she never replies (keyless/quota 502), the session must still close on its own.
+    l.safety = setTimeout(() => {
+      if (live.current === l) stop();
+    }, 12000);
+  }, [stop]);
+
+  return { status, start, finishTurn, stop };
 }
