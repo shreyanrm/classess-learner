@@ -1825,6 +1825,11 @@ def run_engine(
         # a cached seed is an honest floor, not a ceiling: live mode retries the real thing
         if live and cached.get("seeded"):
             stale = True
+        # generated under an older composer prompt: the current doctrine (visual law, fact base,
+        # activity schemas) supersedes it — regenerate on first live serve; the version ledger
+        # retains the old artifact, so nothing is lost
+        if live and cached.get("provenance", {}).get("prompt_version") != store.PROMPT_VERSION:
+            stale = True
         if not stale:
             # Prefer canonical; serve provisional without blocking. A live provisional cache-hit
             # means the original validation thread never finished (e.g. the process restarted) —

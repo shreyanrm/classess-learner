@@ -891,6 +891,58 @@ def test_two_boards_same_concept_generate_once_serve_both(cache_dir) -> None:
     assert len(list(base.parent.glob("linear-equations--core--*.json"))) == 1
 
 
+def test_live_serve_regenerates_pre_doctrine_prompt_versions(monkeypatch, cache_dir) -> None:
+    """An artifact cached under an older composer prompt regenerates on first live serve — the
+    current doctrine (visual law, fact base, schemas) supersedes it; the ledger keeps the old."""
+    from classess_gateway.plexus import engines
+
+    def record_at(version: str) -> dict:
+        return {
+            "concept": "pressure",
+            "modality": "compose",
+            "difficulty": "core",
+            "verified": True,
+            "seeded": False,
+            "status": store.CANONICAL,
+            "artifact": {"cards": [], "workbook": [], "boss": []},
+            "provenance": {
+                "engine": "engine.compose",
+                "model": "anthropic/claude-opus-4-8",
+                "prompt_version": version,
+            },
+        }
+
+    path = store.artifact_path("pressure", "compose", "core")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(record_at("plexus-v1")))
+
+    class _Regenerated(Exception):
+        pass
+
+    def _boom(*_a, **_k):
+        raise _Regenerated
+
+    monkeypatch.setattr(engines, "_generate_live", _boom)
+    # v1-era cache is stale under the current prompt: live serve bypasses it and regenerates
+    with pytest.raises(_Regenerated):
+        engines.run_engine(
+            capability="engine.compose",
+            payload={"concept": "pressure"},
+            provider_model="anthropic/claude-opus-4-8",
+            live=True,
+        )
+
+    # the same record at the CURRENT prompt version is fresh: served from cache, zero tokens
+    path.write_text(json.dumps(record_at(store.PROMPT_VERSION)))
+    out = engines.run_engine(
+        capability="engine.compose",
+        payload={"concept": "pressure"},
+        provider_model="anthropic/claude-opus-4-8",
+        live=True,
+    )
+    assert out.tokens == 0
+
+
 def test_migration_reindexes_legacy_key_and_writes_alias(cache_dir) -> None:
     concept, modality, difficulty = "photosynthesis", "compose", "core"
     legacy_body = f"{concept}\x00{modality}\x00{difficulty}\x00CBSE\x007\x00science\x00c1\x00"
