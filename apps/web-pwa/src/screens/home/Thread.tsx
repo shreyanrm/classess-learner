@@ -389,6 +389,7 @@ function BountyChip({ amount, hue, earned }: { amount: number; hue?: string; ear
 
 function StopCard({
   stop,
+  current,
   x,
   y,
   width,
@@ -397,6 +398,7 @@ function StopCard({
   onArrive,
 }: {
   stop: ThreadStop;
+  current?: boolean;
   x: number;
   y: number;
   width: number;
@@ -404,6 +406,11 @@ function StopCard({
   onGo: (route: Route) => void;
   onArrive?: (stop: ThreadStop) => void;
 }) {
+  // The current stop wears the one hit of pigment on the thread — a hairline ultramarine edge that
+  // says "you are here" without shouting. Every other card stays on the neutral hairline.
+  const restBorder = current
+    ? 'color-mix(in srgb, var(--clss-ultramarine) 42%, transparent)'
+    : HAIR;
   return (
     <motion.button
       type="button"
@@ -414,7 +421,13 @@ function StopCard({
       initial={{ opacity: 0, y: 18, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ ...SPRING, delay }}
-      whileHover={{ y: -3, backgroundColor: TONAL }}
+      whileHover={{
+        y: -3,
+        backgroundColor: TONAL,
+        borderColor: current
+          ? 'color-mix(in srgb, var(--clss-ultramarine) 64%, transparent)'
+          : INK_40,
+      }}
       whileTap={{ scale: 0.98 }}
       style={{
         position: 'absolute',
@@ -425,7 +438,7 @@ function StopCard({
         display: 'flex',
         alignItems: 'center',
         gap: 13,
-        border: `1px solid ${HAIR}`,
+        border: `1px solid ${restBorder}`,
         borderRadius: 3,
         background: 'var(--clss-card)',
         padding: '13px 14px 13px 16px',
@@ -480,9 +493,18 @@ function StopCard({
       {stop.bounty !== undefined && (
         <BountyChip amount={stop.bounty} hue={stop.hue} earned={stop.done} />
       )}
-      <span aria-hidden style={{ color: INK_40, flexShrink: 0 }}>
+      <motion.span
+        aria-hidden
+        animate={current ? { x: [0, 3, 0] } : undefined}
+        transition={
+          current
+            ? { duration: 1.8, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }
+            : undefined
+        }
+        style={{ display: 'inline-flex', color: current ? ULTRA : INK_40, flexShrink: 0 }}
+      >
         <ChevronIcon size={15} />
-      </span>
+      </motion.span>
     </motion.button>
   );
 }
@@ -885,6 +907,7 @@ export function Thread({
         <StopCard
           key={s.id}
           stop={s}
+          current={i === currentIndex}
           x={cardX(pts[i] as Pt)}
           y={(pts[i] as Pt).y - 42}
           width={CW}

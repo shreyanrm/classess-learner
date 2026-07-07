@@ -12,7 +12,7 @@
  */
 
 import { useVidyaBus } from '@classess/vidya';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { chapterById, topicById } from '../data/catalog';
 import { useRouter } from '../shell/router';
@@ -30,6 +30,9 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
   const router = useRouter();
   const sdk = useSdk();
   const bus = useVidyaBus();
+  const still = useReducedMotion();
+  // the close affordance comes forward on hover/focus — ink lifts from quiet grey to full ink
+  const [closeLit, setCloseLit] = useState(false);
 
   // A custom course Vidya composed from a free-text ask: topicId carries the concept itself
   // (`custom:black holes`), so the composing player gets the real title, never "a new course".
@@ -145,8 +148,11 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
             'radial-gradient(64% 100% at 50% 0%, rgba(255,201,60,0.05) 0%, transparent 72%)',
         }}
       />
-      {/* the shell chrome: close, and the endowed progress line */}
-      <header
+      {/* the shell chrome: close, and the endowed progress line — settles in as the course opens */}
+      <motion.header
+        initial={still ? false : { opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: 'spring', stiffness: 240, damping: 30, delay: 0.05 }}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -156,22 +162,31 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
           minHeight: 52,
         }}
       >
-        <button
+        <motion.button
           type="button"
           aria-label="Close course"
           onClick={() => router.back()}
+          onPointerEnter={() => setCloseLit(true)}
+          onPointerLeave={() => setCloseLit(false)}
+          onFocus={() => setCloseLit(true)}
+          onBlur={() => setCloseLit(false)}
+          whileTap={still ? undefined : { scale: 0.88 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 24 }}
           style={{
             border: 'none',
             background: 'transparent',
-            color: 'var(--clss-ink-500)',
+            color: closeLit ? 'var(--clss-ink-900)' : 'var(--clss-ink-500)',
             lineHeight: 1,
             cursor: 'pointer',
             fontFamily: 'inherit',
             padding: 6,
+            display: 'grid',
+            placeItems: 'center',
+            transition: 'color 0.18s ease',
           }}
         >
           <CloseIcon size={17} />
-        </button>
+        </motion.button>
         {mode === 'sandbox' ? (
           <div style={{ ...whisper, flex: 1, textAlign: 'center' }}>
             Free play{topic ? ` · ${topic.name}` : ''}
@@ -186,7 +201,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
           <ReplayButton onReplay={narration.replay} />
           <MuteButton />
         </div>
-      </header>
+      </motion.header>
 
       {/* the full-bleed card area */}
       <main

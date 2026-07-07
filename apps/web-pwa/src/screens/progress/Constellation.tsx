@@ -287,19 +287,46 @@ export function Constellation({
               {/* generous invisible hit area */}
               <circle cx={star.x} cy={star.y} r={18} fill="transparent" />
               {selected && (
-                <circle
-                  cx={star.x}
-                  cy={star.y}
-                  r={10}
-                  style={{
-                    fill: 'none',
-                    stroke: 'color-mix(in srgb, var(--clss-ink) 40%, transparent)',
-                    strokeWidth: 0.75,
-                  }}
-                  vectorEffect="non-scaling-stroke"
-                />
+                <>
+                  <circle
+                    cx={star.x}
+                    cy={star.y}
+                    r={10}
+                    style={{
+                      fill: 'none',
+                      stroke: 'color-mix(in srgb, var(--clss-ink) 40%, transparent)',
+                      strokeWidth: 0.75,
+                    }}
+                    vectorEffect="non-scaling-stroke"
+                  />
+                  {/* a calm ultramarine pulse marks the star in focus — meaning, not chrome */}
+                  {!reduced && (
+                    <motion.circle
+                      cx={star.x}
+                      cy={star.y}
+                      style={{ fill: 'none', stroke: GLOW }}
+                      strokeWidth={1}
+                      vectorEffect="non-scaling-stroke"
+                      initial={{ r: 10, opacity: 0.5 }}
+                      animate={{ r: [10, 15, 10], opacity: [0.5, 0, 0.5] }}
+                      transition={{
+                        duration: 2.6,
+                        repeat: Number.POSITIVE_INFINITY,
+                        ease: 'easeInOut',
+                      }}
+                    />
+                  )}
+                </>
               )}
-              <StarCore star={star} state={state} />
+              {/* the core scales into being on a soft spring — the concept arriving as light */}
+              <motion.g
+                initial={reduced ? false : { opacity: 0, scale: 0.4 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 18, delay: 0.2 + i * 0.07 }}
+                style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+              >
+                <StarCore star={star} state={state} />
+              </motion.g>
               <text
                 x={star.x}
                 y={star.y + 24}

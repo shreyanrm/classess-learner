@@ -14,14 +14,14 @@
  */
 
 import { useVidyaBus, VidyaBody, type VidyaMood } from '@classess/vidya';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { ONBOARDED_KEY, SIGNIN_SOURCE_KEY } from '../App';
 import { ensureFrame } from '../data/frame';
 import { useRouter } from '../shell/router';
 import { rememberInterests } from '../store/mind';
 import { useSdk } from '../store/sdk';
-import { AmbientWash, fluidSpace, MagneticButton } from '../ui/kit';
+import { AmbientWash, cascade, fluidSpace, MagneticButton, rise } from '../ui/kit';
 import { sfx } from '../ui/sound';
 import { MuteButton, speakLine } from '../vidya/speech';
 import { BoardPicker, GradePicker } from './you/GradeBoardPicker';
@@ -86,10 +86,12 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={selected}
+      whileHover={{ y: -1 }}
       whileTap={{ scale: 0.95 }}
       transition={{ type: 'spring', stiffness: 400, damping: 26 }}
       style={{
-        border: 'none',
+        // hairline depth (tonal-step, no shadow) on the resting chip; solid ink when chosen
+        border: selected ? '0.5px solid transparent' : '0.5px solid var(--clss-hairline-on-paper)',
         background: selected ? 'var(--clss-ink-900)' : 'var(--clss-tonal)',
         color: selected ? 'var(--clss-paper)' : 'var(--clss-ink-700)',
         borderRadius: 3,
@@ -98,6 +100,7 @@ function Chip({
         fontFamily: 'inherit',
         cursor: 'pointer',
         lineHeight: 1.2,
+        transition: 'background 0.18s ease, color 0.18s ease, border-color 0.18s ease',
       }}
     >
       {label}
@@ -123,6 +126,7 @@ export function Onboarding() {
   const router = useRouter();
   const sdk = useSdk();
   const bus = useVidyaBus();
+  const reduced = useReducedMotion() ?? false;
 
   const [phase, setPhase] = useState<Phase>('greet');
   // Her current line: it types on screen and plays aloud. `onDone` runs when the typing finishes
@@ -429,8 +433,44 @@ export function Onboarding() {
         initial={{ scale: 0.55, y: -46, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.15 }}
-        style={{ display: 'grid', placeItems: 'center' }}
+        style={{ display: 'grid', placeItems: 'center', position: 'relative' }}
       >
+        {/* her own light — the one earned pigment hit, ultramarine "ignite at rest": a soft halo
+            that breathes so she reads as alive, brighter before the first tap (the door). Behind
+            her body, never intercepts the tap; static under reduced motion. */}
+        <motion.div
+          aria-hidden
+          initial={false}
+          animate={
+            reduced
+              ? { opacity: begun ? 0.32 : 0.46 }
+              : {
+                  opacity: begun ? [0.24, 0.42, 0.24] : [0.36, 0.62, 0.36],
+                  scale: [1, 1.09, 1],
+                }
+          }
+          transition={
+            reduced
+              ? { duration: 0.4 }
+              : { duration: begun ? 4.6 : 3.4, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }
+          }
+          style={{
+            position: 'absolute',
+            width: 230,
+            height: 230,
+            left: '50%',
+            top: '50%',
+            marginLeft: -115,
+            marginTop: -115,
+            borderRadius: '50%',
+            background:
+              'radial-gradient(closest-side, var(--clss-ultramarine-soft) 0%, transparent 72%)',
+            filter: 'blur(8px)',
+            pointerEvents: 'none',
+            // behind her body but scoped to this transformed wrapper's own stacking context
+            zIndex: -1,
+          }}
+        />
         <VidyaBody
           size={112}
           mood={mood}
@@ -463,9 +503,9 @@ export function Onboarding() {
           // The one gesture that unlocks her voice — she can't autoplay before it. Her body above is
           // tappable too; this is the warm, obvious door in.
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={softSpring}
+            variants={cascade}
+            initial="hidden"
+            animate="show"
             style={{
               display: 'flex',
               flexDirection: 'column',
@@ -473,7 +513,8 @@ export function Onboarding() {
               gap: fluidSpace.md,
             }}
           >
-            <div
+            <motion.div
+              variants={rise}
               style={{
                 fontSize: 'clamp(1.32rem, 1.05rem + 1.5vw, 1.9rem)',
                 fontWeight: 550,
@@ -484,16 +525,18 @@ export function Onboarding() {
               }}
             >
               Ready when you are.
-            </div>
-            <MagneticButton
-              size="lg"
-              variant="primary"
-              onClick={begin}
-              ariaLabel="begin"
-              style={{ minWidth: 160, justifyContent: 'center' }}
-            >
-              Tap to begin
-            </MagneticButton>
+            </motion.div>
+            <motion.div variants={rise}>
+              <MagneticButton
+                size="lg"
+                variant="primary"
+                onClick={begin}
+                ariaLabel="begin"
+                style={{ minWidth: 160, justifyContent: 'center' }}
+              >
+                Tap to begin
+              </MagneticButton>
+            </motion.div>
           </motion.div>
         ) : (
           <AnimatePresence mode="wait">

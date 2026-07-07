@@ -7,7 +7,7 @@
  * draggable number scrubber. Ink on paper, hairlines, 3px corners (DESIGN.md §2).
  */
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   type CSSProperties,
   type KeyboardEvent,
@@ -134,11 +134,16 @@ export function ActionBar({
   /** When present, the primary advance button is held closed and fills up as Vidya reads. */
   gate?: { progress: number };
 }) {
+  const still = useReducedMotion();
   if (!bar) return null;
   const gated = Boolean(gate);
   return (
-    <div
+    <motion.div
+      initial={still ? false : { opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 32 }}
       style={{
+        position: 'relative',
         borderTop: '0.5px solid var(--clss-hairline-on-paper)',
         padding: '14px 24px calc(14px + env(safe-area-inset-bottom, 0px))',
         display: 'flex',
@@ -146,6 +151,20 @@ export function ActionBar({
         background: 'var(--clss-paper)',
       }}
     >
+      {/* the card content dissolves into the bar — a soft tonal veil above the hairline, so a scrolling
+          card never hard-cuts at the seam (§1 ambient depth, no shadows) */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: -28,
+          height: 28,
+          pointerEvents: 'none',
+          background: 'linear-gradient(to top, var(--clss-paper), transparent)',
+        }}
+      />
       <div
         style={{
           width: 'min(680px, 100%)',
@@ -202,13 +221,14 @@ export function ActionBar({
           </AnimatePresence>
         </MagneticButton>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 // --- Segmented progress (endowed — never starts empty) -------------------------------------------
 
 export function SegmentedProgress({ fraction, segments }: { fraction: number; segments: number }) {
+  const still = useReducedMotion();
   const f = Math.max(0, Math.min(1, fraction));
   // the frontier stop — the one currently lighting; it breathes so progress feels alive, not static
   const lead = f >= 1 ? -1 : Math.min(segments - 1, Math.floor(f * segments));
@@ -219,6 +239,7 @@ export function SegmentedProgress({ fraction, segments }: { fraction: number; se
     >
       {Array.from({ length: segments }, (_, i) => {
         const fill = Math.max(0, Math.min(1, f * segments - i));
+        const isLead = i === lead;
         return (
           <div
             // biome-ignore lint/suspicious/noArrayIndexKey: segments are positional by nature
@@ -231,19 +252,31 @@ export function SegmentedProgress({ fraction, segments }: { fraction: number; se
               overflow: 'hidden',
             }}
           >
-            {i === lead && (
-              // the stop igniting: a faint ink breath on the segment about to fill
+            {isLead && (
+              // the stop igniting: a faint ultramarine breath on the frontier — mastery at rest
+              // (the one earned pigment of the view, DESIGN.md §1)
               <motion.div
                 aria-hidden
-                animate={{ opacity: [0.22, 0.6, 0.22] }}
-                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
-                style={{ position: 'absolute', inset: 0, background: 'var(--clss-ink-900)' }}
+                animate={still ? { opacity: 0.4 } : { opacity: [0.22, 0.6, 0.22] }}
+                transition={
+                  still
+                    ? undefined
+                    : { duration: 2, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }
+                }
+                style={{ position: 'absolute', inset: 0, background: 'var(--clss-ultramarine)' }}
               />
             )}
             <motion.div
               animate={{ width: `${fill * 100}%` }}
               transition={{ type: 'spring', stiffness: 120, damping: 26 }}
-              style={{ position: 'relative', height: '100%', background: 'var(--clss-ink-900)' }}
+              style={{
+                position: 'relative',
+                height: '100%',
+                // the frontier's growing edge ignites ultramarine; travelled ground settles to ink
+                background: isLead
+                  ? 'linear-gradient(90deg, var(--clss-ink-900) 60%, var(--clss-ultramarine))'
+                  : 'var(--clss-ink-900)',
+              }}
             />
           </div>
         );
@@ -351,11 +384,14 @@ export function Stage({
   children: ReactNode;
   style?: CSSProperties;
 }) {
+  const still = useReducedMotion();
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.985 }}
+      initial={still ? { opacity: 0 } : { opacity: 0, scale: 0.985 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+      transition={
+        still ? { duration: 0.2, ease: 'easeOut' } : { type: 'spring', stiffness: 260, damping: 26 }
+      }
       style={{
         position: 'relative',
         width: '100%',
@@ -433,21 +469,24 @@ export function ParticlePop({
 // --- The deck (horizontal slide-spring + stage crossfade) ------------------------------------------
 
 export function Deck({ id, children }: { id: string; children: ReactNode }) {
+  const still = useReducedMotion();
   return (
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
         key={id}
-        initial={{ x: 72, opacity: 0, scale: 0.99 }}
+        initial={{ x: still ? 0 : 72, opacity: 0, scale: still ? 1 : 0.99 }}
         animate={{
           x: 0,
           opacity: 1,
           scale: 1,
-          transition: { type: 'spring', stiffness: 320, damping: 30 },
+          transition: still
+            ? { duration: 0.2, ease: 'easeOut' }
+            : { type: 'spring', stiffness: 320, damping: 30 },
         }}
         exit={{
-          x: -56,
+          x: still ? 0 : -56,
           opacity: 0,
-          scale: 0.985,
+          scale: still ? 1 : 0.985,
           transition: { duration: 0.18, ease: [0.4, 0, 1, 1] },
         }}
         style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}

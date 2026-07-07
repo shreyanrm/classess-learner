@@ -96,12 +96,35 @@ export function PerformanceStars({
   reduced: boolean;
   size?: number;
 }) {
+  // the row sits in its own light — pigment is scarce, so the bloom only earns full weight when the
+  // run is flawless (gold); a lesser run gets a quieter subject-hue wash.
+  const flawless = stars === 3;
+  const bloomColor = flawless ? GOLD : hue;
   return (
     <div
       role="img"
-      style={{ display: 'flex', gap: 12, justifyContent: 'center', alignItems: 'center' }}
+      style={{
+        position: 'relative',
+        display: 'flex',
+        gap: 12,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
       aria-label={`${stars} of 3 stars earned`}
     >
+      <motion.span
+        aria-hidden
+        initial={reduced ? { opacity: flawless ? 0.5 : 0.32 } : { opacity: 0, scale: 0.7 }}
+        animate={{ opacity: flawless ? 0.5 : 0.32, scale: 1 }}
+        transition={{ duration: reduced ? 0 : 1.1, delay: reduced ? 0 : 0.6, ease: 'easeOut' }}
+        style={{
+          position: 'absolute',
+          inset: '-45% -22%',
+          borderRadius: 999,
+          background: `radial-gradient(ellipse, color-mix(in srgb, ${bloomColor} ${flawless ? 26 : 16}%, transparent) 0%, transparent 70%)`,
+          pointerEvents: 'none',
+        }}
+      />
       {[0, 1, 2].map((i) => {
         const earned = i < stars;
         const gold = earned && i === 2; // the third — the flawless mark — resolves to gold
@@ -117,6 +140,7 @@ export function PerformanceStars({
               damping: 15,
               delay: reduced ? 0 : 0.45 + i * 0.22,
             }}
+            style={{ position: 'relative' }}
           >
             <StarMark size={size} color={gold ? GOLD : hue} outline={!earned} />
           </motion.span>
@@ -151,7 +175,12 @@ export function XpTally({
     return () => controls.stop();
   }, [amount, reduced]);
   return (
-    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 8 }}>
+    <motion.div
+      initial={reduced ? false : { opacity: 0, scale: 0.92, y: 6 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+      style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 8 }}
+    >
       <span
         style={{
           fontVariantNumeric: 'tabular-nums',
@@ -165,7 +194,7 @@ export function XpTally({
         +{n}
       </span>
       <span style={{ ...whisper, letterSpacing: '0.12em' }}>xp</span>
-    </div>
+    </motion.div>
   );
 }
 
@@ -359,6 +388,19 @@ export function LevelUpMoment({ level, reduced }: { level: number; reduced: bool
             transition={{ duration: reduced ? 0 : 1.1, ease: [0.2, 0, 0, 1], delay: 0.1 }}
             style={{ transformOrigin: '74px 74px', transform: 'rotate(-90deg)' }}
           />
+          {/* the minted inner ring — a hairline that makes the badge read as struck, not drawn */}
+          <motion.circle
+            cx={74}
+            cy={74}
+            r={R - 9}
+            fill="none"
+            stroke="var(--clss-ink-100)"
+            strokeWidth={1}
+            initial={reduced ? false : { opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: reduced ? 0 : 0.9, ease: 'easeOut' }}
+            style={{ transformOrigin: '74px 74px' }}
+          />
         </svg>
         <motion.div
           initial={reduced ? false : { scale: 0.4, opacity: 0 }}
@@ -379,6 +421,30 @@ export function LevelUpMoment({ level, reduced }: { level: number; reduced: bool
         >
           {level}
         </motion.div>
+        {/* a single glint crosses the struck badge once the ring closes — light on mastery, mute-safe */}
+        {!reduced && (
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: 999,
+              overflow: 'hidden',
+              pointerEvents: 'none',
+            }}
+          >
+            <motion.div
+              initial={{ x: '-130%' }}
+              animate={{ x: '130%' }}
+              transition={{ duration: 0.9, delay: 1.25, ease: 'easeInOut' }}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: `linear-gradient(115deg, transparent 42%, color-mix(in srgb, ${hue} 32%, transparent) 50%, transparent 58%)`,
+              }}
+            />
+          </div>
+        )}
       </div>
 
       <div>

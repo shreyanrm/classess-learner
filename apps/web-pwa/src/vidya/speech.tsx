@@ -48,6 +48,9 @@ export function setMuted(muted: boolean): void {
 
 // One voice at a time — a new line stops the previous one mid-word, like a person would.
 let playing: { source: AudioBufferSourceNode } | null = null;
+// The streaming path schedules many short chunks ahead on the shared context; tracked here so a
+// new utterance (stopSpeaking) can cut them all off mid-word, exactly like the buffered `playing`.
+const streamSources = new Set<AudioBufferSourceNode>();
 // Bumped on every stop/new-utterance so a running sentence pipeline knows it was superseded.
 let speechGen = 0;
 
@@ -86,6 +89,15 @@ if (typeof window !== 'undefined') {
 
 export function stopSpeaking(): void {
   speechGen++; // abort any in-flight sentence sequence
+  // Cut off any streamed chunks scheduled ahead on the shared context.
+  for (const node of streamSources) {
+    try {
+      node.stop();
+    } catch {
+      // already ended
+    }
+  }
+  streamSources.clear();
   if (!playing) return;
   const p = playing;
   playing = null;
@@ -184,6 +196,100 @@ async function playSamples(
  * the next is already synthesizing — first audio in ~1s instead of after the whole line renders.
  * `onDone` fires once the last sentence finishes (used to gate the course's advance button).
  */
+/**
+ * Stream the whole line through the gateway's Gemini Live socket — playback starts at the first
+ * ~200 ms audio chunk instead of waiting on the full clip (~4 s sooner to first sound; verified
+ * verbatim so she reads the exact line). Resolves `true` once audio has begun (the caller is done),
+ * `false` if it can't start — the caller then falls back to the buffered path, so voice never
+ * regresses. A watchdog bails to the fallback if no audio arrives in time.
+ */
+async function speakStream(
+  text: string,
+  gen: number,
+  opts?: { onDone?: () => void },
+): Promise<boolean> {
+  if (!GATEWAY_URL || !text.trim() || isOffline()) return false;
+  const ctx = speechCtx();
+  if (!ctx) return false;
+  if (ctx.state === 'suspended') await ctx.resume().catch(() => {});
+  if (gen !== speechGen) return true; // superseded during the resume await — treat as handled
+  const url = `${GATEWAY_URL.replace(/^http/, 'ws')}/v1/voice/tts/stream`;
+  return new Promise<boolean>((resolve) => {
+    let ws: WebSocket;
+    try {
+      ws = new WebSocket(url);
+    } catch {
+      resolve(false);
+      return;
+    }
+    let playhead = 0;
+    let played = false;
+    let settled = false;
+    const finish = (ok: boolean) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(watchdog);
+      try {
+        ws.close();
+      } catch {
+        // already closing
+      }
+      resolve(ok);
+    };
+    // No first chunk within the budget → abandon to the buffered fallback.
+    const watchdog = setTimeout(() => !played && finish(false), TTS_TIMEOUT_MS);
+    ws.onopen = () => {
+      try {
+        ws.send(text.slice(0, 600));
+      } catch {
+        finish(false);
+      }
+    };
+    // Error before any audio → fall back; error after → keep what played (finish handled).
+    ws.onerror = () => finish(played);
+    ws.onclose = () => {
+      if (played && gen === speechGen) {
+        const remainMs = Math.max(0, playhead - ctx.currentTime) * 1000;
+        setTimeout(() => gen === speechGen && opts?.onDone?.(), remainMs + 40);
+      }
+      finish(played);
+    };
+    ws.onmessage = (e) => {
+      if (gen !== speechGen) {
+        finish(true);
+        return;
+      }
+      let msg: unknown;
+      try {
+        msg = JSON.parse(String(e.data));
+      } catch {
+        return;
+      }
+      const sc = (msg as { serverContent?: Record<string, unknown> }).serverContent;
+      const parts =
+        (sc?.modelTurn as { parts?: { inlineData?: { data?: string } }[] })?.parts ?? [];
+      for (const p of parts) {
+        const b64 = p?.inlineData?.data;
+        if (!b64) continue;
+        const samples = base64ToFloat32(b64);
+        if (samples.length === 0) continue;
+        const buf = ctx.createBuffer(1, samples.length, 24000);
+        buf.copyToChannel(samples, 0);
+        const node = ctx.createBufferSource();
+        node.buffer = buf;
+        node.connect(ctx.destination);
+        playhead = Math.max(playhead, ctx.currentTime + 0.05);
+        node.start(playhead);
+        playhead += buf.duration;
+        streamSources.add(node);
+        node.onended = () => streamSources.delete(node);
+        played = true;
+        clearTimeout(watchdog);
+      }
+    };
+  });
+}
+
 export async function speakLine(text: string, opts?: { onDone?: () => void }): Promise<void> {
   if (!GATEWAY_URL || isMuted() || !text.trim()) {
     opts?.onDone?.();
@@ -191,6 +297,10 @@ export async function speakLine(text: string, opts?: { onDone?: () => void }): P
   }
   stopSpeaking();
   const gen = ++speechGen;
+  // Fast path: stream the whole line (first audio ~4s sooner). If it can't start, fall through to
+  // the buffered sentence pipeline below — voice never regresses.
+  if (await speakStream(text, gen, opts)) return;
+  if (gen !== speechGen) return; // superseded while streaming attempted
   try {
     // Low-fi (reduced-motion / Data Saver / 2G): shorter TTS — voice the first couple of sentences,
     // the rest stays on screen. Grace degrades, the words don't.

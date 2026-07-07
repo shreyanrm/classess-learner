@@ -9,7 +9,7 @@
  */
 
 import { useRegisterTarget, useVidyaBus, VidyaBody } from '@classess/vidya';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from '../shell/router';
@@ -104,16 +104,24 @@ const CHIPS: { label: string; prompt: string }[] = [
  */
 function HomeSky() {
   const skyRef = useParallax<HTMLDivElement>(-PARALLAX.sky, { max: 120 });
+  const still = useReducedMotion();
+  // The parallax ref drives transform imperatively, so the breath animates opacity only — the
+  // two writers never touch the same property. A slow ~11s tide makes the personal sky feel lived-in
+  // rather than printed; motion-off holds it steady.
   const node = (
-    <div
+    <motion.div
       ref={skyRef}
       aria-hidden
+      animate={still ? undefined : { opacity: [0.82, 1, 0.82] }}
+      transition={
+        still ? undefined : { duration: 11, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }
+      }
       style={{
         position: 'fixed',
         inset: '-12% -8% 20% -8%',
         zIndex: -1,
         pointerEvents: 'none',
-        willChange: 'transform',
+        willChange: 'transform, opacity',
         background:
           'radial-gradient(58% 40% at 50% 4%, var(--clss-ultramarine-soft) 0%, transparent 72%),' +
           ' radial-gradient(46% 30% at 50% 30%, rgba(255,201,60,0.06) 0%, transparent 70%)',
@@ -125,6 +133,7 @@ function HomeSky() {
 
 export function Home() {
   const router = useRouter();
+  const still = useReducedMotion();
   const { ask, busy, mood, setMood } = useVidyaChat();
   // Pointer parallax on the hero (MOTION.md §1): desktop only, ±6px, spring-lagged.
   const tilt = usePointerTilt(6);
@@ -308,7 +317,23 @@ export function Home() {
         >
           {greetingText.slice(0, greetShown)}
           {greetShown < greetingText.length && landed && (
-            <span style={{ color: 'var(--clss-ink-faint)' }}>|</span>
+            <motion.span
+              aria-hidden
+              animate={still ? undefined : { opacity: [1, 0.15, 1] }}
+              transition={
+                still
+                  ? undefined
+                  : { duration: 1, repeat: Number.POSITIVE_INFINITY, ease: 'linear' }
+              }
+              style={{
+                display: 'inline-block',
+                marginLeft: '0.04em',
+                fontWeight: 200,
+                color: 'var(--clss-ink-faint)',
+              }}
+            >
+              |
+            </motion.span>
           )}
         </motion.h1>
         <motion.div
@@ -357,7 +382,8 @@ export function Home() {
                 transition: 'border-color 0.2s ease',
               }}
               onFocusCapture={(e) => {
-                e.currentTarget.style.borderColor = 'var(--clss-faint)';
+                e.currentTarget.style.borderColor =
+                  'color-mix(in srgb, var(--clss-ultramarine) 55%, var(--clss-card-border))';
               }}
               onBlurCapture={(e) => {
                 e.currentTarget.style.borderColor = 'var(--clss-card-border)';

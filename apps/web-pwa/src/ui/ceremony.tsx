@@ -217,6 +217,18 @@ export function Ceremony({ award, onDismiss }: { award: TrophyAward; onDismiss: 
         textAlign: 'center',
       }}
     >
+      {/* a soft vignette deepens the dim toward the edges, pulling the eye to the column of light */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'radial-gradient(ellipse at center, transparent 34%, color-mix(in srgb, var(--clss-ink-900) 26%, transparent) 100%)',
+          pointerEvents: 'none',
+        }}
+      />
+
       {/* the column of light the trophy descends through */}
       <motion.div
         aria-hidden
@@ -279,6 +291,25 @@ export function Ceremony({ award, onDismiss }: { award: TrophyAward; onDismiss: 
           engrave={award.engrave}
         />
         {!reduced && !going && <DustPuff hue={award.hue} delay={0.62} />}
+        {/* the impact ring — a single hairline shockwave expands as the trophy lands: felt weight */}
+        {!reduced && !going && (
+          <motion.div
+            aria-hidden
+            initial={{ scale: 0.2, opacity: 0 }}
+            animate={{ scale: 1.7, opacity: [0, 0.65, 0] }}
+            transition={{ duration: 0.9, delay: 0.62, ease: [0.2, 0, 0.2, 1] }}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              margin: 'auto',
+              width: 176,
+              height: 176,
+              borderRadius: 999,
+              border: `1px solid ${award.hue}`,
+              pointerEvents: 'none',
+            }}
+          />
+        )}
         {/* reduced-motion: a single quiet shimmer stands in for the whole sequence */}
         {reduced && (
           <motion.div

@@ -53,6 +53,7 @@ import { Scene } from '../ui/cast';
 import {
   AmbientWash,
   Card,
+  CountUp,
   cascade,
   FROST,
   Hairline,
@@ -183,6 +184,20 @@ const PLAN_MOTES = (() => {
     dur: `${(7 + r() * 4).toFixed(2)}s`,
   }));
 })();
+
+// The 30-day intensity ramp — tonal at rest, warming through a considered green scale. Shared by the
+// cells and the legend so a single edit moves both. (Existing hues; a heatmap scale, not a UI accent.)
+const ACTIVITY_RAMP = ['var(--clss-tonal)', '#D5EDDD', '#A9DCBB', '#6FC28D', '#3FA764'];
+
+// The heat cells settle in on a quiet stagger — presence arriving, not decoration.
+const heatCell = {
+  hidden: { opacity: 0, scale: 0.4 },
+  show: { opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 460, damping: 26 } },
+} as const;
+const heatGrid = { hidden: {}, show: { transition: { staggerChildren: 0.012 } } } as const;
+
+// Numbers that stack or sit beside a label read cleaner on fixed-width figures.
+const tnum: CSSProperties = { fontVariantNumeric: 'tabular-nums' };
 
 function Section({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -1109,6 +1124,7 @@ export function You() {
                     ...bodyLine,
                     fontSize: '0.85rem',
                     color: 'var(--clss-ink-700)',
+                    ...tnum,
                   }}
                 >
                   moving to {profile.grade} · {boardName(profile.boardId)}. your{' '}
@@ -1145,7 +1161,9 @@ export function You() {
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                  <span
+                  <CountUp
+                    value={xp}
+                    format={(n) => Math.round(n).toLocaleString('en-IN')}
                     style={{
                       fontSize: '3rem',
                       fontWeight: 650,
@@ -1153,9 +1171,7 @@ export function You() {
                       color: 'var(--clss-ink-900)',
                       lineHeight: 1,
                     }}
-                  >
-                    {xp.toLocaleString('en-IN')}
-                  </span>
+                  />
                   <span style={{ fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>xp</span>
                 </div>
                 {/* the level medallion — bigger here, with the xp-to-next spelled out */}
@@ -1172,14 +1188,14 @@ export function You() {
                     >
                       level {level.level}
                     </div>
-                    <div style={{ fontSize: '0.9rem', color: 'var(--clss-ink-700)' }}>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--clss-ink-700)', ...tnum }}>
                       {level.toNext} xp to level {level.level + 1}
                     </div>
                   </div>
                   <LevelBadge info={level} celebrate={false} size={56} />
                 </div>
               </div>
-              <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-700)' }}>
+              <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-700)', ...tnum }}>
                 Day {streakDays} of being a learner
               </div>
               <div
@@ -1212,9 +1228,12 @@ export function You() {
               >
                 ACTIVITY · 30 DAYS
               </div>
-              <div
+              <motion.div
                 role="img"
                 aria-label="this month's activity intensity"
+                variants={heatGrid}
+                initial="hidden"
+                animate="show"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(10, 1fr)',
@@ -1236,15 +1255,16 @@ export function You() {
                     n = 0;
                   }
                   if (n === 0 && marks.includes(d)) n = 1;
-                  const RAMP = ['var(--clss-tonal)', '#D5EDDD', '#A9DCBB', '#6FC28D', '#3FA764'];
                   const fill =
-                    RAMP[Math.min(4, n === 0 ? 0 : n <= 1 ? 1 : n <= 3 ? 2 : n <= 6 ? 3 : 4)];
+                    ACTIVITY_RAMP[
+                      Math.min(4, n === 0 ? 0 : n <= 1 ? 1 : n <= 3 ? 2 : n <= 6 ? 3 : 4)
+                    ];
                   return (
                     <motion.span
                       key={d}
                       title={`${d} — ${n} moments`}
+                      variants={heatCell}
                       whileHover={{ scale: 1.18 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 22 }}
                       style={{
                         aspectRatio: '1',
                         borderRadius: 4,
@@ -1254,6 +1274,26 @@ export function You() {
                     />
                   );
                 })}
+              </motion.div>
+              {/* the quiet key — reads left-to-warm, GitHub's grammar, our palette */}
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}
+                aria-hidden
+              >
+                <span style={{ ...whisper, fontSize: '0.68rem' }}>less</span>
+                {ACTIVITY_RAMP.map((c) => (
+                  <span
+                    key={c}
+                    style={{
+                      width: 9,
+                      height: 9,
+                      borderRadius: 2,
+                      background: c,
+                      display: 'block',
+                    }}
+                  />
+                ))}
+                <span style={{ ...whisper, fontSize: '0.68rem' }}>more</span>
               </div>
               <div style={whisper}>Rest is part of learning — quiet days are allowed</div>
             </div>
@@ -1412,11 +1452,12 @@ export function You() {
                   letterSpacing: '-0.01em',
                   color: 'var(--clss-ink-900)',
                   lineHeight: 1.4,
+                  ...tnum,
                 }}
               >
                 {profile.name} showed up {activeDays} of 7 days this week
               </div>
-              <div style={{ fontSize: '0.9rem', color: 'var(--clss-ink-700)' }}>
+              <div style={{ fontSize: '0.9rem', color: 'var(--clss-ink-700)', ...tnum }}>
                 {mastered.length} {mastered.length === 1 ? 'topic' : 'topics'} mastered ·{' '}
                 {xp.toLocaleString('en-IN')} xp earned
               </div>

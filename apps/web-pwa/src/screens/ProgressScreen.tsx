@@ -243,12 +243,18 @@ export function ProgressScreen() {
                 fontWeight: 650,
                 letterSpacing: '-0.03em',
                 color: 'var(--clss-ink)',
+                fontVariantNumeric: 'tabular-nums',
               }}
             >
               <CountUp value={mastered} /> of {STARS.length} concepts are yours
             </div>
             <div
-              style={{ marginTop: 5, fontSize: fluidType.small, color: 'var(--clss-ink-faint)' }}
+              style={{
+                marginTop: 5,
+                fontSize: fluidType.small,
+                color: 'var(--clss-ink-faint)',
+                fontVariantNumeric: 'tabular-nums',
+              }}
             >
               Day <CountUp value={streakDays} /> of being a learner · tap a star, or scroll for your
               report
@@ -267,6 +273,12 @@ export function ProgressScreen() {
             minHeight: 340,
             position: 'relative',
             margin: '18px clamp(14px, 3vw, 44px) clamp(14px, 2.5vh, 26px)',
+            // the sky is composed as one deliberate art panel — a hairline frames it, the wash
+            // and dust stay contained, so the twin reads as a hero object, not a loose background
+            border: '0.5px solid var(--clss-hairline-on-paper)',
+            borderRadius: 3,
+            overflow: 'hidden',
+            isolation: 'isolate',
           }}
         >
           <AmbientWash
@@ -313,7 +325,7 @@ export function ProgressScreen() {
             >
               {busy ? 'Vidya is thinking…' : ''}
             </div>
-            <div style={{ ...FROST, display: 'flex' }}>
+            <div className="twin-ask-row" style={{ ...FROST, display: 'flex' }}>
               <input
                 ref={askRef}
                 className="twin-ask-input"
@@ -336,7 +348,7 @@ export function ProgressScreen() {
           </form>
           <style>
             {
-              '.twin-ask-input::placeholder{color:var(--clss-ink-faint)}.twin-step:hover{background:#F1F1F5}'
+              '.twin-ask-input::placeholder{color:var(--clss-ink-faint)}.twin-step:hover{background:var(--clss-tonal)}.twin-ask-row{transition:border-color .28s ease}.twin-ask-row:focus-within{border-color:var(--clss-ultramarine-ring)}'
             }
           </style>
         </motion.div>

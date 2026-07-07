@@ -713,30 +713,50 @@ export function AdventureRoadmap({
                   </g>
                 );
               })}
-              {/* THE ROAD — carved: casing, bed, then the walked cobbles */}
-              <path
+              {/* THE ROAD — carved: it unfurls toward the horizon as the world reveals, casing
+                  leading the bed, then the walked cobbles light in behind it. */}
+              <motion.path
                 d={segsToPath(roadSegs)}
                 fill="none"
                 stroke={regions[0]?.pal.roadEdge ?? '#C6A671'}
                 strokeWidth={30}
                 strokeLinecap="round"
                 opacity={0.95}
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: revealed ? 1 : 0 }}
+                transition={{ duration: reduced ? 0 : 1.6, ease: [0.4, 0, 0.2, 1] }}
               />
-              <path
+              <motion.path
                 d={segsToPath(roadSegs)}
                 fill="none"
                 stroke={regions[0]?.pal.road ?? '#E7D6B2'}
                 strokeWidth={22}
                 strokeLinecap="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: revealed ? 1 : 0 }}
+                transition={{
+                  duration: reduced ? 0 : 1.6,
+                  ease: [0.4, 0, 0.2, 1],
+                  delay: reduced ? 0 : 0.12,
+                }}
               />
-              {cobbles.map((c) => (
-                <circle
+              {cobbles.map((c, i) => (
+                <motion.circle
                   key={c.key}
                   cx={c.p.x}
                   cy={c.p.y}
                   r={c.lit ? 4.6 : 3.6}
                   fill={c.lit ? c.hue : 'rgba(20,22,28,0.22)'}
-                  opacity={c.lit ? 0.95 : 0.75}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={
+                    revealed ? { opacity: c.lit ? 0.95 : 0.75, scale: 1 } : { opacity: 0, scale: 0 }
+                  }
+                  transition={{
+                    duration: reduced ? 0 : 0.42,
+                    delay: reduced ? 0 : Math.min(0.3 + i * 0.008, 1.9),
+                    ease: 'easeOut',
+                  }}
+                  style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
                 />
               ))}
               {cps[currentIdx] && (
@@ -806,6 +826,9 @@ export function AdventureRoadmap({
             {cps.map((c) => {
               const size = c.state === 'current' ? CUR : CHECK;
               const hue = c.tone?.hue ?? '#1F35E0';
+              // Checkpoints settle onto the road top-to-bottom as the world reveals — a staggered
+              // arrival that reads as the path being populated, not a page of dots painting in at once.
+              const settle = Math.min(0.6 + (c.index - 1) * 0.05, 1.8);
               return (
                 <motion.button
                   key={c.topic.id}
@@ -818,6 +841,25 @@ export function AdventureRoadmap({
                         ? 'in progress, you are here'
                         : 'not started'
                   }`}
+                  initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.6 }}
+                  animate={
+                    revealed
+                      ? reduced
+                        ? { opacity: 1, transition: { duration: 0.2 } }
+                        : {
+                            opacity: 1,
+                            scale: 1,
+                            transition: {
+                              type: 'spring',
+                              stiffness: 260,
+                              damping: 20,
+                              delay: settle,
+                            },
+                          }
+                      : reduced
+                        ? { opacity: 0 }
+                        : { opacity: 0, scale: 0.6 }
+                  }
                   whileHover={{ y: -4, scale: 1.05 }}
                   whileTap={{ scale: 0.93 }}
                   transition={{ type: 'spring', stiffness: 340, damping: 20 }}
@@ -835,23 +877,27 @@ export function AdventureRoadmap({
                     fontFamily: 'inherit',
                   }}
                 >
-                  {c.state === 'current' && !reduced && (
-                    <motion.span
-                      aria-hidden
-                      animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
-                      transition={{
-                        duration: 2.1,
-                        repeat: Number.POSITIVE_INFINITY,
-                        ease: 'easeOut',
-                      }}
-                      style={{
-                        position: 'absolute',
-                        inset: -8,
-                        borderRadius: '50%',
-                        border: `2px solid ${hue}`,
-                      }}
-                    />
-                  )}
+                  {c.state === 'current' &&
+                    !reduced &&
+                    [0, 1].map((r) => (
+                      <motion.span
+                        key={`beacon-${r}`}
+                        aria-hidden
+                        animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
+                        transition={{
+                          duration: 2.1,
+                          repeat: Number.POSITIVE_INFINITY,
+                          ease: 'easeOut',
+                          delay: r * 1.05,
+                        }}
+                        style={{
+                          position: 'absolute',
+                          inset: -8,
+                          borderRadius: '50%',
+                          border: `2px solid ${hue}`,
+                        }}
+                      />
+                    ))}
                   <span
                     aria-hidden
                     style={{
@@ -874,9 +920,15 @@ export function AdventureRoadmap({
                           : '0 6px 16px -8px rgba(20,22,28,0.45)',
                       display: 'grid',
                       placeItems: 'center',
-                      color: c.state === 'done' ? '#fff' : 'var(--clss-ink-700)',
+                      color:
+                        c.state === 'done'
+                          ? '#fff'
+                          : c.state === 'current'
+                            ? 'var(--clss-ink-700)'
+                            : 'var(--clss-ink-500)',
                       fontWeight: 700,
                       fontSize: c.state === 'current' ? '1.05rem' : '0.92rem',
+                      fontVariantNumeric: 'tabular-nums',
                     }}
                   >
                     {c.state === 'done' ? (
@@ -906,7 +958,7 @@ export function AdventureRoadmap({
                         transform: 'translateX(-50%)',
                       }}
                     >
-                      <Avatar size={40} />
+                      <Avatar size={40} animate={!reduced} />
                     </span>
                   )}
                   {c.state !== 'locked' && (
@@ -1000,9 +1052,45 @@ export function AdventureRoadmap({
           >
             {title ?? 'the expedition'}
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--clss-ink-500)', fontWeight: 550 }}>
+          <div
+            style={{
+              fontSize: '0.75rem',
+              color: 'var(--clss-ink-500)',
+              fontWeight: 550,
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
             {doneCount} of {cps.length} checkpoints ·{' '}
             {intent === 'practice' ? 'practice trail' : 'learning trail'}
+          </div>
+          {/* the walked path, distilled: a hairline that fills to mastery pigment as checkpoints clear */}
+          <div
+            style={{
+              marginTop: 7,
+              height: 3,
+              width: '100%',
+              minWidth: 140,
+              borderRadius: 2,
+              background: 'var(--clss-tonal)',
+              overflow: 'hidden',
+            }}
+          >
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: cps.length ? doneCount / cps.length : 0 }}
+              transition={{
+                duration: reduced ? 0 : 0.9,
+                ease: [0.4, 0, 0.2, 1],
+                delay: reduced ? 0 : 0.4,
+              }}
+              style={{
+                height: '100%',
+                width: '100%',
+                borderRadius: 2,
+                transformOrigin: 'left',
+                background: 'var(--clss-ultramarine)',
+              }}
+            />
           </div>
         </div>
       </div>
