@@ -1,0 +1,6 @@
+- generic [ref=f30e4]:
+  - button "Unmute Vidya" [pressed] [ref=f30e6] [cursor=pointer]:
+    - img [ref=f30e7]
+  - button "Vidya" [ref=f30e11] [cursor=pointer]:
+    - img [ref=f30e15]
+  - button "Skip for now" [ref=f30e41] [cursor=pointer]

@@ -93,7 +93,16 @@ def _passes(verdict: dict[str, Any] | None) -> bool:
 
 
 def _score_of(verdict: dict[str, Any] | None) -> float:
+    """The raw judge score (for logs and provenance). -1 when the judge was unreachable."""
     return -1.0 if verdict is None else verdict["score"]
+
+
+def _rank(verdict: dict[str, Any] | None) -> float:
+    """Best-of comparison key: a CRITICAL (factually wrong / broken) artifact ranks below any
+    clean one whatever its raw score, so best-of never keeps a wrong artifact over a sound one."""
+    if verdict is None:
+        return -1.0
+    return verdict["score"] - 1000.0 if verdict["critical"] else verdict["score"]
 
 
 def validate_and_promote(
@@ -135,7 +144,7 @@ def validate_and_promote(
         # a seeded escalation is the honest floor, not a real regeneration — never best-of a seed
         if alt is not None and not seeded:
             alt_verdict = _judge(judge_model, modality, concept, alt)
-            if _score_of(alt_verdict) > _score_of(verdict):
+            if _rank(alt_verdict) > _rank(verdict):
                 best_artifact, best_model, best_verdict = alt, alt_model, alt_verdict
                 logger.info(
                     "validate: best-of chose the escalated artifact (score=%s)",
@@ -177,13 +186,13 @@ if __name__ == "__main__":  # runnable self-check — no framework, no network
         "artifact": {"cards": ["base"]},
         "provenance": {"engine": "engine.compose", "model": "anthropic/x", "prompt_version": "v"},
     }
-    _saved: dict[str, Any] = {}
-    store.save = lambda c, m, d, r, s: _saved.update(r)  # type: ignore[assignment]
+    store.save = lambda c, m, d, r, s: None  # type: ignore[assignment]
 
-    # fail-then-escalate: base scores low, alt scores high → best-of promotes the alt on GPT-5.5
-    import classess_gateway.plexus.validate as _self
-
-    _self._judge = lambda jm, mo, co, art: {  # type: ignore[assignment]
+    # fail-then-escalate: base scores low, alt scores high → best-of promotes the alt on GPT-5.5.
+    # Run as `python -m ...validate`: this module IS __main__, so rebinding the global `_judge`
+    # here is what validate_and_promote (also in __main__) resolves. _generate_live is imported
+    # fresh from the real engines module, so patch it there.
+    _judge = lambda jm, mo, co, art: {  # type: ignore[assignment] # noqa: E731
         "score": 90.0 if art == {"cards": ["alt"]} else 40.0,
         "critical": False,
         "weak": [],

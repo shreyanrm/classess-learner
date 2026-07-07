@@ -1,291 +1,311 @@
 'use client';
 
 /**
- * Practice — one intention (DESIGN.md §8), second cut. Every door is a mini-poster: a scene
- * illustration on its own hue-washed stage — building blocks for the sandbox, the forgetting
- * curve for review — then the subject grid routed with practice intent. Memory fades on a
- * real curve; the copy never guilts. End-to-end layout, cascade entrance.
+ * Practice, reorganized (DESIGN.md §8, Fable's forge). One intention: sharpen what you already
+ * hold. The page reads top-down as a workshop — what's fading first (FSRS due), the bosses you can
+ * re-challenge, the sandboxes keyed to your own chapters, and then the forge, where you bind your
+ * own workbook from what you've touched and keep it on a shelf. Vidya watches at code level
+ * throughout; the copy never guilts, memory fades on a real curve.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
-import { motion } from 'framer-motion';
-import { type ReactNode, useEffect, useId, useState } from 'react';
+import { useVidyaBus } from '@classess/vidya';
+import { AnimatePresence, motion } from 'framer-motion';
+import { type ReactNode, useEffect, useState } from 'react';
+import { chaptersBySubject, subjects, topicById } from '../data/catalog';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
+import { hueForTopic } from '../ui/hues';
 import { ChevronIcon } from '../ui/icons';
 import { AmbientWash, cascade, rise } from '../ui/kit';
-import { GridHero, SubjectGrid, Whisper } from './Learn';
+import { rgba } from './course/shared';
+import { Whisper } from './Learn';
+import { ForgeBuilder } from './practice/ForgeBuilder';
+import { ForgeRun } from './practice/ForgeRun';
+import { bestScore, type ForgedWorkbook, removeForge, useForged } from './practice/forge-store';
+import { MIX_LABEL, SIZE_LABEL } from './practice/pools';
 
-// The practice door's atmospheric layer (§1 ambient depth) — the same quiet brand dawn as learn,
-// so the two doors read as one calm world. Token-driven; both themes.
 const PRACTICE_WASH =
   'radial-gradient(64% 40% at 50% -6%, var(--clss-ultramarine-soft) 0%, transparent 68%),' +
   ' radial-gradient(48% 26% at 50% 30%, rgba(255,201,60,0.045) 0%, transparent 72%)';
 
-const INK = 'var(--clss-ink-900)';
-const GOLD = '#FFC93C';
-
-/** The open canvas — chunky blocks mid-build, a golden ball bouncing, a play arc. */
-function SandboxScene() {
-  const uid = useId();
+function SectionHead({ title, line }: { title: string; line?: string }) {
   return (
-    <svg
-      viewBox="0 0 200 150"
-      preserveAspectRatio="xMidYMid slice"
-      role="presentation"
-      aria-hidden
-      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-    >
-      <defs>
-        <linearGradient id={`${uid}-b`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#4257F0" />
-          <stop offset="100%" stopColor="var(--clss-ultramarine)" />
-        </linearGradient>
-      </defs>
-      {/* the ground to build on */}
-      <line
-        x1={20}
-        y1={118}
-        x2={180}
-        y2={118}
-        stroke={INK}
-        strokeWidth={2.4}
-        strokeLinecap="round"
-      />
-      {/* a dashed arc of play */}
-      <path
-        d="M38 46 Q 70 14 120 32"
-        fill="none"
-        stroke="var(--clss-ultramarine)"
-        strokeOpacity={0.5}
-        strokeWidth={1.8}
-        strokeDasharray="1 7"
-        strokeLinecap="round"
-      />
-      {/* the build so far */}
-      <rect
-        x={56}
-        y={82}
-        width={42}
-        height={36}
-        rx={5}
-        fill={`url(#${uid}-b)`}
-        stroke={INK}
-        strokeWidth={2.4}
-      />
-      <rect
-        x={68}
-        y={46}
-        width={34}
-        height={30}
-        rx={5}
-        fill="#2BC4D3"
-        stroke={INK}
-        strokeWidth={2.4}
-        transform="rotate(-8 85 61)"
-      />
-      {/* the golden ball, mid-bounce */}
-      <motion.circle
-        cx={136}
-        cy={106}
-        r={11}
-        fill={GOLD}
-        stroke={INK}
-        strokeWidth={2.4}
-        animate={{ y: [0, -14, 0] }}
-        transition={{ duration: 2.4, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
-      />
-      {/* a magenta spark of an idea */}
-      <path d="M160 44 v16 M152 52 h16" stroke="#CC1E7A" strokeWidth={2.2} strokeLinecap="round" />
-    </svg>
-  );
-}
-
-/** The forgetting curve — ink falling on a real curve, one golden point lifted back. */
-function CurveScene() {
-  const uid = useId();
-  return (
-    <svg
-      viewBox="0 0 200 150"
-      preserveAspectRatio="xMidYMid slice"
-      role="presentation"
-      aria-hidden
-      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-    >
-      <defs>
-        <linearGradient id={`${uid}-f`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#CC1E7A" stopOpacity={0.22} />
-          <stop offset="100%" stopColor="#CC1E7A" stopOpacity={0} />
-        </linearGradient>
-      </defs>
-      {/* the axes, whispered */}
-      <path
-        d="M28 24 V 122 H 176"
-        fill="none"
-        stroke={INK}
-        strokeOpacity={0.22}
-        strokeWidth={1.6}
-        strokeLinecap="round"
-      />
-      {/* what fades, tinted */}
-      <path
-        d="M28 36 C 60 42 74 84 108 100 C 132 110 158 114 176 116 L 176 122 L 28 122 Z"
-        fill={`url(#${uid}-f)`}
-      />
-      {/* the curve itself */}
-      <path
-        d="M28 36 C 60 42 74 84 108 100 C 132 110 158 114 176 116"
-        fill="none"
-        stroke={INK}
-        strokeWidth={2.8}
-        strokeLinecap="round"
-      />
-      <circle cx={28} cy={36} r={4.4} fill="#CC1E7A" />
-      {/* the rebound — review lifts it back */}
-      <path
-        d="M108 100 C 124 74 138 58 154 48"
-        fill="none"
-        stroke="#CC1E7A"
-        strokeWidth={2}
-        strokeDasharray="2 7"
-        strokeLinecap="round"
-      />
-      <motion.g
-        animate={{ y: [0, -6, 0] }}
-        transition={{ duration: 3.2, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+    <div style={{ marginBottom: 18 }}>
+      <div
+        style={{
+          fontSize: '1.15rem',
+          fontWeight: 600,
+          letterSpacing: '-0.02em',
+          color: 'var(--clss-ink-900)',
+        }}
       >
-        <circle cx={154} cy={48} r={7.5} fill={GOLD} stroke={INK} strokeWidth={2.2} />
-      </motion.g>
-    </svg>
+        {title}
+      </div>
+      {line && (
+        <div style={{ marginTop: 3, fontSize: '0.88rem', color: 'var(--clss-ink-500)' }}>
+          {line}
+        </div>
+      )}
+    </div>
   );
 }
 
-/** A practice door — a poster row: scene on its hue-washed stage, prompt large, support quiet. */
-function Door({
-  title,
-  line,
-  hint,
-  scene,
-  wash,
-  onOpen,
-  targetRef,
-}: {
-  title: string;
-  line: string;
-  hint?: ReactNode;
-  scene: ReactNode;
-  wash: string;
-  onOpen: () => void;
-  targetRef?: React.RefObject<HTMLButtonElement | null>;
-}) {
-  const [hover, setHover] = useState(false);
+/** A horizontal rail — bosses and sandboxes scroll sideways, one intention each. */
+function Rail({ children }: { children: ReactNode }) {
   return (
-    <motion.button
-      ref={targetRef}
-      type="button"
-      onClick={onOpen}
-      onHoverStart={() => setHover(true)}
-      onHoverEnd={() => setHover(false)}
-      onFocus={() => setHover(true)}
-      onBlur={() => setHover(false)}
-      whileHover={{ y: -3 }}
-      whileTap={{ scale: 0.99 }}
-      transition={{ type: 'spring', stiffness: 360, damping: 26 }}
+    <div
       style={{
-        width: '100%',
-        textAlign: 'left',
-        background: 'var(--clss-card)',
-        border: `1px solid ${hover ? 'var(--clss-faint)' : 'var(--clss-card-border)'}`,
-        transition: 'border-color 0.25s ease',
-        borderRadius: 3,
-        padding: 0,
-        overflow: 'hidden',
-        cursor: 'pointer',
-        fontFamily: 'inherit',
         display: 'flex',
-        alignItems: 'stretch',
+        gap: 12,
+        overflowX: 'auto',
+        paddingBottom: 6,
+        scrollbarWidth: 'thin',
       }}
     >
-      <motion.span
-        animate={hover ? { scale: 1.04 } : { scale: 1 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+      {children}
+    </div>
+  );
+}
+
+function RailCard({
+  eyebrow,
+  title,
+  hue,
+  onClick,
+}: {
+  eyebrow: string;
+  title: string;
+  hue: string;
+  onClick: () => void;
+}) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      whileHover={{ y: -3 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: 'spring', stiffness: 360, damping: 26 }}
+      style={{
+        flex: '0 0 auto',
+        width: 190,
+        textAlign: 'left',
+        padding: '16px 16px 18px',
+        borderRadius: 3,
+        cursor: 'pointer',
+        fontFamily: 'inherit',
+        background: 'var(--clss-card)',
+        border: '0.5px solid var(--clss-card-border)',
+        borderTop: `3px solid ${hue}`,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+        minHeight: 108,
+        justifyContent: 'space-between',
+      }}
+    >
+      <div
         style={{
-          flexShrink: 0,
-          width: 'clamp(140px, 24vw, 220px)',
-          minHeight: 140,
-          background: wash,
-          position: 'relative',
-          overflow: 'hidden',
-          display: 'block',
+          fontSize: '0.72rem',
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          color: hue,
+          fontWeight: 600,
         }}
       >
-        {scene}
-      </motion.span>
-      <span
+        {eyebrow}
+      </div>
+      <div
         style={{
-          flex: 1,
-          minWidth: 0,
-          padding: '22px 24px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 16,
+          fontSize: '0.98rem',
+          fontWeight: 560,
+          color: 'var(--clss-ink-900)',
+          lineHeight: 1.3,
         }}
       >
-        <span style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <span
-            style={{
-              fontSize: '1.3rem',
-              fontWeight: 600,
-              letterSpacing: '-0.02em',
-              color: 'var(--clss-ink-900)',
-            }}
-          >
-            {title}
-          </span>
-          <span style={{ fontSize: '0.88rem', color: 'var(--clss-ink-500)', lineHeight: 1.55 }}>
-            {line}
-          </span>
-        </span>
-        <span
-          style={{
-            color: hover ? 'var(--clss-ink-500)' : 'var(--clss-ink-300)',
-            fontSize: '0.9rem',
-            flexShrink: 0,
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            transition: 'color 0.25s ease',
-          }}
-        >
-          {hint}
-          <ChevronIcon size={14} />
-        </span>
-      </span>
+        {title}
+      </div>
     </motion.button>
   );
 }
+
+// --- The forged-workbook shelf --------------------------------------------------------------------
+
+function ShelfCard({ w, onRun }: { w: ForgedWorkbook; onRun: () => void }) {
+  const hue = hueForTopic(w.picks[0] ?? '');
+  const best = bestScore(w);
+  const building = w.status === 'building';
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 26 }}
+      style={{
+        border: '0.5px solid var(--clss-card-border)',
+        borderLeft: `3px solid ${hue}`,
+        borderRadius: 3,
+        background: 'var(--clss-card)',
+        padding: '16px 18px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          gap: 12,
+          alignItems: 'flex-start',
+        }}
+      >
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontSize: '1.02rem', fontWeight: 600, color: 'var(--clss-ink-900)' }}>
+            {w.title.toLowerCase()}
+          </div>
+          <div style={{ marginTop: 3, fontSize: '0.82rem', color: 'var(--clss-ink-500)' }}>
+            {w.total || w.size} items · {SIZE_LABEL[w.size]} · {MIX_LABEL[w.mix]}
+          </div>
+        </div>
+        {best && (
+          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+            <div
+              style={{
+                fontSize: '1.1rem',
+                fontWeight: 650,
+                color: best.correct / best.total >= 0.8 ? 'var(--clss-feedback-correct)' : hue,
+                fontVariantNumeric: 'tabular-nums',
+              }}
+            >
+              {best.correct}/{best.total}
+            </div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--clss-ink-300)' }}>best</div>
+          </div>
+        )}
+      </div>
+
+      {w.attempts.length > 1 && (
+        <div style={{ display: 'flex', gap: 4, alignItems: 'flex-end', height: 22 }}>
+          {w.attempts.slice(-8).map((a, i) => (
+            <div
+              // biome-ignore lint/suspicious/noArrayIndexKey: attempt bars are positional history
+              key={i}
+              title={`${a.correct}/${a.total}`}
+              style={{
+                width: 6,
+                height: `${Math.max(0.12, a.correct / a.total) * 22}px`,
+                background: rgba(hue, 0.5),
+                borderRadius: 1,
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+        <motion.button
+          type="button"
+          disabled={building}
+          onClick={onRun}
+          whileTap={building ? undefined : { scale: 0.98 }}
+          style={{
+            flex: 1,
+            padding: '10px 14px',
+            borderRadius: 3,
+            border: 'none',
+            cursor: building ? 'default' : 'pointer',
+            fontFamily: 'inherit',
+            fontSize: '0.9rem',
+            fontWeight: 600,
+            color: building ? 'var(--clss-ink-500)' : 'var(--clss-on-ink)',
+            background: building ? 'var(--clss-tonal)' : 'var(--clss-ultramarine)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+          }}
+        >
+          {building ? (
+            <>
+              <motion.span
+                aria-hidden
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1.1, repeat: Number.POSITIVE_INFINITY, ease: 'linear' }}
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: 999,
+                  border: '2px solid var(--clss-ink-300)',
+                  borderTopColor: 'transparent',
+                }}
+              />
+              binding…
+            </>
+          ) : (
+            <>
+              {w.attempts.length > 0 ? 'forge it again' : 'attempt'}
+              <ChevronIcon size={13} />
+            </>
+          )}
+        </motion.button>
+        {!building && (
+          <button
+            type="button"
+            onClick={() => removeForge(w.id)}
+            aria-label="remove this workbook"
+            style={{
+              padding: '9px 12px',
+              borderRadius: 3,
+              border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+              background: 'transparent',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              fontSize: '0.82rem',
+              color: 'var(--clss-ink-500)',
+            }}
+          >
+            remove
+          </button>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+// --- The screen -----------------------------------------------------------------------------------
 
 export function Practice() {
   const router = useRouter();
   const { publishPage } = useVidyaBus();
   const { completed } = useProgress();
-  const sandboxRef = useRegisterTarget<HTMLButtonElement>('practice-sandbox', {
-    kind: 'door',
-    label: 'the free play sandbox door',
-  });
-  const reviewRef = useRegisterTarget<HTMLButtonElement>('practice-review', {
-    kind: 'door',
-    label: 'the due-for-review door — spaced retrieval against the real forgetting curve',
-  });
+  const forged = useForged();
+  const [view, setView] = useState<'home' | 'builder'>('home');
+  const [runId, setRunId] = useState<string | null>(null);
 
-  // Honest FSRS framing: only concepts actually learned can fade.
-  const due = completed.size > 0 ? Math.min(completed.size, 3) : 0;
-  const reviewTopicId = [...completed][0];
+  // due: only what's genuinely been learned can fade (honest FSRS framing)
+  const completedList = [...completed];
+  const due = completedList.length > 0 ? Math.min(completedList.length, 3) : 0;
+  const reviewTopicId = completedList[0];
+
+  // the learner's own chapters — a sandbox door per chapter they've stepped into their subjects
+  const sandboxChapters = subjects.flatMap((s) =>
+    (chaptersBySubject[s.id] ?? []).slice(0, 3).map((c) => ({
+      subject: s.name,
+      chapter: c.name,
+      topicId: c.topics[0]?.id ?? '',
+    })),
+  );
 
   useEffect(() => {
-    publishPage({ route: 'practice', state: { title: 'practice', intent: 'practice', due } });
-  }, [publishPage, due]);
+    publishPage({
+      route: 'practice',
+      state: { title: 'practice', intent: 'practice', due, forged: forged.length },
+    });
+  }, [publishPage, due, forged.length]);
+
+  if (runId) {
+    return <ForgeRun id={runId} onExit={() => setRunId(null)} />;
+  }
 
   return (
     <motion.div
@@ -300,7 +320,11 @@ export function Practice() {
       }}
     >
       <AmbientWash gradient={PRACTICE_WASH} />
-      <Whisper onClick={() => router.navigate({ name: 'home' })}>Home</Whisper>
+      <Whisper
+        onClick={() => (view === 'builder' ? setView('home') : router.navigate({ name: 'home' }))}
+      >
+        {view === 'builder' ? 'Practice' : 'Home'}
+      </Whisper>
 
       <motion.div variants={rise}>
         <h1
@@ -312,56 +336,192 @@ export function Practice() {
             color: 'var(--clss-ink-900)',
           }}
         >
-          Practice
+          {view === 'builder' ? 'The forge' : 'Practice'}
         </h1>
         <div style={{ marginTop: 6, fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>
-          Memory fades on a real curve — practice keeps it honest
+          {view === 'builder'
+            ? "bind your own workbook from what you've already touched"
+            : 'sharpen what you hold — memory fades on a real curve'}
         </div>
       </motion.div>
 
-      <div style={{ marginTop: 52, display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <motion.div variants={rise}>
-          <Door
-            targetRef={sandboxRef}
-            title="Free play sandbox"
-            line="An open canvas on any topic — no task, Vidya watching"
-            scene={<SandboxScene />}
-            wash="rgba(31,53,224,0.05)"
-            onOpen={() => router.navigate({ name: 'sandbox' })}
-          />
-        </motion.div>
-        <motion.div variants={rise}>
-          {due > 0 ? (
-            <Door
-              targetRef={reviewRef}
-              title="Due for review"
-              line={
-                due === 1
-                  ? 'One concept is fading — refresh it'
-                  : `${due} concepts are fading — refresh them`
-              }
-              scene={<CurveScene />}
-              wash="rgba(204,30,122,0.05)"
-              onOpen={() => router.navigate({ name: 'sandbox', topicId: reviewTopicId })}
-            />
-          ) : (
-            <Door
-              targetRef={reviewRef}
-              title="Due for review"
-              line="Nothing is fading yet — learn something first"
-              hint="Learn"
-              scene={<CurveScene />}
-              wash="rgba(204,30,122,0.05)"
-              onOpen={() => router.navigate({ name: 'learn' })}
-            />
-          )}
-        </motion.div>
-      </div>
+      <AnimatePresence mode="wait">
+        {view === 'builder' ? (
+          <motion.div
+            key="builder"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.28, ease: [0.2, 0, 0, 1] }}
+            style={{ marginTop: 40 }}
+          >
+            <ForgeBuilder onForged={() => setView('home')} />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="home"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            style={{ marginTop: 44, display: 'flex', flexDirection: 'column', gap: 52 }}
+          >
+            {/* 1 — due for review, up top */}
+            <motion.section variants={rise}>
+              <SectionHead
+                title="Due for review"
+                line={
+                  due === 0
+                    ? 'nothing is fading yet — learn something first'
+                    : due === 1
+                      ? 'one concept is starting to fade'
+                      : `${due} concepts are starting to fade`
+                }
+              />
+              <motion.button
+                type="button"
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.99 }}
+                transition={{ type: 'spring', stiffness: 360, damping: 26 }}
+                onClick={() =>
+                  due > 0
+                    ? router.navigate({ name: 'sandbox', topicId: reviewTopicId })
+                    : router.navigate({ name: 'learn' })
+                }
+                style={{
+                  width: '100%',
+                  textAlign: 'left',
+                  padding: '18px 20px',
+                  borderRadius: 3,
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  background: 'var(--clss-card)',
+                  border: '0.5px solid var(--clss-card-border)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 14,
+                }}
+              >
+                <span style={{ fontSize: '1rem', color: 'var(--clss-ink-900)', fontWeight: 520 }}>
+                  {due > 0 ? 'refresh them before they slip' : 'go learn something to review later'}
+                </span>
+                <span style={{ color: 'var(--clss-ink-300)', display: 'inline-flex' }}>
+                  <ChevronIcon size={15} />
+                </span>
+              </motion.button>
+            </motion.section>
 
-      <motion.div variants={rise} style={{ marginTop: 76, marginBottom: 20 }}>
-        <GridHero prompt="What needs sharpening?" support="The same worlds, practice intent" />
-      </motion.div>
-      <SubjectGrid intent="practice" />
+            {/* 2 — boss workbooks you can re-challenge */}
+            {completedList.length > 0 && (
+              <motion.section variants={rise}>
+                <SectionHead
+                  title="Boss workbooks"
+                  line="the bosses you've beaten — re-run any to prove it still holds"
+                />
+                <Rail>
+                  {completedList.map((id) => {
+                    const topic = topicById(id);
+                    return (
+                      <RailCard
+                        key={id}
+                        eyebrow="re-challenge"
+                        title={topic?.name ?? 'a topic you mastered'}
+                        hue={hueForTopic(id)}
+                        onClick={() => router.navigate({ name: 'course', topicId: id })}
+                      />
+                    );
+                  })}
+                </Rail>
+              </motion.section>
+            )}
+
+            {/* 3 — sandboxes keyed to your chapters */}
+            <motion.section variants={rise}>
+              <SectionHead
+                title="Sandboxes"
+                line="an open canvas on your own chapters — no task, Vidya watching"
+              />
+              <Rail>
+                {sandboxChapters.map((s) => (
+                  <RailCard
+                    key={`${s.subject}-${s.chapter}`}
+                    eyebrow={s.subject.toLowerCase()}
+                    title={s.chapter}
+                    hue={hueForTopic(s.topicId)}
+                    onClick={() => router.navigate({ name: 'sandbox', topicId: s.topicId })}
+                  />
+                ))}
+              </Rail>
+            </motion.section>
+
+            {/* 4 — forge your own */}
+            <motion.section variants={rise}>
+              <SectionHead
+                title="Forge your own"
+                line="bind a custom workbook from the chapters you've touched"
+              />
+              <motion.button
+                type="button"
+                whileHover={{ y: -3 }}
+                whileTap={{ scale: 0.99 }}
+                transition={{ type: 'spring', stiffness: 360, damping: 26 }}
+                onClick={() => setView('builder')}
+                style={{
+                  width: '100%',
+                  textAlign: 'left',
+                  padding: '22px 24px',
+                  borderRadius: 3,
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  color: 'var(--clss-on-ink)',
+                  background: 'linear-gradient(120deg, var(--clss-ultramarine) 0%, #3A4EF0 100%)',
+                  border: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 16,
+                }}
+              >
+                <span>
+                  <span style={{ fontSize: '1.2rem', fontWeight: 600, letterSpacing: '-0.02em' }}>
+                    Open the forge
+                  </span>
+                  <span
+                    style={{
+                      display: 'block',
+                      marginTop: 4,
+                      fontSize: '0.88rem',
+                      opacity: 0.85,
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    pick your pages, choose the size and balance, and bind them into a book of your
+                    own
+                  </span>
+                </span>
+                <span style={{ opacity: 0.9, display: 'inline-flex', flexShrink: 0 }}>
+                  <ChevronIcon size={16} />
+                </span>
+              </motion.button>
+
+              {/* the shelf — forged workbooks persist here, re-attemptable */}
+              {forged.length > 0 && (
+                <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{ ...{ fontSize: '0.82rem', color: 'var(--clss-ink-500)' } }}>
+                    your shelf
+                  </div>
+                  <AnimatePresence initial={false}>
+                    {forged.map((w) => (
+                      <ShelfCard key={w.id} w={w} onRun={() => setRunId(w.id)} />
+                    ))}
+                  </AnimatePresence>
+                </div>
+              )}
+            </motion.section>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

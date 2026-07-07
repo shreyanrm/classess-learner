@@ -10,6 +10,7 @@ import { ARCADE_DEMO, ArcadeShell } from '../../engines/ArcadeShell';
 import { COMPARE_DEMO, CompareInteractive } from '../../engines/CompareInteractive';
 import { CONCEPTMAP_DEMO, ConceptMap } from '../../engines/ConceptMap';
 import { DERIVATION_DEMO, DerivationCard } from '../../engines/DerivationDepth';
+import { DISCOVERY_DEMO, Discovery } from '../../engines/Discovery';
 import { FLASHCARDS_DEMO, Flashcards } from '../../engines/Flashcards';
 import { MiniWorkbook, WORKBOOK_DEMO } from '../../engines/MiniWorkbook';
 import { PERTURB_DEMO, PerturbationSandbox } from '../../engines/PerturbationSandbox';
@@ -54,6 +55,9 @@ export function EnginesGallery() {
         <div style={{ ...whisper }}>type-batch a · the physics of understanding</div>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 550, marginTop: 8 }}>engine gallery</h1>
       </div>
+      <Bench id="engine-discovery" name="guided discovery — the keystone shell, act-to-reveal">
+        <Discovery spec={DISCOVERY_DEMO} hue={hue} setBar={noop} onDone={noop} />
+      </Bench>
       <Bench id="engine-perturb" name="perturbation sandbox — break it">
         <PerturbationSandbox spec={PERTURB_DEMO} hue={hue} setBar={noop} onDone={noop} />
       </Bench>

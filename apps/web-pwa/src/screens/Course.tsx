@@ -16,6 +16,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { chapterById, topicById } from '../data/catalog';
 import { useRouter } from '../shell/router';
+import { enqueue as enqueueDownload, getDownload } from '../store/downloads';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { CloseIcon } from '../ui/icons';
@@ -44,7 +45,19 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
       : 'composing';
 
   const [bar, setBar] = useState<BarState | null>(null);
-  const { reportProgress } = useProgress();
+  const { reportProgress, completed } = useProgress();
+
+  // THE DOWNLOAD-FIRST CHOKEPOINT (CONTEXT.md content law). Every path into a course routes through
+  // here, so the gate lives here once — not on each of the N call sites (subject rows, the Learn
+  // continue card, home thread stops, expedition checkpoints, the command palette, Vidya's route
+  // actions, custom courses, progress). A composed course the learner does not yet own is NEVER
+  // opened cold into an in-page skeleton: if its content is not generated/cached and it is not
+  // already on its way, enqueue it and bounce back — the downloading pill + the ready notification
+  // carry it (owner law: first click says downloading → notify when ready → then they enter; tapping
+  // the ready toast opens it). The atom (a prebuilt node), a mastered course (warm cache), a course
+  // already ready to open, and every practice sandbox all open instantly, untouched by the gate.
+  const dl = getDownload(topicId);
+  const needsDownload = mode === 'composing' && !completed.has(topicId) && dl?.status !== 'ready';
   const [progress, setProgress] = useState<{ f: number; segments: number }>({
     f: 0.08,
     segments: 9,
@@ -72,14 +85,24 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
   // stable exit — card effects depend on it
   const exit = useCallback(() => router.back(), [router]);
 
+  // The gate acts: enqueue (unless already in line/running) and bounce back to the previous screen,
+  // where the downloading pill/toast is visible and the ready notification will land.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: mount-time gate; topicId/title are stable per route
+  useEffect(() => {
+    if (!needsDownload) return;
+    if (dl?.status !== 'downloading' && dl?.status !== 'queued') enqueueDownload(topicId, title);
+    router.back();
+  }, [needsDownload]);
+
   useEffect(() => {
     bus.publishPage({ route: sandbox ? 'sandbox' : 'course', state: { topicId, title, mode } });
   }, [bus, sandbox, topicId, title, mode]);
 
-  // the row on the subject page fills as the learner travels — the tab is the progress bar
+  // the row on the subject page fills as the learner travels — the tab is the progress bar. Never
+  // for a course being bounced to the download queue (it would falsely mark the topic as started).
   useEffect(() => {
-    if (!sandbox && topic) reportProgress(topic.id, progress.f);
-  }, [sandbox, topic, progress.f, reportProgress]);
+    if (!sandbox && topic && !needsDownload) reportProgress(topic.id, progress.f);
+  }, [sandbox, topic, progress.f, reportProgress, needsDownload]);
 
   // free play on a real node is still an arrival worth recording
   useEffect(() => {

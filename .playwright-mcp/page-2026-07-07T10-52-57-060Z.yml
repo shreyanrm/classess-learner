@@ -1,0 +1,130 @@
+- generic [active] [ref=f28e1]:
+  - generic [ref=f28e2]:
+    - generic [ref=f28e272]:
+      - generic [ref=f28e273]:
+        - heading "Practice" [level=1] [ref=f28e274]
+        - generic [ref=f28e275]: sharpen what you hold — memory fades on a real curve
+      - generic [ref=f28e276]:
+        - generic [ref=f28e277]:
+          - generic [ref=f28e278]:
+            - generic [ref=f28e279]: Due for review
+            - generic [ref=f28e280]: 3 concepts are starting to fade
+          - button "refresh them before they slip" [ref=f28e281] [cursor=pointer]:
+            - generic [ref=f28e282]: refresh them before they slip
+            - img [ref=f28e284]
+        - generic [ref=f28e287]:
+          - generic [ref=f28e288]:
+            - generic [ref=f28e289]: Boss workbooks
+            - generic [ref=f28e290]: the bosses you've beaten — re-run any to prove it still holds
+          - generic [ref=f28e291]:
+            - button "re-challenge Solving equations with the variable on one side" [ref=f28e292] [cursor=pointer]:
+              - generic [ref=f28e293]: re-challenge
+              - generic [ref=f28e294]: Solving equations with the variable on one side
+            - button "re-challenge What makes a number rational" [ref=f28e295] [cursor=pointer]:
+              - generic [ref=f28e296]: re-challenge
+              - generic [ref=f28e297]: What makes a number rational
+            - button "re-challenge Operations on rational numbers" [ref=f28e298] [cursor=pointer]:
+              - generic [ref=f28e299]: re-challenge
+              - generic [ref=f28e300]: Operations on rational numbers
+        - generic [ref=f28e301]:
+          - generic [ref=f28e302]:
+            - generic [ref=f28e303]: Sandboxes
+            - generic [ref=f28e304]: an open canvas on your own chapters — no task, Vidya watching
+          - generic [ref=f28e305]:
+            - button "mathematics Rational numbers" [ref=f28e306] [cursor=pointer]:
+              - generic [ref=f28e307]: mathematics
+              - generic [ref=f28e308]: Rational numbers
+            - button "mathematics Linear equations in one variable" [ref=f28e309] [cursor=pointer]:
+              - generic [ref=f28e310]: mathematics
+              - generic [ref=f28e311]: Linear equations in one variable
+            - button "mathematics Understanding quadrilaterals" [ref=f28e312] [cursor=pointer]:
+              - generic [ref=f28e313]: mathematics
+              - generic [ref=f28e314]: Understanding quadrilaterals
+            - button "physics Force and pressure" [ref=f28e315] [cursor=pointer]:
+              - generic [ref=f28e316]: physics
+              - generic [ref=f28e317]: Force and pressure
+            - button "physics Friction" [ref=f28e318] [cursor=pointer]:
+              - generic [ref=f28e319]: physics
+              - generic [ref=f28e320]: Friction
+            - button "physics Sound" [ref=f28e321] [cursor=pointer]:
+              - generic [ref=f28e322]: physics
+              - generic [ref=f28e323]: Sound
+            - button "chemistry Coal and petroleum" [ref=f28e324] [cursor=pointer]:
+              - generic [ref=f28e325]: chemistry
+              - generic [ref=f28e326]: Coal and petroleum
+            - button "chemistry Combustion and flame" [ref=f28e327] [cursor=pointer]:
+              - generic [ref=f28e328]: chemistry
+              - generic [ref=f28e329]: Combustion and flame
+            - button "chemistry Chemical effects of electric current" [ref=f28e330] [cursor=pointer]:
+              - generic [ref=f28e331]: chemistry
+              - generic [ref=f28e332]: Chemical effects of electric current
+            - button "biology Crop production and management" [ref=f28e333] [cursor=pointer]:
+              - generic [ref=f28e334]: biology
+              - generic [ref=f28e335]: Crop production and management
+            - 'button "biology Microorganisms: friend and foe" [ref=f28e336] [cursor=pointer]':
+              - generic [ref=f28e337]: biology
+              - generic [ref=f28e338]: "Microorganisms: friend and foe"
+            - button "biology Conservation of plants and animals" [ref=f28e339] [cursor=pointer]:
+              - generic [ref=f28e340]: biology
+              - generic [ref=f28e341]: Conservation of plants and animals
+            - button "computer science Thinking in steps" [ref=f28e342] [cursor=pointer]:
+              - generic [ref=f28e343]: computer science
+              - generic [ref=f28e344]: Thinking in steps
+            - button "computer science Patterns and loops" [ref=f28e345] [cursor=pointer]:
+              - generic [ref=f28e346]: computer science
+              - generic [ref=f28e347]: Patterns and loops
+            - button "computer science How the web works" [ref=f28e348] [cursor=pointer]:
+              - generic [ref=f28e349]: computer science
+              - generic [ref=f28e350]: How the web works
+            - button "social science How, when and where" [ref=f28e351] [cursor=pointer]:
+              - generic [ref=f28e352]: social science
+              - generic [ref=f28e353]: How, when and where
+            - button "social science From trade to territory" [ref=f28e354] [cursor=pointer]:
+              - generic [ref=f28e355]: social science
+              - generic [ref=f28e356]: From trade to territory
+            - button "social science Ruling the countryside" [ref=f28e357] [cursor=pointer]:
+              - generic [ref=f28e358]: social science
+              - generic [ref=f28e359]: Ruling the countryside
+        - generic [ref=f28e360]:
+          - generic [ref=f28e361]:
+            - generic [ref=f28e362]: Forge your own
+            - generic [ref=f28e363]: bind a custom workbook from the chapters you've touched
+          - button "Open the forge pick your pages, choose the size and balance, and bind them into a book of your own" [ref=f28e364] [cursor=pointer]:
+            - generic [ref=f28e365]:
+              - text: Open the forge
+              - generic [ref=f28e366]: pick your pages, choose the size and balance, and bind them into a book of your own
+            - img [ref=f28e368]
+          - generic [ref=f28e371]:
+            - generic [ref=f28e372]: your shelf
+            - generic [ref=f28e373]:
+              - generic [ref=f28e375]:
+                - generic [ref=f28e376]: solving equations with the variable on one side + 2 more
+                - generic [ref=f28e377]: 20 items · solid · balanced
+              - generic [ref=f28e378]:
+                - button "attempt" [ref=f28e379] [cursor=pointer]:
+                  - text: attempt
+                  - img [ref=f28e380]
+                - button "remove this workbook" [ref=f28e383] [cursor=pointer]: remove
+    - banner:
+      - img "Classess" [ref=f28e221]
+      - generic [ref=f28e222]:
+        - button "Did you know" [ref=f28e223] [cursor=pointer]:
+          - img [ref=f28e224]
+          - text: Did you know
+        - generic "Day 3 of being a learner" [ref=f28e226]:
+          - img [ref=f28e228]
+          - text: "3"
+        - generic [ref=f28e231]: 320 xp
+        - generic [ref=f28e232]:
+          - img [ref=f28e233]
+          - button "You — level 3, profile and settings" [ref=f28e236] [cursor=pointer]:
+            - generic "Remy" [ref=f28e237]:
+              - img [ref=f28e239]
+          - generic [ref=f28e270]: "3"
+    - generic [ref=f28e386]:
+      - generic:
+        - img
+      - button "Talk to Vidya" [ref=f28e387] [cursor=pointer]:
+        - img [ref=f28e391]
+  - button "Back — Home" [ref=f28e415] [cursor=pointer]:
+    - img [ref=f28e416]

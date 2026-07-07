@@ -15,6 +15,8 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
+import { claimNextForge, settleForge, useForged } from '../screens/practice/forge-store';
+import { composeWorkbook } from '../screens/practice/pools';
 import { useRouter } from '../shell/router';
 import { sfx } from '../ui/sound';
 import { speakLine } from '../vidya/speech';
@@ -27,6 +29,7 @@ import {
   markReady,
   useDownloads,
 } from './downloads';
+import { loadMind } from './mind';
 import { useSdk } from './sdk';
 
 const COMPOSE_TIMEOUT_MS = 75_000;
@@ -40,7 +43,11 @@ export function DownloadCenter() {
   const sdk = useSdk();
   const router = useRouter();
   const items = useDownloads();
+  const forged = useForged();
   const running = useRef(false);
+  const forgeRunning = useRef(false);
+  const forgeNotified = useRef<Set<string>>(new Set());
+  const forgeInit = useRef(false);
   // Notifications fire exactly once per topic even though items re-renders many times.
   const notified = useRef<Set<string>>(new Set());
 
@@ -83,6 +90,40 @@ export function DownloadCenter() {
       void speakLine(readyLine(d.title)); // she says it aloud — mute-aware inside speech.ts
     }
   }, [items]);
+
+  // The forge build runner — one composition in flight, mirroring the course queue's discipline. The
+  // short delay is the "binding" moment made real; composition itself (pools.ts) is deterministic.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `forged` re-triggers; the runner reads the store directly
+  useEffect(() => {
+    if (forgeRunning.current) return;
+    const next = claimNextForge();
+    if (!next) return;
+    forgeRunning.current = true;
+    const slipNodeIds = loadMind().slips.map((s) => s.nodeId);
+    const timer = window.setTimeout(() => {
+      settleForge(next.id, composeWorkbook(next.picks, next.size, next.mix, slipNodeIds));
+      forgeRunning.current = false;
+    }, 1600);
+    return () => window.clearTimeout(timer);
+  }, [forged]);
+
+  // The forge notify moment — a workbook settling to ready lands wherever the learner now is. Ready
+  // forges already on disk at mount are adopted silently (never a pile of dings on every boot).
+  useEffect(() => {
+    if (!forgeInit.current) {
+      forgeInit.current = true;
+      for (const w of forged) if (w.status === 'ready') forgeNotified.current.add(w.id);
+      return;
+    }
+    for (const w of forged) {
+      if (w.status !== 'ready' || forgeNotified.current.has(w.id)) continue;
+      forgeNotified.current.add(w.id);
+      sfx.ding();
+      void speakLine(
+        `your workbook on ${w.title.toLowerCase()} is forged — it's on your shelf, ready whenever you are.`,
+      );
+    }
+  }, [forged]);
 
   const toasts = items.filter((d) => (d.status === 'ready' || d.status === 'failed') && !d.seen);
 

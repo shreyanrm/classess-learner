@@ -1,0 +1,113 @@
+- generic [ref=f28e2]:
+  - generic [ref=f28e4]:
+    - generic [ref=f28e5]:
+      - generic [ref=f28e6]: Tuesday 7 July
+      - heading "Good afternoon, Aanya" [level=1] [ref=f28e7]
+      - generic [ref=f28e8]: Mistakes are just data with feelings
+      - generic [ref=f28e10]:
+        - textbox "Talk to Vidya…" [ref=f28e11]
+        - button "Talk by voice" [ref=f28e12] [cursor=pointer]
+      - generic [ref=f28e21]:
+        - button "Learn something cool" [ref=f28e22] [cursor=pointer]:
+          - img [ref=f28e23]
+          - text: Learn something cool
+        - button "Open a rabbit hole" [ref=f28e25] [cursor=pointer]:
+          - img [ref=f28e26]
+          - text: Open a rabbit hole
+        - button "What should I do today" [ref=f28e28] [cursor=pointer]:
+          - img [ref=f28e29]
+          - text: What should I do today
+      - generic [ref=f28e31]:
+        - button "Learn" [ref=f28e32] [cursor=pointer]:
+          - generic [ref=f28e33]: Learn
+        - button "Practice" [ref=f28e34] [cursor=pointer]:
+          - generic [ref=f28e35]: Practice
+    - generic [ref=f28e37]:
+      - generic [ref=f28e38]: +
+      - generic [ref=f28e39]: ·
+      - generic [ref=f28e40]: ·
+      - generic [ref=f28e41]: +
+      - generic [ref=f28e42]: ·
+      - generic [ref=f28e43]: +
+      - generic [ref=f28e44]: ·
+      - generic [ref=f28e45]: +
+      - img [ref=f28e46]
+      - button "Warm-up Day 3 of being a learner · done" [ref=f28e75] [cursor=pointer]:
+        - img [ref=f28e76]
+        - generic [ref=f28e86]:
+          - generic [ref=f28e87]: Warm-up
+          - generic [ref=f28e88]: Day 3 of being a learner · done
+        - img [ref=f28e90]
+      - button "What makes a number rational Done · revisit any time" [ref=f28e93] [cursor=pointer]:
+        - img [ref=f28e94]
+        - generic [ref=f28e97]:
+          - generic [ref=f28e98]: What makes a number rational
+          - generic [ref=f28e99]: Done · revisit any time
+        - img [ref=f28e101]
+      - button "Operations on rational numbers Done · revisit any time" [ref=f28e104] [cursor=pointer]:
+        - img [ref=f28e105]
+        - generic [ref=f28e108]:
+          - generic [ref=f28e109]: Operations on rational numbers
+          - generic [ref=f28e110]: Done · revisit any time
+        - img [ref=f28e112]
+      - button "Polygons and their angle sums Continue · 45% walked +120" [ref=f28e115] [cursor=pointer]:
+        - img [ref=f28e116]
+        - generic [ref=f28e120]:
+          - generic [ref=f28e121]: Polygons and their angle sums
+          - generic [ref=f28e122]: Continue · 45% walked
+        - generic [ref=f28e125]: "+120"
+        - img [ref=f28e127]
+      - button "Rational numbers on the number line Next up · a fresh idea +120" [ref=f28e130] [cursor=pointer]:
+        - img [ref=f28e131]
+        - generic [ref=f28e134]:
+          - generic [ref=f28e135]: Rational numbers on the number line
+          - generic [ref=f28e136]: Next up · a fresh idea
+        - generic [ref=f28e137]: "+120"
+        - img [ref=f28e139]
+      - button "Review Refresh what’s fading +10" [ref=f28e142] [cursor=pointer]:
+        - img [ref=f28e143]
+        - generic [ref=f28e148]:
+          - generic [ref=f28e149]: Review
+          - generic [ref=f28e150]: Refresh what’s fading
+        - generic [ref=f28e151]: "+10"
+        - img [ref=f28e153]
+      - button "Boss gate Locked · finish today’s topic +120" [ref=f28e156] [cursor=pointer]:
+        - img [ref=f28e157]
+        - generic [ref=f28e160]:
+          - generic [ref=f28e161]: Boss gate
+          - generic [ref=f28e162]: Locked · finish today’s topic
+        - generic [ref=f28e163]: "+120"
+        - img [ref=f28e165]
+      - button "Ask Vidya something Daily quest · one good question +45" [ref=f28e168] [cursor=pointer]:
+        - img [ref=f28e169]
+        - generic [ref=f28e174]:
+          - generic [ref=f28e175]: Ask Vidya something
+          - generic [ref=f28e176]: Daily quest · one good question
+        - generic [ref=f28e177]: "+45"
+        - img [ref=f28e179]
+      - button "Something is hiding here — open the sandbox" [ref=f28e182] [cursor=pointer]:
+        - img [ref=f28e183]
+      - generic: Something is hiding here
+      - generic [ref=f28e187]:
+        - img "Vidya" [ref=f28e189]:
+          - img [ref=f28e193]
+        - generic [ref=f28e217]: Right where we left it
+    - generic [ref=f28e218]:
+      - generic [ref=f28e219]: ⌘K
+      - text: Anything, anywhere
+  - banner:
+    - img "Classess" [ref=f28e221]
+    - generic [ref=f28e222]:
+      - button "Did you know" [ref=f28e223] [cursor=pointer]:
+        - img [ref=f28e224]
+        - text: Did you know
+      - generic "Day 3 of being a learner" [ref=f28e226]:
+        - img [ref=f28e228]
+        - text: "3"
+      - generic [ref=f28e231]: 320 xp
+      - generic [ref=f28e232]:
+        - img [ref=f28e233]
+        - button "You — level 3, profile and settings" [ref=f28e236] [cursor=pointer]:
+          - generic "Remy" [ref=f28e237]:
+            - img [ref=f28e239]
+        - generic [ref=f28e270]: "3"

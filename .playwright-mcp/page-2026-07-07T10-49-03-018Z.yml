@@ -1,0 +1,94 @@
+- generic [ref=f25e2]:
+  - generic [ref=f25e4]:
+    - generic [ref=f25e5]:
+      - generic [ref=f25e6]: Tuesday 7 July
+      - heading "Good afternoon, Aanya" [level=1] [ref=f25e7]
+      - generic [ref=f25e8]: Mistakes are just data with feelings
+      - generic [ref=f25e10]:
+        - textbox "Talk to Vidya…" [ref=f25e11]
+        - button "Talk by voice" [ref=f25e12] [cursor=pointer]
+      - generic [ref=f25e21]:
+        - button "Learn something cool" [ref=f25e22] [cursor=pointer]:
+          - img [ref=f25e23]
+          - text: Learn something cool
+        - button "Open a rabbit hole" [ref=f25e25] [cursor=pointer]:
+          - img [ref=f25e26]
+          - text: Open a rabbit hole
+        - button "What should I do today" [ref=f25e28] [cursor=pointer]:
+          - img [ref=f25e29]
+          - text: What should I do today
+      - generic [ref=f25e31]:
+        - button "Learn" [ref=f25e32] [cursor=pointer]:
+          - generic [ref=f25e33]: Learn
+        - button "Practice" [ref=f25e34] [cursor=pointer]:
+          - generic [ref=f25e35]: Practice
+    - generic [ref=f25e37]:
+      - generic [ref=f25e38]: +
+      - generic [ref=f25e39]: ·
+      - generic [ref=f25e40]: ·
+      - generic [ref=f25e41]: +
+      - generic [ref=f25e42]: ·
+      - generic [ref=f25e43]: +
+      - generic [ref=f25e44]: ·
+      - generic [ref=f25e45]: +
+      - img [ref=f25e46]
+      - button "Warm-up Day 1 of being a learner · done" [ref=f25e65] [cursor=pointer]:
+        - img [ref=f25e66]
+        - generic [ref=f25e76]:
+          - generic [ref=f25e77]: Warm-up
+          - generic [ref=f25e78]: Day 1 of being a learner · done
+        - img [ref=f25e80]
+      - button "What makes a number rational Continue · 8% walked +120" [ref=f25e83] [cursor=pointer]:
+        - img [ref=f25e84]
+        - generic [ref=f25e88]:
+          - generic [ref=f25e89]: What makes a number rational
+          - generic [ref=f25e90]: Continue · 8% walked
+        - generic [ref=f25e93]: "+120"
+        - img [ref=f25e95]
+      - button "Operations on rational numbers Next up · a fresh idea +120" [ref=f25e98] [cursor=pointer]:
+        - img [ref=f25e99]
+        - generic [ref=f25e102]:
+          - generic [ref=f25e103]: Operations on rational numbers
+          - generic [ref=f25e104]: Next up · a fresh idea
+        - generic [ref=f25e105]: "+120"
+        - img [ref=f25e107]
+      - button "Boss gate Locked · finish today’s topic +120" [ref=f25e110] [cursor=pointer]:
+        - img [ref=f25e111]
+        - generic [ref=f25e114]:
+          - generic [ref=f25e115]: Boss gate
+          - generic [ref=f25e116]: Locked · finish today’s topic
+        - generic [ref=f25e117]: "+120"
+        - img [ref=f25e119]
+      - button "Ask Vidya something Daily quest · one good question +45" [ref=f25e122] [cursor=pointer]:
+        - img [ref=f25e123]
+        - generic [ref=f25e128]:
+          - generic [ref=f25e129]: Ask Vidya something
+          - generic [ref=f25e130]: Daily quest · one good question
+        - generic [ref=f25e131]: "+45"
+        - img [ref=f25e133]
+      - button "Something is hiding here — open the sandbox" [ref=f25e136] [cursor=pointer]:
+        - img [ref=f25e137]
+      - generic: Something is hiding here
+      - generic [ref=f25e141]:
+        - img "Vidya" [ref=f25e143]:
+          - img [ref=f25e147]
+        - generic [ref=f25e171]: Right where we left it
+    - generic [ref=f25e172]:
+      - generic [ref=f25e173]: ⌘K
+      - text: Anything, anywhere
+  - banner:
+    - img "Classess" [ref=f25e175]
+    - generic [ref=f25e176]:
+      - button "Did you know" [ref=f25e177] [cursor=pointer]:
+        - img [ref=f25e178]
+        - text: Did you know
+      - generic "Day 1 of being a learner" [ref=f25e180]:
+        - img [ref=f25e182]
+        - text: "1"
+      - generic [ref=f25e185]: 0 xp
+      - generic [ref=f25e186]:
+        - img [ref=f25e187]
+        - button "You — level 1, profile and settings" [ref=f25e190] [cursor=pointer]:
+          - generic "Remy" [ref=f25e191]:
+            - img [ref=f25e193]
+        - generic [ref=f25e224]: "1"

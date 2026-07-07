@@ -6,6 +6,7 @@
  */
 
 import { ATOM_TARGET_NODE_ID } from '@classess/sdk';
+import { frameChapter, frameSync, frameTopic } from './frame';
 import type { Board, Chapter, LearnerProfile, Subject, Topic } from './model';
 
 export const learner: LearnerProfile = {
@@ -2278,10 +2279,7 @@ function currentProfile(): { grade: string; boardId: string } {
     const raw = localStorage.getItem('clss-learner-profile');
     if (raw) {
       const p = JSON.parse(raw) as { grade?: string; boardId?: string };
-      return {
-        grade: p.grade && GRADE_CHAPTERS[p.grade] ? p.grade : 'Class 8',
-        boardId: p.boardId || 'cbse',
-      };
+      return { grade: p.grade || 'Class 8', boardId: p.boardId || 'cbse' };
     }
   } catch {
     // storage unavailable — fall through to the seed profile
@@ -2289,16 +2287,31 @@ function currentProfile(): { grade: string; boardId: string } {
   return { grade: 'Class 8', boardId: 'cbse' };
 }
 
+/**
+ * The learner's frame, per board + grade. CBSE Class 8 (the atom) and Class 10 keep their
+ * hand-carried, richly-wired arrays; every other board+grade resolves from the JSON-built frame
+ * (data/frame.ts), cached per board+grade. An unknown/unbuilt board yields no fake subjects.
+ */
+function seedChapters(boardId: string, grade: string): Record<string, Chapter[]> | null {
+  return boardId === 'cbse' && GRADE_CHAPTERS[grade]
+    ? (GRADE_CHAPTERS[grade] as Record<string, Chapter[]>)
+    : null;
+}
+
 function currentGradeChapters(): Record<string, Chapter[]> {
-  return (
-    GRADE_CHAPTERS[currentProfile().grade] ??
-    (GRADE_CHAPTERS['Class 8'] as Record<string, Chapter[]>)
-  );
+  const { boardId, grade } = currentProfile();
+  const seed = seedChapters(boardId, grade);
+  if (seed) return seed;
+  const f = frameSync(boardId, grade);
+  if (f) return f.chaptersBySubject;
+  // cold or unknown board — CBSE Class 8 is the dev fallback so the atom always resolves; an unknown
+  // board (empty state) never reaches here with doors, so the fake chapters never surface.
+  return boardId === 'cbse' ? (GRADE_CHAPTERS['Class 8'] as Record<string, Chapter[]>) : {};
 }
 
 /**
- * Grade-aware by the persisted profile grade, Class 8 fallback. A Proxy so every property read
- * (and Object.values/keys) resolves the current grade live, without callers changing shape.
+ * Frame-aware by the persisted profile (board + grade). A Proxy so every property read (and
+ * Object.values/keys) resolves the current frame live, without callers changing shape.
  */
 export const chaptersBySubject: Record<string, Chapter[]> = new Proxy(
   {},
@@ -2326,13 +2339,13 @@ for (const bySubject of Object.values(GRADE_CHAPTERS))
     for (const ch of chapters) for (const topic of ch.topics) allTopics.set(topic.id, topic);
 
 export function topicById(id: string): Topic | undefined {
-  return allTopics.get(id);
+  return allTopics.get(id) ?? frameTopic(id);
 }
 
 export function chapterById(id: string): Chapter | undefined {
   for (const chapters of Object.values(chaptersBySubject))
     for (const ch of chapters) if (ch.id === id) return ch;
-  return undefined;
+  return frameChapter(id);
 }
 
 export function subjectById(id: string): Subject | undefined {
@@ -2384,10 +2397,16 @@ export function displaySubjectsFor(boardId: string, grade: string): DisplaySubje
   ];
 }
 
-/** The display doors for the profile on this device (CBSE Class 8 seed fallback). */
+/**
+ * The display doors for the profile on this device. CBSE Class 8/10 keep the hand-carried clubbing;
+ * every other board reads its real doors from the frame. An unknown/unbuilt board returns none —
+ * no fake subjects; Learn falls to its custom-course shelf as the honest empty state.
+ */
 export function displaySubjects(): DisplaySubject[] {
-  const p = currentProfile();
-  return displaySubjectsFor(p.boardId, p.grade);
+  const { boardId, grade } = currentProfile();
+  if (seedChapters(boardId, grade)) return displaySubjectsFor(boardId, grade);
+  const f = frameSync(boardId, grade);
+  return f ? f.doors : [];
 }
 
 /** Resolve a door id — or a canonical subject id navigated to directly — to a display group. */

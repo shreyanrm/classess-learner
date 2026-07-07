@@ -1,0 +1,52 @@
+- generic [ref=f24e2]:
+  - generic [ref=f24e209]:
+    - banner [ref=f24e210]:
+      - button "Close course" [ref=f24e211] [cursor=pointer]:
+        - img [ref=f24e212]
+      - generic [ref=f24e229]:
+        - button "Replay Vidya" [ref=f24e230] [cursor=pointer]:
+          - img [ref=f24e231]
+        - button "Mute Vidya" [ref=f24e234] [cursor=pointer]:
+          - img [ref=f24e235]
+    - main [ref=f24e239]:
+      - generic [ref=f24e241]:
+        - generic [ref=f24e242]:
+          - generic:
+            - img
+          - generic [ref=f24e243]:
+            - img
+          - img [ref=f24e245]
+        - generic [ref=f24e253]: Written and verified
+        - generic [ref=f24e254]: what makes a number rational
+        - generic [ref=f24e255]:
+          - generic [ref=f24e256]: 1a number as a ratio
+          - generic [ref=f24e257]: 2fractions are rational too
+          - generic [ref=f24e258]: 3negatives and zero
+          - generic [ref=f24e259]: 4decimals that stay rational
+          - generic [ref=f24e260]: 5the q is not zero rule
+          - generic [ref=f24e261]: 6the workbook
+          - generic [ref=f24e262]: 7the boss
+          - generic [ref=f24e263]: Composed and checked, line by line. It starts on the next card.
+    - button "Start the course" [ref=f24e266] [cursor=pointer]:
+      - generic [ref=f24e267]: Start the course
+  - banner:
+    - img "Classess" [ref=f24e158]
+    - generic [ref=f24e159]:
+      - button "Did you know" [ref=f24e160] [cursor=pointer]:
+        - img [ref=f24e161]
+        - text: Did you know
+      - generic "Day 1 of being a learner" [ref=f24e163]:
+        - img [ref=f24e165]
+        - text: "1"
+      - generic [ref=f24e168]: 0 xp
+      - generic [ref=f24e169]:
+        - img [ref=f24e170]
+        - button "You — level 1, profile and settings" [ref=f24e173] [cursor=pointer]:
+          - generic "Remy" [ref=f24e174]:
+            - img [ref=f24e176]
+        - generic [ref=f24e207]: "1"
+  - generic [ref=f24e270]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f24e271] [cursor=pointer]:
+      - img [ref=f24e275]

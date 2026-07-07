@@ -35,7 +35,7 @@ function confettiColors(hue: string): [string, string, string] {
  * (each rectangle tumbles, its width breathing as it spins). Runs ~1.8s then stops cold; never
  * loops. Exactly three colors. Silent (the fanfare carries the sound).
  */
-function Confetti({ hue }: { hue: string }) {
+export function Confetti({ hue }: { hue: string }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -388,7 +388,7 @@ export function Ceremony({ award, onDismiss }: { award: TrophyAward; onDismiss: 
 
 // Routes that own the viewport bring their own celebrations (the course greeting theatre) — the
 // ceremony never doubles over them; a queued trophy simply waits until the learner is back out.
-const IMMERSIVE = new Set(['course', 'sandbox', 'onboarding', 'concept']);
+const IMMERSIVE = new Set(['course', 'sandbox', 'onboarding', 'building', 'concept']);
 
 /** Always-mounted: shows the head of the trophy queue as a ceremony, one at a time. */
 export function CeremonyHost() {

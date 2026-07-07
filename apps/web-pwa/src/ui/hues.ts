@@ -4,6 +4,7 @@
  */
 
 import { chapterById, topicById } from '../data/catalog';
+import { canonicalSubjectId } from '../data/frame';
 
 export interface SubjectTone {
   hue: string;
@@ -22,7 +23,13 @@ export const SUBJECT_HUES: Record<string, SubjectTone> = {
 };
 
 export function toneForSubject(subjectId: string): SubjectTone {
-  return SUBJECT_HUES[subjectId] ?? (SUBJECT_HUES.math as SubjectTone);
+  // A board's own subject id (physical_science, computer, history_civics…) resolves to its canonical
+  // family's hue — pigment stays consistent whatever the board calls the subject.
+  return (
+    SUBJECT_HUES[subjectId] ??
+    SUBJECT_HUES[canonicalSubjectId(subjectId)] ??
+    (SUBJECT_HUES.math as SubjectTone)
+  );
 }
 
 /** The earned hue for a topic — resolved through its chapter's subject. */

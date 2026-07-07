@@ -24,6 +24,7 @@ import { ConceptA } from './screens/concepts/ConceptA';
 import { ConceptB } from './screens/concepts/ConceptB';
 import { ConceptC } from './screens/concepts/ConceptC';
 import { EnginesGallery } from './screens/concepts/EnginesGallery';
+import { FrameBuilding } from './screens/FrameBuilding';
 import { Home } from './screens/Home';
 import { Learn } from './screens/Learn';
 import { Onboarding } from './screens/Onboarding';
@@ -167,9 +168,14 @@ function Screen() {
         initial="enter"
         animate="center"
         exit="exit"
-        style={{ willChange: 'transform, opacity' }}
+        // width:100% keeps an EXITING screen full-bleed. mode="popLayout" pops the outgoing screen
+        // out of flow (position:absolute); with no width it shrinks to its content — a course's
+        // ~520px card — and re-anchors top-left, leaking as a stray card over the next screen's
+        // header during the crossfade. Pinned to 100% it stays a full page sliding out. No-op in flow.
+        style={{ willChange: 'transform, opacity', width: '100%' }}
       >
         {route.name === 'onboarding' && <Onboarding />}
+        {route.name === 'building' && <FrameBuilding />}
         {route.name === 'home' && <Home />}
         {route.name === 'chat' && <ChatScreen />}
         {route.name === 'learn' && <Learn />}
@@ -539,8 +545,10 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   // there, in her flow. No route (palette, Vidya nav) can walk around it.
   const locked = !sdk.config.devAuth && !sdk.identity.isAuthenticated();
 
-  // Design concepts render standalone — no app chrome over them, they own the whole canvas.
-  const inFlow = locked || route.name === 'onboarding' || route.name === 'concept';
+  // Onboarding, the frame-building theatre, and design concepts render standalone — no app chrome
+  // over them, they own the whole canvas.
+  const inFlow =
+    locked || route.name === 'onboarding' || route.name === 'building' || route.name === 'concept';
   const onHome = route.name === 'home';
 
   return (

@@ -20,7 +20,9 @@
  *   }
  *
  *   Mark = { id, shape:'circle'|'rect'|'line'|'ring'|'text', x, y, x2?, y2?, r?, w?, h?,
- *            text?, tone?:'ink'|'muted'|'hue' }  // tone 'hue' is earned pigment — use once, on the point
+ *            text?, tone?:'ink'|'muted'|'hue', fill?:'soft'|'solid' }
+ *          // tone 'hue' is earned pigment — use once, on the point.
+ *          // fill = a tactile filled body at rest (CONTENT-VISUALS.md §3.1); absent = outline (structure).
  *
  *   Interaction (one of):
  *     { kind:'tap',   prompt, targets:string[], need? }           // tap the marked ids; done at `need`
@@ -65,6 +67,9 @@ export interface Mark {
   h?: number;
   text?: string;
   tone?: Tone;
+  /** A filled, tactile body at rest (CONTENT-VISUALS.md §3.1): 'solid' = a chunky object,
+   * 'soft' = a roomy tinted container. Absent = outline-only (structure: axes, rays, leaders). */
+  fill?: 'soft' | 'solid';
 }
 
 export type Interaction =
@@ -122,6 +127,7 @@ function parseMark(raw: unknown): Mark | null {
     h: num(raw.h) ? raw.h : undefined,
     text: str(raw.text) ? raw.text : undefined,
     tone,
+    fill: raw.fill === 'solid' ? 'solid' : raw.fill === 'soft' ? 'soft' : undefined,
   };
 }
 
@@ -247,11 +253,30 @@ function MarkShape({
   };
   // the reveal ignites the constellation: solid pigment where the idea landed, a wash on a tapped pick
   const filledLit = lit ? { fill: rgba(hue, 0.85) } : chosen ? { fill: rgba(hue, 0.22) } : {};
+  // a tactile filled body AT REST (CONTENT-VISUALS.md §3.1) — flat fill via fill-opacity, never a
+  // gradient/shadow. Reveal (filledLit) and tapped-pick still win over it. Bodies only; ring/line
+  // /text stay structural. For dimension, the model stacks a darker offset copy behind (§3.2).
+  const restFill =
+    mark.fill && !lit && !chosen
+      ? {
+          fill: toneStroke(mark.tone ?? 'ink', hue),
+          fillOpacity: mark.fill === 'solid' ? 0.9 : 0.16,
+        }
+      : {};
 
   const inner = (() => {
     switch (mark.shape) {
       case 'circle':
-        return <circle cx={mark.x} cy={mark.y} r={mark.r ?? 4} {...common} {...filledLit} />;
+        return (
+          <circle
+            cx={mark.x}
+            cy={mark.y}
+            r={mark.r ?? 4}
+            {...common}
+            {...restFill}
+            {...filledLit}
+          />
+        );
       case 'ring':
         return (
           <circle
@@ -271,6 +296,7 @@ function MarkShape({
             height={mark.h ?? 10}
             rx={2}
             {...common}
+            {...restFill}
             {...filledLit}
           />
         );
@@ -740,11 +766,14 @@ export const DISCOVERY_DEMO: DiscoverySpec = {
       // TAP — find the nucleus inside mostly-empty space
       visual: {
         marks: [
+          // orbital cloud stays structural line-work; the nucleus and electrons are filled objects
           { id: 'cloud', shape: 'ring', x: 50, y: 31, r: 26, tone: 'muted' },
-          { id: 'e1', shape: 'circle', x: 50, y: 5, r: 1.6, tone: 'muted' },
-          { id: 'e2', shape: 'circle', x: 76, y: 31, r: 1.6, tone: 'muted' },
-          { id: 'e3', shape: 'circle', x: 32, y: 48, r: 1.6, tone: 'muted' },
-          { id: 'nucleus', shape: 'circle', x: 50, y: 31, r: 3.4, tone: 'ink' },
+          { id: 'e1', shape: 'circle', x: 50, y: 5, r: 1.9, tone: 'muted', fill: 'solid' },
+          { id: 'e2', shape: 'circle', x: 76, y: 31, r: 1.9, tone: 'muted', fill: 'solid' },
+          { id: 'e3', shape: 'circle', x: 32, y: 48, r: 1.9, tone: 'muted', fill: 'solid' },
+          { id: 'nucleus', shape: 'circle', x: 50, y: 31, r: 3.6, tone: 'ink', fill: 'solid' },
+          // a lighter catch-light on the top-left — stacked flat tone gives the core a lit sphere read (§3.2)
+          { id: 'nucHi', shape: 'circle', x: 48.7, y: 29.7, r: 1.1, tone: 'muted', fill: 'solid' },
         ],
       },
       interaction: {
@@ -762,7 +791,8 @@ export const DISCOVERY_DEMO: DiscoverySpec = {
       visual: {
         marks: [
           { id: 'ring', shape: 'ring', x: 50, y: 31, r: 24, tone: 'muted' },
-          { id: 'core', shape: 'circle', x: 50, y: 31, r: 4, tone: 'ink' },
+          // a SOLID core that visibly grows as protons are added — a filled sphere, not a hollow ring
+          { id: 'core', shape: 'circle', x: 50, y: 31, r: 4, tone: 'ink', fill: 'solid' },
           {
             id: 'cap',
             shape: 'text',
@@ -793,8 +823,9 @@ export const DISCOVERY_DEMO: DiscoverySpec = {
       visual: {
         marks: [
           { id: 'shell', shape: 'ring', x: 50, y: 31, r: 22, tone: 'muted' },
-          { id: 'nuc', shape: 'circle', x: 50, y: 31, r: 3.2, tone: 'ink' },
-          { id: 'electron', shape: 'circle', x: 16, y: 52, r: 2.6, tone: 'ink' },
+          { id: 'nuc', shape: 'circle', x: 50, y: 31, r: 3.4, tone: 'ink', fill: 'solid' },
+          // the draggable electron is a chunky hue knob — a graspable object, not a bare dot (§3.3)
+          { id: 'electron', shape: 'circle', x: 16, y: 52, r: 3.4, tone: 'hue', fill: 'solid' },
         ],
       },
       interaction: {

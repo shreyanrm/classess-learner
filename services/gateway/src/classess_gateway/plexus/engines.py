@@ -1168,7 +1168,7 @@ _SYSTEMS = {
         '{"id":"...","title":"...","stages":[{'
         '"visual":{"marks":[{"id":"m1","shape":"circle|rect|line|ring|text",'
         '"x":<0..100>,"y":<0..62>,"x2":?,"y2":?,"r":?,"w":?,"h":?,"text":?,'
-        '"tone":"ink|muted|hue"}]},'
+        '"tone":"ink|muted|hue","fill":"soft|solid"}]},'
         '"interaction":<ONE of '
         '{"kind":"tap","prompt":"...","targets":["m1"],"need":?} | '
         '{"kind":"drag","prompt":"...","handle":"m1","to":{"x":.,"y":.},"radius":?} | '
@@ -1180,6 +1180,32 @@ _SYSTEMS = {
         "use it once, on the mark the reveal lands on. Aim to attach a discovery spec to most "
         "teaching cards; keep every 'idea' and 'reveal' under ~40 words — the visual does the "
         "teaching.\n\n"
+        # CONTENT-VISUALS.md — draw tactile filled objects, not hairline wireframes (Brilliant bar).
+        # Governs every mark visual: discovery, compare, whatIf, conceptMap.
+        "CONTENT-VISUAL LAW — the focal object of every mark visual is a THING, filled and weighted, "
+        "never a lone outline (the Brilliant bar).\n"
+        "  • FILL: give a real object a body via 'fill' — 'solid' (a chunky saturated tile/block/"
+        "bead/node/handle, its label a separate text mark in white on top) or 'soft' (a roomy "
+        "container: beaker, cell, panel). Omit 'fill' ONLY for pure structure: axes, grid, a ray, a "
+        "leader line, an angle arc. The moment a shape is an OBJECT, it gets a fill.\n"
+        "  • DIMENSION: give a solid object thickness by STACKING FLAT MARKS — draw a second copy of "
+        "the body offset ~1–1.5 units down-and-right FIRST (earlier in the marks array, so it sits "
+        "behind) with tone 'ink' or 'muted' as its darker side face, then the body on top. Hard "
+        "edges only. There are no gradients/shadows/glows — depth is a stacked flat tone, nothing "
+        "more.\n"
+        "  • TACTILE: a drag 'handle' mark is a filled disc (fill 'solid', tone 'hue', r≥3.5) — a "
+        "knob, never a bare dot; a tap target is a whole filled body, never a hollow ring.\n"
+        "  • SCALE: the focal object fills 40–70% of the canvas (≥30 units on its long side), ≥10 "
+        "units clear margin every side, centred or on a clean third, ≤7 weighted marks per stage. "
+        "One confident object beats a field of tiny strokes, and beats a lone timid mark in a big "
+        "empty box.\n"
+        "  • SCENE: draw the object, not a diagram of it (a filled tower with a base, not a line), "
+        "and give it ONE context companion (the block ON the scale) so it reads as a small world.\n"
+        "  • BANNED (reads cheap): a hairline-outline focal object; a lone mark adrift in dead space; "
+        "any gradient/shadow/glow/glass/3D-gloss; emoji/clip-art/mascots; more than one subject hue "
+        "(physics/maths #1F35E0, chemistry #CC1E7A, biology #66B300) plus ink and at most one accent "
+        "when two things genuinely differ; molten #FF5A1F anywhere; text carrying what the picture "
+        "omits.\n\n"
         "Exactly 3 workbook items and exactly 3 boss items, each testing an idea actually "
         "taught on the cards. Every mcq has 3 or 4 distinct options and its answer string "
         "appears exactly once among them; distractors are plausible misconceptions. Every "
@@ -1210,8 +1236,15 @@ _SYSTEMS = {
         "nothing else is coloured. Pick by subject: chemistry #CC1E7A, biology/life #66B300, "
         "physics/maths/mastery #1F35E0. NEVER molten #FF5A1F (that is Vidya's warmth alone).\n"
         "  • A reactive tint is that hue at 0.12–0.25 opacity, never a saturated fill. NO gradients, "
-        "shadows, glows, bevels, or glass — depth is line weight, nothing more. No rainbow palettes, "
-        "no more than one hue in the whole figure.\n\n"
+        "shadows, glows, bevels, or glass — depth is line weight and stacked flat tone, nothing more. "
+        "No rainbow palettes, no more than one hue in the whole figure.\n"
+        # CONTENT-VISUALS.md §4 — objects get filled bodies; only structure stays hairline.
+        "  • FILL OBJECTS, not just outline them (CONTENT-VISUALS.md): when the subject is an OBJECT "
+        "— a beaker, a cell, a tower, a block, a lens, an organ — give it a FILLED body (a soft "
+        "subject-hue fill at ~0.14 with a hue stroke, or ink at ~0.08 for a neutral body) and a "
+        "darker offset copy behind it for thickness, so it reads as a tactile thing, not a wireframe. "
+        "Keep it centred and generously sized (fill most of the frame, deep margins). Only axes, "
+        "grids, rays, leaders, and angle arcs stay unfilled line-work.\n\n"
         "Reply with exactly one <svg>...</svg> element and nothing else."
     ),
     "video": (
@@ -1542,7 +1575,51 @@ def _public(record: dict[str, Any]) -> dict[str, Any]:
         "provenance": record["provenance"],
         "verified": record["verified"],
         "seeded": record.get("seeded", False),
+        "status": store.status(record),
     }
+
+
+def _spawn_validation(
+    record: dict[str, Any],
+    concept: str,
+    modality: str,
+    difficulty: str,
+    scope: dict[str, str],
+    fallbacks: tuple[str, ...],
+) -> None:
+    """Fire the post-serve validation gate in a background thread — the learner never waits on it.
+    Resolves the judge (frontier.reason) and escalation (openai.frontier) models; if either is
+    unregistered we skip validation (the provisional stays served, never blocks)."""
+    from classess_gateway.routing import Track, resolve
+
+    try:
+        judge = resolve("frontier.reason", Track.TRACK_1).provider_model
+        escalation = resolve("openai.frontier", Track.TRACK_1).provider_model
+    except KeyError:
+        logger.warning("validate: judge/escalation model unresolved — skipping validation")
+        return
+
+    def _run() -> None:
+        from classess_gateway.plexus.validate import validate_and_promote
+
+        try:
+            validate_and_promote(
+                concept=concept,
+                modality=modality,
+                difficulty=difficulty,
+                scope=scope,
+                record=record,
+                judge_model=judge,
+                escalation_model=escalation,
+                fallbacks=fallbacks,
+            )
+        except Exception:  # a background failure must never crash the process — log and leave it
+            logger.warning("validate: background validation raised", exc_info=True)
+
+    # ponytail: daemon thread, at-least-once per gateway instance; a Redis lock dedupes across
+    # instances (same seam as the generation slot). validate_and_promote is idempotent — it always
+    # writes canonical, so a provisional is validated once and never re-enters the gate.
+    threading.Thread(target=_run, daemon=True, name=f"validate-{modality}").start()
 
 
 def run_engine(
@@ -1576,7 +1653,13 @@ def run_engine(
         if live and cached.get("seeded"):
             stale = True
         if not stale:
-            return ProviderResponse(output=_public(cached), tokens=0)
+            # Prefer canonical; serve provisional without blocking. A live provisional cache-hit
+            # means the original validation thread never finished (e.g. the process restarted) —
+            # re-arm the gate so it still promotes to canonical, once. (validate is idempotent.)
+            if live and store.status(cached) == store.PROVISIONAL and not cached.get("seeded"):
+                _spawn_validation(cached, concept, modality, difficulty, scope, fallbacks)
+            model = cached.get("provenance", {}).get("model")
+            return ProviderResponse(output=_public(cached), tokens=0, model=model)
 
     # Cache miss: a real generation. Hold the per-user slot for its whole duration (one at a time).
     with _generation_slot(str(payload.get("user") or "").strip()):
@@ -1588,12 +1671,16 @@ def run_engine(
             artifact = _seed(modality, concept, difficulty)
             model_used, tokens, seeded = "mock", _mock_tokens(concept, modality, difficulty), False
 
+        # A real live artifact serves as PROVISIONAL and is validated after serve (below); a seed
+        # (the honest floor) and every mock artifact are stable — canonical with nothing to promote.
+        provisional = live and not seeded
         record = {
             "concept": concept,
             "modality": modality,
             "difficulty": difficulty,
             "verified": True,
             "seeded": seeded,
+            "status": store.PROVISIONAL if provisional else store.CANONICAL,
             "provenance": {
                 "engine": capability,
                 "model": model_used,
@@ -1603,4 +1690,7 @@ def run_engine(
             "createdAt": datetime.now(UTC).isoformat(timespec="seconds"),
         }
         store.save(concept, modality, difficulty, record, scope)
-        return ProviderResponse(output=_public(record), tokens=tokens)
+        # Serve the first learner immediately, THEN validate off the request path (never blocks).
+        if provisional:
+            _spawn_validation(record, concept, modality, difficulty, scope, fallbacks)
+        return ProviderResponse(output=_public(record), tokens=tokens, model=model_used)

@@ -11,19 +11,17 @@
  * quiet alternate). She seals it with your name and a personalised-plan promise, and you step in.
  */
 
-import { useRegisterTarget, useVidyaBus, VidyaBody, type VidyaMood } from '@classess/vidya';
+import { useVidyaBus, VidyaBody, type VidyaMood } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { ONBOARDED_KEY, SIGNIN_SOURCE_KEY } from '../App';
 import { useRouter } from '../shell/router';
-import { lifetimeSnapshot, rememberInterests } from '../store/mind';
-import { useProgress } from '../store/progress';
+import { rememberInterests } from '../store/mind';
 import { useSdk } from '../store/sdk';
-import { Pip, Sprout } from '../ui/cast';
 import { AmbientWash, fluidSpace, MagneticButton } from '../ui/kit';
 import { MuteButton, speakLine } from '../vidya/speech';
-import { GradeBoardPicker } from './you/GradeBoardPicker';
-import { ageFromBirthdate, boardName, boardSeeded, loadProfile, saveProfile } from './you/profile';
+import { BoardPicker, GradePicker } from './you/GradeBoardPicker';
+import { ageFromBirthdate, saveProfile } from './you/profile';
 
 // The first-run atmosphere (§1 ambient depth) — a soft brand dawn blooming from where Vidya
 // settles at the centre, so she arrives inside her own light. Token-driven; both themes.
@@ -52,7 +50,7 @@ const LIKES = [
   'food',
 ];
 
-type Phase = 'greet' | 'name' | 'age' | 'school' | 'likes' | 'auth' | 'ready';
+type Phase = 'greet' | 'name' | 'age' | 'board' | 'grade' | 'likes' | 'auth';
 
 /** "98765 43210" or "+91 98765 43210" → E.164; bare Indian numbers get +91. */
 function normalizePhone(raw: string): string {
@@ -148,7 +146,6 @@ export function Onboarding() {
   const router = useRouter();
   const sdk = useSdk();
   const bus = useVidyaBus();
-  const { award } = useProgress();
 
   const [phase, setPhase] = useState<Phase>('greet');
   // Her current line: it types on screen and plays aloud. `onDone` runs when the typing finishes
@@ -177,11 +174,6 @@ export function Onboarding() {
 
   const finalName = name.trim();
 
-  const readyRef = useRegisterTarget<HTMLDivElement>('onb-ready', {
-    kind: 'card',
-    label: 'the learner page that just became ready',
-  });
-
   // --- she speaks a line: it types on screen and plays aloud together --------------------------
   const say = (text: string, onDone?: () => void) => {
     setPromptReady(false);
@@ -200,9 +192,13 @@ export function Onboarding() {
       `Lovely to meet you, ${who}. So — when did you land on this planet? A year's plenty, or your whole birthday.`,
     );
   };
-  const toSchool = () => {
-    setPhase('school');
-    say(`Where are you in school, ${finalName}? Your class, and your board.`);
+  const toBoard = () => {
+    setPhase('board');
+    say(`Which board are you on, ${finalName}?`);
+  };
+  const toGrade = () => {
+    setPhase('grade');
+    say(`And which class, ${finalName}?`);
   };
   const toLikes = () => {
     setPhase('likes');
@@ -212,10 +208,21 @@ export function Onboarding() {
     setPhase('auth');
     say(`Want me to keep all this safe, ${finalName}? Sign in once and it follows you everywhere.`);
   };
-  const toReady = () => {
-    setPhase('ready');
-    setMood('celebrate');
-    say(`That's everything, ${finalName}. Your plan is ready — come and see.`);
+  // Everything gathered — persist it and hand off to the building theatre, which assembles the
+  // frame per board+grade and gives the welcome moment (FrameBuilding.tsx).
+  const goBuilding = () => {
+    if (grade && boardId) {
+      saveProfile({
+        name: finalName,
+        grade,
+        boardId,
+        birthdate: birthdate || undefined,
+        age: age ?? undefined,
+        interests,
+      });
+    }
+    rememberInterests(interests);
+    router.replace({ name: 'building' });
   };
 
   // Boot: returning from Google lands at ready; otherwise Vidya opens with her greeting, which
@@ -227,17 +234,8 @@ export function Onboarding() {
     booted.current = true;
     if (sessionStorage.getItem(ONB_RETURN_KEY) && sdk.identity.isAuthenticated()) {
       sessionStorage.removeItem(ONB_RETURN_KEY);
-      const p = loadProfile();
-      setName(p.name);
-      setBirthdate(p.birthdate ?? '');
-      setAge(p.age ?? null);
-      setGrade(p.grade);
-      setBoardId(p.boardId);
-      setInterests(p.interests ?? []);
-      setAuthed(true);
-      setPhase('ready');
-      setMood('celebrate');
-      say(`Welcome back, ${p.name}. Your plan is ready.`);
+      // profile was saved before the Google redirect — go straight to the building theatre
+      router.replace({ name: 'building' });
       return;
     }
     say(
@@ -277,17 +275,21 @@ export function Onboarding() {
     setAge(ageFromBirthdate(b) ?? null);
     setMood('celebrate');
     window.setTimeout(() => setMood('idle'), 600);
-    toSchool();
+    toBoard();
   };
-  const submitSchool = () => {
-    if (!grade || !boardId) return;
+  const submitBoard = () => {
+    if (!boardId) return;
+    toGrade();
+  };
+  const submitGrade = () => {
+    if (!grade) return;
     toLikes();
   };
   const toggleLike = (l: string) =>
     setInterests((xs) => (xs.includes(l) ? xs.filter((x) => x !== l) : [...xs, l]));
   const submitLikes = () => {
     if (liveAuth && !authed) toAuth();
-    else toReady();
+    else goBuilding();
   };
 
   // --- the sign-in beat's moves (live mode) ----------------------------------------------------
@@ -320,7 +322,7 @@ export function Onboarding() {
       await sdk.identity.auth.verifyPhoneOtp(normalizePhone(phone), candidate);
       localStorage.setItem(SIGNIN_SOURCE_KEY, 'phone');
       setAuthed(true);
-      toReady();
+      goBuilding();
     } catch {
       setAuthErr('That code did not match — take another look and try again');
       setMood('oops');
@@ -351,36 +353,6 @@ export function Onboarding() {
       setAuthErr('Google did not open — the phone code works just as well');
       setShowPhone(true);
     }
-  };
-
-  // --- the finish ------------------------------------------------------------------------------
-  const finish = () => {
-    if (grade && boardId) {
-      saveProfile({
-        name: finalName,
-        grade,
-        boardId,
-        birthdate: birthdate || undefined,
-        age: age ?? undefined,
-        interests,
-      });
-    }
-    rememberInterests(interests);
-    // Publish the full dossier now (identity + interests) so home greets by name without waiting.
-    bus.publishLifetime(lifetimeSnapshot());
-    sdk.events.record('onboarding.step.completed.v1', {
-      step: 'aha',
-      step_index: 0,
-      total_steps: 1,
-    });
-    award('account'); // +50, blooms on home
-    localStorage.setItem(ONBOARDED_KEY, '1');
-    if (liveAuth) {
-      // Rebuild on the real session: providers re-key to auth.uid() and hydrate live.
-      window.location.assign('/');
-      return;
-    }
-    router.replace({ name: 'home' });
   };
 
   const skip = () => {
@@ -578,9 +550,9 @@ export function Onboarding() {
                 </motion.div>
               )}
 
-              {promptReady && phase === 'school' && (
+              {promptReady && phase === 'board' && (
                 <motion.div
-                  key="i-school"
+                  key="i-board"
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
@@ -594,14 +566,9 @@ export function Onboarding() {
                     maxWidth: 440,
                   }}
                 >
-                  <GradeBoardPicker
-                    grade={grade}
-                    boardId={boardId}
-                    onGrade={setGrade}
-                    onBoard={setBoardId}
-                  />
+                  <BoardPicker boardId={boardId} onBoard={setBoardId} />
                   <AnimatePresence>
-                    {grade && boardId && (
+                    {boardId && (
                       <motion.div
                         initial={{ opacity: 0, y: 10, scale: 0.94 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -611,7 +578,46 @@ export function Onboarding() {
                         <MagneticButton
                           size="lg"
                           variant="primary"
-                          onClick={submitSchool}
+                          onClick={submitBoard}
+                          style={{ minWidth: 120, justifyContent: 'center' }}
+                        >
+                          Next
+                        </MagneticButton>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              )}
+
+              {promptReady && phase === 'grade' && (
+                <motion.div
+                  key="i-grade"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={spring}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 18,
+                    width: '100%',
+                    maxWidth: 440,
+                  }}
+                >
+                  <GradePicker boardId={boardId} grade={grade} onGrade={setGrade} />
+                  <AnimatePresence>
+                    {grade && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.94 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ type: 'spring', stiffness: 420, damping: 26 }}
+                      >
+                        <MagneticButton
+                          size="lg"
+                          variant="primary"
+                          onClick={submitGrade}
                           style={{ minWidth: 140, justifyContent: 'center' }}
                         >
                           That's me
@@ -752,131 +758,13 @@ export function Onboarding() {
                   )}
                 </motion.div>
               )}
-
-              {phase === 'ready' && promptReady && (
-                <motion.div
-                  key="i-ready"
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={spring}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 22,
-                  }}
-                >
-                  <div
-                    ref={readyRef}
-                    style={{ position: 'relative', width: '100%', maxWidth: 340, height: 176 }}
-                  >
-                    <svg
-                      width="100%"
-                      height="176"
-                      viewBox="0 0 340 176"
-                      preserveAspectRatio="none"
-                      fill="none"
-                      aria-hidden="true"
-                      style={{ position: 'absolute', inset: 0 }}
-                    >
-                      <motion.rect
-                        x="0.5"
-                        y="0.5"
-                        width="339"
-                        height="175"
-                        rx="3"
-                        stroke="var(--clss-ink-900)"
-                        strokeWidth="1"
-                        initial={{ pathLength: 0 }}
-                        animate={{ pathLength: 1 }}
-                        transition={{ duration: 1, ease: [0.2, 0, 0, 1], delay: 0.1 }}
-                      />
-                    </svg>
-                    {/* the one pigment moment: an ultramarine wash sweeps the page (DESIGN §2) */}
-                    <motion.div
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ duration: 0.7, ease: [0.2, 0, 0, 1], delay: 0.9 }}
-                      style={{
-                        position: 'absolute',
-                        inset: 1,
-                        borderRadius: 'var(--clss-radius-sm)',
-                        background: 'var(--clss-ultramarine-wash)',
-                        transformOrigin: 'left',
-                      }}
-                    />
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.5, delay: 1.4 }}
-                      style={{
-                        position: 'absolute',
-                        inset: 0,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 6,
-                        textAlign: 'center',
-                        padding: '0 16px',
-                      }}
-                    >
-                      <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>
-                        {finalName}
-                        {age ? ` · ${age}` : ''} · {grade ?? 'Class 8'} ·{' '}
-                        {boardId ? boardName(boardId) : 'CBSE'}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: '1.35rem',
-                          fontWeight: 600,
-                          letterSpacing: '-0.02em',
-                          color: 'var(--clss-ink-900)',
-                        }}
-                      >
-                        your plan is ready
-                      </div>
-                      {boardId && !boardSeeded(boardId) && (
-                        <div style={{ fontSize: '0.8rem', color: 'var(--clss-ink-500)' }}>
-                          your board’s world arrives with you
-                        </div>
-                      )}
-                    </motion.div>
-                    {/* two of the cast are already waiting inside — the page comes furnished */}
-                    <motion.div
-                      aria-hidden
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ ...spring, delay: 1.7 }}
-                      style={{
-                        position: 'absolute',
-                        right: 10,
-                        bottom: 3,
-                        display: 'flex',
-                        alignItems: 'flex-end',
-                      }}
-                    >
-                      <Sprout size={30} seed={1} />
-                      <Pip size={40} mood="delighted" seed={2} />
-                    </motion.div>
-                  </div>
-                  <MagneticButton
-                    size="lg"
-                    variant="primary"
-                    onClick={finish}
-                    style={{ minWidth: 150, justifyContent: 'center' }}
-                  >
-                    Step in
-                  </MagneticButton>
-                </motion.div>
-              )}
             </AnimatePresence>
           </motion.div>
         </AnimatePresence>
       </div>
 
       {/* a quiet door out — mock mode only; live mode keeps the flow (a page needs its owner) */}
-      {!liveAuth && phase !== 'ready' && (
+      {!liveAuth && (
         <button
           type="button"
           onClick={skip}

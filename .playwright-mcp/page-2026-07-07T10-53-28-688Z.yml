@@ -1,0 +1,10 @@
+- generic [ref=f29e4]:
+  - button "Unmute Vidya" [pressed] [ref=f29e6] [cursor=pointer]:
+    - img [ref=f29e7]
+  - button "Vidya" [ref=f29e11] [cursor=pointer]:
+    - img [ref=f29e15]
+  - generic [ref=f29e52]:
+    - generic [ref=f29e53]: Lovely to meet you, Aarav. So — when did you land on this planet? A year's plenty, or your whole birthday.
+    - textbox "when you were born" [active] [ref=f29e69]:
+      - /placeholder: A year, or your birthday
+  - button "Skip for now" [ref=f29e43] [cursor=pointer]

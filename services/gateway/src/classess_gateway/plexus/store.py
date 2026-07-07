@@ -23,7 +23,9 @@ from typing import Any
 # v3: full type universe — cards may carry any rich activity (perturbation, whatIf, compare,
 # conceptMap, mini-workbook, flashcards, derivation, wordProblem, podcast, arcade) alongside the
 # guided-discovery spec and imageSpec; a bump regenerates pre-doctrine caches into richer courses.
-PROMPT_VERSION = "plexus-v3"
+# v4: CONTENT-VISUALS.md — content-visual law (filled tactile objects + mark 'fill'), bump so
+# pre-doctrine hairline caches regenerate into weighted, Brilliant-bar visuals.
+PROMPT_VERSION = "plexus-v4"
 
 # Validation lifecycle. A live artifact serves immediately as PROVISIONAL (its first learner never
 # waits on the judge); a post-serve validation gate promotes it to CANONICAL (best-of after a

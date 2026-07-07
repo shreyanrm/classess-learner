@@ -3,6 +3,9 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  // The frame builder code-splits the real catalogs (content/catalogs/*.json) at the repo root —
+  // allow Vite dev to serve from above the app root.
+  server: { fs: { allow: ['../..'] } },
   plugins: [
     react(),
     VitePWA({

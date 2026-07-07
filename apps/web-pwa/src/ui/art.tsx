@@ -12,6 +12,7 @@
 
 import { motion } from 'framer-motion';
 import { useMemo } from 'react';
+import { canonicalSubjectId } from '../data/frame';
 
 /** FNV-1a — stable tiny hash for deterministic art. */
 export function hash(s: string): number {
@@ -231,6 +232,9 @@ export function SubjectGlyph({
   accent?: boolean;
 }) {
   const o = accent ? 1 : 0.92;
+  // A board names a subject its own way (physical_science, computer…); the glyph draws its canonical
+  // family. Gradient ids stay keyed to the raw id so distinct doors never share a <defs> id.
+  const sid = canonicalSubjectId(subjectId);
   return (
     <svg
       viewBox="0 0 96 96"
@@ -266,7 +270,7 @@ export function SubjectGlyph({
           <stop offset="100%" stopColor="#D6196F" />
         </linearGradient>
       </defs>
-      {subjectId === 'math' && (
+      {sid === 'math' && (
         <g opacity={o}>
           {/* a bold construction: gradient square, tilted triangle, the golden point */}
           <rect x={18} y={26} width={44} height={44} rx={7} fill={`url(#sg-m-${subjectId})`} />
@@ -291,7 +295,7 @@ export function SubjectGlyph({
           <circle cx={71} cy={30} r={6.5} fill="none" stroke="#0D0D10" strokeWidth={2} />
         </g>
       )}
-      {subjectId === 'physics' && (
+      {sid === 'physics' && (
         <g opacity={o}>
           {/* an orbiting atom — violet nucleus, bold ink orbits, one golden electron */}
           <ellipse
@@ -321,7 +325,7 @@ export function SubjectGlyph({
           <circle cx={24} cy={64} r={4} fill="#6D4AE0" stroke="#0D0D10" strokeWidth={2} />
         </g>
       )}
-      {(subjectId === 'chemistry' || subjectId === 'science') && (
+      {(sid === 'chemistry' || sid === 'science') && (
         <g opacity={o}>
           {/* a chunky flask, teal liquid, rising bubbles */}
           <path
@@ -342,7 +346,7 @@ export function SubjectGlyph({
           <circle cx={68} cy={32} r={2.6} fill="#FFC93C" />
         </g>
       )}
-      {subjectId === 'biology' && (
+      {sid === 'biology' && (
         <g opacity={o}>
           {/* a layered leaf with white veins, and a small golden-hearted cell */}
           <path
@@ -369,7 +373,7 @@ export function SubjectGlyph({
           <circle cx={68} cy={68} r={3.6} fill="#FFC93C" stroke="#0D0D10" strokeWidth={1.6} />
         </g>
       )}
-      {subjectId === 'cs' && (
+      {sid === 'cs' && (
         <g opacity={o}>
           {/* chunky code brackets on a magenta panel, a friendly golden cursor mid-line */}
           <rect x={16} y={24} width={64} height={48} rx={7} fill={`url(#sg-c-${subjectId})`} />
@@ -411,7 +415,7 @@ export function SubjectGlyph({
           />
         </g>
       )}
-      {subjectId === 'social' && (
+      {sid === 'social' && (
         <g opacity={o}>
           {/* a warm globe with bold meridians and a horizon flag */}
           <circle cx={46} cy={48} r={27} fill={`url(#sg-g-${subjectId})`} />

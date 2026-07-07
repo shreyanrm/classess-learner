@@ -16,10 +16,9 @@
  * path is engine.compose (already live for courses); this floor keeps the forge real and offline.
  */
 
-import type { WorkbookItem } from '../../engines/MiniWorkbook';
-import type { MiniWorkbookSpec } from '../../engines/MiniWorkbook';
 import { chapterById, subjectById, topicById } from '../../data/catalog';
 import type { Topic } from '../../data/model';
+import type { MiniWorkbookSpec, WorkbookItem } from '../../engines/MiniWorkbook';
 import { topicNodeUuid } from '../course/Composing';
 
 export type ForgeSize = 10 | 20 | 40;
@@ -241,10 +240,12 @@ export function composeWorkbook(
   const problem: TaggedItem[] = [];
 
   for (const topic of topics) {
-    for (const item of recallPool(topic)) recall.push({ topicId: topic.id, bucket: 'recall', item });
+    for (const item of recallPool(topic))
+      recall.push({ topicId: topic.id, bucket: 'recall', item });
     if (isComputable(topic)) {
       // generate enough real problems to reach any requested size for this topic
-      for (let i = 0; i < size; i++) problem.push({ topicId: topic.id, bucket: 'problem', item: problemItem(topic, i) });
+      for (let i = 0; i < size; i++)
+        problem.push({ topicId: topic.id, bucket: 'problem', item: problemItem(topic, i) });
     }
   }
   for (const g of groupItems(topics)) recall.push(g);
@@ -254,7 +255,9 @@ export function composeWorkbook(
   const weigh = (arr: TaggedItem[]): TaggedItem[] => {
     if (mix !== 'vidya' || slipped.size === 0) return arr;
     return [...arr].sort(
-      (a, b) => (slipped.has(topicNodeUuid(b.topicId)) ? 1 : 0) - (slipped.has(topicNodeUuid(a.topicId)) ? 1 : 0),
+      (a, b) =>
+        (slipped.has(topicNodeUuid(b.topicId)) ? 1 : 0) -
+        (slipped.has(topicNodeUuid(a.topicId)) ? 1 : 0),
     );
   };
 
@@ -318,7 +321,9 @@ function pageTitle(topicId: string, n: number): string {
   const topic = topicById(topicId);
   if (!topic) return `page ${n}`;
   const subject = subjectById(chapterById(topic.chapterId)?.subjectId ?? '');
-  return subject ? `${topic.name.toLowerCase()} · ${subject.name.toLowerCase()}` : topic.name.toLowerCase();
+  return subject
+    ? `${topic.name.toLowerCase()} · ${subject.name.toLowerCase()}`
+    : topic.name.toLowerCase();
 }
 
 // ponytail: one runnable check — the composer must hit the size for a computable topic and page by 5.
@@ -326,7 +331,8 @@ if (import.meta.env.DEV) {
   const w = composeWorkbook(['m2-1'], 20, 'problem');
   console.assert(w.total === 20 && !w.short, 'forge: computable topic fills the requested size');
   console.assert(
-    w.pages.every((p) => p.spec.items.length <= 5) && w.pages.reduce((n, p) => n + p.spec.items.length, 0) === 20,
+    w.pages.every((p) => p.spec.items.length <= 5) &&
+      w.pages.reduce((n, p) => n + p.spec.items.length, 0) === 20,
     'forge: pages are capped at five and sum to the total',
   );
 }

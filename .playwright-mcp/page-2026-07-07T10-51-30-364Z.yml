@@ -1,0 +1,89 @@
+- generic [active] [ref=f26e1]:
+  - generic [ref=f26e2]:
+    - generic [ref=f26e320]:
+      - generic [ref=f26e321]:
+        - heading "The forge" [level=1] [ref=f26e454]
+        - generic [ref=f26e323]: bind your own workbook from what you've already touched
+      - generic [ref=f26e456]:
+        - generic [ref=f26e459]:
+          - generic [ref=f26e460]: mathematics
+          - generic [ref=f26e461]:
+            - generic [ref=f26e462]:
+              - generic [ref=f26e463]: Rational numbers
+              - generic [ref=f26e464]:
+                - button "✓ What makes a number rational" [ref=f26e514] [cursor=pointer]:
+                  - generic [ref=f26e515]: ✓
+                  - text: What makes a number rational
+                - button "Operations on rational numbers" [ref=f26e466] [cursor=pointer]
+                - button "Rational numbers on the number line" [disabled] [ref=f26e467]
+            - generic [ref=f26e468]:
+              - generic [ref=f26e469]: Linear equations in one variable
+              - generic [ref=f26e470]:
+                - button "✓ Solving equations with the variable on one side" [ref=f26e505] [cursor=pointer]:
+                  - generic [ref=f26e506]: ✓
+                  - text: Solving equations with the variable on one side
+                - button "Variables on both sides" [disabled] [ref=f26e472]
+                - button "Word problems that become equations" [disabled] [ref=f26e473]
+            - generic [ref=f26e474]:
+              - generic [ref=f26e475]: Understanding quadrilaterals
+              - generic [ref=f26e476]:
+                - button "✓ Polygons and their angle sums" [ref=f26e519] [cursor=pointer]:
+                  - generic [ref=f26e520]: ✓
+                  - text: Polygons and their angle sums
+                - button "Kinds of quadrilaterals" [disabled] [ref=f26e478]
+                - button "Properties of a parallelogram" [disabled] [ref=f26e479]
+                - button "Special parallelograms" [disabled] [ref=f26e480]
+        - generic [ref=f26e481]:
+          - generic [ref=f26e482]:
+            - generic [ref=f26e507]:
+              - generic [ref=f26e508]: page 1
+              - generic [ref=f26e509]: Solving equations with the variable on one side
+            - generic [ref=f26e516]:
+              - generic [ref=f26e517]: page 2
+              - generic [ref=f26e518]: What makes a number rational
+            - generic [ref=f26e521]:
+              - generic [ref=f26e522]: page 3
+              - generic [ref=f26e523]: Polygons and their angle sums
+          - generic [ref=f26e484]:
+            - generic [ref=f26e485]: how long
+            - generic [ref=f26e486]:
+              - button "10 quick" [ref=f26e487] [cursor=pointer]:
+                - generic [ref=f26e488]: "10"
+                - generic [ref=f26e489]: quick
+              - button "20 solid" [ref=f26e490] [cursor=pointer]:
+                - generic [ref=f26e491]: "20"
+                - generic [ref=f26e492]: solid
+              - button "40 marathon" [ref=f26e493] [cursor=pointer]:
+                - generic [ref=f26e494]: "40"
+                - generic [ref=f26e495]: marathon
+          - generic [ref=f26e496]:
+            - generic [ref=f26e497]: the balance
+            - generic [ref=f26e498]:
+              - button "recall-heavy" [ref=f26e499] [cursor=pointer]
+              - button "problem-heavy" [ref=f26e500] [cursor=pointer]
+              - button "balanced" [ref=f26e501] [cursor=pointer]
+              - button "let Vidya balance it" [ref=f26e502] [cursor=pointer]
+          - button "binding…" [disabled] [ref=f26e524] [cursor=pointer]
+    - banner:
+      - img "Classess" [ref=f26e223]
+      - generic [ref=f26e224]:
+        - button "Did you know" [ref=f26e225] [cursor=pointer]:
+          - img [ref=f26e226]
+          - text: Did you know
+        - generic "Day 3 of being a learner" [ref=f26e228]:
+          - img [ref=f26e230]
+          - text: "3"
+        - generic [ref=f26e233]: 320 xp
+        - generic [ref=f26e234]:
+          - img [ref=f26e235]
+          - button "You — level 3, profile and settings" [ref=f26e238] [cursor=pointer]:
+            - generic "Remy" [ref=f26e239]:
+              - img [ref=f26e241]
+          - generic [ref=f26e272]: "3"
+    - generic [ref=f26e421]:
+      - generic:
+        - img
+      - button "Talk to Vidya" [ref=f26e422] [cursor=pointer]:
+        - img [ref=f26e426]
+  - button "Back — Practice" [ref=f26e504] [cursor=pointer]:
+    - img [ref=f26e451]

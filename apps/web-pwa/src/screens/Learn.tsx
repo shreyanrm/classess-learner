@@ -12,6 +12,7 @@ import { motion } from 'framer-motion';
 import { type CSSProperties, type ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { chaptersBySubject, type DisplaySubject, displaySubjects } from '../data/catalog';
+import { canonicalSubjectId } from '../data/frame';
 import { useRouter } from '../shell/router';
 import { SubjectGlyph } from '../ui/art';
 import { Scene } from '../ui/cast';
@@ -98,6 +99,9 @@ export function SubjectSceneBackdrop({
   wide?: boolean;
 }) {
   const w = wide ? 760 : 400;
+  // A board's own subject id resolves to its canonical family's scene (physical_science → the
+  // sciences' orbit-and-molecule, history_civics → the map).
+  const sid = canonicalSubjectId(subjectId);
   return (
     <svg
       viewBox={`0 0 ${w} 210`}
@@ -106,7 +110,7 @@ export function SubjectSceneBackdrop({
       aria-hidden
       style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
     >
-      {subjectId === 'math' && (
+      {sid === 'math' && (
         <g>
           {/* graph paper, whispered — drawn full-bleed; the card view clips the rest */}
           <path
@@ -161,7 +165,7 @@ export function SubjectSceneBackdrop({
         </g>
       )}
       {/* ponytail: the sciences share one scene — orbit (physics), molecule (chemistry), bubbles (biology) */}
-      {['science', 'physics', 'chemistry', 'biology'].includes(subjectId) && (
+      {['science', 'physics', 'chemistry', 'biology'].includes(sid) && (
         <g>
           {/* an orbit, tilted */}
           <ellipse
@@ -202,7 +206,7 @@ export function SubjectSceneBackdrop({
           />
         </g>
       )}
-      {subjectId === 'cs' && (
+      {sid === 'cs' && (
         <g>
           {/* a ghost column of code tokens, indented like real code */}
           <path
@@ -258,7 +262,7 @@ export function SubjectSceneBackdrop({
           </motion.g>
         </g>
       )}
-      {subjectId === 'social' && (
+      {sid === 'social' && (
         <g>
           {/* latitudes, whispered — drawn to the live width so they never stop mid-band */}
           <path
