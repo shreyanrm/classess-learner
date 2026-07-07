@@ -26,6 +26,8 @@ export interface StoredProfile {
   highContrast?: boolean;
   /** Persistent instruction language — she teaches in this until it's changed. */
   language?: string;
+  /** From a signed-in account (Google) — display only; the opaque subject stays in the session. */
+  email?: string;
 }
 
 const FALLBACK: StoredProfile = { name: learner.name, grade: learner.grade, boardId: 'cbse' };
@@ -45,6 +47,7 @@ export function loadProfile(): StoredProfile {
         highContrast: p.highContrast === true,
         language:
           typeof p.language === 'string' && p.language.trim() ? p.language.trim() : undefined,
+        email: typeof p.email === 'string' && p.email.trim() ? p.email.trim() : undefined,
       };
     }
   } catch {
@@ -59,6 +62,29 @@ export function saveProfile(p: StoredProfile): void {
   } catch {
     // storage unavailable — session-only profile is fine
   }
+}
+
+/**
+ * Fold a signed-in account's identity into the local profile — fills gaps only, never overwrites a
+ * name the learner chose or a photo they set. localStorage stays the working copy; the account is
+ * identity + sync on top (auth is additive). Returns true when the stored profile changed.
+ */
+export function mergeAccount(acct: { email?: string; name?: string; avatar?: string }): boolean {
+  const p = loadProfile();
+  let changed = false;
+  if (acct.email && p.email !== acct.email) {
+    p.email = acct.email;
+    changed = true;
+  }
+  // Name only when the learner has not set one of their own (still the seed fallback).
+  if (acct.name && (!p.name || p.name === FALLBACK.name)) {
+    p.name = acct.name;
+    changed = true;
+  }
+  if (changed) saveProfile(p);
+  // Adopt the Google picture only when there is no photo yet — renderAvatar reads it as-is (a URL).
+  if (acct.avatar && !loadPhoto()) savePhoto(acct.avatar);
+  return changed;
 }
 
 export function boardName(boardId: string): string {

@@ -29,6 +29,7 @@ import { Practice } from './screens/Practice';
 import { ProgressScreen } from './screens/ProgressScreen';
 import { SubjectScreen } from './screens/SubjectScreen';
 import { You } from './screens/You';
+import { boardName, loadProfile, mergeAccount } from './screens/you/profile';
 import { CommandPalette } from './shell/CommandPalette';
 import { resolveDestination } from './shell/destinations';
 import { type Route, RouterProvider, useRouter } from './shell/router';
@@ -84,41 +85,84 @@ export const ONBOARDED_KEY = 'clss-onboarded-v1';
 /** Set by the sign-in beat; the next boot records identity.subject.created.v1 fully attributed. */
 export const SIGNIN_SOURCE_KEY = 'clss-signin-source-v1';
 
+// The shared-axis law (MOTION.md §2): navigation is spatial. Nav-level routes are siblings —
+// they crossfade with a small rise, silently. Going deeper is a forward shared-axis push; back is
+// its mirror; each rides the single transition sound. Scenes that own the viewport bring their own
+// entrances and are never doubled with route motion.
+type Dir = 'forward' | 'back' | 'sibling' | 'none';
+const SIBLING_ROUTES = new Set(['home', 'chat', 'learn', 'practice', 'progress', 'you']);
+const OWN_VIEWPORT_ROUTES = new Set(['onboarding', 'concept']);
+const SHARED_SPRING = { type: 'spring', stiffness: 260, damping: 30 } as const;
+
+function classifyTransition(
+  prev: { name: string; depth: number } | null,
+  name: string,
+  depth: number,
+): Dir {
+  if (!prev) return 'none';
+  if (OWN_VIEWPORT_ROUTES.has(name) || OWN_VIEWPORT_ROUTES.has(prev.name)) return 'none';
+  if (SIBLING_ROUTES.has(name) && SIBLING_ROUTES.has(prev.name)) return 'sibling';
+  return depth < prev.depth ? 'back' : 'forward';
+}
+
+const screenVariants = {
+  enter: (d: Dir) =>
+    d === 'sibling'
+      ? { opacity: 0, y: 8, x: 0 }
+      : d === 'back'
+        ? { opacity: 0, x: -24, y: 0 }
+        : d === 'forward'
+          ? { opacity: 0, x: 24, y: 0 }
+          : { opacity: 1, x: 0, y: 0 },
+  center: (d: Dir) => ({
+    opacity: 1,
+    x: 0,
+    y: 0,
+    transition:
+      d === 'sibling'
+        ? { duration: 0.22, ease: [0.4, 0, 0.2, 1] }
+        : d === 'none'
+          ? { duration: 0.001 }
+          : SHARED_SPRING,
+  }),
+  exit: (d: Dir) =>
+    d === 'sibling'
+      ? { opacity: 0, y: -8, transition: { duration: 0.18, ease: [0.4, 0, 0.2, 1] } }
+      : d === 'back'
+        ? { opacity: 0, x: 24, transition: { duration: 0.18, ease: [0.3, 0, 0.8, 0.4] } }
+        : d === 'forward'
+          ? { opacity: 0, x: -24, transition: { duration: 0.18, ease: [0.3, 0, 0.8, 0.4] } }
+          : { opacity: 0, transition: { duration: 0.12 } },
+} as const;
+
 function Screen() {
-  const { route } = useRouter();
-  // One intention per screen; transitions overlap and ease with physical logic (DESIGN.md §5) —
-  // the leaving page recedes while the arriving one springs in, so nothing ever feels like a cut.
+  const { route, depth } = useRouter();
   const key = JSON.stringify(route);
-  // A whoosh rides every page change — felt more than heard. Skip the first mount.
+  const prevRef = useRef<{ name: string; depth: number } | null>(null);
+  const dir = classifyTransition(prevRef.current, route.name, depth);
+  // The single transition sound (MOTION.md §2) rides structural forward/back only — never a sibling
+  // tab, never an own-viewport scene. Skip the first mount.
   const firstScreen = useRef(true);
   // biome-ignore lint/correctness/useExhaustiveDependencies: key is the trigger, not a body dep
   useEffect(() => {
+    const d = classifyTransition(prevRef.current, route.name, depth);
+    prevRef.current = { name: route.name, depth };
     if (firstScreen.current) {
       firstScreen.current = false;
       return;
     }
-    sfx.whoosh();
+    if (d === 'forward' || d === 'back') sfx.whoosh();
   }, [key]);
   return (
-    <AnimatePresence mode="popLayout" initial={false}>
+    <AnimatePresence mode="popLayout" initial={false} custom={dir}>
       <motion.div
         key={key}
-        initial={{ opacity: 0, y: 16, scale: 0.992, filter: 'blur(5px)' }}
-        animate={{
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          filter: 'blur(0px)',
-          transition: { type: 'spring', stiffness: 240, damping: 30, mass: 0.9 },
-        }}
-        exit={{
-          opacity: 0,
-          y: -12,
-          scale: 0.994,
-          filter: 'blur(5px)',
-          transition: { duration: 0.2, ease: [0.3, 0, 0.8, 0.4] },
-        }}
-        style={{ willChange: 'transform, opacity, filter' }}
+        custom={dir}
+        variants={screenVariants}
+        initial="enter"
+        animate="center"
+        exit="exit"
+        style={{ willChange: 'transform, opacity' }}
       >
         {route.name === 'onboarding' && <Onboarding />}
         {route.name === 'home' && <Home />}
@@ -432,6 +476,21 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       source: source === 'google' ? 'linked' : 'phone_otp',
       age_branch: 'unknown',
       consent_tier_initial: 'un_elevated',
+    });
+  }, [sdk]);
+
+  // A signed-in account (optional, additive) folds its identity into the local profile and syncs the
+  // profile row — name/email/avatar fill only gaps, the local copy stays the working truth. Runs on
+  // every boot, so it completes a Google round-trip started from onboarding OR from You.
+  useEffect(() => {
+    const acct = sdk.account?.profile();
+    if (!acct) return;
+    mergeAccount(acct);
+    const p = loadProfile();
+    void sdk.account?.syncProfile({
+      display_name: p.name,
+      grade: p.grade,
+      board: boardName(p.boardId),
     });
   }, [sdk]);
 

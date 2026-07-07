@@ -11,8 +11,9 @@ import { type PracticeItem, reviewCard } from '@classess/sdk';
 import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useProgress } from '../../store/progress';
+import { useProgress, XP_AWARDS } from '../../store/progress';
 import { useSdk } from '../../store/sdk';
+import { ComboMeter, comboBreak, comboHit, XpTick } from '../../ui/combo';
 import { useVidyaChat } from '../../vidya/chat';
 import { announceCard } from '../../vidya/speech';
 import { hintFor, maxHintDepth, noteCorrect, noteMiss, regrade, useTutor } from '../../vidya/tutor';
@@ -346,6 +347,7 @@ export function PracticeRun({
       });
       noteCorrect();
       award('item');
+      comboHit();
       setContest('upheld');
       setPhase('correct');
       setMood('correct');
@@ -399,10 +401,12 @@ export function PracticeRun({
       noteCorrect();
       setPhase('correct');
       award('item');
+      comboHit();
       setMood('correct');
       window.setTimeout(() => setMood('idle'), 1400);
     } else {
       noteMiss();
+      comboBreak();
       // FSRS framing: a lapse, due again soon — and it literally returns later in this run
       const card = reviewCard(null, false, Date.now());
       sdk.events.record(
@@ -515,8 +519,13 @@ export function PracticeRun({
 
   return (
     <CardBody maxWidth={520} center={false}>
-      <div style={whisper}>
-        practice · {Math.min(pos + 1, queue.length)} of {queue.length}
+      <div
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}
+      >
+        <div style={whisper}>
+          practice · {Math.min(pos + 1, queue.length)} of {queue.length}
+        </div>
+        <ComboMeter hue={HUE} />
       </div>
       <div style={cardTitle}>solve for x</div>
 
@@ -611,8 +620,9 @@ export function PracticeRun({
               >
                 <span style={{ color: 'var(--clss-ink-500)', fontWeight: 500 }}>x =</span>
                 <span>{entry === '' ? ' ' : entry.replace('-', '−')}</span>
-                {/* the earned burst — small, hue-true, once */}
+                {/* the earned burst — small, hue-true, once — with the real +xp riding up beside it */}
                 {phase === 'correct' && <ParticlePop hue={HUE} />}
+                {phase === 'correct' && <XpTick amount={XP_AWARDS.item} hue={HUE} />}
               </motion.div>
 
               {phase === 'correct' && (

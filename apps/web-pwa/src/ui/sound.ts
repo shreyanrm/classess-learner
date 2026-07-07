@@ -92,6 +92,27 @@ export const sfx = {
     tone(ac, { freq: 990, type: 'sine', at: 0.07, dur: 0.16, peak: 0.045 });
   },
 
+  /**
+   * Combo rise — consecutive correct answers, from the third on. A quick two-note lift whose
+   * pitch climbs a semitone with each step of the chain, so a longer streak literally sounds
+   * higher. Quieter than a routine bloom (it rides alongside it) and capped so it never shrills.
+   */
+  combo(step: number) {
+    const ac = audio();
+    if (!ac) return;
+    const n = Math.min(Math.max(step, 3), 11); // clamp: 3rd correct up, ceiling so it never shrills
+    const base = 520 * 2 ** ((n - 3) / 12); // a semitone higher per step past the earn threshold
+    tone(ac, {
+      freq: base,
+      type: 'triangle',
+      dur: 0.13,
+      peak: 0.03,
+      attack: 0.005,
+      glideTo: base * 1.5,
+    });
+    tone(ac, { freq: base * 1.5, type: 'sine', at: 0.06, dur: 0.14, peak: 0.026, attack: 0.006 });
+  },
+
   /** Warm chord — XP, an award, a completion. A soft major triad that blooms and fades. */
   chord() {
     const ac = audio();
@@ -125,6 +146,22 @@ export const sfx = {
     src.connect(bp).connect(g).connect(ac.destination);
     src.start(t0);
     src.stop(t0 + dur + 0.02);
+  },
+
+  /**
+   * Fanfare — a level crossing, the rarest earn. A rising major arpeggio that resolves an octave
+   * up with a soft sparkle on top: brighter and taller than the completion chord, so a level-up
+   * sounds unmistakably like more than a routine reward. Mute-aware like everything here.
+   */
+  fanfare() {
+    const ac = audio();
+    if (!ac) return;
+    // C5 · E5 · G5 · C6 — an ascending major arpeggio, each note stepping in a touch later
+    [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+      tone(ac, { freq: f, type: 'sine', at: i * 0.09, dur: 0.55, peak: 0.05, attack: 0.012 });
+    });
+    // a high shimmer arriving on the resolve — the light on top of the sound
+    tone(ac, { freq: 2093, type: 'sine', at: 0.34, dur: 0.5, peak: 0.018, attack: 0.01 });
   },
 
   /** Gentle chime — Vidya lands. A single bell: fundamental plus a soft high partial. */

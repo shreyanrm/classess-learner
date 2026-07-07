@@ -1,19 +1,31 @@
 'use client';
 
 /**
- * The greeting — the earned close of a topic (DESIGN.md §3.9). A full-screen calm card, her
- * words, and the ignite: one ultramarine catch-light sweeping the region, sub-second, sound-free,
- * fired only on genuine mastery. Docked Vidya celebrates, then settles.
+ * The greeting — the victory theatre that closes a topic (DESIGN.md §3.9, §5). A full-screen
+ * earned moment: the sigil ignites in the subject hue, performance stars land (1–3 from the run's
+ * real accuracy), the XP tally springs up, a restrained starburst arrives, and the completion
+ * chord sounds. Then the "what you proved" line and the door onward. A boss-closed topic earns a
+ * bigger theatre and a trophy note. When the earn crosses a level curve threshold, a distinct
+ * full-screen level moment forges in as a second beat. Reduced-motion, dark theme, and mute all
+ * respected. Docked Vidya celebrates, then settles.
  */
 
 import { useVidyaBus } from '@classess/vidya';
-import { motion } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
 import type { Topic } from '../../data/model';
-import { useProgress } from '../../store/progress';
+import { levelInfo, useProgress, XP_AWARDS } from '../../store/progress';
 import { useSdk } from '../../store/sdk';
 import { TopicSigil } from '../../ui/art';
 import { Juni, Pico, Pip } from '../../ui/cast';
+import {
+  LevelUpMoment,
+  PerformanceStars,
+  performanceStars,
+  Starburst,
+  TrophyNote,
+  XpTally,
+} from '../../ui/celebration';
 import { hueForTopic } from '../../ui/hues';
 import { useVidyaChat } from '../../vidya/chat';
 import type { BarState } from './shared';
@@ -61,6 +73,10 @@ export function Greeting({
   enteredAt,
   setBar,
   onContinue,
+  boss = true,
+  bossCorrect,
+  bossTotal,
+  itemsTotal = 6,
 }: {
   topic: Topic;
   nodeId: string;
@@ -68,12 +84,33 @@ export function Greeting({
   enteredAt: number;
   setBar: (b: BarState | null) => void;
   onContinue: () => void;
+  /** A boss-closed topic earns the bigger theatre and the trophy note. */
+  boss?: boolean;
+  /** Graded boss evidence — items correct of total — the lead signal for the performance stars. */
+  bossCorrect?: number;
+  bossTotal?: number;
+  /** Baseline count of graded items in the run, so extra attempts read as stumbles. */
+  itemsTotal?: number;
 }) {
   const sdk = useSdk();
   const bus = useVidyaBus();
-  const { completeTopic } = useProgress();
+  const { completeTopic, xp } = useProgress();
   const { setMood } = useVidyaChat();
+  const reduced = useReducedMotion() ?? false;
   const fired = useRef(false);
+
+  // the real earn, and whether it crosses a level curve threshold (§ store levelInfo). xp here is
+  // the pre-completion total (completeTopic runs in the effect below), so the crossing is exact.
+  const gained = topic.xp ?? XP_AWARDS.topic;
+  const startXp = useRef(xp);
+  const levelBefore = levelInfo(startXp.current).level;
+  const levelAfter = levelInfo(startXp.current + gained).level;
+  const leveledUp = levelAfter > levelBefore;
+
+  const stars = performanceStars({ bossCorrect, bossTotal, attemptsTotal, itemsTotal });
+
+  // victory first; if the earn crossed a level, a distinct level beat follows before moving on
+  const [phase, setPhase] = useState<'victory' | 'levelup'>('victory');
 
   useEffect(() => {
     if (fired.current) return;
@@ -113,11 +150,25 @@ export function Greeting({
     return () => window.clearTimeout(settle);
   }, [completeTopic, setMood, sdk, bus, topic, nodeId, attemptsTotal, enteredAt]);
 
+  // victory bar advances to the level beat when the earn crossed a threshold; otherwise onward.
   useEffect(() => {
-    setBar({ primary: { label: 'continue', onClick: onContinue } });
-  }, [setBar, onContinue]);
+    if (phase === 'levelup') {
+      setBar({ primary: { label: 'continue', onClick: onContinue } });
+    } else {
+      setBar({
+        primary: {
+          label: 'continue',
+          onClick: leveledUp ? () => setPhase('levelup') : onContinue,
+        },
+      });
+    }
+  }, [phase, leveledUp, setBar, onContinue]);
 
   const hue = hueForTopic(topic.id);
+
+  if (phase === 'levelup') {
+    return <LevelUpMoment level={levelAfter} reduced={reduced} />;
+  }
 
   return (
     <CardBody maxWidth={560}>
@@ -153,6 +204,8 @@ export function Greeting({
         />
         {/* sparks drift up while the room catches light */}
         <Sparks hue={hue} />
+        {/* the reward arriving as stars — bigger for a boss-closed topic (stars law, §5) */}
+        <Starburst hue={hue} reduced={reduced} big={boss} />
 
         {/* the sigil, mastered — the same geometry from the row and the door, now lit large */}
         <motion.div
@@ -193,6 +246,21 @@ export function Greeting({
           <Juni size={40} seed={1} />
         </motion.div>
       </Stage>
+
+      {/* the earned scoreboard — performance stars, the XP springing up, and the boss trophy */}
+      <div
+        style={{
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 14,
+        }}
+      >
+        <PerformanceStars stars={stars} hue={hue} reduced={reduced} />
+        <XpTally amount={gained} hue={hue} reduced={reduced} />
+        {boss && <TrophyNote hue={hue} />}
+      </div>
 
       <div style={{ position: 'relative', textAlign: 'center' }}>
         <div style={whisper}>the greeting</div>

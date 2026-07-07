@@ -714,12 +714,18 @@ export function You() {
   const [proactivity, setProactivity] = useState<Proactivity>(() => loadProactivity());
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  // The optional account layer — present whenever Supabase keys are configured (live OR local mode).
+  const account = sdk.account;
+  const acct = account?.profile() ?? null;
   const signOut = () => {
     setSigningOut(true);
-    // End the session, then boot fresh: the live-mode guard lands on onboarding's sign-in beat.
-    // Local progress stays cached on-device and reconciles when this account signs back in.
-    void sdk.identity.auth.signOut().finally(() => window.location.assign('/'));
+    // End the session, then boot fresh: the live-mode guard lands on onboarding's sign-in beat; in
+    // local mode it simply drops the account chip. Local progress stays cached and reconciles on
+    // the next sign-in.
+    void (account?.signOut() ?? Promise.resolve()).finally(() => window.location.assign('/'));
   };
+  // Additive sign-in from You — a local learner keeps everything and gains a cross-device identity.
+  const signInGoogle = () => void account?.signInWithGoogle(window.location.origin);
   const startOver = () => {
     const keys: string[] = [];
     for (let i = 0; i < localStorage.length; i += 1) {
@@ -1520,32 +1526,61 @@ export function You() {
                   </div>
                 </button>
               </div>
-              {/* sign out — live mode only; the dev-mock learner has no session to end */}
-              {!sdk.config.devAuth && (
+              {/* the account — additive: signed in shows who + a way out; signed out offers Google.
+                  Only when Supabase is configured (account layer present); pure-local builds skip it. */}
+              {account && (
                 <>
                   <Hairline />
-                  <div style={{ padding: '13px 0' }}>
-                    <button
-                      type="button"
-                      onClick={signOut}
-                      disabled={signingOut}
+                  {acct ? (
+                    <div style={{ padding: '13px 0' }}>
+                      <button
+                        type="button"
+                        onClick={signOut}
+                        disabled={signingOut}
+                        style={{
+                          border: 'none',
+                          background: 'transparent',
+                          fontFamily: 'inherit',
+                          cursor: signingOut ? 'default' : 'pointer',
+                          padding: 0,
+                          textAlign: 'left',
+                        }}
+                      >
+                        <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>
+                          {signingOut ? 'signing out…' : 'sign out'}
+                        </div>
+                        <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
+                          {acct.email
+                            ? `signed in as ${acct.email} — your page follows you to any device`
+                            : 'your page stays safe with your account — sign back in any time'}
+                        </div>
+                      </button>
+                    </div>
+                  ) : (
+                    <div
                       style={{
-                        border: 'none',
-                        background: 'transparent',
-                        fontFamily: 'inherit',
-                        cursor: signingOut ? 'default' : 'pointer',
-                        padding: 0,
-                        textAlign: 'left',
+                        padding: '13px 0',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 10,
                       }}
                     >
-                      <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>
-                        {signingOut ? 'signing out…' : 'sign out'}
+                      <div>
+                        <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>
+                          keep this page safe
+                        </div>
+                        <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
+                          sign in with Google so your progress follows you to any device — nothing
+                          you have now is lost
+                        </div>
                       </div>
-                      <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
-                        your page stays safe with your account — sign back in any time
+                      <div>
+                        <MagneticButton size="sm" variant="quiet" onClick={signInGoogle}>
+                          continue with Google
+                        </MagneticButton>
                       </div>
-                    </button>
-                  </div>
+                    </div>
+                  )}
                 </>
               )}
               <Hairline />

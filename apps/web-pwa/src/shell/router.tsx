@@ -29,6 +29,8 @@ export interface Router {
   replace: (route: Route) => void;
   back: () => void;
   canGoBack: boolean;
+  /** Stack depth — the route-transition layer reads it to tell forward from back (MOTION.md §2). */
+  depth: number;
 }
 
 const RouterContext = createContext<Router | null>(null);
@@ -57,6 +59,7 @@ export function RouterProvider({ initial, children }: { initial: Route; children
       replace,
       back,
       canGoBack: stack.length > 1,
+      depth: stack.length,
     }),
     [stack, navigate, replace, back],
   );

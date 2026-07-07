@@ -16,7 +16,15 @@ import { useViewport } from '../shell/useViewport';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { CloseIcon } from '../ui/icons';
-import { fluidType, MagneticButton, Reveal } from '../ui/kit';
+import {
+  CountUp,
+  FROST,
+  fluidType,
+  MagneticButton,
+  PARALLAX,
+  Reveal,
+  useParallax,
+} from '../ui/kit';
 import { useVidyaChat } from '../vidya/chat';
 import { Whisper } from './Learn';
 import { Constellation } from './progress/Constellation';
@@ -134,6 +142,8 @@ export function ProgressScreen() {
     [selected, states],
   );
   const [pathReplay, setPathReplay] = useState(0);
+  // The twin sits on the context plane (MOTION.md §1): it lags gently as the report scrolls up.
+  const skyParallax = useParallax<HTMLDivElement>(PARALLAX.context, { max: 90 });
 
   // She reads this page at code level: the whole constellation, star by star.
   useEffect(() => {
@@ -234,12 +244,13 @@ export function ProgressScreen() {
                 color: 'var(--clss-ink)',
               }}
             >
-              {mastered} of {STARS.length} concepts are yours
+              <CountUp value={mastered} /> of {STARS.length} concepts are yours
             </div>
             <div
               style={{ marginTop: 5, fontSize: fluidType.small, color: 'var(--clss-ink-faint)' }}
             >
-              day {streakDays} of being a learner · tap a star, or scroll for your report
+              day <CountUp value={streakDays} /> of being a learner · tap a star, or scroll for your
+              report
             </div>
           </header>
         </Reveal>
@@ -257,14 +268,19 @@ export function ProgressScreen() {
           }}
         >
           <div ref={mapRef} style={{ position: 'absolute', inset: 0 }}>
-            <Constellation
-              states={states}
-              ignited={ignited}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-              path={pathSteps}
-              pathReplay={pathReplay}
-            />
+            <div
+              ref={skyParallax}
+              style={{ position: 'absolute', inset: 0, willChange: 'transform' }}
+            >
+              <Constellation
+                states={states}
+                ignited={ignited}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+                path={pathSteps}
+                pathReplay={pathReplay}
+              />
+            </div>
           </div>
 
           {/* ask your twin — one calm question floating on glass at the sky's foot */}
@@ -289,16 +305,7 @@ export function ProgressScreen() {
             >
               {busy ? 'Vidya is thinking…' : ''}
             </div>
-            <div
-              style={{
-                background: 'rgba(255,255,255,0.72)',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-                border: '1px solid var(--clss-card-border)',
-                borderRadius: 3,
-                display: 'flex',
-              }}
-            >
+            <div style={{ ...FROST, display: 'flex' }}>
               <input
                 ref={askRef}
                 className="twin-ask-input"
@@ -355,11 +362,7 @@ export function ProgressScreen() {
                     width: 300,
                   }
                 : { left: 28, right: 28, bottom: 128 }),
-              background: 'rgba(255,255,255,0.72)',
-              backdropFilter: 'blur(16px)',
-              WebkitBackdropFilter: 'blur(16px)',
-              border: '1px solid var(--clss-card-border)',
-              borderRadius: 3,
+              ...FROST,
               padding: '18px 18px 16px',
               zIndex: 20,
             }}

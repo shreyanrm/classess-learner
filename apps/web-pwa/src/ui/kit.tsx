@@ -8,10 +8,18 @@
  * no floating fragments, no arbitrary gaps. Cool neutrals only — never warm.
  */
 
-import { motion, useMotionTemplate, useMotionValue, useSpring } from 'framer-motion';
+import {
+  animate,
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+} from 'framer-motion';
 import {
   type CSSProperties,
   type ReactNode,
+  type RefObject,
   useCallback,
   useEffect,
   useRef,
@@ -92,6 +100,126 @@ export function SectionLabel({ children, style }: { children: ReactNode; style?:
 
 export function Hairline({ style }: { style?: CSSProperties }) {
   return <div style={{ height: 1, background: surface.cardBorder, ...style }} />;
+}
+
+// --- Frost — the one floating-chrome recipe (hoisted from the Expedition, DESIGN.md §2) -----------
+/**
+ * FROST: the single frosted-glass surface for ALL floating chrome — header, drawers, palettes,
+ * scene chrome, glass cards. Theme-aware through the frost tokens (dark inverts to graphite glass),
+ * sharp 3px corners, one hairline. Depth is frost + hairline, never a shadow. Spread it, never
+ * re-mix a one-off blur: `style={{ ...FROST, padding: … }}`.
+ */
+export const FROST: CSSProperties = {
+  background: 'var(--clss-frost-on-paper)',
+  backdropFilter: 'blur(var(--clss-frost-blur)) saturate(1.2)',
+  WebkitBackdropFilter: 'blur(var(--clss-frost-blur)) saturate(1.2)',
+  border: '0.5px solid color-mix(in srgb, var(--clss-ink) 14%, transparent)',
+  borderRadius: surface.radius.card,
+};
+
+// --- Parallax — the three depths (MOTION.md §1) ---------------------------------------------------
+/** Scroll rates for the three depth planes. Content is always 1.0 — never parallax what you touch. */
+export const PARALLAX = { sky: 0.08, context: 0.16, content: 1 } as const;
+
+/**
+ * Attach the returned ref to ONE decorative plane; it translates at `factor × scroll` on a
+ * rAF-throttled scroll listener (MOTION.md §1's canonical pattern from the Expedition). Reduced
+ * motion → no transform. Positive factor lags a plane inside scrolling flow (background depth);
+ * negative drifts a pinned/fixed plane upward. `max` caps the travel so a plane never slides free.
+ * Pass a `scroller` ref for scoped scenes; defaults to the window.
+ */
+export function useParallax<T extends HTMLElement>(
+  factor: number,
+  { max = 200, scroller }: { max?: number; scroller?: RefObject<HTMLElement | null> } = {},
+) {
+  const ref = useRef<T | null>(null);
+  const reduced = useReducedMotion() ?? false;
+  useEffect(() => {
+    if (reduced || !factor) return;
+    const src: HTMLElement | Window = scroller?.current ?? window;
+    const readY = () => (scroller?.current ? scroller.current.scrollTop : window.scrollY);
+    let raf = 0;
+    const apply = () => {
+      raf = 0;
+      const el = ref.current;
+      if (!el) return;
+      const y = Math.max(-max, Math.min(max, readY() * factor));
+      el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
+    };
+    const on = () => {
+      if (!raf) raf = requestAnimationFrame(apply);
+    };
+    src.addEventListener('scroll', on, { passive: true });
+    apply();
+    return () => {
+      src.removeEventListener('scroll', on);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [factor, max, reduced, scroller]);
+  return ref;
+}
+
+/**
+ * Pointer parallax for hero art (MOTION.md §1): desktop only, ±`range`px, spring-lagged. Returns
+ * motion values to bind to a `motion` element's `x`/`y`. Coarse pointers and reduced-motion get 0.
+ */
+export function usePointerTilt(range = 6) {
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const x = useSpring(mx, { stiffness: 120, damping: 18 });
+  const y = useSpring(my, { stiffness: 120, damping: 18 });
+  const reduced = useReducedMotion() ?? false;
+  useEffect(() => {
+    if (reduced || (typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches))
+      return;
+    const on = (e: PointerEvent) => {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      mx.set(Math.max(-range, Math.min(range, ((e.clientX - cx) / cx) * range)));
+      my.set(Math.max(-range, Math.min(range, ((e.clientY - cy) / cy) * range)));
+    };
+    window.addEventListener('pointermove', on, { passive: true });
+    return () => window.removeEventListener('pointermove', on);
+  }, [mx, my, range, reduced]);
+  return { x, y };
+}
+
+// --- Spring number — earned counts arrive by spring, never an instant swap (MOTION.md §3) ---------
+/** A number that springs to `value` on every change. Reduced-motion snaps. `format` styles it. */
+export function CountUp({
+  value,
+  format,
+  style,
+}: {
+  value: number;
+  format?: (n: number) => string;
+  style?: CSSProperties;
+}) {
+  const reduced = useReducedMotion() ?? false;
+  const [display, setDisplay] = useState(value);
+  const displayRef = useRef(value);
+  useEffect(() => {
+    if (reduced) {
+      displayRef.current = value;
+      setDisplay(value);
+      return;
+    }
+    const controls = animate(displayRef.current, value, {
+      type: 'spring',
+      stiffness: 90,
+      damping: 20,
+      onUpdate: (v) => {
+        displayRef.current = v;
+        setDisplay(v);
+      },
+    });
+    return () => controls.stop();
+  }, [value, reduced]);
+  return (
+    <span style={{ fontVariantNumeric: 'tabular-nums', ...style }}>
+      {format ? format(display) : Math.round(display).toString()}
+    </span>
+  );
 }
 
 // --- Cards ----------------------------------------------------------------------------------------
@@ -291,8 +419,9 @@ export function TiltCard({
       const r = el.getBoundingClientRect();
       const px = (e.clientX - r.left) / r.width;
       const py = (e.clientY - r.top) / r.height;
-      ry.set((px - 0.5) * 5);
-      rx.set((0.5 - py) * 5);
+      // MOTION.md §3: content cards tilt max 1.2° toward the pointer — a whisper, never a wobble.
+      ry.set((px - 0.5) * 2.4);
+      rx.set((0.5 - py) * 2.4);
       sx.set(px * 100);
       sy.set(py * 100);
     },

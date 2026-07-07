@@ -1,0 +1,90 @@
+- generic [ref=f20e1]:
+  - generic [ref=f20e2]:
+    - generic [ref=f20e258]:
+      - generic [ref=f20e259]:
+        - img "Vidya" [ref=f20e260]:
+          - img [ref=f20e264]
+        - generic [ref=f20e288]:
+          - generic [ref=f20e289]: Vidya
+          - generic [ref=f20e290]: one conversation, always
+        - button "Unmute Vidya" [pressed] [ref=f20e291] [cursor=pointer]:
+          - img [ref=f20e292]
+      - generic [ref=f20e296]:
+        - generic [ref=f20e297]: hello Vidya
+        - generic [ref=f20e299]: Hey Shreyan, good to see you back. Ready to tackle equations with the variable on one side, or do you want to warm up with something else first?
+        - generic [ref=f20e300]: what's my name?
+        - generic [ref=f20e302]: Your name is Shreyan — and I've got you down as someone who loves cricket and space, so I'm always thinking about how to make math feel as sharp as a perfect cover drive.
+        - generic [ref=f20e303]: give me an example
+        - generic [ref=f20e305]: "Shreyan, imagine you're setting a field placement in cricket — you've got to balance your bowlers and batsmen on each side of the pitch to win the match. Linear equations work the same way: you're balancing both sides of an equation to find where the variable 'lands.' For instance, if 2x + 5 = 13, you'd subtract 5 from both sides (like moving a fielder) to get 2x = 8, then divide by 2 to isolate x. The trick is: whatever you do to one side, you do to the other, or the balance breaks."
+        - generic [ref=f20e306]: take me to practice
+        - generic [ref=f20e308]: taking you to practice.
+        - generic [ref=f20e309]: show my progress
+        - generic [ref=f20e311]: here is your progress.
+        - generic [ref=f20e312]: open the atom
+        - generic [ref=f20e314]: opening Solving equations with the variable on one side.
+        - generic [ref=f20e315]: open the atom
+        - generic [ref=f20e317]: opening Solving equations with the variable on one side.
+        - generic [ref=f20e318]: what's on my screen right now?
+        - generic [ref=f20e320]: You're looking at a balance scale showing x + 3 on the left side and 8 on the right side — it's perfectly level right now, which means both sides are equal. That's your equation x + 3 = 8 set up as a scale.
+        - generic [ref=f20e321]: open the atom
+        - generic [ref=f20e323]: opening Solving equations with the variable on one side.
+        - generic [ref=f20e324]: circle the x on the left pan
+        - generic [ref=f20e326]: Done — I've circled the x on the left pan. Now, what do you think we need to do to get x by itself on that side?
+        - generic [ref=f20e327]: open the atom
+        - generic [ref=f20e329]: opening Solving equations with the variable on one side.
+        - generic [ref=f20e330]: I'm stuck, just point at the x for me please
+        - generic [ref=f20e332]: I've got you — look at the scale right now. The x is on the left pan with the 3. To get x alone, what's in the way?
+        - generic [ref=f20e333]: explain this
+        - generic [ref=f20e335]: Right, let me break it down. You've got x and 3 sitting together on the left side of the balance. To isolate x — to get it alone — you need to remove the 3. What operation would undo adding 3?
+        - generic [ref=f20e336]: can you point that out?
+        - generic [ref=f20e338]: I'd love to, but I can't see the balance scale you're working with right now — it sounds like you're in a course. Can you tell me what you see on the left pan, and I'll walk you through it from here?
+        - generic [ref=f20e339]: take me to learn
+        - generic [ref=f20e341]: opening your library.
+        - generic [ref=f20e342]: Tell me something genuinely cool from science or math that most people never learn in school.
+        - generic [ref=f20e344]: give me a moment, then ask me again.
+        - generic [ref=f20e345]: draw me a dragon
+        - generic [ref=f20e346]:
+          - generic [ref=f20e347]: Here's your dragon—and one true thing riding with it.
+          - generic [ref=f20e348]:
+            - generic [ref=f20e349]: drawn just for fun
+            - generic [ref=f20e350]:
+              - img "a drawing of a dragon" [ref=f20e351]
+              - generic [ref=f20e359]: a little a dragon, just for you.
+              - generic [ref=f20e360]: "and one true thing: The Komodo dragon is the largest lizard alive — up to 3 metres, and it can smell carrion kilometres away."
+        - generic [ref=f20e361]: forget that I like cricket
+        - generic [ref=f20e363]: "Hold on—before I forget that, just want to check: you're sure you want me to drop it from what I remember about you?"
+        - generic [ref=f20e364]: yes, forget it
+        - generic [ref=f20e366]: forgotten — I let go of “likes cricket”.
+        - generic [ref=f20e367]: explain linear equations to me
+        - generic [ref=f20e369]: give me a moment, then ask me again.
+        - generic [ref=f20e370]: draw me a dragon
+        - generic [ref=f20e371]:
+          - generic [ref=f20e372]: Here's your dragon—and one true thing riding with it.
+          - generic [ref=f20e373]:
+            - generic [ref=f20e374]: drawn just for fun
+            - generic [ref=f20e375]:
+              - img "a drawing of a dragon" [ref=f20e376]
+              - generic [ref=f20e384]: a little a dragon, just for you.
+              - generic [ref=f20e385]: "and one true thing: The Komodo dragon is the largest lizard alive — up to 3 metres, and it can smell carrion kilometres away."
+      - generic [ref=f20e387]:
+        - textbox "Talk to Vidya…" [active] [ref=f20e388]
+        - button "Talk by voice" [ref=f20e389] [cursor=pointer]
+    - banner:
+      - img "Classess" [ref=f20e199]
+      - generic [ref=f20e200]:
+        - button "Did you know" [ref=f20e201] [cursor=pointer]:
+          - img [ref=f20e202]
+          - text: Did you know
+        - generic "day 3 of being a learner" [ref=f20e204]:
+          - img [ref=f20e205]
+          - text: "3"
+        - generic [ref=f20e208]: 420 xp
+        - generic [ref=f20e209]:
+          - generic "level 4 · 60/200 xp to level 5" [ref=f20e210]:
+            - img [ref=f20e211]
+            - generic [ref=f20e214]: "4"
+          - button "You — level 4, profile and settings" [ref=f20e215] [cursor=pointer]:
+            - generic "fox" [ref=f20e216]:
+              - img [ref=f20e218]
+  - button "Back — ◦ back" [ref=f20e398] [cursor=pointer]:
+    - img [ref=f20e399]

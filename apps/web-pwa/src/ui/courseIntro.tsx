@@ -12,6 +12,7 @@
 
 import { motion } from 'framer-motion';
 import { hash, rng, TopicSigil } from './art';
+import { usePointerTilt } from './kit';
 
 /** `rgba()` from a hex hue — the wash, the glow, and the hue nodes need translucent stops. */
 function rgba(hex: string, alpha: number): string {
@@ -172,6 +173,8 @@ export function CourseIntroScene({
   bold?: boolean;
 }) {
   const r = rng(hash(`intro:${topicId}`));
+  // hero pointer parallax (MOTION.md §1) — the field drifts behind the still sigil on desktop
+  const tilt = usePointerTilt(8);
   // the sigil's huge faint echo — placed and turned uniquely per course
   const echoAngle = Math.round(r() * 360);
   const echoTop = r() > 0.5;
@@ -211,8 +214,10 @@ export function CourseIntroScene({
         <TopicSigil id={topicId} size={echoSize} hue={hue} bold />
       </div>
 
-      {/* the bespoke generative lattice — a quiet circuit in the subject's hue */}
-      <Constellation topicId={topicId} hue={hue} />
+      {/* the bespoke generative lattice — a quiet circuit in the subject's hue, on the sky plane */}
+      <motion.div style={{ position: 'absolute', inset: 0, x: tilt.x, y: tilt.y }}>
+        <Constellation topicId={topicId} hue={hue} />
+      </motion.div>
 
       {/* the concept's sigil, drawing itself — the course's true identity, centred and alive */}
       <motion.div

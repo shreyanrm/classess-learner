@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import { useSdk } from '../../store/sdk';
 import { BossSigil } from '../../ui/art';
+import { ComboMeter, comboBreak, comboHit } from '../../ui/combo';
 import { aX, firstMove, fmt, linearize } from './equations';
 import type { BarState } from './shared';
 import { CardBody, ChoiceButton, cardTitle, rgba, Stage, whisper } from './shared';
@@ -107,7 +108,8 @@ export function Boss({
   setBar: (b: BarState | null) => void;
   setSub: (f: number) => void;
   onAttempt: () => void;
-  onPass: () => void;
+  /** Fires on a pass, carrying how many of the three were correct — the greeting's star signal. */
+  onPass: (correct: number) => void;
 }) {
   const sdk = useSdk();
   const bus = useVidyaBus();
@@ -201,16 +203,23 @@ export function Boss({
               );
             });
             round.current += 1;
+            // the combo carries in from practice: each clean answer extends it, a miss breaks it —
+            // silent here so the boss's own evaluation moment stays one idea, not a stack of tones
+            for (const ok of r) {
+              if (ok) comboHit(true);
+              else comboBreak();
+            }
             setResults(r);
             setEvaluated(true);
           },
         },
       });
     } else {
-      const pass = (results?.filter(Boolean).length ?? 0) >= 2;
+      const correct = results?.filter(Boolean).length ?? 0;
+      const pass = correct >= 2;
       setBar({
         primary: pass
-          ? { label: 'continue', onClick: onPass }
+          ? { label: 'continue', onClick: () => onPass(correct) }
           : {
               label: 'one more look',
               onClick: () => {
@@ -249,7 +258,10 @@ export function Boss({
       {/* the boss's face — its sigil watching over the workbook, prompt large */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={whisper}>the boss · answered together, checked together</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <div style={whisper}>the boss · answered together, checked together</div>
+            <ComboMeter hue={HUE} />
+          </div>
           <div style={{ ...cardTitle, marginTop: 8 }}>three questions, one scale</div>
         </div>
         <motion.div

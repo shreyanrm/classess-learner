@@ -50,7 +50,8 @@ export function LevelBadge({
   const still = useReducedMotion();
   const r = size / 2 - 2;
   const c = 2 * Math.PI * r;
-  const hue = 'var(--clss-ultramarine)';
+  // subject-neutral ink fills the arc — XP-to-next is progress, not mastery, so it never takes pigment
+  const ring = 'var(--clss-ink-900)';
   return (
     <motion.span
       title={`level ${info.level} · ${info.intoLevel}/${info.span} xp to level ${info.level + 1}`}
@@ -73,13 +74,20 @@ export function LevelBadge({
         aria-hidden
         style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }}
       >
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#E9E9EE" strokeWidth={2.5} />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="var(--clss-card-border)"
+          strokeWidth={2.5}
+        />
         <motion.circle
           cx={size / 2}
           cy={size / 2}
           r={r}
           fill="none"
-          stroke={hue}
+          stroke={ring}
           strokeWidth={2.5}
           strokeLinecap="round"
           strokeDasharray={c}
@@ -100,6 +108,120 @@ export function LevelBadge({
         {info.level}
       </span>
     </motion.span>
+  );
+}
+
+/**
+ * The identity unit — the avatar wearing its XP-to-next ring, with the level as a struck coin at
+ * its corner. The ring is subject-neutral ink that fills toward the next level; the coin is the
+ * badge, polished with a paper rim so it lifts off the face. Both give a small proud pulse on a
+ * level crossing. One tap opens You.
+ */
+function IdentityAvatar({
+  info,
+  celebrate,
+  profile,
+  onOpen,
+}: {
+  info: ReturnType<typeof levelInfo>;
+  celebrate: boolean;
+  profile: Parameters<typeof renderAvatar>[0];
+  onOpen: () => void;
+}) {
+  const still = useReducedMotion();
+  const size = 42;
+  const r = size / 2 - 2.5;
+  const c = 2 * Math.PI * r;
+  return (
+    <motion.div
+      animate={celebrate && !still ? { scale: [1, 1.12, 1] } : { scale: 1 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 14 }}
+      style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}
+    >
+      {/* the XP-to-next ring — ink filling clockwise from the top */}
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        role="presentation"
+        aria-hidden
+        style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }}
+      >
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="var(--clss-card-border)"
+          strokeWidth={2.5}
+        />
+        <motion.circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="var(--clss-ink-900)"
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          strokeDasharray={c}
+          initial={false}
+          animate={{ strokeDashoffset: c * (1 - info.progress) }}
+          transition={{ type: 'spring', stiffness: 210, damping: 26 }}
+        />
+      </svg>
+      {/* the learner — photo, chosen cast buddy, or initial, all through one resolver */}
+      <motion.button
+        type="button"
+        aria-label={`You — level ${info.level}, profile and settings`}
+        title={`level ${info.level} · ${info.intoLevel}/${info.span} xp to level ${info.level + 1}`}
+        onClick={onOpen}
+        whileHover={{ scale: 1.06 }}
+        whileTap={{ scale: 0.94 }}
+        style={{
+          position: 'absolute',
+          top: 5,
+          left: 5,
+          width: 32,
+          height: 32,
+          borderRadius: 3,
+          border: 'none',
+          background: 'var(--clss-tonal)',
+          padding: 0,
+          overflow: 'hidden',
+          fontFamily: 'inherit',
+          cursor: 'pointer',
+          display: 'grid',
+          placeItems: 'center',
+        }}
+      >
+        {renderAvatar(profile, 30)}
+      </motion.button>
+      {/* the level coin — a struck badge on the corner, paper-rimmed so it reads as a coin */}
+      <span
+        aria-hidden
+        style={{
+          position: 'absolute',
+          right: -3,
+          bottom: -3,
+          minWidth: 16,
+          height: 16,
+          padding: '0 3px',
+          borderRadius: 999,
+          background: 'var(--clss-ink-900)',
+          border: '1.5px solid var(--clss-paper)',
+          color: 'var(--clss-on-ink)',
+          fontSize: '0.62rem',
+          fontWeight: 700,
+          fontVariantNumeric: 'tabular-nums',
+          lineHeight: 1,
+          display: 'grid',
+          placeItems: 'center',
+          boxSizing: 'border-box',
+        }}
+      >
+        {info.level}
+      </span>
+    </motion.div>
   );
 }
 
@@ -170,6 +292,105 @@ function StarBurst({ bloom }: { bloom: XpBloom }) {
         +{bloom.amount} xp
       </motion.div>
     </div>
+  );
+}
+
+/**
+ * The streak flame — alive, and the life scales with the chain. At day 1 it barely breathes; by
+ * day 30 it flickers hard, sways, and throws a warm glow. Flicker amplitude, speed, and the halo
+ * all ride one intensity so a long streak literally burns prouder. Warm pigment is earned here —
+ * the streak is a genuine achievement, so molten light is legitimate (not chrome).
+ */
+function StreakFlame({ streakDays }: { streakDays: number }) {
+  const still = useReducedMotion();
+  // day 1 → 0 (a quiet pilot light), day 30+ → 1 (a proud, roaring flame)
+  const t = Math.max(0, Math.min(1, (streakDays - 1) / 29));
+  const aY = 0.03 + t * 0.11; // vertical lick grows with the chain
+  const aX = 0.02 + t * 0.07; // side sway
+  const lean = t * 2.6; // a living tilt only a strong flame has
+  const outerDur = 2.8 - t * 1.3; // faster flicker when it's proud
+  const coreDur = 1.9 - t * 0.7;
+  const coreA = 0.08 + t * 0.16;
+
+  return (
+    <span
+      style={{
+        position: 'relative',
+        display: 'grid',
+        placeItems: 'center',
+        width: 15,
+        height: 19,
+      }}
+    >
+      {/* the halo — warm light pooling behind a strong flame; invisible at a fresh streak */}
+      {!still && t > 0.08 && (
+        <motion.span
+          aria-hidden
+          animate={{ opacity: [t * 0.5, t * 0.85, t * 0.5], scale: [1, 1.12, 1] }}
+          transition={{ duration: outerDur, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+          style={{
+            position: 'absolute',
+            width: 26,
+            height: 26,
+            borderRadius: '50%',
+            background:
+              'radial-gradient(circle, rgba(255,138,61,0.55), rgba(255,90,31,0.12) 55%, rgba(255,90,31,0) 75%)',
+            filter: 'blur(2px)',
+            pointerEvents: 'none',
+          }}
+        />
+      )}
+      <motion.svg
+        width="15"
+        height="19"
+        viewBox="0 0 15 19"
+        role="presentation"
+        aria-hidden
+        animate={
+          still
+            ? undefined
+            : {
+                scaleY: [1, 1 + aY, 1 - aY * 0.6, 1],
+                scaleX: [1, 1 - aX * 0.6, 1 + aX, 1],
+                rotate: [0, lean, -lean * 0.7, 0],
+              }
+        }
+        transition={{ duration: outerDur, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+        style={{ transformOrigin: '50% 100%', display: 'block', position: 'relative' }}
+      >
+        <defs>
+          <linearGradient id="hdrFlame" x1="0.5" y1="0" x2="0.5" y2="1">
+            <stop offset="0%" stopColor="#FF8A3D" />
+            <stop offset="100%" stopColor="#F0461F" />
+          </linearGradient>
+        </defs>
+        {/* outer teardrop — tip drawn up, a full round base */}
+        <path
+          d="M7.5 1.2
+             C7.9 4.1 10.1 5.9 11.6 8.1
+             C12.5 9.5 13 10.9 13 12.4
+             C13 15.6 10.6 17.9 7.5 17.9
+             C4.4 17.9 2 15.6 2 12.4
+             C2 10.9 2.5 9.5 3.4 8.1
+             C4.9 5.9 7.1 4.1 7.5 1.2 Z"
+          fill="url(#hdrFlame)"
+        />
+        {/* the inner core — a smaller teardrop of light, breathing harder as the streak grows */}
+        <motion.path
+          d="M7.5 9.4
+             C7.8 10.9 8.9 11.8 9.6 12.9
+             C10 13.6 10.2 14.2 10.2 14.9
+             C10.2 16.5 9 17.6 7.5 17.6
+             C6 17.6 4.8 16.5 4.8 14.9
+             C4.8 14.2 5 13.6 5.4 12.9
+             C6.1 11.8 7.2 10.9 7.5 9.4 Z"
+          fill="#FFE1B8"
+          animate={still ? undefined : { scaleY: [1, 1 + coreA, 1 - coreA * 0.5, 1] }}
+          transition={{ duration: coreDur, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+          style={{ transformOrigin: '50% 92%' }}
+        />
+      </motion.svg>
+    </span>
   );
 }
 
@@ -284,50 +505,9 @@ export function AppHeader() {
           </motion.button>
         )}
 
-        {/* the streak — a clean two-layer teardrop flame, an inner core of light */}
+        {/* the streak — a living flame whose flicker scales with the chain (quiet at 1, proud at 30) */}
         <span title={`day ${streakDays} of being a learner`} style={chipStyle}>
-          <motion.svg
-            width="15"
-            height="19"
-            viewBox="0 0 15 19"
-            role="presentation"
-            aria-hidden
-            animate={{ scaleY: [1, 1.05, 0.97, 1], scaleX: [1, 0.97, 1.03, 1] }}
-            transition={{ duration: 2.4, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
-            style={{ transformOrigin: '50% 100%', display: 'block' }}
-          >
-            <defs>
-              <linearGradient id="hdrFlame" x1="0.5" y1="0" x2="0.5" y2="1">
-                <stop offset="0%" stopColor="#FF8A3D" />
-                <stop offset="100%" stopColor="#F0461F" />
-              </linearGradient>
-            </defs>
-            {/* outer teardrop — tip drawn up, a full round base */}
-            <path
-              d="M7.5 1.2
-                 C7.9 4.1 10.1 5.9 11.6 8.1
-                 C12.5 9.5 13 10.9 13 12.4
-                 C13 15.6 10.6 17.9 7.5 17.9
-                 C4.4 17.9 2 15.6 2 12.4
-                 C2 10.9 2.5 9.5 3.4 8.1
-                 C4.9 5.9 7.1 4.1 7.5 1.2 Z"
-              fill="url(#hdrFlame)"
-            />
-            {/* the inner core — a smaller teardrop of light, breathing on its own */}
-            <motion.path
-              d="M7.5 9.4
-                 C7.8 10.9 8.9 11.8 9.6 12.9
-                 C10 13.6 10.2 14.2 10.2 14.9
-                 C10.2 16.5 9 17.6 7.5 17.6
-                 C6 17.6 4.8 16.5 4.8 14.9
-                 C4.8 14.2 5 13.6 5.4 12.9
-                 C6.1 11.8 7.2 10.9 7.5 9.4 Z"
-              fill="#FFE1B8"
-              animate={{ scaleY: [1, 1.12, 0.94, 1] }}
-              transition={{ duration: 1.7, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
-              style={{ transformOrigin: '50% 92%' }}
-            />
-          </motion.svg>
+          <StreakFlame streakDays={streakDays} />
           {streakDays}
         </span>
 
@@ -342,33 +522,13 @@ export function AppHeader() {
           {xp} xp
         </motion.span>
 
-        {/* identity — the level medallion joined to the avatar as one unit */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <LevelBadge info={level} celebrate={celebrate} />
-          {/* the learner — photo, chosen cast buddy, or initial, all through one resolver */}
-          <motion.button
-            type="button"
-            aria-label={`You — level ${level.level}, profile and settings`}
-            onClick={() => router.navigate({ name: 'you' })}
-            whileHover={{ scale: 1.06 }}
-            whileTap={{ scale: 0.94 }}
-            style={{
-              width: 34,
-              height: 34,
-              borderRadius: 3,
-              border: '1px solid var(--clss-card-border)',
-              background: 'var(--clss-tonal)',
-              padding: 0,
-              overflow: 'hidden',
-              fontFamily: 'inherit',
-              cursor: 'pointer',
-              display: 'grid',
-              placeItems: 'center',
-            }}
-          >
-            {renderAvatar(profile, 32)}
-          </motion.button>
-        </div>
+        {/* identity — the avatar wearing its XP ring, the level struck on its corner */}
+        <IdentityAvatar
+          info={level}
+          celebrate={celebrate}
+          profile={profile}
+          onOpen={() => router.navigate({ name: 'you' })}
+        />
 
         {/* the daily fact card */}
         <AnimatePresence>

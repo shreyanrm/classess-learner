@@ -9,19 +9,54 @@ import { chaptersBySubject, mathChapters, subjects, topicById } from '../../data
 import type { Topic } from '../../data/model';
 import type { Route } from '../../shell/router';
 import type { ProgressStore } from '../../store/progress';
+import { XP_AWARDS } from '../../store/progress';
+import { hueForTopic } from '../../ui/hues';
 
-export type StopKind = 'landing' | 'done' | 'continue' | 'next' | 'review' | 'boss';
+export type StopKind = 'landing' | 'done' | 'continue' | 'next' | 'review' | 'boss' | 'bonus';
 
 export interface ThreadStop {
   id: string;
   kind: StopKind;
   title: string;
   meta: string;
+  /** The XP a quest pays out — shown as its bounty; pigment only once earned. */
+  bounty?: number;
+  /** True once the quest is genuinely earned — lights the stop and its bounty. */
+  done?: boolean;
+  /** The owning subject's hue — the pigment the earned burst arrives in. */
+  hue?: string;
   /** Furthest fraction reached inside a continue topic — drawn as its filament. */
   progress?: number;
   /** Boss gate only: dashed until the day's topic finishes. */
   locked?: boolean;
   route: Route;
+}
+
+const MOLTEN = '#FF5A1F';
+const DAILY_KEY = 'clss-daily-quest-v1';
+const todayStr = (): string => new Date().toISOString().slice(0, 10);
+
+/** Whether today's bonus quest chest has already been claimed. */
+function claimedToday(): boolean {
+  try {
+    return localStorage.getItem(DAILY_KEY) === todayStr();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Claim today's bonus quest. Returns true only on the first claim of the day, so the caller
+ * awards the reward XP exactly once. The date-keyed flag is the real per-day de-dup.
+ */
+export function claimDailyQuest(): boolean {
+  try {
+    if (localStorage.getItem(DAILY_KEY) === todayStr()) return false;
+    localStorage.setItem(DAILY_KEY, todayStr());
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -84,6 +119,7 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
       kind: 'landing',
       title: 'Warm-up',
       meta: `day ${streakDays} of being a learner · done`,
+      done: true,
       route: { name: 'progress' },
     },
     ...doneTopics.map(
@@ -92,6 +128,8 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
         kind: 'done',
         title: t.name,
         meta: 'done · revisit any time',
+        done: true,
+        hue: hueForTopic(t.id),
         route: { name: 'course', topicId: t.id },
       }),
     ),
@@ -103,6 +141,8 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
       kind: 'continue',
       title: continueTopic.name,
       meta: `continue · ${Math.round(continueF * 100)}% walked`,
+      bounty: continueTopic.xp,
+      hue: hueForTopic(continueTopic.id),
       progress: continueF,
       route: { name: 'course', topicId: continueTopic.id },
     });
@@ -113,6 +153,8 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
       kind: 'next',
       title: nextTopic.name,
       meta: 'next up · a fresh idea',
+      bounty: nextTopic.xp,
+      hue: hueForTopic(nextTopic.id),
       route: { name: 'course', topicId: nextTopic.id },
     });
   }
@@ -122,6 +164,7 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
       kind: 'review',
       title: 'Review',
       meta: 'refresh what’s fading',
+      bounty: XP_AWARDS.item,
       route: { name: 'practice' },
     });
   }
@@ -131,10 +174,60 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
       kind: 'boss',
       title: 'Boss gate',
       meta: gateDone ? 'unlocked · ready when you are' : 'locked · finish today’s topic',
+      bounty: gate.xp,
+      hue: hueForTopic(gate.id),
+      done: gateDone,
       locked: !gateDone,
       route: { name: 'course', topicId: gate.id },
     });
   }
+
+  // The daily bonus quest — one date-seeded nudge drawn from real state, paid out from a chest.
+  // Eligibility is real (you can only clear reviews if you've completed something; a mystery only
+  // shows if the world holds an undiscovered one), and the day-of-year seed rotates the pick so it
+  // is stable within a day and different across days.
+  const mysteryTopic = world.find(
+    (t) => (t.kind === 'mystery' || t.kind === 'bonus') && !completed.has(t.id),
+  );
+  const quests = {
+    reviews: {
+      title: 'Clear your reviews',
+      meta: 'daily quest · refresh what is fading',
+      bounty: XP_AWARDS.bonus,
+      route: { name: 'practice' } as Route,
+    },
+    mystery: {
+      title: 'Explore a mystery',
+      meta: 'daily quest · something out of syllabus',
+      bounty: XP_AWARDS.mystery,
+      route: (mysteryTopic
+        ? { name: 'course', topicId: mysteryTopic.id }
+        : { name: 'sandbox' }) as Route,
+    },
+    ask: {
+      title: 'Ask Vidya something',
+      meta: 'daily quest · one good question',
+      bounty: XP_AWARDS.bonus,
+      route: { name: 'chat' } as Route,
+    },
+  };
+  const eligible: (keyof typeof quests)[] = ['ask'];
+  if (completed.size > 0) eligible.unshift('reviews');
+  if (mysteryTopic) eligible.push('mystery');
+  const seed = Math.floor(Date.now() / 86_400_000);
+  const pick = eligible[seed % eligible.length] as keyof typeof quests;
+  const q = quests[pick];
+  const claimed = claimedToday();
+  stops.push({
+    id: 'bonus',
+    kind: 'bonus',
+    title: q.title,
+    meta: claimed ? 'daily quest · bonus claimed' : q.meta,
+    bounty: q.bounty,
+    done: claimed,
+    hue: MOLTEN,
+    route: q.route,
+  });
 
   const currentIndex = Math.max(
     stops.findIndex((s) => s.kind === (continueTopic ? 'continue' : 'next')),

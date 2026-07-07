@@ -13,7 +13,7 @@ import { type FormEvent, useEffect, useLayoutEffect, useRef, useState } from 're
 import { OFFLINE_LINE, useConnectivity } from '../shell/resilience';
 import { useRouter } from '../shell/router';
 import { SendIcon, WaveformIcon } from '../ui/icons';
-import { fluidType, MagneticButton } from '../ui/kit';
+import { FROST, fluidType, MagneticButton } from '../ui/kit';
 import { useVidyaChat } from '../vidya/chat';
 import { TurnAttachments } from '../vidya/paths';
 import { MuteButton } from '../vidya/speech';
@@ -140,24 +140,35 @@ export function ChatScreen() {
     >
       <Whisper onClick={() => router.back()}>◦ back</Whisper>
 
-      {/* her presence — small, alive, above the thread */}
+      {/* her presence — small, alive, floating on frosted glass above the thread */}
       <div
         style={{
           display: 'flex',
-          alignItems: 'center',
           justifyContent: 'center',
-          gap: 10,
           padding: '10px 0 6px',
         }}
       >
-        <VidyaBody size={44} mood={busy ? 'thinking' : mood} gaze="pointer" label="Vidya" />
-        <div>
-          <div style={{ fontWeight: 600, color: 'var(--clss-ink)', lineHeight: 1.1 }}>Vidya</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--clss-ink-faint)' }}>
-            {busy ? 'thinking…' : 'one conversation, always'}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+          style={{
+            ...FROST,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 10,
+            padding: '7px 12px 7px 10px',
+          }}
+        >
+          <VidyaBody size={44} mood={busy ? 'thinking' : mood} gaze="pointer" label="Vidya" />
+          <div>
+            <div style={{ fontWeight: 600, color: 'var(--clss-ink)', lineHeight: 1.1 }}>Vidya</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--clss-ink-faint)' }}>
+              {busy ? 'thinking…' : 'one conversation, always'}
+            </div>
           </div>
-        </div>
-        <MuteButton />
+          <MuteButton />
+        </motion.div>
       </div>
 
       {/* offline: one plain line telling them what still works (family N, the dead-end rule) */}

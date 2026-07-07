@@ -1,7 +1,12 @@
 import { InMemoryKgtopg, type KGtoPG } from '@classess/kgtopg-contract-seed';
 import { resolveConfig, type SdkConfig } from './config';
 import { type EventProvider, InMemoryEventProvider, SupabaseOutboxEventProvider } from './events';
-import { DevMockIdentity, type IdentityProvider, SupabaseAuthIdentity } from './identity';
+import {
+  type AccountProfile,
+  DevMockIdentity,
+  type IdentityProvider,
+  SupabaseAuthIdentity,
+} from './identity';
 import {
   type ContentProvider,
   GatewayLLMProvider,
@@ -32,6 +37,26 @@ export interface Sdk {
   payment: PaymentProvider;
   /** Learner state + Vidya threads: localStorage in local mode; Supabase-reconciled in live mode. */
   state: StateProvider;
+  /**
+   * The optional account layer — Supabase Auth as an ADDITIVE identity+sync layer, present whenever
+   * the Supabase env keys are configured (even in dev-mock/local mode). Signing in never becomes a
+   * wall: the local subject keeps working; a Google session just adds a real identity and syncs the
+   * profile row. Undefined when no Supabase keys are configured (pure local build).
+   */
+  account?: AccountLayer;
+}
+
+/** The additive account surface the app offers from onboarding and You. */
+export interface AccountLayer {
+  isAuthenticated(): boolean;
+  /** The signed-in identity's claims (email/name/avatar), or null when signed out. */
+  profile(): AccountProfile | null;
+  /** Redirect to Google sign-in; the session completes on return via the URL fragment. */
+  signInWithGoogle(redirectTo?: string): Promise<void>;
+  /** End the account session (local caches stay — offline-first). */
+  signOut(): Promise<void>;
+  /** Upsert the learner profile row under auth.uid() (RLS-guarded, best-effort). */
+  syncProfile(row: { display_name?: string; grade?: string; board?: string }): Promise<void>;
 }
 
 /** Never-uploaded placeholder for pre-sign-in live-mode events (RLS would reject them anyway). */
@@ -44,14 +69,19 @@ export function createSdk(overrides: Partial<SdkConfig> = {}): Sdk {
     // Secrets/keys come from env only — live auth without them is a misconfiguration, not a mode.
     throw new Error('DEV_AUTH=false requires SUPABASE_URL and SUPABASE_ANON_KEY from the env.');
   }
-  const liveAuth =
-    !config.devAuth && config.supabaseUrl && config.supabaseAnonKey
+  // Supabase Auth exists whenever the (client-safe) keys are configured — additively, even in
+  // dev-mock mode. It adopts an OAuth session from the URL fragment on construction, so a Google
+  // round-trip completes on the next boot regardless of which mode the app runs in.
+  const supabaseAuth =
+    config.supabaseUrl && config.supabaseAnonKey
       ? new SupabaseAuthIdentity({
           url: config.supabaseUrl,
           anonKey: config.supabaseAnonKey,
           surface: config.surface,
         })
       : null;
+  // In live mode (DEV_AUTH=false) it IS the app's identity; in dev-mock it stays a side account.
+  const liveAuth = !config.devAuth ? supabaseAuth : null;
   const identity: IdentityProvider = liveAuth ?? new DevMockIdentity(config);
 
   // Live mode: auth.uid() IS the canonical subject, and consent stays un_elevated until verifiable
@@ -101,5 +131,34 @@ export function createSdk(overrides: Partial<SdkConfig> = {}): Sdk {
   const messaging: MessagingProvider = new MockMessagingProvider();
   const payment: PaymentProvider = new MockPaymentProvider();
 
-  return { config, identity, kgtopg, events, llm, content, messaging, payment, state };
+  // The additive account layer: profile sync rides its own REST client keyed to the account token
+  // (auth.uid()), independent of persistMode — so a Google session upserts profiles_cache even when
+  // the device is otherwise in local mode.
+  const accountRest =
+    supabaseAuth && config.supabaseUrl && config.supabaseAnonKey
+      ? new SupabaseRest({
+          url: config.supabaseUrl,
+          anonKey: config.supabaseAnonKey,
+          accessToken: () => supabaseAuth.currentAccessToken(),
+        })
+      : null;
+  const account: AccountLayer | undefined = supabaseAuth
+    ? {
+        isAuthenticated: () => supabaseAuth.isAuthenticated(),
+        profile: () => supabaseAuth.accountProfile(),
+        signInWithGoogle: (redirectTo) => supabaseAuth.auth.signInWithGoogle(redirectTo),
+        signOut: () => supabaseAuth.auth.signOut(),
+        syncProfile: async (row) => {
+          const sub = supabaseAuth.subjectId;
+          if (!sub || !accountRest) return;
+          try {
+            await accountRest.upsert('profiles_cache', { subject_id: sub, ...row }, 'subject_id');
+          } catch {
+            // best-effort — offline or the row is not yet writable; the local profile still holds
+          }
+        },
+      }
+    : undefined;
+
+  return { config, identity, kgtopg, events, llm, content, messaging, payment, state, account };
 }

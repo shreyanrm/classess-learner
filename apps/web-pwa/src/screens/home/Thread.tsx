@@ -8,11 +8,12 @@
  * energy flow when the boss unlocks, drifting plus-field ambience.
  */
 
-import { motion } from 'framer-motion';
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import type { Route } from '../../shell/router';
 import { ChevronIcon } from '../../ui/icons';
 import { fluidType } from '../../ui/kit';
+import { sfx } from '../../ui/sound';
 import type { StopKind, ThreadStop } from './stops';
 
 const INK = 'var(--clss-ink)';
@@ -25,6 +26,7 @@ const ULTRA = 'var(--clss-ultramarine)';
 const MAGENTA = '#CC1E7A';
 const ACID = '#66B300';
 const TEAL = '#0FA3B1';
+const MOLTEN = '#FF5A1F';
 const SPRING = { type: 'spring', stiffness: 260, damping: 26 } as const;
 
 interface Pt {
@@ -272,6 +274,62 @@ function StarMedallion() {
   );
 }
 
+/** The daily bonus quest — a chest that opens the moment the day is sealed. */
+function ChestMedallion({ open }: { open: boolean }) {
+  const body = open ? 'url(#th-chest)' : 'color-mix(in srgb, var(--clss-ink) 8%, transparent)';
+  return (
+    <svg
+      width="42"
+      height="42"
+      viewBox="0 0 46 46"
+      role="presentation"
+      aria-hidden
+      style={{ display: 'block', flexShrink: 0 }}
+    >
+      <defs>
+        <linearGradient id="th-chest" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#FFB86B" />
+          <stop offset="100%" stopColor={MOLTEN} />
+        </linearGradient>
+      </defs>
+      {open && <circle cx="23" cy="24" r="17" fill={MOLTEN} opacity="0.12" />}
+      <path
+        d="M10 22 C10 13 15.5 10 23 10 C30.5 10 36 13 36 22 Z"
+        fill={body}
+        stroke={open ? 'none' : INK_40}
+        strokeWidth={open ? 0 : 1.4}
+      />
+      <rect
+        x="9.5"
+        y="21"
+        width="27"
+        height="16"
+        rx="2.5"
+        fill={body}
+        stroke={open ? 'none' : INK_40}
+        strokeWidth={open ? 0 : 1.4}
+      />
+      <rect
+        x="9.5"
+        y="24.5"
+        width="27"
+        height="3"
+        fill={open ? '#FFFFFF' : INK_40}
+        opacity="0.55"
+      />
+      <rect x="20.5" y="25" width="5" height="7" rx="1.4" fill={open ? '#FFFFFF' : INK_40} />
+      {open && (
+        <path
+          d="M23 4 v4 M17 6 l2 3 M29 6 l-2 3"
+          stroke={MOLTEN}
+          strokeWidth="1.6"
+          strokeLinecap="round"
+        />
+      )}
+    </svg>
+  );
+}
+
 function medallionFor(stop: ThreadStop): ReactNode {
   switch (stop.kind) {
     case 'landing':
@@ -286,6 +344,8 @@ function medallionFor(stop: ThreadStop): ReactNode {
       return <CycleMedallion />;
     case 'boss':
       return <ShieldMedallion lit={!stop.locked} />;
+    case 'bonus':
+      return <ChestMedallion open={Boolean(stop.done)} />;
   }
 }
 
@@ -296,9 +356,36 @@ const META_COLOR: Record<StopKind, string> = {
   next: INK_40,
   review: INK_60,
   boss: INK_40,
+  bonus: MOLTEN,
 };
 
 /* ------------------------------------------------------------------ stop card */
+
+/** The XP a quest pays — quiet ink while it is still a promise, subject-hue pigment once earned. */
+function BountyChip({ amount, hue, earned }: { amount: number; hue?: string; earned?: boolean }) {
+  const pigment = hue ?? ULTRA;
+  return (
+    <span
+      style={{
+        flexShrink: 0,
+        display: 'inline-flex',
+        alignItems: 'center',
+        height: 22,
+        padding: '0 8px',
+        borderRadius: 3,
+        fontSize: 11.5,
+        fontWeight: 700,
+        letterSpacing: '0.01em',
+        fontVariantNumeric: 'tabular-nums',
+        color: earned ? pigment : INK_60,
+        background: earned ? `color-mix(in srgb, ${pigment} 14%, transparent)` : 'transparent',
+        border: earned ? '1px solid transparent' : `1px solid ${HAIR}`,
+      }}
+    >
+      +{amount}
+    </span>
+  );
+}
 
 function StopCard({
   stop,
@@ -307,6 +394,7 @@ function StopCard({
   width,
   delay,
   onGo,
+  onArrive,
 }: {
   stop: ThreadStop;
   x: number;
@@ -314,11 +402,15 @@ function StopCard({
   width: number;
   delay: number;
   onGo: (route: Route) => void;
+  onArrive?: (stop: ThreadStop) => void;
 }) {
   return (
     <motion.button
       type="button"
-      onClick={() => onGo(stop.route)}
+      onClick={() => {
+        onArrive?.(stop);
+        onGo(stop.route);
+      }}
       initial={{ opacity: 0, y: 18, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ ...SPRING, delay }}
@@ -385,6 +477,9 @@ function StopCard({
           </span>
         )}
       </span>
+      {stop.bounty !== undefined && (
+        <BountyChip amount={stop.bounty} hue={stop.hue} earned={stop.done} />
+      )}
       <span aria-hidden style={{ color: INK_40, flexShrink: 0 }}>
         <ChevronIcon size={15} />
       </span>
@@ -478,6 +573,35 @@ function Node({ stop, current, delay }: { stop: ThreadStop; current: boolean; de
         )}
       </motion.g>
     );
+  if (stop.kind === 'bonus')
+    return (
+      <motion.g
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ ...SPRING, delay }}
+      >
+        <rect
+          x="-8"
+          y="-6"
+          width="16"
+          height="12"
+          rx="2.5"
+          fill={stop.done ? MOLTEN : '#FFFFFF'}
+          stroke={stop.done ? 'none' : INK_40}
+          strokeWidth="1.8"
+          strokeDasharray={stop.done ? undefined : '3 4'}
+        />
+        <line
+          x1="-8"
+          x2="8"
+          y1="-1.5"
+          y2="-1.5"
+          stroke={stop.done ? '#FFFFFF' : INK_40}
+          strokeWidth="1.4"
+          strokeOpacity={stop.done ? 0.7 : 1}
+        />
+      </motion.g>
+    );
   // next (not current) and review — quiet stops still ahead
   return (
     <motion.circle
@@ -510,17 +634,22 @@ const DRIFT = [
 
 /* ------------------------------------------------------------------ the thread */
 
+const SEEN_KEY = 'clss-thread-seen-v1';
+
 export function Thread({
   stops,
   currentIndex,
   vidya,
   onGo,
+  onArrive,
 }: {
   stops: ThreadStop[];
   currentIndex: number;
   /** Vidya's body (with her own choreography) — seated beside the current stop. */
   vidya?: ReactNode;
   onGo: (route: Route) => void;
+  /** Fired the instant a stop is tapped — lets the home claim the bonus quest before it routes. */
+  onArrive?: (stop: ThreadStop) => void;
 }) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [w, setW] = useState(1200);
@@ -534,6 +663,50 @@ export function Thread({
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  // Earned burst: a stop that is newly done since the learner last looked lights with a small
+  // subject-hue pop and a tick — completion usually happens inside a course, so the reward lands
+  // when they walk back onto the thread. The seen-set (real, persisted) is what makes it earned,
+  // not a mount-time firework: a fresh install lights nothing until something is actually finished.
+  const doneNow = useMemo(() => stops.filter((s) => s.done).map((s) => s.id), [stops]);
+  const [burst, setBurst] = useState<string[]>([]);
+  const [sealed, setSealed] = useState(false);
+  useEffect(() => {
+    let seen: string[] | null = null;
+    try {
+      const raw = localStorage.getItem(SEEN_KEY);
+      seen = raw === null ? null : (JSON.parse(raw) as string[]);
+    } catch {
+      seen = null;
+    }
+    const persist = () => {
+      try {
+        localStorage.setItem(SEEN_KEY, JSON.stringify(doneNow));
+      } catch {
+        // storage unavailable — the burst just won't replay across reloads
+      }
+    };
+    if (seen === null) {
+      persist(); // first ever paint — adopt the current state without a firework
+      return;
+    }
+    const fresh = doneNow.filter((id) => !(seen as string[]).includes(id));
+    persist();
+    if (fresh.length === 0) return;
+    setBurst(fresh);
+    sfx.tap(); // the tick that lands with the light (debounced, so a batch is still one tick)
+    // Finishing today's topic (its boss lit) seals the day — the rarest beat gets the fanfare.
+    const daySealed = fresh.some((id) => id.startsWith('boss'));
+    if (daySealed) {
+      setSealed(true);
+      sfx.fanfare();
+    }
+    const t = window.setTimeout(() => {
+      setBurst([]);
+      setSealed(false);
+    }, 3400);
+    return () => window.clearTimeout(t);
+  }, [doneNow]);
 
   // --- geometry, all from the measured width — the thread reflows per viewport
   const cx = w / 2;
@@ -663,6 +836,19 @@ export function Thread({
         {stops.map((s, i) => (
           <g key={s.id} transform={`translate(${(pts[i] as Pt).x} ${(pts[i] as Pt).y})`}>
             <Node stop={s} current={i === currentIndex} delay={nodeDelay(i)} />
+            {burst.includes(s.id) && (
+              <motion.circle
+                cx="0"
+                cy="0"
+                r="11"
+                fill="none"
+                stroke={s.hue ?? MOLTEN}
+                strokeWidth="2.4"
+                initial={{ scale: 0.4, opacity: 0.85 }}
+                animate={{ scale: 3.2, opacity: 0 }}
+                transition={{ duration: 1.1, ease: 'easeOut' }}
+              />
+            )}
           </g>
         ))}
       </svg>
@@ -693,8 +879,50 @@ export function Thread({
           width={CW}
           delay={nodeDelay(i) + 0.12}
           onGo={onGo}
+          onArrive={onArrive}
         />
       ))}
+
+      {/* the day, sealed — a quiet moment the instant today's topic is finished */}
+      <AnimatePresence>
+        {sealed && (
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={SPRING}
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: H - 78,
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 6,
+              pointerEvents: 'none',
+            }}
+          >
+            <div
+              style={{
+                fontFamily: 'Caveat, cursive',
+                fontSize: 26,
+                fontWeight: 600,
+                color: MOLTEN,
+                lineHeight: 1,
+              }}
+            >
+              the day, sealed
+            </div>
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: 72 }}
+              transition={{ ...SPRING, delay: 0.1 }}
+              style={{ height: 2, borderRadius: 2, background: MOLTEN }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* the mystery — discovered, never assigned */}
       <motion.button

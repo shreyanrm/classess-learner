@@ -180,17 +180,30 @@ class MemoryKV implements KVStorage {
   }
 }
 
-/** Read the `sub` claim (auth.uid) straight off a JWT — no verification needed client-side. */
-function jwtSub(token: string): string | null {
+/** Decode a JWT payload client-side (no verification — GoTrue signs it, RLS re-verifies server-side). */
+function jwtClaims(token: string): Record<string, unknown> | null {
   try {
     const payload = token.split('.')[1] ?? '';
-    const json = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/'))) as {
-      sub?: string;
-    };
-    return json.sub ?? null;
+    const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+    return JSON.parse(json) as Record<string, unknown>;
   } catch {
     return null;
   }
+}
+
+/** Read the `sub` claim (auth.uid) straight off a JWT. */
+function jwtSub(token: string): string | null {
+  const c = jwtClaims(token);
+  return typeof c?.sub === 'string' ? c.sub : null;
+}
+
+/** The identity claims an OAuth session carries — Google fills email + name + avatar. */
+export interface AccountProfile {
+  /** auth.uid() — the canonical subject. */
+  subjectId: string;
+  email?: string;
+  name?: string;
+  avatar?: string;
 }
 
 async function gotrueError(res: Response): Promise<string> {
@@ -270,6 +283,21 @@ export class SupabaseAuthIdentity implements IdentityProvider {
   /** The current access token without a refresh round-trip (SupabaseRest reads this per request). */
   currentAccessToken(): string | undefined {
     return this.session?.access_token;
+  }
+
+  /** Identity claims from the current session's JWT — Google fills these. Null when signed out. */
+  accountProfile(): AccountProfile | null {
+    if (!this.session) return null;
+    const c = jwtClaims(this.session.access_token) ?? {};
+    const meta = (c.user_metadata ?? {}) as Record<string, unknown>;
+    const str = (v: unknown): string | undefined =>
+      typeof v === 'string' && v.trim() ? v.trim() : undefined;
+    return {
+      subjectId: this.session.subject_id,
+      email: str(c.email),
+      name: str(meta.full_name) ?? str(meta.name),
+      avatar: str(meta.avatar_url) ?? str(meta.picture),
+    };
   }
 
   // --- The flows ------------------------------------------------------------

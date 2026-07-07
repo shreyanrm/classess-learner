@@ -89,7 +89,10 @@ function Pedestal({
 }) {
   return (
     <motion.div
-      whileHover={earned ? { y: -3 } : undefined}
+      initial="rest"
+      animate="rest"
+      whileHover={earned ? 'hover' : undefined}
+      variants={{ rest: { y: 0 }, hover: { y: -5 } }}
       transition={{ type: 'spring', stiffness: 380, damping: 24 }}
       style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}
     >
@@ -98,16 +101,45 @@ function Pedestal({
           width: '100%',
           height: 132,
           borderRadius: 3,
-          background: earned ? `${hue}0D` : 'var(--clss-tonal)',
+          // gallery light: earned pedestals glow from above in their hue; empty ones stay flat tonal
+          background: earned
+            ? `linear-gradient(180deg, ${hue}1A 0%, ${hue}08 46%, ${hue}03 100%)`
+            : 'var(--clss-tonal)',
           border: earned
             ? '1px solid var(--clss-card-border)'
             : '1px dashed var(--clss-hairline-on-paper-strong)',
           display: 'grid',
           placeItems: 'center',
           position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        <div style={{ opacity: earned ? 1 : 0.4, filter: earned ? undefined : 'grayscale(1)' }}>
+        {/* the shelf light — a soft pool the object stands in, brightening as you lean in */}
+        {earned && (
+          <motion.div
+            aria-hidden
+            variants={{ rest: { opacity: 0.5 }, hover: { opacity: 0.9 } }}
+            transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+            style={{
+              position: 'absolute',
+              bottom: -10,
+              width: 108,
+              height: 84,
+              borderRadius: '50%',
+              background: `radial-gradient(ellipse at center bottom, ${hue}33, ${hue}00 70%)`,
+              filter: 'blur(3px)',
+              pointerEvents: 'none',
+            }}
+          />
+        )}
+        {/* locked objects are true silhouettes — the shape without the light, awaiting its moment */}
+        <div
+          style={{
+            position: 'relative',
+            opacity: earned ? 1 : 0.42,
+            filter: earned ? undefined : 'grayscale(1) contrast(0) brightness(0.9)',
+          }}
+        >
           {art}
         </div>
         {/* the plinth — a thin lit base the object rests on */}
@@ -119,7 +151,7 @@ function Pedestal({
             height: 3,
             borderRadius: 2,
             background: earned ? hue : 'var(--clss-hairline-on-paper-strong)',
-            opacity: earned ? 0.5 : 1,
+            opacity: earned ? 0.55 : 1,
           }}
         />
       </div>

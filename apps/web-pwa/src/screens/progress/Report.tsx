@@ -7,6 +7,7 @@
  * trajectory — "at this pace, all N are yours by <date>" — a simple linear pace, never astrology.
  */
 
+import { motion, useReducedMotion } from 'framer-motion';
 import { useMemo } from 'react';
 import { loadMind, medianLatencyMs } from '../../store/mind';
 import { useSdk } from '../../store/sdk';
@@ -114,8 +115,9 @@ export function computeTrajectory(
 
 // --- the surface ---------------------------------------------------------------------------------
 
-/** A thirty-day area of daily moments — the shape of showing up. */
+/** A thirty-day area of daily moments — the shape of showing up, drawn in as it scrolls into view. */
 function ActivityGraph({ counts, now }: { counts: Record<string, number>; now: number }) {
+  const reduced = useReducedMotion();
   const days = useMemo(
     () =>
       Array.from({ length: 30 }, (_, i) => {
@@ -129,8 +131,10 @@ function ActivityGraph({ counts, now }: { counts: Record<string, number>; now: n
   const H = 60;
   const step = W / (days.length - 1);
   const pts = days.map((n, i) => [i * step, H - (n / max) * (H - 6) - 3] as const);
-  const line = pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
-  const area = `0,${H} ${line} ${W},${H}`;
+  const linePath = pts
+    .map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}`)
+    .join(' ');
+  const area = `0,${H} ${pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ')} ${W},${H}`;
   return (
     <svg
       viewBox={`0 0 ${W} ${H}`}
@@ -147,21 +151,37 @@ function ActivityGraph({ counts, now }: { counts: Record<string, number>; now: n
           <stop offset="100%" stopColor={ULTRA} stopOpacity={0} />
         </linearGradient>
       </defs>
-      <polygon points={area} fill="url(#rep-act)" />
-      <polyline
-        points={line}
+      {/* the fill swells up from the baseline as the line draws across it */}
+      <motion.polygon
+        points={area}
+        fill="url(#rep-act)"
+        style={{ transformOrigin: '50% 100%' }}
+        initial={reduced ? false : { opacity: 0, scaleY: 0.4 }}
+        whileInView={{ opacity: 1, scaleY: 1 }}
+        viewport={{ once: true, amount: 0.6 }}
+        transition={{ type: 'spring', stiffness: 120, damping: 22, delay: 0.1 }}
+      />
+      {/* the line traces itself left to right — the spring draw-in */}
+      <motion.path
+        d={linePath}
         fill="none"
         stroke={ULTRA}
         strokeWidth={1.4}
         strokeLinejoin="round"
         strokeLinecap="round"
+        initial={reduced ? false : { pathLength: 0 }}
+        whileInView={{ pathLength: 1 }}
+        viewport={{ once: true, amount: 0.6 }}
+        transition={{ type: 'spring', stiffness: 55, damping: 20 }}
       />
     </svg>
   );
 }
 
 function AccuracyBar({ label, ratio, total }: { label: string; ratio: number; total: number }) {
+  const reduced = useReducedMotion();
   const pct = Math.round(ratio * 100);
+  const target = `${Math.max(4, pct)}%`;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
@@ -178,9 +198,14 @@ function AccuracyBar({ label, ratio, total }: { label: string; ratio: number; to
           overflow: 'hidden',
         }}
       >
-        <div
+        {/* the fill springs out to its mark when the bar scrolls into view */}
+        <motion.div
+          initial={reduced ? false : { width: 0 }}
+          whileInView={{ width: target }}
+          viewport={{ once: true, amount: 0.8 }}
+          transition={{ type: 'spring', stiffness: 90, damping: 20 }}
           style={{
-            width: `${Math.max(4, pct)}%`,
+            width: reduced ? target : undefined,
             height: '100%',
             borderRadius: 2,
             background:

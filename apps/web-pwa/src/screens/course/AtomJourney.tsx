@@ -99,6 +99,8 @@ export function AtomJourney({
   const resumedRef = useRef(card !== 'arrival');
   const [sub, setSub] = useState(0);
   const [items, setItems] = useState<PracticeItem[]>([]);
+  // how many of the boss's three the learner got right — the greeting's performance-star signal
+  const [bossCorrect, setBossCorrect] = useState(3);
   const enteredAt = useRef(Date.now());
   const attempts = useRef(0);
   const enteredFired = useRef(false);
@@ -218,7 +220,13 @@ export function AtomJourney({
   const toWhatif = useCallback(() => go('whatif'), [go]);
   const toPractice = useCallback(() => go('practice'), [go]);
   const toBossdoor = useCallback(() => go('bossdoor'), [go]);
-  const toGreeting = useCallback(() => go('greeting'), [go]);
+  const toGreeting = useCallback(
+    (correct: number) => {
+      setBossCorrect(correct);
+      go('greeting');
+    },
+    [go],
+  );
   const toTease = useCallback(() => go('tease'), [go]);
   const toMystery = useCallback(() => go('mystery'), [go]);
   const finishMystery = useCallback(() => {
@@ -385,6 +393,10 @@ export function AtomJourney({
           enteredAt={enteredAt.current}
           setBar={setBar}
           onContinue={toTease}
+          boss
+          bossCorrect={bossCorrect}
+          bossTotal={bossItems.length}
+          itemsTotal={practiceItems.length + bossItems.length}
         />
       )}
 

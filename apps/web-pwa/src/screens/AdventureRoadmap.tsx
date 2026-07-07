@@ -18,7 +18,7 @@
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { Chapter, Topic } from '../data/model';
 import { useRouter } from '../shell/router';
@@ -27,6 +27,7 @@ import { hash } from '../ui/art';
 import { type BiomePalette, biomeFor, resolveBiome } from '../ui/biomes';
 import { CAST, type CastId } from '../ui/cast';
 import type { SubjectTone } from '../ui/hues';
+import { FROST } from '../ui/kit';
 import { ambience, sfx } from '../ui/sound';
 
 type Intent = 'learn' | 'practice';
@@ -241,17 +242,7 @@ function CampSmoke({ x, y, reduced }: { x: number; y: number; reduced: boolean }
   );
 }
 
-// --- frosted chrome ----------------------------------------------------------------------------
-
-const FROST: CSSProperties = {
-  background: 'color-mix(in srgb, var(--clss-paper) 62%, transparent)',
-  backdropFilter: 'blur(16px) saturate(1.25)',
-  WebkitBackdropFilter: 'blur(16px) saturate(1.25)',
-  border: '0.5px solid color-mix(in srgb, var(--clss-ink) 14%, transparent)',
-  borderRadius: 3,
-};
-
-// --- the screen --------------------------------------------------------------------------------
+// --- the screen (frosted chrome comes from ui/kit's hoisted FROST recipe) -----------------------
 
 export function AdventureRoadmap({
   chapters,

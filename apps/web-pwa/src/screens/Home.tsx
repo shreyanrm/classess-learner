@@ -11,14 +11,26 @@
 import { useRegisterTarget, useVidyaBus, VidyaBody } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from '../shell/router';
 import { loadMind, loadProactivity, proactiveChip } from '../store/mind';
 import { useProgress } from '../store/progress';
 import { SendIcon, SparkIcon, WaveformIcon } from '../ui/icons';
-import { AuroraButton, cascade, fluidSpace, fluidType, Kbd, MagneticButton, rise } from '../ui/kit';
+import {
+  AuroraButton,
+  cascade,
+  fluidSpace,
+  fluidType,
+  Kbd,
+  MagneticButton,
+  PARALLAX,
+  rise,
+  useParallax,
+  usePointerTilt,
+} from '../ui/kit';
 import { useVidyaChat } from '../vidya/chat';
 import { useVidyaVoice } from '../vidya/voice';
-import { deriveStops } from './home/stops';
+import { claimDailyQuest, deriveStops } from './home/stops';
 import { Thread } from './home/Thread';
 import { loadProfile } from './you/profile';
 
@@ -85,9 +97,37 @@ const CHIPS: { label: string; prompt: string }[] = [
   },
 ];
 
+/**
+ * The sky plane (MOTION.md §1) — a calm ultramarine wash and Vidya's warm beam, drifting at the
+ * 0.08 sky rate behind the whole home. Portaled to <body> so it stays viewport-pinned past the
+ * route wrapper's residual transform (the same escape the back pill makes). Decorative, muted.
+ */
+function HomeSky() {
+  const skyRef = useParallax<HTMLDivElement>(-PARALLAX.sky, { max: 120 });
+  const node = (
+    <div
+      ref={skyRef}
+      aria-hidden
+      style={{
+        position: 'fixed',
+        inset: '-12% -8% 20% -8%',
+        zIndex: -1,
+        pointerEvents: 'none',
+        willChange: 'transform',
+        background:
+          'radial-gradient(58% 40% at 50% 4%, var(--clss-ultramarine-soft) 0%, transparent 72%),' +
+          ' radial-gradient(46% 30% at 50% 30%, rgba(255,201,60,0.06) 0%, transparent 70%)',
+      }}
+    />
+  );
+  return typeof document === 'undefined' ? node : createPortal(node, document.body);
+}
+
 export function Home() {
   const router = useRouter();
   const { ask, busy, mood, setMood } = useVidyaChat();
+  // Pointer parallax on the hero (MOTION.md §1): desktop only, ±6px, spring-lagged.
+  const tilt = usePointerTilt(6);
   const progress = useProgress();
   const { publishPage } = useVidyaBus();
   const [draft, setDraft] = useState('');
@@ -210,7 +250,9 @@ export function Home() {
       }}
       style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}
     >
-      <VidyaBody size={96} mood={busy ? 'thinking' : mood} gaze="pointer" label="Vidya" />
+      <motion.div style={{ x: tilt.x, y: tilt.y }}>
+        <VidyaBody size={96} mood={busy ? 'thinking' : mood} gaze="pointer" label="Vidya" />
+      </motion.div>
       <div
         style={{
           fontFamily: 'Caveat, cursive',
@@ -229,6 +271,7 @@ export function Home() {
 
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+      <HomeSky />
       {/* beneath the global AppHeader — nothing at the top edge */}
       <motion.div
         variants={cascade}
@@ -458,6 +501,12 @@ export function Home() {
           currentIndex={currentIndex}
           vidya={vidyaNode}
           onGo={(route) => router.navigate(route)}
+          onArrive={(stop) => {
+            // The bonus chest pays out its shown bounty as real XP, once per day.
+            if (stop.kind === 'bonus' && stop.bounty !== undefined && claimDailyQuest()) {
+              progress.award('bonus', { amount: stop.bounty, hue: stop.hue });
+            }
+          }}
         />
       </div>
 

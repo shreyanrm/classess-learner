@@ -26,7 +26,7 @@ import { useSdk } from '../store/sdk';
 import { ChapterFiligree, SubjectGlyph, TopicSigil } from '../ui/art';
 import { hueForTopic, type SubjectTone, toneForSubject } from '../ui/hues';
 import { ChevronIcon } from '../ui/icons';
-import { cascade, MagneticButton, rise } from '../ui/kit';
+import { cascade, MagneticButton, PARALLAX, rise, useParallax } from '../ui/kit';
 import { loadViewPref, type SubjectView, saveViewPref } from '../ui/viewPref';
 import { type BridgePlan, composeBridge, masteredGround } from '../vidya/tutor';
 import { AdventureRoadmap } from './AdventureRoadmap';
@@ -604,6 +604,8 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
     s.chapters.map((ch) => ({ chapter: ch, tone: s.tone })),
   );
   const [openChapter, setOpenChapter] = useState<string | null>(null);
+  // The glyph stage rides the context plane under the scrolling chapter list (MOTION.md §1).
+  const glyphParallax = useParallax<HTMLDivElement>(PARALLAX.context, { max: 44 });
   const [view, setView] = useState<SubjectView>(loadViewPref);
   const setViewPref = (v: SubjectView) => {
     setView(v);
@@ -654,6 +656,7 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
       >
         <SubjectSceneBackdrop subjectId={subjectId} wide={isDesktop} />
         <div
+          ref={glyphParallax}
           style={{
             position: 'absolute',
             right: isDesktop ? '8%' : 16,
@@ -662,6 +665,7 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
             display: 'flex',
             alignItems: 'center',
             pointerEvents: 'none',
+            willChange: 'transform',
           }}
         >
           <motion.div
