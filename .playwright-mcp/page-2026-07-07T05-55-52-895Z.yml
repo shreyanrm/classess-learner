@@ -1,0 +1,48 @@
+- generic [ref=f29e2]:
+  - generic [ref=f29e1382]:
+    - banner [ref=f29e1383]:
+      - button "Close course" [ref=f29e1384] [cursor=pointer]:
+        - img [ref=f29e1385]
+      - generic [ref=f29e1407]:
+        - button "Replay Vidya" [ref=f29e1408] [cursor=pointer]:
+          - img [ref=f29e1409]
+        - button "Unmute Vidya" [pressed] [ref=f29e1412] [cursor=pointer]:
+          - img [ref=f29e1413]
+    - main [ref=f29e1416]:
+      - generic [ref=f29e1418]:
+        - generic [ref=f29e1419]:
+          - generic:
+            - img
+          - generic [ref=f29e1420]:
+            - img
+          - img [ref=f29e1422]
+        - generic [ref=f29e1429]: a working course, honestly floored
+        - generic [ref=f29e1430]: variables on both sides
+        - generic [ref=f29e1431]:
+          - generic [ref=f29e1432]: 1meet variables on both sides
+          - generic [ref=f29e1433]: 2feel the rule
+          - generic [ref=f29e1434]: 3predict, then check
+          - generic [ref=f29e1435]: 4where it bends
+          - generic [ref=f29e1436]: 5the workbook
+          - generic [ref=f29e1437]: 6the boss
+          - generic [ref=f29e1438]: the fully generated course is still in verification — this working path is live now and follows the same grammar.
+    - button "start the working course" [ref=f29e1441] [cursor=pointer]:
+      - generic [ref=f29e1442]: start the working course
+  - banner:
+    - img "Classess" [ref=f29e221]
+    - generic [ref=f29e222]:
+      - generic "day 12 of being a learner" [ref=f29e223]:
+        - img [ref=f29e225]
+        - text: "12"
+      - generic [ref=f29e228]: 540 xp
+      - generic [ref=f29e229]:
+        - img [ref=f29e230]
+        - button "You — level 4, profile and settings" [ref=f29e233] [cursor=pointer]:
+          - generic "fox" [ref=f29e234]:
+            - img [ref=f29e236]
+        - generic [ref=f29e251]: "4"
+  - generic [ref=f29e430]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f29e431] [cursor=pointer]:
+      - img [ref=f29e435]

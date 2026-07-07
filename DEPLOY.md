@@ -98,13 +98,13 @@ Vercel instead.
 
 ## 3. Supabase → migrations
 
-Project: **MSR Build** (`okesmrstrynfjjikfbtv`, ap-south-1). Migrations in
-`infra/supabase/migrations/` are the source of truth (to date applied via the
-Supabase MCP; the CLI reproduces the same state):
+Project: **canonical** (`keepraxqagzgjrrweryt`). Migrations in
+`infra/supabase/migrations/` are the source of truth (applied via the Supabase
+MCP or the CLI, which reproduces the same state):
 
 ```sh
 supabase login
-supabase --workdir infra link --project-ref okesmrstrynfjjikfbtv
+supabase --workdir infra link --project-ref keepraxqagzgjrrweryt
 supabase --workdir infra db push     # applies infra/supabase/migrations in order
 ```
 

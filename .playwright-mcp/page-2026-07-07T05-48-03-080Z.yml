@@ -1,0 +1,277 @@
+- generic [ref=f24e1]:
+  - generic [ref=f24e2]:
+    - generic [ref=f24e257]:
+      - banner [ref=f24e258]:
+        - button "choose your avatar" [ref=f24e259] [cursor=pointer]:
+          - generic "fox" [ref=f24e261]:
+            - img [ref=f24e263]
+        - generic [ref=f24e278]:
+          - textbox "your name" [ref=f24e279]: Shreyan
+          - button "class 10 · CBSE · change" [ref=f24e280] [cursor=pointer]:
+            - text: class 10 · CBSE
+            - generic [ref=f24e281]: · change
+      - generic [ref=f24e283]:
+        - generic [ref=f24e284]: the ledger
+        - generic [ref=f24e285]:
+          - generic [ref=f24e286]:
+            - generic [ref=f24e287]:
+              - generic [ref=f24e288]: "540"
+              - generic [ref=f24e289]: xp
+            - generic [ref=f24e290]:
+              - generic [ref=f24e291]:
+                - generic [ref=f24e292]: level 4
+                - generic [ref=f24e293]: 20 xp to level 5
+              - generic "level 4 · 180/200 xp to level 5" [ref=f24e294]:
+                - img [ref=f24e295]
+                - generic [ref=f24e298]: "4"
+          - generic [ref=f24e299]: day 12 of being a learner
+          - img "active on 7 of the last 7 days" [ref=f24e300]
+          - generic [ref=f24e308]: ACTIVITY · 30 DAYS
+          - img "this month's activity intensity" [ref=f24e309]:
+            - generic "2026-06-08 — 0 moments" [ref=f24e310]
+            - generic "2026-06-09 — 0 moments" [ref=f24e311]
+            - generic "2026-06-10 — 0 moments" [ref=f24e312]
+            - generic "2026-06-11 — 0 moments" [ref=f24e313]
+            - generic "2026-06-12 — 0 moments" [ref=f24e314]
+            - generic "2026-06-13 — 0 moments" [ref=f24e315]
+            - generic "2026-06-14 — 0 moments" [ref=f24e316]
+            - generic "2026-06-15 — 0 moments" [ref=f24e317]
+            - generic "2026-06-16 — 0 moments" [ref=f24e318]
+            - generic "2026-06-17 — 0 moments" [ref=f24e319]
+            - generic "2026-06-18 — 0 moments" [ref=f24e320]
+            - generic "2026-06-19 — 0 moments" [ref=f24e321]
+            - generic "2026-06-20 — 0 moments" [ref=f24e322]
+            - generic "2026-06-21 — 0 moments" [ref=f24e323]
+            - generic "2026-06-22 — 0 moments" [ref=f24e324]
+            - generic "2026-06-23 — 0 moments" [ref=f24e325]
+            - generic "2026-06-24 — 0 moments" [ref=f24e326]
+            - generic "2026-06-25 — 0 moments" [ref=f24e327]
+            - generic "2026-06-26 — 0 moments" [ref=f24e328]
+            - generic "2026-06-27 — 0 moments" [ref=f24e329]
+            - generic "2026-06-28 — 0 moments" [ref=f24e330]
+            - generic "2026-06-29 — 0 moments" [ref=f24e331]
+            - generic "2026-06-30 — 0 moments" [ref=f24e332]
+            - generic "2026-07-01 — 1 moments" [ref=f24e333]
+            - generic "2026-07-02 — 1 moments" [ref=f24e334]
+            - generic "2026-07-03 — 1 moments" [ref=f24e335]
+            - generic "2026-07-04 — 1 moments" [ref=f24e336]
+            - generic "2026-07-05 — 1 moments" [ref=f24e337]
+            - generic "2026-07-06 — 38 moments" [ref=f24e338]
+            - generic "2026-07-07 — 1 moments" [ref=f24e339]
+          - generic [ref=f24e340]: rest is part of learning — quiet days are allowed
+      - generic [ref=f24e343]:
+        - generic [ref=f24e344]: learning is better shared
+        - generic [ref=f24e345]:
+          - img [ref=f24e347]
+          - img [ref=f24e366]
+          - img [ref=f24e395]
+          - img [ref=f24e407]
+          - img [ref=f24e425]
+          - img [ref=f24e450]
+          - img [ref=f24e464]
+        - generic [ref=f24e483]:
+          - generic [ref=f24e484]:
+            - generic [ref=f24e485]: invite a friend
+            - generic [ref=f24e486]: when your friend finishes their first topic, you both unlock a bonus lesson.
+            - button "copy link" [ref=f24e488] [cursor=pointer]
+          - generic [ref=f24e489]:
+            - generic [ref=f24e490]: invite a parent
+            - generic [ref=f24e491]: give them a window into your learning — the weekly note shows them what you can now do.
+            - button "copy link" [ref=f24e493] [cursor=pointer]
+      - generic [ref=f24e496]:
+        - generic [ref=f24e497]: your trophy room
+        - generic [ref=f24e498]:
+          - generic [ref=f24e499]:
+            - generic [ref=f24e500]:
+              - generic [ref=f24e503]:
+                - img [ref=f24e504]
+                - img [ref=f24e507]
+              - generic [ref=f24e516]:
+                - generic [ref=f24e517]: What makes a number rational
+                - generic [ref=f24e518]: mastered
+            - generic [ref=f24e519]:
+              - generic [ref=f24e522]:
+                - img [ref=f24e523]
+                - img [ref=f24e526]
+              - generic [ref=f24e534]:
+                - generic [ref=f24e535]: Operations on rational numbers
+                - generic [ref=f24e536]: mastered
+            - generic [ref=f24e537]:
+              - generic [ref=f24e540]:
+                - img [ref=f24e541]
+                - img [ref=f24e544]
+              - generic [ref=f24e553]:
+                - generic [ref=f24e554]: Rational numbers on the number line
+                - generic [ref=f24e555]: mastered
+            - generic [ref=f24e556]:
+              - generic [ref=f24e559]:
+                - img [ref=f24e560]
+                - img [ref=f24e563]
+              - generic [ref=f24e570]:
+                - generic [ref=f24e571]: Solving equations with the variable on one side
+                - generic [ref=f24e572]: mastered
+            - generic [ref=f24e573]:
+              - img [ref=f24e576]:
+                - generic [ref=f24e582]: "3"
+              - generic [ref=f24e584]:
+                - generic [ref=f24e585]: 3-day streak
+                - generic [ref=f24e586]: kept coming back
+            - generic [ref=f24e587]:
+              - img [ref=f24e590]:
+                - generic [ref=f24e596]: "7"
+              - generic [ref=f24e598]:
+                - generic [ref=f24e599]: 7-day streak
+                - generic [ref=f24e600]: kept coming back
+            - generic [ref=f24e601]:
+              - img [ref=f24e604]:
+                - generic [ref=f24e610]: "250"
+              - generic [ref=f24e612]:
+                - generic [ref=f24e613]: 250 xp
+                - generic [ref=f24e614]: earned in full
+            - generic [ref=f24e615]:
+              - img [ref=f24e618]:
+                - generic [ref=f24e624]: "14"
+              - generic [ref=f24e626]:
+                - generic [ref=f24e627]: 14-day streak
+                - generic [ref=f24e628]: 2 days to go
+            - generic [ref=f24e629]:
+              - img [ref=f24e632]:
+                - generic [ref=f24e638]: 1k
+              - generic [ref=f24e640]:
+                - generic [ref=f24e641]: 1,000 xp
+                - generic [ref=f24e642]: 460 xp to go
+            - generic [ref=f24e643]:
+              - generic [ref=f24e646]:
+                - img [ref=f24e647]
+                - img [ref=f24e650]
+              - generic [ref=f24e658]:
+                - generic [ref=f24e659]: a concept you master next
+                - generic [ref=f24e660]: finish any course
+          - generic [ref=f24e662]: 7 on display · the dim pedestals name what comes next
+      - generic [ref=f24e665]:
+        - generic [ref=f24e666]: the note home
+        - generic [ref=f24e667]:
+          - generic [ref=f24e668]:
+            - generic [ref=f24e669]: the weekly note
+            - generic [ref=f24e670]: preview
+          - generic [ref=f24e671]: Shreyan showed up 7 of 7 days this week
+          - generic [ref=f24e672]: 4 topics mastered · 540 xp earned
+          - generic [ref=f24e673]: Shreyan can now solve Solving equations with the variable on one side on their own
+          - generic [ref=f24e674]: arrives on WhatsApp, in your language — pride first, always
+        - generic [ref=f24e676]:
+          - textbox "a parent's phone number" [ref=f24e677]
+          - button "link a parent" [ref=f24e678] [cursor=pointer]
+      - generic [ref=f24e681]:
+        - generic [ref=f24e682]: your plan
+        - generic [ref=f24e683]:
+          - generic [ref=f24e684]:
+            - generic [ref=f24e685]: free
+            - generic [ref=f24e686]: your plan today
+          - generic [ref=f24e687]: everything you need to learn well, every single day.
+          - generic [ref=f24e689]: superstar — ₹999/mo · ₹8,999/yr
+          - generic [ref=f24e690]: for when you're ready to push your limits. we never discount — learners who show up get gifted superstar weeks instead.
+      - generic [ref=f24e693]:
+        - generic [ref=f24e694]: what Vidya knows about you
+        - generic [ref=f24e695]:
+          - generic [ref=f24e696]:
+            - generic [ref=f24e697]:
+              - text: into cricket
+              - button "forget cricket" [ref=f24e698] [cursor=pointer]: ×
+            - generic [ref=f24e699]:
+              - text: into space
+              - button "forget space" [ref=f24e700] [cursor=pointer]: ×
+            - generic [ref=f24e701]:
+              - text: into space and astronomy
+              - button "forget into space and astronomy" [ref=f24e702] [cursor=pointer]: ×
+            - generic [ref=f24e703]:
+              - text: exam on Friday
+              - button "forget exam on Friday" [ref=f24e704] [cursor=pointer]: ×
+          - generic [ref=f24e705]:
+            - generic [ref=f24e706]: you usually answer an item in about 3s (3 answers watched)
+            - generic [ref=f24e707]: you showed up 3 of the last 7 days
+          - generic [ref=f24e709]: this stays on your device and shapes how she helps you. remove any one, or clear it all — she will not mind.
+          - button "clear everything she knows" [ref=f24e711] [cursor=pointer]
+      - generic [ref=f24e714]:
+        - generic [ref=f24e715]: settings
+        - generic [ref=f24e716]:
+          - generic [ref=f24e717]:
+            - generic [ref=f24e718]:
+              - generic [ref=f24e719]: Vidya's voice
+              - generic [ref=f24e720]: she speaks her replies out loud
+            - switch "Vidya's voice" [checked] [ref=f24e721] [cursor=pointer]
+          - generic [ref=f24e724]:
+            - generic [ref=f24e725]:
+              - generic [ref=f24e726]: the ignite sound
+              - generic [ref=f24e727]: a sub-second note when something is genuinely mastered
+            - switch "the ignite sound" [checked] [ref=f24e728] [cursor=pointer]
+          - generic [ref=f24e731]:
+            - generic [ref=f24e732]:
+              - generic [ref=f24e733]: adventure roadmap
+              - generic [ref=f24e734]: see each subject's chapters as a journey through biomes, not a list
+            - switch "adventure roadmap" [checked] [ref=f24e735] [cursor=pointer]
+          - generic [ref=f24e738]:
+            - generic [ref=f24e739]:
+              - generic [ref=f24e740]: how forward she is
+              - generic [ref=f24e741]: gentle suggestion chips at the right moments
+            - generic [ref=f24e742]:
+              - button "quiet — she waits to be asked — no suggestions, no nudges" [ref=f24e743] [cursor=pointer]: quiet
+              - button "balanced — gentle suggestion chips at the right moments" [pressed] [ref=f24e744] [cursor=pointer]: balanced
+              - button "proactive — she speaks up when she sees something worth your time" [ref=f24e745] [cursor=pointer]: proactive
+          - generic [ref=f24e747]:
+            - generic [ref=f24e748]:
+              - generic [ref=f24e749]: appearance
+              - generic [ref=f24e750]: the paper canvas — bright and open
+            - generic [ref=f24e751]:
+              - button "light — the paper canvas — bright and open" [pressed] [ref=f24e752] [cursor=pointer]: light
+              - button "dark — soft graphite — subtle, easy at night" [ref=f24e753] [cursor=pointer]: dark
+              - button "system — follows your device, light by day and dark by night" [ref=f24e754] [cursor=pointer]: system
+          - generic [ref=f24e756]:
+            - generic [ref=f24e757]:
+              - generic [ref=f24e758]: larger text
+              - generic [ref=f24e759]: bump the type size across the whole app
+            - switch "larger text" [ref=f24e760] [cursor=pointer]
+          - generic [ref=f24e763]:
+            - generic [ref=f24e764]:
+              - generic [ref=f24e765]: high contrast
+              - generic [ref=f24e766]: stronger text and lines, easier to read
+            - switch "high contrast" [ref=f24e767] [cursor=pointer]
+          - generic [ref=f24e770]:
+            - generic [ref=f24e771]:
+              - generic [ref=f24e772]: the language I learn in
+              - generic [ref=f24e773]: Vidya teaches and replies in this language until you change it — English by default
+            - textbox "the language I learn in" [ref=f24e774]:
+              - /placeholder: e.g. Hindi, Tamil, English
+          - button "redo my setup walk through the intro with Vidya again — your xp, streak, and mastery all stay" [ref=f24e777] [cursor=pointer]:
+            - generic [ref=f24e778]: redo my setup
+            - generic [ref=f24e779]: walk through the intro with Vidya again — your xp, streak, and mastery all stay
+          - generic [ref=f24e781]:
+            - generic [ref=f24e782]:
+              - generic [ref=f24e783]: keep this page safe
+              - generic [ref=f24e784]: sign in with Google so your progress follows you to any device — nothing you have now is lost
+            - button "continue with Google" [ref=f24e786] [cursor=pointer]
+          - button "start over erase everything on this device and begin again" [ref=f24e789] [cursor=pointer]:
+            - generic [ref=f24e790]: start over
+            - generic [ref=f24e791]: erase everything on this device and begin again
+    - banner:
+      - img "Classess" [ref=f24e221]
+      - generic [ref=f24e222]:
+        - button "Did you know" [ref=f24e223] [cursor=pointer]:
+          - img [ref=f24e224]
+          - text: Did you know
+        - generic "day 12 of being a learner" [ref=f24e226]:
+          - img [ref=f24e228]
+          - text: "12"
+        - generic [ref=f24e231]: 540 xp
+        - generic [ref=f24e232]:
+          - img [ref=f24e233]
+          - button "You — level 4, profile and settings" [ref=f24e236] [cursor=pointer]:
+            - generic "fox" [ref=f24e237]:
+              - img [ref=f24e239]
+          - generic [ref=f24e254]: "4"
+    - generic [ref=f24e794]:
+      - generic:
+        - img
+      - button "Talk to Vidya" [ref=f24e795] [cursor=pointer]:
+        - img [ref=f24e799]
+  - button "Back — Home" [active] [ref=f24e823] [cursor=pointer]:
+    - img [ref=f24e824]

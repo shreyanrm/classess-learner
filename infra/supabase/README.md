@@ -1,13 +1,13 @@
 # Supabase — Learner operational plane
 
-The Learner operational plane is the Supabase project **MSR Build** (`okesmrstrynfjjikfbtv`,
-ap-south-1), in a dedicated **`learner`** schema. Migrations are applied through the **Supabase MCP**
+The Learner operational plane is the canonical Supabase project (`keepraxqagzgjrrweryt`),
+in a dedicated **`learner`** schema. Migrations are applied through the **Supabase MCP**
 (no local Postgres / CLI is required); the files in `migrations/` are the source of truth and
 reproduce the same state on a fresh project.
 
 ## The two planes (never joined by SQL)
 
-MSR Build also hosts the **KGtoPG platform plane** in separate schemas — `platform` (append-only
+The **KGtoPG platform plane** lives in separate schemas — `platform` (append-only
 `events`, purpose+age-tier `consents`, `audit_log`, `app_memberships`), `pii_vault` (the only
 opaque-UUID → person map), and `operational` (the shared ontology, `prerequisite_edges`,
 confidence-gated `content_versions`). The Learner app never reads those schemas from the client.

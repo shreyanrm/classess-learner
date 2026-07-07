@@ -183,7 +183,7 @@ function IdentityAvatar({
           left: 5,
           width: 32,
           height: 32,
-          borderRadius: 3,
+          borderRadius: '50%', // the frame matches the face — avatars are circles, so is their button
           border: 'none',
           background: 'var(--clss-tonal)',
           padding: 0,

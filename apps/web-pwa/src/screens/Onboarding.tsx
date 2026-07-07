@@ -1,15 +1,14 @@
 'use client';
 
 /**
- * Onboarding — a conversation, not a form (owner directive, 2026-07-07). You meet Vidya: she
- * greets you aloud (voice + typed lines), you answer in a chat-like thread with quick chips, and
- * she gathers your name, AGE (mandatory — drives the age-branch), class + board, and what you're
- * into — the likes framed as "what do you do when you're not studying" so it never feels like
- * data collection. Everything persists to the learner profile AND the mind's interests slot, so
- * her analogies reach for cricket or video games from the very first lesson. In live mode a single
- * sign-in beat is woven into the talk (phone code or Google), never bolted on as a wall. It ends
- * with the page becoming yours — one ultramarine wash — and you step in, where she flies to meet
- * you on home. A keen learner is through in under a minute.
+ * Onboarding — Vidya is the whole interface (owner redesign, 2026-07-07). She settles at the
+ * centre of the screen and asks one thing at a time, aloud (voice + a line that types itself).
+ * There is no thread, no dots, no chrome: the last beat fades out as the next fades in, so it
+ * reads as one continuous conversation. She learns your name first ("what can I call you?") and
+ * every line after is yours by name; she gathers your age (mandatory — drives the age-branch),
+ * class + board, and what you're into (grounds her analogies from lesson one), then — in live
+ * mode — offers to keep it safe across devices with a single Google sign-in (phone code as the
+ * quiet alternate). She seals it with your name and a personalised-plan promise, and you step in.
  */
 
 import { useRegisterTarget, useVidyaBus, VidyaBody, type VidyaMood } from '@classess/vidya';
@@ -29,6 +28,7 @@ import { boardName, boardSeeded, loadProfile, saveProfile } from './you/profile'
 /** Survives the Google round-trip in this tab: on return, restore the flow at the ready beat. */
 const ONB_RETURN_KEY = 'clss-onb-return';
 const spring = { type: 'spring', stiffness: 320, damping: 30 } as const;
+const softSpring = { type: 'spring', stiffness: 220, damping: 24 } as const;
 
 /** The ages our grades actually span, offered as one-tap chips (mandatory). */
 const AGES = Array.from({ length: 10 }, (_, i) => i + 9); // 9…18
@@ -49,14 +49,7 @@ const LIKES = [
   'food',
 ];
 
-type Phase = 'name' | 'age' | 'school' | 'likes' | 'auth' | 'ready';
-
-interface Message {
-  id: string;
-  role: 'vidya' | 'user';
-  text: string;
-  onDone?: () => void;
-}
+type Phase = 'greet' | 'name' | 'age' | 'school' | 'likes' | 'auth' | 'ready';
 
 /** "98765 43210" or "+91 98765 43210" → E.164; bare Indian numbers get +91. */
 function normalizePhone(raw: string): string {
@@ -64,7 +57,7 @@ function normalizePhone(raw: string): string {
   return kept.startsWith('+') ? kept : `+91${kept}`;
 }
 
-/** A line that types itself, letter by letter, at a calm pace. */
+/** A line that types itself, letter by letter, at a calm pace, then hands off. */
 function TypedLine({ text, onDone }: { text: string; onDone?: () => void }) {
   const [n, setN] = useState(0);
   const onDoneRef = useRef(onDone);
@@ -77,9 +70,9 @@ function TypedLine({ text, onDone }: { text: string; onDone?: () => void }) {
       setN(i);
       if (i >= text.length) {
         window.clearInterval(interval);
-        window.setTimeout(() => onDoneRef.current?.(), 240);
+        window.setTimeout(() => onDoneRef.current?.(), 260);
       }
-    }, 30);
+    }, 28);
     return () => window.clearInterval(interval);
   }, [text]);
 
@@ -134,15 +127,31 @@ function Chip({
   );
 }
 
+/** The single text field this app uses for name and codes — one intention, centered, calm. */
+const fieldStyle: React.CSSProperties = {
+  flex: 1,
+  minWidth: 0,
+  fontSize: '1.15rem',
+  fontFamily: 'inherit',
+  color: 'var(--clss-ink-900)',
+  background: 'var(--clss-tonal)',
+  border: 'none',
+  borderRadius: 3,
+  outline: 'none',
+  padding: '13px 16px',
+};
+
 export function Onboarding() {
   const router = useRouter();
   const sdk = useSdk();
   const bus = useVidyaBus();
   const { award } = useProgress();
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [phase, setPhase] = useState<Phase>('greet');
+  // Her current line: it types on screen and plays aloud. `onDone` runs when the typing finishes
+  // (reveal the beat's input, or — for a statement beat like the greeting — advance on its own).
+  const [line, setLine] = useState<{ text: string; onDone?: () => void }>({ text: '' });
   const [promptReady, setPromptReady] = useState(false);
-  const [phase, setPhase] = useState<Phase>('name');
   const [mood, setMood] = useState<VidyaMood>('idle');
 
   const [name, setName] = useState('');
@@ -159,53 +168,51 @@ export function Onboarding() {
   const [authStage, setAuthStage] = useState<'phone' | 'code'>('phone');
   const [authBusy, setAuthBusy] = useState(false);
   const [authErr, setAuthErr] = useState<string | null>(null);
+  const [showPhone, setShowPhone] = useState(false);
 
-  const idRef = useRef(0);
-  const nid = () => `m${idRef.current++}`;
-  const endRef = useRef<HTMLDivElement>(null);
-  const finalName = name.trim() || 'Aanya';
+  const finalName = name.trim();
 
   const readyRef = useRegisterTarget<HTMLDivElement>('onb-ready', {
     kind: 'card',
     label: 'the learner page that just became ready',
   });
 
-  // --- the thread's two moves --------------------------------------------------------------------
-  /** Vidya speaks a line: it types on screen and plays aloud together. */
+  // --- she speaks a line: it types on screen and plays aloud together --------------------------
   const say = (text: string, onDone?: () => void) => {
     setPromptReady(false);
-    setMessages((m) => [
-      ...m,
-      { id: nid(), role: 'vidya', text, onDone: onDone ?? (() => setPromptReady(true)) },
-    ]);
+    setLine({ text, onDone: onDone ?? (() => setPromptReady(true)) });
     void speakLine(text);
   };
-  const youSaid = (text: string) => setMessages((m) => [...m, { id: nid(), role: 'user', text }]);
 
-  // --- the beats ---------------------------------------------------------------------------------
+  // --- the beats -------------------------------------------------------------------------------
+  const toName = () => {
+    setPhase('name');
+    say('so — what can I call you?');
+  };
   const toAge = (who: string) => {
     setPhase('age');
-    say(`good to meet you, ${who}. how old are you?`);
+    say(`lovely to meet you, ${who}. and how old are you these days?`);
   };
   const toSchool = () => {
     setPhase('school');
-    say('and where are you in school — which class, and your board?');
+    say(`where are you in school, ${finalName}? your class, and your board.`);
   };
   const toLikes = () => {
     setPhase('likes');
-    say("last thing, and it's the fun one — when you're not studying, what are you into?");
+    say(`last fun one, ${finalName} — what are you into these days?`);
   };
   const toAuth = () => {
     setPhase('auth');
-    say('let me keep this page safe so it follows you to any device — a quick sign in.');
+    say(`want me to keep all this safe, ${finalName}? sign in once and it follows you everywhere.`);
   };
   const toReady = () => {
     setPhase('ready');
     setMood('celebrate');
-    say(`that's everything I need. your page is ready, ${finalName}.`);
+    say(`that's everything, ${finalName}. your plan is ready — come and see.`);
   };
 
-  // Boot: returning from Google lands at ready; otherwise Vidya opens the conversation.
+  // Boot: returning from Google lands at ready; otherwise Vidya opens with her greeting, which
+  // advances itself into the name ask once she has finished saying hello.
   const booted = useRef(false);
   // biome-ignore lint/correctness/useExhaustiveDependencies: run-once boot, guarded by booted ref
   useEffect(() => {
@@ -222,11 +229,12 @@ export function Onboarding() {
       setAuthed(true);
       setPhase('ready');
       setMood('celebrate');
-      say(`welcome back, ${p.name}. your page is ready.`);
+      say(`welcome back, ${p.name}. your plan is ready.`);
       return;
     }
-    say('hi — I’m Vidya', () =>
-      say('I’m going to learn how you think — my favourite thing. first, what should I call you?'),
+    say(
+      "hi — I'm Vidya. let's get to know each other, so I can build you a plan that's all yours.",
+      () => window.setTimeout(toName, 600),
     );
   }, [sdk]);
 
@@ -245,40 +253,33 @@ export function Onboarding() {
     });
   }, [bus, phase, name, age, grade, boardId, interests, authed]);
 
-  // Keep the newest line in view as the thread grows.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: scroll on every thread change
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, [messages, promptReady, authStage]);
-
-  // --- answers -----------------------------------------------------------------------------------
+  // --- answers ---------------------------------------------------------------------------------
   const submitName = () => {
-    const n = name.trim() || 'Aanya';
+    const n = name.trim();
+    if (!n) return;
     setName(n);
-    youSaid(n);
     setMood('celebrate');
     window.setTimeout(() => setMood('idle'), 800);
     toAge(n);
   };
   const pickAge = (a: number) => {
     setAge(a);
-    youSaid(`${a}`);
+    setMood('celebrate');
+    window.setTimeout(() => setMood('idle'), 600);
     toSchool();
   };
   const submitSchool = () => {
     if (!grade || !boardId) return;
-    youSaid(`${grade} · ${boardName(boardId)}`);
     toLikes();
   };
   const toggleLike = (l: string) =>
     setInterests((xs) => (xs.includes(l) ? xs.filter((x) => x !== l) : [...xs, l]));
   const submitLikes = () => {
-    youSaid(interests.length ? interests.join(', ') : 'a bit of everything');
     if (liveAuth && !authed) toAuth();
     else toReady();
   };
 
-  // --- the sign-in beat's moves (live mode) ------------------------------------------------------
+  // --- the sign-in beat's moves (live mode) ----------------------------------------------------
   const sendCode = async () => {
     const normalized = normalizePhone(phone);
     if (normalized.replace(/\D/g, '').length < 10) {
@@ -307,7 +308,6 @@ export function Onboarding() {
     try {
       await sdk.identity.auth.verifyPhoneOtp(normalizePhone(phone), candidate);
       localStorage.setItem(SIGNIN_SOURCE_KEY, 'phone');
-      youSaid('signed in');
       setAuthed(true);
       toReady();
     } catch {
@@ -331,10 +331,11 @@ export function Onboarding() {
     } catch {
       sessionStorage.removeItem(ONB_RETURN_KEY);
       setAuthErr('Google did not open — the phone code works just as well');
+      setShowPhone(true);
     }
   };
 
-  // --- the finish --------------------------------------------------------------------------------
+  // --- the finish ------------------------------------------------------------------------------
   const finish = () => {
     if (grade && boardId) {
       saveProfile({ name: finalName, grade, boardId, age: age ?? undefined, interests });
@@ -362,10 +363,7 @@ export function Onboarding() {
     router.replace({ name: 'home' });
   };
 
-  const steps: Phase[] = liveAuth
-    ? ['name', 'age', 'school', 'likes', 'auth', 'ready']
-    : ['name', 'age', 'school', 'likes', 'ready'];
-  const stepIndex = steps.indexOf(phase);
+  const nameReady = name.trim().length > 0;
 
   return (
     <div
@@ -373,466 +371,463 @@ export function Onboarding() {
         minHeight: '100dvh',
         display: 'flex',
         flexDirection: 'column',
-        maxWidth: 660,
-        margin: '0 auto',
+        alignItems: 'center',
+        justifyContent: 'center',
         width: '100%',
-        padding: `0 ${fluidSpace.gutter}`,
+        padding: `${fluidSpace.xl} ${fluidSpace.gutter}`,
+        position: 'relative',
+        gap: fluidSpace.md,
       }}
     >
-      {/* her header — she arrives first and stays through the whole talk */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          paddingTop: fluidSpace.md,
-          paddingBottom: fluidSpace.sm,
-        }}
-      >
-        <motion.div
-          initial={{ scale: 0, y: 20, opacity: 0 }}
-          animate={{ scale: 1, y: 0, opacity: 1 }}
-          transition={{ type: 'spring', stiffness: 240, damping: 18, delay: 0.1 }}
-        >
-          <VidyaBody
-            size={54}
-            mood={mood}
-            gaze="pointer"
-            label="Vidya"
-            onTap={() => {
-              setMood('celebrate');
-              window.setTimeout(() => setMood('idle'), 1000);
-            }}
-          />
-        </motion.div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <div style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--clss-ink-900)' }}>
-            Vidya
-          </div>
-          <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
-            {steps.map((s, i) => (
-              <span
-                key={s}
-                style={{
-                  width: i === stepIndex ? 16 : 6,
-                  height: 6,
-                  borderRadius: 3,
-                  transition: 'width 240ms cubic-bezier(0.2,0,0,1), background 240ms',
-                  background:
-                    i < stepIndex
-                      ? 'var(--clss-ink-700)'
-                      : i === stepIndex
-                        ? 'var(--clss-ultramarine)'
-                        : 'var(--clss-hairline-on-paper-strong)',
-                }}
-              />
-            ))}
-          </div>
-        </div>
-        <div style={{ marginLeft: 'auto' }}>
-          <MuteButton />
-        </div>
+      {/* the one control on the page — she speaks every line, so muting is always within reach */}
+      <div style={{ position: 'fixed', top: fluidSpace.sm, right: fluidSpace.sm, zIndex: 2 }}>
+        <MuteButton />
       </div>
 
-      {/* the thread — past lines stay, faint; the newest is the live prompt */}
+      {/* she settles at the centre — the whole interface, present before a word is asked */}
+      <motion.div
+        initial={{ scale: 0.55, y: -46, opacity: 0 }}
+        animate={{ scale: 1, y: 0, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.15 }}
+        style={{ display: 'grid', placeItems: 'center' }}
+      >
+        <VidyaBody
+          size={112}
+          mood={mood}
+          gaze="pointer"
+          label="Vidya"
+          onTap={() => {
+            setMood('celebrate');
+            window.setTimeout(() => setMood('idle'), 1000);
+          }}
+        />
+      </motion.div>
+
+      {/* one beat at a time — her line and its single input, the last fading out as the next fades in */}
       <div
         style={{
-          flex: 1,
-          overflowY: 'auto',
+          width: '100%',
+          maxWidth: 560,
+          minHeight: 220,
           display: 'flex',
           flexDirection: 'column',
-          gap: 10,
-          paddingBottom: fluidSpace.md,
+          alignItems: 'center',
+          gap: fluidSpace.md,
         }}
       >
-        {messages.map((m, i) => {
-          const isLast = i === messages.length - 1;
-          const isVidya = m.role === 'vidya';
-          return (
-            <motion.div
-              key={m.id}
-              initial={{ opacity: 0, y: 12, filter: 'blur(4px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              transition={spring}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={phase}
+            initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, y: -14, filter: 'blur(6px)', transition: { duration: 0.24 } }}
+            transition={softSpring}
+            style={{
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: fluidSpace.md,
+            }}
+          >
+            {/* her question — the only text on screen, typed as she says it */}
+            <div
               style={{
-                alignSelf: isVidya ? 'flex-start' : 'flex-end',
-                maxWidth: '80%',
-                borderRadius: 3,
-                padding: '10px 14px',
-                fontSize: 'clamp(0.98rem, 0.92rem + 0.4vw, 1.12rem)',
-                lineHeight: 1.5,
-                background: isVidya ? 'var(--clss-tonal)' : 'var(--clss-ink-900)',
-                color: isVidya ? 'var(--clss-ink-900)' : 'var(--clss-paper)',
-                // older lines recede so the live prompt reads as current
-                opacity: isVidya && !isLast ? 0.55 : 1,
+                fontSize: 'clamp(1.32rem, 1.05rem + 1.5vw, 1.9rem)',
+                fontWeight: 550,
+                letterSpacing: '-0.02em',
+                lineHeight: 1.35,
+                color: 'var(--clss-ink-900)',
+                textAlign: 'center',
+                textWrap: 'balance',
+                maxWidth: 520,
+                minHeight: '2.6em',
               }}
             >
-              {isVidya ? <TypedLine text={m.text} onDone={m.onDone} /> : m.text}
-            </motion.div>
-          );
-        })}
-        <div ref={endRef} />
-      </div>
+              <TypedLine text={line.text} onDone={line.onDone} />
+            </div>
 
-      {/* the dock — the current beat's single input, revealed once she's finished asking */}
-      <div style={{ paddingBottom: fluidSpace.lg, paddingTop: fluidSpace.xs }}>
-        <AnimatePresence mode="wait">
-          {promptReady && phase === 'name' && (
-            <motion.div
-              key="d-name"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={spring}
-              style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}
-            >
-              <input
-                // biome-ignore lint/a11y/noAutofocus: the input is this beat's single intention
-                autoFocus
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                onFocus={() => setMood('listening')}
-                onBlur={() => setMood('idle')}
-                onKeyDown={(e) => e.key === 'Enter' && submitName()}
-                placeholder="type your name"
-                aria-label="your name"
-                style={{
-                  flex: 1,
-                  minWidth: 180,
-                  fontSize: '1.15rem',
-                  fontFamily: 'inherit',
-                  color: 'var(--clss-ink-900)',
-                  background: 'var(--clss-tonal)',
-                  border: 'none',
-                  borderRadius: 3,
-                  outline: 'none',
-                  padding: '13px 15px',
-                }}
-              />
-              <MagneticButton
-                size="lg"
-                variant="primary"
-                onClick={submitName}
-                style={{ minWidth: 120, justifyContent: 'center' }}
-              >
-                {name.trim() ? `I’m ${name.trim()}` : 'I’m Aanya'}
-              </MagneticButton>
-            </motion.div>
-          )}
-
-          {promptReady && phase === 'age' && (
-            <motion.div
-              key="d-age"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={spring}
-              style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}
-            >
-              {AGES.map((a) => (
-                <Chip key={a} label={`${a}`} selected={age === a} onClick={() => pickAge(a)} />
-              ))}
-            </motion.div>
-          )}
-
-          {promptReady && phase === 'school' && (
-            <motion.div
-              key="d-school"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={spring}
-              style={{ display: 'flex', flexDirection: 'column', gap: 18 }}
-            >
-              <GradeBoardPicker
-                grade={grade}
-                boardId={boardId}
-                onGrade={setGrade}
-                onBoard={setBoardId}
-              />
-              <MagneticButton
-                size="lg"
-                variant="primary"
-                disabled={!grade || !boardId}
-                onClick={submitSchool}
-                style={{ alignSelf: 'flex-start', minWidth: 140, justifyContent: 'center' }}
-              >
-                that’s me
-              </MagneticButton>
-            </motion.div>
-          )}
-
-          {promptReady && phase === 'likes' && (
-            <motion.div
-              key="d-likes"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={spring}
-              style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
-            >
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {LIKES.map((l) => (
-                  <Chip
-                    key={l}
-                    label={l}
-                    selected={interests.includes(l)}
-                    onClick={() => toggleLike(l)}
-                  />
-                ))}
-              </div>
-              <MagneticButton
-                size="lg"
-                variant="primary"
-                onClick={submitLikes}
-                style={{ alignSelf: 'flex-start', minWidth: 140, justifyContent: 'center' }}
-              >
-                {interests.length ? 'that’s me' : 'a bit of everything'}
-              </MagneticButton>
-            </motion.div>
-          )}
-
-          {promptReady && phase === 'auth' && (
-            <motion.div
-              key="d-auth"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={spring}
-              style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
-            >
-              {authStage === 'phone' ? (
-                <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+            {/* the beat's single input, revealed once she has finished asking */}
+            <AnimatePresence>
+              {promptReady && phase === 'name' && (
+                <motion.div
+                  key="i-name"
+                  initial={{ opacity: 0, y: 14, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={spring}
+                  style={{
+                    display: 'flex',
+                    gap: 10,
+                    alignItems: 'center',
+                    width: '100%',
+                    maxWidth: 380,
+                  }}
+                >
                   <input
-                    type="tel"
-                    inputMode="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    // biome-ignore lint/a11y/noAutofocus: the input is this beat's single intention
+                    autoFocus
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     onFocus={() => setMood('listening')}
                     onBlur={() => setMood('idle')}
-                    onKeyDown={(e) => e.key === 'Enter' && !authBusy && void sendCode()}
-                    placeholder="your phone number"
-                    aria-label="your phone number"
-                    style={{
-                      flex: 1,
-                      minWidth: 180,
-                      fontSize: '1.15rem',
-                      fontFamily: 'inherit',
-                      color: 'var(--clss-ink-900)',
-                      background: 'var(--clss-tonal)',
-                      border: 'none',
-                      borderRadius: 3,
-                      outline: 'none',
-                      padding: '13px 15px',
-                    }}
+                    onKeyDown={(e) => e.key === 'Enter' && submitName()}
+                    placeholder="type your name"
+                    aria-label="your name"
+                    style={{ ...fieldStyle, textAlign: 'center' }}
                   />
+                  {/* the continue affordance bubbles in only once there is a name to send */}
+                  <AnimatePresence>
+                    {nameReady && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.6, x: -6 }}
+                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                        exit={{ opacity: 0, scale: 0.6 }}
+                        transition={{ type: 'spring', stiffness: 480, damping: 24 }}
+                      >
+                        <MagneticButton
+                          size="lg"
+                          variant="primary"
+                          onClick={submitName}
+                          ariaLabel="continue"
+                          style={{ minWidth: 52, justifyContent: 'center', padding: '0 18px' }}
+                        >
+                          →
+                        </MagneticButton>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              )}
+
+              {promptReady && phase === 'age' && (
+                <motion.div
+                  key="i-age"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={spring}
+                  style={{
+                    display: 'flex',
+                    gap: 8,
+                    flexWrap: 'wrap',
+                    justifyContent: 'center',
+                    maxWidth: 440,
+                  }}
+                >
+                  {AGES.map((a) => (
+                    <Chip key={a} label={`${a}`} selected={age === a} onClick={() => pickAge(a)} />
+                  ))}
+                </motion.div>
+              )}
+
+              {promptReady && phase === 'school' && (
+                <motion.div
+                  key="i-school"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={spring}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 18,
+                    width: '100%',
+                    maxWidth: 440,
+                  }}
+                >
+                  <GradeBoardPicker
+                    grade={grade}
+                    boardId={boardId}
+                    onGrade={setGrade}
+                    onBoard={setBoardId}
+                  />
+                  <AnimatePresence>
+                    {grade && boardId && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.94 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ type: 'spring', stiffness: 420, damping: 26 }}
+                      >
+                        <MagneticButton
+                          size="lg"
+                          variant="primary"
+                          onClick={submitSchool}
+                          style={{ minWidth: 140, justifyContent: 'center' }}
+                        >
+                          that's me
+                        </MagneticButton>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              )}
+
+              {promptReady && phase === 'likes' && (
+                <motion.div
+                  key="i-likes"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={spring}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 16,
+                    maxWidth: 460,
+                  }}
+                >
+                  <div
+                    style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}
+                  >
+                    {LIKES.map((l) => (
+                      <Chip
+                        key={l}
+                        label={l}
+                        selected={interests.includes(l)}
+                        onClick={() => toggleLike(l)}
+                      />
+                    ))}
+                  </div>
+                  <MagneticButton
+                    size="lg"
+                    variant="primary"
+                    onClick={submitLikes}
+                    style={{ minWidth: 150, justifyContent: 'center' }}
+                  >
+                    {interests.length ? 'that’s me' : 'a bit of everything'}
+                  </MagneticButton>
+                </motion.div>
+              )}
+
+              {promptReady && phase === 'auth' && (
+                <motion.div
+                  key="i-auth"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={spring}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 14,
+                    width: '100%',
+                    maxWidth: 380,
+                  }}
+                >
+                  {/* Google leads — one tap keeps it safe across devices */}
                   <MagneticButton
                     size="lg"
                     variant="primary"
                     disabled={authBusy}
-                    onClick={() => void sendCode()}
-                    style={{ minWidth: 150, justifyContent: 'center' }}
+                    onClick={() => void withGoogle()}
+                    style={{ width: '100%', justifyContent: 'center' }}
                   >
-                    {authBusy ? 'sending…' : 'text me the code'}
+                    continue with Google
                   </MagneticButton>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <input
-                    // biome-ignore lint/a11y/noAutofocus: the code is this stage's single intention
-                    autoFocus
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    maxLength={6}
-                    value={code}
-                    onChange={(e) => {
-                      const digits = e.target.value.replace(/\D/g, '');
-                      setCode(digits);
-                      if (digits.length === 6 && !authBusy) void verifyCode(digits);
-                    }}
-                    onFocus={() => setMood('listening')}
-                    placeholder="6-digit code"
-                    aria-label="the six-digit code we texted you"
-                    style={{
-                      flex: 1,
-                      minWidth: 160,
-                      fontSize: '1.4rem',
-                      letterSpacing: '0.3em',
-                      fontFamily: 'inherit',
-                      color: 'var(--clss-ink-900)',
-                      background: 'var(--clss-tonal)',
-                      border: 'none',
-                      borderRadius: 3,
-                      outline: 'none',
-                      padding: '13px 15px',
-                    }}
-                  />
-                  <MagneticButton
-                    size="lg"
-                    variant="primary"
-                    disabled={authBusy || code.length < 6}
-                    onClick={() => void verifyCode(code)}
-                    style={{ minWidth: 140, justifyContent: 'center' }}
-                  >
-                    {authBusy ? 'checking…' : 'that’s my code'}
-                  </MagneticButton>
-                </div>
-              )}
-              {authErr && (
-                <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>{authErr}</div>
-              )}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <span style={{ flex: 1, height: 1, background: 'var(--clss-hairline-on-paper)' }} />
-                <span style={{ fontSize: '0.8rem', color: 'var(--clss-ink-300)' }}>or</span>
-                <span style={{ flex: 1, height: 1, background: 'var(--clss-hairline-on-paper)' }} />
-              </div>
-              <MagneticButton
-                size="md"
-                variant="ghost"
-                disabled={authBusy}
-                onClick={() => void withGoogle()}
-                style={{ alignSelf: 'flex-start', minWidth: 190, justifyContent: 'center' }}
-              >
-                continue with Google
-              </MagneticButton>
-            </motion.div>
-          )}
 
-          {phase === 'ready' && (
-            <motion.div
-              key="d-ready"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={spring}
-              style={{ display: 'flex', flexDirection: 'column', gap: 22 }}
-            >
-              <div
-                ref={readyRef}
-                style={{ position: 'relative', width: '100%', maxWidth: 340, height: 176 }}
-              >
-                <svg
-                  width="100%"
-                  height="176"
-                  viewBox="0 0 340 176"
-                  preserveAspectRatio="none"
-                  fill="none"
-                  aria-hidden="true"
-                  style={{ position: 'absolute', inset: 0 }}
-                >
-                  <motion.rect
-                    x="0.5"
-                    y="0.5"
-                    width="339"
-                    height="175"
-                    rx="3"
-                    stroke="var(--clss-ink-900)"
-                    strokeWidth="1"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 1, ease: [0.2, 0, 0, 1], delay: 0.15 }}
-                  />
-                </svg>
-                {/* the one pigment moment: an ultramarine wash sweeps the page */}
-                <motion.div
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.7, ease: [0.2, 0, 0, 1], delay: 1.1 }}
-                  style={{
-                    position: 'absolute',
-                    inset: 1,
-                    borderRadius: 'var(--clss-radius-sm)',
-                    background: 'var(--clss-ultramarine-wash)',
-                    transformOrigin: 'left',
-                  }}
-                />
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 1.6 }}
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 6,
-                    textAlign: 'center',
-                    padding: '0 16px',
-                  }}
-                >
-                  <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>
-                    {finalName}
-                    {age ? ` · ${age}` : ''} · {grade ?? 'Class 8'} ·{' '}
-                    {boardId ? boardName(boardId) : 'CBSE'}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: '1.35rem',
-                      fontWeight: 600,
-                      letterSpacing: '-0.02em',
-                      color: 'var(--clss-ink-900)',
-                    }}
-                  >
-                    your page is ready
-                  </div>
-                  {boardId && !boardSeeded(boardId) && (
-                    <div style={{ fontSize: '0.8rem', color: 'var(--clss-ink-500)' }}>
-                      your board’s world arrives with you
+                  {!showPhone ? (
+                    <button type="button" onClick={() => setShowPhone(true)} style={ghostButton}>
+                      or use your phone
+                    </button>
+                  ) : authStage === 'phone' ? (
+                    <div style={{ display: 'flex', gap: 10, alignItems: 'center', width: '100%' }}>
+                      <input
+                        type="tel"
+                        inputMode="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        onFocus={() => setMood('listening')}
+                        onBlur={() => setMood('idle')}
+                        onKeyDown={(e) => e.key === 'Enter' && !authBusy && void sendCode()}
+                        placeholder="your phone number"
+                        aria-label="your phone number"
+                        style={fieldStyle}
+                      />
+                      <MagneticButton
+                        size="lg"
+                        variant="primary"
+                        disabled={authBusy}
+                        onClick={() => void sendCode()}
+                        style={{ minWidth: 92, justifyContent: 'center' }}
+                      >
+                        {authBusy ? 'sending…' : 'send'}
+                      </MagneticButton>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', gap: 10, alignItems: 'center', width: '100%' }}>
+                      <input
+                        // biome-ignore lint/a11y/noAutofocus: the code is this stage's single intention
+                        autoFocus
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        maxLength={6}
+                        value={code}
+                        onChange={(e) => {
+                          const digits = e.target.value.replace(/\D/g, '');
+                          setCode(digits);
+                          if (digits.length === 6 && !authBusy) void verifyCode(digits);
+                        }}
+                        onFocus={() => setMood('listening')}
+                        placeholder="6-digit code"
+                        aria-label="the six-digit code we texted you"
+                        style={{ ...fieldStyle, letterSpacing: '0.3em', textAlign: 'center' }}
+                      />
+                      <MagneticButton
+                        size="lg"
+                        variant="primary"
+                        disabled={authBusy || code.length < 6}
+                        onClick={() => void verifyCode(code)}
+                        style={{ minWidth: 92, justifyContent: 'center' }}
+                      >
+                        {authBusy ? '…' : 'go'}
+                      </MagneticButton>
+                    </div>
+                  )}
+                  {authErr && (
+                    <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>
+                      {authErr}
                     </div>
                   )}
                 </motion.div>
-                {/* two of the cast are already waiting inside — the page comes furnished */}
+              )}
+
+              {phase === 'ready' && promptReady && (
                 <motion.div
-                  aria-hidden
-                  initial={{ opacity: 0, y: 8 }}
+                  key="i-ready"
+                  initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ ...spring, delay: 1.9 }}
+                  transition={spring}
                   style={{
-                    position: 'absolute',
-                    right: 10,
-                    bottom: 3,
                     display: 'flex',
-                    alignItems: 'flex-end',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 22,
                   }}
                 >
-                  <Sprout size={30} seed={1} />
-                  <Pip size={40} mood="delighted" seed={2} />
-                </motion.div>
-              </div>
-              <AnimatePresence>
-                {promptReady && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={spring}
+                  <div
+                    ref={readyRef}
+                    style={{ position: 'relative', width: '100%', maxWidth: 340, height: 176 }}
                   >
-                    <MagneticButton
-                      size="lg"
-                      variant="primary"
-                      onClick={finish}
-                      style={{ minWidth: 150, justifyContent: 'center' }}
+                    <svg
+                      width="100%"
+                      height="176"
+                      viewBox="0 0 340 176"
+                      preserveAspectRatio="none"
+                      fill="none"
+                      aria-hidden="true"
+                      style={{ position: 'absolute', inset: 0 }}
                     >
-                      step in
-                    </MagneticButton>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          )}
+                      <motion.rect
+                        x="0.5"
+                        y="0.5"
+                        width="339"
+                        height="175"
+                        rx="3"
+                        stroke="var(--clss-ink-900)"
+                        strokeWidth="1"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 1, ease: [0.2, 0, 0, 1], delay: 0.1 }}
+                      />
+                    </svg>
+                    {/* the one pigment moment: an ultramarine wash sweeps the page (DESIGN §2) */}
+                    <motion.div
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 0.7, ease: [0.2, 0, 0, 1], delay: 0.9 }}
+                      style={{
+                        position: 'absolute',
+                        inset: 1,
+                        borderRadius: 'var(--clss-radius-sm)',
+                        background: 'var(--clss-ultramarine-wash)',
+                        transformOrigin: 'left',
+                      }}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 1.4 }}
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6,
+                        textAlign: 'center',
+                        padding: '0 16px',
+                      }}
+                    >
+                      <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>
+                        {finalName}
+                        {age ? ` · ${age}` : ''} · {grade ?? 'Class 8'} ·{' '}
+                        {boardId ? boardName(boardId) : 'CBSE'}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '1.35rem',
+                          fontWeight: 600,
+                          letterSpacing: '-0.02em',
+                          color: 'var(--clss-ink-900)',
+                        }}
+                      >
+                        your plan is ready
+                      </div>
+                      {boardId && !boardSeeded(boardId) && (
+                        <div style={{ fontSize: '0.8rem', color: 'var(--clss-ink-500)' }}>
+                          your board’s world arrives with you
+                        </div>
+                      )}
+                    </motion.div>
+                    {/* two of the cast are already waiting inside — the page comes furnished */}
+                    <motion.div
+                      aria-hidden
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ ...spring, delay: 1.7 }}
+                      style={{
+                        position: 'absolute',
+                        right: 10,
+                        bottom: 3,
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                      }}
+                    >
+                      <Sprout size={30} seed={1} />
+                      <Pip size={40} mood="delighted" seed={2} />
+                    </motion.div>
+                  </div>
+                  <MagneticButton
+                    size="lg"
+                    variant="primary"
+                    onClick={finish}
+                    style={{ minWidth: 150, justifyContent: 'center' }}
+                  >
+                    step in
+                  </MagneticButton>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </AnimatePresence>
-
-        {/* skip — a quiet door out, no guilt; live mode keeps the flow (a page needs its owner) */}
-        {!liveAuth && phase !== 'ready' && (
-          <button
-            type="button"
-            onClick={skip}
-            style={{ ...ghostButton, marginTop: 14, display: 'block' }}
-          >
-            skip for now
-          </button>
-        )}
       </div>
+
+      {/* a quiet door out — mock mode only; live mode keeps the flow (a page needs its owner) */}
+      {!liveAuth && phase !== 'ready' && (
+        <button
+          type="button"
+          onClick={skip}
+          style={{ ...ghostButton, position: 'fixed', bottom: fluidSpace.sm }}
+        >
+          skip for now
+        </button>
+      )}
     </div>
   );
 }
