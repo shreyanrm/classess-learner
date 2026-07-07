@@ -2,26 +2,30 @@
 
 /**
  * Onboarding — Vidya is the whole interface (owner redesign, 2026-07-07). She settles at the
- * centre of the screen and asks one thing at a time, aloud (voice + a line that types itself).
- * There is no thread, no dots, no chrome: the last beat fades out as the next fades in, so it
- * reads as one continuous conversation. She learns your name first ("what can I call you?") and
- * every line after is yours by name; she asks when you were born (mandatory — age is derived from it),
- * class + board, and what you're into (grounds her analogies from lesson one), then — in live
- * mode — offers to keep it safe across devices with a single Google sign-in (phone code as the
- * quiet alternate). She seals it with your name and a personalised-plan promise, and you step in.
+ * centre of the screen and asks one thing at a time, aloud (voice + a line that fades in whole,
+ * gently rising — no typing). There is no thread, no dots, no chrome: the last beat fades out as
+ * the next fades in, so it reads as one continuous conversation. She greets, then — before any
+ * get-to-know-you question — makes the space theirs: sign-in is the FIRST beat and it is mandatory
+ * (Google leads, phone-code the alternate). A dev bypass exists only when no account layer is
+ * configured (no Supabase keys → local dev / tests). On the Google return she always asks your name
+ * as its own beat — a given-name may sit prefilled, but she still asks and your answer wins — then
+ * when you were born (a calendar; age is derived from it), class + board, and what you're into
+ * (grounds her analogies from lesson one). She seals it with a personalised-plan promise, you step in.
  */
 
 import { useVidyaBus, VidyaBody, type VidyaMood } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { ONBOARDED_KEY, SIGNIN_SOURCE_KEY } from '../App';
+import { ensureFrame } from '../data/frame';
 import { useRouter } from '../shell/router';
 import { rememberInterests } from '../store/mind';
 import { useSdk } from '../store/sdk';
 import { AmbientWash, fluidSpace, MagneticButton } from '../ui/kit';
+import { sfx } from '../ui/sound';
 import { MuteButton, speakLine } from '../vidya/speech';
 import { BoardPicker, GradePicker } from './you/GradeBoardPicker';
-import { ageFromBirthdate, saveProfile } from './you/profile';
+import { ageFromBirthdate, loadProfile, resolveBoardId, saveProfile } from './you/profile';
 
 // The first-run atmosphere (§1 ambient depth) — a soft brand dawn blooming from where Vidya
 // settles at the centre, so she arrives inside her own light. Token-driven; both themes.
@@ -29,7 +33,7 @@ const ONBOARDING_WASH =
   'radial-gradient(46% 40% at 50% 38%, var(--clss-ultramarine-soft) 0%, transparent 66%),' +
   ' radial-gradient(60% 44% at 50% 40%, rgba(255,201,60,0.04) 0%, transparent 74%)';
 
-/** Survives the Google round-trip in this tab: on return, restore the flow at the ready beat. */
+/** Survives the Google round-trip in this tab: on return, resume at the name beat (given-name prefilled). */
 const ONB_RETURN_KEY = 'clss-onb-return';
 const spring = { type: 'spring', stiffness: 320, damping: 30 } as const;
 const softSpring = { type: 'spring', stiffness: 220, damping: 24 } as const;
@@ -56,33 +60,6 @@ type Phase = 'greet' | 'name' | 'age' | 'board' | 'grade' | 'likes' | 'auth';
 function normalizePhone(raw: string): string {
   const kept = raw.replace(/[^\d+]/g, '');
   return kept.startsWith('+') ? kept : `+91${kept}`;
-}
-
-/** A line that types itself, letter by letter, at a calm pace, then hands off. */
-function TypedLine({ text, onDone }: { text: string; onDone?: () => void }) {
-  const [n, setN] = useState(0);
-  const onDoneRef = useRef(onDone);
-  onDoneRef.current = onDone;
-
-  useEffect(() => {
-    let i = 0;
-    const interval = window.setInterval(() => {
-      i += 1;
-      setN(i);
-      if (i >= text.length) {
-        window.clearInterval(interval);
-        window.setTimeout(() => onDoneRef.current?.(), 260);
-      }
-    }, 28);
-    return () => window.clearInterval(interval);
-  }, [text]);
-
-  return (
-    <span>
-      {text.slice(0, n)}
-      {n < text.length && <span style={{ color: 'var(--clss-ink-300)' }}>▏</span>}
-    </span>
-  );
 }
 
 const ghostButton: React.CSSProperties = {
@@ -150,7 +127,7 @@ export function Onboarding() {
   const [phase, setPhase] = useState<Phase>('greet');
   // Her current line: it types on screen and plays aloud. `onDone` runs when the typing finishes
   // (reveal the beat's input, or — for a statement beat like the greeting — advance on its own).
-  const [line, setLine] = useState<{ text: string; onDone?: () => void }>({ text: '' });
+  const [line, setLine] = useState('');
   const [promptReady, setPromptReady] = useState(false);
   const [mood, setMood] = useState<VidyaMood>('idle');
 
@@ -162,9 +139,16 @@ export function Onboarding() {
   const [boardId, setBoardId] = useState<string | null>(null);
   const [interests, setInterests] = useState<string[]>([]);
 
-  // the sign-in beat (live mode only — mock mode never sees it)
-  const liveAuth = !sdk.config.devAuth;
-  const [authed, setAuthed] = useState(() => sdk.identity.isAuthenticated());
+  // Sign-in is the FIRST beat and it is mandatory — the additive account layer (Supabase) IS the
+  // gate. `authed` tracks that ACCOUNT session (Google/phone), not the always-true dev-mock
+  // identity. With no account layer (no Supabase keys → pure local dev / tests) the auth beat is
+  // bypassed by config, never by the learner.
+  const account = sdk.account;
+  const canAuth = !!account;
+  const [authed, setAuthed] = useState(() => !!account?.isAuthenticated());
+  // Audio can't autoplay before a gesture — the first beat waits for one warm tap, which unlocks
+  // her voice; then she greets and every later line rides the taps that advance the beats.
+  const [begun, setBegun] = useState(false);
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [authStage, setAuthStage] = useState<'phone' | 'code'>('phone');
@@ -173,43 +157,58 @@ export function Onboarding() {
   const [showPhone, setShowPhone] = useState(false);
 
   const finalName = name.trim();
+  // Times the input/continue reveal after each line settles (replaces the old typing-done signal).
+  const revealTimer = useRef<number | undefined>(undefined);
 
-  // --- she speaks a line: it types on screen and plays aloud together --------------------------
+  // --- she speaks a line: it fades in whole (gently rising — no typing) and plays aloud. The
+  // input/continue reveal keys off a calm delay after the line settles, not a character count. -----
+  const REVEAL_DELAY = 820;
   const say = (text: string, onDone?: () => void) => {
     setPromptReady(false);
-    setLine({ text, onDone: onDone ?? (() => setPromptReady(true)) });
+    setLine(text);
     void speakLine(text);
+    window.clearTimeout(revealTimer.current);
+    revealTimer.current = window.setTimeout(
+      () => (onDone ? onDone() : setPromptReady(true)),
+      REVEAL_DELAY,
+    );
   };
 
-  // --- the beats -------------------------------------------------------------------------------
+  // --- the beats (a soft tick marks each advance; nothing on typing / idle) ---------------------
   const toName = () => {
+    sfx.tap();
     setPhase('name');
     say('Hey there, what can I call you?');
   };
   const toAge = (who: string) => {
+    sfx.tap();
     setPhase('age');
-    say(
-      `Lovely to meet you, ${who}. So — when did you land on this planet? A year's plenty, or your whole birthday.`,
-    );
+    say(`Lovely to meet you, ${who}. So — when did you land on this planet? Pop your birthday in.`);
   };
   const toBoard = () => {
+    sfx.tap();
     setPhase('board');
     say(`Which board are you on, ${finalName}?`);
   };
   const toGrade = () => {
+    sfx.tap();
     setPhase('grade');
     say(`And which class, ${finalName}?`);
   };
   const toLikes = () => {
+    sfx.tap();
     setPhase('likes');
     say(`Last fun one, ${finalName} — what are you into these days?`);
   };
   const toAuth = () => {
+    sfx.tap();
     setPhase('auth');
-    say(`Want me to keep all this safe, ${finalName}? Sign in once and it follows you everywhere.`);
+    say(
+      "First — let's make this space truly yours. One sign-in and everything you build here follows you everywhere.",
+    );
   };
-  // Everything gathered — persist it and hand off to the building theatre, which assembles the
-  // frame per board+grade and gives the welcome moment (FrameBuilding.tsx).
+  // Everything gathered — persist locally, seal the onboarded marker + world onto the account (so a
+  // future sign-in reconstructs it and lands home), and hand to the building theatre (FrameBuilding).
   const goBuilding = () => {
     if (grade && boardId) {
       saveProfile({
@@ -220,29 +219,84 @@ export function Onboarding() {
         age: age ?? undefined,
         interests,
       });
+      // board stored as its raw id so a restore rebuilds the frame; archetype_slot carries the
+      // onboarded sentinel (a real column — no schema change). Best-effort; local stays the truth.
+      // ponytail: birthdate/interests aren't in profiles_cache on this project, so they stay
+      // local-only — cross-device restore of those needs the columns added, name/board/grade suffice.
+      void account?.syncProfile({
+        display_name: finalName,
+        grade,
+        board: boardId,
+        archetype_slot: 'onboarded',
+      });
     }
     rememberInterests(interests);
+    sfx.reveal(); // her big moment — the world-build handoff
     router.replace({ name: 'building' });
   };
 
-  // Boot: returning from Google lands at ready; otherwise Vidya opens with her greeting, which
-  // advances itself into the name ask once she has finished saying hello.
+  // After the greeting: sign-in is the first ask (mandatory) unless there's no account layer
+  // (local dev / tests), where we go straight to the name beat.
+  const afterGreet = () => (canAuth && !authed ? toAuth() : toName());
+
+  // The first warm tap unlocks her voice inside the gesture, then she greets and the flow begins.
+  const begin = () => {
+    if (begun) return;
+    setBegun(true);
+    sfx.tap(); // the gesture that unlocks her voice — and ticks the first beat in
+    say(
+      "Hi — I'm Vidya. Let's get to know each other, so I can build you a plan that's all yours.",
+      () => window.setTimeout(afterGreet, 600),
+    );
+  };
+
+  // A Google return, resolved: an already-onboarded account skips every question and lands home
+  // with one warm line; a new account resumes at the name beat (she ALWAYS asks — the Google
+  // given-name only prefills, their answer wins).
+  const resumeAfterAuth = async () => {
+    const remote = (await account?.fetchProfile().catch(() => null)) ?? null;
+    const restorable = remote?.archetype_slot === 'onboarded' && !!remote.grade && !!remote.board;
+    if (restorable) {
+      const p = loadProfile();
+      const boardId = resolveBoardId(remote?.board) ?? p.boardId;
+      const grade = (remote?.grade as string | undefined) ?? p.grade;
+      // remote wins for identity/board/grade; local keeps birthdate/interests it already holds
+      saveProfile({
+        ...p,
+        name: (remote?.display_name ?? p.name).trim() || p.name,
+        grade,
+        boardId,
+      });
+      void ensureFrame(boardId, grade); // warm their world before they land on it
+      localStorage.setItem(ONBOARDED_KEY, '1');
+      const given = (remote?.display_name ?? p.name).trim().split(/\s+/)[0];
+      say(`Welcome back${given ? `, ${given}` : ''}.`);
+      window.setTimeout(() => router.replace({ name: 'home' }), 1600);
+      return;
+    }
+    const given = account?.profile()?.name?.trim().split(/\s+/)[0];
+    if (given) setName(given);
+    toName();
+  };
+
+  // Boot: a Google return resumes (restore-and-home, or the name beat prefilled). Otherwise the
+  // first beat waits for the warm begin tap. A reload without a session simply replays this and,
+  // after the greeting, lands back on the mandatory auth gate.
   const booted = useRef(false);
   // biome-ignore lint/correctness/useExhaustiveDependencies: run-once boot, guarded by booted ref
   useEffect(() => {
     if (booted.current) return;
     booted.current = true;
-    if (sessionStorage.getItem(ONB_RETURN_KEY) && sdk.identity.isAuthenticated()) {
+    if (sessionStorage.getItem(ONB_RETURN_KEY) && account?.isAuthenticated()) {
       sessionStorage.removeItem(ONB_RETURN_KEY);
-      // profile was saved before the Google redirect — go straight to the building theatre
-      router.replace({ name: 'building' });
-      return;
+      setAuthed(true);
+      setBegun(true); // returning from an OAuth gesture — no separate begin tap needed
+      void resumeAfterAuth();
     }
-    say(
-      "Hi — I'm Vidya. Let's get to know each other, so I can build you a plan that's all yours.",
-      () => window.setTimeout(toName, 600),
-    );
   }, [sdk]);
+
+  // Don't leave the reveal timer running past unmount.
+  useEffect(() => () => window.clearTimeout(revealTimer.current), []);
 
   useEffect(() => {
     bus.publishPage({
@@ -287,10 +341,7 @@ export function Onboarding() {
   };
   const toggleLike = (l: string) =>
     setInterests((xs) => (xs.includes(l) ? xs.filter((x) => x !== l) : [...xs, l]));
-  const submitLikes = () => {
-    if (liveAuth && !authed) toAuth();
-    else goBuilding();
-  };
+  const submitLikes = () => goBuilding();
 
   // --- the sign-in beat's moves (live mode) ----------------------------------------------------
   const sendCode = async () => {
@@ -322,7 +373,7 @@ export function Onboarding() {
       await sdk.identity.auth.verifyPhoneOtp(normalizePhone(phone), candidate);
       localStorage.setItem(SIGNIN_SOURCE_KEY, 'phone');
       setAuthed(true);
-      goBuilding();
+      void resumeAfterAuth(); // existing account → home; new → the name beat (she still asks)
     } catch {
       setAuthErr('That code did not match — take another look and try again');
       setMood('oops');
@@ -332,22 +383,12 @@ export function Onboarding() {
   };
 
   const withGoogle = async () => {
-    // The redirect leaves the page: keep what she has learned so far, mark the return path.
-    if (grade && boardId) {
-      saveProfile({
-        name: finalName,
-        grade,
-        boardId,
-        birthdate: birthdate || undefined,
-        age: age ?? undefined,
-        interests,
-      });
-    }
-    rememberInterests(interests);
+    // Auth is beat one — nothing gathered yet. Mark the return so boot resumes here, signed in
+    // (the additive account layer runs the redirect and completes it on the way back).
     sessionStorage.setItem(ONB_RETURN_KEY, '1');
     localStorage.setItem(SIGNIN_SOURCE_KEY, 'google');
     try {
-      await sdk.identity.auth.signInWithGoogle(window.location.origin);
+      await account?.signInWithGoogle(window.location.origin);
     } catch {
       sessionStorage.removeItem(ONB_RETURN_KEY);
       setAuthErr('Google did not open — the phone code works just as well');
@@ -394,8 +435,12 @@ export function Onboarding() {
           size={112}
           mood={mood}
           gaze="pointer"
-          label="Vidya"
+          label={begun ? 'Vidya' : 'Vidya — tap to begin'}
           onTap={() => {
+            if (!begun) {
+              begin(); // her body is the tap that unlocks her voice
+              return;
+            }
             setMood('celebrate');
             window.setTimeout(() => setMood('idle'), 1000);
           }}
@@ -414,22 +459,20 @@ export function Onboarding() {
           gap: fluidSpace.md,
         }}
       >
-        <AnimatePresence mode="wait">
+        {!begun ? (
+          // The one gesture that unlocks her voice — she can't autoplay before it. Her body above is
+          // tappable too; this is the warm, obvious door in.
           <motion.div
-            key={phase}
-            initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, y: -14, filter: 'blur(6px)', transition: { duration: 0.24 } }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={softSpring}
             style={{
-              width: '100%',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               gap: fluidSpace.md,
             }}
           >
-            {/* her question — the only text on screen, typed as she says it */}
             <div
               style={{
                 fontSize: 'clamp(1.32rem, 1.05rem + 1.5vw, 1.9rem)',
@@ -438,333 +481,403 @@ export function Onboarding() {
                 lineHeight: 1.35,
                 color: 'var(--clss-ink-900)',
                 textAlign: 'center',
-                textWrap: 'balance',
-                maxWidth: 520,
-                minHeight: '2.6em',
               }}
             >
-              <TypedLine text={line.text} onDone={line.onDone} />
+              Ready when you are.
             </div>
-
-            {/* the beat's single input, revealed once she has finished asking */}
-            <AnimatePresence>
-              {promptReady && phase === 'name' && (
-                <motion.div
-                  key="i-name"
-                  initial={{ opacity: 0, y: 14, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={spring}
-                  style={{
-                    display: 'flex',
-                    gap: 10,
-                    alignItems: 'center',
-                    width: '100%',
-                    maxWidth: 380,
-                  }}
-                >
-                  <input
-                    // biome-ignore lint/a11y/noAutofocus: the input is this beat's single intention
-                    autoFocus
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    onFocus={() => setMood('listening')}
-                    onBlur={() => setMood('idle')}
-                    onKeyDown={(e) => e.key === 'Enter' && submitName()}
-                    placeholder="Type your name"
-                    aria-label="your name"
-                    style={{ ...fieldStyle, textAlign: 'center' }}
-                  />
-                  {/* the continue affordance bubbles in only once there is a name to send */}
-                  <AnimatePresence>
-                    {nameReady && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.6, x: -6 }}
-                        animate={{ opacity: 1, scale: 1, x: 0 }}
-                        exit={{ opacity: 0, scale: 0.6 }}
-                        transition={{ type: 'spring', stiffness: 480, damping: 24 }}
-                      >
-                        <MagneticButton
-                          size="lg"
-                          variant="primary"
-                          onClick={submitName}
-                          ariaLabel="continue"
-                          style={{ minWidth: 52, justifyContent: 'center', padding: '0 18px' }}
-                        >
-                          →
-                        </MagneticButton>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              )}
-
-              {promptReady && phase === 'age' && (
-                <motion.div
-                  key="i-age"
-                  initial={{ opacity: 0, y: 14, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={spring}
-                  style={{
-                    display: 'flex',
-                    gap: 10,
-                    alignItems: 'center',
-                    width: '100%',
-                    maxWidth: 380,
-                  }}
-                >
-                  <input
-                    // biome-ignore lint/a11y/noAutofocus: the input is this beat's single intention
-                    autoFocus
-                    value={birthdate}
-                    onChange={(e) => setBirthdate(e.target.value)}
-                    onFocus={() => setMood('listening')}
-                    onBlur={() => setMood('idle')}
-                    onKeyDown={(e) => e.key === 'Enter' && submitBirthdate()}
-                    placeholder="A year, or your birthday"
-                    aria-label="when you were born"
-                    style={{ ...fieldStyle, textAlign: 'center' }}
-                  />
-                  {/* the continue affordance bubbles in only once there is something to send */}
-                  <AnimatePresence>
-                    {birthdate.trim().length > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.6, x: -6 }}
-                        animate={{ opacity: 1, scale: 1, x: 0 }}
-                        exit={{ opacity: 0, scale: 0.6 }}
-                        transition={{ type: 'spring', stiffness: 480, damping: 24 }}
-                      >
-                        <MagneticButton
-                          size="lg"
-                          variant="primary"
-                          onClick={submitBirthdate}
-                          ariaLabel="continue"
-                          style={{ minWidth: 52, justifyContent: 'center', padding: '0 18px' }}
-                        >
-                          →
-                        </MagneticButton>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              )}
-
-              {promptReady && phase === 'board' && (
-                <motion.div
-                  key="i-board"
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={spring}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 18,
-                    width: '100%',
-                    maxWidth: 440,
-                  }}
-                >
-                  <BoardPicker boardId={boardId} onBoard={setBoardId} />
-                  <AnimatePresence>
-                    {boardId && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.94 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ type: 'spring', stiffness: 420, damping: 26 }}
-                      >
-                        <MagneticButton
-                          size="lg"
-                          variant="primary"
-                          onClick={submitBoard}
-                          style={{ minWidth: 120, justifyContent: 'center' }}
-                        >
-                          Next
-                        </MagneticButton>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              )}
-
-              {promptReady && phase === 'grade' && (
-                <motion.div
-                  key="i-grade"
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={spring}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 18,
-                    width: '100%',
-                    maxWidth: 440,
-                  }}
-                >
-                  <GradePicker boardId={boardId} grade={grade} onGrade={setGrade} />
-                  <AnimatePresence>
-                    {grade && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.94 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ type: 'spring', stiffness: 420, damping: 26 }}
-                      >
-                        <MagneticButton
-                          size="lg"
-                          variant="primary"
-                          onClick={submitGrade}
-                          style={{ minWidth: 140, justifyContent: 'center' }}
-                        >
-                          That's me
-                        </MagneticButton>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              )}
-
-              {promptReady && phase === 'likes' && (
-                <motion.div
-                  key="i-likes"
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={spring}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 16,
-                    maxWidth: 460,
-                  }}
-                >
-                  <div
-                    style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}
-                  >
-                    {LIKES.map((l) => (
-                      <Chip
-                        key={l}
-                        label={l}
-                        selected={interests.includes(l)}
-                        onClick={() => toggleLike(l)}
-                      />
-                    ))}
-                  </div>
-                  <MagneticButton
-                    size="lg"
-                    variant="primary"
-                    onClick={submitLikes}
-                    style={{ minWidth: 150, justifyContent: 'center' }}
-                  >
-                    {interests.length ? 'That’s me' : 'A bit of everything'}
-                  </MagneticButton>
-                </motion.div>
-              )}
-
-              {promptReady && phase === 'auth' && (
-                <motion.div
-                  key="i-auth"
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={spring}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 14,
-                    width: '100%',
-                    maxWidth: 380,
-                  }}
-                >
-                  {/* Google leads — one tap keeps it safe across devices */}
-                  <MagneticButton
-                    size="lg"
-                    variant="primary"
-                    disabled={authBusy}
-                    onClick={() => void withGoogle()}
-                    style={{ width: '100%', justifyContent: 'center' }}
-                  >
-                    Continue with Google
-                  </MagneticButton>
-
-                  {!showPhone ? (
-                    <button type="button" onClick={() => setShowPhone(true)} style={ghostButton}>
-                      Or use your phone
-                    </button>
-                  ) : authStage === 'phone' ? (
-                    <div style={{ display: 'flex', gap: 10, alignItems: 'center', width: '100%' }}>
-                      <input
-                        type="tel"
-                        inputMode="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        onFocus={() => setMood('listening')}
-                        onBlur={() => setMood('idle')}
-                        onKeyDown={(e) => e.key === 'Enter' && !authBusy && void sendCode()}
-                        placeholder="Your phone number"
-                        aria-label="your phone number"
-                        style={fieldStyle}
-                      />
-                      <MagneticButton
-                        size="lg"
-                        variant="primary"
-                        disabled={authBusy}
-                        onClick={() => void sendCode()}
-                        style={{ minWidth: 92, justifyContent: 'center' }}
-                      >
-                        {authBusy ? 'sending…' : 'send'}
-                      </MagneticButton>
-                    </div>
-                  ) : (
-                    <div style={{ display: 'flex', gap: 10, alignItems: 'center', width: '100%' }}>
-                      <input
-                        // biome-ignore lint/a11y/noAutofocus: the code is this stage's single intention
-                        autoFocus
-                        inputMode="numeric"
-                        autoComplete="one-time-code"
-                        maxLength={6}
-                        value={code}
-                        onChange={(e) => {
-                          const digits = e.target.value.replace(/\D/g, '');
-                          setCode(digits);
-                          if (digits.length === 6 && !authBusy) void verifyCode(digits);
-                        }}
-                        onFocus={() => setMood('listening')}
-                        placeholder="6-digit code"
-                        aria-label="the six-digit code we texted you"
-                        style={{ ...fieldStyle, letterSpacing: '0.3em', textAlign: 'center' }}
-                      />
-                      <MagneticButton
-                        size="lg"
-                        variant="primary"
-                        disabled={authBusy || code.length < 6}
-                        onClick={() => void verifyCode(code)}
-                        style={{ minWidth: 92, justifyContent: 'center' }}
-                      >
-                        {authBusy ? '…' : 'go'}
-                      </MagneticButton>
-                    </div>
-                  )}
-                  {authErr && (
-                    <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>
-                      {authErr}
-                    </div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <MagneticButton
+              size="lg"
+              variant="primary"
+              onClick={begin}
+              ariaLabel="begin"
+              style={{ minWidth: 160, justifyContent: 'center' }}
+            >
+              Tap to begin
+            </MagneticButton>
           </motion.div>
-        </AnimatePresence>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={phase}
+              initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: -14, filter: 'blur(6px)', transition: { duration: 0.24 } }}
+              transition={softSpring}
+              style={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: fluidSpace.md,
+              }}
+            >
+              {/* her question — the only text on screen; the whole line fades in and gently rises
+                (MOTION §3 spring), no typing. Keyed by the line so each new one re-animates. */}
+              <div
+                style={{
+                  fontSize: 'clamp(1.32rem, 1.05rem + 1.5vw, 1.9rem)',
+                  fontWeight: 550,
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1.35,
+                  color: 'var(--clss-ink-900)',
+                  textAlign: 'center',
+                  textWrap: 'balance',
+                  maxWidth: 520,
+                  minHeight: '2.6em',
+                }}
+              >
+                <motion.div
+                  key={line}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={softSpring}
+                >
+                  {line}
+                </motion.div>
+              </div>
+
+              {/* the beat's single input, revealed once she has finished asking */}
+              <AnimatePresence>
+                {promptReady && phase === 'name' && (
+                  <motion.div
+                    key="i-name"
+                    initial={{ opacity: 0, y: 14, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={spring}
+                    style={{
+                      display: 'flex',
+                      gap: 10,
+                      alignItems: 'center',
+                      width: '100%',
+                      maxWidth: 380,
+                    }}
+                  >
+                    <input
+                      // biome-ignore lint/a11y/noAutofocus: the input is this beat's single intention
+                      autoFocus
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      onFocus={() => setMood('listening')}
+                      onBlur={() => setMood('idle')}
+                      onKeyDown={(e) => e.key === 'Enter' && submitName()}
+                      placeholder="Type your name"
+                      aria-label="your name"
+                      style={{ ...fieldStyle, textAlign: 'center' }}
+                    />
+                    {/* the continue affordance bubbles in only once there is a name to send */}
+                    <AnimatePresence>
+                      {nameReady && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.6, x: -6 }}
+                          animate={{ opacity: 1, scale: 1, x: 0 }}
+                          exit={{ opacity: 0, scale: 0.6 }}
+                          transition={{ type: 'spring', stiffness: 480, damping: 24 }}
+                        >
+                          <MagneticButton
+                            size="lg"
+                            variant="primary"
+                            onClick={submitName}
+                            ariaLabel="continue"
+                            style={{ minWidth: 52, justifyContent: 'center', padding: '0 18px' }}
+                          >
+                            →
+                          </MagneticButton>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )}
+
+                {promptReady && phase === 'age' && (
+                  <motion.div
+                    key="i-age"
+                    initial={{ opacity: 0, y: 14, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={spring}
+                    style={{
+                      display: 'flex',
+                      gap: 10,
+                      alignItems: 'center',
+                      width: '100%',
+                      maxWidth: 380,
+                    }}
+                  >
+                    <input
+                      type="date"
+                      // biome-ignore lint/a11y/noAutofocus: the input is this beat's single intention
+                      autoFocus
+                      value={birthdate}
+                      onChange={(e) => setBirthdate(e.target.value)}
+                      onFocus={() => setMood('listening')}
+                      onBlur={() => setMood('idle')}
+                      onKeyDown={(e) => e.key === 'Enter' && submitBirthdate()}
+                      aria-label="your date of birth"
+                      style={{
+                        ...fieldStyle,
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        // native <input type="date"> over a picker lib (ponytail). Its calendar chrome
+                        // follows the live theme so it stays legible in both. No range limit — owner law:
+                        // take whatever they give; ageFromBirthdate parses the YYYY-MM-DD it yields.
+                        colorScheme:
+                          typeof document !== 'undefined' &&
+                          document.documentElement.dataset.theme === 'dark'
+                            ? 'dark'
+                            : 'light',
+                      }}
+                    />
+                    {/* the continue affordance bubbles in only once there is something to send */}
+                    <AnimatePresence>
+                      {birthdate.trim().length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.6, x: -6 }}
+                          animate={{ opacity: 1, scale: 1, x: 0 }}
+                          exit={{ opacity: 0, scale: 0.6 }}
+                          transition={{ type: 'spring', stiffness: 480, damping: 24 }}
+                        >
+                          <MagneticButton
+                            size="lg"
+                            variant="primary"
+                            onClick={submitBirthdate}
+                            ariaLabel="continue"
+                            style={{ minWidth: 52, justifyContent: 'center', padding: '0 18px' }}
+                          >
+                            →
+                          </MagneticButton>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )}
+
+                {promptReady && phase === 'board' && (
+                  <motion.div
+                    key="i-board"
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={spring}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 18,
+                      width: '100%',
+                      maxWidth: 440,
+                    }}
+                  >
+                    <BoardPicker boardId={boardId} onBoard={setBoardId} />
+                    <AnimatePresence>
+                      {boardId && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10, scale: 0.94 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          transition={{ type: 'spring', stiffness: 420, damping: 26 }}
+                        >
+                          <MagneticButton
+                            size="lg"
+                            variant="primary"
+                            onClick={submitBoard}
+                            style={{ minWidth: 120, justifyContent: 'center' }}
+                          >
+                            Next
+                          </MagneticButton>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )}
+
+                {promptReady && phase === 'grade' && (
+                  <motion.div
+                    key="i-grade"
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={spring}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 18,
+                      width: '100%',
+                      maxWidth: 440,
+                    }}
+                  >
+                    <GradePicker boardId={boardId} grade={grade} onGrade={setGrade} />
+                    <AnimatePresence>
+                      {grade && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10, scale: 0.94 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          transition={{ type: 'spring', stiffness: 420, damping: 26 }}
+                        >
+                          <MagneticButton
+                            size="lg"
+                            variant="primary"
+                            onClick={submitGrade}
+                            style={{ minWidth: 140, justifyContent: 'center' }}
+                          >
+                            That's me
+                          </MagneticButton>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )}
+
+                {promptReady && phase === 'likes' && (
+                  <motion.div
+                    key="i-likes"
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={spring}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 16,
+                      maxWidth: 460,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: 8,
+                        flexWrap: 'wrap',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {LIKES.map((l) => (
+                        <Chip
+                          key={l}
+                          label={l}
+                          selected={interests.includes(l)}
+                          onClick={() => toggleLike(l)}
+                        />
+                      ))}
+                    </div>
+                    <MagneticButton
+                      size="lg"
+                      variant="primary"
+                      onClick={submitLikes}
+                      style={{ minWidth: 150, justifyContent: 'center' }}
+                    >
+                      {interests.length ? 'That’s me' : 'A bit of everything'}
+                    </MagneticButton>
+                  </motion.div>
+                )}
+
+                {promptReady && phase === 'auth' && (
+                  <motion.div
+                    key="i-auth"
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={spring}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 14,
+                      width: '100%',
+                      maxWidth: 380,
+                    }}
+                  >
+                    {/* Google leads — one tap keeps it safe across devices */}
+                    <MagneticButton
+                      size="lg"
+                      variant="primary"
+                      disabled={authBusy}
+                      onClick={() => void withGoogle()}
+                      style={{ width: '100%', justifyContent: 'center' }}
+                    >
+                      Continue with Google
+                    </MagneticButton>
+
+                    {!showPhone ? (
+                      <button type="button" onClick={() => setShowPhone(true)} style={ghostButton}>
+                        Or use your phone
+                      </button>
+                    ) : authStage === 'phone' ? (
+                      <div
+                        style={{ display: 'flex', gap: 10, alignItems: 'center', width: '100%' }}
+                      >
+                        <input
+                          type="tel"
+                          inputMode="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          onFocus={() => setMood('listening')}
+                          onBlur={() => setMood('idle')}
+                          onKeyDown={(e) => e.key === 'Enter' && !authBusy && void sendCode()}
+                          placeholder="Your phone number"
+                          aria-label="your phone number"
+                          style={fieldStyle}
+                        />
+                        <MagneticButton
+                          size="lg"
+                          variant="primary"
+                          disabled={authBusy}
+                          onClick={() => void sendCode()}
+                          style={{ minWidth: 92, justifyContent: 'center' }}
+                        >
+                          {authBusy ? 'sending…' : 'send'}
+                        </MagneticButton>
+                      </div>
+                    ) : (
+                      <div
+                        style={{ display: 'flex', gap: 10, alignItems: 'center', width: '100%' }}
+                      >
+                        <input
+                          // biome-ignore lint/a11y/noAutofocus: the code is this stage's single intention
+                          autoFocus
+                          inputMode="numeric"
+                          autoComplete="one-time-code"
+                          maxLength={6}
+                          value={code}
+                          onChange={(e) => {
+                            const digits = e.target.value.replace(/\D/g, '');
+                            setCode(digits);
+                            if (digits.length === 6 && !authBusy) void verifyCode(digits);
+                          }}
+                          onFocus={() => setMood('listening')}
+                          placeholder="6-digit code"
+                          aria-label="the six-digit code we texted you"
+                          style={{ ...fieldStyle, letterSpacing: '0.3em', textAlign: 'center' }}
+                        />
+                        <MagneticButton
+                          size="lg"
+                          variant="primary"
+                          disabled={authBusy || code.length < 6}
+                          onClick={() => void verifyCode(code)}
+                          style={{ minWidth: 92, justifyContent: 'center' }}
+                        >
+                          {authBusy ? '…' : 'go'}
+                        </MagneticButton>
+                      </div>
+                    )}
+                    {authErr && (
+                      <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>
+                        {authErr}
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </AnimatePresence>
+        )}
       </div>
 
-      {/* a quiet door out — mock mode only; live mode keeps the flow (a page needs its owner) */}
-      {!liveAuth && (
+      {/* a dev door out — ONLY when no account layer is configured (pure local dev / tests). With
+          Supabase keys present, sign-in is mandatory and there is no skip. */}
+      {!canAuth && (
         <button
           type="button"
           onClick={skip}

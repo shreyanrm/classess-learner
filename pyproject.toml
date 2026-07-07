@@ -21,7 +21,10 @@ exclude = ["content/catalogs", "content/cache", "services/render-worker"]
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-extend-exclude = ["docs", ".venv"]
+# services/render-worker is a Node/TS render service (see [tool.uv.workspace] above); its Python
+# files (the queue seam + the operator-run drain worker) are standalone scripts, not part of the
+# linted gateway codebase — excluded here for the same reason it is excluded from the uv workspace.
+extend-exclude = ["docs", ".venv", "services/render-worker"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "C4"]

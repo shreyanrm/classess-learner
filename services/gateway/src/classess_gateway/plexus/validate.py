@@ -1,12 +1,14 @@
-"""Post-serve validation gate + Opus (frontier.reason) quality-backup escalation.
+"""Post-serve validation gate + GPT-5.5 (openai.frontier) quality-backup escalation.
 
-MODEL-ORDER FLIP (owner law, 2026-07-07): the content primary is GPT-5.5 (openai.frontier); OPUS
-is the quality-backup. An artifact serves immediately as ``status="provisional"`` — the first
+CONTENT ORDER (owner verdict 2026-07-07): the content primary is OPUS (frontier.reason); GPT-5.5
+is the quality-backup. Owner's evidence — in the Opus-vs-GPT-5.5 storyboard comparison Opus was
+slightly better, and GPT-5.5 made subtle React/SVG errors — so Opus leads and GPT-5.5 competes on
+every quality failure. An artifact serves immediately as ``status="provisional"`` — the first
 learner never waits on a judge. A background thread (spawned after serve, in :mod:`engines`) then
-scores the provisional GPT-5.5 artifact with an LLM judge (Opus) against the quality bars:
+scores the provisional Opus artifact with an LLM judge (Opus) against the quality bars:
 correctness, interactivity, visual-heaviness, guided-discovery register, and
 grammar/sentence-case. On a quality-fail (score below the bar, or a critical/factual error) the
-SAME spec is regenerated on the escalation model (Opus); both artifacts are re-scored and the
+SAME spec is regenerated on the escalation model (GPT-5.5); both artifacts are re-scored and the
 BEST-OF is promoted to ``status="canonical"``.
 
 Validation ALWAYS terminates in a canonical record, so a provisional is validated exactly
@@ -19,15 +21,21 @@ validatedAt, score}}`` — ``model`` is the model that actually produced the can
 artifact (the escalation model when best-of chose it), so telemetry reports the real model.
 
 Owner law — every version is kept FOREVER: the winner is saved canonical, and the losing
-candidate (the GPT-5.5 provisional an Opus rebuild supersedes, or an Opus rebuild that lost
+candidate (the Opus provisional a GPT-5.5 rebuild supersedes, or a GPT-5.5 rebuild that lost
 best-of) is appended to the immutable version ledger as SUPERSEDED / REJECTED — never deleted.
+
+A video artifact promoted to canonical also appends a render job to the out-of-band MP4 queue
+(:func:`_enqueue_video_render`) — best-effort, never blocking the promotion.
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
+import os
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 from classess_gateway.plexus import store
@@ -110,6 +118,204 @@ def _rank(verdict: dict[str, Any] | None) -> float:
     return verdict["score"] - 1000.0 if verdict["critical"] else verdict["score"]
 
 
+def _promote_after_lint_failure(
+    *,
+    concept: str,
+    modality: str,
+    difficulty: str,
+    scope: dict[str, str],
+    record: dict[str, Any],
+    artifact: Any,
+    base_model: str,
+    base_reasons: list[str],
+    judge_model: str,
+    escalation_model: str,
+    fallbacks: tuple[str, ...],
+    now: str,
+    provenance: Any,
+    generate_live: Any,
+    lint_artifact: Any,
+) -> dict[str, Any]:
+    """The technical-lint-failure route (owner law): the served provisional is technically broken,
+    so rebuild the SAME spec on the quality-backup (GPT-5.5) WITHOUT a judge call. If the rebuild
+    lints clean it is promoted (unscored — the quality-backup model's clean rebuild is trusted); if
+    it is ALSO broken or fell to a seed, refuse to the honest seed, loudly. Every version is kept
+    forever: the failed provisional (and any failed rebuild) persists as REJECTED with lint reasons
+    in provenance."""
+    logger.warning(
+        "validate: technical lint FAILED for %s/%r (%d issue(s)) — GPT-5.5 rebuild, no judge: %s",
+        modality,
+        concept,
+        len(base_reasons),
+        "; ".join(base_reasons[:6]),
+    )
+
+    alt: Any = None
+    alt_model = escalation_model
+    alt_seeded = True
+    alt_reasons: list[str] = []
+    if escalation_model:
+        try:
+            alt, alt_model, _tokens, alt_seeded = generate_live(
+                modality, concept, difficulty, escalation_model, fallbacks, {}
+            )
+        except Exception:
+            logger.warning("validate: lint-failure GPT-5.5 rebuild raised", exc_info=True)
+            alt, alt_seeded = None, True
+
+    alt_ok = False
+    if alt is not None and not alt_seeded:
+        alt_lint = lint_artifact(modality, alt)
+        alt_ok, alt_reasons = alt_lint.ok, alt_lint.reasons
+
+    if alt_ok:
+        canonical = {
+            **record,
+            "status": store.CANONICAL,
+            "artifact": alt,
+            "provenance": provenance(alt_model, None),
+        }
+        logger.info(
+            "validate: lint-clean GPT-5.5 rebuild promoted to canonical for %s/%r",
+            modality,
+            concept,
+        )
+    else:
+        # GPT-5.5's rebuild is ALSO broken (or unavailable/seeded) — the loud refuse/seed path.
+        logger.error(
+            "validate: GPT-5.5 rebuild ALSO failed technical lint for %s/%r — serving the seed: %s",
+            modality,
+            concept,
+            "; ".join(alt_reasons[:6]) or "rebuild seeded or unavailable",
+        )
+        seed_artifact = _seed_for(modality, concept, difficulty)
+        canonical = {
+            **record,
+            "status": store.CANONICAL,
+            "artifact": seed_artifact,
+            "seeded": True,  # an honest floor, not a ceiling: live mode retries the real thing
+            "provenance": {
+                **record.get("provenance", {}),
+                "model": "seed",
+                "validation": {"model": judge_model, "validatedAt": now, "score": None},
+            },
+        }
+
+    store.save(concept, modality, difficulty, canonical, scope)
+    store.save_version(concept, modality, difficulty, canonical, scope)
+    # Keep the failed Opus provisional forever — REJECTED, lint reasons recorded (never deleted).
+    store.save_version(
+        concept,
+        modality,
+        difficulty,
+        {
+            **record,
+            "status": store.REJECTED,
+            "artifact": artifact,
+            "provenance": provenance(base_model, None, lint_reasons=base_reasons),
+        },
+        scope,
+    )
+    # A rebuild that itself failed lint is kept too — every generated version persists.
+    if alt is not None and not alt_seeded and not alt_ok:
+        store.save_version(
+            concept,
+            modality,
+            difficulty,
+            {
+                **record,
+                "status": store.REJECTED,
+                "artifact": alt,
+                "provenance": provenance(alt_model, None, lint_reasons=alt_reasons),
+            },
+            scope,
+        )
+    return canonical
+
+
+def _seed_for(modality: str, concept: str, difficulty: str) -> Any:
+    """The honest floor for a modality (imported lazily — engines pulls in sympy/litellm seams)."""
+    from classess_gateway.plexus.engines import _seed
+
+    return _seed(modality, concept, difficulty)
+
+
+# --- render-queue seam (INTEGRATION.md): promote-to-canonical -> enqueue an out-of-band render -
+# The render worker (services/render-worker) drains this queue and renders each video artifact to an
+# MP4 with Remotion — Node-only deps that must never touch the gateway. The queue FILE + JSONL line
+# is the whole contract, so the gateway appends the line itself (stdlib) rather than importing the
+# worker's queue.py (which is not on the gateway path). See services/render-worker/INTEGRATION.md.
+
+
+def _render_queue_path() -> Path:
+    """The shared render queue. RENDER_QUEUE_PATH (the worker's env override) wins; otherwise it
+    lives beside the cached artifacts (and honours PLEXUS_CACHE_DIR, so tests stay isolated)."""
+    override = os.getenv("RENDER_QUEUE_PATH")
+    return Path(override) if override else store.cache_dir() / "_render-queue.jsonl"
+
+
+def _video_spec_fingerprint(artifact: Any) -> str:
+    """A gateway-side content hash of the video scene spec, used ONLY to dedupe the queue (no two
+    pending jobs for the same film). It hashes the same inputs the worker's authoritative
+    sceneSpecHash does — scene id + SVG payload + narration audio — but need not match it byte for
+    byte: the worker computes its own hash for the MP4 filename + reuse economy."""
+    scenes = artifact.get("scenes") if isinstance(artifact, dict) else None
+    spec = [
+        {
+            "id": s.get("id"),
+            "svg": (s.get("visual") or {}).get("payload"),
+            "audio": (s.get("audio") or {}).get("b64"),
+        }
+        for s in (scenes or [])
+        if isinstance(s, dict)
+    ]
+    bed = (artifact.get("narrationAudio") or {}) if isinstance(artifact, dict) else {}
+    blob = json.dumps({"scenes": spec, "bed": bed.get("b64")}, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(blob.encode()).hexdigest()[:16]
+
+
+def _enqueue_video_render(artifact_path: Path, artifact: Any) -> None:
+    """Append one render job for a canonical video artifact — best-effort, NEVER blocking promotion.
+    Idempotent per scene-spec fingerprint among pending (un-drained) jobs: a re-promote of the same
+    film does not stack duplicate jobs. ``drain`` clears the queue, so a later re-promote after a
+    drain re-enqueues (the worker then reuses the existing MP4 by hash — reuse economy)."""
+    try:
+        queue = _render_queue_path()
+        spec_hash = _video_spec_fingerprint(artifact)
+        if queue.exists():
+            for line in queue.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    if json.loads(line).get("sceneSpecHash") == spec_hash:
+                        return  # already pending for this exact spec — idempotent, skip
+                except json.JSONDecodeError:
+                    continue
+        job = {
+            "artifact": str(artifact_path),
+            "out": None,
+            "sceneSpecHash": spec_hash,
+            "enqueuedAt": datetime.now(UTC).isoformat(),
+        }
+        queue.parent.mkdir(parents=True, exist_ok=True)
+        with queue.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(job, separators=(",", ":")) + "\n")
+    except Exception:  # a queue write must never break a promotion — log and move on
+        logger.warning("validate: render enqueue failed — promotion unaffected", exc_info=True)
+
+
+def _maybe_enqueue_render(
+    concept: str, modality: str, difficulty: str, scope: dict[str, str], canonical: dict[str, Any]
+) -> None:
+    """Enqueue an MP4 render iff a real (non-seed) VIDEO artifact was promoted to canonical."""
+    if modality != "video" or canonical.get("seeded"):
+        return
+    _enqueue_video_render(
+        store.artifact_path(concept, modality, difficulty, scope), canonical.get("artifact")
+    )
+
+
 def validate_and_promote(
     *,
     concept: str,
@@ -122,16 +328,64 @@ def validate_and_promote(
     fallbacks: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """Score the provisional artifact, escalate + best-of on a quality-fail, and promote the
-    winner to canonical. ALWAYS writes a canonical record (validation is once-and-done)."""
+    winner to canonical. ALWAYS writes a canonical record (validation is once-and-done).
+
+    A DETERMINISTIC technical lint runs FIRST, before the LLM judge: a broken SVG attribute, a
+    dead expression, or an out-of-vocabulary enum is a certain reject, so it routes an Opus rebuild
+    WITHOUT spending a judge call (:func:`_promote_after_lint_failure`)."""
     from classess_gateway.plexus.engines import _generate_live
+    from classess_gateway.plexus.lint import lint_artifact
 
     artifact = record["artifact"]
     base_model = record.get("provenance", {}).get("model", "unknown")
+    now = datetime.now(UTC).isoformat(timespec="seconds")
+
+    def _provenance(
+        model: str, ver: dict[str, Any] | None, lint_reasons: list[str] | None = None
+    ) -> dict[str, Any]:
+        prov: dict[str, Any] = {
+            **record.get("provenance", {}),
+            "model": model,
+            "validation": {
+                "model": judge_model,
+                "validatedAt": now,
+                "score": None if ver is None else ver["score"],
+            },
+        }
+        if lint_reasons is not None:  # the deterministic lint's verdict, on a rejected version
+            prov["lint"] = lint_reasons
+        return prov
+
+    lint = lint_artifact(modality, artifact)
+    if not lint.ok:
+        canonical = _promote_after_lint_failure(
+            concept=concept,
+            modality=modality,
+            difficulty=difficulty,
+            scope=scope,
+            record=record,
+            artifact=artifact,
+            base_model=base_model,
+            base_reasons=lint.reasons,
+            judge_model=judge_model,
+            escalation_model=escalation_model,
+            fallbacks=fallbacks,
+            now=now,
+            provenance=_provenance,
+            generate_live=_generate_live,
+            lint_artifact=lint_artifact,
+        )
+        _maybe_enqueue_render(concept, modality, difficulty, scope, canonical)
+        return canonical
+
     verdict = _judge(judge_model, modality, concept, artifact)
     best_artifact, best_model, best_verdict = artifact, base_model, verdict
 
-    # Escalation candidate (the Opus rebuild), if the gate fires. Kept in scope so its version — win
-    # or lose — is persisted to the immutable ledger below.
+    # Escalation candidate (the GPT-5.5 rebuild), if the gate fires. Kept in scope so its version —
+    # win or lose — is persisted to the immutable ledger below. Owner verdict (2026-07-07): Opus is
+    # the proven-stronger content model (slightly better storyboards; GPT-5.5 made subtle React/SVG
+    # errors) so Opus leads; GPT-5.5 is the proven-strong cross-family backup that competes here on
+    # every quality failure, and best-of promotes whichever actually scores higher.
     alt: Any = None
     alt_model = escalation_model
     alt_verdict: dict[str, Any] | None = None
@@ -146,7 +400,7 @@ def validate_and_promote(
             escalation_model,
         )
         try:
-            # regenerate the SAME spec (concept x difficulty) on the quality-backup (Opus); empty
+            # regenerate the SAME spec (concept x difficulty) on the quality-backup (GPT-5.5); empty
             # payload (no raster)
             alt, alt_model, _tokens, alt_seeded = _generate_live(
                 modality, concept, difficulty, escalation_model, fallbacks, {}
@@ -164,19 +418,6 @@ def validate_and_promote(
                     _score_of(alt_verdict),
                 )
 
-    now = datetime.now(UTC).isoformat(timespec="seconds")
-
-    def _provenance(model: str, ver: dict[str, Any] | None) -> dict[str, Any]:
-        return {
-            **record.get("provenance", {}),
-            "model": model,
-            "validation": {
-                "model": judge_model,
-                "validatedAt": now,
-                "score": None if ver is None else ver["score"],
-            },
-        }
-
     canonical = {
         **record,
         "status": store.CANONICAL,
@@ -184,19 +425,19 @@ def validate_and_promote(
         "provenance": _provenance(best_model, best_verdict),
     }
     store.save(concept, modality, difficulty, canonical, scope)
-    # Owner law: keep every version forever. The canonical winner is a ledger record; and if an Opus
-    # rebuild actually ran, the LOSER of best-of is kept too — SUPERSEDED when the rebuild replaced
-    # the served provisional, REJECTED when the rebuild itself lost. Never deleted.
+    # Owner law: keep every version forever. The canonical winner is a ledger record; and if a
+    # GPT-5.5 rebuild actually ran, the LOSER of best-of is kept too — SUPERSEDED when the rebuild
+    # replaced the served provisional, REJECTED when the rebuild itself lost. Never deleted.
     store.save_version(concept, modality, difficulty, canonical, scope)
     if alt is not None and not alt_seeded:
-        if best_artifact is alt:  # the Opus rebuild won → the GPT-5.5 provisional is superseded
+        if best_artifact is alt:  # the GPT-5.5 rebuild won → the Opus provisional is superseded
             loser = {
                 **record,
                 "status": store.SUPERSEDED,
                 "artifact": artifact,
                 "provenance": _provenance(base_model, verdict),
             }
-        else:  # the Opus rebuild lost best-of → rejected, but still kept as a record
+        else:  # the GPT-5.5 rebuild lost best-of → rejected, but still kept as a record
             loser = {
                 **record,
                 "status": store.REJECTED,
@@ -205,6 +446,7 @@ def validate_and_promote(
             }
         store.save_version(concept, modality, difficulty, loser, scope)
 
+    _maybe_enqueue_render(concept, modality, difficulty, scope, canonical)
     logger.info(
         "validate: promoted %s/%r to canonical (model=%s score=%s)",
         modality,
@@ -223,17 +465,24 @@ def validate_and_promote(
 if __name__ == "__main__":  # runnable self-check — no framework, no network
     _rec = {
         "artifact": {"cards": ["base"]},
-        "provenance": {"engine": "engine.compose", "model": "openai/gpt-5.5", "prompt_version": "v"},  # noqa: E501
+        # base is now OPUS (the content primary, owner verdict 2026-07-07)
+        "provenance": {
+            "engine": "engine.compose",
+            "model": "anthropic/claude-opus-4-8",
+            "prompt_version": "v",
+        },  # noqa: E501
     }
     _saved: list[dict] = []
     store.save = lambda c, m, d, r, s: None  # type: ignore[assignment]
-    store.save_version = lambda c, m, d, r, s: (_saved.append(r), store.artifact_path(c, m, d, s))[1]  # type: ignore[assignment] # noqa: E501
+    store.save_version = lambda c, m, d, r, s: (_saved.append(r), store.artifact_path(c, m, d, s))[
+        1
+    ]  # type: ignore[assignment] # noqa: E501
 
-    # fail-then-escalate: GPT-5.5 base scores low, the Opus rebuild scores high → best-of promotes
-    # the Opus rebuild, and the superseded GPT base survives in the version ledger. Run as
-    # `python -m ...validate`: this module IS __main__, so rebinding the global `_judge` here is
-    # what validate_and_promote (also in __main__) resolves. _generate_live is imported fresh from
-    # the real engines module, so patch it there.
+    # fail-then-escalate: the Opus base scores low, the GPT-5.5 rebuild scores high → best-of
+    # promotes the GPT-5.5 rebuild, and the superseded Opus base survives in the version ledger. Run
+    # as `python -m ...validate`: this module IS __main__, so rebinding the global `_judge` here is
+    # what validate_and_promote (also in __main__) resolves. _generate_live and lint_artifact are
+    # imported fresh from their real modules, so patch them there.
     _judge = lambda jm, mo, co, art: {  # type: ignore[assignment] # noqa: E731
         "score": 90.0 if art == {"cards": ["alt"]} else 40.0,
         "critical": False,
@@ -241,8 +490,10 @@ if __name__ == "__main__":  # runnable self-check — no framework, no network
         "notes": "",
     }
     import classess_gateway.plexus.engines as _eng
+    import classess_gateway.plexus.lint as _lint
 
-    _eng._generate_live = lambda *a: ({"cards": ["alt"]}, "anthropic/claude-opus-4-8", 1, False)  # type: ignore[assignment]
+    _lint.lint_artifact = lambda modality, artifact: _lint.LintResult(True, [])  # type: ignore[assignment]
+    _eng._generate_live = lambda *a: ({"cards": ["alt"]}, "openai/gpt-5.5", 1, False)  # type: ignore[assignment]
     out = validate_and_promote(
         concept="c",
         modality="compose",
@@ -250,13 +501,13 @@ if __name__ == "__main__":  # runnable self-check — no framework, no network
         scope={},
         record=_rec,
         judge_model="anthropic/claude-opus-4-8",
-        escalation_model="anthropic/claude-opus-4-8",
+        escalation_model="openai/gpt-5.5",
     )
     assert out["status"] == "canonical", out
     assert out["artifact"] == {"cards": ["alt"]}, out
-    assert out["provenance"]["model"] == "anthropic/claude-opus-4-8", out
+    assert out["provenance"]["model"] == "openai/gpt-5.5", out
     assert out["provenance"]["validation"]["score"] == 90.0, out
-    # every version kept forever: the canonical winner AND the superseded GPT base both persist
+    # every version kept forever: the canonical winner AND the superseded Opus base both persist
     _statuses = {r["status"]: r["artifact"] for r in _saved}
     assert _statuses.get("canonical") == {"cards": ["alt"]}, _saved
     assert _statuses.get("superseded") == {"cards": ["base"]}, _saved

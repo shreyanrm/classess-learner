@@ -6,13 +6,19 @@ deps live only here). The seam is exactly one call, plus a worker that drains a 
 ## The one hook
 
 When a **video** artifact is promoted to canonical, enqueue a render. That promotion happens in
-`services/gateway/src/classess_gateway/plexus/validate.py`, in `validate_and_promote(...)`, right
-after the canonical record is written:
+`services/gateway/src/classess_gateway/plexus/validate.py`, in `validate_and_promote(...)`.
+
+**Implemented** (2026-07-07): the gateway takes the blessed "simplest" option below — it appends the
+JSONL line **itself** (pure stdlib, `_enqueue_video_render` / `_maybe_enqueue_render`) after each
+canonical video save, rather than importing this package. The job carries a `sceneSpecHash`
+(a gateway-side content fingerprint) so the append is **idempotent per film among pending jobs** and
+best-effort (a queue-write failure never blocks the promotion). A seeded honest-floor video is not
+enqueued. The reference shape stays:
 
 ```python
-store.save(concept, modality, difficulty, canonical, scope)   # validate.py ~L186 (existing)
-# --- render seam (add this) ---
-if modality == "video":
+store.save(concept, modality, difficulty, canonical, scope)   # existing
+# --- render seam (implemented in validate.py) ---
+if modality == "video" and not canonical.get("seeded"):
     from classess_render_worker.queue import enqueue_render   # or import by path; see note
     enqueue_render(store.artifact_path(concept, modality, difficulty, scope))
 ```
@@ -41,14 +47,16 @@ Do not add Remotion or any render dependency to the gateway. The enqueue side is
 
 ## The worker (drains the queue)
 
-A tiny out-of-band loop (cron, a sidecar, or a `bun`/`node` process) does:
+**Implemented**: `worker.py` (stdlib) is the drain loop — `python worker.py --once` (cron) or
+`python worker.py` (sidecar). It renders each pending job and **appends** a `done`/`error` status
+line to the same jsonl (append-only — retention law: a done spec is skipped next pass, nothing is
+rewritten). See the README ("Draining the queue"). Conceptually it does:
 
 ```python
-from classess_render_worker.queue import drain
-import subprocess
-for job in drain():
-    subprocess.run(["node", "src/render.ts", "--artifact", job["artifact"]],
-                   cwd="services/render-worker", check=False)
+# worker.py: for each pending (un-drained, not-yet-done) job
+subprocess.run(["node", "src/render.ts", "--artifact", job["artifact"]],
+               cwd="services/render-worker", check=False)
+# then append {"status": "done"|"error", "sceneSpecHash": ..., ...} to the queue file
 ```
 
 Each render writes, **beside the artifact**:

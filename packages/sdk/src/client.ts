@@ -46,17 +46,33 @@ export interface Sdk {
   account?: AccountLayer;
 }
 
+/** The cached profile row for a subject — what a returning sign-in reconstructs their world from. */
+export interface CachedProfile {
+  display_name?: string;
+  grade?: string;
+  board?: string;
+  /** Onboarding completion sentinel ('onboarded' once the flow finished) — reuses an existing column. */
+  archetype_slot?: string;
+}
+
 /** The additive account surface the app offers from onboarding and You. */
 export interface AccountLayer {
   isAuthenticated(): boolean;
   /** The signed-in identity's claims (email/name/avatar), or null when signed out. */
   profile(): AccountProfile | null;
+  /** Read the cached profile row for the signed-in subject (null when none / signed out). */
+  fetchProfile(): Promise<CachedProfile | null>;
   /** Redirect to Google sign-in; the session completes on return via the URL fragment. */
   signInWithGoogle(redirectTo?: string): Promise<void>;
   /** End the account session (local caches stay — offline-first). */
   signOut(): Promise<void>;
   /** Upsert the learner profile row under auth.uid() (RLS-guarded, best-effort). */
-  syncProfile(row: { display_name?: string; grade?: string; board?: string }): Promise<void>;
+  syncProfile(row: {
+    display_name?: string;
+    grade?: string;
+    board?: string;
+    archetype_slot?: string;
+  }): Promise<void>;
 }
 
 /** Never-uploaded placeholder for pre-sign-in live-mode events (RLS would reject them anyway). */
@@ -146,6 +162,19 @@ export function createSdk(overrides: Partial<SdkConfig> = {}): Sdk {
     ? {
         isAuthenticated: () => supabaseAuth.isAuthenticated(),
         profile: () => supabaseAuth.accountProfile(),
+        fetchProfile: async () => {
+          const sub = supabaseAuth.subjectId;
+          if (!sub || !accountRest) return null;
+          try {
+            const row = await accountRest.selectOne(
+              'profiles_cache',
+              `subject_id=eq.${sub}&select=display_name,grade,board,archetype_slot`,
+            );
+            return (row as CachedProfile | null) ?? null;
+          } catch {
+            return null; // offline or unreadable — treat as no cached profile
+          }
+        },
         signInWithGoogle: (redirectTo) => supabaseAuth.auth.signInWithGoogle(redirectTo),
         signOut: () => supabaseAuth.auth.signOut(),
         syncProfile: async (row) => {

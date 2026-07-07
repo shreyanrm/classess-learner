@@ -621,18 +621,18 @@ def _video_routing():
     return primary, fallbacks
 
 
-def test_video_defaults_to_gpt_and_escalates_to_opus() -> None:
-    """engine.video storyboards on GPT-5.5 (the primary post model-order flip) and escalates to the
-    frontier reasoner (Opus) as its first fallback."""
+def test_video_defaults_to_opus_and_escalates_to_gpt() -> None:
+    """engine.video storyboards on Opus (frontier.reason, the primary per the owner's 2026-07-07
+    content-order verdict) and competes on GPT-5.5 (openai.frontier) as its first fallback."""
     from classess_gateway.registry import policy
     from classess_gateway.routing import resolve, resolve_any
 
     pol = policy("engine.video")
-    assert pol.primary == "openai.frontier"
-    assert resolve(pol.primary, pol.track).provider_model == "openai/gpt-5.5"
-    # the escalation target is the FIRST fallback: the frontier reasoner (Opus)
-    assert pol.fallback[0] == "frontier.reason"
-    assert resolve_any(pol.fallback[0]).provider_model == "anthropic/claude-opus-4-8"
+    assert pol.primary == "frontier.reason"
+    assert resolve(pol.primary, pol.track).provider_model == "anthropic/claude-opus-4-8"
+    # the escalation target is the FIRST fallback: GPT-5.5, the quality-backup
+    assert pol.fallback[0] == "openai.frontier"
+    assert resolve_any(pol.fallback[0]).provider_model == "openai/gpt-5.5"
 
 
 def _patch_complete(monkeypatch, plans: dict[str, str]) -> list[str]:

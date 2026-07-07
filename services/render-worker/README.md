@@ -57,6 +57,34 @@ bun run render -- --artifact ../../content/cache/video/refraction-of-light--core
 `render` is wired to `node src/render.ts` (Node runs the `.ts` via type-stripping) — Node drives the
 Remotion renderer for stability; `bun run render` invokes it either way.
 
+## Draining the queue (the worker loop)
+
+The gateway appends one job per canonical **video** promotion to `content/cache/_render-queue.jsonl`
+(the promote-to-canonical seam in `plexus/validate.py`; see `INTEGRATION.md`). `worker.py` drains
+that queue — runs `render` per job, then **appends** a `{"status":"done"|"error", …}` line to the
+same jsonl (append-only, so the retention law holds: no line is rewritten, a done spec is skipped
+next pass). Pure stdlib, no deps of its own.
+
+```bash
+python worker.py --once      # one pass — the cron / CI one-liner
+python worker.py             # continuous sidecar (loops, --interval seconds, default 15)
+python worker.py --selftest  # pure-logic check, renders nothing
+```
+
+Operator-run / cron **only** — it is deliberately **not** wired into the gateway process (Remotion's
+heavy, licence-encumbered deps must never load there). `RENDER_QUEUE_PATH` overrides the queue path;
+`RENDER_CMD` overrides the render command (default `node src/render.ts`).
+
+## Manim rung (future infra — the flag + queue are real, the renderer is a stub)
+
+Some ideas out-run self-animating SVG — an equation that **morphs** term by term, a **3D** scene, a
+geometric **proof** that choreographs itself. The gateway flags those (`plexus/manim_rung.py`:
+`needs_manim(scene_plan)`, keyword + explicit-flag heuristic) and enqueues them to
+`content/cache/_manim-queue.jsonl` (`enqueue_manim`). The **flag and the queue exist today and are
+tested**; the **Manim render container** (a Python env with a `manim` install, headless Cairo/LaTeX)
+is **future infra** — nothing here imports or runs manim yet. When that container lands it will drain
+the manim queue exactly as this worker drains the MP4 queue.
+
 ## What it does (the laws it honours)
 
 - **Beat-sync (MOTION.md §5):** each scene lasts **exactly its measured narration-audio duration**

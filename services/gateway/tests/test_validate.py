@@ -212,25 +212,27 @@ def test_seeded_escalation_is_not_chosen(monkeypatch, cache_dir) -> None:
     assert out["provenance"]["model"] == "openai/gpt-5.5"  # the GPT primary is kept
 
 
-# --- model-order flip: content engines route primary to GPT-5.5, escalate to Opus -------
+# --- content order (owner verdict 2026-07-07): OPUS primary + judge, GPT-5.5 the quality-backup --
+# (Opus led the storyboard comparison; GPT-5.5 made subtle React/SVG errors — hence the lint gate.)
 
 
-def test_content_engines_route_primary_to_gpt_and_escalate_to_opus() -> None:
+def test_content_engines_route_primary_to_opus_and_escalate_to_gpt() -> None:
     from classess_gateway.registry import policy
 
     for cap in ("engine.compose", "engine.simulate", "engine.diagram", "engine.video"):
         pol = policy(cap)
-        # PRIMARY is GPT-5.5 via the logical openai.frontier, on Track 1
-        assert pol.primary == "openai.frontier"
-        assert resolve(pol.primary, pol.track).provider_model == "openai/gpt-5.5"
-        # Opus (frontier.reason) waits in the fallback chain as the quality-backup
-        assert "frontier.reason" in pol.fallback
-    assert resolve("frontier.reason", Track.TRACK_1).provider_model == "anthropic/claude-opus-4-8"
+        # PRIMARY is Opus via the logical frontier.reason, on Track 1
+        assert pol.primary == "frontier.reason"
+        assert resolve(pol.primary, pol.track).provider_model == "anthropic/claude-opus-4-8"
+        # GPT-5.5 (openai.frontier) waits in the fallback chain as the quality-backup
+        assert "openai.frontier" in pol.fallback
+    assert resolve("openai.frontier", Track.TRACK_1).provider_model == "openai/gpt-5.5"
 
 
-def test_spawn_validation_escalates_to_opus_not_gpt(monkeypatch) -> None:
-    """The post-serve gate's quality-backup is now Opus: GPT-5.5 fails -> Opus rebuilds (not the
-    other way around). Run the spawned thread synchronously and capture the resolved models."""
+def test_spawn_validation_escalates_to_gpt_not_opus(monkeypatch) -> None:
+    """The post-serve gate's quality-backup is GPT-5.5: Opus is primary and judge, and on a
+    quality-fail GPT-5.5 rebuilds the same spec (both minds compete). Run the spawned thread
+    synchronously and capture the resolved models."""
     import classess_gateway.plexus.engines as engines
 
     captured: dict = {}
@@ -247,9 +249,9 @@ def test_spawn_validation_escalates_to_opus_not_gpt(monkeypatch) -> None:
             self._target()
 
     monkeypatch.setattr(engines.threading, "Thread", _SyncThread)
-    record = {"artifact": {}, "provenance": {"model": "openai/gpt-5.5"}}
+    record = {"artifact": {}, "provenance": {"model": "anthropic/claude-opus-4-8"}}
     engines._spawn_validation(record, "c", "compose", "core", {}, ())
-    assert captured["escalation_model"] == "anthropic/claude-opus-4-8"  # Opus rebuilds
+    assert captured["escalation_model"] == "openai/gpt-5.5"  # GPT-5.5 rebuilds
     assert captured["judge_model"] == "anthropic/claude-opus-4-8"  # Opus judges
 
 
@@ -305,3 +307,171 @@ def test_rejected_loser_survives_when_base_wins(monkeypatch, cache_dir) -> None:
     assert by_status[store.CANONICAL]["artifact"] == {"cards": ["base"]}  # GPT base won
     assert by_status[store.REJECTED]["artifact"] == {"cards": ["alt"]}  # losing rebuild kept
     assert by_status[store.REJECTED]["provenance"]["model"] == _OPUS
+
+
+# --- deterministic technical lint: a subtle SVG/spec defect routes a rebuild on the quality- ------
+# --- backup WITHOUT a judge call; the broken version persists as REJECTED with the lint reasons. --
+# Current content order (owner verdict 2026-07-07): Opus is primary + judge, GPT-5.5 is the
+# quality-backup that rebuilds — so a lint failure routes to GPT-5.5. The lint mechanism itself is
+# model-agnostic (it rebuilds on whatever escalation_model is passed); these pass models explicitly.
+_GPT = "openai/gpt-5.5"
+
+_CLEAN_SVG = (
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">'
+    '<circle cx="5" cy="5" r="2" fill="#111"/></svg>'
+)
+
+
+def _lint_record(modality, artifact):
+    return {
+        "concept": "photosynthesis",
+        "modality": modality,
+        "difficulty": "core",
+        "verified": True,
+        "seeded": False,
+        "status": store.PROVISIONAL,
+        "provenance": {"engine": f"engine.{modality}", "model": _OPUS,  # Opus is the primary
+                       "prompt_version": "plexus-v4"},
+        "artifact": artifact,
+    }
+
+
+def _run_lint_gate(monkeypatch, *, modality, artifact, rebuild_artifact, rebuild_seeded=False):
+    """Drive validate_and_promote through the lint gate. Returns (out, judge_calls, rebuild_calls).
+    The judge is a tripwire — the lint-failure path must NEVER call it. Wired like production:
+    judge on Opus, rebuild on the GPT-5.5 quality-backup."""
+    judge_calls: list = []
+    rebuild_calls: list = []
+
+    def judge(*a):
+        judge_calls.append(a)
+        return {"score": 99.0, "critical": False, "weak": [], "notes": "should never run"}
+
+    def regen(modality_, concept, difficulty, provider_model, fallbacks, payload):
+        rebuild_calls.append(provider_model)  # capture the model the rebuild routed to
+        return rebuild_artifact, provider_model, 5, rebuild_seeded
+
+    monkeypatch.setattr("classess_gateway.plexus.validate._judge", judge)
+    monkeypatch.setattr("classess_gateway.plexus.engines._generate_live", regen)
+    out = validate_and_promote(
+        concept="photosynthesis",
+        modality=modality,
+        difficulty="core",
+        scope={},
+        record=_lint_record(modality, artifact),
+        judge_model=_OPUS,
+        escalation_model=_GPT,
+    )
+    return out, judge_calls, rebuild_calls
+
+
+def _rejected(modality):
+    versions = store.load_versions("photosynthesis", modality, "core", {})
+    return [v for v in versions if v["status"] == store.REJECTED]
+
+
+def test_lint_undefined_attr_rejects_and_rebuilds_without_judging(monkeypatch, cache_dir) -> None:
+    """The exact production bug: cx="undefined" parses as XML but renders NaN. The lint catches it,
+    routes a quality-backup rebuild WITHOUT a judge call, and keeps the broken version REJECTED."""
+    broken = _CLEAN_SVG.replace('cx="5"', 'cx="undefined"')
+    out, judge_calls, rebuild_calls = _run_lint_gate(
+        monkeypatch, modality="diagram", artifact=broken, rebuild_artifact=_CLEAN_SVG
+    )
+    assert judge_calls == []  # NO judge call was burned on a technically-broken artifact
+    assert rebuild_calls == [_GPT]  # the SAME spec routed to the quality-backup
+    assert out["status"] == store.CANONICAL
+    assert out["artifact"] == _CLEAN_SVG  # the lint-clean rebuild is promoted
+    assert out["provenance"]["model"] == _GPT
+    rejected = _rejected("diagram")
+    assert len(rejected) == 1
+    assert rejected[0]["artifact"] == broken  # the broken version is kept forever, not deleted
+    assert any("undefined" in r for r in rejected[0]["provenance"]["lint"])
+
+
+def test_lint_bad_smil_dur_rejects_video_scene(monkeypatch, cache_dir) -> None:
+    bad = (
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">'
+        '<rect x="1" y="1" width="2" height="2">'
+        '<animate attributeName="x" values="1;5" dur="abc"/></rect></svg>'
+    )
+    clean_video = {"scenes": [{"id": "s1", "durationMs": 1000, "narration": "n",
+                               "visual": {"kind": "svg", "payload": _CLEAN_SVG}}]}
+    artifact = {"scenes": [{"id": "s1", "visual": {"kind": "svg", "payload": bad}}]}
+    out, judge_calls, rebuild_calls = _run_lint_gate(
+        monkeypatch, modality="video", artifact=artifact, rebuild_artifact=clean_video
+    )
+    assert judge_calls == []
+    assert rebuild_calls == [_GPT]
+    assert out["artifact"] == clean_video
+    assert any("dur" in r for r in _rejected("video")[0]["provenance"]["lint"])
+
+
+def test_lint_dangling_url_ref_rejects(monkeypatch, cache_dir) -> None:
+    broken = _CLEAN_SVG.replace('fill="#111"', 'fill="url(#missing)"')
+    out, judge_calls, _rc = _run_lint_gate(
+        monkeypatch, modality="diagram", artifact=broken, rebuild_artifact=_CLEAN_SVG
+    )
+    assert judge_calls == []
+    assert out["artifact"] == _CLEAN_SVG
+    assert any("missing" in r for r in _rejected("diagram")[0]["provenance"]["lint"])
+
+
+def test_lint_non_numeric_coord_rejects_discovery_mark(monkeypatch, cache_dir) -> None:
+    """A discovery mark coordinate must be numeric (Discovery.tsx); a stringy 'undefined' is a
+    spec-shape defect the deterministic lint catches even without any SVG."""
+    artifact = {"cards": [{"id": "c1", "discovery": {"stages": [
+        {"visual": {"marks": [{"id": "m1", "shape": "circle", "x": "undefined", "y": 10}]}}
+    ]}}]}
+    out, judge_calls, _rc = _run_lint_gate(
+        monkeypatch, modality="compose", artifact=artifact, rebuild_artifact={"cards": ["ok"]}
+    )
+    assert judge_calls == []
+    assert out["artifact"] == {"cards": ["ok"]}
+    assert any("numeric" in r for r in _rejected("compose")[0]["provenance"]["lint"])
+
+
+def test_lint_wrong_enum_rejects(monkeypatch, cache_dir) -> None:
+    artifact = {"cards": [{"id": "c1", "interaction": {"kind": "wiggle", "prompt": "x"}}]}
+    out, judge_calls, _rc = _run_lint_gate(
+        monkeypatch, modality="compose", artifact=artifact, rebuild_artifact={"cards": ["ok"]}
+    )
+    assert judge_calls == []
+    assert out["artifact"] == {"cards": ["ok"]}
+    assert any("vocabulary" in r for r in _rejected("compose")[0]["provenance"]["lint"])
+
+
+def test_lint_rebuild_also_broken_falls_to_seed_loudly(monkeypatch, cache_dir) -> None:
+    """When the quality-backup's rebuild is ALSO technically broken, refuse to the honest seed —
+    keep BOTH broken versions (the provisional and the failed rebuild) REJECTED, never deleted."""
+    broken = _CLEAN_SVG.replace('cx="5"', 'cx="undefined"')
+    still_broken = _CLEAN_SVG.replace('cy="5"', 'cy="NaN"')
+    out, judge_calls, rebuild_calls = _run_lint_gate(
+        monkeypatch, modality="diagram", artifact=broken, rebuild_artifact=still_broken
+    )
+    assert judge_calls == []  # still no judge call
+    assert rebuild_calls == [_GPT]
+    assert out["status"] == store.CANONICAL
+    assert out["seeded"] is True  # the honest floor, served as canonical
+    assert out["provenance"]["model"] == "seed"
+    from classess_gateway.plexus.lint import lint_artifact
+
+    assert lint_artifact("diagram", out["artifact"]).ok  # the seed itself is lint-clean
+    rejected = _rejected("diagram")
+    artifacts = {r["artifact"] for r in rejected}
+    assert broken in artifacts and still_broken in artifacts  # both broken versions survive
+    assert len(rejected) == 2
+
+
+def test_lint_clean_artifact_takes_the_normal_judge_path(monkeypatch, cache_dir) -> None:
+    """A lint-clean provisional is NOT short-circuited: the LLM judge still runs and promotes it."""
+    judged: list = []
+
+    def judge(_jm, _mo, _co, _art):
+        judged.append(True)
+        return {"score": 91.0, "critical": False, "weak": [], "notes": "clean"}
+
+    out = _promote(monkeypatch, _provisional({"cards": ["base"]}), judge=judge,
+                   regen=lambda *_a: ({"cards": ["alt"]}, _OPUS, 1, False))
+    assert judged == [True]  # lint passed → the judge ran exactly once
+    assert out["status"] == store.CANONICAL
+    assert out["provenance"]["validation"]["score"] == 91.0

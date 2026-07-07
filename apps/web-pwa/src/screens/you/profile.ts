@@ -120,6 +120,13 @@ export function boardName(boardId: string): string {
   return boards.find((b) => b.id === boardId)?.name ?? boardId;
 }
 
+/** Reverse of boardName — accept a stored board (raw id OR display name) and resolve its id. */
+export function resolveBoardId(board: string | undefined): string | undefined {
+  if (!board) return undefined;
+  const s = board.trim();
+  return boards.find((b) => b.id === s)?.id ?? boards.find((b) => b.name === s)?.id;
+}
+
 export function boardSeeded(boardId: string): boolean {
   return boards.find((b) => b.id === boardId)?.seeded ?? false;
 }

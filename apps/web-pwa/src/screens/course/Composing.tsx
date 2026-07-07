@@ -948,7 +948,10 @@ function motionSceneFromVideo(raw: unknown, title: string): MotionScene | null {
     })
     .filter((x): x is NonNullable<typeof x> => x !== null);
   if (steps.length === 0) return null;
-  return parseMotionScene({ id: 'video', title, steps });
+  // renderedUrl (optional): the gateway attaches it when an MP4 render exists beside the artifact,
+  // so MotionPlayer plays the baked film instead of the live scenes. parseMotionScene safety-checks it.
+  const renderedUrl = typeof src.renderedUrl === 'string' ? src.renderedUrl : undefined;
+  return parseMotionScene({ id: 'video', title, steps, renderedUrl });
 }
 
 function useVideoScene(title: string, courseId: string): VideoState {

@@ -17,8 +17,10 @@ learner, honest in provenance (``model: "seed"``).
 
 from __future__ import annotations
 
+import base64
 import copy
 import hashlib
+import json
 import logging
 import math
 import re
@@ -1355,8 +1357,8 @@ def _raster_diagram(concept: str, difficulty: str) -> str | None:
 
 
 def _scene_plan_complex(obj: Any) -> bool:
-    """A video scene plan can self-declare that animating it needs the frontier reasoner
-    (owner's video routing law): an explicit complexity flag escalates sonnet -> Opus."""
+    """A video scene plan can self-declare that animating it warrants a second mind (owner's video
+    routing law): an explicit complexity flag triggers the GPT-5.5 second opinion on the Opus draft."""
     if not isinstance(obj, dict):
         return False
     flag = obj.get("complexity")
@@ -1372,11 +1374,10 @@ def _generate_video_live(
     fallbacks: tuple[str, ...],
     user: str,
 ) -> tuple[Any, str, int, bool]:
-    """engine.video routing law (owner, 2026-07-07, post model-order flip): storyboard on GPT-5.5
-    (the primary) by DEFAULT, escalate to the frontier reasoner (Opus — the first fallback) ONLY
-    when necessary: the scene plan flags itself complex, or the GPT draft fails structural
-    verification. Returns the Opus draft only when it actually verifies, so an escalation never
-    degrades the result."""
+    """engine.video routing law (owner verdict 2026-07-07): storyboard on OPUS (the primary) by
+    DEFAULT, and get a GPT-5.5 second opinion (the first fallback) ONLY when necessary: the scene
+    plan flags itself complex, or the Opus draft fails structural verification. The second draft is
+    taken only when it actually verifies, so a second opinion never degrades the result."""
     from classess_gateway.vidya import _extract_json
 
     text, tokens = _complete(provider_model, "video", user, fallbacks)
@@ -1567,12 +1568,46 @@ def _mock_tokens(concept: str, modality: str, difficulty: str) -> int:
     return int(digest, 16) % 500 + 1
 
 
-def _public(record: dict[str, Any]) -> dict[str, Any]:
+def _rendered_url(
+    concept: str, modality: str, difficulty: str, scope: dict[str, str]
+) -> str | None:
+    """When the out-of-band render worker (services/render-worker) has produced an MP4 beside the
+    canonical VIDEO artifact, return a data: URL for it so MotionPlayer prefers the baked film (its
+    Classess watermark already burned in) over live SMIL scenes. Absent — the common case, since
+    renders are operator-run and out-of-band — this is ``None`` and the app plays the live scenes.
+
+    ponytail: inlines the MP4 as a self-contained ``data:`` URI so no static-file route or HTTP
+    range server is needed; swap for a ``/media`` route with range requests if MP4s are ever served
+    at scale (multi-MB base64 per serve is the ceiling)."""
+    if modality != "video":
+        return None
+    try:
+        base = store.artifact_path(concept, modality, difficulty, scope)
+        manifests = sorted(base.parent.glob(f"{base.stem}.*.render-manifest.json"))
+        if not manifests:
+            return None
+        # newest manifest wins — retention keeps every version; the latest render matches the
+        # current canonical spec (a changed spec re-renders to a new, later manifest).
+        manifest = json.loads(manifests[-1].read_text())
+        mp4 = base.parent / str(manifest.get("output") or "")
+        if not mp4.is_file():
+            return None
+        return "data:video/mp4;base64," + base64.b64encode(mp4.read_bytes()).decode()
+    except (OSError, ValueError):
+        return None
+
+
+def _public(record: dict[str, Any], rendered_url: str | None = None) -> dict[str, Any]:
+    artifact = record["artifact"]
+    if rendered_url and isinstance(artifact, dict):
+        # attach transiently to the SERVED artifact (a shallow copy — never persisted to cache) so
+        # MotionPlayer can prefer the baked MP4; the live-scene fields ride along as the fallback.
+        artifact = {**artifact, "renderedUrl": rendered_url}
     return {
         "concept": record["concept"],
         "modality": record["modality"],
         "difficulty": record["difficulty"],
-        "artifact": record["artifact"],
+        "artifact": artifact,
         "provenance": record["provenance"],
         "verified": record["verified"],
         "seeded": record.get("seeded", False),
@@ -1589,16 +1624,16 @@ def _spawn_validation(
     fallbacks: tuple[str, ...],
 ) -> None:
     """Fire the post-serve validation gate in a background thread — the learner never waits on it.
-    MODEL-ORDER FLIP (owner law): the content primary is now GPT-5.5, so OPUS (frontier.reason) is
-    the QUALITY-BACKUP — it both judges the provisional and rebuilds it on a quality-fail (best-of
-    promoted). If either model is unregistered we skip validation (the provisional stays served,
-    never blocks)."""
+    CONTENT ORDER (owner verdict 2026-07-07): the content primary is OPUS, and GPT-5.5
+    (openai.frontier) is the QUALITY-BACKUP — Opus (frontier.reason) JUDGES the provisional and, on
+    a quality-fail, GPT-5.5 REBUILDS the same spec (best-of promoted; both minds compete). If either
+    model is unregistered we skip validation (the provisional stays served, never blocks)."""
     from classess_gateway.routing import Track, resolve
 
     try:
         judge = resolve("frontier.reason", Track.TRACK_1).provider_model
-        # Opus is the quality-backup: a GPT-5.5 draft that fails the gate is rebuilt on Opus.
-        escalation = resolve("frontier.reason", Track.TRACK_1).provider_model
+        # GPT-5.5 is the quality-backup: an Opus draft that fails the gate is rebuilt on GPT-5.5.
+        escalation = resolve("openai.frontier", Track.TRACK_1).provider_model
     except KeyError:
         logger.warning("validate: judge/escalation model unresolved — skipping validation")
         return
@@ -1663,7 +1698,8 @@ def run_engine(
             if live and store.status(cached) == store.PROVISIONAL and not cached.get("seeded"):
                 _spawn_validation(cached, concept, modality, difficulty, scope, fallbacks)
             model = cached.get("provenance", {}).get("model")
-            return ProviderResponse(output=_public(cached), tokens=0, model=model)
+            rendered = _rendered_url(concept, modality, difficulty, scope)
+            return ProviderResponse(output=_public(cached, rendered), tokens=0, model=model)
 
     # Cache miss: a real generation. Hold the per-user slot for its whole duration (one at a time).
     with _generation_slot(str(payload.get("user") or "").strip()):
@@ -1696,8 +1732,12 @@ def run_engine(
         store.save(concept, modality, difficulty, record, scope)
         # Serve the first learner immediately, THEN validate off the request path (never blocks).
         if provisional:
-            # Owner law: keep every version forever. The GPT-5.5 provisional lands in the immutable
-            # ledger before the gate runs, so the attempt survives even if Opus later supersedes it.
+            # Owner law: keep every version forever. The Opus provisional lands in the immutable
+            # ledger before the gate runs, so the attempt survives even if a GPT-5.5 rebuild later
+            # supersedes it.
             store.save_version(concept, modality, difficulty, record, scope)
             _spawn_validation(record, concept, modality, difficulty, scope, fallbacks)
-        return ProviderResponse(output=_public(record), tokens=tokens, model=model_used)
+        # A fresh video has no MP4 yet (the render is out-of-band), so rendered_url is None here; a
+        # later cache-hit picks it up once the worker has produced it. Cheap no-op for non-video.
+        rendered = _rendered_url(concept, modality, difficulty, scope)
+        return ProviderResponse(output=_public(record, rendered), tokens=tokens, model=model_used)

@@ -141,16 +141,19 @@ _POLICIES: dict[str, RoutingPolicy] = {
         ),
         # Plexus engines: heavy content generation, warm-cached under content/cache/ so the first
         # learner pays and the rest reuse.
-        # MODEL-ORDER FLIP (owner law, 2026-07-07): content engines route PRIMARY to GPT-5.5
-        # via the logical openai.frontier; OPUS (frontier.reason) is the QUALITY-BACKUP — a GPT
-        # draft that fails the post-serve validation gate is rebuilt on Opus, best-of promoted
-        # (plexus.validate). The fallback chain here is litellm's on-ERROR failover (a GPT outage
-        # still yields content): GPT-5.5 -> Opus -> Haiku. Vidya's turn routing is UNTOUCHED.
+        # CONTENT ORDER (owner verdict 2026-07-07): OPUS is PRIMARY, GPT-5.5 the QUALITY-BACKUP.
+        # Owner's evidence: in the Opus-vs-GPT-5.5 storyboard comparison Opus was slightly better,
+        # and GPT-5.5 made subtle React/SVG errors — so the four content engines route PRIMARY to
+        # Opus (frontier.reason); openai.frontier (GPT-5.5) is the FIRST fallback and the post-serve
+        # validation gate's rebuild target (a failed Opus draft is rebuilt on GPT-5.5, best-of
+        # promoted — plexus.validate; both minds compete on every quality failure). The chain here
+        # is litellm's on-ERROR failover (an Opus outage still yields content): Opus -> GPT-5.5 ->
+        # Haiku. Vidya's turn routing is UNTOUCHED.
         RoutingPolicy(
             capability="engine.compose",
             track=Track.TRACK_1,
-            primary="openai.frontier",
-            fallback=("frontier.reason", "frontier.fast"),
+            primary="frontier.reason",
+            fallback=("openai.frontier", "frontier.fast"),
             max_latency_ms=12000,
             cost_ceiling=0.08,
             cache_tier=CacheTier.EXACT,
@@ -158,8 +161,8 @@ _POLICIES: dict[str, RoutingPolicy] = {
         RoutingPolicy(
             capability="engine.simulate",
             track=Track.TRACK_1,
-            primary="openai.frontier",
-            fallback=("frontier.reason", "frontier.fast"),
+            primary="frontier.reason",
+            fallback=("openai.frontier", "frontier.fast"),
             max_latency_ms=12000,
             cost_ceiling=0.08,
             cache_tier=CacheTier.EXACT,
@@ -167,22 +170,22 @@ _POLICIES: dict[str, RoutingPolicy] = {
         RoutingPolicy(
             capability="engine.diagram",
             track=Track.TRACK_1,
-            primary="openai.frontier",
-            fallback=("frontier.reason", "frontier.fast"),
+            primary="frontier.reason",
+            fallback=("openai.frontier", "frontier.fast"),
             max_latency_ms=10000,
             cost_ceiling=0.05,
             cache_tier=CacheTier.EXACT,
         ),
-        # Video routing law (owner, 2026-07-07, post model-order flip): scene plans are storyboarded
-        # on GPT-5.5 (openai.frontier) by DEFAULT and escalate to the frontier reasoner (Opus) ONLY
-        # when necessary — a complexity flag in the scene plan or a failed structural/quality
-        # validation. The escalation target is the FIRST fallback, which the engine calls explicitly
-        # (not just an error-fallback): frontier.reason. See plexus.engines._generate_video_live.
+        # Video routing law (owner verdict 2026-07-07): scene plans are storyboarded on OPUS
+        # (frontier.reason) by DEFAULT and get a GPT-5.5 second opinion (openai.frontier) ONLY when
+        # necessary — a complexity flag in the scene plan or a failed structural verification. That
+        # second-opinion target is the FIRST fallback, which the engine calls explicitly (not just
+        # an error-fallback), and is taken only when it verifies. See engines._generate_video_live.
         RoutingPolicy(
             capability="engine.video",
             track=Track.TRACK_1,
-            primary="openai.frontier",
-            fallback=("frontier.reason", "frontier.fast"),
+            primary="frontier.reason",
+            fallback=("openai.frontier", "frontier.fast"),
             max_latency_ms=30000,
             cost_ceiling=0.15,
             cache_tier=CacheTier.EXACT,

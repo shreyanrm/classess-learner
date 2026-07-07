@@ -43,11 +43,16 @@ export interface MotionScene {
   title?: string;
   steps: MotionStep[];
   narration?: { src: string };
+  /** A rendered MP4 of this exact film (gateway fills it when the render worker has produced one
+   * beside the artifact). Present => play the baked video (watermark already in it), not live SMIL. */
+  renderedUrl?: string;
 }
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
 
 const isSafeMediaSrc = (src: string): boolean => /^(https?:\/\/|data:(image|audio)\/)/.test(src);
+
+const isSafeVideoSrc = (src: string): boolean => /^(https?:\/\/|data:video\/)/.test(src);
 
 function parseVisual(raw: Record<string, unknown>): MotionVisual | null {
   const visual = isRecord(raw.visual) ? raw.visual : raw;
@@ -97,11 +102,13 @@ export function parseMotionScene(raw: unknown): MotionScene | null {
       : typeof src.narration_src === 'string'
         ? src.narration_src
         : null;
+  const renderedRaw = typeof src.renderedUrl === 'string' ? src.renderedUrl : null;
   return {
     id: typeof src.id === 'string' ? src.id : 'motion',
     title: typeof src.title === 'string' ? src.title : undefined,
     steps,
     narration: narrationSrc && isSafeMediaSrc(narrationSrc) ? { src: narrationSrc } : undefined,
+    renderedUrl: renderedRaw && isSafeVideoSrc(renderedRaw) ? renderedRaw : undefined,
   };
 }
 
@@ -323,6 +330,35 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
     }
     setPlaying(true);
   };
+
+  // Prefer the baked MP4 when the render worker has produced one (its Classess watermark is already
+  // burned in, so no overlay here). Native <video controls> — reduced-motion safe (no autoplay),
+  // both themes via the token-styled stage. Falls back to the live SMIL scenes when absent.
+  if (scene.renderedUrl) {
+    return (
+      <div
+        ref={stageRef}
+        style={{
+          position: 'relative',
+          width: '100%',
+          border: '0.5px solid var(--clss-hairline-on-paper)',
+          borderRadius: 'var(--clss-radius-md)',
+          background: 'var(--clss-paper)',
+          overflow: 'hidden',
+        }}
+      >
+        {/* biome-ignore lint/a11y/useMediaCaption: narration is spoken in the film; scene captions are baked into the frames */}
+        <video
+          src={scene.renderedUrl}
+          controls
+          playsInline
+          preload="metadata"
+          aria-label={scene.title ? `motion explainer: ${scene.title}` : 'motion explainer'}
+          style={{ width: '100%', height: 'auto', display: 'block' }}
+        />
+      </div>
+    );
+  }
 
   if (!step) return null;
   const current = step;

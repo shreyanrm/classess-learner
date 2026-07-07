@@ -533,6 +533,10 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     const acct = sdk.account?.profile();
     if (!acct) return;
     mergeAccount(acct);
+    // Don't push local→remote until this device has completed onboarding — otherwise a fresh-device
+    // sign-in would overwrite the account's saved world with the seed fallback before the returning
+    // learner's flow restores it. Onboarding writes the authoritative row on completion.
+    if (!localStorage.getItem(ONBOARDED_KEY)) return;
     const p = loadProfile();
     void sdk.account?.syncProfile({
       display_name: p.name,
