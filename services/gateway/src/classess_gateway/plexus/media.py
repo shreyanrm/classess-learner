@@ -8,10 +8,14 @@ only — this path never runs keyless, so tests and CI never touch the network.
 from __future__ import annotations
 
 import base64
+import contextlib
 import json
+import logging
 import os
 import re
 import struct
+
+logger = logging.getLogger("classess.gateway")
 
 TTS_MODEL = "gemini-2.5-flash-preview-tts"
 _TTS_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{TTS_MODEL}:generateContent"
@@ -24,8 +28,10 @@ def synthesize_narration(text: str) -> dict[str, str] | None:
     import urllib.error
     import urllib.request
 
+    key_name = "GEMINI_API_KEY" if os.getenv("GEMINI_API_KEY") else "GOOGLE_AI_API_KEY"
     key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY")
     if not key or not text.strip():
+        logger.warning("tts: no key present (checked GEMINI_API_KEY, GOOGLE_AI_API_KEY)")
         return None
 
     body = {
@@ -44,8 +50,16 @@ def synthesize_narration(text: str) -> dict[str, str] | None:
     try:
         with urllib.request.urlopen(req, timeout=_HTTP_TIMEOUT_S) as resp:
             payload = json.loads(resp.read().decode())
-    except (urllib.error.URLError, TimeoutError, ValueError, OSError):
-        return None  # refusal invisible — narrationAudio stays null
+    except urllib.error.HTTPError as exc:  # Google rejected it — surface WHY (key/billing/model)
+        detail = ""
+        with contextlib.suppress(OSError):
+            detail = exc.read().decode(errors="replace")[:300]
+        logger.warning("tts: Google HTTP %s via %s — %s", exc.code, key_name, detail)
+        return None
+    except (urllib.error.URLError, TimeoutError, ValueError, OSError) as exc:
+        # a fast failure here (before a real round-trip) means the container cannot reach Google
+        logger.warning("tts: request failed via %s — %s: %s", key_name, type(exc).__name__, exc)
+        return None
 
     for cand in payload.get("candidates") or []:
         for part in (cand.get("content") or {}).get("parts") or []:
@@ -53,6 +67,7 @@ def synthesize_narration(text: str) -> dict[str, str] | None:
             if inline and inline.get("data"):
                 mime = inline.get("mimeType") or inline.get("mime_type") or "audio/pcm;rate=24000"
                 return _as_playable(str(mime), str(inline["data"]))
+    logger.warning("tts: Google 200 but no audio in response via %s", key_name)
     return None
 
 
