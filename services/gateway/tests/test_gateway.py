@@ -351,3 +351,27 @@ def test_capability_routes_are_rate_limited_per_ip(monkeypatch: pytest.MonkeyPat
     # non-capability routes are never limited
     assert client.get("/healthz").status_code == 200
     assert client.get("/v1/capabilities").status_code == 200
+
+
+def test_second_concurrent_generation_gets_429_retry_after(tmp_path, monkeypatch) -> None:
+    """A content engine allows one generation per user; a second in-flight one → 429."""
+    from classess_gateway.plexus import engines
+    from fastapi.testclient import TestClient
+
+    monkeypatch.setenv("PLEXUS_CACHE_DIR", str(tmp_path))
+    client = TestClient(create_app(make_gateway()))
+    body = {"consent_tier": "un_elevated", "payload": {"concept": "fractions", "user": "u1"}}
+
+    engines._gen_in_flight.add("u1")  # pretend u1's first generation is still cooking
+    try:
+        resp = client.post("/v1/capability/engine.compose", json=body)
+    finally:
+        engines._gen_in_flight.discard("u1")
+    assert resp.status_code == 429
+    assert resp.headers["Retry-After"]
+    assert resp.json()["error"] == "generation_in_flight"
+
+    # with the slot free, the same call succeeds
+    ok = client.post("/v1/capability/engine.compose", json=body)
+    assert ok.status_code == 200
+    assert ok.json()["output"]["verified"] is True

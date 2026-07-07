@@ -1,0 +1,188 @@
+- generic [ref=f5e1]:
+  - generic [ref=f5e2]:
+    - generic [ref=f5e463]:
+      - generic [ref=f5e464]:
+        - img [ref=f5e465]
+        - generic:
+          - generic:
+            - img
+        - generic [ref=f5e475]:
+          - heading "Mathematics" [level=1] [ref=f5e476]
+          - generic [ref=f5e477]: patterns, structure, and certainty
+          - generic [ref=f5e478]:
+            - generic [ref=f5e479]: CBSE · Class 10
+            - generic [ref=f5e480]: 14 chapters
+      - generic [ref=f5e481]:
+        - generic [ref=f5e482]: the chapters
+        - tablist "how to view chapters" [ref=f5e483]:
+          - tab "list" [selected] [ref=f5e484] [cursor=pointer]
+          - tab "roadmap" [ref=f5e485] [cursor=pointer]
+      - generic [ref=f5e1410]:
+        - button "01 Real Numbers" [ref=f5e1413] [cursor=pointer]:
+          - generic [ref=f5e1414]:
+            - img [ref=f5e1415]
+            - generic [ref=f5e1422]: "01"
+          - generic [ref=f5e1423]:
+            - generic [ref=f5e1424]: Real Numbers
+            - img [ref=f5e1425]
+          - img [ref=f5e1433]
+        - generic [ref=f5e1447]:
+          - button "02 Polynomials" [expanded] [ref=f5e1448] [cursor=pointer]:
+            - generic [ref=f5e1449]:
+              - img [ref=f5e1450]
+              - generic [ref=f5e1456]: "02"
+            - generic [ref=f5e1457]:
+              - generic [ref=f5e1458]: Polynomials
+              - img [ref=f5e1459]
+            - img [ref=f5e1465]
+          - generic [ref=f5e1862]:
+            - button "Zeroes of a polynomial ready when you are — tap to dive in ready" [ref=f5e1909] [cursor=pointer]:
+              - img [ref=f5e1867]
+              - generic [ref=f5e1873]:
+                - generic [ref=f5e1874]: Zeroes of a polynomial
+                - generic [ref=f5e1875]: ready when you are — tap to dive in
+              - generic [ref=f5e1876]:
+                - text: ready
+                - img [ref=f5e1910]
+            - generic [ref=f5e1881]:
+              - button "Relationship between zeroes and coefficients How roots and coefficients connect. builds on Zeroes of a polynomial" [active] [ref=f5e1882] [cursor=pointer]:
+                - img [ref=f5e1884]
+                - generic [ref=f5e1891]:
+                  - generic [ref=f5e1892]: Relationship between zeroes and coefficients
+                  - generic [ref=f5e1893]: How roots and coefficients connect.
+                - generic [ref=f5e1894]: builds on Zeroes of a polynomial
+              - generic [ref=f5e1920]:
+                - generic [ref=f5e1921]: this builds on Zeroes of a polynomial — take those first, or proceed anyway
+                - generic [ref=f5e1922]:
+                  - button "take me there" [ref=f5e1923] [cursor=pointer]
+                  - button "proceed anyway" [ref=f5e1924] [cursor=pointer]
+            - button "Division of polynomials Dividing one polynomial by another. builds on Relationship between zeroes and coefficients" [ref=f5e1897] [cursor=pointer]:
+              - img [ref=f5e1899]
+              - generic [ref=f5e1905]:
+                - generic [ref=f5e1906]: Division of polynomials
+                - generic [ref=f5e1907]: Dividing one polynomial by another.
+              - generic [ref=f5e1908]: builds on Relationship between zeroes and coefficients
+        - button "03 Pair of Linear Equations in Two Variables" [ref=f5e1480] [cursor=pointer]:
+          - generic [ref=f5e1481]:
+            - img [ref=f5e1482]
+            - generic [ref=f5e1488]: "03"
+          - generic [ref=f5e1489]:
+            - generic [ref=f5e1490]: Pair of Linear Equations in Two Variables
+            - img [ref=f5e1491]
+          - img [ref=f5e1497]
+        - button "04 Quadratic Equations" [ref=f5e1512] [cursor=pointer]:
+          - generic [ref=f5e1513]:
+            - img [ref=f5e1514]
+            - generic [ref=f5e1521]: "04"
+          - generic [ref=f5e1522]:
+            - generic [ref=f5e1523]: Quadratic Equations
+            - img [ref=f5e1524]
+          - img [ref=f5e1528]
+        - button "05 Arithmetic Progressions" [ref=f5e1543] [cursor=pointer]:
+          - generic [ref=f5e1544]:
+            - img [ref=f5e1545]
+            - generic [ref=f5e1550]: "05"
+          - generic [ref=f5e1551]:
+            - generic [ref=f5e1552]: Arithmetic Progressions
+            - img [ref=f5e1553]
+          - img [ref=f5e1559]
+        - button "06 Triangles" [ref=f5e1574] [cursor=pointer]:
+          - generic [ref=f5e1575]:
+            - img [ref=f5e1576]
+            - generic [ref=f5e1582]: "06"
+          - generic [ref=f5e1583]:
+            - generic [ref=f5e1584]: Triangles
+            - img [ref=f5e1585]
+          - img [ref=f5e1591]
+        - button "07 Coordinate Geometry" [ref=f5e1606] [cursor=pointer]:
+          - generic [ref=f5e1607]:
+            - img [ref=f5e1608]
+            - generic [ref=f5e1614]: "07"
+          - generic [ref=f5e1615]:
+            - generic [ref=f5e1616]: Coordinate Geometry
+            - img [ref=f5e1617]
+          - img [ref=f5e1623]
+        - button "08 Introduction to Trigonometry" [ref=f5e1638] [cursor=pointer]:
+          - generic [ref=f5e1639]:
+            - img [ref=f5e1640]
+            - generic [ref=f5e1645]: "08"
+          - generic [ref=f5e1646]:
+            - generic [ref=f5e1647]: Introduction to Trigonometry
+            - img [ref=f5e1648]
+          - img [ref=f5e1651]
+        - button "09 Some Applications of Trigonometry" [ref=f5e1666] [cursor=pointer]:
+          - generic [ref=f5e1667]:
+            - img [ref=f5e1668]
+            - generic [ref=f5e1673]: "09"
+          - generic [ref=f5e1674]:
+            - generic [ref=f5e1675]: Some Applications of Trigonometry
+            - img [ref=f5e1676]
+          - img [ref=f5e1683]
+        - button "10 Circles" [ref=f5e1698] [cursor=pointer]:
+          - generic [ref=f5e1699]:
+            - img [ref=f5e1700]
+            - generic [ref=f5e1708]: "10"
+          - generic [ref=f5e1709]:
+            - generic [ref=f5e1710]: Circles
+            - img [ref=f5e1711]
+          - img [ref=f5e1718]
+        - button "11 Areas Related to Circles" [ref=f5e1733] [cursor=pointer]:
+          - generic [ref=f5e1734]:
+            - img [ref=f5e1735]
+            - generic [ref=f5e1741]: "11"
+          - generic [ref=f5e1742]:
+            - generic [ref=f5e1743]: Areas Related to Circles
+            - img [ref=f5e1744]
+          - img [ref=f5e1751]
+        - button "12 Surface Areas and Volumes" [ref=f5e1766] [cursor=pointer]:
+          - generic [ref=f5e1767]:
+            - img [ref=f5e1768]
+            - generic [ref=f5e1775]: "12"
+          - generic [ref=f5e1776]:
+            - generic [ref=f5e1777]: Surface Areas and Volumes
+            - img [ref=f5e1778]
+          - img [ref=f5e1784]
+        - button "13 Statistics" [ref=f5e1799] [cursor=pointer]:
+          - generic [ref=f5e1800]:
+            - img [ref=f5e1801]
+            - generic [ref=f5e1808]: "13"
+          - generic [ref=f5e1809]:
+            - generic [ref=f5e1810]: Statistics
+            - img [ref=f5e1811]
+          - img [ref=f5e1818]
+        - button "14 Probability" [ref=f5e1833] [cursor=pointer]:
+          - generic [ref=f5e1834]:
+            - img [ref=f5e1835]
+            - generic [ref=f5e1841]: "14"
+          - generic [ref=f5e1842]:
+            - generic [ref=f5e1843]: Probability
+            - img [ref=f5e1844]
+          - img [ref=f5e1848]
+    - banner:
+      - img "Classess" [ref=f5e221]
+      - generic [ref=f5e222]:
+        - button "Did you know" [ref=f5e223] [cursor=pointer]:
+          - img [ref=f5e224]
+          - text: Did you know
+        - generic "day 12 of being a learner" [ref=f5e226]:
+          - img [ref=f5e228]
+          - text: "12"
+        - generic [ref=f5e231]: 590 xp
+        - generic [ref=f5e232]:
+          - img [ref=f5e233]
+          - button "You — level 5, profile and settings" [ref=f5e236] [cursor=pointer]:
+            - generic "fox" [ref=f5e237]:
+              - img [ref=f5e239]
+          - generic [ref=f5e254]: "5"
+    - generic [ref=f5e429]:
+      - generic:
+        - img
+      - button "Talk to Vidya" [ref=f5e430] [cursor=pointer]:
+        - img [ref=f5e434]
+    - button "Zeroes of a polynomial your course is ready — tap to dive in open" [ref=f5e1913] [cursor=pointer]:
+      - generic [ref=f5e1915]:
+        - generic [ref=f5e1916]: Zeroes of a polynomial
+        - generic [ref=f5e1917]: your course is ready — tap to dive in
+      - generic [ref=f5e1918]: open
+  - button "Back — ◦ ,learn" [ref=f5e486] [cursor=pointer]:
+    - img [ref=f5e487]

@@ -33,6 +33,7 @@ import { boardName, loadProfile, mergeAccount } from './screens/you/profile';
 import { CommandPalette } from './shell/CommandPalette';
 import { resolveDestination } from './shell/destinations';
 import { type Route, RouterProvider, useRouter } from './shell/router';
+import { DownloadCenter } from './store/DownloadCenter';
 import { machineRoomSnapshot } from './store/machine-room';
 import {
   clearMind,
@@ -43,7 +44,6 @@ import {
   mindLines,
   rememberFact,
 } from './store/mind';
-import { DownloadCenter } from './store/DownloadCenter';
 import { ProgressProvider, useProgress } from './store/progress';
 import { SdkProvider } from './store/sdk';
 import { AppHeader } from './ui/AppHeader';

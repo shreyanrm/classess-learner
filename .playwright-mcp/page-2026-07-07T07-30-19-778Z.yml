@@ -1,0 +1,63 @@
+- generic [ref=f5e2]:
+  - generic [ref=f5e2041]:
+    - banner [ref=f5e2042]:
+      - button "Close course" [ref=f5e2043] [cursor=pointer]:
+        - img [ref=f5e2044]
+      - generic [ref=f5e2061]:
+        - button "Replay Vidya" [ref=f5e2062] [cursor=pointer]:
+          - img [ref=f5e2063]
+        - button "Unmute Vidya" [pressed] [ref=f5e2066] [cursor=pointer]:
+          - img [ref=f5e2067]
+    - main [ref=f5e2070]:
+      - generic [ref=f5e2072]:
+        - generic [ref=f5e2073]:
+          - generic:
+            - img
+          - generic [ref=f5e2074]:
+            - img
+          - img [ref=f5e2076]
+        - generic [ref=f5e2082]: written and verified
+        - generic [ref=f5e2083]: zeroes of a polynomial
+        - generic [ref=f5e2084]:
+          - generic [ref=f5e2085]: 1meet zeroes of a polynomial
+          - generic [ref=f5e2086]: 2feel the rule
+          - generic [ref=f5e2087]: 3make a move
+          - generic [ref=f5e2088]: 4predict, then check
+          - generic [ref=f5e2089]: 5where it bends
+          - generic [ref=f5e2090]: 6the workbook
+          - generic [ref=f5e2091]: 7the boss
+          - generic [ref=f5e2092]: composed and checked, line by line. it starts on the next card.
+    - button "start the course" [ref=f5e2095] [cursor=pointer]:
+      - generic [ref=f5e2096]: start the course
+  - banner:
+    - img "Classess" [ref=f5e221]
+    - generic [ref=f5e222]:
+      - button "Did you know" [ref=f5e223] [cursor=pointer]:
+        - img [ref=f5e224]
+        - text: Did you know
+      - generic "day 12 of being a learner" [ref=f5e226]:
+        - img [ref=f5e228]
+        - text: "12"
+      - generic [ref=f5e231]: 590 xp
+      - generic [ref=f5e232]:
+        - img [ref=f5e233]
+        - button "You — level 5, profile and settings" [ref=f5e236] [cursor=pointer]:
+          - generic "fox" [ref=f5e237]:
+            - img [ref=f5e239]
+        - generic [ref=f5e254]: "5"
+  - generic [ref=f5e429]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f5e430] [cursor=pointer]:
+      - img [ref=f5e434]
+  - generic:
+    - button "Tangent to a circle your course is ready — tap to dive in open" [ref=f5e1977] [cursor=pointer]:
+      - generic [ref=f5e1979]:
+        - generic [ref=f5e1980]: Tangent to a circle
+        - generic [ref=f5e1981]: your course is ready — tap to dive in
+      - generic [ref=f5e1982]: open
+    - button "Theoretical probability your course is ready — tap to dive in open" [ref=f5e2034] [cursor=pointer]:
+      - generic [ref=f5e2036]:
+        - generic [ref=f5e2037]: Theoretical probability
+        - generic [ref=f5e2038]: your course is ready — tap to dive in
+      - generic [ref=f5e2039]: open

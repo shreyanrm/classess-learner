@@ -1,0 +1,143 @@
+- generic [active] [ref=f5e1]:
+  - generic [ref=f5e2]:
+    - generic [ref=f5e463]:
+      - generic [ref=f5e464]:
+        - img [ref=f5e465]
+        - generic:
+          - generic:
+            - img
+        - generic [ref=f5e475]:
+          - heading "Mathematics" [level=1] [ref=f5e476]
+          - generic [ref=f5e477]: patterns, structure, and certainty
+          - generic [ref=f5e478]:
+            - generic [ref=f5e479]: CBSE · Class 10
+            - generic [ref=f5e480]: 14 chapters
+      - generic [ref=f5e481]:
+        - generic [ref=f5e482]: the adventure
+        - tablist "how to view chapters" [ref=f5e483]:
+          - tab "list" [ref=f5e484] [cursor=pointer]
+          - tab "roadmap" [selected] [ref=f5e485] [cursor=pointer]
+    - banner:
+      - img "Classess" [ref=f5e221]
+      - generic [ref=f5e222]:
+        - button "Did you know" [ref=f5e223] [cursor=pointer]:
+          - img [ref=f5e224]
+          - text: Did you know
+        - generic "day 12 of being a learner" [ref=f5e226]:
+          - img [ref=f5e228]
+          - text: "12"
+        - generic [ref=f5e231]: 590 xp
+        - generic [ref=f5e232]:
+          - img [ref=f5e233]
+          - button "You — level 5, profile and settings" [ref=f5e236] [cursor=pointer]:
+            - generic "fox" [ref=f5e237]:
+              - img [ref=f5e239]
+          - generic [ref=f5e254]: "5"
+    - generic [ref=f5e429]:
+      - generic:
+        - img
+      - button "Talk to Vidya" [ref=f5e430] [cursor=pointer]:
+        - img [ref=f5e434]
+  - button "Back — ◦ ,learn" [ref=f5e486] [cursor=pointer]:
+    - img [ref=f5e487]
+  - generic "Mathematics expedition map" [ref=f5e490]:
+    - generic [ref=f5e491]:
+      - img [ref=f5e493]
+      - img [ref=f5e495]
+      - img [ref=f5e497]
+    - generic:
+      - img
+    - generic [ref=f5e501]:
+      - img [ref=f5e502]
+      - button "Euclid's division lemma — checkpoint 1, in progress, you are here" [ref=f5e1296] [cursor=pointer]:
+        - generic [ref=f5e1298]: "1"
+        - img [ref=f5e1300]
+        - generic [ref=f5e1320]: Euclid's division lemma
+      - button "The fundamental theorem of arithmetic — checkpoint 2, not started" [ref=f5e1321] [cursor=pointer]:
+        - generic [ref=f5e1322]: "2"
+      - button "Rational and irrational numbers — checkpoint 3, not started" [ref=f5e1323] [cursor=pointer]:
+        - generic [ref=f5e1324]: "3"
+      - button "Zeroes of a polynomial — checkpoint 4, not started" [ref=f5e1325] [cursor=pointer]:
+        - generic [ref=f5e1326]: "4"
+      - button "Relationship between zeroes and coefficients — checkpoint 5, not started" [ref=f5e1327] [cursor=pointer]:
+        - generic [ref=f5e1328]: "5"
+      - button "Division of polynomials — checkpoint 6, not started" [ref=f5e1329] [cursor=pointer]:
+        - generic [ref=f5e1330]: "6"
+      - button "Graphical solution — checkpoint 7, not started" [ref=f5e1331] [cursor=pointer]:
+        - generic [ref=f5e1332]: "7"
+      - button "Algebraic methods — checkpoint 8, not started" [ref=f5e1333] [cursor=pointer]:
+        - generic [ref=f5e1334]: "8"
+      - button "Consistency of equations — checkpoint 9, not started" [ref=f5e1335] [cursor=pointer]:
+        - generic [ref=f5e1336]: "9"
+      - button "Standard form — checkpoint 10, not started" [ref=f5e1337] [cursor=pointer]:
+        - generic [ref=f5e1338]: "10"
+      - button "Solving quadratics — checkpoint 11, not started" [ref=f5e1339] [cursor=pointer]:
+        - generic [ref=f5e1340]: "11"
+      - button "Nature of roots — checkpoint 12, not started" [ref=f5e1341] [cursor=pointer]:
+        - generic [ref=f5e1342]: "12"
+      - button "The nth term — checkpoint 13, not started" [ref=f5e1343] [cursor=pointer]:
+        - generic [ref=f5e1344]: "13"
+      - button "Sum of n terms — checkpoint 14, not started" [ref=f5e1345] [cursor=pointer]:
+        - generic [ref=f5e1346]: "14"
+      - button "Applications of AP — checkpoint 15, not started" [ref=f5e1347] [cursor=pointer]:
+        - generic [ref=f5e1348]: "15"
+      - button "Similarity of triangles — checkpoint 16, not started" [ref=f5e1349] [cursor=pointer]:
+        - generic [ref=f5e1350]: "16"
+      - button "Criteria for similarity — checkpoint 17, not started" [ref=f5e1351] [cursor=pointer]:
+        - generic [ref=f5e1352]: "17"
+      - button "Areas of similar triangles — checkpoint 18, not started" [ref=f5e1353] [cursor=pointer]:
+        - generic [ref=f5e1354]: "18"
+      - button "Distance formula — checkpoint 19, not started" [ref=f5e1355] [cursor=pointer]:
+        - generic [ref=f5e1356]: "19"
+      - button "Section formula — checkpoint 20, not started" [ref=f5e1357] [cursor=pointer]:
+        - generic [ref=f5e1358]: "20"
+      - button "Area of a triangle — checkpoint 21, not started" [ref=f5e1359] [cursor=pointer]:
+        - generic [ref=f5e1360]: "21"
+      - button "Trigonometric ratios — checkpoint 22, not started" [ref=f5e1361] [cursor=pointer]:
+        - generic [ref=f5e1362]: "22"
+      - button "Ratios of specific angles — checkpoint 23, not started" [ref=f5e1363] [cursor=pointer]:
+        - generic [ref=f5e1364]: "23"
+      - button "Trigonometric identities — checkpoint 24, not started" [ref=f5e1365] [cursor=pointer]:
+        - generic [ref=f5e1366]: "24"
+      - button "Heights and distances — checkpoint 25, not started" [ref=f5e1367] [cursor=pointer]:
+        - generic [ref=f5e1368]: "25"
+      - button "Angle of elevation — checkpoint 26, not started" [ref=f5e1369] [cursor=pointer]:
+        - generic [ref=f5e1370]: "26"
+      - button "Angle of depression — checkpoint 27, not started" [ref=f5e1371] [cursor=pointer]:
+        - generic [ref=f5e1372]: "27"
+      - button "Tangent to a circle — checkpoint 28, not started" [ref=f5e1373] [cursor=pointer]:
+        - generic [ref=f5e1374]: "28"
+      - button "Number of tangents from a point — checkpoint 29, not started" [ref=f5e1375] [cursor=pointer]:
+        - generic [ref=f5e1376]: "29"
+      - button "Tangent properties — checkpoint 30, not started" [ref=f5e1377] [cursor=pointer]:
+        - generic [ref=f5e1378]: "30"
+      - button "Perimeter and area of a circle — checkpoint 31, not started" [ref=f5e1379] [cursor=pointer]:
+        - generic [ref=f5e1380]: "31"
+      - button "Areas of sectors and segments — checkpoint 32, not started" [ref=f5e1381] [cursor=pointer]:
+        - generic [ref=f5e1382]: "32"
+      - button "Combined figures — checkpoint 33, not started" [ref=f5e1383] [cursor=pointer]:
+        - generic [ref=f5e1384]: "33"
+      - button "Surface area of combined solids — checkpoint 34, not started" [ref=f5e1385] [cursor=pointer]:
+        - generic [ref=f5e1386]: "34"
+      - button "Volume of combined solids — checkpoint 35, not started" [ref=f5e1387] [cursor=pointer]:
+        - generic [ref=f5e1388]: "35"
+      - button "Conversion of solids — checkpoint 36, not started" [ref=f5e1389] [cursor=pointer]:
+        - generic [ref=f5e1390]: "36"
+      - button "Mean of grouped data — checkpoint 37, not started" [ref=f5e1391] [cursor=pointer]:
+        - generic [ref=f5e1392]: "37"
+      - button "Mode and median of grouped data — checkpoint 38, not started" [ref=f5e1393] [cursor=pointer]:
+        - generic [ref=f5e1394]: "38"
+      - button "Cumulative frequency — checkpoint 39, not started" [ref=f5e1395] [cursor=pointer]:
+        - generic [ref=f5e1396]: "39"
+      - button "Theoretical probability — checkpoint 40, not started" [ref=f5e1397] [cursor=pointer]:
+        - generic [ref=f5e1398]: "40"
+      - button "Simple events — checkpoint 41, not started" [ref=f5e1399] [cursor=pointer]:
+        - generic [ref=f5e1400]: "41"
+      - button "Complementary events — checkpoint 42, not started" [ref=f5e1401] [cursor=pointer]:
+        - generic [ref=f5e1402]: "42"
+    - generic:
+      - button "Back to the chapter list" [ref=f5e1403] [cursor=pointer]:
+        - img [ref=f5e1404]
+      - generic [ref=f5e1406]:
+        - generic [ref=f5e1407]: Mathematics
+        - generic [ref=f5e1408]: 0 of 42 checkpoints · learning trail

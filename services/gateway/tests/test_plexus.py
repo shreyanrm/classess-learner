@@ -379,6 +379,65 @@ def test_artifact_cached_on_disk_keyed_by_concept_modality_difficulty(cache_dir)
     assert store.artifact_path("fractions", "compose", "stretch") != path
 
 
+# --- board-shared cache: keyed board+grade+subject+chapter+topic+contentVersion ---------
+
+
+def test_cache_key_widens_with_curriculum_scope() -> None:
+    # empty scope reproduces the original concept x modality x difficulty digest exactly, so
+    # every pre-scope warm file still hits.
+    assert store.artifact_path("fractions", "compose", "core", {}) == store.artifact_path(
+        "fractions", "compose", "core"
+    )
+    cbse = {"board": "CBSE", "grade": "7", "subject": "maths", "chapter": "c1"}
+    icse = {**cbse, "board": "ICSE"}
+    v2 = {**cbse, "contentVersion": "v2"}
+    # same topic under a different board / contentVersion is a distinct verified artifact
+    assert store.artifact_path("fractions", "compose", "core", cbse) != store.artifact_path(
+        "fractions", "compose", "core", icse
+    )
+    assert store.artifact_path("fractions", "compose", "core", cbse) != store.artifact_path(
+        "fractions", "compose", "core", v2
+    )
+    # identical scope is stable (a real cache hit)
+    assert store.artifact_path("fractions", "compose", "core", dict(cbse)) == store.artifact_path(
+        "fractions", "compose", "core", dict(cbse)
+    )
+
+
+def test_board_shared_hit_reuses_and_personalization_never_baked_in(cache_dir) -> None:
+    scope = {"board": "CBSE", "grade": "7", "subject": "science", "chapter": "c3"}
+    # miss: first learner on this coordinate pays; a personalization field rides in the payload
+    first = invoke("engine.compose", concept="pressure", user="learner-a", **scope)
+    # hit: a different learner on the same coordinate reuses the verified core, zero tokens
+    second = invoke("engine.compose", concept="pressure", user="learner-b", **scope)
+    assert first.output == second.output
+    assert second.tokens == 0
+
+    record = json.loads(store.artifact_path("pressure", "compose", "core", scope).read_text())
+    # the cached artifact is the shared core — no user / personalization ever baked in
+    blob = json.dumps(record)
+    assert "learner-a" not in blob and "learner-b" not in blob
+    assert "user" not in record and "user" not in record["artifact"]
+
+
+def test_one_generation_per_user_gate() -> None:
+    from classess_gateway.plexus import engines
+
+    # simulate a generation already in flight for this user
+    engines._gen_in_flight.add("busy-user")
+    try:
+        with pytest.raises(engines.GenerationBusy):
+            invoke("engine.compose", concept="fractions", user="busy-user")
+        # a different user is unaffected — one slot is per user, not global
+        assert invoke("engine.compose", concept="fractions", user="free-user").output["verified"]
+    finally:
+        engines._gen_in_flight.discard("busy-user")
+    # once the slot clears, the first user proceeds
+    assert invoke("engine.compose", concept="algebra", user="busy-user").output["verified"]
+    # the slot is always released after a generation — nothing leaks
+    assert engines._gen_in_flight == set()
+
+
 # --- sanitizer ---------------------------------------------------------------------------
 
 

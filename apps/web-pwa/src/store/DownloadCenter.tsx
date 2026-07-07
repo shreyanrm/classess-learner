@@ -18,7 +18,6 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from '../shell/router';
 import { sfx } from '../ui/sound';
 import { speakLine } from '../vidya/speech';
-import { useSdk } from './sdk';
 import {
   acknowledge,
   claimNext,
@@ -28,6 +27,7 @@ import {
   markReady,
   useDownloads,
 } from './downloads';
+import { useSdk } from './sdk';
 
 const COMPOSE_TIMEOUT_MS = 75_000;
 
@@ -47,6 +47,7 @@ export function DownloadCenter() {
   // The runner loop: self-driving. Claiming flips a course to `downloading` and fans a store event,
   // which re-runs this effect; the running ref plus claimNext's one-in-flight guard keep it to a
   // single generation at a time. markReady/markFailed fan another event → the next course is claimed.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `items` is the re-trigger (not read here); sdk is a stable singleton
   useEffect(() => {
     if (running.current) return;
     const next = claimNext();
@@ -70,7 +71,8 @@ export function DownloadCenter() {
       .finally(() => {
         running.current = false;
       });
-  }, [items, sdk]);
+    // sdk is a stable singleton; `items` is the sole trigger that re-drives the queue.
+  }, [items]);
 
   // The notify moment — fires as a course settles ready, once, wherever the learner is now.
   useEffect(() => {
@@ -159,7 +161,9 @@ export function DownloadCenter() {
                   d.status === 'ready' ? 'var(--clss-ultramarine)' : 'var(--clss-ink-300)',
               }}
             />
-            <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <span
+              style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}
+            >
               <span style={{ fontSize: '0.94rem', fontWeight: 600, lineHeight: 1.25 }}>
                 {d.title}
               </span>

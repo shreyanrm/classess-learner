@@ -18,6 +18,9 @@ learner, honest in provenance (``model: "seed"``).
 from __future__ import annotations
 
 import hashlib
+import threading
+from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import UTC, datetime
 from typing import Any
 from xml.sax.saxutils import quoteattr
@@ -747,7 +750,48 @@ def _generate_live(
     return _seed(modality, concept, difficulty), "seed", tokens, True
 
 
+# --- one generation at a time, per user (strict queue) ---------------------------------
+# The cache-hit path returns before this gate, so instant board-shared reuse is NEVER gated —
+# only a real (cache-miss) generation is. A second concurrent generation for the same user is
+# refused with GenerationBusy, which the app maps to 429 + Retry-After.
+# ponytail: in-process set guarded by a lock — correct for one gateway instance. Move to a
+# Redis SETNX lock when >1 instance runs (same seam the rate limiter will move on).
+_GEN_RETRY_AFTER_S = 3
+_gen_lock = threading.Lock()
+_gen_in_flight: set[str] = set()
+
+
+class GenerationBusy(Exception):
+    """This user already has a generation in flight — one at a time."""
+
+    def __init__(self, user: str, retry_after: int = _GEN_RETRY_AFTER_S) -> None:
+        self.user = user
+        self.retry_after = retry_after
+        super().__init__(f"generation already in flight for {user!r}")
+
+
+@contextmanager
+def _generation_slot(user: str) -> Iterator[None]:
+    if not user:  # anonymous/unkeyed calls aren't per-user gated; the per-IP rate limit still caps
+        yield
+        return
+    with _gen_lock:
+        if user in _gen_in_flight:
+            raise GenerationBusy(user)
+        _gen_in_flight.add(user)
+    try:
+        yield
+    finally:
+        with _gen_lock:
+            _gen_in_flight.discard(user)
+
+
 # --- the engine entrypoint (called from both providers) --------------------------------
+
+
+def _scope(payload: dict[str, Any]) -> dict[str, str]:
+    """The board-shared curriculum coordinate — never personalization (that stays runtime-only)."""
+    return {k: str(payload.get(k) or "").strip() for k in store.SCOPE_KEYS}
 
 
 def _mock_tokens(concept: str, modality: str, difficulty: str) -> int:
@@ -782,8 +826,9 @@ def run_engine(
     concept = str(payload.get("concept") or payload.get("topic") or "").strip()
     concept = concept or _DEFAULT_CONCEPT
     difficulty = str(payload.get("difficulty") or "core").strip() or "core"
+    scope = _scope(payload)
 
-    cached = store.load(concept, modality, difficulty)
+    cached = store.load(concept, modality, difficulty, scope)
     if cached is not None and cached.get("verified"):
         artifact = cached.get("artifact")
         # compose grew workbook + boss; a pre-upgrade cache record regenerates instead of serving
@@ -799,27 +844,29 @@ def run_engine(
         if not stale:
             return ProviderResponse(output=_public(cached), tokens=0)
 
-    if live:
-        artifact, model_used, tokens, seeded = _generate_live(
-            modality, concept, difficulty, provider_model, fallbacks, payload
-        )
-    else:
-        artifact = _seed(modality, concept, difficulty)
-        model_used, tokens, seeded = "mock", _mock_tokens(concept, modality, difficulty), False
+    # Cache miss: a real generation. Hold the per-user slot for its whole duration (one at a time).
+    with _generation_slot(str(payload.get("user") or "").strip()):
+        if live:
+            artifact, model_used, tokens, seeded = _generate_live(
+                modality, concept, difficulty, provider_model, fallbacks, payload
+            )
+        else:
+            artifact = _seed(modality, concept, difficulty)
+            model_used, tokens, seeded = "mock", _mock_tokens(concept, modality, difficulty), False
 
-    record = {
-        "concept": concept,
-        "modality": modality,
-        "difficulty": difficulty,
-        "verified": True,
-        "seeded": seeded,
-        "provenance": {
-            "engine": capability,
-            "model": model_used,
-            "prompt_version": store.PROMPT_VERSION,
-        },
-        "artifact": artifact,
-        "createdAt": datetime.now(UTC).isoformat(timespec="seconds"),
-    }
-    store.save(concept, modality, difficulty, record)
-    return ProviderResponse(output=_public(record), tokens=tokens)
+        record = {
+            "concept": concept,
+            "modality": modality,
+            "difficulty": difficulty,
+            "verified": True,
+            "seeded": seeded,
+            "provenance": {
+                "engine": capability,
+                "model": model_used,
+                "prompt_version": store.PROMPT_VERSION,
+            },
+            "artifact": artifact,
+            "createdAt": datetime.now(UTC).isoformat(timespec="seconds"),
+        }
+        store.save(concept, modality, difficulty, record, scope)
+        return ProviderResponse(output=_public(record), tokens=tokens)

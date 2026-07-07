@@ -12,7 +12,7 @@
  * DOM beyond storage. ponytail: a tiny event-emitter over localStorage, no state library.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export type DownloadStatus = 'queued' | 'downloading' | 'ready' | 'failed';
 
@@ -54,7 +54,7 @@ function persist(next: Download[]): void {
   } catch {
     // storage unavailable — the queue is session-only, still fully functional in memory
   }
-  window.dispatchEvent(new Event(EVT));
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event(EVT));
 }
 
 export function getDownloads(): Download[] {
@@ -88,9 +88,7 @@ export function enqueue(topicId: string, title: string): void {
  */
 export function claimNext(): Download | undefined {
   if (items.some((d) => d.status === 'downloading')) return undefined;
-  const next = items
-    .filter((d) => d.status === 'queued')
-    .sort((a, b) => a.at - b.at)[0];
+  const next = items.filter((d) => d.status === 'queued').sort((a, b) => a.at - b.at)[0];
   if (!next) return undefined;
   persist(items.map((d) => (d.topicId === next.topicId ? { ...d, status: 'downloading' } : d)));
   return next;
@@ -148,6 +146,7 @@ export function useDownloads(): Download[] {
 export function useDownload(topicId: string): { entry: Download | undefined; position: number } {
   const all = useDownloadsRaw();
   const entry = all.find((d) => d.topicId === topicId);
-  const position = useCallback(() => positionOf(topicId), [topicId])();
+  // positionOf reads the same module mirror `all` is a snapshot of — recomputed each render.
+  const position = positionOf(topicId);
   return { entry, position };
 }

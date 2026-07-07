@@ -368,9 +368,25 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
         return [_policy_view(policy(name)) for name in capabilities()]
 
     @app.post("/v1/capability/{name}")
-    def invoke(name: str, request: CapabilityRequest) -> CapabilityResponse:
+    def invoke(name: str, request: CapabilityRequest) -> Response:
         if name not in set(capabilities()):
             raise HTTPException(status_code=404, detail=f"unknown capability: {name}")
+        # Content engines enforce one generation at a time per user (strict queue). A second
+        # concurrent generation while the first is still cooking gets a polite 429 + Retry-After.
+        if name.startswith("engine."):
+            from classess_gateway.plexus import GenerationBusy  # lazy: engine path only
+
+            try:
+                return gw.invoke(name, request)
+            except GenerationBusy as exc:
+                return JSONResponse(
+                    status_code=429,
+                    content={
+                        "error": "generation_in_flight",
+                        "detail": "one lesson at a time — yours is still cooking, hang tight",
+                    },
+                    headers={"Retry-After": str(exc.retry_after)},
+                )
         return gw.invoke(name, request)
 
     register_voice(app)
