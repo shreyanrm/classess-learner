@@ -20,7 +20,6 @@ import {
 } from '../data/catalog';
 import type { Chapter, Topic } from '../data/model';
 import { useRouter } from '../shell/router';
-import { boardName, loadProfile } from './you/profile';
 import { useViewport } from '../shell/useViewport';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
@@ -32,6 +31,7 @@ import { loadViewPref, type SubjectView, saveViewPref } from '../ui/viewPref';
 import { type BridgePlan, composeBridge, masteredGround } from '../vidya/tutor';
 import { AdventureRoadmap } from './AdventureRoadmap';
 import { SubjectSceneBackdrop, Whisper } from './Learn';
+import { boardName, loadProfile } from './you/profile';
 
 const EXPAND_SPRING = { type: 'spring', stiffness: 320, damping: 32 } as const;
 

@@ -370,6 +370,8 @@ function CheckpointNode({
           paddingLeft: leftCol ? 12 : 0,
           paddingRight: leftCol ? 0 : 12,
           pointerEvents: 'none',
+          // a soft paper-coloured halo so labels stay legible on any biome, both themes
+          textShadow: '0 0 5px var(--clss-paper), 0 0 5px var(--clss-paper)',
         }}
       >
         <div

@@ -10,7 +10,7 @@
 
 import type { Sdk } from '@classess/sdk';
 import { type LifetimeContext, useVidyaBus } from '@classess/vidya';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { boardName, loadProfile } from '../screens/you/profile';
 import { useRouter } from '../shell/router';
 import { useSdk } from './sdk';
@@ -338,11 +338,11 @@ export function MindObserver() {
   // Storage is the source of truth: other writers (rememberInterests at onboarding finish,
   // rememberFact from her turns, profile edits) write the mind out-of-band, so every mutation
   // here re-reads before it mutates — a stale in-memory snapshot must never clobber them.
-  const freshMind = () => {
+  const freshMind = useCallback(() => {
     const mind = loadMind();
     mindRef.current = mind;
     return mind;
-  };
+  }, []);
 
   // session cadence + first publish, once per boot: the dossier rides from the very first turn
   useEffect(() => {

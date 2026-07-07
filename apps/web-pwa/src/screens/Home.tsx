@@ -12,7 +12,6 @@ import { useRegisterTarget, useVidyaBus, VidyaBody } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { useRouter } from '../shell/router';
-import { loadProfile } from './you/profile';
 import { loadMind, loadProactivity, proactiveChip } from '../store/mind';
 import { useProgress } from '../store/progress';
 import { SendIcon, SparkIcon, WaveformIcon } from '../ui/icons';
@@ -21,6 +20,7 @@ import { useVidyaChat } from '../vidya/chat';
 import { useVidyaVoice } from '../vidya/voice';
 import { deriveStops } from './home/stops';
 import { Thread } from './home/Thread';
+import { loadProfile } from './you/profile';
 
 function greeting(name: string): string {
   const h = new Date().getHours();
