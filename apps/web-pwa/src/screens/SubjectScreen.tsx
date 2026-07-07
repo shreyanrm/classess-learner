@@ -21,6 +21,7 @@ import {
 import type { Chapter, Topic } from '../data/model';
 import { useRouter } from '../shell/router';
 import { useViewport } from '../shell/useViewport';
+import { enqueue as enqueueDownload, useDownload } from '../store/downloads';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { ChapterFiligree, SubjectGlyph, TopicSigil } from '../ui/art';
@@ -61,7 +62,31 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
   // the concept-graph bridge stands only on ground the learner already owns
   const ground = gated ? masteredGround(topic, completed, topicById) : [];
 
+  // download-first (CONTEXT.md content law): a syllabus course that must be composed is generated
+  // on the first tap, in the background — never a spinner the learner waits behind. A prebuilt node
+  // (the atom) plays instantly; practice opens a sandbox (no compose); a mastered course reopens
+  // from the warm cache. Everything else queues, one at a time, and lands a notification when ready.
+  const { entry: dl, position } = useDownload(topic.id);
+  const needsGen = intent === 'learn' && !topic.nodeId && !mastered;
+  const downloading = dl?.status === 'downloading' || dl?.status === 'queued';
+  const ready = dl?.status === 'ready';
+  const slipped = dl?.status === 'failed';
+
   const open = (topicId: string) => router.navigate(topicRoute(topicId, intent));
+
+  const onTap = () => {
+    if (gated) {
+      setConfirmOpen((o) => !o);
+      return;
+    }
+    // ready, or a course that never needs composing → open it straight away
+    if (!needsGen || ready) {
+      open(topic.id);
+      return;
+    }
+    if (downloading) return; // already on its way — the row shows where it stands in line
+    enqueueDownload(topic.id, topic.name); // first tap (or after a slip) → she starts composing
+  };
 
   // bridge me there: she composes a lesson that travels only over mastered ground
   const requestBridge = async () => {
@@ -79,7 +104,7 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
     <div>
       <motion.button
         type="button"
-        onClick={() => (gated ? setConfirmOpen((o) => !o) : open(topic.id))}
+        onClick={onTap}
         onPointerEnter={() => setHover(true)}
         onPointerLeave={() => setHover(false)}
         whileHover={{ x: 3, y: -1 }}
@@ -126,7 +151,15 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
             {topic.name}
           </span>
           <span style={{ fontSize: '0.82rem', color: 'var(--clss-ink-500)', lineHeight: 1.5 }}>
-            {topic.blurb}
+            {downloading
+              ? position > 1
+                ? `${position - 1} ahead in line — she composes one at a time`
+                : 'vidya is composing this for you — it will land on its own'
+              : ready
+                ? 'ready when you are — tap to dive in'
+                : slipped
+                  ? 'that one slipped away — tap to try again'
+                  : topic.blurb}
           </span>
         </span>
 
@@ -176,12 +209,100 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
           >
             builds on {unmet[0]?.name}
           </span>
+        ) : downloading ? (
+          <span
+            style={{
+              flexShrink: 0,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 7,
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              color: 'var(--clss-ink-500)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <motion.span
+              aria-hidden
+              animate={{ scale: [1, 1.5, 1], opacity: [0.9, 0.4, 0.9] }}
+              transition={{ duration: 1.4, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: 999,
+                background: hueForTopic(topic.id),
+              }}
+            />
+            {position > 1 ? 'in line' : 'downloading'}
+          </span>
+        ) : ready ? (
+          <span
+            style={{
+              flexShrink: 0,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              color: hueForTopic(topic.id),
+              fontSize: '0.78rem',
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            ready
+            <ChevronIcon size={13} />
+          </span>
+        ) : slipped ? (
+          <span style={{ flexShrink: 0, fontSize: '0.75rem', color: 'var(--clss-ink-500)' }}>
+            retry
+          </span>
         ) : (
           <span style={{ flexShrink: 0, color: 'var(--clss-ink-300)' }}>
             <ChevronIcon size={14} />
           </span>
         )}
       </motion.button>
+
+      {/* she composes on the page — Composing-style skeleton lines while the learner stays here */}
+      <AnimatePresence initial={false}>
+        {downloading && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={EXPAND_SPRING}
+            style={{ overflow: 'hidden' }}
+          >
+            <div
+              style={{
+                margin: '6px 4px 4px 60px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 9,
+              }}
+            >
+              {['72%', '54%', '63%'].map((w, i) => (
+                <motion.div
+                  // biome-ignore lint/suspicious/noArrayIndexKey: skeleton lines are positional
+                  key={i}
+                  animate={{ opacity: [0.4, 0.9, 0.4] }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Number.POSITIVE_INFINITY,
+                    ease: 'easeInOut',
+                    delay: i * 0.18,
+                  }}
+                  style={{
+                    height: 9,
+                    width: w,
+                    background: 'var(--clss-tonal)',
+                    borderRadius: 3,
+                  }}
+                />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* The gate is advice, never a wall — proceed anyway always works. */}
       <AnimatePresence initial={false}>

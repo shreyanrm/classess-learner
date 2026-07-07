@@ -173,10 +173,6 @@ export const dark: Record<string, string> = {
   // frost inverts to a dark graphite glass
   '--clss-frost-on-paper': 'rgba(23,24,28,0.62)',
   '--clss-spotlight': 'rgba(255,255,255,0.05)',
-  '--clss-vidya-beam':
-    'linear-gradient(to bottom, rgba(255,150,90,0.30), rgba(255,110,50,0.12) 55%, rgba(255,110,50,0) 88%)',
-  '--clss-vidya-beam-pool':
-    'radial-gradient(ellipse at center, rgba(255,120,60,0.22), rgba(255,120,60,0) 70%)',
   '--clss-logo-filter': 'brightness(0) invert(1)',
 };
 

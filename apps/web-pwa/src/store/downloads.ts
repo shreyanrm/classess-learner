@@ -1,0 +1,153 @@
+'use client';
+
+/**
+ * The course-download queue — on-first-start generation, one in flight per learner (CONTEXT.md
+ * content law). A learner taps an ungenerated course; instead of dropping into a spinner, Vidya
+ * composes it in the background and lands a notification the moment it is ready. Further taps
+ * queue politely behind it (strict FIFO, one at a time), each showing its place in line.
+ *
+ * This is the pure store: localStorage-backed so the queue survives a reload, a window event so
+ * every surface (the card that started it, the global toast) stays in sync. The generation call
+ * itself and the notify moment live in DownloadCenter — this module never touches the SDK or the
+ * DOM beyond storage. ponytail: a tiny event-emitter over localStorage, no state library.
+ */
+
+import { useCallback, useEffect, useState } from 'react';
+
+export type DownloadStatus = 'queued' | 'downloading' | 'ready' | 'failed';
+
+export interface Download {
+  topicId: string;
+  title: string;
+  status: DownloadStatus;
+  /** Enqueue time — FIFO order and the "one at a time" line are read off this. */
+  at: number;
+  /** A ready/failed download the learner has not yet acknowledged (drives the toast). */
+  seen: boolean;
+}
+
+const KEY = 'clss-downloads-v1';
+const EVT = 'clss-downloads-changed';
+
+function load(): Download[] {
+  try {
+    const raw = JSON.parse(localStorage.getItem(KEY) ?? '[]') as Download[];
+    if (!Array.isArray(raw)) return [];
+    // A generation lost to a reload was mid-flight and never finished — put it back in line so
+    // the runner picks it up again. Nothing is ever stranded as "downloading" across a boot.
+    return raw
+      .filter((d) => d && typeof d.topicId === 'string' && typeof d.title === 'string')
+      .map((d) => (d.status === 'downloading' ? { ...d, status: 'queued' as const } : d));
+  } catch {
+    return [];
+  }
+}
+
+// Module-singleton mirror of storage. Every mutation goes through persist() so the on-disk copy
+// and the in-memory copy never drift, and one window event fans the change to all listeners.
+let items: Download[] = typeof window === 'undefined' ? [] : load();
+
+function persist(next: Download[]): void {
+  items = next;
+  try {
+    localStorage.setItem(KEY, JSON.stringify(items));
+  } catch {
+    // storage unavailable — the queue is session-only, still fully functional in memory
+  }
+  window.dispatchEvent(new Event(EVT));
+}
+
+export function getDownloads(): Download[] {
+  return items;
+}
+
+export function getDownload(topicId: string): Download | undefined {
+  return items.find((d) => d.topicId === topicId);
+}
+
+/** 1-based place in the "one at a time" line (queued + the one downloading); 0 if not waiting. */
+export function positionOf(topicId: string): number {
+  const waiting = items
+    .filter((d) => d.status === 'queued' || d.status === 'downloading')
+    .sort((a, b) => a.at - b.at);
+  const i = waiting.findIndex((d) => d.topicId === topicId);
+  return i < 0 ? 0 : i + 1;
+}
+
+/** Start (or restart) a download. A no-op while one is already queued/running/ready for this topic. */
+export function enqueue(topicId: string, title: string): void {
+  const existing = getDownload(topicId);
+  if (existing && existing.status !== 'failed') return; // already in line, running, or ready
+  const rest = items.filter((d) => d.topicId !== topicId); // drop a prior failed entry
+  persist([...rest, { topicId, title, status: 'queued', at: Date.now(), seen: true }]);
+}
+
+/**
+ * The runner's atomic claim: promote the oldest queued download to `downloading` and return it.
+ * Returns undefined when one is already in flight (the one-at-a-time law) or the line is empty.
+ */
+export function claimNext(): Download | undefined {
+  if (items.some((d) => d.status === 'downloading')) return undefined;
+  const next = items
+    .filter((d) => d.status === 'queued')
+    .sort((a, b) => a.at - b.at)[0];
+  if (!next) return undefined;
+  persist(items.map((d) => (d.topicId === next.topicId ? { ...d, status: 'downloading' } : d)));
+  return next;
+}
+
+function settle(topicId: string, status: 'ready' | 'failed'): void {
+  if (!getDownload(topicId)) return;
+  // seen=false surfaces it in the toast; the card reads status directly.
+  persist(items.map((d) => (d.topicId === topicId ? { ...d, status, seen: false } : d)));
+}
+
+export function markReady(topicId: string): void {
+  settle(topicId, 'ready');
+}
+
+export function markFailed(topicId: string): void {
+  settle(topicId, 'failed');
+}
+
+/** Acknowledge a landed notification — the toast drops, the ready status stays for the card. */
+export function acknowledge(topicId: string): void {
+  persist(items.map((d) => (d.topicId === topicId ? { ...d, seen: true } : d)));
+}
+
+// --- Hooks ----------------------------------------------------------------------------------------
+
+function useDownloadsRaw(): Download[] {
+  const [snap, setSnap] = useState<Download[]>(items);
+  useEffect(() => {
+    const sync = () => setSnap(items);
+    sync(); // catch a mutation that landed between module init and mount
+    window.addEventListener(EVT, sync);
+    // cross-tab: another tab's storage write reloads our mirror, then fans out
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === KEY) {
+        items = load();
+        setSnap(items);
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener(EVT, sync);
+      window.removeEventListener('storage', onStorage);
+    };
+  }, []);
+  return snap;
+}
+
+/** Live view of the whole queue — the global toast and center subscribe here. */
+export function useDownloads(): Download[] {
+  return useDownloadsRaw();
+}
+
+/** One topic's live download state plus its place in line — a course card subscribes here. */
+export function useDownload(topicId: string): { entry: Download | undefined; position: number } {
+  const all = useDownloadsRaw();
+  const entry = all.find((d) => d.topicId === topicId);
+  const position = useCallback(() => positionOf(topicId), [topicId])();
+  return { entry, position };
+}

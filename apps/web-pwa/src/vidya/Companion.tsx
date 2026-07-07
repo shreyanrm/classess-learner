@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * The docked Vidya (DESIGN.md §4) — she flies in on every page, hovers on her light beam at the
+ * The docked Vidya (DESIGN.md §4) — she flies in on every page, floats in a slow idle drift at the
  * bottom right, and one tap opens her full-height drawer on the right. Her words arrive in her
  * own hand — Caveat, written letter by letter. Her canvas ink lives in the overlay and fades;
  * nothing she draws is saved.

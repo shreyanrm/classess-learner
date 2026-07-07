@@ -43,6 +43,7 @@ import {
   mindLines,
   rememberFact,
 } from './store/mind';
+import { DownloadCenter } from './store/DownloadCenter';
 import { ProgressProvider, useProgress } from './store/progress';
 import { SdkProvider } from './store/sdk';
 import { AppHeader } from './ui/AppHeader';
@@ -519,6 +520,8 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       <MindObserver />
       {/* she speaks what she writes — sound and ink on the same beat */}
       <SpeechNarrator />
+      {/* the course-download queue: composes ungened courses one at a time, notifies on ready */}
+      <DownloadCenter />
     </VidyaChatProvider>
   );
 }

@@ -2,9 +2,9 @@
 
 /**
  * Vidya in flight. On every page she flies in from somewhere — arcs through the room, banks
- * into the turn, and settles onto her dock with a soft bounce. Beneath her: a warm light-beam
- * shadow, long and bright while she is airborne, relaxing into a hovering pool once she lands.
- * She never stops floating — a slow bob keeps her airborne even at rest.
+ * into the turn, and settles onto her dock with a soft bounce. She never stops floating: docked,
+ * a slow organic drift (bob, a whisper of sway and tilt) keeps her mid-swoosh — the same being
+ * that glides between routes, never a metronome, never a beam pinning her to the ground.
  */
 
 import { useReducedMotion } from '@classess/motion';
@@ -61,21 +61,29 @@ export function FlyingVidya({
   const px = useSpring(0, { stiffness: 60, damping: 18 });
   const py = useSpring(0, { stiffness: 60, damping: 18 });
   useEffect(() => {
+    if (reduced) return; // reduced-motion: she stays put — no drift, no pointer lean.
     const onMove = (e: PointerEvent) => {
       px.set(Math.max(-8, Math.min(8, (e.clientX - window.innerWidth + 60) * 0.02)));
       py.set(Math.max(-8, Math.min(8, (e.clientY - window.innerHeight + 60) * 0.02)));
     };
     window.addEventListener('pointermove', onMove, { passive: true });
     return () => window.removeEventListener('pointermove', onMove);
-  }, [px, py]);
+  }, [px, py, reduced]);
 
-  // The perpetual hover — she floats even at rest.
-  const bob = useTransform(time, (ms) => (reduced ? 0 : Math.sin(ms / 900) * 3.2));
+  // The perpetual idle drift — docked, she wanders a slow organic loop, not a metronomic bob.
+  // Layered incommensurate periods (bob ≈5s, sway ≈6.6s, tilt ≈5.6s) with phase offsets trace a
+  // soft Lissajous float; the spring/velocity feel rides in on her pointer springs folded below.
+  const driftY = useTransform(time, (ms) =>
+    reduced ? 0 : Math.sin(ms / 800) * 7 + Math.sin(ms / 520) * 1.3,
+  );
+  const driftX = useTransform(time, (ms) =>
+    reduced ? 0 : Math.sin(ms / 1050 + 0.7) * 3 + Math.sin(ms / 680) * 0.8,
+  );
+  const driftRot = useTransform(time, (ms) => (reduced ? 0 : Math.sin(ms / 900 + 1.3) * 1.5));
 
-  // The beam breathes with the hover: nearer the ground, tighter the pool.
-  const beamPulse = useTransform(time, (ms) => (reduced ? 0.5 : 0.5 + 0.18 * Math.sin(ms / 700)));
-  const beamOpacity = useTransform(beamPulse, (v) => (flying ? 0.12 : 0.32 + v * 0.22));
-  const beamScaleY = useTransform(beamPulse, (v) => (flying ? 1 : 0.52 + v * 0.1));
+  // Pointer drift folded into the same values — velocity-continuous springs, her route-glide feel.
+  const idleX = useTransform([driftX, px], ([d, p]: number[]) => (d ?? 0) + (p ?? 0));
+  const idleY = useTransform([driftY, py], ([d, p]: number[]) => (d ?? 0) + (p ?? 0));
 
   useEffect(() => {
     if (lastRoute.current === routeKey) return;
@@ -149,7 +157,7 @@ export function FlyingVidya({
     >
       {/* The flight body — position, bank and squash all live on real motion values. */}
       <motion.div style={{ x: ex, y: ey, rotate: bank, scaleX: sqx, scaleY: sqy }}>
-        <motion.div style={{ y: bob, x: px, translateY: py }}>
+        <motion.div style={{ x: idleX, y: idleY, rotate: driftRot }}>
           {/* Her motion flame — an upside-down fire, trailing beneath her as she flies. */}
           <motion.div
             aria-hidden
@@ -199,42 +207,6 @@ export function FlyingVidya({
               />
             </motion.svg>
           </motion.div>
-          {/* The light-beam shadow beneath her — the floating made visible. */}
-          <motion.div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              left: '50%',
-              top: '68%',
-              width: size * 0.62,
-              height: size * 1.5,
-              translateX: '-50%',
-              transformOrigin: '50% 0%',
-              scaleY: beamScaleY,
-              opacity: beamOpacity,
-              background: 'var(--clss-vidya-beam)',
-              clipPath: 'polygon(38% 0%, 62% 0%, 92% 100%, 8% 100%)',
-              filter: 'blur(5px)',
-              pointerEvents: 'none',
-            }}
-          />
-          <motion.div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              left: '50%',
-              top: `calc(68% + ${size * 1.28}px)`,
-              width: size * 0.94,
-              height: size * 0.2,
-              translateX: '-50%',
-              borderRadius: '50%',
-              background: 'var(--clss-vidya-beam-pool)',
-              filter: 'blur(4px)',
-              opacity: beamOpacity,
-              scaleX: beamScaleY,
-              pointerEvents: 'none',
-            }}
-          />
           <VidyaBody
             size={size}
             mood={flying ? 'hint' : mood}
