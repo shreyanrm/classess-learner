@@ -355,8 +355,8 @@ export function ConceptC() {
           }}
         >
           <ClassessLogo height={15} />
-          <span style={CAPS}>the daily edition · printed for Arya</span>
-          <span style={{ ...CAPS, color: INK_60 }}>monday 6 july 2026</span>
+          <span style={CAPS}>The daily edition · printed for Arya</span>
+          <span style={{ ...CAPS, color: INK_60 }}>Monday 6 July 2026</span>
         </motion.div>
         {rule(0.1, 2)}
         <div style={{ height: 3 }} />
@@ -401,7 +401,7 @@ export function ConceptC() {
               minHeight: 18,
             }}
           >
-            <span style={{ ...CAPS, marginRight: 10 }}>from the wire</span>
+            <span style={{ ...CAPS, marginRight: 10 }}>From the wire</span>
             <AnimatePresence mode="wait">
               <motion.span
                 key={fact}
@@ -496,7 +496,7 @@ export function ConceptC() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...SPRING, delay: 0.7 }}
           >
-            <div style={CAPS}>the lede</div>
+            <div style={CAPS}>The lede</div>
             <p
               style={{
                 fontSize: 17,
@@ -524,7 +524,7 @@ export function ConceptC() {
               Twelve minutes, one boss battle, and the chapter closes.
             </p>
 
-            <div style={{ ...CAPS, marginTop: 44 }}>contents</div>
+            <div style={{ ...CAPS, marginTop: 44 }}>Contents</div>
             <div style={{ marginTop: 8 }}>
               <IndexRow
                 no="01"
@@ -546,7 +546,7 @@ export function ConceptC() {
             transition={{ ...SPRING, delay: 0.82 }}
           >
             <div style={{ border: `1px solid ${HAIR}`, borderRadius: 3, padding: '20px 22px' }}>
-              <div style={CAPS}>did you know</div>
+              <div style={CAPS}>Did you know</div>
               <div
                 style={{
                   fontFamily: 'Caveat, cursive',
@@ -573,7 +573,7 @@ export function ConceptC() {
         {/* the feature spread — the lesson */}
         <div style={{ padding: '30px 2px 0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <span style={CAPS}>the feature · practice</span>
+            <span style={CAPS}>The feature · practice</span>
             <span style={{ ...CAPS, fontVariantNumeric: 'tabular-nums' }}>
               linear equations · 3 of 8
             </span>
@@ -756,7 +756,7 @@ export function ConceptC() {
                 gap: 18,
               }}
             >
-              <div style={CAPS}>marginalia</div>
+              <div style={CAPS}>Marginalia</div>
               {touched && !solved && (
                 <Handwrite text="keep both sides equal" color={INK_60} size={25} />
               )}

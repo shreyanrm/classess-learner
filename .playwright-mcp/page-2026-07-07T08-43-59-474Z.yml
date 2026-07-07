@@ -1,0 +1,87 @@
+- generic [ref=f2e2]:
+  - generic [ref=f2e4]:
+    - generic [ref=f2e5]:
+      - generic [ref=f2e6]: Tuesday 7 July
+      - heading [level=1]
+      - generic [ref=f2e7]: Mistakes are just data with feelings
+      - generic [ref=f2e9]:
+        - textbox "Talk to Vidya…" [ref=f2e10]
+        - button "Talk by voice" [ref=f2e11] [cursor=pointer]
+      - generic [ref=f2e20]:
+        - button "Learn something cool" [ref=f2e21] [cursor=pointer]:
+          - img [ref=f2e22]
+          - text: Learn something cool
+        - button "Open a rabbit hole" [ref=f2e24] [cursor=pointer]:
+          - img [ref=f2e25]
+          - text: Open a rabbit hole
+        - button "What should I do today" [ref=f2e27] [cursor=pointer]:
+          - img [ref=f2e28]
+          - text: What should I do today
+      - generic [ref=f2e30]:
+        - button "Learn" [ref=f2e31] [cursor=pointer]:
+          - generic [ref=f2e32]: Learn
+        - button "Practice" [ref=f2e33] [cursor=pointer]:
+          - generic [ref=f2e34]: Practice
+    - generic [ref=f2e36]:
+      - generic [ref=f2e37]: +
+      - generic [ref=f2e38]: ·
+      - generic [ref=f2e39]: ·
+      - generic [ref=f2e40]: +
+      - generic [ref=f2e41]: ·
+      - generic [ref=f2e42]: +
+      - generic [ref=f2e43]: ·
+      - generic [ref=f2e44]: +
+      - img [ref=f2e45]
+      - button "Warm-up Day 1 of being a learner · done" [ref=f2e62] [cursor=pointer]:
+        - img [ref=f2e63]
+        - generic [ref=f2e73]:
+          - generic [ref=f2e74]: Warm-up
+          - generic [ref=f2e75]: Day 1 of being a learner · done
+        - img [ref=f2e77]
+      - button "What makes a number rational Next up · a fresh idea +120" [ref=f2e80] [cursor=pointer]:
+        - img [ref=f2e81]
+        - generic [ref=f2e84]:
+          - generic [ref=f2e85]: What makes a number rational
+          - generic [ref=f2e86]: Next up · a fresh idea
+        - generic [ref=f2e87]: "+120"
+        - img [ref=f2e89]
+      - button "Boss gate Locked · finish today’s topic +120" [ref=f2e92] [cursor=pointer]:
+        - img [ref=f2e93]
+        - generic [ref=f2e96]:
+          - generic [ref=f2e97]: Boss gate
+          - generic [ref=f2e98]: Locked · finish today’s topic
+        - generic [ref=f2e99]: "+120"
+        - img [ref=f2e101]
+      - button "Ask Vidya something Daily quest · one good question +45" [ref=f2e104] [cursor=pointer]:
+        - img [ref=f2e105]
+        - generic [ref=f2e110]:
+          - generic [ref=f2e111]: Ask Vidya something
+          - generic [ref=f2e112]: Daily quest · one good question
+        - generic [ref=f2e113]: "+45"
+        - img [ref=f2e115]
+      - button "Something is hiding here — open the sandbox" [ref=f2e118] [cursor=pointer]:
+        - img [ref=f2e119]
+      - generic: Something is hiding here
+      - generic [ref=f2e123]:
+        - img "Vidya" [ref=f2e125]:
+          - img [ref=f2e129]
+        - generic [ref=f2e153]: I marked today’s walk for you
+    - generic [ref=f2e154]:
+      - generic [ref=f2e155]: ⌘K
+      - text: Anything, anywhere
+  - banner:
+    - img "Classess" [ref=f2e157]
+    - generic [ref=f2e158]:
+      - button "Did you know" [ref=f2e159] [cursor=pointer]:
+        - img [ref=f2e160]
+        - text: Did you know
+      - generic "Day 1 of being a learner" [ref=f2e162]:
+        - img [ref=f2e164]
+        - text: "1"
+      - generic [ref=f2e167]: 0 xp
+      - generic [ref=f2e168]:
+        - img [ref=f2e169]
+        - button "You — level 1, profile and settings" [ref=f2e172] [cursor=pointer]:
+          - generic "Nova" [ref=f2e173]:
+            - img [ref=f2e175]
+        - generic [ref=f2e203]: "1"

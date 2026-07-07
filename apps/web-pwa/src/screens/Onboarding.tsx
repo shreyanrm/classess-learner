@@ -140,7 +140,7 @@ const fieldStyle: React.CSSProperties = {
   background: 'var(--clss-tonal)',
   border: 'none',
   borderRadius: 3,
-  outline: 'none',
+  // no inline `outline: none` — the global :focus-visible ring (main.tsx) marks the focused field
   padding: '13px 16px',
 };
 
@@ -197,25 +197,25 @@ export function Onboarding() {
   const toAge = (who: string) => {
     setPhase('age');
     say(
-      `lovely to meet you, ${who}. so — when did you land on this planet? a year's plenty, or your whole birthday.`,
+      `Lovely to meet you, ${who}. So — when did you land on this planet? A year's plenty, or your whole birthday.`,
     );
   };
   const toSchool = () => {
     setPhase('school');
-    say(`where are you in school, ${finalName}? your class, and your board.`);
+    say(`Where are you in school, ${finalName}? Your class, and your board.`);
   };
   const toLikes = () => {
     setPhase('likes');
-    say(`last fun one, ${finalName} — what are you into these days?`);
+    say(`Last fun one, ${finalName} — what are you into these days?`);
   };
   const toAuth = () => {
     setPhase('auth');
-    say(`want me to keep all this safe, ${finalName}? sign in once and it follows you everywhere.`);
+    say(`Want me to keep all this safe, ${finalName}? Sign in once and it follows you everywhere.`);
   };
   const toReady = () => {
     setPhase('ready');
     setMood('celebrate');
-    say(`that's everything, ${finalName}. your plan is ready — come and see.`);
+    say(`That's everything, ${finalName}. Your plan is ready — come and see.`);
   };
 
   // Boot: returning from Google lands at ready; otherwise Vidya opens with her greeting, which
@@ -237,7 +237,7 @@ export function Onboarding() {
       setAuthed(true);
       setPhase('ready');
       setMood('celebrate');
-      say(`welcome back, ${p.name}. your plan is ready.`);
+      say(`Welcome back, ${p.name}. Your plan is ready.`);
       return;
     }
     say(
@@ -614,7 +614,7 @@ export function Onboarding() {
                           onClick={submitSchool}
                           style={{ minWidth: 140, justifyContent: 'center' }}
                         >
-                          that's me
+                          That's me
                         </MagneticButton>
                       </motion.div>
                     )}
@@ -655,7 +655,7 @@ export function Onboarding() {
                     onClick={submitLikes}
                     style={{ minWidth: 150, justifyContent: 'center' }}
                   >
-                    {interests.length ? 'that’s me' : 'a bit of everything'}
+                    {interests.length ? 'That’s me' : 'A bit of everything'}
                   </MagneticButton>
                 </motion.div>
               )}
@@ -684,12 +684,12 @@ export function Onboarding() {
                     onClick={() => void withGoogle()}
                     style={{ width: '100%', justifyContent: 'center' }}
                   >
-                    continue with Google
+                    Continue with Google
                   </MagneticButton>
 
                   {!showPhone ? (
                     <button type="button" onClick={() => setShowPhone(true)} style={ghostButton}>
-                      or use your phone
+                      Or use your phone
                     </button>
                   ) : authStage === 'phone' ? (
                     <div style={{ display: 'flex', gap: 10, alignItems: 'center', width: '100%' }}>
@@ -866,7 +866,7 @@ export function Onboarding() {
                     onClick={finish}
                     style={{ minWidth: 150, justifyContent: 'center' }}
                   >
-                    step in
+                    Step in
                   </MagneticButton>
                 </motion.div>
               )}
@@ -882,7 +882,7 @@ export function Onboarding() {
           onClick={skip}
           style={{ ...ghostButton, position: 'fixed', bottom: fluidSpace.sm }}
         >
-          skip for now
+          Skip for now
         </button>
       )}
     </div>

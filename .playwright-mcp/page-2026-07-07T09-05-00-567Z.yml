@@ -1,0 +1,43 @@
+- generic [ref=f1e2]:
+  - generic [ref=f1e1681]:
+    - banner [ref=f1e1682]:
+      - button "Close course" [ref=f1e1683] [cursor=pointer]:
+        - img [ref=f1e1684]
+      - generic [ref=f1e1701]:
+        - button "Replay Vidya" [ref=f1e1702] [cursor=pointer]:
+          - img [ref=f1e1703]
+        - button "Mute Vidya" [ref=f1e1706] [cursor=pointer]:
+          - img [ref=f1e1707]
+    - main [ref=f1e1711]:
+      - generic [ref=f1e1757]:
+        - generic [ref=f1e1758]: Drag it — feel the law move
+        - generic [ref=f1e1759]: feel the rule
+        - generic [ref=f1e1760]: "The idea behaves like a balance: change one side, the other follows."
+        - generic [ref=f1e1786]: She is composing this piece just for you — it will land here on its own
+        - generic [ref=f1e1767]: Drag the weight until it balances.
+    - generic: Picking up where you left off
+    - button "Check" [ref=f1e1768] [cursor=pointer]:
+      - generic [ref=f1e1769]: Check
+  - banner:
+    - img "Classess" [ref=f1e158]
+    - generic [ref=f1e159]:
+      - generic "Day 1 of being a learner" [ref=f1e160]:
+        - img [ref=f1e162]
+        - text: "1"
+      - generic [ref=f1e1750]: 15 xp
+      - generic [ref=f1e166]:
+        - img [ref=f1e167]
+        - button "You — level 1, profile and settings" [ref=f1e170] [cursor=pointer]:
+          - generic "Indi" [ref=f1e171]:
+            - img [ref=f1e173]
+        - generic [ref=f1e207]: "1"
+  - generic [ref=f1e420]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f1e421] [cursor=pointer]:
+      - img [ref=f1e425]
+  - button "Nutrition Your course is ready — tap to dive in Open" [ref=f1e1674] [cursor=pointer]:
+    - generic [ref=f1e1676]:
+      - generic [ref=f1e1677]: Nutrition
+      - generic [ref=f1e1678]: Your course is ready — tap to dive in
+    - generic [ref=f1e1679]: Open

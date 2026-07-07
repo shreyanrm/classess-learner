@@ -1,0 +1,14 @@
+- generic [ref=f5e3]:
+  - generic [ref=f5e4]: "[plugin:vite:import-analysis] Failed to resolve import \"./screens/concepts/EnginesGallery\" from \"src/App.tsx\". Does the file exist?"
+  - generic [ref=f5e5]: /Users/depl/Documents/classess-learner/apps/web-pwa/src/App.tsx:25:31
+  - generic [ref=f5e6]: "31 | import { ConceptB } from \"./screens/concepts/ConceptB\"; 32 | import { ConceptC } from \"./screens/concepts/ConceptC\"; 33 | import { EnginesGallery } from \"./screens/concepts/EnginesGallery\"; | ^ 34 | import { Home } from \"./screens/Home\"; 35 | import { Learn } from \"./screens/Learn\";"
+  - generic [ref=f5e7]: at TransformPluginContext._formatLog (file:///Users/depl/Documents/classess-learner/node_modules/.bun/vite@6.4.3+5fd7b6562e245eab/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42658:41) at TransformPluginContext.error (file:///Users/depl/Documents/classess-learner/node_modules/.bun/vite@6.4.3+5fd7b6562e245eab/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42655:16) at normalizeUrl (file:///Users/depl/Documents/classess-learner/node_modules/.bun/vite@6.4.3+5fd7b6562e245eab/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:40634:23) at process.processTicksAndRejections (node:internal/process/task_queues:104:5) at async file:///Users/depl/Documents/classess-learner/node_modules/.bun/vite@6.4.3+5fd7b6562e245eab/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:40753:37 at async Promise.all (index 12) at async TransformPluginContext.transform (file:///Users/depl/Documents/classess-learner/node_modules/.bun/vite@6.4.3+5fd7b6562e245eab/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:40680:7) at async EnvironmentPluginContainer.transform (file:///Users/depl/Documents/classess-learner/node_modules/.bun/vite@6.4.3+5fd7b6562e245eab/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42453:18) at async loadAndTransform (file:///Users/depl/Documents/classess-learner/node_modules/.bun/vite@6.4.3+5fd7b6562e245eab/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:35845:27) at async viteTransformMiddleware (file:///Users/depl/Documents/classess-learner/node_modules/.bun/vite@6.4.3+5fd7b6562e245eab/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:37369:24
+  - generic [ref=f5e8]:
+    - text: Click outside, press Esc key, or fix the code to dismiss.
+    - text: You can also disable this overlay by setting
+    - code [ref=f5e9]: server.hmr.overlay
+    - text: to
+    - code [ref=f5e10]: "false"
+    - text: in
+    - code [ref=f5e11]: vite.config.ts
+    - text: .

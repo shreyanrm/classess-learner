@@ -288,7 +288,7 @@ function ProactivityRow({
   return (
     <div style={{ padding: '13px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
       <div>
-        <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>how forward she is</div>
+        <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>How forward she is</div>
         <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
           {PROACTIVITY_LINES[value]}
         </div>
@@ -1053,7 +1053,6 @@ export function You() {
                 background: 'transparent',
                 border: 'none',
                 borderBottom: '0.5px solid transparent',
-                outline: 'none',
                 padding: 0,
                 width: '100%',
               }}
@@ -1181,7 +1180,7 @@ export function You() {
                 </div>
               </div>
               <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-700)' }}>
-                day {streakDays} of being a learner
+                Day {streakDays} of being a learner
               </div>
               <div
                 role="img"
@@ -1256,7 +1255,7 @@ export function You() {
                   );
                 })}
               </div>
-              <div style={whisper}>rest is part of learning — quiet days are allowed</div>
+              <div style={whisper}>Rest is part of learning — quiet days are allowed</div>
             </div>
           </Section>
         </motion.div>
@@ -1312,7 +1311,6 @@ export function You() {
                             fontFamily: 'inherit',
                             border: '0.5px solid var(--clss-hairline-on-paper-strong)',
                             borderRadius: 'var(--clss-radius-sm)',
-                            outline: 'none',
                             background: 'var(--clss-paper)',
                             color: 'var(--clss-ink-900)',
                             minWidth: 0,
@@ -1451,7 +1449,6 @@ export function You() {
                       fontFamily: 'inherit',
                       border: '0.5px solid var(--clss-hairline-on-paper-strong)',
                       borderRadius: 'var(--clss-radius-sm)',
-                      outline: 'none',
                       background: 'var(--clss-paper)',
                       color: 'var(--clss-ink-900)',
                       minWidth: 0,
@@ -1462,7 +1459,7 @@ export function You() {
                   </MagneticButton>
                 </div>
                 {phoneNudge && (
-                  <div style={whisper}>that number looks short — check it once more</div>
+                  <div style={whisper}>That number looks short — check it once more</div>
                 )}
               </div>
             )}
@@ -1502,7 +1499,7 @@ export function You() {
                     }}
                   />
                 ))}
-                <span className="plan-forever">free forever</span>
+                <span className="plan-forever">Free forever</span>
                 <div className="plan-upgrade">
                   <MagneticButton
                     size="sm"
@@ -1697,7 +1694,6 @@ export function You() {
                     fontFamily: 'inherit',
                     border: '0.5px solid var(--clss-hairline-on-paper-strong)',
                     borderRadius: 'var(--clss-radius-sm)',
-                    outline: 'none',
                     background: 'var(--clss-paper)',
                     color: 'var(--clss-ink-900)',
                   }}

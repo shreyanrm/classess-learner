@@ -1,0 +1,45 @@
+- generic [ref=f14e2]:
+  - generic [ref=f14e256]:
+    - banner [ref=f14e257]:
+      - button "Close course" [ref=f14e258] [cursor=pointer]:
+        - img [ref=f14e259]
+      - generic [ref=f14e283]:
+        - button "Replay Vidya" [ref=f14e284] [cursor=pointer]:
+          - img [ref=f14e285]
+        - button "Mute Vidya" [ref=f14e288] [cursor=pointer]:
+          - img [ref=f14e289]
+    - main [ref=f14e293]:
+      - generic [ref=f14e295]:
+        - generic [ref=f14e296]:
+          - generic:
+            - img
+          - generic [ref=f14e297]:
+            - img
+          - img [ref=f14e299]
+        - generic [ref=f14e305]:
+          - generic [ref=f14e306]: mathematics
+          - generic [ref=f14e307]: solving equations with the variable on one side
+          - generic [ref=f14e308]: one idea, a scale that cannot lie, and a boss at the end.
+    - button "Begin" [disabled] [ref=f14e311]:
+      - generic [ref=f14e312]: Begin
+  - banner:
+    - img "Classess" [ref=f14e221]
+    - generic [ref=f14e222]:
+      - button "Did you know" [ref=f14e223] [cursor=pointer]:
+        - img [ref=f14e224]
+        - text: Did you know
+      - generic "Day 12 of being a learner" [ref=f14e226]:
+        - img [ref=f14e228]
+        - text: "12"
+      - generic [ref=f14e231]: 605 xp
+      - generic [ref=f14e232]:
+        - img [ref=f14e233]
+        - button "You — level 5, profile and settings" [ref=f14e236] [cursor=pointer]:
+          - generic "fox" [ref=f14e237]:
+            - img [ref=f14e239]
+        - generic [ref=f14e254]: "5"
+  - generic [ref=f14e315]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f14e316] [cursor=pointer]:
+      - img [ref=f14e320]

@@ -1,0 +1,89 @@
+- generic [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - generic [ref=f4e256]:
+      - generic [ref=f4e258]:
+        - img "Vidya" [ref=f4e259]:
+          - img [ref=f4e263]
+        - generic [ref=f4e287]:
+          - generic [ref=f4e288]: Vidya
+          - generic [ref=f4e289]: One conversation, always
+        - button "Mute Vidya" [ref=f4e290] [cursor=pointer]:
+          - img [ref=f4e291]
+      - generic [ref=f4e296]:
+        - generic [ref=f4e297]: show my progress
+        - generic [ref=f4e299]: here is your progress.
+        - generic [ref=f4e300]: open the atom
+        - generic [ref=f4e302]: opening Solving equations with the variable on one side.
+        - generic [ref=f4e303]: open the atom
+        - generic [ref=f4e305]: opening Solving equations with the variable on one side.
+        - generic [ref=f4e306]: what's on my screen right now?
+        - generic [ref=f4e308]: You're looking at a balance scale showing x + 3 on the left side and 8 on the right side — it's perfectly level right now, which means both sides are equal. That's your equation x + 3 = 8 set up as a scale.
+        - generic [ref=f4e309]: open the atom
+        - generic [ref=f4e311]: opening Solving equations with the variable on one side.
+        - generic [ref=f4e312]: circle the x on the left pan
+        - generic [ref=f4e314]: Done — I've circled the x on the left pan. Now, what do you think we need to do to get x by itself on that side?
+        - generic [ref=f4e315]: open the atom
+        - generic [ref=f4e317]: opening Solving equations with the variable on one side.
+        - generic [ref=f4e318]: I'm stuck, just point at the x for me please
+        - generic [ref=f4e320]: I've got you — look at the scale right now. The x is on the left pan with the 3. To get x alone, what's in the way?
+        - generic [ref=f4e321]: explain this
+        - generic [ref=f4e323]: Right, let me break it down. You've got x and 3 sitting together on the left side of the balance. To isolate x — to get it alone — you need to remove the 3. What operation would undo adding 3?
+        - generic [ref=f4e324]: can you point that out?
+        - generic [ref=f4e326]: I'd love to, but I can't see the balance scale you're working with right now — it sounds like you're in a course. Can you tell me what you see on the left pan, and I'll walk you through it from here?
+        - generic [ref=f4e327]: take me to learn
+        - generic [ref=f4e329]: opening your library.
+        - generic [ref=f4e330]: Tell me something genuinely cool from science or math that most people never learn in school.
+        - generic [ref=f4e332]: give me a moment, then ask me again.
+        - generic [ref=f4e333]: draw me a dragon
+        - generic [ref=f4e334]:
+          - generic [ref=f4e335]: Here's your dragon—and one true thing riding with it.
+          - generic [ref=f4e336]:
+            - generic [ref=f4e337]: Drawn just for fun
+            - generic [ref=f4e338]:
+              - img "a drawing of a dragon" [ref=f4e339]
+              - generic [ref=f4e347]: a little a dragon, just for you.
+              - generic [ref=f4e348]: "and one true thing: The Komodo dragon is the largest lizard alive — up to 3 metres, and it can smell carrion kilometres away."
+        - generic [ref=f4e349]: forget that I like cricket
+        - generic [ref=f4e351]: "Hold on—before I forget that, just want to check: you're sure you want me to drop it from what I remember about you?"
+        - generic [ref=f4e352]: yes, forget it
+        - generic [ref=f4e354]: forgotten — I let go of “likes cricket”.
+        - generic [ref=f4e355]: explain linear equations to me
+        - generic [ref=f4e357]: give me a moment, then ask me again.
+        - generic [ref=f4e358]: draw me a dragon
+        - generic [ref=f4e359]:
+          - generic [ref=f4e360]: Here's your dragon—and one true thing riding with it.
+          - generic [ref=f4e361]:
+            - generic [ref=f4e362]: Drawn just for fun
+            - generic [ref=f4e363]:
+              - img "a drawing of a dragon" [ref=f4e364]
+              - generic [ref=f4e372]: a little a dragon, just for you.
+              - generic [ref=f4e373]: "and one true thing: The Komodo dragon is the largest lizard alive — up to 3 metres, and it can smell carrion kilometres away."
+        - generic [ref=f4e374]: explain photosynthesis
+        - generic [ref=f4e376]: give me a moment, then ask me again.
+        - generic [ref=f4e377]: Hi Vidya, say hello to me
+        - generic [ref=f4e379]: Hey Aanya, hello to you too—good to see you on a Tuesday afternoon.
+        - generic [ref=f4e380]: Say a short hello please
+        - generic [ref=f4e382]: Hey Aanya.
+        - generic [ref=f4e383]: what can I do on this screen right now?
+        - generic [ref=f4e402]: "You're in the chat with me right now—but if you look at the left side, you'll see today's thread with stops you can tap into: the warm-up you've done, rational numbers (which you can revisit), and the main thing we're on—solving equations with variables on both sides."
+      - generic [ref=f4e386]:
+        - textbox "Talk to Vidya…" [active] [ref=f4e387]
+        - button "Talk by voice" [ref=f4e388] [cursor=pointer]
+    - banner:
+      - img "Classess" [ref=f4e221]
+      - generic [ref=f4e222]:
+        - button "Did you know" [ref=f4e223] [cursor=pointer]:
+          - img [ref=f4e224]
+          - text: Did you know
+        - generic "Day 12 of being a learner" [ref=f4e226]:
+          - img [ref=f4e228]
+          - text: "12"
+        - generic [ref=f4e231]: 605 xp
+        - generic [ref=f4e232]:
+          - img [ref=f4e233]
+          - button "You — level 5, profile and settings" [ref=f4e236] [cursor=pointer]:
+            - generic "fox" [ref=f4e237]:
+              - img [ref=f4e239]
+          - generic [ref=f4e254]: "5"
+  - button "Back — ◦ back" [ref=f4e397] [cursor=pointer]:
+    - img [ref=f4e398]

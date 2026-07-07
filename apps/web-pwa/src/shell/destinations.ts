@@ -126,23 +126,23 @@ function subjectName(id: string): string {
 function destSay(route: Route): string {
   switch (route.name) {
     case 'home':
-      return 'taking you home.';
+      return 'Taking you home.';
     case 'chat':
-      return 'opening the conversation.';
+      return 'Opening the conversation.';
     case 'learn':
-      return 'opening your library.';
+      return 'Opening your library.';
     case 'practice':
-      return 'taking you to practice.';
+      return 'Taking you to practice.';
     case 'progress':
-      return 'here is your progress.';
+      return 'Here is your progress.';
     case 'you':
-      return 'opening your profile.';
+      return 'Opening your profile.';
     case 'subject':
-      return `taking you to ${subjectName(route.subjectId)}.`;
+      return `Taking you to ${subjectName(route.subjectId)}.`;
     case 'course':
-      return `opening ${topicById(route.topicId)?.name ?? 'that course'}.`;
+      return `Opening ${topicById(route.topicId)?.name ?? 'that course'}.`;
     default:
-      return 'taking you there.';
+      return 'Taking you there.';
   }
 }
 

@@ -1,0 +1,84 @@
+- generic [active] [ref=f11e1]:
+  - generic [ref=f11e2]:
+    - generic [ref=f11e256]:
+      - generic [ref=f11e257]:
+        - heading "Practice" [level=1] [ref=f11e258]
+        - generic [ref=f11e259]: Memory fades on a real curve — practice keeps it honest
+      - generic [ref=f11e260]:
+        - button "Free play sandbox An open canvas on any topic — no task, Vidya watching" [ref=f11e262] [cursor=pointer]:
+          - img [ref=f11e264]
+          - generic [ref=f11e270]:
+            - generic [ref=f11e271]:
+              - generic [ref=f11e272]: Free play sandbox
+              - generic [ref=f11e273]: An open canvas on any topic — no task, Vidya watching
+            - img [ref=f11e275]
+        - button "Due for review 3 concepts are fading — refresh them" [ref=f11e279] [cursor=pointer]:
+          - img [ref=f11e281]
+          - generic [ref=f11e289]:
+            - generic [ref=f11e290]:
+              - generic [ref=f11e291]: Due for review
+              - generic [ref=f11e292]: 3 concepts are fading — refresh them
+            - img [ref=f11e294]
+      - generic [ref=f11e298]:
+        - generic [ref=f11e299]: What needs sharpening?
+        - generic [ref=f11e300]: The same worlds, practice intent
+      - generic [ref=f11e301]:
+        - button "Mathematics — open the subject" [ref=f11e304] [cursor=pointer]:
+          - generic [ref=f11e305]:
+            - generic [ref=f11e306]:
+              - img [ref=f11e307]
+              - img [ref=f11e318]
+            - generic [ref=f11e325]:
+              - generic [ref=f11e326]: Mathematics
+              - generic [ref=f11e327]: patterns, structure, and certainty
+              - generic [ref=f11e328]: 14 chapters
+        - button "Science — open the subject" [ref=f11e331] [cursor=pointer]:
+          - generic [ref=f11e332]:
+            - generic [ref=f11e333]:
+              - img [ref=f11e334]
+              - img [ref=f11e347]
+            - generic [ref=f11e356]:
+              - generic [ref=f11e357]: Science
+              - generic [ref=f11e358]: how the world actually works
+              - generic [ref=f11e359]: 13 chapters
+        - button "Social Science — open the subject" [ref=f11e362] [cursor=pointer]:
+          - generic [ref=f11e363]:
+            - generic [ref=f11e364]:
+              - img [ref=f11e365]
+              - img [ref=f11e375]
+            - generic [ref=f11e382]:
+              - generic [ref=f11e383]: Social Science
+              - generic [ref=f11e384]: people, places, and power
+              - generic [ref=f11e385]: 22 chapters
+        - button "Computer Applications — open the subject" [ref=f11e388] [cursor=pointer]:
+          - generic [ref=f11e389]:
+            - generic [ref=f11e390]:
+              - img [ref=f11e391]
+              - img [ref=f11e401]
+            - generic [ref=f11e409]:
+              - generic [ref=f11e410]: Computer Applications
+              - generic [ref=f11e411]: how machines think in steps
+              - generic [ref=f11e412]: 3 chapters
+    - banner:
+      - img "Classess" [ref=f11e221]
+      - generic [ref=f11e222]:
+        - button "Did you know" [ref=f11e223] [cursor=pointer]:
+          - img [ref=f11e224]
+          - text: Did you know
+        - generic "Day 12 of being a learner" [ref=f11e226]:
+          - img [ref=f11e228]
+          - text: "12"
+        - generic [ref=f11e231]: 605 xp
+        - generic [ref=f11e232]:
+          - img [ref=f11e233]
+          - button "You — level 5, profile and settings" [ref=f11e236] [cursor=pointer]:
+            - generic "fox" [ref=f11e237]:
+              - img [ref=f11e239]
+          - generic [ref=f11e254]: "5"
+    - generic [ref=f11e415]:
+      - generic:
+        - img
+      - button "Talk to Vidya" [ref=f11e416] [cursor=pointer]:
+        - img [ref=f11e420]
+  - button "Back — Home" [ref=f11e444] [cursor=pointer]:
+    - img [ref=f11e445]

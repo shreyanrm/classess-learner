@@ -17,13 +17,12 @@ import {
 } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Discovery, DISCOVERY_DEMO } from './engines/Discovery';
-import { ActionBar, type BarState } from './screens/course/shared';
 import { ChatScreen } from './screens/ChatScreen';
 import { Course } from './screens/Course';
 import { ConceptA } from './screens/concepts/ConceptA';
 import { ConceptB } from './screens/concepts/ConceptB';
 import { ConceptC } from './screens/concepts/ConceptC';
+import { EnginesGallery } from './screens/concepts/EnginesGallery';
 import { Home } from './screens/Home';
 import { Learn } from './screens/Learn';
 import { Onboarding } from './screens/Onboarding';
@@ -34,6 +33,7 @@ import { You } from './screens/You';
 import { boardName, loadProfile, mergeAccount } from './screens/you/profile';
 import { CommandPalette } from './shell/CommandPalette';
 import { resolveDestination } from './shell/destinations';
+import { useConnectivity } from './shell/resilience';
 import { type Route, RouterProvider, useRouter } from './shell/router';
 import { DownloadCenter } from './store/DownloadCenter';
 import { machineRoomSnapshot } from './store/machine-room';
@@ -139,29 +139,8 @@ const screenVariants = {
           : { opacity: 0, transition: { duration: 0.12 } },
 } as const;
 
-// TEMP demo hatch (#discovery-demo) — proves the guided-discovery shell live; removed after capture.
-function DiscoveryDemoHatch() {
-  const [bar, setBar] = DemoBarState();
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <main
-        style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}
-      >
-        <Discovery spec={DISCOVERY_DEMO} hue="#FF5A1F" setBar={setBar} onDone={() => {}} />
-      </main>
-      <ActionBar bar={bar} />
-    </div>
-  );
-}
-function DemoBarState() {
-  return useState<BarState | null>(null);
-}
-
 function Screen() {
   const { route, depth } = useRouter();
-  if (typeof window !== 'undefined' && window.location.hash === '#discovery-demo') {
-    return <DiscoveryDemoHatch />;
-  }
   const key = JSON.stringify(route);
   const prevRef = useRef<{ name: string; depth: number } | null>(null);
   const dir = classifyTransition(prevRef.current, route.name, depth);
@@ -204,6 +183,7 @@ function Screen() {
         {route.name === 'concept' && route.which === 'a' && <ConceptA />}
         {route.name === 'concept' && route.which === 'b' && <ConceptB />}
         {route.name === 'concept' && route.which === 'c' && <ConceptC />}
+        {route.name === 'concept' && route.which === 'engines' && <EnginesGallery />}
       </motion.div>
     </AnimatePresence>
   );
@@ -216,6 +196,14 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   const { xp, streakDays } = useProgress();
   const [busy, setBusy] = useState(false);
   const [mood, setMood] = useState<VidyaMood>('idle');
+  // Offline resilience lives here in the shared chat layer, not in one screen — so every composer
+  // (the home front door, the chat page, a suggestion chip) gets the same safe behavior: a message
+  // typed with no connection is queued, shown as a pending bubble, and fired once on reconnect,
+  // instead of hitting the network and falling into the generic "give me a moment" error.
+  const { offline } = useConnectivity();
+  const offlineRef = useRef(offline);
+  offlineRef.current = offline;
+  const [pending, setPending] = useState<{ id: string; text: string }[]>([]);
   // One conversation for life: the archive is the local source of truth; only its tail loads.
   const [boot] = useState(() => {
     let archive = readArchive();
@@ -235,7 +223,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   const [turns, setTurns] = useState<ChatTurn[]>(() =>
     boot.tail.length > 0
       ? boot.tail
-      : [{ id: 'seed', role: 'vidya', text: 'ask me anything — I can see the page you are on.' }],
+      : [{ id: 'seed', role: 'vidya', text: 'Ask me anything — I can see the page you are on.' }],
   );
   const loadedStart = useRef(boot.start);
   const [hasOlder, setHasOlder] = useState(boot.start > 0);
@@ -278,6 +266,12 @@ function AppInner({ sdk }: { sdk: Sdk }) {
 
   // A real Vidya turn: she reasons over the page she is plugged into, then speaks and acts on it.
   const ask = async (text: string) => {
+    // No connection — hold it rather than dropping it on the floor. It renders as a pending bubble
+    // on the chat page and the reconnect effect below drains the queue once, in order.
+    if (offlineRef.current) {
+      setPending((q) => [...q, { id: crypto.randomUUID(), text }]);
+      return;
+    }
     const say = (t: Omit<ChatTurn, 'id'>) => {
       const turn = { ...t, id: `t${readArchive().length}-${t.role}` };
       appendToArchive(turn);
@@ -414,9 +408,9 @@ function AppInner({ sdk }: { sdk: Sdk }) {
               role: 'vidya',
               text:
                 lines.length > 0
-                  ? `here is everything I am keeping about you:\n${lines
+                  ? `Here is everything I am keeping about you:\n${lines
                       .map((l) => `· ${l}`)
-                      .join('\n')}\n\nsay the word and I will forget any of it.`
+                      .join('\n')}\n\nSay the word and I will forget any of it.`
                   : 'I have not saved anything about you yet — tell me what matters and I will keep it.',
             });
           } else if (a.scope === 'all') {
@@ -424,7 +418,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
             bus.publishLifetime({});
             say({
               role: 'vidya',
-              text: 'done — I cleared everything I was keeping about you. we start fresh from here.',
+              text: 'Done — I cleared everything I was keeping about you. We start fresh from here.',
             });
           } else {
             const removed = forgetMatching(a.target ?? '');
@@ -433,7 +427,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
               role: 'vidya',
               text:
                 removed.length > 0
-                  ? `forgotten — I let go of “${removed.join('”, “')}”.`
+                  ? `Forgotten — I let go of “${removed.join('”, “')}”.`
                   : 'I could not find that in what I remember — nothing to forget there.',
             });
           }
@@ -448,7 +442,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
         );
         say({
           role: 'vidya',
-          text: output.say ?? 'let us look at this together.',
+          text: output.say ?? 'Let us look at this together.',
           ...(extras.path !== 'inline' ? { extras } : {}),
         });
         // the route path: she takes you there herself, docked — after her line lands
@@ -469,12 +463,25 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       bus.dispatch(actions);
       setMood(actions.length > 0 ? 'explaining' : 'idle');
     } catch {
-      say({ role: 'vidya', text: 'give me a moment, then ask me again.' });
+      say({ role: 'vidya', text: 'Give me a moment, then ask me again.' });
       setMood('idle');
     } finally {
       setBusy(false);
     }
   };
+
+  // Reconnect: drain the offline queue once, in order. askRef keeps us off the latest closure so
+  // this effect doesn't re-run on every turn that lands.
+  const askRef = useRef(ask);
+  askRef.current = ask;
+  useEffect(() => {
+    if (offline || pending.length === 0) return;
+    const queued = pending;
+    setPending([]);
+    void (async () => {
+      for (const q of queued) await askRef.current(q.text);
+    })();
+  }, [offline, pending]);
 
   // Approval outcomes and action results patch the turn wherever it is rendered — and the archive,
   // so a decided card never re-offers after reload.
@@ -487,8 +494,8 @@ function AppInner({ sdk }: { sdk: Sdk }) {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: ask is recreated with turns; tracking turns/busy/mood covers it
   const chat = useMemo(
-    () => ({ turns, ask, busy, mood, setMood, hasOlder, loadOlder, updateTurn }),
-    [turns, busy, mood, hasOlder],
+    () => ({ turns, ask, busy, mood, setMood, hasOlder, loadOlder, updateTurn, offline, pending }),
+    [turns, busy, mood, hasOlder, offline, pending],
   );
 
   // The first authenticated boot after the sign-in beat: record the subject's creation, fully
@@ -590,10 +597,13 @@ export function App() {
     [],
   );
   // Unauthenticated in live mode => onboarding, always (the sign-in beat lives there).
+  // ponytail: a dev preview hook — #engines boots straight into the engine gallery for QA/screenshots.
   const initial: Route =
-    sdk.identity.isAuthenticated() && localStorage.getItem(ONBOARDED_KEY)
-      ? { name: 'home' }
-      : { name: 'onboarding' };
+    typeof location !== 'undefined' && location.hash === '#engines'
+      ? { name: 'concept', which: 'engines' }
+      : sdk.identity.isAuthenticated() && localStorage.getItem(ONBOARDED_KEY)
+        ? { name: 'home' }
+        : { name: 'onboarding' };
   return (
     <SdkProvider value={sdk}>
       <ProgressProvider>

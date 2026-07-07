@@ -250,7 +250,7 @@ export function ProgressScreen() {
             <div
               style={{ marginTop: 5, fontSize: fluidType.small, color: 'var(--clss-ink-faint)' }}
             >
-              day <CountUp value={streakDays} /> of being a learner · tap a star, or scroll for your
+              Day <CountUp value={streakDays} /> of being a learner · tap a star, or scroll for your
               report
             </div>
           </header>
@@ -328,7 +328,6 @@ export function ProgressScreen() {
                   fontSize: fluidType.body,
                   fontFamily: 'inherit',
                   border: 'none',
-                  outline: 'none',
                   background: 'transparent',
                   color: 'var(--clss-ink)',
                 }}
@@ -443,7 +442,7 @@ export function ProgressScreen() {
                       color: 'var(--clss-ink-faint)',
                     }}
                   >
-                    to make this yours
+                    To make this yours
                   </div>
                   <button
                     type="button"
@@ -459,7 +458,7 @@ export function ProgressScreen() {
                       margin: '-10px -6px',
                     }}
                   >
-                    show me the path
+                    Show me the path
                   </button>
                 </div>
                 <ol
@@ -507,7 +506,7 @@ export function ProgressScreen() {
                             }}
                           >
                             <svg width="9" height="8" viewBox="0 0 9 8" fill="none">
-                              <title>already yours</title>
+                              <title>Already yours</title>
                               <path
                                 d="M1 4l2.4 2.6L8 1"
                                 stroke="rgba(31,53,224,0.55)"

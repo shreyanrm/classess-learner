@@ -49,7 +49,7 @@ export function accuracyByNode(events: Logged[]): Map<string, Accuracy> {
 }
 
 export interface Trajectory {
-  kind: 'none' | 'complete' | 'projected';
+  kind: 'none' | 'complete' | 'projected' | 'building';
   line: string;
   /** active days observed, for the sub-line */
   activeDays: number;
@@ -83,17 +83,25 @@ export function computeTrajectory(
 ): Trajectory {
   const days = activeDayList(counts);
   const activeDays = days.length;
-  if (masteredCount <= 0 || activeDays === 0)
+  if (masteredCount <= 0)
     return {
       kind: 'none',
       activeDays,
-      line: 'master your first concept and a trajectory appears here — no guesswork, just your pace.',
+      line: 'Master your first concept and a trajectory appears here — no guesswork, just your pace.',
     };
   if (masteredCount >= total)
     return {
       kind: 'complete',
       activeDays,
-      line: 'every concept in this constellation is yours. the next chapter is where the sky grows.',
+      line: 'Every concept in this constellation is yours. The next chapter is where the sky grows.',
+    };
+  // Mastery exists but no day-level activity to pace from (e.g. seed/imported progress) — acknowledge
+  // real progress instead of the empty-state line, which would contradict the "N of M" header above.
+  if (activeDays === 0)
+    return {
+      kind: 'building',
+      activeDays,
+      line: `${masteredCount} of ${total} concepts are yours — keep a rhythm going and a finish date will appear here.`,
     };
   const pacePerActiveDay = masteredCount / activeDays;
   const remaining = total - masteredCount;
@@ -109,7 +117,7 @@ export function computeTrajectory(
   return {
     kind: 'projected',
     activeDays,
-    line: `at this pace, all ${total} concepts are yours by around ${date}.`,
+    line: `At this pace, all ${total} concepts are yours by around ${date}.`,
   };
 }
 
@@ -300,7 +308,7 @@ export function ProgressReport({
     >
       <Reveal>
         <div style={{ textAlign: 'center', marginBottom: 4 }}>
-          <div style={eyebrow}>your report</div>
+          <div style={eyebrow}>Your report</div>
           <div
             style={{
               marginTop: 6,
@@ -308,7 +316,7 @@ export function ProgressReport({
               color: 'var(--clss-ink-faint)',
             }}
           >
-            drawn from what you have actually done — not a guess
+            Drawn from what you have actually done — not a guess
           </div>
         </div>
       </Reveal>
@@ -326,7 +334,7 @@ export function ProgressReport({
             gap: 8,
           }}
         >
-          <div style={eyebrow}>trajectory</div>
+          <div style={eyebrow}>Trajectory</div>
           <div
             style={{
               fontSize: 'clamp(1.05rem, 2.4vw, 1.35rem)',
@@ -358,7 +366,7 @@ export function ProgressReport({
       >
         <Reveal delay={0.08}>
           <Panel>
-            <div style={eyebrow}>strengths</div>
+            <div style={eyebrow}>Strengths</div>
             {strengths.length === 0 ? (
               <div
                 style={{
@@ -367,7 +375,7 @@ export function ProgressReport({
                   lineHeight: 1.5,
                 }}
               >
-                your first independent concept lands here — you are closer than it feels.
+                Your first independent concept lands here — you are closer than it feels.
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
@@ -394,7 +402,7 @@ export function ProgressReport({
 
         <Reveal delay={0.12}>
           <Panel>
-            <div style={eyebrow}>where to grow</div>
+            <div style={eyebrow}>Where to grow</div>
             {growth.length === 0 ? (
               <div
                 style={{
@@ -403,7 +411,7 @@ export function ProgressReport({
                   lineHeight: 1.5,
                 }}
               >
-                nothing shaky right now — practice a little to surface your next edge.
+                Nothing shaky right now — practice a little to surface your next edge.
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -443,7 +451,7 @@ export function ProgressReport({
       <Reveal delay={0.16}>
         <Panel>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <div style={eyebrow}>last 30 days</div>
+            <div style={eyebrow}>Last 30 days</div>
             {medianSec !== undefined && (
               <div style={{ fontSize: fluidType.small, color: 'var(--clss-ink-faint)' }}>
                 ~{medianSec}s per answer
@@ -453,7 +461,7 @@ export function ProgressReport({
           <ActivityGraph counts={counts} now={now} />
           <Hairline />
           <div style={{ fontSize: fluidType.small, color: 'var(--clss-ink-soft)' }}>
-            quiet days are part of it — the line only needs to keep coming back.
+            Quiet days are part of it — the line only needs to keep coming back.
           </div>
         </Panel>
       </Reveal>

@@ -159,7 +159,7 @@ export function Constellation({
       style={{ width: '100%', height: '100%', display: 'block' }}
       aria-label="your knowledge constellation — every star is a concept"
     >
-      <title>your knowledge constellation</title>
+      <title>Your knowledge constellation</title>
       <defs>
         <radialGradient id="twin-halo">
           <stop offset="0%" style={{ stopColor: GLOW, stopOpacity: 0.18 }} />
@@ -256,7 +256,7 @@ export function Constellation({
             role="button"
             tabIndex={0}
             aria-label={`${star.label} — ${BREATH_LABEL[state]}`}
-            style={{ cursor: 'pointer', outline: 'none' }}
+            style={{ cursor: 'pointer' }}
             initial={reduced ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.7, delay: 0.15 + i * 0.07, ease: 'easeOut' }}
@@ -305,7 +305,7 @@ export function Constellation({
                 y={star.y + 24}
                 textAnchor="middle"
                 style={{
-                  fill: isLit ? 'var(--clss-ink-soft)' : 'rgba(92,94,102,0.5)',
+                  fill: isLit ? 'var(--clss-ink-soft)' : 'var(--clss-ink-300)',
                   fontSize: 11.5,
                   fontFamily: 'inherit',
                 }}

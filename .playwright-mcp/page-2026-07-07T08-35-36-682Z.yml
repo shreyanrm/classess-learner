@@ -1,0 +1,72 @@
+- generic [active] [ref=f9e1]:
+  - generic [ref=f9e2]:
+    - generic [ref=f9e314]:
+      - generic [ref=f9e315]:
+        - banner [ref=f9e317]:
+          - generic [ref=f9e318]: 4 of 8 concepts are yours
+          - generic [ref=f9e319]: Day 3 of being a learner · tap a star, or scroll for your report
+        - generic [ref=f9e320]:
+          - img "your knowledge constellation — every star is a concept" [ref=f9e323]:
+            - button "rational numbers — yours, independently" [ref=f9e334] [cursor=pointer]:
+              - generic [ref=f9e341]: rational numbers
+            - button "operations — yours, independently" [ref=f9e342] [cursor=pointer]:
+              - generic [ref=f9e349]: operations
+            - button "the number line — yours, independently" [ref=f9e350] [cursor=pointer]:
+              - generic [ref=f9e357]: the number line
+            - button "integers — not started" [ref=f9e358] [cursor=pointer]:
+              - generic [ref=f9e362]: integers
+            - button "variables — not started" [ref=f9e363] [cursor=pointer]:
+              - generic [ref=f9e367]: variables
+            - button "linear equations — yours, independently" [ref=f9e368] [cursor=pointer]:
+              - generic [ref=f9e375]: linear equations
+            - button "both sides — not started" [ref=f9e376] [cursor=pointer]:
+              - generic [ref=f9e380]: both sides
+            - button "word problems — not started" [ref=f9e381] [cursor=pointer]:
+              - generic [ref=f9e385]: word problems
+          - textbox "Ask your twin" [ref=f9e389]:
+            - /placeholder: "Ask your twin: what am I weakest at…"
+      - generic [ref=f9e390]:
+        - generic [ref=f9e392]:
+          - generic [ref=f9e393]: Your report
+          - generic [ref=f9e394]: drawn from what you have actually done — not a guess
+        - generic [ref=f9e396]:
+          - generic [ref=f9e397]: Trajectory
+          - generic [ref=f9e398]: master your first concept and a trajectory appears here — no guesswork, just your pace.
+        - generic [ref=f9e399]:
+          - generic [ref=f9e401]:
+            - generic [ref=f9e402]: Strengths
+            - generic [ref=f9e403]:
+              - generic [ref=f9e406]: What makes a number rational
+              - generic [ref=f9e409]: Operations on rational numbers
+              - generic [ref=f9e412]: Rational numbers on the number line
+              - generic [ref=f9e415]: Solving linear equations in one variable
+          - generic [ref=f9e417]:
+            - generic [ref=f9e418]: Where to grow
+            - generic [ref=f9e419]: nothing shaky right now — practice a little to surface your next edge.
+        - generic [ref=f9e421]:
+          - generic [ref=f9e423]: Last 30 days
+          - img "your last thirty days of activity" [ref=f9e424]
+          - generic [ref=f9e427]: quiet days are part of it — the line only needs to keep coming back.
+    - banner:
+      - img "Classess" [ref=f9e221]
+      - generic [ref=f9e222]:
+        - button "Did you know" [ref=f9e310] [cursor=pointer]:
+          - img [ref=f9e311]
+          - text: Did you know
+        - generic "Day 3 of being a learner" [ref=f9e223]:
+          - img [ref=f9e225]
+          - text: "3"
+        - generic [ref=f9e228]: 420 xp
+        - generic [ref=f9e229]:
+          - img [ref=f9e230]
+          - button "You — level 4, profile and settings" [ref=f9e233] [cursor=pointer]:
+            - generic "Ace" [ref=f9e234]:
+              - img [ref=f9e236]
+          - generic [ref=f9e265]: "4"
+    - generic [ref=f9e430]:
+      - generic:
+        - img
+      - button "Talk to Vidya" [ref=f9e431] [cursor=pointer]:
+        - img [ref=f9e435]
+  - button "Back — Home" [ref=f9e459] [cursor=pointer]:
+    - img [ref=f9e460]

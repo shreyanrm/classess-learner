@@ -1,0 +1,202 @@
+- generic [ref=f7e4]:
+  - generic [ref=f7e5]:
+    - generic [ref=f7e6]: type-batch a · the physics of understanding
+    - heading "engine gallery" [level=1] [ref=f7e7]
+  - generic [ref=f7e8]:
+    - generic [ref=f7e9]: perturbation sandbox — break it
+    - generic [ref=f7e11]:
+      - generic [ref=f7e12]: break it — find where the law stops working
+      - generic [ref=f7e13]: ohm’s law, pushed to the edge
+      - generic [ref=f7e14]:
+        - generic [ref=f7e15]: I = 12 / R
+        - img "plot of current I against R" [ref=f7e16]
+      - generic [ref=f7e19]:
+        - generic [ref=f7e20]: current I
+        - generic [ref=f7e21]: 1.5A
+      - generic [ref=f7e22]:
+        - slider "R — drag toward the breakpoint" [ref=f7e23] [cursor=pointer]: "7.998"
+        - generic [ref=f7e24]: R 8
+      - generic [ref=f7e25]: drag R toward 0.4 and watch current I run away.
+  - generic [ref=f7e26]:
+    - generic [ref=f7e27]: what-if numerical — every value editable
+    - generic [ref=f7e29]:
+      - generic [ref=f7e30]: what-if — every number is yours to change
+      - generic [ref=f7e31]: the tower and the angle
+      - generic [ref=f7e32]:
+        - text: you stand
+        - slider "distance (m)" [ref=f7e34]: "30"
+        - text: m from a tower and look up to its top at an angle of
+        - slider "angle (°)" [ref=f7e36]: "40"
+        - text: °. how tall is the tower?
+      - img "scene for the tower and the angle" [ref=f7e38]:
+        - generic [ref=f7e42]: 40°
+        - generic [ref=f7e43]: 30 m
+      - generic [ref=f7e44]:
+        - generic [ref=f7e45]: the solution, live
+        - generic [ref=f7e46]:
+          - generic [ref=f7e47]: angle in radians a·π/180
+          - generic [ref=f7e48]: "0.698"
+        - generic [ref=f7e49]:
+          - generic [ref=f7e50]: height = distance × tan(angle)
+          - generic [ref=f7e51]: "25.17"
+      - generic [ref=f7e52]: drag any highlighted number in the problem — the picture and the answer follow.
+  - generic [ref=f7e53]:
+    - generic [ref=f7e54]: compare interactive — dual panel
+    - generic [ref=f7e56]:
+      - generic [ref=f7e57]: compare — tap a part to see it in both
+      - generic [ref=f7e58]: animal cell vs plant cell
+      - generic [ref=f7e59]:
+        - generic [ref=f7e60]:
+          - generic [ref=f7e61]: animal cell
+          - img "animal cell" [ref=f7e63]:
+            - generic [ref=f7e66] [cursor=pointer]: cytoplasm
+        - generic [ref=f7e68]:
+          - generic [ref=f7e69]: plant cell
+          - img "plant cell" [ref=f7e71]
+      - generic [ref=f7e77]: tap any part in either panel — its match lights up in both, and I'll tell you what changes.
+  - generic [ref=f7e83]:
+    - generic [ref=f7e84]: concept map — seeded, tappable
+    - generic [ref=f7e86]:
+      - generic [ref=f7e87]: concept map — tap a node to trace how it connects
+      - generic [ref=f7e88]: states of matter
+      - generic [ref=f7e89]:
+        - img
+        - button "matter" [ref=f7e90] [cursor=pointer]
+        - button "solid" [ref=f7e91] [cursor=pointer]
+        - button "liquid" [ref=f7e92] [cursor=pointer]
+        - button "gas" [ref=f7e93] [cursor=pointer]
+        - button "melting" [ref=f7e94] [cursor=pointer]
+        - button "evaporation" [ref=f7e95] [cursor=pointer]
+      - generic [ref=f7e96]: tap any concept to light up everything it connects to.
+  - generic [ref=f7e98]: type-batch b · practice & delight
+  - generic [ref=f7e99]:
+    - generic [ref=f7e100]: mini-workbook — match, fill, order, checked into evidence
+    - generic [ref=f7e102]:
+      - generic [ref=f7e103]:
+        - generic [ref=f7e104]: a quick check · answered together
+        - generic [ref=f7e105]: hold what you built
+      - generic [ref=f7e106]:
+        - generic [ref=f7e107]: match each particle to where it lives.
+        - generic [ref=f7e108]:
+          - generic [ref=f7e109]:
+            - button "proton" [ref=f7e110] [cursor=pointer]
+            - button "electron" [ref=f7e111] [cursor=pointer]
+            - button "neutron" [ref=f7e112] [cursor=pointer]
+          - generic [ref=f7e113]:
+            - button "in the nucleus" [disabled] [ref=f7e114] [cursor=pointer]
+            - button "in the nucleus, no charge" [disabled] [ref=f7e115] [cursor=pointer]
+            - button "in a shell" [disabled] [ref=f7e116] [cursor=pointer]
+      - generic [ref=f7e117]:
+        - generic [ref=f7e118]: fill the gaps from the bank.
+        - generic [ref=f7e119]:
+          - generic [ref=f7e120]:
+            - generic [ref=f7e121]:
+              - text: an atom of carbon has
+              - button [disabled] [ref=f7e122]
+            - generic [ref=f7e123]:
+              - text: protons, which is what makes it
+              - button [disabled] [ref=f7e124]
+            - text: .
+          - generic [ref=f7e125]:
+            - button "8" [ref=f7e126] [cursor=pointer]
+            - button "oxygen" [ref=f7e127] [cursor=pointer]
+            - button "6" [ref=f7e128] [cursor=pointer]
+            - button "carbon" [ref=f7e129] [cursor=pointer]
+      - generic [ref=f7e130]:
+        - generic [ref=f7e131]: put the shells in filling order, innermost first.
+        - generic [ref=f7e132]:
+          - button "· third shell (8)" [ref=f7e133] [cursor=pointer]:
+            - generic [ref=f7e134]: ·
+            - text: third shell (8)
+          - button "· first shell (2)" [ref=f7e135] [cursor=pointer]:
+            - generic [ref=f7e136]: ·
+            - text: first shell (2)
+          - button "· second shell (8)" [ref=f7e137] [cursor=pointer]:
+            - generic [ref=f7e138]: ·
+            - text: second shell (8)
+  - generic [ref=f7e139]:
+    - generic [ref=f7e140]: flashcards — spring 3d flip, FSRS on grade
+    - generic [ref=f7e142]:
+      - generic [ref=f7e143]: recall · 1 / 3
+      - generic [ref=f7e145] [cursor=pointer]:
+        - generic [ref=f7e147]:
+          - generic [ref=f7e148]: prompt
+          - generic [ref=f7e149]: what decides which element an atom is?
+          - generic [ref=f7e150]: tap to flip
+        - generic [ref=f7e152]:
+          - generic [ref=f7e153]: answer
+          - generic [ref=f7e154]: the number of protons in its nucleus.
+  - generic [ref=f7e155]:
+    - generic [ref=f7e156]: derivation depth — the ⓘ, nestable one level
+    - generic [ref=f7e158]:
+      - generic [ref=f7e159]:
+        - generic [ref=f7e160]: the formula — depth on request
+        - generic [ref=f7e161]: you only need the result
+      - generic [ref=f7e162]: this is the formula. it stands on its own — but if you ever wonder where it comes from, the ⓘ opens the whole path.
+      - generic [ref=f7e165]:
+        - generic [ref=f7e166]: the identity
+        - generic [ref=f7e167]: (a + b)² = a² + 2ab + b²
+        - button "how we got here" [ref=f7e168] [cursor=pointer]: i
+  - generic [ref=f7e169]:
+    - generic [ref=f7e170]: word-problem breakdown — given · find · plan · solve
+    - generic [ref=f7e172]:
+      - generic [ref=f7e173]:
+        - generic [ref=f7e174]: reading a problem, the method
+        - generic [ref=f7e175]: a ladder against a wall
+      - generic [ref=f7e176]: a 5 m ladder leans against a wall, its foot 3 m from the base. how high up the wall does the ladder reach?
+      - generic [ref=f7e178]:
+        - generic [ref=f7e179]: given
+        - generic [ref=f7e180]: what the problem hands you
+      - generic [ref=f7e182]:
+        - generic [ref=f7e183]: find
+        - generic [ref=f7e184]: what you are actually after
+      - generic [ref=f7e186]:
+        - generic [ref=f7e187]: plan
+        - generic [ref=f7e188]: the path from one to the other
+      - generic [ref=f7e190]:
+        - generic [ref=f7e191]: solve
+        - generic [ref=f7e192]: the working, line by line
+  - generic [ref=f7e193]:
+    - generic [ref=f7e194]: podcast player — chaptered, TTS seam, speed + minimize
+    - generic [ref=f7e196]:
+      - generic [ref=f7e197]:
+        - generic [ref=f7e198]:
+          - generic [ref=f7e199]: listen · a lecture in chapters
+          - generic [ref=f7e200]: the atom, out loud
+        - button "minimize the player" [ref=f7e201] [cursor=pointer]: ▾
+      - generic [ref=f7e202]:
+        - generic [ref=f7e203]:
+          - button "play" [ref=f7e204] [cursor=pointer]:
+            - img [ref=f7e205]
+          - generic [ref=f7e207]:
+            - generic [ref=f7e208]: mostly empty space
+            - generic [ref=f7e209]: chapter 1 of 3
+          - button "playback speed 1x" [ref=f7e210] [cursor=pointer]: 1×
+        - progressbar [ref=f7e211]
+        - paragraph [ref=f7e212]: here is the strangest thing about the atom. it is almost entirely empty. if the nucleus were a marble on the halfway line of a football field, the electrons would drift somewhere out by the stands. everything you touch is, at heart, mostly nothing.
+      - generic [ref=f7e213]:
+        - button "1 mostly empty space" [ref=f7e214] [cursor=pointer]:
+          - generic [ref=f7e215]: "1"
+          - generic [ref=f7e216]: mostly empty space
+        - button "2 the proton decides everything" [ref=f7e217] [cursor=pointer]:
+          - generic [ref=f7e218]: "2"
+          - generic [ref=f7e219]: the proton decides everything
+        - button "3 why the shells matter" [ref=f7e220] [cursor=pointer]:
+          - generic [ref=f7e221]: "3"
+          - generic [ref=f7e222]: why the shells matter
+  - generic [ref=f7e223]:
+    - generic [ref=f7e224]: arcade — falling-answers catch, wired to real items
+    - generic [ref=f7e226]:
+      - generic [ref=f7e227]:
+        - generic [ref=f7e228]:
+          - generic [ref=f7e229]: catch the answer
+          - generic [ref=f7e230]: element catch
+        - generic [ref=f7e231]:
+          - generic [ref=f7e232]:
+            - generic [ref=f7e233]: score
+            - generic [ref=f7e234]: "0"
+          - img "3 lives" [ref=f7e235]
+      - generic [ref=f7e243]:
+        - generic [ref=f7e244]: slide to catch the right answer
+        - generic [ref=f7e245]: move with your finger or the arrow keys. grab the answer, dodge the rest.
+        - button "start" [ref=f7e246] [cursor=pointer]

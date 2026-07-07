@@ -30,6 +30,10 @@ export interface VidyaChat {
   loadOlder: () => void;
   /** Patch a turn's extras (approval outcomes, action results) — in memory and in the archive. */
   updateTurn: (id: string, patch: (extras: TurnExtras) => TurnExtras) => void;
+  /** No connection right now — every composer reflects the same offline truth. */
+  offline: boolean;
+  /** Messages typed while offline, held here (not yet real turns) until reconnect drains them. */
+  pending: { id: string; text: string }[];
 }
 
 // ---- the never-ending archive ----------------------------------------------------------------

@@ -71,7 +71,7 @@ export function GradeBoardPicker({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 22, width: '100%' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <SectionLabel>your grade</SectionLabel>
+        <SectionLabel>Your grade</SectionLabel>
         <div style={row}>
           {GRADES.map((g) => (
             <Chip key={g} label={g} selected={grade === g} onClick={() => onGrade(g)} />
@@ -80,7 +80,7 @@ export function GradeBoardPicker({
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <SectionLabel>your board</SectionLabel>
+        <SectionLabel>Your board</SectionLabel>
         <div
           style={{
             maxHeight: 240,
@@ -89,6 +89,10 @@ export function GradeBoardPicker({
             flexDirection: 'column',
             gap: 14,
             paddingRight: 4,
+            // Fade the bottom edge so it's clear the list scrolls — otherwise a learner whose board
+            // sits below the cut (Common Core, UK, IB…) sees a hard-sliced row and assumes it's the end.
+            WebkitMaskImage: 'linear-gradient(to bottom, #000 calc(100% - 22px), transparent 100%)',
+            maskImage: 'linear-gradient(to bottom, #000 calc(100% - 22px), transparent 100%)',
           }}
         >
           <div style={row}>
@@ -110,7 +114,7 @@ export function GradeBoardPicker({
                   letterSpacing: '0.1em',
                 }}
               >
-                {region.toLowerCase()}
+                {region}
               </div>
               <div style={row}>
                 {rest

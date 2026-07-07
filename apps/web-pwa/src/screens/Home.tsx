@@ -397,7 +397,7 @@ export function Home() {
                 style={{ display: 'inline-flex' }}
               >
                 <MagneticButton variant="primary" onClick={() => {}} ariaLabel="Ask Vidya">
-                  <SendIcon size={13} /> ask
+                  <SendIcon size={13} /> Ask
                 </MagneticButton>
               </motion.span>
             )}

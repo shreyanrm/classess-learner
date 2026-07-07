@@ -20,7 +20,9 @@ import re
 from pathlib import Path
 from typing import Any
 
-PROMPT_VERSION = "plexus-v1"
+# v2: composer type-selection doctrine — cards may carry a guided-discovery spec and an imageSpec
+# for organic visuals; a bump regenerates pre-doctrine caches into the richer courses.
+PROMPT_VERSION = "plexus-v2"
 
 
 def cache_dir() -> Path:

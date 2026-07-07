@@ -488,7 +488,7 @@ function Rail({ mood, solved }: { mood: VidyaMood; solved: boolean }) {
             )}
           </AnimatePresence>
         </div>
-        <div style={{ marginTop: 18, ...CAPS }}>monday 6 july</div>
+        <div style={{ marginTop: 18, ...CAPS }}>Monday 6 July</div>
       </div>
     </motion.aside>
   );
@@ -548,7 +548,7 @@ function HeroCard({ tilt, onContinue }: { tilt: number; onContinue: () => void }
         <BalanceScene tilt={tilt} size={264} />
       </motion.div>
       <div>
-        <div style={CAPS}>continue · mathematics</div>
+        <div style={CAPS}>Continue · mathematics</div>
         <h2 style={{ fontSize: 30, fontWeight: 600, marginTop: 10 }}>Linear equations</h2>
         <p style={{ fontSize: 14.5, color: INK_60, margin: '8px 0 0', lineHeight: 1.55 }}>
           the balance is uneven until x owns its value. two screens left, then the boss battle.
@@ -691,8 +691,8 @@ function LessonAct({ practice }: { practice: ReturnType<typeof usePractice> }) {
     >
       <div style={{ maxWidth: 980, width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-          <span style={CAPS}>practice · linear equations</span>
-          <span style={{ ...CAPS, fontVariantNumeric: 'tabular-nums' }}>question 3 of 8</span>
+          <span style={CAPS}>Practice · linear equations</span>
+          <span style={{ ...CAPS, fontVariantNumeric: 'tabular-nums' }}>Question 3 of 8</span>
         </div>
 
         <div
@@ -891,7 +891,7 @@ export function ConceptA() {
           >
             <span style={CAPS}>today</span>
             <span style={{ fontSize: 13, color: INK_60, maxWidth: 400, textAlign: 'right' }}>
-              <span style={{ ...CAPS, marginRight: 10 }}>did you know</span>
+              <span style={{ ...CAPS, marginRight: 10 }}>Did you know</span>
               octopuses solve equations of a kind — they balance eight arms at once
             </span>
           </motion.div>

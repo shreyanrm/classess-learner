@@ -397,7 +397,7 @@ function Board({ practice }: { practice: ReturnType<typeof usePractice> }) {
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <span style={CAPS}>stop two · practice · linear equations</span>
+        <span style={CAPS}>Stop two · practice · linear equations</span>
         <span style={{ ...CAPS, fontVariantNumeric: 'tabular-nums' }}>3 of 8</span>
       </div>
 

@@ -17,10 +17,36 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { topicById } from '../../data/catalog';
 import type { Topic } from '../../data/model';
+import { ArcadeShell, type ArcadeSpec, parseArcade } from '../../engines/ArcadeShell';
+import {
+  CompareInteractive,
+  type CompareSpec,
+  parseCompareSpec,
+} from '../../engines/CompareInteractive';
+import { ConceptMap, type ConceptMapSpec, parseConceptMapSpec } from '../../engines/ConceptMap';
+import {
+  DerivationCard,
+  type DerivationSpec,
+  parseDerivation,
+} from '../../engines/DerivationDepth';
 import { DiagramView, svgIsClean } from '../../engines/DiagramView';
 import { Discovery, type DiscoverySpec, parseDiscoverySpec } from '../../engines/Discovery';
+import { Flashcards, type FlashcardsSpec, parseFlashcards } from '../../engines/Flashcards';
+import { MiniWorkbook, type MiniWorkbookSpec, parseMiniWorkbook } from '../../engines/MiniWorkbook';
 import { MotionPlayer, type MotionScene, parseMotionScene } from '../../engines/MotionPlayer';
+import {
+  PerturbationSandbox,
+  type PerturbSpec,
+  parsePerturbSpec,
+} from '../../engines/PerturbationSandbox';
+import { PodcastPlayer, type PodcastSpec, parsePodcast } from '../../engines/PodcastPlayer';
 import { parseSimSpec, SimRunner, type SimSpec, simSpecFromGateway } from '../../engines/SimRunner';
+import { parseWhatIfSpec, WhatIfNumerical, type WhatIfSpec } from '../../engines/WhatIfNumerical';
+import {
+  parseWordProblem,
+  WordProblemBreakdown,
+  type WordProblemSpec,
+} from '../../engines/WordProblemBreakdown';
 import { useProgress } from '../../store/progress';
 import { useSdk } from '../../store/sdk';
 import { CourseIntroScene } from '../../ui/courseIntro';
@@ -47,6 +73,45 @@ import {
 type CardKind = 'sim' | 'diagram' | 'text';
 type ActKind = 'tap' | 'drag' | 'slide' | 'type';
 
+/** A physics-of-understanding renderer a card can carry — each owns its own shell + action bar. */
+type CardActivity =
+  | { type: 'perturb'; spec: PerturbSpec }
+  | { type: 'whatif'; spec: WhatIfSpec }
+  | { type: 'compare'; spec: CompareSpec }
+  | { type: 'conceptMap'; spec: ConceptMapSpec }
+  // type-batch B — practice & delight
+  | { type: 'workbook'; spec: MiniWorkbookSpec }
+  | { type: 'flashcards'; spec: FlashcardsSpec }
+  | { type: 'derivation'; spec: DerivationSpec }
+  | { type: 'wordProblem'; spec: WordProblemSpec }
+  | { type: 'podcast'; spec: PodcastSpec }
+  | { type: 'arcade'; spec: ArcadeSpec };
+
+/** Try each activity parser in turn; the first field that yields a valid spec wins (refusal → none). */
+function parseActivity(c: Record<string, unknown>): CardActivity | undefined {
+  const perturb = parsePerturbSpec(c.perturbation);
+  if (perturb) return { type: 'perturb', spec: perturb };
+  const whatif = parseWhatIfSpec(c.whatIf);
+  if (whatif) return { type: 'whatif', spec: whatif };
+  const compare = parseCompareSpec(c.compare);
+  if (compare) return { type: 'compare', spec: compare };
+  const conceptMap = parseConceptMapSpec(c.conceptMap);
+  if (conceptMap) return { type: 'conceptMap', spec: conceptMap };
+  const workbook = parseMiniWorkbook(c.workbook);
+  if (workbook) return { type: 'workbook', spec: workbook };
+  const flashcards = parseFlashcards(c.flashcards);
+  if (flashcards) return { type: 'flashcards', spec: flashcards };
+  const derivation = parseDerivation(c.derivation);
+  if (derivation) return { type: 'derivation', spec: derivation };
+  const wordProblem = parseWordProblem(c.wordProblem);
+  if (wordProblem) return { type: 'wordProblem', spec: wordProblem };
+  const podcast = parsePodcast(c.podcast);
+  if (podcast) return { type: 'podcast', spec: podcast };
+  const arcade = parseArcade(c.arcade);
+  if (arcade) return { type: 'arcade', spec: arcade };
+  return undefined;
+}
+
 interface GenCard {
   id: string;
   kind: CardKind;
@@ -56,6 +121,8 @@ interface GenCard {
   reveal: string;
   /** When present, this card renders on the guided-discovery shell instead of the act/check flow. */
   discovery?: DiscoverySpec;
+  /** When present, this card renders a physics-of-understanding engine (its own shell). */
+  activity?: CardActivity;
 }
 
 interface GenItem {
@@ -128,6 +195,7 @@ function parseGenCourse(raw: unknown, fallbackTitle: string): GenCourse | null {
       interaction: { kind: actKind as ActKind, prompt },
       reveal,
       discovery: parseDiscoverySpec(c.discovery) ?? undefined,
+      activity: parseActivity(c),
     });
   });
   if (cards.length < 3) return null;
@@ -371,7 +439,7 @@ const inputStyle: CSSProperties = {
   fontFamily: 'inherit',
   border: '0.5px solid var(--clss-hairline-on-paper-strong)',
   borderRadius: 3,
-  outline: 'none',
+  // no inline `outline: none` — the global :focus-visible ultramarine ring (main.tsx) must show
   background: 'var(--clss-paper)',
   color: 'var(--clss-ink-900)',
 };
@@ -790,7 +858,7 @@ function InkScreen({
         <>
           <Shimmer lines={4} />
           <div style={{ ...lead, marginTop: 2 }}>
-            every card is generated, then checked, before it reaches you — it will land here on its
+            Every card is generated, then checked, before it reaches you — it will land here on its
             own; no need to hold your breath.
           </div>
         </>
@@ -814,7 +882,7 @@ function InkScreen({
           ))}
           <div style={{ ...lead, marginTop: 4 }}>
             {course?.seeded
-              ? 'the fully generated course is still in verification — this working path is live now and follows the same grammar.'
+              ? 'The fully generated course is still in verification — this working path is live now and follows the same grammar.'
               : settled
                 ? 'Composed and checked, line by line. It starts on the next card.'
                 : ''}
@@ -1158,8 +1226,8 @@ export function Composing({
   // content cards: act → check (reveal + XP) → continue
   const card = course && idx < stops ? course.cards[idx] : null;
   useEffect(() => {
-    // a discovery card runs on the guided-discovery shell, which owns its own action bar
-    if (!entered || !card || card.discovery) return;
+    // a discovery card or an activity engine owns its own action bar — skip the act/check flow
+    if (!entered || !card || card.discovery || card.activity) return;
     if (!revealed) {
       setBar({
         primary: {
@@ -1266,6 +1334,58 @@ export function Composing({
     return (
       <Deck id={`gen-discovery-${idx}`}>
         <Discovery spec={card.discovery} hue={hue} setBar={setBar} onDone={advance} />
+      </Deck>
+    );
+  }
+
+  if (card?.activity) {
+    const a = card.activity;
+    return (
+      <Deck id={`gen-activity-${idx}`}>
+        {a.type === 'perturb' && (
+          <PerturbationSandbox spec={a.spec} hue={hue} setBar={setBar} onDone={advance} />
+        )}
+        {a.type === 'whatif' && (
+          <WhatIfNumerical spec={a.spec} hue={hue} setBar={setBar} onDone={advance} />
+        )}
+        {a.type === 'compare' && (
+          <CompareInteractive spec={a.spec} hue={hue} setBar={setBar} onDone={advance} />
+        )}
+        {a.type === 'conceptMap' && (
+          <ConceptMap spec={a.spec} hue={hue} setBar={setBar} onDone={advance} />
+        )}
+        {a.type === 'workbook' && (
+          <MiniWorkbook
+            spec={a.spec}
+            hue={hue}
+            nodeId={nodeUuid}
+            courseId={course.courseId}
+            setBar={setBar}
+            onDone={advance}
+          />
+        )}
+        {a.type === 'flashcards' && (
+          <Flashcards spec={a.spec} hue={hue} nodeId={nodeUuid} setBar={setBar} onDone={advance} />
+        )}
+        {a.type === 'derivation' && (
+          <DerivationCard spec={a.spec} hue={hue} setBar={setBar} onDone={advance} />
+        )}
+        {a.type === 'wordProblem' && (
+          <WordProblemBreakdown spec={a.spec} hue={hue} setBar={setBar} onDone={advance} />
+        )}
+        {a.type === 'podcast' && (
+          <PodcastPlayer spec={a.spec} hue={hue} setBar={setBar} onDone={advance} />
+        )}
+        {a.type === 'arcade' && (
+          <ArcadeShell
+            spec={a.spec}
+            hue={hue}
+            nodeId={nodeUuid}
+            courseId={course.courseId}
+            setBar={setBar}
+            onDone={advance}
+          />
+        )}
       </Deck>
     );
   }

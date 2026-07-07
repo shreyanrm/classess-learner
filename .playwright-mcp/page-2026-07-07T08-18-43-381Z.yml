@@ -1,0 +1,52 @@
+- generic [ref=f10e2]:
+  - generic [ref=f10e256]:
+    - banner [ref=f10e257]:
+      - button "Close course" [ref=f10e258] [cursor=pointer]:
+        - img [ref=f10e259]
+      - generic [ref=f10e275]:
+        - button "Replay Vidya" [ref=f10e276] [cursor=pointer]:
+          - img [ref=f10e277]
+        - button "Mute Vidya" [ref=f10e280] [cursor=pointer]:
+          - img [ref=f10e281]
+    - main [ref=f10e285]:
+      - generic [ref=f10e287]:
+        - generic [ref=f10e288]:
+          - generic:
+            - img
+          - generic [ref=f10e289]:
+            - img
+          - img [ref=f10e291]
+        - generic [ref=f10e298]: Written and verified
+        - generic [ref=f10e299]: variables on both sides
+        - generic [ref=f10e300]:
+          - generic [ref=f10e301]: 1a balanced scale
+          - generic [ref=f10e302]: 2move the x blocks together
+          - generic [ref=f10e303]: 3isolate x
+          - generic [ref=f10e304]: 4the rule
+          - generic [ref=f10e305]: 5when it flips
+          - generic [ref=f10e306]: 6the workbook
+          - generic [ref=f10e307]: 7the boss
+          - generic [ref=f10e308]: Composed and checked, line by line. It starts on the next card.
+    - button "Start the course" [ref=f10e311] [cursor=pointer]:
+      - generic [ref=f10e312]: Start the course
+  - banner:
+    - img "Classess" [ref=f10e221]
+    - generic [ref=f10e222]:
+      - button "Did you know" [ref=f10e223] [cursor=pointer]:
+        - img [ref=f10e224]
+        - text: Did you know
+      - generic "Day 12 of being a learner" [ref=f10e226]:
+        - img [ref=f10e228]
+        - text: "12"
+      - generic [ref=f10e231]: 605 xp
+      - generic [ref=f10e232]:
+        - img [ref=f10e233]
+        - button "You — level 5, profile and settings" [ref=f10e236] [cursor=pointer]:
+          - generic "fox" [ref=f10e237]:
+            - img [ref=f10e239]
+        - generic [ref=f10e254]: "5"
+  - generic [ref=f10e315]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f10e316] [cursor=pointer]:
+      - img [ref=f10e320]

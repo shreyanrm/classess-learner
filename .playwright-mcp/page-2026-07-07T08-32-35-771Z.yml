@@ -1,0 +1,114 @@
+- generic [ref=f3e1]:
+  - generic [ref=f3e2]:
+    - generic [ref=f3e270]:
+      - generic [ref=f3e271]:
+        - heading "Learn" [level=1] [ref=f3e272]
+        - generic [ref=f3e273]: Pick a subject — a topic is a course, composed for you
+      - generic [ref=f3e275]:
+        - generic [ref=f3e276]: Where to today?
+        - generic [ref=f3e277]: Your subjects, one tap each
+      - generic [ref=f3e279]:
+        - button "Mathematics — open the subject" [ref=f3e282] [cursor=pointer]:
+          - generic [ref=f3e283]:
+            - generic [ref=f3e284]:
+              - img [ref=f3e285]
+              - img [ref=f3e296]
+            - generic [ref=f3e303]:
+              - generic [ref=f3e304]: Mathematics
+              - generic [ref=f3e305]: patterns, structure, and certainty
+              - generic [ref=f3e306]: 13 chapters
+        - button "Science — open the subject" [ref=f3e309] [cursor=pointer]:
+          - generic [ref=f3e310]:
+            - generic [ref=f3e311]:
+              - img [ref=f3e312]
+              - img [ref=f3e325]
+            - generic [ref=f3e334]:
+              - generic [ref=f3e335]: Science
+              - generic [ref=f3e336]: how the world actually works
+              - generic [ref=f3e337]: 13 chapters
+        - button "Social Science — open the subject" [ref=f3e340] [cursor=pointer]:
+          - generic [ref=f3e341]:
+            - generic [ref=f3e342]:
+              - img [ref=f3e343]
+              - img [ref=f3e353]
+            - generic [ref=f3e360]:
+              - generic [ref=f3e361]: Social Science
+              - generic [ref=f3e362]: people, places, and power
+              - generic [ref=f3e363]: 14 chapters
+        - button "Computer Science — open the subject" [ref=f3e366] [cursor=pointer]:
+          - generic [ref=f3e367]:
+            - generic [ref=f3e368]:
+              - img [ref=f3e369]
+              - img [ref=f3e379]
+            - generic [ref=f3e387]:
+              - generic [ref=f3e388]: Computer Science
+              - generic [ref=f3e389]: how machines think in steps
+              - generic [ref=f3e390]: 3 chapters
+      - generic [ref=f3e392]:
+        - generic [ref=f3e393]: Courses of your own
+        - generic [ref=f3e394]: Composed the moment you ask
+      - button "Ask Vidya for a course on anything Black holes, cricket physics, the history of zero — your custom courses will live here" [ref=f3e395] [cursor=pointer]:
+        - generic [ref=f3e397]:
+          - img [ref=f3e399]
+          - img [ref=f3e425]
+        - generic [ref=f3e436]:
+          - generic [ref=f3e437]: Ask Vidya for a course on anything
+          - generic [ref=f3e438]: Black holes, cricket physics, the history of zero — your custom courses will live here
+      - button "Past courses ›" [ref=f3e440] [cursor=pointer]
+    - banner:
+      - img "Classess" [ref=f3e221]
+      - generic [ref=f3e222]:
+        - generic "Day 3 of being a learner" [ref=f3e226]:
+          - img [ref=f3e228]
+          - text: "3"
+        - generic [ref=f3e231]: 420 xp
+        - generic [ref=f3e232]:
+          - img [ref=f3e233]
+          - button "You — level 4, profile and settings" [ref=f3e236] [cursor=pointer]:
+            - generic "Ace" [ref=f3e237]:
+              - img [ref=f3e239]
+          - generic [ref=f3e268]: "4"
+    - generic [ref=f3e443]:
+      - generic:
+        - img
+      - button "Talk to Vidya" [ref=f3e444] [cursor=pointer]:
+        - img [ref=f3e448]
+    - combobox [expanded] [ref=f3e473]:
+      - textbox "Search surfaces, subjects, and actions, or ask Vidya" [active] [ref=f3e474]:
+        - /placeholder: Where to, or what…
+      - listbox "results" [ref=f3e475]:
+        - generic [ref=f3e476]:
+          - generic [ref=f3e477]: recent
+          - option "Progress Your knowledge twin" [selected] [ref=f3e478] [cursor=pointer]:
+            - generic [ref=f3e479]: Progress
+            - generic [ref=f3e480]: Your knowledge twin
+        - generic [ref=f3e481]:
+          - generic [ref=f3e482]: go to
+          - option "Home The front door" [ref=f3e483] [cursor=pointer]:
+            - generic [ref=f3e484]: Home
+            - generic [ref=f3e485]: The front door
+          - option "Learn Your subjects" [ref=f3e486] [cursor=pointer]:
+            - generic [ref=f3e487]: Learn
+            - generic [ref=f3e488]: Your subjects
+          - option "Practice Sandbox & retrieval" [ref=f3e489] [cursor=pointer]:
+            - generic [ref=f3e490]: Practice
+            - generic [ref=f3e491]: Sandbox & retrieval
+          - option "You Profile & settings" [ref=f3e492] [cursor=pointer]:
+            - generic [ref=f3e493]: You
+            - generic [ref=f3e494]: Profile & settings
+          - option "Chat Talk to Vidya" [ref=f3e495] [cursor=pointer]:
+            - generic [ref=f3e496]: Chat
+            - generic [ref=f3e497]: Talk to Vidya
+      - generic [ref=f3e498]:
+        - generic [ref=f3e499]:
+          - generic [ref=f3e500]: ↑
+          - generic [ref=f3e501]: ↓
+          - text: Navigate
+        - generic [ref=f3e502]:
+          - generic [ref=f3e503]: ↵
+          - text: Open
+        - generic [ref=f3e504]:
+          - generic [ref=f3e505]: esc
+          - text: Close
+  - button "Back — Home" [ref=f3e506] [cursor=pointer]:
+    - img [ref=f3e507]

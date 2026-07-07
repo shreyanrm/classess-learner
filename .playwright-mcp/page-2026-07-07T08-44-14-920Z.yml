@@ -1,0 +1,70 @@
+- generic [active] [ref=f2e1]:
+  - generic [ref=f2e2]:
+    - generic [ref=f2e252]:
+      - generic [ref=f2e253]:
+        - banner [ref=f2e255]:
+          - generic [ref=f2e256]: 0 of 8 concepts are yours
+          - generic [ref=f2e257]: Day 1 of being a learner · tap a star, or scroll for your report
+        - generic [ref=f2e258]:
+          - img "your knowledge constellation — every star is a concept" [ref=f2e261]:
+            - button "rational numbers — not started" [ref=f2e272] [cursor=pointer]:
+              - generic [ref=f2e276]: rational numbers
+            - button "operations — not started" [ref=f2e277] [cursor=pointer]:
+              - generic [ref=f2e281]: operations
+            - button "the number line — not started" [ref=f2e282] [cursor=pointer]:
+              - generic [ref=f2e286]: the number line
+            - button "integers — not started" [ref=f2e287] [cursor=pointer]:
+              - generic [ref=f2e291]: integers
+            - button "variables — not started" [ref=f2e292] [cursor=pointer]:
+              - generic [ref=f2e296]: variables
+            - button "linear equations — not started" [ref=f2e297] [cursor=pointer]:
+              - generic [ref=f2e301]: linear equations
+            - button "both sides — not started" [ref=f2e302] [cursor=pointer]:
+              - generic [ref=f2e306]: both sides
+            - button "word problems — not started" [ref=f2e307] [cursor=pointer]:
+              - generic [ref=f2e311]: word problems
+          - textbox "Ask your twin" [ref=f2e315]:
+            - /placeholder: "Ask your twin: what am I weakest at…"
+      - generic [ref=f2e316]:
+        - generic [ref=f2e318]:
+          - generic [ref=f2e319]: Your report
+          - generic [ref=f2e320]: drawn from what you have actually done — not a guess
+        - generic [ref=f2e322]:
+          - generic [ref=f2e323]: Trajectory
+          - generic [ref=f2e324]: master your first concept and a trajectory appears here — no guesswork, just your pace.
+        - generic [ref=f2e325]:
+          - generic [ref=f2e327]:
+            - generic [ref=f2e328]: Strengths
+            - generic [ref=f2e329]: your first independent concept lands here — you are closer than it feels.
+          - generic [ref=f2e331]:
+            - generic [ref=f2e332]: Where to grow
+            - generic [ref=f2e333]: nothing shaky right now — practice a little to surface your next edge.
+        - generic [ref=f2e335]:
+          - generic [ref=f2e337]: Last 30 days
+          - img "your last thirty days of activity" [ref=f2e338]
+          - generic [ref=f2e341]: quiet days are part of it — the line only needs to keep coming back.
+    - banner:
+      - img "Classess" [ref=f2e157]
+      - generic [ref=f2e158]:
+        - generic "Day 1 of being a learner" [ref=f2e162]:
+          - img [ref=f2e164]
+          - text: "1"
+        - generic [ref=f2e167]: 0 xp
+        - generic [ref=f2e168]:
+          - img [ref=f2e169]
+          - button "You — level 1, profile and settings" [ref=f2e172] [cursor=pointer]:
+            - generic "Nova" [ref=f2e173]:
+              - img [ref=f2e175]
+          - generic [ref=f2e203]: "1"
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - img
+            - button "Talk to Vidya":
+              - generic:
+                - generic:
+                  - img
+  - button "Back — Home" [ref=f2e342] [cursor=pointer]:
+    - img [ref=f2e343]

@@ -10,7 +10,7 @@
 import { useRegisterTarget, useVidyaBus, VidyaBody } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { OFFLINE_LINE, useConnectivity } from '../shell/resilience';
+import { OFFLINE_LINE } from '../shell/resilience';
 import { useRouter } from '../shell/router';
 import { SendIcon, WaveformIcon } from '../ui/icons';
 import { AmbientWash, FROST, fluidType, MagneticButton } from '../ui/kit';
@@ -28,7 +28,7 @@ const CHAT_WASH =
 
 export function ChatScreen() {
   const router = useRouter();
-  const { turns, ask, busy, mood, setMood, hasOlder, loadOlder } = useVidyaChat();
+  const { turns, ask, busy, mood, setMood, hasOlder, loadOlder, offline, pending } = useVidyaChat();
   const bus = useVidyaBus();
   const [draft, setDraft] = useState('');
   const [voiceNote, setVoiceNote] = useState(false);
@@ -52,12 +52,8 @@ export function ChatScreen() {
     bus.publishCanvas(undefined);
   }, [bus, turns.length]);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  // Family N — offline resilience. When they send with no connection we don't drop it on the floor:
-  // it queues, shows as a pending bubble, and fires once when the connection returns (retry-once).
-  const { offline } = useConnectivity();
-  const [pending, setPending] = useState<{ id: string; text: string }[]>([]);
-  const askRef = useRef(ask);
-  askRef.current = ask;
+  // Family N — offline resilience. `offline` + `pending` come from the shared chat layer so nothing
+  // typed with no connection is dropped: it shows as a pending bubble and fires once on reconnect.
   // scroll bookkeeping: keep the reader's place when the past prepends, follow the newest line
   const restore = useRef<{ height: number; top: number } | null>(null);
   const lastLen = useRef(turns.length);
@@ -103,26 +99,12 @@ export function ChatScreen() {
     e.preventDefault();
     const text = draft.trim();
     if (!text) return;
+    // Offline queueing + reconnect retry live in the shared chat layer (App.tsx `ask`), so the home
+    // composer and this one behave identically. When online, don't stack turns while one is in flight.
+    if (busy && !offline) return;
     setDraft('');
-    if (offline) {
-      // hold it — the reconnect effect will send it
-      setPending((q) => [...q, { id: crypto.randomUUID(), text }]);
-      return;
-    }
-    if (busy) return;
     void ask(text);
   };
-
-  // Reconnect: drain the queue once, in order. askRef keeps us off the latest closure without
-  // re-running this effect every time a turn lands.
-  useEffect(() => {
-    if (offline || pending.length === 0) return;
-    const queued = pending;
-    setPending([]);
-    void (async () => {
-      for (const q of queued) await askRef.current(q.text);
-    })();
-  }, [offline, pending]);
 
   const toggleVoice = () => {
     if (voiceOn) return voice.stop();
@@ -394,7 +376,7 @@ export function ChatScreen() {
               style={{ display: 'inline-flex' }}
             >
               <MagneticButton variant="primary" onClick={() => {}} ariaLabel="Ask Vidya">
-                <SendIcon size={13} /> ask
+                <SendIcon size={13} /> Ask
               </MagneticButton>
             </motion.span>
           )}

@@ -93,7 +93,7 @@ export function GeneratedImage({
         {settledWaiting && (
           <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}>
             {state === 'failed' ? (
-              <span style={whisper}>this image is being remade</span>
+              <span style={whisper}>This image is being remade</span>
             ) : (
               <motion.span
                 animate={{ opacity: [0.4, 1, 0.4] }}

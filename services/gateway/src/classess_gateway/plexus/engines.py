@@ -18,6 +18,7 @@ learner, honest in provenance (``model: "seed"``).
 from __future__ import annotations
 
 import hashlib
+import math
 import threading
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -41,6 +42,12 @@ _CARD_KINDS = {"sim", "diagram", "text"}
 _ITEM_TYPES = {"mcq", "fill"}
 _VISUAL_KINDS = {"svg", "sim", "diagram"}
 _MAX_SCENE_MS = 120_000
+
+# guided-discovery (Discovery.tsx) — the keystone teaching format a card may embed. These mirror
+# the client's parseDiscoverySpec EXACTLY so a spec that would be dropped at the door is refused
+# here instead (an invalid discovery drops from the card; the card still teaches via its kind).
+_SHAPES = {"circle", "rect", "line", "ring", "text"}
+_TONES = {"ink", "muted", "hue"}
 
 
 # --- verification (every artifact passes here before caching or serving) ---------------
@@ -107,6 +114,146 @@ def _verify_items(raw: Any, need: int = 3) -> list[dict[str, Any]] | None:
     return None
 
 
+def _fnum(v: Any) -> bool:
+    """A finite JSON number (client parity: `typeof v === 'number' && Number.isFinite(v)`).
+    JSON booleans decode to bool in Python, which is an int subclass — exclude them explicitly."""
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(float(v))
+
+
+def _nes(v: Any) -> bool:
+    """A non-empty string (client parity for its `str` guard)."""
+    return isinstance(v, str) and v.strip() != ""
+
+
+def _verify_mark(raw: Any) -> dict[str, Any] | None:
+    if not isinstance(raw, dict) or not _nes(raw.get("id")) or raw.get("shape") not in _SHAPES:
+        return None
+    if not (_fnum(raw.get("x")) and _fnum(raw.get("y"))):
+        return None
+    mark: dict[str, Any] = {
+        "id": raw["id"],
+        "shape": raw["shape"],
+        "x": float(raw["x"]),
+        "y": float(raw["y"]),
+        "tone": raw["tone"] if raw.get("tone") in _TONES else "ink",
+    }
+    for k in ("x2", "y2", "r", "w", "h"):
+        if _fnum(raw.get(k)):
+            mark[k] = float(raw[k])
+    if _nes(raw.get("text")):
+        mark["text"] = raw["text"]
+    return mark
+
+
+def _verify_interaction(raw: Any, mark_ids: set[str]) -> dict[str, Any] | None:
+    """Exactly one of tap / drag / slide, every referenced mark id present (Discovery.tsx)."""
+    if not isinstance(raw, dict) or not _nes(raw.get("prompt")):
+        return None
+    kind, prompt = raw.get("kind"), raw["prompt"]
+    if kind == "tap":
+        targets = [t for t in (raw.get("targets") or []) if isinstance(t, str) and t in mark_ids]
+        if not targets:
+            return None
+        need = (
+            max(1, min(len(targets), round(float(raw["need"]))))
+            if _fnum(raw.get("need"))
+            else len(targets)
+        )
+        return {"kind": "tap", "prompt": prompt, "targets": targets, "need": need}
+    if kind == "drag":
+        handle, to = raw.get("handle"), raw.get("to")
+        if not (_nes(handle) and handle in mark_ids and isinstance(to, dict)):
+            return None
+        if not (_fnum(to.get("x")) and _fnum(to.get("y"))):
+            return None
+        radius = float(raw["radius"]) if _fnum(raw.get("radius")) else 8.0
+        return {
+            "kind": "drag",
+            "prompt": prompt,
+            "handle": handle,
+            "to": {"x": float(to["x"]), "y": float(to["y"])},
+            "radius": radius,
+        }
+    if kind == "slide":
+        lo, hi = raw.get("min"), raw.get("max")
+        if not (_fnum(lo) and _fnum(hi) and float(lo) < float(hi)):
+            return None
+        lo, hi = float(lo), float(hi)
+        frm = min(hi, max(lo, float(raw["from"]))) if _fnum(raw.get("from")) else lo
+        at = min(hi, max(lo, float(raw["at"]))) if _fnum(raw.get("at")) else hi
+        out: dict[str, Any] = {"kind": "slide", "prompt": prompt, "min": lo, "max": hi, "from": frm, "at": at}
+        if _nes(raw.get("unit")):
+            out["unit"] = raw["unit"]
+        if _nes(raw.get("valueLabel")):
+            out["valueLabel"] = raw["valueLabel"]
+        bind = raw.get("bind")
+        if isinstance(bind, dict) and _nes(bind.get("mark")) and bind["mark"] in mark_ids:
+            prop, rng = bind.get("prop"), bind.get("at")
+            if (
+                prop in ("x", "y", "r")
+                and isinstance(rng, list)
+                and len(rng) >= 2
+                and _fnum(rng[0])
+                and _fnum(rng[1])
+            ):
+                out["bind"] = {"mark": bind["mark"], "prop": prop, "at": [float(rng[0]), float(rng[1])]}
+        return out
+    return None
+
+
+def _verify_discovery_stage(raw: Any) -> dict[str, Any] | None:
+    if not isinstance(raw, dict) or not _nes(raw.get("reveal")) or not _nes(raw.get("caption")):
+        return None
+    visual = raw.get("visual")
+    marks_raw = visual.get("marks") if isinstance(visual, dict) else None
+    marks = [m for m in map(_verify_mark, marks_raw) if m] if isinstance(marks_raw, list) else []
+    if not marks:
+        return None
+    interaction = _verify_interaction(raw.get("interaction"), {m["id"] for m in marks})
+    if interaction is None:
+        return None
+    return {
+        "visual": {"marks": marks},
+        "interaction": interaction,
+        "reveal": raw["reveal"],
+        "caption": raw["caption"],
+    }
+
+
+def _verify_discovery(raw: Any) -> dict[str, Any] | None:
+    """A card's embedded guided-discovery spec — 1..6 stages, one idea each (Discovery.tsx)."""
+    if not isinstance(raw, dict):
+        return None
+    stages_raw = raw.get("stages")
+    stages = (
+        [s for s in map(_verify_discovery_stage, stages_raw) if s]
+        if isinstance(stages_raw, list)
+        else []
+    )
+    if not 1 <= len(stages) <= 6:
+        return None
+    return {
+        "id": raw["id"] if _nes(raw.get("id")) else "discovery",
+        "title": raw["title"] if _nes(raw.get("title")) else "discover it",
+        "stages": stages,
+    }
+
+
+def _verify_image_spec(raw: Any) -> dict[str, Any] | None:
+    """An imageSpec marks a card whose visual is organic/complex — SVG cannot express a plant cell
+    or the human body. The client hydrates the card through the Nano Banana raster seam (invokes
+    engine.diagram with raster=true) instead of asking for line-art SVG. Shape: {subject, caption?}."""
+    if not isinstance(raw, dict):
+        return None
+    subject = raw.get("subject") or raw.get("concept")
+    if not _nes(subject):
+        return None
+    out = {"subject": subject.strip()}
+    if _nes(raw.get("caption")):
+        out["caption"] = raw["caption"].strip()
+    return out
+
+
 def _verify_compose(spec: Any, concept: str, difficulty: str) -> dict[str, Any] | None:
     if not isinstance(spec, dict):
         return None
@@ -129,16 +276,23 @@ def _verify_compose(spec: Any, concept: str, difficulty: str) -> dict[str, Any] 
             kind = "text"
         if not (title and idea and prompt and reveal):
             return None
-        clean.append(
-            {
-                "id": str(card.get("id") or f"c{i + 1}"),
-                "kind": kind,
-                "title": title,
-                "idea": _cap_words(idea),
-                "interaction": {"kind": interaction["kind"], "prompt": prompt},
-                "reveal": _cap_words(reveal),
-            }
-        )
+        clean_card: dict[str, Any] = {
+            "id": str(card.get("id") or f"c{i + 1}"),
+            "kind": kind,
+            "title": title,
+            "idea": _cap_words(idea),
+            "interaction": {"kind": interaction["kind"], "prompt": prompt},
+            "reveal": _cap_words(reveal),
+        }
+        # Optional richer formats ride ALONGSIDE the card and are additive: a malformed one is
+        # dropped (invisible), the card still teaches via its base kind. Never fail the course.
+        discovery = _verify_discovery(card.get("discovery"))
+        if discovery is not None:
+            clean_card["discovery"] = discovery
+        image_spec = _verify_image_spec(card.get("imageSpec"))
+        if image_spec is not None:
+            clean_card["imageSpec"] = image_spec
+        clean.append(clean_card)
     # the mini-workbook and the boss both ship WITH the outline, answers verified here
     workbook = _verify_items(spec.get("workbook"))
     boss = _verify_items(spec.get("boss"))
@@ -280,6 +434,36 @@ def _seed_compose(concept: str, difficulty: str) -> dict[str, Any]:
                 "idea": "The idea behaves like a balance: change one side, the other follows.",
                 "interaction": {"kind": "drag", "prompt": "Drag the weight until it balances."},
                 "reveal": "Whatever you do to one side, you do to the other.",
+                # guided-discovery is the default teaching format — the floor demonstrates it too, so
+                # the shell is exercised in mock mode and never only reachable through a live model.
+                "discovery": {
+                    "id": "d-balance",
+                    "title": "tip it, then even it",
+                    "stages": [
+                        {
+                            "visual": {
+                                "marks": [
+                                    {"id": "beam", "shape": "line", "x": 28, "y": 30, "x2": 72, "y2": 30},
+                                    {"id": "pivot", "shape": "circle", "x": 50, "y": 34, "r": 2, "tone": "muted"},
+                                    {"id": "load", "shape": "circle", "x": 70, "y": 40, "r": 4, "tone": "hue"},
+                                ]
+                            },
+                            "interaction": {
+                                "kind": "slide",
+                                "prompt": "Slide to pile weight onto one side.",
+                                "min": 0,
+                                "max": 10,
+                                "from": 0,
+                                "at": 6,
+                                "unit": "kg",
+                                "valueLabel": "{v} kg",
+                                "bind": {"mark": "load", "prop": "r", "at": [3, 9]},
+                            },
+                            "reveal": "One side grows heavier and the balance tips — the rule is broken until you match it.",
+                            "caption": "Feel it: whatever you add to one side, you must add to the other.",
+                        }
+                    ],
+                },
             },
             {
                 "id": "c3",
@@ -511,7 +695,9 @@ _SYSTEMS = {
         '"cards":[{"id":"c1","kind":"sim|diagram|text","title":"...",'
         '"idea":"<the one idea, at most ~40 words — never a paragraph>",'
         '"interaction":{"kind":"tap|drag|slide|type","prompt":"<what the learner does first>"},'
-        '"reveal":"<what the action uncovers, at most ~40 words>"}],'
+        '"reveal":"<what the action uncovers, at most ~40 words>",'
+        '"discovery":<OPTIONAL guided-discovery spec, see below — the default teaching format>,'
+        '"imageSpec":<OPTIONAL {"subject":"...","caption":"..."} for organic/complex visuals>}],'
         '"workbook":[{"id":"w1","type":"mcq","prompt":"...",'
         '"options":["...","...","..."],"answer":"<copied character-for-character from options>"},'
         '{"id":"w2","type":"fill","prompt":"<a sentence with a ________ gap>",'
@@ -523,10 +709,39 @@ _SYSTEMS = {
         "with 1-3 parameters drives it; 'diagram' when a labeled picture carries it).\n"
         "  4. FORMALIZE — name the rule that the exploration just revealed.\n"
         "  5. PRACTICE-READY / EDGE — apply it, or push it to where the model breaks.\n\n"
-        "VISUAL-FIRST is law: every card that rests on anything quantitative or spatial MUST "
-        "be 'sim' or 'diagram', never 'text'. Aim for AT LEAST TWO visual (sim/diagram) cards; "
-        "'text' is the exception, not the default. Use at most one 'sim' card. Keep every "
-        "'idea' and 'reveal' under ~40 words — dense, not wordy; the visual does the teaching.\n\n"
+        # Fable's type-selection doctrine — which teaching format each beat reaches for.
+        "FORMAT SELECTION — reach for the format that TEACHES the beat, in this priority:\n"
+        "  • GUIDED-DISCOVERY is the DEFAULT. For any teaching beat that can be discovered by "
+        "acting on a picture, attach a 'discovery' spec to the card (schema below): one idea per "
+        "stage, act-to-reveal, zero lecturing. Prefer this over a plain 'text' card every time.\n"
+        "  • SIM ('kind':'sim') when a quantitative LAW with 1-3 parameters drives the idea and the "
+        "learner should perturb it — 'bend it until it breaks'. At most one 'sim' card.\n"
+        "  • DIAGRAM ('kind':'diagram') for a spatial or structural idea a clean labelled line-drawing "
+        "carries. When the subject is ORGANIC or complex — a plant cell, the human eye, a leaf's "
+        "veins — line-art SVG cannot express it: keep 'kind':'diagram' AND add an 'imageSpec' "
+        "({'subject': a precise noun phrase to illustrate}); the app renders it as a real image.\n"
+        "  • TEXT is the exception — connective tissue only, never where a visual could carry it.\n"
+        "  • The workbook is the mini-workbook that consolidates recall after the teaching beats; the "
+        "boss proves mastery. (Longer companions — the revision podcast, flashcard decks, the motion "
+        "video, chapter concept-maps — are produced by their own engines around this course; here you "
+        "author the discovery spine and its checks.)\n\n"
+        "GUIDED-DISCOVERY SPEC — a card's optional 'discovery' object, rendered on the discovery shell "
+        "(a large reactive SVG the learner acts on). 1 to 6 stages, ONE idea each:\n"
+        '{"id":"...","title":"...","stages":[{'
+        '"visual":{"marks":[{"id":"m1","shape":"circle|rect|line|ring|text",'
+        '"x":<0..100>,"y":<0..62>,"x2":?,"y2":?,"r":?,"w":?,"h":?,"text":?,'
+        '"tone":"ink|muted|hue"}]},'
+        '"interaction":<ONE of '
+        '{"kind":"tap","prompt":"...","targets":["m1"],"need":?} | '
+        '{"kind":"drag","prompt":"...","handle":"m1","to":{"x":.,"y":.},"radius":?} | '
+        '{"kind":"slide","prompt":"...","min":.,"max":.,"from":.,"at":.,"unit":?,'
+        '"valueLabel":"{v} …","bind":{"mark":"m1","prop":"x|y|r","at":[from,to]}}>,'
+        '"reveal":"<the idea, revealed only after the act>","caption":"<her one spoken line>"}]}\n'
+        "Every id referenced by an interaction (targets / handle / bind.mark) MUST exist in that "
+        "stage's marks. Coordinates live on a 0..100 by 0..62 canvas. tone 'hue' is earned pigment — "
+        "use it once, on the mark the reveal lands on. Aim to attach a discovery spec to most "
+        "teaching cards; keep every 'idea' and 'reveal' under ~40 words — the visual does the "
+        "teaching.\n\n"
         "Exactly 3 workbook items and exactly 3 boss items, each testing an idea actually "
         "taught on the cards. Every mcq has 3 or 4 distinct options and its answer string "
         "appears exactly once among them; distractors are plausible misconceptions. Every "

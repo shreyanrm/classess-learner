@@ -405,7 +405,7 @@ export function MuteButton({ size = 17 }: { size?: number }) {
       onClick={() => setMuted(!muted)}
       aria-label={muted ? 'Unmute Vidya' : 'Mute Vidya'}
       aria-pressed={muted}
-      title={muted ? 'her voice is off — words still arrive' : 'she speaks her replies'}
+      title={muted ? 'Her voice is off — words still arrive' : 'She speaks her replies'}
       style={{
         border: 'none',
         background: 'transparent',

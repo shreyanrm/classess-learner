@@ -386,7 +386,7 @@ function FormulaCardView({ card }: { card: FormulaCardSpec }) {
         {card.note ? (
           <span style={whisper}>{card.note}</span>
         ) : (
-          <span style={whisper}>one page — keep it for the morning.</span>
+          <span style={whisper}>One page — keep it for the morning.</span>
         )}
         <MagneticButton variant="quiet" size="sm" onClick={() => window.print()}>
           print
@@ -629,7 +629,7 @@ function ActionCard({ turnId, action }: { turnId: string; action: ActionAttachme
           {action.result}
         </div>
       )}
-      {action.status === 'ignored' && <span style={whisper}>left for later — just ask again.</span>}
+      {action.status === 'ignored' && <span style={whisper}>Left for later — just ask again.</span>}
     </Shell>
   );
 }

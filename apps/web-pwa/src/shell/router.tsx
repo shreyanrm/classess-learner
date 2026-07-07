@@ -21,7 +21,7 @@ export type Route =
   | { name: 'sandbox'; topicId?: string }
   | { name: 'progress' }
   | { name: 'you' }
-  | { name: 'concept'; which: 'a' | 'b' | 'c' };
+  | { name: 'concept'; which: 'a' | 'b' | 'c' | 'engines' };
 
 export interface Router {
   route: Route;

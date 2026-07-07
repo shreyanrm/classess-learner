@@ -20,6 +20,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { unmetPrereqs } from '../data/catalog';
 import type { Chapter, Topic } from '../data/model';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
@@ -27,7 +28,7 @@ import { hash } from '../ui/art';
 import { type BiomePalette, biomeFor, resolveBiome } from '../ui/biomes';
 import { CAST, type CastId } from '../ui/cast';
 import type { SubjectTone } from '../ui/hues';
-import { FROST } from '../ui/kit';
+import { FROST, MagneticButton } from '../ui/kit';
 import { ambience, sfx } from '../ui/sound';
 
 type Intent = 'learn' | 'practice';
@@ -264,6 +265,10 @@ export function AdventureRoadmap({
   const farRef = useRef<HTMLDivElement>(null);
   const [W, setW] = useState(() => (typeof window === 'undefined' ? 390 : window.innerWidth));
   const [entering, setEntering] = useState<Checkpoint | null>(null);
+  // Prerequisite gate — advice, never a wall (DESIGN.md §8). Parity with the list view: a checkpoint
+  // whose prerequisites are unmet shows an advisory with a proceed-anyway door instead of a silent
+  // hard-navigate, so the roadmap can't be used to one-tap-skip the whole progression.
+  const [gate, setGate] = useState<{ c: Checkpoint; unmet: Topic[] } | null>(null);
   const [revealed, setRevealed] = useState(false);
 
   useEffect(() => {
@@ -398,9 +403,11 @@ export function AdventureRoadmap({
     if (el && cur) el.scrollTop = Math.max(0, cur.p.y - window.innerHeight * 0.55);
   }, []);
 
-  const enter = (c: Checkpoint) => {
+  // The zoom-into-the-level flourish, then the actual navigation. Called once the gate (if any) clears.
+  const go = (c: Checkpoint) => {
     if (entering) return;
     sfx.tap();
+    setGate(null);
     setEntering(c);
     window.setTimeout(
       () =>
@@ -411,6 +418,17 @@ export function AdventureRoadmap({
         ),
       reduced ? 80 : 480,
     );
+  };
+
+  const enter = (c: Checkpoint) => {
+    if (entering) return;
+    const unmet = completed.has(c.topic.id) ? [] : unmetPrereqs(c.topic, completed);
+    if (unmet.length > 0) {
+      sfx.tap();
+      setGate({ c, unmet });
+      return;
+    }
+    go(c);
   };
 
   const doneCount = cps.filter((c) => c.state === 'done').length;
@@ -797,10 +815,15 @@ export function AdventureRoadmap({
                         fontSize: '0.78rem',
                         fontWeight: 600,
                         color: 'var(--clss-ink-900)',
-                        whiteSpace: 'nowrap',
-                        maxWidth: 200,
+                        // Wrap to two centered lines instead of a single truncated line — a checkpoint
+                        // name has to be readable at 390px (DESIGN.md §7: glanceable or redrawn).
+                        textAlign: 'center',
+                        lineHeight: 1.2,
+                        maxWidth: 180,
+                        display: '-webkit-box',
+                        WebkitBoxOrient: 'vertical',
+                        WebkitLineClamp: 2,
                         overflow: 'hidden',
-                        textOverflow: 'ellipsis',
                       }}
                     >
                       {c.topic.name}
@@ -905,6 +928,75 @@ export function AdventureRoadmap({
                 }}
               />
             ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* prerequisite advisory — advice, never a wall (DESIGN.md §8): proceed-anyway always works */}
+      <AnimatePresence>
+        {gate && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setGate(null)}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'grid',
+              placeItems: 'center',
+              padding: 24,
+              zIndex: 40,
+              background: 'rgba(0,0,0,0.32)',
+            }}
+          >
+            <motion.div
+              initial={{ scale: reduced ? 1 : 0.94, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: reduced ? 1 : 0.96, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-label="This builds on earlier checkpoints"
+              style={{
+                ...FROST,
+                maxWidth: 340,
+                width: '100%',
+                borderRadius: 'var(--clss-radius-lg)',
+                padding: '22px 22px 18px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 14,
+              }}
+            >
+              <div style={{ fontSize: '0.95rem', lineHeight: 1.5, color: 'var(--clss-ink-900)' }}>
+                This builds on {gate.unmet.map((u) => u.name).join(' and ')} — take those first, or
+                proceed anyway.
+              </div>
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                <MagneticButton
+                  size="sm"
+                  variant="quiet"
+                  onClick={() => {
+                    const first = gate.unmet[0];
+                    setGate(null);
+                    if (first)
+                      router.navigate(
+                        intent === 'practice'
+                          ? { name: 'sandbox', topicId: first.id }
+                          : { name: 'course', topicId: first.id },
+                      );
+                  }}
+                >
+                  Take those first
+                </MagneticButton>
+                <MagneticButton size="sm" variant="primary" onClick={() => go(gate.c)}>
+                  Proceed anyway
+                </MagneticButton>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

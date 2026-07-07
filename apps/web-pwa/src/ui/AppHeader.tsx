@@ -395,20 +395,20 @@ function StreakFlame({ streakDays }: { streakDays: number }) {
 }
 
 const FACTS: string[] = [
-  'a white tiger has stripes on its skin, not just its fur',
-  'a day on Venus lasts longer than its entire year',
-  'honey found in Egyptian tombs is still edible after three thousand years',
-  'lightning is about five times hotter than the surface of the sun',
-  'octopuses have three hearts, and their blood is blue',
-  'sound travels about four times faster underwater than in air',
-  'sharks existed on Earth before trees did',
-  'bananas are berries, but strawberries are not',
-  'the Eiffel Tower grows about fifteen centimetres taller every summer',
-  'hot water can sometimes freeze faster than cold water',
-  'there are more possible chess games than atoms in the observable universe',
-  'a teaspoon of neutron star material would weigh about a billion tonnes',
-  'your bones are about five times stronger than steel of the same weight',
-  'the human brain runs on roughly the power of a dim light bulb',
+  'A white tiger has stripes on its skin, not just its fur.',
+  'A day on Venus lasts longer than its entire year.',
+  'Honey found in Egyptian tombs is still edible after three thousand years.',
+  'Lightning is about five times hotter than the surface of the sun.',
+  'Octopuses have three hearts, and their blood is blue.',
+  'Sound travels about four times faster underwater than in air.',
+  'Sharks existed on Earth before trees did.',
+  'Bananas are berries, but strawberries are not.',
+  'The Eiffel Tower grows about fifteen centimetres taller every summer.',
+  'Hot water can sometimes freeze faster than cold water.',
+  'There are more possible chess games than atoms in the observable universe.',
+  'A teaspoon of neutron star material would weigh about a billion tonnes.',
+  'Your bones are about five times stronger than steel of the same weight.',
+  'The human brain runs on roughly the power of a dim light bulb.',
 ];
 
 const chipStyle = {
@@ -506,7 +506,7 @@ export function AppHeader() {
         )}
 
         {/* the streak — a living flame whose flicker scales with the chain (quiet at 1, proud at 30) */}
-        <span title={`day ${streakDays} of being a learner`} style={chipStyle}>
+        <span title={`Day ${streakDays} of being a learner`} style={chipStyle}>
           <StreakFlame streakDays={streakDays} />
           {streakDays}
         </span>

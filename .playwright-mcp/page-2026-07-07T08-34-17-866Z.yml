@@ -1,0 +1,49 @@
+- generic [ref=f6e2]:
+  - generic [ref=f6e2418]:
+    - banner [ref=f6e2419]:
+      - button "Close course" [ref=f6e2420] [cursor=pointer]:
+        - img [ref=f6e2421]
+      - generic [ref=f6e2437]:
+        - button "Replay Vidya" [ref=f6e2438] [cursor=pointer]:
+          - img [ref=f6e2439]
+        - button "Mute Vidya" [ref=f6e2442] [cursor=pointer]:
+          - img [ref=f6e2443]
+    - main [ref=f6e2447]:
+      - generic [ref=f6e2449]:
+        - generic [ref=f6e2450]:
+          - generic:
+            - img
+          - generic [ref=f6e2451]:
+            - img
+          - img [ref=f6e2453]
+        - generic [ref=f6e2460]: Written and verified
+        - generic [ref=f6e2461]: variables on both sides
+        - generic [ref=f6e2462]:
+          - generic [ref=f6e2463]: 1a balanced scale
+          - generic [ref=f6e2464]: 2move the x blocks together
+          - generic [ref=f6e2465]: 3isolate x
+          - generic [ref=f6e2466]: 4the rule
+          - generic [ref=f6e2467]: 5when it flips
+          - generic [ref=f6e2468]: 6the workbook
+          - generic [ref=f6e2469]: 7the boss
+          - generic [ref=f6e2470]: Composed and checked, line by line. It starts on the next card.
+    - button "Start the course" [ref=f6e2473] [cursor=pointer]:
+      - generic [ref=f6e2474]: Start the course
+  - banner:
+    - img "Classess" [ref=f6e221]
+    - generic [ref=f6e222]:
+      - generic "Day 3 of being a learner" [ref=f6e226]:
+        - img [ref=f6e228]
+        - text: "3"
+      - generic [ref=f6e231]: 420 xp
+      - generic [ref=f6e232]:
+        - img [ref=f6e233]
+        - button "You — level 4, profile and settings" [ref=f6e236] [cursor=pointer]:
+          - generic "Ace" [ref=f6e237]:
+            - img [ref=f6e239]
+        - generic [ref=f6e268]: "4"
+  - generic [ref=f6e309]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f6e310] [cursor=pointer]:
+      - img [ref=f6e314]

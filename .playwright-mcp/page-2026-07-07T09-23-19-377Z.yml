@@ -1,0 +1,69 @@
+- generic [ref=f6e2]:
+  - generic [ref=f6e1033]:
+    - banner [ref=f6e1034]:
+      - button "Close course" [ref=f6e1035] [cursor=pointer]:
+        - img [ref=f6e1036]
+      - generic [ref=f6e1053]:
+        - button "Replay Vidya" [ref=f6e1054] [cursor=pointer]:
+          - img [ref=f6e1055]
+        - button "Mute Vidya" [ref=f6e1058] [cursor=pointer]:
+          - img [ref=f6e1059]
+    - main [ref=f6e1063]:
+      - generic [ref=f6e1066]:
+        - generic [ref=f6e1067]: Drag it — feel the law move
+        - generic [ref=f6e1068]: feel the rule
+        - generic [ref=f6e1069]: "The idea behaves like a balance: change one side, the other follows."
+        - generic [ref=f6e1081]:
+          - generic [ref=f6e1082]: V = I*R
+          - generic [ref=f6e1083]:
+            - generic [ref=f6e1084]:
+              - generic [ref=f6e1085]: I
+              - slider "I" [ref=f6e1087]: "2"
+              - generic [ref=f6e1088]: A
+            - generic [ref=f6e1089]:
+              - generic [ref=f6e1090]: R
+              - slider "R" [ref=f6e1092]: "10"
+              - generic [ref=f6e1093]: ohm
+          - generic [ref=f6e1096]:
+            - generic [ref=f6e1097]: V
+            - generic [ref=f6e1099]: "20"
+        - generic [ref=f6e1076]: Drag the weight until it balances.
+    - button "Check" [ref=f6e1079] [cursor=pointer]:
+      - generic [ref=f6e1080]: Check
+  - banner:
+    - img "Classess" [ref=f6e175]
+    - generic [ref=f6e176]:
+      - generic "Day 1 of being a learner" [ref=f6e177]:
+        - img [ref=f6e179]
+        - text: "1"
+      - generic [ref=f6e182]: 15 xp
+      - generic [ref=f6e183]:
+        - img [ref=f6e184]
+        - button "You — level 1, profile and settings" [ref=f6e187] [cursor=pointer]:
+          - generic "Indi" [ref=f6e188]:
+            - img [ref=f6e190]
+        - generic [ref=f6e224]: "1"
+  - complementary [ref=f6e1100]:
+    - generic [ref=f6e1101]:
+      - img "Vidya" [ref=f6e1102]:
+        - img [ref=f6e1106]
+      - generic [ref=f6e1130]:
+        - generic [ref=f6e1131]: Vidya
+        - generic [ref=f6e1132]: coach mode · I nudge, you move
+      - button "Mute Vidya" [ref=f6e1133] [cursor=pointer]:
+        - img [ref=f6e1134]
+      - button "Open the full conversation" [ref=f6e1138] [cursor=pointer]: full chat ↗
+      - button "Close" [ref=f6e1139] [cursor=pointer]:
+        - img [ref=f6e1140]
+    - generic [ref=f6e1143]:
+      - generic [ref=f6e1157]: what's on my screen right now?
+      - generic [ref=f6e1160]: You're in the Nutrition topic, looking at a problem about Ohm's law — V equals I times R. Your working shows I is 2 amps, R is 10 ohms, and you've calculated V as 20 volts. That's exactly right.
+    - 'button "teach her: nutrition — she plays the student" [ref=f6e1144] [cursor=pointer]'
+    - generic [ref=f6e1145]:
+      - textbox "Ask or do anything…" [active] [ref=f6e1146]
+      - button "Talk by voice" [ref=f6e1147] [cursor=pointer]
+  - button "Nutrition Your course is ready — tap to dive in Open" [ref=f6e225] [cursor=pointer]:
+    - generic [ref=f6e227]:
+      - generic [ref=f6e228]: Nutrition
+      - generic [ref=f6e229]: Your course is ready — tap to dive in
+    - generic [ref=f6e230]: Open

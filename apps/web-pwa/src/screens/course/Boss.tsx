@@ -336,7 +336,7 @@ export function Boss({
                   textAlign: 'center',
                   border: '0.5px solid var(--clss-hairline-on-paper-strong)',
                   borderRadius: 'var(--clss-radius-sm)',
-                  outline: 'none',
+                  // no inline `outline: none` — keep the global :focus-visible ring (main.tsx)
                   background: 'var(--clss-paper)',
                   color: 'var(--clss-ink-900)',
                 }}

@@ -491,7 +491,7 @@ export function SimRunner({ spec }: { spec: SimSpec }) {
               color: 'var(--clss-ink-700)',
             }}
           >
-            <span style={{ ...whisper, display: 'block', marginBottom: 4 }}>where it breaks</span>
+            <span style={{ ...whisper, display: 'block', marginBottom: 4 }}>Where it breaks</span>
             {bp.note}
           </motion.div>
         ))}

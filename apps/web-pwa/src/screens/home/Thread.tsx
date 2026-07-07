@@ -753,8 +753,19 @@ export function Thread({
   const cardX = (p: Pt) =>
     cardRight(p) ? Math.min(p.x + 42, w - CW - 10) : Math.max(p.x - 42 - CW, 10);
   const cp = pts[Math.min(currentIndex, pts.length - 1)] as Pt;
-  const vidyaX = cardRight(cp) ? Math.max(4, cp.x - 42 - 128) : Math.min(w - 132, cp.x + 40);
-  const vidyaY = cp.y - 114;
+  // Seating Vidya beside the current stop only works when there's breathing room next to its card.
+  // On a phone the card eats nearly the full width, so the beside-clamp lands her block on the path's
+  // own node and the caption becomes unreadable. Below ~560px she instead drops into the open
+  // vertical gap under the current node (there's a full ~190px stride to the next stop), clear of
+  // both the node and the card.
+  const VB = 128; // her block's width
+  const narrow = w < 560;
+  const vidyaX = narrow
+    ? Math.max(4, Math.min(cp.x - VB / 2, w - VB - 4))
+    : cardRight(cp)
+      ? Math.max(4, cp.x - 42 - VB)
+      : Math.min(w - VB - 4, cp.x + 40);
+  const vidyaY = narrow ? cp.y + 34 : cp.y - 114;
 
   // Node entrances ride the draw-in — each pops as the pen reaches it.
   const DRAW = Math.min(2.3, 0.9 + stops.length * 0.28);
@@ -912,7 +923,7 @@ export function Thread({
                 lineHeight: 1,
               }}
             >
-              the day, sealed
+              The day, sealed
             </div>
             <motion.div
               initial={{ width: 0 }}

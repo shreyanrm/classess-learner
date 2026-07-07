@@ -16,7 +16,9 @@ export const ink = {
   800: '#1A1A1F',
   700: '#2E2E35',
   500: '#6E6E76',
-  300: '#B9B9C0',
+  // 300 is the "whisper" caption used for real informational text, so it must clear WCAG AA
+  // (4.5:1) on paper — #72727C is 4.76:1 on #FFFFFF, the faintest value that still passes.
+  300: '#72727C',
   100: '#ECECEF',
 } as const;
 
@@ -150,7 +152,7 @@ export const dark: Record<string, string> = {
   '--clss-ink-800': '#E4E5EA',
   '--clss-ink-700': '#C7C9D1',
   '--clss-ink-500': '#9A9DA8',
-  '--clss-ink-300': '#4A4C55',
+  '--clss-ink-300': '#868790', // AA on dark paper: 4.97:1 on #17181C (whisper caption; real text)
   '--clss-ink-100': '#26272E',
   '--clss-paper': '#17181C',
   '--clss-canvas': '#17181C',

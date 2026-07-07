@@ -475,7 +475,9 @@ export function CardBody({
         width: '100%',
         maxWidth,
         margin: '0 auto',
-        padding: '28px 24px 36px',
+        // Bottom padding clears the globally docked Vidya orb (Companion.tsx: fixed, ~112px tall at
+        // bottom-right) so the last line of copy is never occluded on short/mobile viewports.
+        padding: '28px 24px max(36px, 96px)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: center ? 'center' : 'flex-start',

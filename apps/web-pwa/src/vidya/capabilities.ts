@@ -77,14 +77,14 @@ const CAPABILITIES: Record<CapabilityId, VidyaCapability> = {
       const found = findTopic(query);
       if (found) {
         router.navigate({ name: 'course', topicId: found.id });
-        return `we are in ${found.name} — I am right here with you.`;
+        return `We are in ${found.name} — I am right here with you.`;
       }
       if (query) {
         router.navigate({ name: 'course', topicId: `custom:${query}` });
-        return `nothing in the syllabus matched that one — so I am dreaming up a fresh course on ${query}, just for you. give me a moment.`;
+        return `Nothing in the syllabus matched that one — so I am dreaming up a fresh course on ${query}, just for you. Give me a moment.`;
       }
       router.navigate({ name: 'course', topicId: ATOM_TOPIC_ID });
-      return 'let us start where the whole idea clicks — I am right here with you.';
+      return 'Let us start where the whole idea clicks — I am right here with you.';
     },
   },
 

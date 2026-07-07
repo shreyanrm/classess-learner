@@ -1,0 +1,81 @@
+- generic [ref=f6e2]:
+  - generic [ref=f6e1033]:
+    - banner [ref=f6e1034]:
+      - button "Close course" [ref=f6e1035] [cursor=pointer]:
+        - img [ref=f6e1036]
+      - generic [ref=f6e1053]:
+        - button "Replay Vidya" [ref=f6e1054] [cursor=pointer]:
+          - img [ref=f6e1055]
+        - button "Mute Vidya" [ref=f6e1058] [cursor=pointer]:
+          - img [ref=f6e1059]
+    - main [ref=f6e1063]:
+      - generic [ref=f6e1189]:
+        - generic [ref=f6e1190]: the picture
+        - generic [ref=f6e1191]: predict, then check
+        - generic [ref=f6e1192]: A claimed answer must survive the original problem.
+        - figure [ref=f6e1228]:
+          - 'img "diagram: Predict, then check" [ref=f6e1230]':
+            - img [ref=f6e1231]:
+              - generic [ref=f6e1232]: "Nutrition: Predict, then Check"
+              - generic [ref=f6e1234]: PREDICT
+              - generic [ref=f6e1235]: Guess if food
+              - generic [ref=f6e1236]: has starch,
+              - generic [ref=f6e1237]: sugar or fat
+              - generic [ref=f6e1240]: CHECK
+              - generic [ref=f6e1241]: Test it!
+              - generic [ref=f6e1242]: Iodine → starch
+              - generic [ref=f6e1243]: Paper → fat
+              - generic [ref=f6e1244]: Sample tests
+              - generic [ref=f6e1246]: Rice
+              - generic [ref=f6e1247]: Starch
+              - generic [ref=f6e1248]: iodine=blue
+              - generic [ref=f6e1250]: Fruit
+              - generic [ref=f6e1251]: Sugar
+              - generic [ref=f6e1252]: tastes sweet
+              - generic [ref=f6e1254]: Oil
+              - generic [ref=f6e1255]: Fat
+              - generic [ref=f6e1256]: greasy spot
+        - generic [ref=f6e1199]: Type your value and test it.
+    - button "Check" [ref=f6e1200] [cursor=pointer]:
+      - generic [ref=f6e1201]: Check
+  - banner:
+    - img "Classess" [ref=f6e175]
+    - generic [ref=f6e176]:
+      - generic "Day 1 of being a learner" [ref=f6e177]:
+        - img [ref=f6e179]
+        - text: "1"
+      - generic [ref=f6e1184]: 45 xp
+      - generic [ref=f6e183]:
+        - img [ref=f6e184]
+        - button "You — level 1, profile and settings" [ref=f6e187] [cursor=pointer]:
+          - generic "Indi" [ref=f6e188]:
+            - img [ref=f6e190]
+        - generic [ref=f6e224]: "1"
+  - complementary [ref=f6e1100]:
+    - generic [ref=f6e1101]:
+      - img "Vidya" [ref=f6e1102]:
+        - img [ref=f6e1106]
+      - generic [ref=f6e1130]:
+        - generic [ref=f6e1131]: Vidya
+        - generic [ref=f6e1132]: coach mode · I nudge, you move
+      - button "Mute Vidya" [ref=f6e1133] [cursor=pointer]:
+        - img [ref=f6e1134]
+      - button "Open the full conversation" [ref=f6e1138] [cursor=pointer]: full chat ↗
+      - button "Close" [ref=f6e1139] [cursor=pointer]:
+        - img [ref=f6e1140]
+    - generic [ref=f6e1143]:
+      - generic [ref=f6e1157]: what's on my screen right now?
+      - generic [ref=f6e1160]: You're in the Nutrition topic, looking at a problem about Ohm's law — V equals I times R. Your working shows I is 2 amps, R is 10 ohms, and you've calculated V as 20 volts. That's exactly right.
+      - generic [ref=f6e1162]: demonstrate it — set the current I to 5 and show me what V becomes
+      - generic [ref=f6e1165]: Let me adjust the current to 5 amps and you'll see V change right in front of you.
+      - generic [ref=f6e1258]: what does this diagram show?
+      - generic [ref=f6e1261]: That diagram shows the relationship between voltage, current, and resistance — it's the visual way to understand Ohm's law, V equals I times R. What do you notice about how the three quantities connect?
+    - 'button "teach her: nutrition — she plays the student" [ref=f6e1144] [cursor=pointer]'
+    - generic [ref=f6e1145]:
+      - textbox "Ask or do anything…" [active] [ref=f6e1146]
+      - button "Talk by voice" [ref=f6e1147] [cursor=pointer]
+  - button "Nutrition Your course is ready — tap to dive in Open" [ref=f6e225] [cursor=pointer]:
+    - generic [ref=f6e227]:
+      - generic [ref=f6e228]: Nutrition
+      - generic [ref=f6e229]: Your course is ready — tap to dive in
+    - generic [ref=f6e230]: Open

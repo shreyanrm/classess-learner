@@ -110,6 +110,159 @@ def test_compose_refuses_ambiguous_or_missing_answers() -> None:
     assert ok is not None and len(ok) == 3
 
 
+# --- compose: the type universe (guided-discovery + organic imageSpec) ------------------
+
+
+def _valid_discovery() -> dict:
+    """A guided-discovery spec that mirrors what Discovery.tsx's parser accepts."""
+    return {
+        "id": "d1",
+        "title": "tip the balance",
+        "stages": [
+            {
+                "visual": {
+                    "marks": [
+                        {"id": "beam", "shape": "line", "x": 28, "y": 30, "x2": 72, "y2": 30},
+                        {"id": "load", "shape": "circle", "x": 70, "y": 40, "r": 4, "tone": "hue"},
+                    ]
+                },
+                "interaction": {
+                    "kind": "slide",
+                    "prompt": "slide to add weight",
+                    "min": 0,
+                    "max": 10,
+                    "from": 0,
+                    "at": 6,
+                    "unit": "kg",
+                    "valueLabel": "{v} kg",
+                    "bind": {"mark": "load", "prop": "r", "at": [3, 9]},
+                },
+                "reveal": "the balance tips until you match it",
+                "caption": "whatever you add to one side, add to the other",
+            }
+        ],
+    }
+
+
+def _compose_spec(cards: list[dict]) -> dict:
+    """A minimally valid compose spec (three cards + workbook + boss) to feed _verify_compose."""
+    base = [
+        {
+            "kind": "text",
+            "title": f"card {i}",
+            "idea": "one idea",
+            "interaction": {"kind": "tap", "prompt": "tap it"},
+            "reveal": "there it is",
+        }
+        for i in range(1, 4)
+    ]
+    for i, extra in enumerate(cards):
+        base[i] = {**base[i], **extra}
+    items = [
+        {"type": "mcq", "prompt": "p", "options": ["a", "b"], "answer": "a"},
+        {"type": "fill", "prompt": "q ____", "answer": "x"},
+        {"type": "mcq", "prompt": "r", "options": ["c", "d"], "answer": "c"},
+    ]
+    return {"cards": base, "workbook": items, "boss": items}
+
+
+def test_verify_discovery_mirrors_client_contract() -> None:
+    from classess_gateway.plexus.engines import _verify_discovery
+
+    ok = _verify_discovery(_valid_discovery())
+    assert ok is not None
+    stage = ok["stages"][0]
+    assert {m["id"] for m in stage["visual"]["marks"]} == {"beam", "load"}
+    assert stage["interaction"]["kind"] == "slide"
+
+    # a tap whose target is not among the marks is refused (id-integrity, like the client)
+    bad_target = _valid_discovery()
+    bad_target["stages"][0]["interaction"] = {
+        "kind": "tap",
+        "prompt": "tap",
+        "targets": ["ghost"],
+    }
+    assert _verify_discovery(bad_target) is None
+
+    # empty marks, a slide with min >= max, and >6 stages are all refused
+    no_marks = {"stages": [{"visual": {"marks": []}, "reveal": "r", "caption": "c"}]}
+    assert _verify_discovery(no_marks) is None
+    bad_slide = _valid_discovery()
+    bad_slide["stages"][0]["interaction"]["min"] = 10
+    bad_slide["stages"][0]["interaction"]["max"] = 0
+    assert _verify_discovery(bad_slide) is None
+    too_many = {"stages": _valid_discovery()["stages"] * 7, "id": "d", "title": "t"}
+    assert _verify_discovery(too_many) is None
+
+
+def test_compose_keeps_valid_discovery_and_drops_malformed() -> None:
+    from classess_gateway.plexus.engines import _verify_compose
+
+    spec = _compose_spec(
+        [
+            {"kind": "sim", "discovery": _valid_discovery()},  # card 1: valid discovery kept
+            {"kind": "text", "discovery": {"stages": [{"junk": True}]}},  # card 2: dropped
+        ]
+    )
+    out = _verify_compose(spec, "balance", "core")
+    assert out is not None
+    assert "discovery" in out["cards"][0] and out["cards"][0]["discovery"]["stages"]
+    assert "discovery" not in out["cards"][1]  # malformed dropped — the card still teaches
+    assert len(out["cards"]) == 3  # a bad discovery never fails the whole course
+
+
+def test_compose_emits_image_spec_for_organic_visual() -> None:
+    from classess_gateway.plexus.engines import _verify_compose, _verify_image_spec
+
+    assert _verify_image_spec({"subject": "a plant cell", "caption": "labelled"}) == {
+        "subject": "a plant cell",
+        "caption": "labelled",
+    }
+    assert _verify_image_spec({"subject": "   "}) is None
+    assert _verify_image_spec("plant cell") is None
+
+    spec = _compose_spec([{"kind": "diagram", "imageSpec": {"subject": "the human eye"}}])
+    out = _verify_compose(spec, "the eye", "core")
+    assert out is not None
+    assert out["cards"][0]["imageSpec"] == {"subject": "the human eye"}
+
+
+def test_seed_compose_teaches_via_guided_discovery() -> None:
+    """Guided-discovery is the DEFAULT format — the honest floor demonstrates it too, so the shell
+    is exercised in mock mode, not only reachable through a live model."""
+    out = invoke("engine.compose", concept="linear equations").output["artifact"]
+    discovery_cards = [c for c in out["cards"] if "discovery" in c]
+    assert discovery_cards, "the seed course must carry at least one guided-discovery card"
+    stage = discovery_cards[0]["discovery"]["stages"][0]
+    ids = {m["id"] for m in stage["visual"]["marks"]}
+    inter = stage["interaction"]
+    # the seed's own discovery obeys the id-integrity law the verifier enforces
+    if inter["kind"] == "slide" and "bind" in inter:
+        assert inter["bind"]["mark"] in ids
+
+
+def test_image_raster_seam_wraps_gemini_result(monkeypatch) -> None:
+    """engine.diagram's raster path (the Nano Banana seam) wraps a Gemini image as inline SVG."""
+    from classess_gateway.plexus import engines, image
+
+    monkeypatch.setattr(
+        image,
+        "generate_image",
+        lambda concept, difficulty="core": {
+            "status": "ready",
+            "mime": "image/png",
+            "b64": "AAAA",
+            "provenance": {},
+        },
+    )
+    svg = engines._raster_diagram("a plant cell", "core")
+    assert svg is not None and svg.startswith("<svg") and "<image" in svg
+    assert "data:image/png;base64,AAAA" in svg
+    # a refusal (unavailable) yields no raster — the caller falls through to the SVG path
+    monkeypatch.setattr(image, "generate_image", lambda *a, **k: {"status": "unavailable"})
+    assert engines._raster_diagram("a plant cell", "core") is None
+
+
 # --- simulate ---------------------------------------------------------------------------
 
 

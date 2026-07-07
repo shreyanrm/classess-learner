@@ -213,9 +213,9 @@ export function studyPath(target: Star, states: Record<string, StarState>): Path
 
 /** Plain language, never a raw score or the formula (CONTEXT.md §8). */
 export const BAND_LANGUAGE: Record<StarState, string> = {
-  independent: 'you can solve this independently',
-  supported: 'you understand this with guidance',
-  unlit: 'not started',
+  independent: 'You can solve this independently',
+  supported: 'You understand this with guidance',
+  unlit: 'Not started',
 };
 
 const SEEN_KEY = 'clss-twin-seen-v1';
