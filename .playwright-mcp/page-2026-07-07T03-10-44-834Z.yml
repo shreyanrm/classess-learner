@@ -1,0 +1,38 @@
+- generic [ref=f26e1]:
+  - generic [ref=f26e2]:
+    - generic [ref=f26e234]:
+      - generic [ref=f26e235]:
+        - img "Vidya" [ref=f26e236]:
+          - img [ref=f26e240]
+        - generic [ref=f26e264]:
+          - generic [ref=f26e265]: Vidya
+          - generic [ref=f26e266]: one conversation, always
+        - button "Unmute Vidya" [pressed] [ref=f26e267] [cursor=pointer]:
+          - img [ref=f26e268]
+      - generic [ref=f26e272]:
+        - generic [ref=f26e273]: where we began
+        - generic [ref=f26e274]: Tell me something genuinely cool from science or math that most people never learn in school.
+        - generic [ref=f26e275]: what's on my screen right now?
+        - generic [ref=f26e277]: You're on your home screen — today's walk through linear equations. You've already knocked out the warm-up and rational numbers on the number line, and next up is solving equations with the variable on one side.
+      - generic [ref=f26e279]:
+        - textbox "Talk to Vidya…" [active] [ref=f26e280]
+        - button "Talk by voice" [ref=f26e281] [cursor=pointer]
+    - banner:
+      - img "Classess" [ref=f26e199]
+      - generic [ref=f26e200]:
+        - button "Did you know" [ref=f26e201] [cursor=pointer]:
+          - img [ref=f26e202]
+          - text: Did you know
+        - generic "day 3 of being a learner" [ref=f26e204]:
+          - img [ref=f26e205]
+          - text: "3"
+        - generic [ref=f26e208]: 420 xp
+        - generic [ref=f26e209]:
+          - generic "level 4 · 60/200 xp to level 5" [ref=f26e210]:
+            - img [ref=f26e211]
+            - generic [ref=f26e214]: "4"
+          - button "You — level 4, profile and settings" [ref=f26e215] [cursor=pointer]:
+            - generic "fox" [ref=f26e216]:
+              - img [ref=f26e218]
+  - button "Back — ◦ back" [ref=f26e290] [cursor=pointer]:
+    - img [ref=f26e291]

@@ -1,0 +1,103 @@
+- generic [ref=f5e2]:
+  - generic [ref=f5e4]:
+    - generic [ref=f5e5]:
+      - generic [ref=f5e6]: tuesday 7 july
+      - heading "Good morning, Aanya" [level=1] [ref=f5e7]
+      - generic [ref=f5e8]: mistakes are just data with feelings
+      - generic [ref=f5e10]:
+        - textbox "Talk to Vidya…" [ref=f5e11]
+        - button "Talk by voice" [ref=f5e12] [cursor=pointer]
+      - generic [ref=f5e21]:
+        - button "Learn something cool" [ref=f5e22] [cursor=pointer]:
+          - img [ref=f5e23]
+          - text: Learn something cool
+        - button "Open a rabbit hole" [ref=f5e25] [cursor=pointer]:
+          - img [ref=f5e26]
+          - text: Open a rabbit hole
+        - button "What should I do today" [ref=f5e28] [cursor=pointer]:
+          - img [ref=f5e29]
+          - text: What should I do today
+      - generic [ref=f5e31]:
+        - button "Learn" [ref=f5e32] [cursor=pointer]:
+          - generic [ref=f5e33]: Learn
+        - button "Practice" [ref=f5e34] [cursor=pointer]:
+          - generic [ref=f5e35]: Practice
+    - generic [ref=f5e37]:
+      - generic [ref=f5e38]: +
+      - generic [ref=f5e39]: ·
+      - generic [ref=f5e40]: ·
+      - generic [ref=f5e41]: +
+      - generic [ref=f5e42]: ·
+      - generic [ref=f5e43]: +
+      - generic [ref=f5e44]: ·
+      - generic [ref=f5e45]: +
+      - img [ref=f5e46]
+      - button "Warm-up day 3 of being a learner · done" [ref=f5e72] [cursor=pointer]:
+        - img [ref=f5e73]
+        - generic [ref=f5e83]:
+          - generic [ref=f5e84]: Warm-up
+          - generic [ref=f5e85]: day 3 of being a learner · done
+        - img [ref=f5e87]
+      - button "Rational numbers on the number line done · revisit any time" [ref=f5e90] [cursor=pointer]:
+        - img [ref=f5e91]
+        - generic [ref=f5e94]:
+          - generic [ref=f5e95]: Rational numbers on the number line
+          - generic [ref=f5e96]: done · revisit any time
+        - img [ref=f5e98]
+      - button "Solving equations with the variable on one side done · revisit any time" [ref=f5e101] [cursor=pointer]:
+        - img [ref=f5e102]
+        - generic [ref=f5e105]:
+          - generic [ref=f5e106]: Solving equations with the variable on one side
+          - generic [ref=f5e107]: done · revisit any time
+        - img [ref=f5e109]
+      - button "Variables on both sides continue · 55% walked" [ref=f5e112] [cursor=pointer]:
+        - img [ref=f5e113]
+        - generic [ref=f5e117]:
+          - generic [ref=f5e118]: Variables on both sides
+          - generic [ref=f5e119]: continue · 55% walked
+        - img [ref=f5e123]
+      - button "Word problems that become equations next up · a fresh idea" [ref=f5e126] [cursor=pointer]:
+        - img [ref=f5e127]
+        - generic [ref=f5e130]:
+          - generic [ref=f5e131]: Word problems that become equations
+          - generic [ref=f5e132]: next up · a fresh idea
+        - img [ref=f5e134]
+      - button "Review refresh what’s fading" [ref=f5e137] [cursor=pointer]:
+        - img [ref=f5e138]
+        - generic [ref=f5e143]:
+          - generic [ref=f5e144]: Review
+          - generic [ref=f5e145]: refresh what’s fading
+        - img [ref=f5e147]
+      - button "Boss gate locked · finish today’s topic" [ref=f5e150] [cursor=pointer]:
+        - img [ref=f5e151]
+        - generic [ref=f5e154]:
+          - generic [ref=f5e155]: Boss gate
+          - generic [ref=f5e156]: locked · finish today’s topic
+        - img [ref=f5e158]
+      - button "Something is hiding here — open the sandbox" [ref=f5e161] [cursor=pointer]:
+        - img [ref=f5e162]
+      - generic: something is hiding here
+      - generic [ref=f5e166]:
+        - img "Vidya" [ref=f5e167]:
+          - img [ref=f5e171]
+        - generic [ref=f5e195]: right where we left it
+    - generic [ref=f5e196]:
+      - generic [ref=f5e197]: ⌘K
+      - text: Anything, anywhere
+  - banner:
+    - img "Classess" [ref=f5e199]
+    - generic [ref=f5e200]:
+      - button "Did you know" [ref=f5e201] [cursor=pointer]:
+        - img [ref=f5e202]
+        - text: Did you know
+      - generic "day 3 of being a learner" [ref=f5e204]:
+        - img [ref=f5e205]
+        - text: "3"
+      - generic [ref=f5e208]: 420 xp
+      - generic [ref=f5e209]:
+        - generic "level 4 · 60/200 xp to level 5" [ref=f5e210]:
+          - img [ref=f5e211]
+          - generic [ref=f5e214]: "4"
+        - button "You — level 4, profile and settings" [ref=f5e215] [cursor=pointer]:
+          - generic "fox" [ref=f5e216]:
+            - img [ref=f5e218]

@@ -30,8 +30,9 @@ import { ProgressScreen } from './screens/ProgressScreen';
 import { SubjectScreen } from './screens/SubjectScreen';
 import { You } from './screens/You';
 import { CommandPalette } from './shell/CommandPalette';
+import { resolveDestination } from './shell/destinations';
 import { type Route, RouterProvider, useRouter } from './shell/router';
-import { MindObserver } from './store/mind';
+import { MindObserver, rememberFact } from './store/mind';
 import { ProgressProvider } from './store/progress';
 import { SdkProvider } from './store/sdk';
 import { AppHeader } from './ui/AppHeader';
@@ -224,6 +225,23 @@ function AppInner({ sdk }: { sdk: Sdk }) {
           : t.text.slice(0, 600),
     }));
     bus.publishTurn({ recentTurns: recent, lastUserInput: text });
+    // What the learner has actually been doing — the last few backbone events, compacted. Carries
+    // her interaction history into the assembled context so Vidya grounds in real activity, not just
+    // the static page (context-bus SessionContext.recentEvents; rendered by the gateway).
+    const recentEvents = sdk.events
+      .getLog()
+      .slice(-6)
+      .map((e) => {
+        const p = (e.payload ?? {}) as Record<string, unknown>;
+        const tail =
+          p.correct !== undefined
+            ? ` (correct=${p.correct})`
+            : typeof p.assistance_level === 'string'
+              ? ` (${p.assistance_level})`
+              : '';
+        return `${e.event_type.replace(/\.v1$/, '')}${tail}`;
+      });
+    bus.publishSession({ sessionId: 'dev-session', recentEvents });
     try {
       const context = bus.assembleContext();
       const result = await sdk.llm.invoke(
@@ -248,6 +266,31 @@ function AppInner({ sdk }: { sdk: Sdk }) {
           ...(s.category === 'crisis' ? { escalated_to: 'guardian' as const } : {}),
         });
       }
+      // Navigation on command (VIDYA.md §10) — the one nav path, shared by the chat page and the
+      // drawer. Any phrasing that resolves to a place navigates directly: no approval card, a spoken
+      // + inked confirmation (SpeechNarrator voices her line), and never silence on a clear miss.
+      // Runs on the raw text, so it works even when the classifier would have split it into an
+      // approval-gated action or dropped it to inline.
+      const nav = resolveDestination(text);
+      if (nav) {
+        say({ role: 'vidya', text: 'route' in nav ? nav.say : nav.unknown });
+        sdk.events.record('vidya.turn.assistant.v1', {
+          turn_id: crypto.randomUUID(),
+          assistance_level: 'coach',
+          hint_level: 0,
+          grounded: Boolean(output.grounded),
+          track: result.track,
+          handed_answer: false,
+        });
+        if ('route' in nav) {
+          setMood('explaining');
+          window.setTimeout(() => router.navigate(nav.route), 650);
+        } else {
+          setMood('idle');
+        }
+        return;
+      }
+
       // The five-path orchestrator (VIDYA.md §6): the gateway's classification wins; unclassified
       // turns fall to the deterministic keyword classifier so every mode works keyless.
       const extras = resolveTurnExtras(
@@ -352,6 +395,9 @@ function WithVidya({ sdk }: { sdk: Sdk }) {
       // her 'speak' action plays aloud through the TTS path (mute-respecting); the drawer
       // still shows the written line either way
       onSpeak: (text: string) => void speakLine(text),
+      // she writes a durable fact to the learner's mind; MindObserver folds it into the next
+      // lifetime pulse (~4s) and every reload thereafter carries it in the dossier
+      onRemember: (text: string) => rememberFact(text),
     }),
     [router],
   );

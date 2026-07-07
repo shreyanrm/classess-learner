@@ -153,6 +153,48 @@ def test_http_surface() -> None:
     assert unknown.status_code == 404
 
 
+# --- the dossier: identity + facts ride every Vidya turn (VIDYA.md §7) -----------------
+def test_dossier_renders_identity_and_facts() -> None:
+    from classess_gateway.vidya import _build_user_prompt
+
+    context = {
+        "lifetime": {
+            "learner": {"name": "Ravi", "age": 14, "grade": "Class 9", "board": "CBSE"},
+            "facts": ["exam Friday"],
+            "twinSummary": "into cricket",
+        }
+    }
+    prompt = _build_user_prompt(context, None)
+    assert "Who you are teaching" in prompt
+    assert "Ravi" in prompt
+    assert "exam Friday" in prompt
+    assert "cricket" in prompt
+
+
+def test_dossier_is_empty_when_nothing_is_known() -> None:
+    from classess_gateway.vidya import _build_user_prompt
+
+    prompt = _build_user_prompt({}, None)
+    assert "Who you are teaching" not in prompt
+
+
+def test_mock_turn_answers_the_name_question() -> None:
+    from classess_gateway.vidya import mock_vidya_turn
+
+    out = mock_vidya_turn(
+        {"context": {"lifetime": {"learner": {"name": "Ravi"}}, "turn": {"lastUserInput": "what's my name?"}}}
+    )
+    assert "Ravi" in out["say"]
+
+
+def test_mock_turn_remembers_a_preferred_name() -> None:
+    from classess_gateway.vidya import mock_vidya_turn
+
+    out = mock_vidya_turn({"context": {"turn": {"lastUserInput": "call me Ravi"}}})
+    remembers = [a for a in out["actions"] if a.get("type") == "remember"]
+    assert remembers and "Ravi" in remembers[0]["text"]
+
+
 # --- voice ------------------------------------------------------------------------------
 def test_voice_session_is_unavailable_without_a_key(monkeypatch: pytest.MonkeyPatch) -> None:
     from fastapi.testclient import TestClient

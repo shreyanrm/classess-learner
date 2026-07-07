@@ -1,0 +1,54 @@
+- generic [ref=f34e1]:
+  - generic [ref=f34e2]:
+    - generic [ref=f34e508]:
+      - generic [ref=f34e509]:
+        - img "Vidya" [ref=f34e510]:
+          - img [ref=f34e514]
+        - generic [ref=f34e538]:
+          - generic [ref=f34e539]: Vidya
+          - generic [ref=f34e540]: one conversation, always
+        - button "Unmute Vidya" [pressed] [ref=f34e541] [cursor=pointer]:
+          - img [ref=f34e542]
+      - generic [ref=f34e546]:
+        - generic [ref=f34e547]: where we began
+        - generic [ref=f34e548]: Tell me something genuinely cool from science or math that most people never learn in school.
+        - generic [ref=f34e549]: what's on my screen right now?
+        - generic [ref=f34e551]: You're on your home screen — today's walk through linear equations. You've already knocked out the warm-up and rational numbers on the number line, and next up is solving equations with the variable on one side.
+        - generic [ref=f34e552]: hello Vidya
+        - generic [ref=f34e554]: Hey Shreyan, good to see you back. Ready to tackle equations with the variable on one side, or do you want to warm up with something else first?
+        - generic [ref=f34e555]: what's my name?
+        - generic [ref=f34e557]: Your name is Shreyan — and I've got you down as someone who loves cricket and space, so I'm always thinking about how to make math feel as sharp as a perfect cover drive.
+        - generic [ref=f34e558]: give me an example
+        - generic [ref=f34e560]: "Shreyan, imagine you're setting a field placement in cricket — you've got to balance your bowlers and batsmen on each side of the pitch to win the match. Linear equations work the same way: you're balancing both sides of an equation to find where the variable 'lands.' For instance, if 2x + 5 = 13, you'd subtract 5 from both sides (like moving a fielder) to get 2x = 8, then divide by 2 to isolate x. The trick is: whatever you do to one side, you do to the other, or the balance breaks."
+        - generic [ref=f34e561]: take me to practice
+        - generic [ref=f34e563]: taking you to practice.
+        - generic [ref=f34e564]: show my progress
+        - generic [ref=f34e566]: here is your progress.
+        - generic [ref=f34e567]: open the atom
+        - generic [ref=f34e569]: opening Solving equations with the variable on one side.
+        - generic [ref=f34e570]: open the atom
+        - generic [ref=f34e572]: opening Solving equations with the variable on one side.
+        - generic [ref=f34e573]: what's on my screen right now?
+        - generic [ref=f34e575]: You're looking at a balance scale showing x + 3 on the left side and 8 on the right side — it's perfectly level right now, which means both sides are equal. That's your equation x + 3 = 8 set up as a scale.
+      - generic [ref=f34e577]:
+        - textbox "Talk to Vidya…" [active] [ref=f34e578]
+        - button "Talk by voice" [ref=f34e579] [cursor=pointer]
+    - banner:
+      - img "Classess" [ref=f34e199]
+      - generic [ref=f34e200]:
+        - button "Did you know" [ref=f34e201] [cursor=pointer]:
+          - img [ref=f34e202]
+          - text: Did you know
+        - generic "day 3 of being a learner" [ref=f34e204]:
+          - img [ref=f34e205]
+          - text: "3"
+        - generic [ref=f34e208]: 420 xp
+        - generic [ref=f34e209]:
+          - generic "level 4 · 60/200 xp to level 5" [ref=f34e210]:
+            - img [ref=f34e211]
+            - generic [ref=f34e214]: "4"
+          - button "You — level 4, profile and settings" [ref=f34e215] [cursor=pointer]:
+            - generic "fox" [ref=f34e216]:
+              - img [ref=f34e218]
+  - button "Back — ◦ back" [ref=f34e588] [cursor=pointer]:
+    - img [ref=f34e589]

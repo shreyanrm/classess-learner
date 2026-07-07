@@ -17,7 +17,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { ONBOARDED_KEY, SIGNIN_SOURCE_KEY } from '../App';
 import { useRouter } from '../shell/router';
-import { loadMind, rememberInterests, summarizeMind } from '../store/mind';
+import { lifetimeSnapshot, rememberInterests } from '../store/mind';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { Pip, Sprout } from '../ui/cast';
@@ -340,8 +340,8 @@ export function Onboarding() {
       saveProfile({ name: finalName, grade, boardId, age: age ?? undefined, interests });
     }
     rememberInterests(interests);
-    // Publish now so mock-mode home greets with the likes without waiting for the next fold.
-    bus.publishLifetime({ twinSummary: summarizeMind(loadMind()) });
+    // Publish the full dossier now (identity + interests) so home greets by name without waiting.
+    bus.publishLifetime(lifetimeSnapshot());
     sdk.events.record('onboarding.step.completed.v1', {
       step: 'aha',
       step_index: 0,

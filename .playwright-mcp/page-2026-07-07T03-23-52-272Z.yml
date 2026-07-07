@@ -1,0 +1,96 @@
+- generic [ref=f36e2]:
+  - generic [ref=f36e322]:
+    - banner [ref=f36e323]:
+      - button "Close course" [ref=f36e324] [cursor=pointer]:
+        - img [ref=f36e325]
+      - generic [ref=f36e342]:
+        - button "Replay Vidya" [ref=f36e343] [cursor=pointer]:
+          - img [ref=f36e344]
+        - button "Unmute Vidya" [pressed] [ref=f36e347] [cursor=pointer]:
+          - img [ref=f36e348]
+    - main [ref=f36e351]:
+      - generic [ref=f36e353]:
+        - generic [ref=f36e354]: guided discovery
+        - generic [ref=f36e355]: get x alone
+        - generic [ref=f36e356]: take weights off the pans — the scale must end level.
+        - generic [ref=f36e357]:
+          - generic [ref=f36e359]: x + 3 = 8
+          - generic [ref=f36e362]:
+            - img [ref=f36e364]
+            - generic [ref=f36e369]:
+              - img
+              - generic [ref=f36e371]:
+                - generic [ref=f36e372]: x
+                - generic "take this weight off" [ref=f36e374]: "1"
+                - generic "take this weight off" [ref=f36e375]: "1"
+                - generic "take this weight off" [ref=f36e376]: "1"
+            - generic [ref=f36e377]:
+              - img
+              - generic [ref=f36e379]:
+                - generic "take this weight off" [ref=f36e380]: "1"
+                - generic "take this weight off" [ref=f36e381]: "1"
+                - generic "take this weight off" [ref=f36e382]: "1"
+                - generic "take this weight off" [ref=f36e383]: "1"
+                - generic "take this weight off" [ref=f36e384]: "1"
+                - generic "take this weight off" [ref=f36e385]: "1"
+                - generic "take this weight off" [ref=f36e386]: "1"
+                - generic "take this weight off" [ref=f36e387]: "1"
+    - button "continue" [disabled] [ref=f36e392]:
+      - generic [ref=f36e393]: continue
+  - banner:
+    - img "Classess" [ref=f36e199]
+    - generic [ref=f36e200]:
+      - button "Did you know" [ref=f36e201] [cursor=pointer]:
+        - img [ref=f36e202]
+        - text: Did you know
+      - generic "day 3 of being a learner" [ref=f36e204]:
+        - img [ref=f36e205]
+        - text: "3"
+      - generic [ref=f36e208]: 420 xp
+      - generic [ref=f36e209]:
+        - generic "level 4 · 60/200 xp to level 5" [ref=f36e210]:
+          - img [ref=f36e211]
+          - generic [ref=f36e214]: "4"
+        - button "You — level 4, profile and settings" [ref=f36e215] [cursor=pointer]:
+          - generic "fox" [ref=f36e216]:
+            - img [ref=f36e218]
+  - complementary [ref=f36e439]:
+    - generic [ref=f36e440]:
+      - img "Vidya" [ref=f36e441]:
+        - img [ref=f36e445]
+      - generic [ref=f36e469]:
+        - generic [ref=f36e470]: Vidya
+        - generic [ref=f36e471]: coach mode · I nudge, you move
+      - button "Unmute Vidya" [pressed] [ref=f36e472] [cursor=pointer]:
+        - img [ref=f36e473]
+      - button "Open the full conversation" [ref=f36e476] [cursor=pointer]: full chat ↗
+      - button "Close" [ref=f36e477] [cursor=pointer]:
+        - img [ref=f36e478]
+    - generic [ref=f36e481]:
+      - generic [ref=f36e482]: Tell me something genuinely cool from science or math that most people never learn in school.
+      - generic [ref=f36e483]: what's on my screen right now?
+      - generic [ref=f36e486]: You're on your home screen — today's walk through linear equations. You've already knocked out the warm-up and rational numbers on the number line, and next up is solving equations with the variable on one side.
+      - generic [ref=f36e487]: hello Vidya
+      - generic [ref=f36e490]: Hey Shreyan, good to see you back. Ready to tackle equations with the variable on one side, or do you want to warm up with something else first?
+      - generic [ref=f36e491]: what's my name?
+      - generic [ref=f36e494]: Your name is Shreyan — and I've got you down as someone who loves cricket and space, so I'm always thinking about how to make math feel as sharp as a perfect cover drive.
+      - generic [ref=f36e495]: give me an example
+      - generic [ref=f36e498]: "Shreyan, imagine you're setting a field placement in cricket — you've got to balance your bowlers and batsmen on each side of the pitch to win the match. Linear equations work the same way: you're balancing both sides of an equation to find where the variable 'lands.' For instance, if 2x + 5 = 13, you'd subtract 5 from both sides (like moving a fielder) to get 2x = 8, then divide by 2 to isolate x. The trick is: whatever you do to one side, you do to the other, or the balance breaks."
+      - generic [ref=f36e499]: take me to practice
+      - generic [ref=f36e502]: taking you to practice.
+      - generic [ref=f36e503]: show my progress
+      - generic [ref=f36e506]: here is your progress.
+      - generic [ref=f36e507]: open the atom
+      - generic [ref=f36e510]: opening Solving equations with the variable on one side.
+      - generic [ref=f36e511]: open the atom
+      - generic [ref=f36e514]: opening Solving equations with the variable on one side.
+      - generic [ref=f36e515]: what's on my screen right now?
+      - generic [ref=f36e518]: You're looking at a balance scale showing x + 3 on the left side and 8 on the right side — it's perfectly level right now, which means both sides are equal. That's your equation x + 3 = 8 set up as a scale.
+      - generic [ref=f36e519]: open the atom
+      - generic [ref=f36e522]: opening Solving equations with the variable on one side.
+      - generic [ref=f36e536]: circle the x on the left pan
+      - generic [ref=f36e539]: Done — I've circled the x on the left pan. Now, what do you think we need to do to get x by itself on that side?
+    - 'button "teach her: solving equations with the variable on one side — she plays the student" [ref=f36e523] [cursor=pointer]'
+    - generic [ref=f36e524]:
+      - textbox "Ask or do anything…" [ref=f36e525]
+      - button "Talk by voice" [ref=f36e526] [cursor=pointer]

@@ -35,6 +35,54 @@ export function rng(seed: number): () => number {
   };
 }
 
+/** Mix two hex colors — t=0 → a, t=1 → b. For deriving dark-theme terrain from a light palette. */
+export function mixHex(a: string, b: string, t: number): string {
+  const pa = Number.parseInt(a.slice(1), 16);
+  const pb = Number.parseInt(b.slice(1), 16);
+  const mix = (sh: number) => {
+    const x = (pa >> sh) & 255;
+    const y = (pb >> sh) & 255;
+    return Math.round(x + (y - x) * t);
+  };
+  const h = (n: number) => n.toString(16).padStart(2, '0');
+  return `#${h(mix(16))}${h(mix(8))}${h(mix(0))}`;
+}
+
+/**
+ * A smooth, closed organic blob — Catmull-Rom through radial points jittered by a seed. One
+ * generator for every soft mass in the world: plateaus, canopies, boulders, clouds, drifts.
+ */
+export function blobPath(
+  cx: number,
+  cy: number,
+  rx: number,
+  ry: number,
+  seed: number,
+  pts = 8,
+  jitter = 0.18,
+): string {
+  const r = rng(seed);
+  const P: [number, number][] = Array.from({ length: pts }, (_, i) => {
+    const a = (i / pts) * Math.PI * 2;
+    const j = 1 - jitter + r() * jitter * 2;
+    return [cx + Math.cos(a) * rx * j, cy + Math.sin(a) * ry * j];
+  });
+  const at = (i: number) => P[((i % pts) + pts) % pts] as [number, number];
+  let d = `M ${at(0)[0].toFixed(1)} ${at(0)[1].toFixed(1)}`;
+  for (let i = 0; i < pts; i++) {
+    const p0 = at(i - 1);
+    const p1 = at(i);
+    const p2 = at(i + 1);
+    const p3 = at(i + 2);
+    const c1x = p1[0] + (p2[0] - p0[0]) / 6;
+    const c1y = p1[1] + (p2[1] - p0[1]) / 6;
+    const c2x = p2[0] - (p3[0] - p1[0]) / 6;
+    const c2y = p2[1] - (p3[1] - p1[1]) / 6;
+    d += ` C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+  }
+  return `${d} Z`;
+}
+
 const INK_FAINT = 'var(--clss-ink-100)';
 const INK_SOFT = 'var(--clss-ink-300)';
 const INK = 'var(--clss-ink-700)';

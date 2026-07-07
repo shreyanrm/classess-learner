@@ -10,6 +10,7 @@
 import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
 import { motion } from 'framer-motion';
 import { type CSSProperties, type ReactNode, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { chaptersBySubject, type DisplaySubject, displaySubjects } from '../data/catalog';
 import { useRouter } from '../shell/router';
 import { SubjectGlyph } from '../ui/art';
@@ -31,11 +32,12 @@ export function Whisper({
   onClick: () => void;
   style?: CSSProperties;
 }) {
-  return (
+  const button = (
     <motion.button
       type="button"
       onClick={onClick}
       aria-label={`Back — ${String(children)}`}
+      title={String(children)}
       whileHover={{ x: -3 }}
       whileTap={{ scale: 0.95 }}
       transition={{ type: 'spring', stiffness: 380, damping: 24 }}
@@ -44,25 +46,26 @@ export function Whisper({
         top: 74,
         left: 24,
         zIndex: 10,
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 9,
-        padding: '8px 15px 8px 11px',
+        display: 'grid',
+        placeItems: 'center',
+        // owner law: the arrow alone — the destination lives in aria-label/title, never on screen
+        padding: 9,
         background: 'var(--clss-paper)',
         border: '0.5px solid var(--clss-hairline-on-paper-strong)',
         borderRadius: 3,
         color: 'var(--clss-ink-700)',
-        fontFamily: 'inherit',
-        fontSize: '0.85rem',
-        fontWeight: 500,
         cursor: 'pointer',
         ...style,
       }}
     >
-      <BackIcon size={15} />
-      {children}
+      <BackIcon size={17} />
     </motion.button>
   );
+  // Portal to <body>: every screen renders inside Screen()'s page-transition motion.div, which
+  // keeps a transform/filter even at rest — that turns position:fixed into position:absolute
+  // relative to the wrapper, so the back pill scrolled away with the page. Body escapes it, and
+  // the pill is now truly viewport-fixed on every scrolling screen (the owner's complaint).
+  return typeof document === 'undefined' ? button : createPortal(button, document.body);
 }
 
 /** One drifting accent per scene — the stage reads alive, never static. */

@@ -1,0 +1,76 @@
+- generic [active] [ref=f30e1]:
+  - generic [ref=f30e2]:
+    - generic [ref=f30e311]:
+      - generic [ref=f30e312]:
+        - banner [ref=f30e314]:
+          - generic [ref=f30e315]: 4 of 8 concepts are yours
+          - generic [ref=f30e316]: day 3 of being a learner · tap a star, or scroll for your report
+        - generic [ref=f30e317]:
+          - img "your knowledge constellation — every star is a concept" [ref=f30e319]:
+            - button "rational numbers — yours, independently" [ref=f30e330] [cursor=pointer]:
+              - generic [ref=f30e337]: rational numbers
+            - button "operations — yours, independently" [ref=f30e338] [cursor=pointer]:
+              - generic [ref=f30e345]: operations
+            - button "the number line — yours, independently" [ref=f30e346] [cursor=pointer]:
+              - generic [ref=f30e353]: the number line
+            - button "integers — not started" [ref=f30e354] [cursor=pointer]:
+              - generic [ref=f30e358]: integers
+            - button "variables — not started" [ref=f30e359] [cursor=pointer]:
+              - generic [ref=f30e363]: variables
+            - button "linear equations — yours, independently" [ref=f30e364] [cursor=pointer]:
+              - generic [ref=f30e371]: linear equations
+            - button "both sides — not started" [ref=f30e372] [cursor=pointer]:
+              - generic [ref=f30e376]: both sides
+            - button "word problems — not started" [ref=f30e377] [cursor=pointer]:
+              - generic [ref=f30e381]: word problems
+          - textbox "Ask your twin" [ref=f30e385]:
+            - /placeholder: "ask your twin: what am I weakest at…"
+      - generic [ref=f30e386]:
+        - generic [ref=f30e388]:
+          - generic [ref=f30e389]: your report
+          - generic [ref=f30e390]: drawn from what you have actually done — not a guess
+        - generic [ref=f30e392]:
+          - generic [ref=f30e393]: trajectory
+          - generic [ref=f30e394]: at this pace, all 8 concepts are yours by around 14 Jul 2026.
+          - generic [ref=f30e395]: based on 4 mastered across 1 active day · a straight-line estimate, it moves as you do
+        - generic [ref=f30e396]:
+          - generic [ref=f30e398]:
+            - generic [ref=f30e399]: strengths
+            - generic [ref=f30e400]:
+              - generic [ref=f30e403]: What makes a number rational
+              - generic [ref=f30e406]: Operations on rational numbers
+              - generic [ref=f30e409]: Rational numbers on the number line
+              - generic [ref=f30e412]: Solving linear equations in one variable
+          - generic [ref=f30e414]:
+            - generic [ref=f30e415]: where to grow
+            - generic [ref=f30e416]: nothing shaky right now — practice a little to surface your next edge.
+        - generic [ref=f30e418]:
+          - generic [ref=f30e419]:
+            - generic [ref=f30e420]: last 30 days
+            - generic [ref=f30e421]: ~13s per answer
+          - img "your last thirty days of activity" [ref=f30e422]
+          - generic [ref=f30e426]: quiet days are part of it — the line only needs to keep coming back.
+    - banner:
+      - img "Classess" [ref=f30e199]
+      - generic [ref=f30e200]:
+        - button "Did you know" [ref=f30e201] [cursor=pointer]:
+          - img [ref=f30e202]
+          - text: Did you know
+        - generic "day 3 of being a learner" [ref=f30e204]:
+          - img [ref=f30e205]
+          - text: "3"
+        - generic [ref=f30e208]: 420 xp
+        - generic [ref=f30e209]:
+          - generic "level 4 · 60/200 xp to level 5" [ref=f30e210]:
+            - img [ref=f30e211]
+            - generic [ref=f30e214]: "4"
+          - button "You — level 4, profile and settings" [ref=f30e215] [cursor=pointer]:
+            - generic "fox" [ref=f30e216]:
+              - img [ref=f30e218]
+    - generic [ref=f30e429]:
+      - generic:
+        - img
+      - button "Talk to Vidya" [ref=f30e430] [cursor=pointer]:
+        - img [ref=f30e434]
+  - button "Back — Home" [ref=f30e458] [cursor=pointer]:
+    - img [ref=f30e459]

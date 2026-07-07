@@ -1,0 +1,54 @@
+- generic [ref=f18e4]:
+  - generic [ref=f18e5]:
+    - button "Vidya" [ref=f18e7] [cursor=pointer]:
+      - img [ref=f18e11]
+    - generic [ref=f18e36]: Vidya
+    - button "Mute Vidya" [ref=f18e44] [cursor=pointer]:
+      - img [ref=f18e45]
+  - generic [ref=f18e49]:
+    - generic [ref=f18e50]: hi — I’m Vidya
+    - generic [ref=f18e55]: I’m going to learn how you think — my favourite thing. first, what should I call you?
+    - generic [ref=f18e73]: Shreyan
+    - generic [ref=f18e74]: good to meet you, Shreyan. how old are you?
+    - generic [ref=f18e87]: "15"
+    - generic [ref=f18e88]: and where are you in school — which class, and your board?
+  - generic [ref=f18e52]:
+    - generic [ref=f18e90]:
+      - generic [ref=f18e91]:
+        - generic [ref=f18e92]:
+          - generic [ref=f18e93]: your grade
+          - generic [ref=f18e94]:
+            - button "Class 6" [ref=f18e95] [cursor=pointer]
+            - button "Class 7" [ref=f18e96] [cursor=pointer]
+            - button "Class 8" [ref=f18e97] [cursor=pointer]
+            - button "Class 9" [pressed] [ref=f18e98] [cursor=pointer]
+            - button "Class 10" [ref=f18e99] [cursor=pointer]
+        - generic [ref=f18e100]:
+          - generic [ref=f18e101]: your board
+          - generic [ref=f18e102]:
+            - generic [ref=f18e103]:
+              - button "CBSE" [active] [pressed] [ref=f18e104] [cursor=pointer]
+              - button "ICSE" [ref=f18e105] [cursor=pointer]
+              - button "Telangana State Board" [ref=f18e106] [cursor=pointer]
+            - generic [ref=f18e107]:
+              - generic [ref=f18e108]: india
+              - generic [ref=f18e109]:
+                - button "Andhra Pradesh State Board" [ref=f18e110] [cursor=pointer]
+                - button "Maharashtra State Board" [ref=f18e111] [cursor=pointer]
+                - button "Karnataka State Board" [ref=f18e112] [cursor=pointer]
+                - button "Tamil Nadu State Board" [ref=f18e113] [cursor=pointer]
+                - button "Kerala State Board" [ref=f18e114] [cursor=pointer]
+                - button "UP Board" [ref=f18e115] [cursor=pointer]
+            - generic [ref=f18e116]:
+              - generic [ref=f18e117]: international
+              - generic [ref=f18e118]:
+                - button "IB" [ref=f18e119] [cursor=pointer]
+                - button "Cambridge (IGCSE)" [ref=f18e120] [cursor=pointer]
+            - generic [ref=f18e121]:
+              - generic [ref=f18e122]: united states
+              - button "Common Core" [ref=f18e124] [cursor=pointer]
+            - generic [ref=f18e125]:
+              - generic [ref=f18e126]: united kingdom
+              - button "National Curriculum" [ref=f18e128] [cursor=pointer]
+      - button "that’s me" [ref=f18e129] [cursor=pointer]
+    - button "skip for now" [ref=f18e53] [cursor=pointer]

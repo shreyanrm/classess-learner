@@ -1,0 +1,61 @@
+- generic [ref=f36e2]:
+  - generic [ref=f36e322]:
+    - banner [ref=f36e323]:
+      - button "Close course" [ref=f36e324] [cursor=pointer]:
+        - img [ref=f36e325]
+      - generic [ref=f36e342]:
+        - button "Replay Vidya" [ref=f36e343] [cursor=pointer]:
+          - img [ref=f36e344]
+        - button "Unmute Vidya" [pressed] [ref=f36e347] [cursor=pointer]:
+          - img [ref=f36e348]
+    - main [ref=f36e351]:
+      - generic [ref=f36e353]:
+        - generic [ref=f36e354]: guided discovery
+        - generic [ref=f36e355]: get x alone
+        - generic [ref=f36e356]: take weights off the pans — the scale must end level.
+        - generic [ref=f36e357]:
+          - generic [ref=f36e359]: x + 3 = 8
+          - generic [ref=f36e362]:
+            - img [ref=f36e364]
+            - generic [ref=f36e369]:
+              - img
+              - generic [ref=f36e371]:
+                - generic [ref=f36e372]: x
+                - generic "take this weight off" [ref=f36e374]: "1"
+                - generic "take this weight off" [ref=f36e375]: "1"
+                - generic "take this weight off" [ref=f36e376]: "1"
+            - generic [ref=f36e377]:
+              - img
+              - generic [ref=f36e379]:
+                - generic "take this weight off" [ref=f36e380]: "1"
+                - generic "take this weight off" [ref=f36e381]: "1"
+                - generic "take this weight off" [ref=f36e382]: "1"
+                - generic "take this weight off" [ref=f36e383]: "1"
+                - generic "take this weight off" [ref=f36e384]: "1"
+                - generic "take this weight off" [ref=f36e385]: "1"
+                - generic "take this weight off" [ref=f36e386]: "1"
+                - generic "take this weight off" [ref=f36e387]: "1"
+    - button "continue" [disabled] [ref=f36e392]:
+      - generic [ref=f36e393]: continue
+  - banner:
+    - img "Classess" [ref=f36e199]
+    - generic [ref=f36e200]:
+      - button "Did you know" [ref=f36e201] [cursor=pointer]:
+        - img [ref=f36e202]
+        - text: Did you know
+      - generic "day 3 of being a learner" [ref=f36e204]:
+        - img [ref=f36e205]
+        - text: "3"
+      - generic [ref=f36e208]: 420 xp
+      - generic [ref=f36e209]:
+        - generic "level 4 · 60/200 xp to level 5" [ref=f36e210]:
+          - img [ref=f36e211]
+          - generic [ref=f36e214]: "4"
+        - button "You — level 4, profile and settings" [ref=f36e215] [cursor=pointer]:
+          - generic "fox" [ref=f36e216]:
+            - img [ref=f36e218]
+  - generic [ref=f36e396]:
+    - generic:
+      - img
+    - button "Talk to Vidya" [ref=f36e397] [cursor=pointer]:
+      - img [ref=f36e401]

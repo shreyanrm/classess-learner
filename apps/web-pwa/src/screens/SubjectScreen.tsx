@@ -14,13 +14,13 @@ import { useEffect, useState } from 'react';
 import {
   chaptersBySubject,
   displaySubjectById,
-  learner,
   subjectById,
   topicById,
   unmetPrereqs,
 } from '../data/catalog';
 import type { Chapter, Topic } from '../data/model';
 import { useRouter } from '../shell/router';
+import { boardName, loadProfile } from './you/profile';
 import { useViewport } from '../shell/useViewport';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
@@ -612,6 +612,15 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
   const listRef = useRegisterTarget<HTMLDivElement>('subject-chapters', {
     kind: 'list',
     label: `the ${group?.name ?? subjectId} chapter list — a tap expands a chapter into its topics`,
+    // She reads the actual chapters on the page — names, topic counts, which one is open — so she
+    // points at a real chapter instead of the whole list.
+    getSceneState: () => ({
+      subject: group?.name ?? subjectId,
+      open: openChapter,
+      chapters: sections.flatMap((s) =>
+        s.chapters.map((ch) => ({ name: ch.name, topics: ch.topics.length })),
+      ),
+    }),
   });
 
   useEffect(() => {
@@ -696,7 +705,7 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
                 color: 'var(--clss-ink-500)',
               }}
             >
-              {learner.board} · {learner.grade}
+              {boardName(loadProfile().boardId)} · {loadProfile().grade}
             </span>
             <span
               style={{

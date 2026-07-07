@@ -1,232 +1,431 @@
 'use client';
 
 /**
- * Biomes — each chapter of a subject becomes a place with its own weather (adventure roadmap).
- * Pure SVG, drawn in a 0..100 box and clipped to a medallion circle by the caller. Deterministic
- * per chapter: the biome and its small variations (peak height, star count, ember drift) are
- * derived from the chapter id through the shared art hash/rng. Light-theme, layered, premium —
- * never cartoon-cheap: soft washes, one clean motif, no outlines shouting.
+ * Biomes — the atmospheres a subject's map flows through (adventure roadmap). A CHAPTER is a
+ * region: a stretch of terrain with its own palette, props, and sky wash; the map scrolls from one
+ * region into the next, the atmosphere blending at the border. Topics are the checkpoints seated on
+ * the road that winds through; content steps are the cobbles between them (drawn by the roadmap).
+ *
+ * Each biome carries a light palette and paints its own scene (pines, spires, dunes…) into a band.
+ * The roadmap derives the dark-theme palette from the light one, draws the shared terrain engine
+ * (plateaus with lit tops and darker cliff sides), then calls the biome to scatter its props. Pure,
+ * deterministic SVG — no assets, no outlines shouting — premium flat-with-depth, never cartoon.
  */
 
 import type { ReactNode } from 'react';
-import { hash, rng } from './art';
+import { blobPath, hash, mixHex, rng } from './art';
 
-export interface Biome {
-  id: string;
-  name: string;
-  /** The two-stop sky wash behind the scene (top → foot). */
-  sky: [string, string];
-  /** The biome's own accent — used for the "you are here" life and stop hue when neutral. */
+/** The resolved colour set a biome paints with — light values live on the biome; dark is derived. */
+export interface BiomePalette {
+  /** Atmosphere wash behind the region (top → foot). */
+  washTop: string;
+  washBot: string;
+  /** Plateau faces — the lit grassy top and the darker cliff side under it. */
+  top: string;
+  side: string;
+  /** The road surface laid on this land, and its casing edge. */
+  road: string;
+  roadEdge: string;
+  /** A distant parallax hill sitting on the horizon of the region. */
+  far: string;
+  /** The vibrant pop — current-checkpoint glow, one accent per region. */
   accent: string;
-  /** Draw the scene in a 0..100 viewBox; `rand` gives stable per-chapter variation. */
-  draw: (rand: () => number) => ReactNode;
 }
 
-const g = '#1CA363';
+/** Where a biome may place its props — the region band and the road that threads it. */
+export interface BandGeom {
+  W: number;
+  yTop: number;
+  yBot: number;
+  /** The road's centre x at a given y — so a prop can sit beside it, or straddle it. */
+  cxAt: (y: number) => number;
+  rand: () => number;
+}
 
-/** The ordered march of places — a subject's chapters travel through these. */
+export interface Biome extends BiomePalette {
+  id: string;
+  name: string;
+  /**
+   * Paint the region. `back` renders behind the road (terrain furniture the road passes in front
+   * of); `front` renders over it (a feature the road tucks BEHIND — the overlap that sells depth).
+   */
+  scene: (g: BandGeom, pal: BiomePalette) => { back: ReactNode; front: ReactNode };
+}
+
+// --- prop helpers — a small kit, reused across biomes, tinted by the region palette --------------
+
+const shadow = (x: number, y: number, rx: number) => (
+  <ellipse cx={x} cy={y} rx={rx} ry={rx * 0.34} fill="rgba(20,22,28,0.13)" />
+);
+
+/** A two-tier conifer with a trunk — the forest and the snowfields. */
+function conifer(key: string, x: number, by: number, h: number, pal: BiomePalette, cap?: string) {
+  const w = h * 0.44;
+  const dark = mixHex(pal.top, '#0c3a22', 0.5);
+  const body = mixHex(pal.top, dark, 0.5);
+  return (
+    <g key={key}>
+      {shadow(x, by + 1, w * 0.8)}
+      <rect
+        x={x - 1.4}
+        y={by - h * 0.16}
+        width={2.8}
+        height={h * 0.18}
+        fill={mixHex(pal.side, '#3a2414', 0.4)}
+      />
+      <path
+        d={`M${x} ${by - h} L${x - w} ${by - h * 0.4} L${x + w} ${by - h * 0.4} Z`}
+        fill={dark}
+      />
+      <path
+        d={`M${x} ${by - h * 0.66} L${x - w * 1.05} ${by - h * 0.12} L${x + w * 1.05} ${by - h * 0.12} Z`}
+        fill={body}
+      />
+      {cap && (
+        <path
+          d={`M${x} ${by - h} L${x - w * 0.34} ${by - h * 0.76} L${x + w * 0.34} ${by - h * 0.76} Z`}
+          fill={cap}
+        />
+      )}
+    </g>
+  );
+}
+
+/** A soft round-canopy tree — meadow, ocean palm-stand stand-in. */
+function roundTree(key: string, x: number, by: number, r: number, pal: BiomePalette, seed: number) {
+  const dark = mixHex(pal.top, '#123a12', 0.5);
+  return (
+    <g key={key}>
+      {shadow(x, by + 1, r * 0.95)}
+      <rect
+        x={x - 2}
+        y={by - r * 1.1}
+        width={4}
+        height={r * 1.15}
+        fill={mixHex(pal.side, '#4a3016', 0.45)}
+        rx={1.5}
+      />
+      <path d={blobPath(x, by - r * 1.5, r, r * 0.92, seed, 9, 0.16)} fill={dark} />
+      <path
+        d={blobPath(x - r * 0.22, by - r * 1.66, r * 0.62, r * 0.58, seed + 7, 8, 0.16)}
+        fill={mixHex(pal.top, '#ffffff', 0.14)}
+      />
+    </g>
+  );
+}
+
+/** A rounded boulder — the shared rock, tinted per land. */
+function boulder(key: string, x: number, by: number, r: number, pal: BiomePalette, seed: number) {
+  const base = mixHex(pal.side, '#000000', 0.08);
+  return (
+    <g key={key}>
+      {shadow(x, by + 1, r * 1.05)}
+      <path d={blobPath(x, by - r * 0.62, r, r * 0.72, seed, 8, 0.14)} fill={base} />
+      <path
+        d={blobPath(x - r * 0.2, by - r * 0.82, r * 0.6, r * 0.42, seed + 3, 7, 0.15)}
+        fill={mixHex(base, '#ffffff', 0.16)}
+      />
+    </g>
+  );
+}
+
+/** A tall rock spire — ember ridge, night crystals share the silhouette. */
+function spire(key: string, x: number, by: number, h: number, pal: BiomePalette, glow?: string) {
+  const w = h * 0.3;
+  const dark = mixHex(pal.side, '#000000', 0.12);
+  return (
+    <g key={key}>
+      {shadow(x, by + 1, w * 1.2)}
+      <path d={`M${x} ${by - h} L${x - w} ${by} L${x + w} ${by} Z`} fill={dark} />
+      <path
+        d={`M${x} ${by - h} L${x} ${by} L${x + w} ${by} Z`}
+        fill={mixHex(dark, '#ffffff', 0.14)}
+      />
+      {glow && <circle cx={x} cy={by - h * 0.5} r={w * 0.5} fill={glow} opacity={0.85} />}
+    </g>
+  );
+}
+
+/** A saguaro cactus — the dunes. */
+function cactus(key: string, x: number, by: number, h: number, pal: BiomePalette) {
+  const c = mixHex(pal.accent, '#2e7d32', 0.45);
+  const w = 4.6;
+  return (
+    <g key={key}>
+      {shadow(x, by + 1, h * 0.28)}
+      <path
+        d={`M${x} ${by} v${-h} M${x} ${by - h * 0.5} h${-h * 0.28} v${-h * 0.24} M${x} ${by - h * 0.66} h${h * 0.24} v${-h * 0.2}`}
+        fill="none"
+        stroke={c}
+        strokeWidth={w}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
+  );
+}
+
+/** A layered mesa — the red canyon's signature stepped rock. */
+function mesa(key: string, x: number, by: number, h: number, pal: BiomePalette) {
+  const w = h * 0.9;
+  const a = mixHex(pal.side, '#000000', 0.05);
+  const b = mixHex(pal.side, '#ffffff', 0.12);
+  return (
+    <g key={key}>
+      {shadow(x, by + 1, w * 0.8)}
+      <path
+        d={`M${x - w} ${by} L${x - w * 0.86} ${by - h * 0.62} L${x + w * 0.86} ${by - h * 0.62} L${x + w} ${by} Z`}
+        fill={a}
+      />
+      <path
+        d={`M${x - w * 0.7} ${by - h * 0.62} L${x - w * 0.58} ${by - h} L${x + w * 0.5} ${by - h} L${x + w * 0.62} ${by - h * 0.62} Z`}
+        fill={b}
+      />
+    </g>
+  );
+}
+
+/** A little watchtower — the forest's one landmark. Straddles the road as a front feature. */
+function watchtower(key: string, x: number, by: number, pal: BiomePalette) {
+  const wood = mixHex(pal.side, '#5a3a1e', 0.5);
+  const roof = mixHex(pal.accent, '#000000', 0.15);
+  return (
+    <g key={key}>
+      {shadow(x, by + 1, 15)}
+      <path
+        d={`M${x - 9} ${by} L${x - 6} ${by - 30} L${x + 6} ${by - 30} L${x + 9} ${by} Z`}
+        fill={wood}
+      />
+      <rect
+        x={x - 8}
+        y={by - 40}
+        width={16}
+        height={12}
+        rx={2}
+        fill={mixHex(wood, '#ffffff', 0.12)}
+      />
+      <path d={`M${x - 11} ${by - 40} L${x} ${by - 52} L${x + 11} ${by - 40} Z`} fill={roof} />
+      <rect
+        x={x - 2.4}
+        y={by - 24}
+        width={4.8}
+        height={7}
+        rx={1}
+        fill={mixHex(wood, '#000000', 0.2)}
+      />
+    </g>
+  );
+}
+
+/** Scatter a biome's back props on either side of the road, plus one front feature over it. */
+function scatter(
+  g: BandGeom,
+  opts: {
+    back: (key: string, x: number, y: number, s: number, seed: number) => ReactNode;
+    front: (key: string, x: number, y: number) => ReactNode;
+    count?: number;
+    accents?: ReactNode;
+  },
+): { back: ReactNode; front: ReactNode } {
+  const { rand, W, yTop, yBot } = g;
+  const n = opts.count ?? 2 + Math.floor(rand() * 2); // 2..3 back props
+  const items: { node: ReactNode; y: number }[] = [];
+  for (let i = 0; i < n; i++) {
+    const y = yTop + 30 + rand() * (yBot - yTop - 60);
+    const side = rand() < 0.5 ? -1 : 1;
+    const cx = g.cxAt(y);
+    let x = cx + side * (54 + rand() * (W * 0.13));
+    x = Math.max(30, Math.min(W - 30, x));
+    const s = 0.82 + rand() * 0.4;
+    items.push({
+      node: opts.back(`bk-${i}-${x.toFixed(0)}-${y.toFixed(0)}`, x, y, s, hash(`${i}:${y}`)),
+      y,
+    });
+  }
+  items.sort((a, b) => a.y - b.y); // painter's order — lower props in front
+  const fy = yTop + (yBot - yTop) * (0.4 + rand() * 0.2);
+  const front = opts.front(`ft-${fy.toFixed(0)}`, g.cxAt(fy) + (rand() < 0.5 ? -22 : 22), fy);
+  return {
+    back: (
+      <>
+        {opts.accents}
+        {items.map((it) => it.node)}
+      </>
+    ),
+    front,
+  };
+}
+
+// --- the ordered march of atmospheres — a subject's chapters travel through these ----------------
+
 export const BIOMES: Biome[] = [
   {
     id: 'forest',
     name: 'the deep forest',
-    sky: ['#EAF6EE', '#D6EFDE'],
+    washTop: '#E8F5EC',
+    washBot: '#D2ECDB',
+    top: '#7FC98F',
+    side: '#3C8A5B',
+    road: '#E7D6B2',
+    roadEdge: '#C6A671',
+    far: '#B7DFC5',
     accent: '#1CA363',
-    draw: (rand) => {
-      const pines = 3 + Math.floor(rand() * 2);
-      return (
-        <>
-          <path d="M0 78 Q50 68 100 80 V100 H0 Z" fill="#BFE6CC" />
-          {Array.from({ length: pines }, (_, i) => {
-            const x = 18 + i * (64 / Math.max(1, pines - 1));
-            const h = 30 + rand() * 16;
-            const shade = i % 2 ? '#25925A' : g;
-            return (
-              <g key={`pine-${x.toFixed(1)}`}>
-                <path d={`M${x} ${82 - h} L${x - 11} 84 L${x + 11} 84 Z`} fill={shade} />
-                <path
-                  d={`M${x} ${82 - h + 8} L${x - 8} ${78} L${x + 8} ${78} Z`}
-                  fill={shade}
-                  opacity={0.85}
-                />
-              </g>
-            );
-          })}
-        </>
-      );
-    },
+    scene: (g, pal) =>
+      scatter(g, {
+        back: (k, x, y, s) => conifer(k, x, y, 42 * s, pal),
+        front: (k, x, y) => watchtower(k, x, y, pal),
+        count: 3,
+      }),
   },
   {
     id: 'snow',
     name: 'the snowfields',
-    sky: ['#EAF1FA', '#DCE8F6'],
+    washTop: '#F4F8FD',
+    washBot: '#E2EDF8',
+    top: '#D6E4F5',
+    side: '#A4BCDC',
+    road: '#DBE6F3',
+    roadEdge: '#AABFDA',
+    far: '#C7D9EF',
     accent: '#4C7FD6',
-    draw: (rand) => (
-      <>
-        <path d="M8 82 L42 34 L74 82 Z" fill="#C6D6EC" />
-        <path d="M42 34 L54 52 L30 52 Z" fill="#FFFFFF" />
-        <path d="M0 84 Q30 74 60 84 T100 84 V100 H0 Z" fill="#EDF3FB" />
-        {Array.from({ length: 5 }, () => {
-          const cx = 12 + rand() * 78;
-          const cy = 12 + rand() * 40;
-          return (
-            <circle
-              key={`flake-${cx.toFixed(1)}-${cy.toFixed(1)}`}
-              cx={cx}
-              cy={cy}
-              r={1.4}
-              fill="#8FB0DD"
-              opacity={0.8}
-            />
-          );
-        })}
-      </>
-    ),
+    scene: (g, pal) =>
+      scatter(g, {
+        back: (k, x, y, s) => conifer(k, x, y, 40 * s, pal, '#FFFFFF'),
+        front: (k, x, y) =>
+          boulder(k, x, y, 20, { ...pal, side: '#CFDDEE' }, hash(`snowrock:${y}`)),
+        count: 3,
+      }),
   },
   {
     id: 'lava',
     name: 'the ember ridge',
-    sky: ['#FCEDE4', '#F7DBCB'],
+    washTop: '#F6E6DB',
+    washBot: '#E9CDBB',
+    top: '#8C5340',
+    side: '#593224',
+    road: '#3E2C24',
+    roadEdge: '#241811',
+    far: '#C99A82',
     accent: '#FF5A1F',
-    draw: (rand) => (
-      <>
-        <path d="M10 84 L46 38 L82 84 Z" fill="#7C3A24" />
-        <path d="M46 38 L58 60 L34 60 Z" fill="#FF5A1F" />
-        <circle cx={46} cy={44} r={5} fill="#FFC93C" />
-        {Array.from({ length: 4 }, () => {
-          const cx = 38 + rand() * 20;
-          const cy = 26 + rand() * 12;
-          return (
-            <circle
-              key={`ember-${cx.toFixed(1)}-${cy.toFixed(1)}`}
-              cx={cx}
-              cy={cy}
-              r={1.6}
-              fill="#FF7A3C"
-              opacity={0.85}
-            />
-          );
-        })}
-        <path d="M0 86 Q50 80 100 86 V100 H0 Z" fill="#E9C4B0" />
-      </>
-    ),
+    scene: (g, pal) =>
+      scatter(g, {
+        back: (k, x, y, s, seed) =>
+          spire(k, x, y, 44 * s, pal, seed % 3 === 0 ? '#FF7A3C' : undefined),
+        front: (k, x, y) => boulder(k, x, y, 22, pal, hash(`emberrock:${y}`)),
+        count: 3,
+        accents: null,
+      }),
   },
   {
     id: 'ocean',
-    name: 'the open ocean',
-    sky: ['#E4F4F6', '#CFEAEE'],
+    name: 'the coral shore',
+    washTop: '#E2F3F5',
+    washBot: '#C7E7EC',
+    top: '#EAD9A8',
+    side: '#C6A768',
+    road: '#E9D3A2',
+    roadEdge: '#C7A970',
+    far: '#BEE4E9',
     accent: '#0FA3B1',
-    draw: (rand) => (
-      <>
-        <circle cx={70} cy={34} r={9} fill="#FFC93C" opacity={0.9} />
-        {Array.from({ length: 3 }, (_, i) => {
-          const y = 60 + i * 12;
-          return (
-            <path
-              key={`wave-${y}`}
-              d={`M-4 ${y} q14 -6 28 0 t28 0 t28 0 t28 0`}
-              fill="none"
-              stroke={i % 2 ? '#0FA3B1' : '#2BC4D3'}
-              strokeWidth={2.4}
-              strokeLinecap="round"
-              opacity={0.9 - i * 0.15}
-            />
-          );
-        })}
-        <rect
-          x={0}
-          y={82}
-          width={100}
-          height={18}
-          fill="#BEE6EA"
-          opacity={rand() > 0.5 ? 1 : 0.9}
-        />
-      </>
-    ),
+    scene: (g, pal) =>
+      scatter(g, {
+        back: (k, x, y, s, seed) => roundTree(k, x, y, 15 * s, { ...pal, top: '#3EBF9A' }, seed),
+        front: (k, x, y) =>
+          boulder(k, x, y, 19, { ...pal, side: '#9BC7CC' }, hash(`shorerock:${y}`)),
+        count: 3,
+      }),
   },
   {
     id: 'night',
-    name: 'the night sky',
-    sky: ['#E7E9FB', '#D7DBF6'],
+    name: 'the night reaches',
+    washTop: '#E7E9FB',
+    washBot: '#D2D6F2',
+    top: '#8A8FCB',
+    side: '#4E52A0',
+    road: '#D6D2EC',
+    roadEdge: '#ABA6D8',
+    far: '#C5C8EC',
     accent: '#4257F0',
-    draw: (rand) => (
-      <>
-        <path d="M64 22 a13 13 0 1 0 13 15 a10 10 0 1 1 -13 -15 Z" fill="#C6CBF2" />
-        {Array.from({ length: 7 }, () => {
-          const cx = 10 + rand() * 80;
-          const cy = 14 + rand() * 54;
-          return (
-            <circle
-              key={`nstar-${cx.toFixed(1)}-${cy.toFixed(1)}`}
-              cx={cx}
-              cy={cy}
-              r={rand() > 0.7 ? 1.8 : 1.1}
-              fill="#4257F0"
-              opacity={0.55 + rand() * 0.35}
-            />
-          );
-        })}
-        <path d="M0 84 Q50 78 100 84 V100 H0 Z" fill="#CBCFEF" />
-      </>
-    ),
+    scene: (g, pal) =>
+      scatter(g, {
+        back: (k, x, y, s) => spire(k, x, y, 40 * s, { ...pal, side: '#5A5FB0' }, '#8E93F5'),
+        front: (k, x, y) => spire(k, x, y, 30, { ...pal, side: '#6A6FC0' }, '#A9AEFF'),
+        count: 3,
+      }),
   },
   {
     id: 'desert',
     name: 'the dunes',
-    sky: ['#FCF3E2', '#F8E7C6'],
+    washTop: '#FBF1DD',
+    washBot: '#F4E2C0',
+    top: '#EAC98D',
+    side: '#C79A5A',
+    road: '#E7CFA0',
+    roadEdge: '#C4A46E',
+    far: '#EBD3A6',
     accent: '#E8881A',
-    draw: (rand) => (
-      <>
-        <circle cx={30} cy={30} r={10} fill="#F0A030" opacity={0.9} />
-        <path d="M0 70 Q28 56 56 70 T112 70 V100 H0 Z" fill="#EAC489" />
-        <path d="M0 84 Q34 74 68 84 T120 84 V100 H0 Z" fill="#DDAE68" />
-        {rand() > 0.4 && (
-          <path
-            d="M78 84 v-14 M74 76 h8 M74 72 h8"
-            stroke="#9C7238"
-            strokeWidth={2}
-            strokeLinecap="round"
-          />
-        )}
-      </>
-    ),
+    scene: (g, pal) =>
+      scatter(g, {
+        back: (k, x, y, s) => cactus(k, x, y, 34 * s, pal),
+        front: (k, x, y) => boulder(k, x, y, 20, pal, hash(`dunerock:${y}`)),
+        count: 3,
+      }),
   },
   {
     id: 'meadow',
     name: 'the sunlit meadow',
-    sky: ['#F1F8E6', '#E4F1CE'],
+    washTop: '#F1F8E6',
+    washBot: '#E2F0CD',
+    top: '#B7DE86',
+    side: '#6EAC4C',
+    road: '#E9DBB4',
+    roadEdge: '#CBB37E',
+    far: '#CDE7A6',
     accent: '#66B300',
-    draw: (rand) => (
-      <>
-        <path d="M0 74 Q50 62 100 74 V100 H0 Z" fill="#CFE79A" />
-        <path d="M0 84 Q50 76 100 84 V100 H0 Z" fill="#B7DA78" />
-        {Array.from({ length: 4 }, (_, i) => {
-          const x = 16 + i * 22 + rand() * 6;
-          return (
-            <g key={`flower-${x.toFixed(1)}`}>
-              <line x1={x} y1={84} x2={x} y2={72} stroke="#66B300" strokeWidth={1.6} />
-              <circle cx={x} cy={70} r={3} fill={i % 2 ? '#CC1E7A' : '#FFC93C'} />
-            </g>
-          );
-        })}
-      </>
-    ),
+    scene: (g, pal) =>
+      scatter(g, {
+        back: (k, x, y, s, seed) => roundTree(k, x, y, 16 * s, pal, seed),
+        front: (k, x, y) => roundTree(k, x, y, 18, pal, hash(`meadowtree:${y}`)),
+        count: 3,
+      }),
   },
   {
     id: 'canyon',
     name: 'the red canyon',
-    sky: ['#FBEDE6', '#F4D9C9'],
+    washTop: '#FAEBE2',
+    washBot: '#F0D4C4',
+    top: '#D98A5E',
+    side: '#9E4E30',
+    road: '#E7C09E',
+    roadEdge: '#C08A5E',
+    far: '#E3B598',
     accent: '#CC5A2E',
-    draw: (rand) => (
-      <>
-        <path d="M0 80 L22 44 L40 80 Z" fill="#C96A44" />
-        <path d="M46 80 L70 34 L94 80 Z" fill="#B65535" />
-        <path d="M46 80 L70 34 L82 58 L70 80 Z" fill="#A6472C" opacity={0.6} />
-        <path d="M0 82 Q50 76 100 82 V100 H0 Z" fill="#E3B79E" />
-        {rand() > 0.6 && <circle cx={20} cy={26} r={7} fill="#F0A030" opacity={0.85} />}
-      </>
-    ),
+    scene: (g, pal) =>
+      scatter(g, {
+        back: (k, x, y, s) => mesa(k, x, y, 40 * s, pal),
+        front: (k, x, y) => boulder(k, x, y, 21, pal, hash(`canyonrock:${y}`)),
+        count: 3,
+      }),
   },
 ];
+
+const GRAPHITE = '#15161B';
+const NEARBLACK = '#0D0E12';
+
+/** Derive the on-theme palette — light values ship on the biome; dark drops luminance, keeps hue. */
+export function resolveBiome(b: Biome, dark: boolean): BiomePalette {
+  if (!dark) return b;
+  return {
+    washTop: mixHex(b.accent, GRAPHITE, 0.82),
+    washBot: mixHex(b.accent, NEARBLACK, 0.9),
+    top: mixHex(b.top, GRAPHITE, 0.5),
+    side: mixHex(b.side, NEARBLACK, 0.52),
+    road: mixHex(b.road, GRAPHITE, 0.52),
+    roadEdge: mixHex(b.roadEdge, NEARBLACK, 0.42),
+    far: mixHex(b.far, GRAPHITE, 0.7),
+    accent: mixHex(b.accent, '#FFFFFF', 0.12),
+  };
+}
 
 /** The chapter's biome — stable, derived from its id (its place never changes between visits). */
 export function biomeFor(chapterId: string): Biome {

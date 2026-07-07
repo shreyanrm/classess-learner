@@ -8,11 +8,11 @@
  * the aurora doors wait at the thread's end.
  */
 
-import { useVidyaBus, VidyaBody } from '@classess/vidya';
+import { useRegisterTarget, useVidyaBus, VidyaBody } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
-import { learner } from '../data/catalog';
 import { useRouter } from '../shell/router';
+import { loadProfile } from './you/profile';
 import { loadMind, loadProactivity, proactiveChip } from '../store/mind';
 import { useProgress } from '../store/progress';
 import { SendIcon, SparkIcon, WaveformIcon } from '../ui/icons';
@@ -28,6 +28,38 @@ function greeting(name: string): string {
     h < 5 ? 'Good night' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
   return `${part}, ${name}`;
 }
+
+// Her line under the greeting — one per day (days-since-epoch rotation), never a poster slogan.
+const DAILY_LINES = [
+  'the day is a walk, not a list',
+  'curiosity first — the rest follows',
+  'one good question beats ten answers',
+  'today bends to the curious',
+  'the hard part is only new once',
+  'mistakes are just data with feelings',
+  'begin anywhere; it all connects',
+  'nothing clicks until something snags',
+  'confusion is the start of knowing',
+  'stay for the aha, not the marks',
+  'a little every day outruns a lot someday',
+  'questions are doors left ajar',
+  'practice makes patterns, not perfect',
+  'what you notice, you never lose',
+  'thinking slow is still thinking',
+  'the good stuff hides one step past easy',
+  'today has one idea with your name on it',
+  'almost right is halfway home',
+  'let the problem talk first',
+  'ten quiet minutes can move a mountain',
+  'the pencil remembers what the eye forgets',
+  'wonder is a muscle — warm it up',
+  'every expert was once this lost',
+  'small steps count double here',
+  'we build the bridge as we cross it',
+  'slow is smooth, smooth is fast',
+  'follow the itch in the question',
+  'learning is remembering forward',
+];
 
 const CAPS = {
   fontSize: fluidType.eyebrow,
@@ -65,6 +97,17 @@ export function Home() {
   // The day, derived from real state — every stop routes somewhere real.
   const { stops, currentIndex } = useMemo(() => deriveStops(progress), [progress]);
 
+  // She reads the day at code level and can point at it: every stop on the thread, and where she
+  // has walked the learner to. So "what's on my screen" on home names the real stops, not a box.
+  const threadRef = useRegisterTarget<HTMLDivElement>('today-thread', {
+    kind: 'journey',
+    label: "today's walk — the stops on the thread, each a real door",
+    getSceneState: () => ({
+      current: stops[currentIndex]?.title,
+      stops: stops.map((s) => ({ title: s.title, meta: s.meta, kind: s.kind })),
+    }),
+  });
+
   // The proactivity dial (You settings) gates every suggestion — quiet means she waits to be asked.
   const [dial] = useState(() => loadProactivity());
   const chips = useMemo(() => {
@@ -78,7 +121,8 @@ export function Home() {
   const [firstVisit] = useState(() => sessionStorage.getItem('clss-home-opened') !== '1');
   const [landed, setLanded] = useState(!firstVisit);
   const [greetShown, setGreetShown] = useState(!firstVisit ? 999 : 0);
-  const greetingText = greeting(learner.name);
+  // Identity comes from the onboarded profile — the catalog's seed learner is only a fallback.
+  const greetingText = greeting(loadProfile().name);
   useEffect(() => {
     if (!landed || greetShown >= greetingText.length) return;
     const t = setInterval(() => setGreetShown((n) => n + 1), 28);
@@ -125,10 +169,11 @@ export function Home() {
   };
 
   const now = new Date();
-  const dateLine = `today · ${now
+  // Just the date — it's obviously today, saying so is noise.
+  const dateLine = now
     .toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
     .toLowerCase()
-    .replace(/,/g, '')}`;
+    .replace(/,/g, '');
 
   const currentKind = stops[currentIndex]?.kind;
   // Under the quiet dial she never volunteers a line — presence without a nudge.
@@ -226,7 +271,7 @@ export function Home() {
             color: 'color-mix(in srgb, var(--clss-ink) 58%, transparent)',
           }}
         >
-          the day is a walk, not a list
+          {DAILY_LINES[Math.floor(now.getTime() / 86_400_000) % DAILY_LINES.length]}
         </motion.div>
 
         {/* the chat bar — the door; the conversation itself lives on its own page */}
@@ -407,7 +452,7 @@ export function Home() {
       </motion.div>
 
       {/* the day, drawn — one thread, stops on it, Vidya walking it */}
-      <div style={{ marginTop: fluidSpace.md }}>
+      <div ref={threadRef} style={{ marginTop: fluidSpace.md }}>
         <Thread
           stops={stops}
           currentIndex={currentIndex}

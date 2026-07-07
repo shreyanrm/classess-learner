@@ -92,6 +92,10 @@ export interface TurnContext {
 export interface LifetimeContext {
   twinSummary?: string;
   masteryHighlights?: string[];
+  /** Who she is teaching — the dossier's identity, from the onboarding profile (VIDYA.md §7). */
+  learner?: { name: string; age?: number; grade?: string; board?: string };
+  /** Durable facts she has learned in conversation — the concierge's notepad. */
+  facts?: string[];
 }
 
 /** The full, serializable context Vidya reasons over — her perception of the app. */
@@ -119,6 +123,8 @@ export interface VidyaHandlers {
   onSpeak?: (text: string) => void;
   onRevealHint?: (level: number) => void;
   onEscalateHint?: () => void;
+  /** Persist a durable fact she just learned (the remember action) into the learner's mind. */
+  onRemember?: (text: string) => void;
 }
 
 export interface VidyaBus {
@@ -289,6 +295,8 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
       for (const s of effects.setStates) applyTutorAction(s.targetId, s.patch);
       for (const level of effects.revealHints) h?.onRevealHint?.(level);
       for (let i = 0; i < effects.escalateHints; i += 1) h?.onEscalateHint?.();
+      // she writes to her own dossier — a fact learned here rides every future turn
+      for (const text of effects.remembers) h?.onRemember?.(text);
 
       // Marks are ephemeral: clear them once the longest ttl elapses (each fades by its own ttl in the
       // overlay). Vidya decides the ttl per mark; nothing lingers permanently.

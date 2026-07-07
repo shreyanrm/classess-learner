@@ -9,8 +9,9 @@
  */
 
 import type { Sdk } from '@classess/sdk';
-import { useVidyaBus } from '@classess/vidya';
+import { type LifetimeContext, useVidyaBus } from '@classess/vidya';
 import { useEffect, useRef } from 'react';
+import { boardName, loadProfile } from '../screens/you/profile';
 import { useRouter } from '../shell/router';
 import { useSdk } from './sdk';
 
@@ -39,6 +40,8 @@ export interface MindState {
   sessionDays: string[];
   /** what the learner is into (from onboarding) — grounds analogies and examples */
   interests: string[];
+  /** durable free-form facts she has learned in conversation — the concierge's notepad */
+  facts: string[];
 }
 
 const EMPTY: MindState = {
@@ -47,10 +50,12 @@ const EMPTY: MindState = {
   dwellSec: {},
   sessionDays: [],
   interests: [],
+  facts: [],
 };
 const MAX_LATENCIES = 60;
 const MAX_SLIPS = 12;
 const MAX_DAYS = 30;
+const MAX_FACTS = 12;
 
 export function loadMind(): MindState {
   try {
@@ -63,10 +68,31 @@ export function loadMind(): MindState {
       dwellSec: m.dwellSec && typeof m.dwellSec === 'object' ? m.dwellSec : {},
       sessionDays: Array.isArray(m.sessionDays) ? m.sessionDays : [],
       interests: Array.isArray(m.interests) ? m.interests : [],
+      facts: Array.isArray(m.facts) ? m.facts : [],
     };
   } catch {
     return { ...EMPTY };
   }
+}
+
+/**
+ * She learned a durable fact in conversation (the remember action) — a preferred name, a goal, an
+ * exam date. Dedupe-append and cap; it rides every future dossier. Steerable/clearable in You.
+ */
+/** Pure fact fold: trim, drop empties/dupes (case-insensitive), append, cap. Testable without a DOM. */
+export function foldFact(facts: string[], text: string): string[] {
+  const fact = text.trim().slice(0, 160);
+  if (!fact) return facts;
+  if (facts.some((f) => f.toLowerCase() === fact.toLowerCase())) return facts;
+  return [...facts, fact].slice(-MAX_FACTS);
+}
+
+export function rememberFact(text: string): void {
+  const mind = loadMind();
+  const next = foldFact(mind.facts, text);
+  if (next === mind.facts) return; // nothing new — skip the write
+  mind.facts = next;
+  saveMind(mind);
 }
 
 /** Onboarding writes what the learner is into — folded into every Vidya call via the lifetime slot. */
@@ -217,7 +243,28 @@ export function mindLines(mind: MindState): string[] {
   if (format) lines.push(`you linger longest on ${format}`);
   const active = activeDaysOfLastSeven(mind);
   if (mind.sessionDays.length > 0) lines.push(`you showed up ${active} of the last 7 days`);
+  for (const fact of mind.facts) lines.push(`she remembers: ${fact}`);
   return lines;
+}
+
+/**
+ * The dossier the concierge reasons over — identity from the onboarding profile plus the behavioural
+ * twin and the facts she has learned. Every vidya.turn payload carries this (VIDYA.md §7); rendered
+ * by the gateway into a "who you are teaching" block.
+ */
+export function lifetimeSnapshot(): LifetimeContext {
+  const p = loadProfile();
+  const mind = loadMind();
+  return {
+    twinSummary: summarizeMind(mind),
+    learner: {
+      name: p.name,
+      age: p.age,
+      grade: p.grade,
+      board: boardName(p.boardId),
+    },
+    facts: mind.facts,
+  };
 }
 
 /** One compact string for the lifetime slot — every Vidya call is conditioned on this. */
@@ -288,27 +335,35 @@ export function MindObserver() {
   const seen = useRef<Set<string>>(new Set());
   if (mindRef.current === null) mindRef.current = loadMind();
 
-  // session cadence + first publish, once per boot
+  // Storage is the source of truth: other writers (rememberInterests at onboarding finish,
+  // rememberFact from her turns, profile edits) write the mind out-of-band, so every mutation
+  // here re-reads before it mutates — a stale in-memory snapshot must never clobber them.
+  const freshMind = () => {
+    const mind = loadMind();
+    mindRef.current = mind;
+    return mind;
+  };
+
+  // session cadence + first publish, once per boot: the dossier rides from the very first turn
   useEffect(() => {
-    const mind = mindRef.current;
-    if (!mind) return;
+    const mind = freshMind();
     if (markSessionDay(mind)) saveMind(mind);
-    bus.publishLifetime({ twinSummary: summarizeMind(mind) });
+    bus.publishLifetime(lifetimeSnapshot());
   }, [bus]);
 
-  // fold the event log on a slow pulse
+  // fold the event log on a slow pulse, and refresh the dossier every pulse — so a fact she just
+  // learned (rememberFact writes localStorage out-of-band) and any profile edit ride within ~4s.
+  // ponytail: ≤4s lag on same-session facts; a reload picks them up immediately via the boot publish.
   useEffect(() => {
     const fold = () => {
-      const mind = mindRef.current;
-      if (!mind) return;
+      const mind = freshMind();
       const log = sdk.events.getLog();
-      if (log.length <= cursor.current) return;
-      const fresh = log.slice(cursor.current);
-      cursor.current = log.length;
-      if (foldEvents(mind, fresh, seen.current)) {
-        saveMind(mind);
-        bus.publishLifetime({ twinSummary: summarizeMind(mind) });
+      if (log.length > cursor.current) {
+        const fresh = log.slice(cursor.current);
+        cursor.current = log.length;
+        if (foldEvents(mind, fresh, seen.current)) saveMind(mind);
       }
+      bus.publishLifetime(lifetimeSnapshot());
     };
     const t = window.setInterval(fold, 4000);
     return () => {
@@ -322,8 +377,7 @@ export function MindObserver() {
     const name = route.name;
     const started = Date.now();
     return () => {
-      const mind = mindRef.current;
-      if (!mind) return;
+      const mind = freshMind();
       addDwell(mind, name, (Date.now() - started) / 1000);
       saveMind(mind);
     };

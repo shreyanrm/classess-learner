@@ -178,6 +178,14 @@ export function VidyaCompanion() {
     });
   };
 
+  // Closing the drawer only contracts her — she stays docked (FlyingVidya never unmounts). And a
+  // live mic must not outlive the drawer, so any voice session is stopped on close (stop() no-ops
+  // when idle). Both close affordances route through here.
+  const close = () => {
+    voice.stop();
+    setOpen(false);
+  };
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: length/open ARE the triggers — scroll on new turns and on expand
   useEffect(() => {
     const el = scrollRef.current;
@@ -199,13 +207,16 @@ export function VidyaCompanion() {
 
   return (
     <>
-      {!open && (
+      {/* She is always docked and mounted — the drawer only overlays her. Closing it must never
+          remove her (the owner's complaint); hiding via visibility keeps her in place with no
+          re-fly, and the fixed drawer (higher z) covers her while open. */}
+      <div style={{ visibility: open ? 'hidden' : 'visible' }}>
         <FlyingVidya
           routeKey={route.name}
           mood={busy ? 'thinking' : mood}
           onTap={() => setOpen(true)}
         />
-      )}
+      </div>
       <AnimatePresence>
         {open && (
           <motion.aside
@@ -258,7 +269,7 @@ export function VidyaCompanion() {
               <button
                 type="button"
                 onClick={() => {
-                  setOpen(false);
+                  close();
                   router.navigate({ name: 'chat' });
                 }}
                 aria-label="Open the full conversation"
@@ -278,7 +289,7 @@ export function VidyaCompanion() {
               </button>
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={close}
                 aria-label="Close"
                 style={{
                   border: 'none',

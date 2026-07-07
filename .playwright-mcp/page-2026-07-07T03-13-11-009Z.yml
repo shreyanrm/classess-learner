@@ -1,0 +1,40 @@
+- generic [ref=f28e1]:
+  - generic [ref=f28e2]:
+    - generic [ref=f28e234]:
+      - generic [ref=f28e235]:
+        - img "Vidya" [ref=f28e236]:
+          - img [ref=f28e240]
+        - generic [ref=f28e264]:
+          - generic [ref=f28e265]: Vidya
+          - generic [ref=f28e266]: one conversation, always
+        - button "Mute Vidya" [ref=f28e267] [cursor=pointer]:
+          - img [ref=f28e268]
+      - generic [ref=f28e273]:
+        - generic [ref=f28e274]: where we began
+        - generic [ref=f28e275]: Tell me something genuinely cool from science or math that most people never learn in school.
+        - generic [ref=f28e276]: what's on my screen right now?
+        - generic [ref=f28e278]: You're on your home screen — today's walk through linear equations. You've already knocked out the warm-up and rational numbers on the number line, and next up is solving equations with the variable on one side.
+        - generic [ref=f28e279]: hello Vidya
+        - generic [ref=f28e281]: Hey Shreyan, good to see you back. Ready to tackle equations with the variable on one side, or do you want to warm up with something else first?
+      - generic [ref=f28e283]:
+        - textbox "Talk to Vidya…" [active] [ref=f28e284]
+        - button "Talk by voice" [ref=f28e285] [cursor=pointer]
+    - banner:
+      - img "Classess" [ref=f28e199]
+      - generic [ref=f28e200]:
+        - button "Did you know" [ref=f28e201] [cursor=pointer]:
+          - img [ref=f28e202]
+          - text: Did you know
+        - generic "day 3 of being a learner" [ref=f28e204]:
+          - img [ref=f28e205]
+          - text: "3"
+        - generic [ref=f28e208]: 420 xp
+        - generic [ref=f28e209]:
+          - generic "level 4 · 60/200 xp to level 5" [ref=f28e210]:
+            - img [ref=f28e211]
+            - generic [ref=f28e214]: "4"
+          - button "You — level 4, profile and settings" [ref=f28e215] [cursor=pointer]:
+            - generic "fox" [ref=f28e216]:
+              - img [ref=f28e218]
+  - button "Back — ◦ back" [ref=f28e294] [cursor=pointer]:
+    - img [ref=f28e295]

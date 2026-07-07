@@ -52,6 +52,9 @@ export const VidyaActionSchema = z.discriminatedUnion('type', [
   // Voice-locked speech (VIDYA.md §4 speak): plays through the voice path when live, otherwise
   // rendered as her handwritten line.
   z.object({ type: z.literal('speak'), text: z.string() }),
+  // Learn a durable fact the learner just shared — a preferred name, a goal, an exam date. Persisted
+  // to the mind and rendered into every future dossier (VIDYA.md §7). Never for transient chatter.
+  z.object({ type: z.literal('remember'), text: z.string() }),
   z.object({ type: z.literal('revealHint'), level: z.number().int().nonnegative() }),
   z.object({ type: z.literal('escalateHint') }),
   // Consequential — offered, never forced.
@@ -139,6 +142,8 @@ export interface ActionEffects {
   says: string[];
   /** Voice-locked lines: spoken when voice is live, otherwise her handwritten line. */
   speaks: string[];
+  /** Durable facts she learned this turn — persisted to the mind, fed into future dossiers. */
+  remembers: string[];
   /** setState demonstrations, routed to each target's applyTutorAction seam. */
   setStates: TutorStatePatch[];
   revealHints: number[];
@@ -155,6 +160,7 @@ export function reduceActions(actions: VidyaAction[]): ActionEffects {
     offer: null,
     says: [],
     speaks: [],
+    remembers: [],
     setStates: [],
     revealHints: [],
     escalateHints: 0,
@@ -202,6 +208,9 @@ export function reduceActions(actions: VidyaAction[]): ActionEffects {
       case 'speak':
         effects.speaks.push(action.text);
         break;
+      case 'remember':
+        effects.remembers.push(action.text);
+        break;
       case 'setState':
         effects.setStates.push({ targetId: action.targetId, patch: action.patch });
         break;
@@ -232,6 +241,7 @@ export function describeActionVocabulary(): string {
     '- point: {"type":"point","targetId":"<id>","ttl":<ms>} — draw attention to a target.',
     '- setState: {"type":"setState","targetId":"<id>","patch":{...}} — demonstrate by doing: drive an interactive by patching its own state. Only for targets whose scene state is listed; the patch keys must match that state.',
     '- speak: {"type":"speak","text":"..."} — say it in your voice when voice is live; otherwise it appears as your handwritten line. Short, warm, never the final answer.',
+    '- remember: {"type":"remember","text":"<a durable fact the learner just shared — a preferred name, a goal, a fear, an exam date>"} — save something worth carrying across sessions; use sparingly, never for transient chatter.',
     '- setMood: {"type":"setMood","mood":"thinking|hint|correct|celebrate|waiting|idle"}.',
     '- revealHint: {"type":"revealHint","level":<n>} / escalateHint: {"type":"escalateHint"}.',
     '- navigate/startPractice/switchModality — consequential; these are OFFERED to the learner, not forced.',

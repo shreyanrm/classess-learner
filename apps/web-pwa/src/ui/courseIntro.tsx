@@ -2,42 +2,160 @@
 
 /**
  * The course intro scene — every course opens on its own picture (owner directive: two courses
- * never open identically). The scene is derived deterministically from the topic: the concept's
- * own sigil geometry (echoed huge and faint behind, at a per-topic angle), the subject's hue, and
- * a small cast + prop chosen and posed from the topic id. One generator, a distinct arrival for
- * every course. White canvas, 3px radius, hue wash — DESIGN.md law.
+ * never open identically). The scene is derived deterministically from the topic id: the concept's
+ * own sigil geometry (echoed huge and faint behind at a per-topic angle), and a bespoke generative
+ * constellation — a fine-line lattice of nodes wired like a quiet circuit, drawn in the subject's
+ * own hue with a couple of accent nodes. One generator, a distinct, dignified arrival for every
+ * course. No stock characters, no clip-art props: course imagery must be relevant to the topic and
+ * premium (owner law). White/paper canvas, 3px radius, low-alpha hue wash — DESIGN.md law.
  */
 
 import { motion } from 'framer-motion';
-import { chapterById, topicById } from '../data/catalog';
 import { hash, rng, TopicSigil } from './art';
-import { type CastId, type PropId, Scene, type SceneItem } from './cast';
 
-/** `rgba()` from a hex hue — the stage wash and motes need translucent stops. */
+/** `rgba()` from a hex hue — the wash, the glow, and the hue nodes need translucent stops. */
 function rgba(hex: string, alpha: number): string {
   const n = Number.parseInt(hex.slice(1), 16);
   return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${alpha})`;
 }
 
-const CASTS: CastId[] = ['pip', 'sage', 'sprout', 'volt', 'ember', 'pico', 'juni', 'torto'];
-const MOODS = ['happy', 'curious', 'delighted', 'neutral'] as const;
+const GOLD = '#FFC93C';
+const FIELD_W = 400;
+const FIELD_H = 300;
 
-/** The prop that belongs to a subject's world — a flask for chemistry, a planet for physics… */
-const SUBJECT_PROP: Record<string, PropId> = {
-  math: 'pencil',
-  physics: 'planet',
-  chemistry: 'beaker',
-  science: 'beaker',
-  biology: 'plant',
-  cs: 'bulb',
-  social: 'flag',
-};
+interface Node {
+  x: number;
+  y: number;
+  r: number;
+  kind: 'faint' | 'hue' | 'gold';
+}
+interface Edge {
+  a: number;
+  b: number;
+  hot: boolean;
+}
 
-function subjectOf(topicId: string): string {
-  const chapter = topicById(topicId)
-    ? chapterById(topicById(topicId)?.chapterId ?? '')
-    : chapterById(topicId);
-  return chapter?.subjectId ?? 'math';
+/** A seeded lattice for a topic — nodes placed off-centre (the sigil owns the core), then wired
+ *  to nearest neighbours so it reads as an intelligent circuit rather than scattered dots. */
+function buildField(topicId: string): { nodes: Node[]; edges: Edge[] } {
+  const r = rng(hash(`field:${topicId}`));
+  const cx = FIELD_W / 2;
+  const cy = FIELD_H / 2;
+  const count = 8 + Math.floor(r() * 4); // 8..11
+  const nodes: Node[] = [];
+  let guard = 0;
+  while (nodes.length < count && guard < 500) {
+    guard++;
+    const x = 30 + r() * (FIELD_W - 60);
+    const y = 26 + r() * (FIELD_H - 52);
+    // keep an elliptical core clear so the sigil never fights the field
+    const dx = x - cx;
+    const dy = y - cy;
+    if ((dx * dx) / (108 * 108) + (dy * dy) / (86 * 86) < 1) continue;
+    nodes.push({ x, y, r: 1.5, kind: 'faint' });
+  }
+
+  // one golden accent + two hue accents (the view's single hit of pigment lives here)
+  const pick = (): number => Math.floor(r() * nodes.length);
+  const gold = pick();
+  (nodes[gold] as Node).kind = 'gold';
+  (nodes[gold] as Node).r = 2.8;
+  let placed = 0;
+  for (let g = 0; g < nodes.length && placed < 2; g++) {
+    const i = (gold + 1 + g) % nodes.length;
+    if (nodes[i]?.kind === 'faint') {
+      (nodes[i] as Node).kind = 'hue';
+      (nodes[i] as Node).r = 2.4;
+      placed++;
+    }
+  }
+
+  // wire each node to its nearest neighbour(s) — a mesh, not a cloud; drop the long ugly spans
+  const edges: Edge[] = [];
+  const seen = new Set<string>();
+  nodes.forEach((n, i) => {
+    const near = nodes
+      .map((m, j) => ({ j, d: Math.hypot(m.x - n.x, m.y - n.y) }))
+      .filter((e) => e.j !== i)
+      .sort((p, q) => p.d - q.d)
+      .slice(0, 2);
+    for (const { j, d } of near) {
+      if (d > 168) continue;
+      const key = i < j ? `${i}-${j}` : `${j}-${i}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      edges.push({ a: i, b: j, hot: nodes[i]?.kind !== 'faint' || nodes[j]?.kind !== 'faint' });
+    }
+  });
+
+  return { nodes, edges };
+}
+
+function Constellation({ topicId, hue }: { topicId: string; hue: string }) {
+  const { nodes, edges } = buildField(topicId);
+  return (
+    <svg
+      viewBox={`0 0 ${FIELD_W} ${FIELD_H}`}
+      preserveAspectRatio="xMidYMid slice"
+      role="presentation"
+      aria-hidden
+      style={{
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+      }}
+    >
+      {edges.map((e, i) => {
+        const a = nodes[e.a] as Node;
+        const b = nodes[e.b] as Node;
+        return (
+          <motion.line
+            key={`${e.a}-${e.b}`}
+            x1={a.x}
+            y1={a.y}
+            x2={b.x}
+            y2={b.y}
+            stroke={e.hot ? rgba(hue, 0.32) : 'var(--clss-ink-100)'}
+            strokeWidth={e.hot ? 1 : 0.8}
+            strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 1 }}
+            transition={{ duration: 0.9, delay: 0.15 + i * 0.045, ease: [0.2, 0, 0, 1] }}
+          />
+        );
+      })}
+      {nodes.map((n, i) => {
+        const fill = n.kind === 'gold' ? GOLD : n.kind === 'hue' ? hue : 'var(--clss-ink-300)';
+        const alive = n.kind !== 'faint';
+        return (
+          <motion.circle
+            key={`${n.x.toFixed(1)}-${n.y.toFixed(1)}`}
+            cx={n.x}
+            cy={n.y}
+            r={n.r}
+            fill={fill}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={alive ? { scale: 1, opacity: [0.6, 1, 0.6] } : { scale: 1, opacity: 0.85 }}
+            transition={
+              alive
+                ? {
+                    scale: { type: 'spring', stiffness: 300, damping: 20, delay: 0.5 + i * 0.05 },
+                    opacity: {
+                      duration: 3.6 + (i % 3),
+                      repeat: Number.POSITIVE_INFINITY,
+                      ease: 'easeInOut',
+                    },
+                  }
+                : { type: 'spring', stiffness: 300, damping: 22, delay: 0.5 + i * 0.05 }
+            }
+            style={{ transformOrigin: `${n.x}px ${n.y}px` }}
+          />
+        );
+      })}
+    </svg>
+  );
 }
 
 export function CourseIntroScene({
@@ -60,46 +178,6 @@ export function CourseIntroScene({
   const echoLeft = r() > 0.5;
   const echoSize = Math.round(minHeight * (0.9 + r() * 0.5));
 
-  // a small world at the sigil's feet: two distinct buddies + the subject's own prop
-  const a = Math.floor(r() * CASTS.length);
-  let b = Math.floor(r() * CASTS.length);
-  if (b === a) b = (b + 1 + Math.floor(r() * (CASTS.length - 1))) % CASTS.length;
-  const cast1 = CASTS[a] as CastId;
-  const cast2 = CASTS[b] as CastId;
-  const prop = SUBJECT_PROP[subjectOf(topicId)] ?? 'books';
-  const mood1 = MOODS[Math.floor(r() * MOODS.length)];
-  const mood2 = MOODS[Math.floor(r() * MOODS.length)];
-  const flip = r() > 0.5;
-  // three plausible arrangements, chosen per topic
-  const layout = Math.floor(r() * 3);
-  const items: SceneItem[] =
-    layout === 0
-      ? [
-          { id: prop, x: 0.16, size: 46 },
-          { id: cast1, x: 0.34, size: 76, mood: mood1 },
-          { id: cast2, x: 0.64, size: 66, mood: mood2, flip },
-        ]
-      : layout === 1
-        ? [
-            { id: cast1, x: 0.2, size: 72, mood: mood1 },
-            { id: cast2, x: 0.46, size: 80, mood: mood2 },
-            { id: prop, x: 0.78, size: 50 },
-          ]
-        : [
-            { id: cast1, x: 0.24, size: 78, mood: mood1 },
-            { id: prop, x: 0.5, size: 48 },
-            { id: cast2, x: 0.76, size: 68, mood: mood2, flip },
-          ];
-
-  const motes = Array.from({ length: 4 }, (_, i) => ({
-    id: `mote-${i}`,
-    left: `${12 + Math.round(r() * 76)}%`,
-    top: `${14 + Math.round(r() * 40)}%`,
-    s: 3 + Math.round(r() * 4),
-    dur: 6 + r() * 4,
-    gold: i === 1,
-  }));
-
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.985 }}
@@ -110,10 +188,10 @@ export function CourseIntroScene({
         width: '100%',
         minHeight,
         borderRadius: 3,
-        background: rgba(hue, 0.06),
+        // a quiet hue wash, lifted by a soft central glow — premium, not a flat pink slab
+        background: `radial-gradient(120% 90% at 50% 42%, ${rgba(hue, 0.09)} 0%, ${rgba(hue, 0.04)} 55%, transparent 100%)`,
         overflow: 'hidden',
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
       }}
@@ -133,57 +211,18 @@ export function CourseIntroScene({
         <TopicSigil id={topicId} size={echoSize} hue={hue} bold />
       </div>
 
-      {/* slow hue motes — alive at rest */}
-      <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-        {motes.map((m, i) => (
-          <motion.span
-            key={m.id}
-            animate={{ y: [0, -13, 0], opacity: [0.3, 0.65, 0.3] }}
-            transition={{
-              duration: m.dur,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: 'easeInOut',
-              delay: i * 0.8,
-            }}
-            style={{
-              position: 'absolute',
-              left: m.left,
-              top: m.top,
-              width: m.s,
-              height: m.s,
-              borderRadius: 999,
-              background: m.gold ? '#FFC93C' : rgba(hue, 0.5),
-            }}
-          />
-        ))}
-      </div>
+      {/* the bespoke generative lattice — a quiet circuit in the subject's hue */}
+      <Constellation topicId={topicId} hue={hue} />
 
-      {/* the concept's sigil, drawing itself — lifted so its world sits at its feet */}
+      {/* the concept's sigil, drawing itself — the course's true identity, centred and alive */}
       <motion.div
         initial={{ scale: 0.92 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', stiffness: 230, damping: 26 }}
-        style={{ position: 'relative', marginBottom: 44 }}
+        style={{ position: 'relative' }}
       >
         <TopicSigil id={topicId} size={sigilSize} draw bold={bold} hue={hue} />
       </motion.div>
-
-      {/* the little world that greets this course */}
-      <Scene
-        items={items}
-        height={116}
-        hue={hue}
-        wash={0}
-        baseline={10}
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'transparent',
-          borderRadius: 0,
-        }}
-      />
     </motion.div>
   );
 }

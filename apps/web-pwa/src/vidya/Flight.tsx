@@ -9,17 +9,19 @@
 
 import { useReducedMotion } from '@classess/motion';
 import { VidyaBody, type VidyaMood } from '@classess/vidya';
-import { motion, useAnimationControls, useSpring, useTime, useTransform } from 'framer-motion';
+import {
+  animate,
+  motion,
+  useMotionValue,
+  useSpring,
+  useTime,
+  useTransform,
+  useVelocity,
+} from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 
-function hash(str: string): number {
-  let h = 0x811c9dc5;
-  for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h = Math.imul(h, 0x01000193);
-  }
-  return h >>> 0;
-}
+// Once per browser session she performs the full arrival; after that she only glides.
+const FLEW_KEY = 'clss-vidya-flew';
 
 export function FlyingVidya({
   routeKey,
@@ -33,10 +35,22 @@ export function FlyingVidya({
   size?: number;
 }) {
   const reduced = useReducedMotion();
-  const controls = useAnimationControls();
   const time = useTime();
   const [flying, setFlying] = useState(false);
   const lastRoute = useRef<string>('');
+
+  // The entrance offset from the dock, driven by force — not keyframes. At rest it sits at 0
+  // (docked); a flight jumps it off-screen then springs it home, so acceleration, the banked
+  // arc, overshoot and settle all fall out of the physics instead of being authored.
+  const ex = useMotionValue(0);
+  const ey = useMotionValue(0);
+  const op = useMotionValue(0);
+  // Anticipation squash — she loads before she launches.
+  const sqx = useMotionValue(1);
+  const sqy = useMotionValue(1);
+  // Banking is truthful: it reads her real horizontal velocity and relaxes to 0 as she settles.
+  const evx = useVelocity(ex);
+  const bank = useTransform(evx, (v) => Math.max(-22, Math.min(22, v * 0.012)));
 
   // Docked responsiveness: she drifts a few px toward the cursor — alive, never in the way.
   const px = useSpring(0, { stiffness: 60, damping: 18 });
@@ -61,203 +75,169 @@ export function FlyingVidya({
   useEffect(() => {
     if (lastRoute.current === routeKey) return;
     lastRoute.current = routeKey;
+
+    // Reduced motion collapses the whole thing to a fade — no travel, no lean.
     if (reduced) {
-      void controls.start({ x: 0, y: 0, rotate: 0, opacity: 1, transition: { duration: 0.2 } });
+      ex.jump(0);
+      ey.jump(0);
+      animate(op, 1, { duration: 0.3 });
       return;
     }
+
     const w = window.innerWidth;
     const h = window.innerHeight;
-    // Fully responsive, per-page choreography: geometry derives from the LIVE viewport with
-    // safe margins, and the route hash picks among distinct flight styles so no two pages
-    // feel identical. Small viewports get a short, graceful drop instead of a grand tour.
-    const small = w < 760 || h < 560;
-    const margin = Math.max(72, Math.min(w, h) * 0.08);
-    const clampX = (x: number) => Math.max(-(w - margin - 90), Math.min(0, x));
-    const clampY = (y: number) => Math.max(-(h - margin - 90), Math.min(0, y));
-    const xs: number[] = [];
-    const ys: number[] = [];
-    const style = hash(routeKey) % 3;
-    if (small) {
-      const STEPS_S = 6;
-      for (let i = 0; i <= STEPS_S; i++) {
-        const t = i / STEPS_S;
-        xs.push(clampX(-w * 0.08 * (1 - t)));
-        ys.push(-h * 0.5 * (1 - t) * (1 - t) - 60 * (1 - t));
-      }
-    } else if (style === 0) {
-      const cxr = clampX(-Math.min(w * 0.42, w - 260));
-      const cyr = clampY(-h * 0.52);
-      const r = Math.max(60, Math.min(w, h) * 0.14);
-      xs.push(cxr, cxr);
-      ys.push(-h - 90, cyr - r);
-      const LOOP = 12;
-      for (let i = 1; i <= LOOP; i++) {
-        const a = -Math.PI / 2 + (i / LOOP) * Math.PI * 2;
-        xs.push(clampX(cxr + r * Math.cos(a)));
-        ys.push(clampY(cyr + r * Math.sin(a)));
-      }
-      xs.push(0);
-      ys.push(0);
-    } else if (style === 1) {
-      const STEPS_1 = 12;
-      for (let i = 0; i <= STEPS_1; i++) {
-        const t = i / STEPS_1;
-        xs.push(clampX(-(w - margin - 100) * (1 - t)));
-        ys.push(clampY(-h * 0.32 - Math.sin(t * Math.PI * 2) * h * 0.16 * (1 - t)));
-      }
-      xs[xs.length - 1] = 0;
-      ys[ys.length - 1] = 0;
-    } else {
-      const STEPS_2 = 10;
-      for (let i = 0; i <= STEPS_2; i++) {
-        const t = i / STEPS_2;
-        xs.push(clampX(-(w * 0.7) * (1 - t)));
-        ys.push(clampY(-Math.sin(t * Math.PI) * h * 0.34));
-      }
-      xs[xs.length - 1] = 0;
-      ys[ys.length - 1] = 0;
+    const flew = sessionStorage.getItem(FLEW_KEY);
+
+    // FREQUENCY LAW: later route changes get a short, low-amplitude glide into the dock —
+    // present already, she just eases back in. Never the grand arrival twice.
+    if (flew) {
+      op.set(1);
+      ex.jump(-Math.min(46, w * 0.05));
+      ey.jump(-Math.min(26, h * 0.04));
+      animate(ex, 0, { type: 'spring', stiffness: 140, damping: 20 });
+      animate(ey, 0, { type: 'spring', stiffness: 170, damping: 22 });
+      return;
     }
-    const STEPS = xs.length - 1;
-    // Banking follows velocity — she leans into the turn like a thing with weight.
-    const rots = xs.map((x, i) => {
-      if (i === 0) return 0;
-      const dx = x - (xs[i - 1] as number);
-      const dy = (ys[i] as number) - (ys[i - 1] as number);
-      return Math.max(-26, Math.min(26, dx * 0.16 + dy * -0.04));
-    });
-    rots[STEPS] = 0;
+
+    // The full arrival — once per session. One continuous force curve from off-screen to dock.
+    sessionStorage.setItem(FLEW_KEY, '1');
+    const small = w < 760 || h < 560;
+    ex.jump(-(small ? w * 0.5 : w * 0.72));
+    ey.jump(-(small ? h * 0.36 : h * 0.44));
+    op.set(0);
     setFlying(true);
-    void controls
-      .start({
-        x: xs,
-        y: ys,
-        rotate: rots,
-        opacity: [0, 1, ...Array(STEPS - 1).fill(1)],
-        transition: { duration: small ? 1.0 : 2.2, ease: [0.3, 0.9, 0.4, 1] },
-      })
-      .then(() =>
-        controls.start({
-          y: [0, -12, 0, -4, 0],
-          scaleY: [1, 0.92, 1.06, 0.97, 1],
-          scaleX: [1, 1.06, 0.96, 1.02, 1],
-          transition: { duration: 0.7, ease: 'easeOut' },
-        }),
-      )
-      .then(() => setFlying(false))
-      .catch(() => setFlying(false));
+
+    // Anticipation: the squash is her visible load, and an underdamped spring eases in from rest
+    // on its own — she barely moves for the first breath, then launches. No timing gap to cancel.
+    animate(op, 1, { duration: 0.24 });
+    animate(sqx, [1, 1.12, 0.98, 1], { duration: 0.34, ease: 'easeOut' });
+    animate(sqy, [1, 0.86, 1.04, 1], { duration: 0.34, ease: 'easeOut' });
+
+    // y catches home faster than x, so the trajectory bows into an arc — no control points.
+    // Underdamped springs (ratio < 1) give the overshoot-and-settle the law asks for, for free.
+    animate(ey, 0, { type: 'spring', stiffness: 90, damping: 15 });
+    const home = animate(ex, 0, { type: 'spring', stiffness: 45, damping: 13 });
+    void home.then(() => setFlying(false)).catch(() => setFlying(false));
+
     // No matter what interrupts the flight, she always lands, visible, on her dock.
     const safety = window.setTimeout(() => {
-      controls.set({ x: 0, y: 0, rotate: 0, opacity: 1, scaleX: 1, scaleY: 1 });
+      ex.jump(0);
+      ey.jump(0);
+      op.set(1);
+      sqx.set(1);
+      sqy.set(1);
       setFlying(false);
     }, 3000);
     return () => window.clearTimeout(safety);
-  }, [routeKey, reduced, controls]);
+  }, [routeKey, reduced, ex, ey, op, sqx, sqy]);
 
   return (
     <motion.div
-      animate={controls}
-      initial={{ opacity: 0 }}
       style={{
         position: 'fixed',
         right: 22,
         bottom: 26,
+        opacity: op,
         zIndex: 'var(--clss-z-vidyaPresence)' as unknown as number,
         pointerEvents: flying ? 'none' : 'auto',
       }}
     >
-      <motion.div style={{ y: bob, x: px, translateY: py }}>
-        {/* Her motion flame — an upside-down fire, trailing beneath her as she flies. */}
-        <motion.div
-          aria-hidden
-          animate={{ opacity: flying ? 1 : 0 }}
-          transition={{ duration: flying ? 0.2 : 0.45 }}
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '62%',
-            width: size * 0.86,
-            height: size * 1.35,
-            translateX: '-50%',
-            transformOrigin: '50% 0%',
-            pointerEvents: 'none',
-            filter: 'blur(1.5px)',
-          }}
-        >
-          <motion.svg
-            viewBox="0 0 40 60"
-            width="100%"
-            height="100%"
-            animate={{
-              scaleY: [1, 1.28, 0.92, 1.18, 1],
-              scaleX: [1, 0.92, 1.06, 0.95, 1],
-              skewX: [0, -3, 2.5, -2, 0],
+      {/* The flight body — position, bank and squash all live on real motion values. */}
+      <motion.div style={{ x: ex, y: ey, rotate: bank, scaleX: sqx, scaleY: sqy }}>
+        <motion.div style={{ y: bob, x: px, translateY: py }}>
+          {/* Her motion flame — an upside-down fire, trailing beneath her as she flies. */}
+          <motion.div
+            aria-hidden
+            animate={{ opacity: flying ? 1 : 0 }}
+            transition={{ duration: flying ? 0.2 : 0.45 }}
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '62%',
+              width: size * 0.86,
+              height: size * 1.35,
+              translateX: '-50%',
+              transformOrigin: '50% 0%',
+              pointerEvents: 'none',
+              filter: 'blur(1.5px)',
             }}
-            transition={{ duration: 0.55, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
-            style={{ transformOrigin: '50% 8%', display: 'block', overflow: 'visible' }}
           >
-            {/* outer tongue — molten into rose */}
-            <path
-              d="M20 58 C7 41 2 30 6 18 C9 9 14 5 20 3 C26 5 31 9 34 18 C38 30 33 41 20 58 Z"
-              fill="rgba(240,97,155,0.55)"
-            />
-            <path
-              d="M20 54 C9 39 5 30 8.5 19 C11 11 15 7 20 5.5 C25 7 29 11 31.5 19 C35 30 31 39 20 54 Z"
-              fill="#FF5A1F"
-              opacity="0.85"
-            />
-            {/* the hot core */}
-            <motion.path
-              d="M20 46 C13 36 11 29 13 22 C15 16 17.5 13.5 20 12.5 C22.5 13.5 25 16 27 22 C29 29 27 36 20 46 Z"
-              fill="#FFD9A8"
-              animate={{ scaleY: [1, 1.2, 0.9, 1.15, 1] }}
-              transition={{ duration: 0.4, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
-              style={{ transformOrigin: '50% 20%' }}
-            />
-          </motion.svg>
+            <motion.svg
+              viewBox="0 0 40 60"
+              width="100%"
+              height="100%"
+              animate={{
+                scaleY: [1, 1.28, 0.92, 1.18, 1],
+                scaleX: [1, 0.92, 1.06, 0.95, 1],
+                skewX: [0, -3, 2.5, -2, 0],
+              }}
+              transition={{ duration: 0.55, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+              style={{ transformOrigin: '50% 8%', display: 'block', overflow: 'visible' }}
+            >
+              {/* outer tongue — molten into rose */}
+              <path
+                d="M20 58 C7 41 2 30 6 18 C9 9 14 5 20 3 C26 5 31 9 34 18 C38 30 33 41 20 58 Z"
+                fill="rgba(240,97,155,0.55)"
+              />
+              <path
+                d="M20 54 C9 39 5 30 8.5 19 C11 11 15 7 20 5.5 C25 7 29 11 31.5 19 C35 30 31 39 20 54 Z"
+                fill="#FF5A1F"
+                opacity="0.85"
+              />
+              {/* the hot core */}
+              <motion.path
+                d="M20 46 C13 36 11 29 13 22 C15 16 17.5 13.5 20 12.5 C22.5 13.5 25 16 27 22 C29 29 27 36 20 46 Z"
+                fill="#FFD9A8"
+                animate={{ scaleY: [1, 1.2, 0.9, 1.15, 1] }}
+                transition={{ duration: 0.4, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+                style={{ transformOrigin: '50% 20%' }}
+              />
+            </motion.svg>
+          </motion.div>
+          {/* The light-beam shadow beneath her — the floating made visible. */}
+          <motion.div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '68%',
+              width: size * 0.62,
+              height: size * 1.5,
+              translateX: '-50%',
+              transformOrigin: '50% 0%',
+              scaleY: beamScaleY,
+              opacity: beamOpacity,
+              background: 'var(--clss-vidya-beam)',
+              clipPath: 'polygon(38% 0%, 62% 0%, 92% 100%, 8% 100%)',
+              filter: 'blur(5px)',
+              pointerEvents: 'none',
+            }}
+          />
+          <motion.div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: `calc(68% + ${size * 1.28}px)`,
+              width: size * 0.94,
+              height: size * 0.2,
+              translateX: '-50%',
+              borderRadius: '50%',
+              background: 'var(--clss-vidya-beam-pool)',
+              filter: 'blur(4px)',
+              opacity: beamOpacity,
+              scaleX: beamScaleY,
+              pointerEvents: 'none',
+            }}
+          />
+          <VidyaBody
+            size={size}
+            mood={flying ? 'hint' : mood}
+            gaze={flying ? undefined : 'pointer'}
+            onTap={onTap}
+            label="Talk to Vidya"
+          />
         </motion.div>
-        {/* The light-beam shadow beneath her — the floating made visible. */}
-        <motion.div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '68%',
-            width: size * 0.62,
-            height: size * 1.5,
-            translateX: '-50%',
-            transformOrigin: '50% 0%',
-            scaleY: beamScaleY,
-            opacity: beamOpacity,
-            background: 'var(--clss-vidya-beam)',
-            clipPath: 'polygon(38% 0%, 62% 0%, 92% 100%, 8% 100%)',
-            filter: 'blur(5px)',
-            pointerEvents: 'none',
-          }}
-        />
-        <motion.div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: `calc(68% + ${size * 1.28}px)`,
-            width: size * 0.94,
-            height: size * 0.2,
-            translateX: '-50%',
-            borderRadius: '50%',
-            background: 'var(--clss-vidya-beam-pool)',
-            filter: 'blur(4px)',
-            opacity: beamOpacity,
-            scaleX: beamScaleY,
-            pointerEvents: 'none',
-          }}
-        />
-        <VidyaBody
-          size={size}
-          mood={flying ? 'hint' : mood}
-          gaze={flying ? undefined : 'pointer'}
-          onTap={onTap}
-          label="Talk to Vidya"
-        />
       </motion.div>
     </motion.div>
   );

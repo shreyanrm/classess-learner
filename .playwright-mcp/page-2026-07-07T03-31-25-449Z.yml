@@ -1,0 +1,298 @@
+- generic [active] [ref=f5e1]:
+  - generic [ref=f5e2]:
+    - generic [ref=f5e578]:
+      - generic [ref=f5e579]:
+        - img [ref=f5e580]
+        - generic:
+          - generic:
+            - img
+        - generic [ref=f5e590]:
+          - heading "Mathematics" [level=1] [ref=f5e591]
+          - generic [ref=f5e592]: patterns, structure, and certainty
+          - generic [ref=f5e593]:
+            - generic [ref=f5e594]: CBSE · Class 8
+            - generic [ref=f5e595]: 13 chapters
+      - button "Continue · Linear equations in one variable Variables on both sides Continue" [ref=f5e596] [cursor=pointer]:
+        - img [ref=f5e597]
+        - generic [ref=f5e604]:
+          - generic [ref=f5e605]: Continue · Linear equations in one variable
+          - generic [ref=f5e606]: Variables on both sides
+        - generic [ref=f5e609]: Continue
+      - generic [ref=f5e610]:
+        - generic [ref=f5e611]: the adventure
+        - tablist "how to view chapters" [ref=f5e612]:
+          - tab "list" [ref=f5e613] [cursor=pointer]
+          - tab "roadmap" [selected] [ref=f5e614] [cursor=pointer]
+      - generic [ref=f5e616]:
+        - generic [ref=f5e617]:
+          - img [ref=f5e618]
+          - generic [ref=f5e1392]:
+            - generic:
+              - generic: What makes a number rational
+              - generic: mastered
+            - button "What makes a number rational, completed" [ref=f5e1393] [cursor=pointer]:
+              - text: "1"
+              - img [ref=f5e1395]
+          - generic [ref=f5e1397]:
+            - generic:
+              - generic: Operations on rational numbers
+              - generic: mastered
+            - button "Operations on rational numbers, completed" [ref=f5e1398] [cursor=pointer]:
+              - text: "2"
+              - img [ref=f5e1400]
+          - generic [ref=f5e1402]:
+            - generic:
+              - generic: Rational numbers on the number line
+              - generic: mastered
+            - button "Rational numbers on the number line, completed" [ref=f5e1403] [cursor=pointer]:
+              - text: "3"
+              - img [ref=f5e1405]
+          - generic [ref=f5e1407]:
+            - generic:
+              - generic: Solving equations with the variable on one side
+              - generic: mastered
+            - button "Solving equations with the variable on one side, completed" [ref=f5e1408] [cursor=pointer]:
+              - text: "4"
+              - img [ref=f5e1410]
+          - generic [ref=f5e1412]:
+            - generic:
+              - img "Juni the bee"
+            - generic:
+              - generic: Variables on both sides
+              - generic: 55% in
+            - button "Variables on both sides, in progress, you are here" [ref=f5e1413] [cursor=pointer]: "5"
+          - generic [ref=f5e1414]:
+            - generic:
+              - generic: Word problems that become equations
+              - generic: 7 steps
+            - button "Word problems that become equations, not started" [ref=f5e1415] [cursor=pointer]: "6"
+          - generic [ref=f5e1416]:
+            - generic:
+              - generic: Polygons and their angle sums
+              - generic: 6 steps
+            - button "Polygons and their angle sums, not started" [ref=f5e1417] [cursor=pointer]: "7"
+          - generic [ref=f5e1418]:
+            - generic:
+              - generic: Kinds of quadrilaterals
+              - generic: 8 steps
+            - button "Kinds of quadrilaterals, not started" [ref=f5e1419] [cursor=pointer]: "8"
+          - generic [ref=f5e1420]:
+            - generic:
+              - generic: Properties of a parallelogram
+              - generic: 9 steps
+            - button "Properties of a parallelogram, not started" [ref=f5e1421] [cursor=pointer]: "9"
+          - generic [ref=f5e1422]:
+            - generic:
+              - generic: Special parallelograms
+              - generic: 9 steps
+            - button "Special parallelograms, not started" [ref=f5e1423] [cursor=pointer]: "10"
+          - generic [ref=f5e1424]:
+            - generic:
+              - generic: Organising and grouping data
+              - generic: 7 steps
+            - button "Organising and grouping data, not started" [ref=f5e1425] [cursor=pointer]: "11"
+          - generic [ref=f5e1426]:
+            - generic:
+              - generic: Bar graphs and histograms
+              - generic: 10 steps
+            - button "Bar graphs and histograms, not started" [ref=f5e1427] [cursor=pointer]: "12"
+          - generic [ref=f5e1428]:
+            - generic:
+              - generic: Pie charts
+              - generic: 9 steps
+            - button "Pie charts, not started" [ref=f5e1429] [cursor=pointer]: "13"
+          - generic [ref=f5e1430]:
+            - generic:
+              - generic: Chance and probability
+              - generic: 9 steps
+            - button "Chance and probability, not started" [ref=f5e1431] [cursor=pointer]: "14"
+          - generic [ref=f5e1432]:
+            - generic:
+              - generic: Perfect squares and their patterns
+              - generic: 9 steps
+            - button "Perfect squares and their patterns, not started" [ref=f5e1433] [cursor=pointer]: "15"
+          - generic [ref=f5e1434]:
+            - generic:
+              - generic: Properties of square numbers
+              - generic: 10 steps
+            - button "Properties of square numbers, not started" [ref=f5e1435] [cursor=pointer]: "16"
+          - generic [ref=f5e1436]:
+            - generic:
+              - generic: Finding square roots
+              - generic: 6 steps
+            - button "Finding square roots, not started" [ref=f5e1437] [cursor=pointer]: "17"
+          - generic [ref=f5e1438]:
+            - generic:
+              - generic: Square roots of decimals
+              - generic: 7 steps
+            - button "Square roots of decimals, not started" [ref=f5e1439] [cursor=pointer]: "18"
+          - generic [ref=f5e1440]:
+            - generic:
+              - generic: Cubes and their patterns
+              - generic: 6 steps
+            - button "Cubes and their patterns, not started" [ref=f5e1441] [cursor=pointer]: "19"
+          - generic [ref=f5e1442]:
+            - generic:
+              - generic: Perfect cubes
+              - generic: 10 steps
+            - button "Perfect cubes, not started" [ref=f5e1443] [cursor=pointer]: "20"
+          - generic [ref=f5e1444]:
+            - generic:
+              - generic: Finding cube roots
+              - generic: 9 steps
+            - button "Finding cube roots, not started" [ref=f5e1445] [cursor=pointer]: "21"
+          - generic [ref=f5e1446]:
+            - generic:
+              - generic: Ratios and percentages
+              - generic: 9 steps
+            - button "Ratios and percentages, not started" [ref=f5e1447] [cursor=pointer]: "22"
+          - generic [ref=f5e1448]:
+            - generic:
+              - generic: Discount, profit and loss
+              - generic: 6 steps
+            - button "Discount, profit and loss, not started" [ref=f5e1449] [cursor=pointer]: "23"
+          - generic [ref=f5e1450]:
+            - generic:
+              - generic: Tax and everyday buying
+              - generic: 7 steps
+            - button "Tax and everyday buying, not started" [ref=f5e1451] [cursor=pointer]: "24"
+          - generic [ref=f5e1452]:
+            - generic:
+              - generic: Compound interest
+              - generic: 9 steps
+            - button "Compound interest, not started" [ref=f5e1453] [cursor=pointer]: "25"
+          - generic [ref=f5e1454]:
+            - generic:
+              - generic: Terms, factors and coefficients
+              - generic: 10 steps
+            - button "Terms, factors and coefficients, not started" [ref=f5e1455] [cursor=pointer]: "26"
+          - generic [ref=f5e1456]:
+            - generic:
+              - generic: Adding and subtracting expressions
+              - generic: 8 steps
+            - button "Adding and subtracting expressions, not started" [ref=f5e1457] [cursor=pointer]: "27"
+          - generic [ref=f5e1458]:
+            - generic:
+              - generic: Multiplying expressions
+              - generic: 7 steps
+            - button "Multiplying expressions, not started" [ref=f5e1459] [cursor=pointer]: "28"
+          - generic [ref=f5e1460]:
+            - generic:
+              - generic: Standard identities
+              - generic: 10 steps
+            - button "Standard identities, not started" [ref=f5e1461] [cursor=pointer]: "29"
+          - generic [ref=f5e1462]:
+            - generic:
+              - generic: Area of trapezium and polygons
+              - generic: 8 steps
+            - button "Area of trapezium and polygons, not started" [ref=f5e1463] [cursor=pointer]: "30"
+          - generic [ref=f5e1464]:
+            - generic:
+              - generic: Surface area of solids
+              - generic: 9 steps
+            - button "Surface area of solids, not started" [ref=f5e1465] [cursor=pointer]: "31"
+          - generic [ref=f5e1466]:
+            - generic:
+              - generic: Volume of solids
+              - generic: 10 steps
+            - button "Volume of solids, not started" [ref=f5e1467] [cursor=pointer]: "32"
+          - generic [ref=f5e1468]:
+            - generic:
+              - generic: Volume and capacity
+              - generic: 8 steps
+            - button "Volume and capacity, not started" [ref=f5e1469] [cursor=pointer]: "33"
+          - generic [ref=f5e1470]:
+            - generic:
+              - generic: Powers with negative exponents
+              - generic: 9 steps
+            - button "Powers with negative exponents, not started" [ref=f5e1471] [cursor=pointer]: "34"
+          - generic [ref=f5e1472]:
+            - generic:
+              - generic: Laws of exponents
+              - generic: 10 steps
+            - button "Laws of exponents, not started" [ref=f5e1473] [cursor=pointer]: "35"
+          - generic [ref=f5e1474]:
+            - generic:
+              - generic: Standard form for small numbers
+              - generic: 6 steps
+            - button "Standard form for small numbers, not started" [ref=f5e1475] [cursor=pointer]: "36"
+          - generic [ref=f5e1476]:
+            - generic:
+              - generic: Direct proportion
+              - generic: 9 steps
+            - button "Direct proportion, not started" [ref=f5e1477] [cursor=pointer]: "37"
+          - generic [ref=f5e1478]:
+            - generic:
+              - generic: Inverse proportion
+              - generic: 7 steps
+            - button "Inverse proportion, not started" [ref=f5e1479] [cursor=pointer]: "38"
+          - generic [ref=f5e1480]:
+            - generic:
+              - generic: Proportions in daily life
+              - generic: 6 steps
+            - button "Proportions in daily life, not started" [ref=f5e1481] [cursor=pointer]: "39"
+          - generic [ref=f5e1482]:
+            - generic:
+              - generic: Common factors and grouping
+              - generic: 9 steps
+            - button "Common factors and grouping, not started" [ref=f5e1483] [cursor=pointer]: "40"
+          - generic [ref=f5e1484]:
+            - generic:
+              - generic: Factorising with identities
+              - generic: 6 steps
+            - button "Factorising with identities, not started" [ref=f5e1485] [cursor=pointer]: "41"
+          - generic [ref=f5e1486]:
+            - generic:
+              - generic: Dividing algebraic expressions
+              - generic: 7 steps
+            - button "Dividing algebraic expressions, not started" [ref=f5e1487] [cursor=pointer]: "42"
+          - generic [ref=f5e1488]:
+            - generic:
+              - generic: Reading bar, pie and line graphs
+              - generic: 7 steps
+            - button "Reading bar, pie and line graphs, not started" [ref=f5e1489] [cursor=pointer]: "43"
+          - generic [ref=f5e1490]:
+            - generic:
+              - generic: Coordinates and the plane
+              - generic: 6 steps
+            - button "Coordinates and the plane, not started" [ref=f5e1491] [cursor=pointer]: "44"
+          - generic [ref=f5e1492]:
+            - generic:
+              - generic: Plotting and reading line graphs
+              - generic: 10 steps
+            - button "Plotting and reading line graphs, not started" [ref=f5e1493] [cursor=pointer]: "45"
+        - generic:
+          - generic:
+            - img
+          - generic:
+            - img
+          - generic:
+            - img
+          - generic:
+            - img
+          - generic:
+            - img
+    - banner:
+      - img "Classess" [ref=f5e199]
+      - generic [ref=f5e200]:
+        - button "Did you know" [ref=f5e201] [cursor=pointer]:
+          - img [ref=f5e202]
+          - text: Did you know
+        - generic "day 3 of being a learner" [ref=f5e204]:
+          - img [ref=f5e205]
+          - text: "3"
+        - generic [ref=f5e208]: 420 xp
+        - generic [ref=f5e209]:
+          - generic "level 4 · 60/200 xp to level 5" [ref=f5e210]:
+            - img [ref=f5e211]
+            - generic [ref=f5e214]: "4"
+          - button "You — level 4, profile and settings" [ref=f5e215] [cursor=pointer]:
+            - generic "fox" [ref=f5e216]:
+              - img [ref=f5e218]
+    - generic [ref=f5e513]:
+      - generic:
+        - img
+      - button "Talk to Vidya" [ref=f5e514] [cursor=pointer]:
+        - img [ref=f5e518]
+  - button "Back — ◦ ,learn" [ref=f5e1494] [cursor=pointer]:
+    - img [ref=f5e1495]

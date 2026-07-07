@@ -1,0 +1,9 @@
+- generic [ref=f18e4]:
+  - generic [ref=f18e5]:
+    - button "Vidya" [ref=f18e7] [cursor=pointer]:
+      - img [ref=f18e11]
+    - generic [ref=f18e36]: Vidya
+    - button "Mute Vidya" [ref=f18e44] [cursor=pointer]:
+      - img [ref=f18e45]
+  - generic [ref=f18e51]: ▏
+  - button "skip for now" [ref=f18e53] [cursor=pointer]

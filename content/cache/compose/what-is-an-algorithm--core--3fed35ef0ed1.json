@@ -1,0 +1,134 @@
+{
+ "concept": "What is an algorithm",
+ "modality": "compose",
+ "difficulty": "core",
+ "verified": true,
+ "seeded": false,
+ "provenance": {
+  "engine": "engine.compose",
+  "model": "anthropic/claude-opus-4-8",
+  "prompt_version": "plexus-v1"
+ },
+ "artifact": {
+  "topic": "What is an algorithm",
+  "difficulty": "core",
+  "cards": [
+   {
+    "id": "c1",
+    "kind": "diagram",
+    "title": "Making tea",
+    "idea": "Making a cup of tea follows fixed steps: boil water, add tea leaves, add milk and sugar, strain, pour. Order matters.",
+    "interaction": {
+     "kind": "tap",
+     "prompt": "Tap the step that must come first"
+    },
+    "reveal": "Boiling water comes first. A set of clear steps in the right order to finish a task is the heart of an algorithm."
+   },
+   {
+    "id": "c2",
+    "kind": "text",
+    "title": "Order matters",
+    "idea": "An algorithm is not just steps, but steps in the correct sequence. Swap two steps and the result can break.",
+    "interaction": {
+     "kind": "drag",
+     "prompt": "Drag the steps to brush teeth in a sensible order: apply paste, wet brush, brush teeth, rinse mouth"
+    },
+    "reveal": "Wet brush, apply paste, brush teeth, rinse mouth. Rinsing before brushing wastes the paste. Sequence decides the outcome."
+   },
+   {
+    "id": "c3",
+    "kind": "diagram",
+    "title": "Finish exactly",
+    "idea": "A good algorithm has a clear start, finite steps, and a clear end. It must stop, not run forever.",
+    "interaction": {
+     "kind": "tap",
+     "prompt": "Tap the box that marks where the process ends"
+    },
+    "reveal": "The stop box marks the end. Every step is precise and the process finishes after a limited number of steps."
+   },
+   {
+    "id": "c4",
+    "kind": "text",
+    "title": "Name the idea",
+    "idea": "An algorithm is a finite set of clear, ordered steps that solves a task or problem and then stops.",
+    "interaction": {
+     "kind": "type",
+     "prompt": "Type the word for a clear ordered set of steps that solves a task"
+    },
+    "reveal": "Algorithm. Recipes, directions to a friend's house, and long division are all everyday algorithms."
+   },
+   {
+    "id": "c5",
+    "kind": "diagram",
+    "title": "Follow it exactly",
+    "idea": "A computer follows an algorithm literally. A vague or wrong step gives a wrong result, so steps must be unambiguous.",
+    "interaction": {
+     "kind": "tap",
+     "prompt": "Tap the step that is too vague for a computer to follow: 'add some sugar' or 'add 2 spoons of sugar'"
+    },
+    "reveal": "'Add some sugar' is vague. 'Add 2 spoons of sugar' is precise. Algorithms need exact, unambiguous instructions."
+   }
+  ],
+  "workbook": [
+   {
+    "id": "w1",
+    "type": "mcq",
+    "prompt": "Which best describes an algorithm?",
+    "options": [
+     "A finite set of clear, ordered steps to solve a task",
+     "A single random guess at an answer",
+     "A drawing with no fixed order"
+    ],
+    "answer": "A finite set of clear, ordered steps to solve a task"
+   },
+   {
+    "id": "w2",
+    "type": "fill",
+    "prompt": "An algorithm must eventually ________, not run forever.",
+    "answer": "stop"
+   },
+   {
+    "id": "w3",
+    "type": "mcq",
+    "prompt": "Why does the order of steps matter in an algorithm?",
+    "options": [
+     "Because swapping steps can give a wrong result",
+     "Because more steps always mean a better answer",
+     "Because order never affects the outcome"
+    ],
+    "answer": "Because swapping steps can give a wrong result"
+   }
+  ],
+  "boss": [
+   {
+    "id": "b1",
+    "type": "mcq",
+    "prompt": "Which instruction is unsuitable for an algorithm a computer must follow?",
+    "options": [
+     "Add 2 spoons of sugar",
+     "Boil water for 3 minutes",
+     "Add sugar until it tastes nice"
+    ],
+    "answer": "Add sugar until it tastes nice"
+   },
+   {
+    "id": "b2",
+    "type": "fill",
+    "prompt": "Long division is an example of a everyday ________ because it is a set of ordered steps that reaches an answer.",
+    "answer": "algorithm"
+   },
+   {
+    "id": "b3",
+    "type": "mcq",
+    "prompt": "An algorithm keeps repeating a step and never reaches an end. Which required property does it break?",
+    "options": [
+     "It must be finite and stop",
+     "It must use numbers",
+     "It must be written in English"
+    ],
+    "answer": "It must be finite and stop"
+   }
+  ]
+ },
+ "createdAt": "2026-07-07T02:15:25+00:00"
+}

@@ -34,9 +34,42 @@ export function setMuted(muted: boolean): void {
 }
 
 // One voice at a time — a new line stops the previous one mid-word, like a person would.
-let playing: { ctx: AudioContext; source: AudioBufferSourceNode } | null = null;
+let playing: { source: AudioBufferSourceNode } | null = null;
 // Bumped on every stop/new-utterance so a running sentence pipeline knows it was superseded.
 let speechGen = 0;
+
+// ONE shared AudioContext for all her speech, lazily created (mirrors ui/sound.ts). A fresh
+// context per sentence starts 'suspended' on Safari/iOS — and always when narration auto-fires
+// before any gesture (cold reload / deep-link into a course) — so source.start() is silent and
+// onended never fires. Sharing one context lets us unlock it on the first user gesture below.
+let sharedCtx: AudioContext | null = null;
+function speechCtx(): AudioContext | null {
+  try {
+    if (!sharedCtx) {
+      const Ctor =
+        window.AudioContext ??
+        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!Ctor) return null;
+      sharedCtx = new Ctor();
+    }
+    return sharedCtx;
+  } catch {
+    return null;
+  }
+}
+
+// Belt-and-suspenders unlock: a context created outside a user gesture (auto-narration on a course
+// cold-load) stays suspended and cannot resume until the learner touches the page. Resume it on the
+// first pointer/key — any already-scheduled narration then becomes audible.
+if (typeof window !== 'undefined') {
+  const unlock = () => {
+    const c = speechCtx();
+    if (c && c.state === 'suspended') void c.resume();
+  };
+  const opts: AddEventListenerOptions = { capture: true, passive: true };
+  window.addEventListener('pointerdown', unlock, opts);
+  window.addEventListener('keydown', unlock, opts);
+}
 
 export function stopSpeaking(): void {
   speechGen++; // abort any in-flight sentence sequence
@@ -48,7 +81,7 @@ export function stopSpeaking(): void {
   } catch {
     // already ended
   }
-  void p.ctx.close();
+  // The context is shared and reused — stop the source, never tear the context down.
 }
 
 /** Split into speakable sentences so we can synth+play the first while the rest queues. */
@@ -83,33 +116,46 @@ async function synth(
 }
 
 /** Play one sentence; resolves when it finishes (or immediately if superseded). */
-function playSamples(samples: Float32Array<ArrayBuffer>, rate: number, gen: number): Promise<void> {
-  return new Promise((resolve) => {
-    if (gen !== speechGen) return resolve();
-    if (playing) {
-      try {
-        playing.source.stop();
-      } catch {
-        /* ended */
-      }
-      void playing.ctx.close();
-      playing = null;
+async function playSamples(
+  samples: Float32Array<ArrayBuffer>,
+  rate: number,
+  gen: number,
+): Promise<void> {
+  if (gen !== speechGen) return;
+  const ctx = speechCtx();
+  if (!ctx) return;
+  if (playing) {
+    try {
+      playing.source.stop();
+    } catch {
+      /* ended */
     }
-    const ctx = new AudioContext({ sampleRate: rate });
-    const buffer = ctx.createBuffer(1, samples.length, rate);
-    buffer.copyToChannel(samples, 0);
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-    source.connect(ctx.destination);
-    playing = { ctx, source };
-    source.onended = () => {
-      if (playing?.source === source) {
-        playing = null;
-        void ctx.close();
-      }
+    playing = null;
+  }
+  // Unlock before scheduling — mirrors voice.ts:148 ("Safari still starts contexts suspended").
+  if (ctx.state === 'suspended') await ctx.resume().catch(() => {});
+  if (gen !== speechGen) return; // a newer utterance took over during the resume await
+  // The buffer carries its own sample rate; WebAudio resamples it to the shared context's rate.
+  const buffer = ctx.createBuffer(1, samples.length, rate);
+  buffer.copyToChannel(samples, 0);
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  source.connect(ctx.destination);
+  playing = { source };
+  return new Promise((resolve) => {
+    let settled = false;
+    const done = () => {
+      if (settled) return;
+      settled = true;
+      if (playing?.source === source) playing = null;
       resolve();
     };
+    source.onended = done;
     source.start();
+    // Never hang the pipeline (or a gated advance button) if onended never fires — e.g. the context
+    // is still suspended because the page has had no gesture yet. Resolve on the sentence's own
+    // clock as a floor; the audio still plays once a tap resumes the context.
+    setTimeout(done, (samples.length / rate) * 1000 + 500);
   });
 }
 
@@ -125,17 +171,23 @@ export async function speakLine(text: string, opts?: { onDone?: () => void }): P
   }
   stopSpeaking();
   const gen = ++speechGen;
-  const parts = sentences(text);
-  let pending = synth(parts[0] as string);
-  for (let i = 0; i < parts.length; i++) {
-    const cur = await pending;
-    if (gen !== speechGen) return; // a newer utterance took over
-    pending = i + 1 < parts.length ? synth(parts[i + 1] as string) : Promise.resolve(null);
-    if (isMuted()) return; // muted mid-flight — respect it
-    if (cur) await playSamples(cur.samples, cur.rate, gen);
-    if (gen !== speechGen) return;
+  try {
+    const parts = sentences(text);
+    let pending = synth(parts[0] as string);
+    for (let i = 0; i < parts.length; i++) {
+      const cur = await pending;
+      if (gen !== speechGen) return; // a newer utterance took over
+      pending = i + 1 < parts.length ? synth(parts[i + 1] as string) : Promise.resolve(null);
+      if (isMuted()) return; // muted mid-flight — respect it
+      if (cur) await playSamples(cur.samples, cur.rate, gen);
+      if (gen !== speechGen) return;
+    }
+    if (gen === speechGen) opts?.onDone?.();
+  } catch {
+    // Never fail silently: her words are already on screen — just release any gate waiting on us
+    // (the course advance button) so a TTS hiccup can never strand the learner on a locked card.
+    if (gen === speechGen) opts?.onDone?.();
   }
-  if (gen === speechGen) opts?.onDone?.();
 }
 
 /**

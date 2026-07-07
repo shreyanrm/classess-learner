@@ -7,7 +7,7 @@
  * belongs on the other screens — here she speaks in regular type, person to person.
  */
 
-import { VidyaBody } from '@classess/vidya';
+import { useRegisterTarget, useVidyaBus, VidyaBody } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useRouter } from '../shell/router';
@@ -22,9 +22,28 @@ import { Whisper } from './Learn';
 export function ChatScreen() {
   const router = useRouter();
   const { turns, ask, busy, mood, setMood, hasOlder, loadOlder } = useVidyaChat();
+  const bus = useVidyaBus();
   const [draft, setDraft] = useState('');
   const [voiceNote, setVoiceNote] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  // The chat page is the one full-screen route that used to publish nothing — so the bus kept the
+  // last content screen's page/curriculum/canvas, and she would answer about a page already left.
+  // She publishes herself here: the conversation IS the screen, and the course layers are cleared.
+  const threadRef = useRegisterTarget<HTMLDivElement>('chat-thread', {
+    kind: 'conversation',
+    label: 'the conversation on screen',
+    getSceneState: () => ({
+      turns: turns.slice(-6).map((t) => ({ role: t.role, text: t.text.slice(0, 120) })),
+    }),
+  });
+  useEffect(() => {
+    bus.publishPage({
+      route: 'chat',
+      state: { title: 'conversation', intent: 'talk', turnCount: turns.length },
+    });
+    bus.publishCurriculum({});
+    bus.publishCanvas(undefined);
+  }, [bus, turns.length]);
   const inputRef = useRef<HTMLInputElement | null>(null);
   // scroll bookkeeping: keep the reader's place when the past prepends, follow the newest line
   const restore = useRef<{ height: number; top: number } | null>(null);
@@ -124,6 +143,7 @@ export function ChatScreen() {
         style={{ flex: 1, overflowY: 'auto', padding: '10px 20px' }}
       >
         <div
+          ref={threadRef}
           style={{
             maxWidth: 680,
             margin: '0 auto',

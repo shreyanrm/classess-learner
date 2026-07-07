@@ -1,0 +1,26 @@
+- generic [ref=f18e4]:
+  - generic [ref=f18e5]:
+    - button "Vidya" [ref=f18e7] [cursor=pointer]:
+      - img [ref=f18e11]
+    - generic [ref=f18e36]: Vidya
+    - button "Mute Vidya" [ref=f18e44] [cursor=pointer]:
+      - img [ref=f18e45]
+  - generic [ref=f18e49]:
+    - generic [ref=f18e50]: hi — I’m Vidya
+    - generic [ref=f18e55]: I’m going to learn how you think — my favourite thing. first, what should I call you?
+    - generic [ref=f18e73]: Shreyan
+    - generic [ref=f18e74]: good to meet you, Shreyan. how old are you?
+    - generic [ref=f18e87]: "15"
+    - generic [ref=f18e88]: and where are you in school — which class, and your board?
+    - generic [ref=f18e130]: Class 9 · CBSE
+    - generic [ref=f18e131]: last thing, and it's the fun one — when you're not studying, what are you into?
+    - generic [ref=f18e151]: cricket, space
+    - generic [ref=f18e153]: that's everything I need. your pag▏
+  - generic [ref=f18e155]:
+    - img [ref=f18e156]
+    - generic [ref=f18e158]:
+      - generic [ref=f18e159]: Shreyan · 15 · Class 9 · CBSE
+      - generic [ref=f18e160]: your page is ready
+    - generic [ref=f18e161]:
+      - img [ref=f18e162]
+      - img [ref=f18e181]

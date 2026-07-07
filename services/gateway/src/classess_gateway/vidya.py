@@ -63,6 +63,19 @@ VIDYA_SYSTEM = (
     VIDYA_PERSONA
     + """
 
+You know this learner personally — you are their concierge, not a stranger who resets each turn. The
+"Who you are teaching" block is their dossier: their name, age, class and board, what they are into,
+how they have been doing, and things you have chosen to remember about them. Use it like a tutor who
+has known only them for years. Greet them by name when it is natural — the first turn of a session, a
+real win — never robotically at the top of every reply. Reach for THEIR world for every example and
+analogy (their sport, their game, their age) rather than a generic one. When it fits, reference what
+they did last or last session, and anticipate the next step instead of waiting to be asked. If the
+dossier is empty, just be warm and do not invent details you were not given.
+
+When the learner tells you something durable worth carrying across sessions — a name they prefer to be
+called, a goal, a fear, an exam date — save it with a remember action so it joins their dossier for
+next time. Use it sparingly; never remember transient chatter.
+
 A deterministic verifier has already decided whether the working is correct and, if not, WHICH form
 first breaks. Trust it completely; never contradict it and never restate the final answer.
 
@@ -79,13 +92,28 @@ Every reply takes exactly ONE path — pick the lightest that truly answers:
 - "visualization" — ONLY when a drawing answers better than words: a diagram ("draw", "diagram"),
   a chart ("chart", "graph", "plot"), or a concept map ("concept map", "mind map"). Set
   viz: {"kind":"diagram|chart|conceptmap","concept":"<what to draw>"}.
-- "action" — when they ask you to DO something in the product. Set action:
+- "action" — when they ask you to DO real work in the product: prepare a parent note, face a
+  boss, or compose a brand-new course on something not in the syllabus. Set action:
   {"capability":"open_course|start_practice|start_boss|go_to_twin|prepare_parent_note",
    "params":{"query":"<course or topic name, when relevant>"},
    "why":"<one honest line: why this, grounded in what you can actually see>",
    "confidence":"high|medium|low"}.
-- "route" — when they just want to go somewhere. Set route:
+- "route" — when they just want to GO somewhere that already exists. Set route:
   {"to":"home|chat|learn|practice|progress|you","why":"<one short line>"}.
+  The destinations, and the exact token for each:
+    home     — their dashboard / today.
+    chat     — this full conversation with you.
+    learn    — the library of subjects and courses (also: library, subjects, courses).
+    practice — unaided practice / sandbox.
+    progress — their progress and knowledge twin (also: my progress, mastery, my twin).
+    you      — their profile and settings (also: profile, account, settings).
+  For a named subject ("open chemistry", "take me to physics") or a specific course ("open the
+  atom", "go to variables on both sides"), still use route with to:"learn" — the app resolves the
+  exact subject or course from what they named and takes them straight there.
+
+A pure "take me to / go to / open / show me <place>" is ALWAYS a route, never an action — routing
+navigates instantly and reversibly, so it never needs approval. Reserve action for doing work
+(a parent note, a boss, composing a course from scratch), not for plain navigation.
 
 Do not manufacture a component for its own sake — a question that prose answers stays inline.
 
@@ -100,6 +128,9 @@ provided target registry. Overlay actions:
   patching its own state. Only for targets whose scene state is provided; patch keys must match it.
 - {"type":"speak","text":"..."}  a line in your voice: spoken aloud when voice is live, otherwise it
   appears in your handwriting. Short and warm, never the final answer.
+- {"type":"remember","text":"<a durable fact the learner just shared — a preferred name, a goal, a
+  fear, an exam date>"}  save something worth carrying across sessions; use sparingly, never for
+  transient chatter.
 - {"type":"setMood","mood":"thinking|hint|correct|celebrate|waiting|idle"}
 
 Choosing a mark is a pedagogical act — pick the ONE that fits this exact moment, never a default.
@@ -411,12 +442,67 @@ _MOCK_SAY = {
 }
 
 
+def _preferred_name(learner: dict[str, Any], facts: list[Any]) -> str:
+    """The name to call them: a remembered 'call me X' preference wins over the onboarding name."""
+    for f in facts:
+        m = re.search(r"called?\s+([A-Za-z][\w'’-]{0,30})", str(f), re.IGNORECASE)
+        if m:
+            return m.group(1)
+    return str(learner.get("name") or "").strip()
+
+
+# Keyless remember: two clear shapes the learner might say that are worth carrying forward. In live
+# mode the model decides when to remember; this is the deterministic twin for mock mode.
+_REMEMBER_MOCK: tuple[tuple[re.Pattern[str], Any], ...] = (
+    (
+        re.compile(r"\bcall me\s+([A-Za-z][\w'’-]{0,30})", re.IGNORECASE),
+        lambda m: f"prefers to be called {m.group(1)}",
+    ),
+    (
+        re.compile(r"\bremember (?:that\s+)?(.+)", re.IGNORECASE),
+        lambda m: m.group(1).strip(" .!?\"'")[:120],
+    ),
+)
+
+
 def mock_vidya_turn(payload: dict[str, Any]) -> dict[str, Any]:
     """Deterministic, network-free five-path turn. The same shape live mode returns."""
     context = payload.get("context") or {}
     turn = context.get("turn") or {}
     curriculum = context.get("curriculum") or {}
+    lifetime = context.get("lifetime") or {}
+    learner = lifetime.get("learner") or {}
+    facts = lifetime.get("facts") or []
     text = str(turn.get("lastUserInput") or "")
+    name = _preferred_name(learner, facts)
+
+    # The concierge knows who she is teaching (grounded in the real dossier, keyless).
+    if name and re.search(r"\b(my name|who am i)\b", text, re.IGNORECASE):
+        return {
+            "path": "inline",
+            "say": f"you're {name} — of course I remember.",
+            "actions": [{"type": "setMood", "mood": "idle"}],
+            "grounded": True,
+            "handed_answer": False,
+        }
+
+    # She learns a durable fact and writes it to her dossier via the remember action.
+    for pattern, render in _REMEMBER_MOCK:
+        m = pattern.search(text)
+        if m:
+            fact = render(m)
+            if fact:
+                return {
+                    "path": "inline",
+                    "say": "got it — I'll remember that.",
+                    "actions": [
+                        {"type": "remember", "text": fact},
+                        {"type": "setMood", "mood": "correct"},
+                    ],
+                    "grounded": True,
+                    "handed_answer": False,
+                }
+
     classification = classify_intent(text, str(curriculum.get("nodeName") or ""))
     out: dict[str, Any] = {
         "say": _MOCK_SAY[str(classification["path"])],
@@ -430,11 +516,67 @@ def mock_vidya_turn(payload: dict[str, Any]) -> dict[str, Any]:
 # --- prompt assembly -------------------------------------------------------------------------------
 
 
+def _digest_state(state: Any) -> str:
+    """A compact, one-line rendering of a screen's published state — lists and maps clipped so she
+    reads the actual contents (the stops, the constellation, the chapters) without a wall of JSON."""
+    if not isinstance(state, dict) or not state:
+        return "(nothing published)"
+    parts: list[str] = []
+    for k, v in state.items():
+        if isinstance(v, (list, dict)):
+            s = json.dumps(v, default=str)
+            parts.append(f"{k}={s[:200] + '…' if len(s) > 200 else s}")
+        else:
+            parts.append(f"{k}={v}")
+    return "; ".join(parts)
+
+
+def _dossier(lifetime: dict[str, Any]) -> str:
+    """The 'who you are teaching' block — the persistent-context conditioning VIDYA.md §7 requires.
+    Terse (it rides every turn) and only the lines actually present; empty when nothing is known."""
+    learner = lifetime.get("learner") or {}
+    lines: list[str] = []
+    name = str(learner.get("name") or "").strip()
+    if name:
+        lines.append(f"  Name: {name} (address them by name naturally, not every line)")
+    bio = [
+        str(bit)
+        for bit in (
+            f"age {learner['age']}" if learner.get("age") else "",
+            learner.get("grade"),
+            learner.get("board"),
+        )
+        if bit
+    ]
+    if bio:
+        lines.append("  " + " · ".join(bio))
+    twin = str(lifetime.get("twinSummary") or "").strip()
+    if twin:
+        lines.append(f"  What they're like: {twin}")
+    mastery = [str(m) for m in (lifetime.get("masteryHighlights") or []) if m][:4]
+    if mastery:
+        lines.append(f"  Strong on: {', '.join(mastery)}")
+    facts = [str(f) for f in (lifetime.get("facts") or []) if f][:12]
+    if facts:
+        lines.append(f"  Things to remember: {'; '.join(facts)}")
+    if not lines:
+        return ""
+    return "Who you are teaching:\n" + "\n".join(lines) + "\n\n"
+
+
 def _build_user_prompt(context: dict[str, Any], grounding: dict[str, Any] | None) -> str:
     canvas = context.get("canvas") or {}
     curriculum = context.get("curriculum") or {}
     turn = context.get("turn") or {}
     targets = context.get("targets") or []
+    page = context.get("page") or {}
+    session = context.get("session") or {}
+    lifetime = context.get("lifetime") or {}
+
+    route = page.get("route") or "unknown"
+    screen = _digest_state(page.get("state"))
+    events = [str(e) for e in (session.get("recentEvents") or [])][-6:]
+    activity = "\n".join(f"  - {e}" for e in events) or "  (nothing yet this session)"
 
     node = curriculum.get("nodeName") or "linear equations in one variable"
     equation = canvas.get("equation") or "(none yet)"
@@ -471,6 +613,9 @@ def _build_user_prompt(context: dict[str, Any], grounding: dict[str, Any] | None
         )
 
     return (
+        f"Current screen: {route} — {screen}\n"
+        f"Recent activity (newest last):\n{activity}\n\n"
+        f"{_dossier(lifetime)}"
         f"Topic: {node}\n"
         f"Problem: {equation}\n"
         f"Learner's working:\n{step_lines}\n\n"
@@ -478,6 +623,9 @@ def _build_user_prompt(context: dict[str, Any], grounding: dict[str, Any] | None
         f"Targets you may draw on:\n{target_lines}\n\n"
         f"Recent conversation:\n{recent_lines}\n"
         f'Learner just said: "{last_user}"\n\n'
+        "The Current screen line and the targets are exactly what the learner is looking at right "
+        "now — when they ask what is on their screen, or refer to this or here, answer from those "
+        "concretely (name the real stops, chapters, stars, options — never a page you cannot see). "
         "Classify this turn into exactly one path, then give the reply (a graduated hint when they "
         "are working a problem) and any overlay actions pointing at the exact place that needs "
         "attention."

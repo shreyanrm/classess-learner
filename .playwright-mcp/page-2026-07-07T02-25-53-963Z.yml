@@ -1,0 +1,97 @@
+- generic [ref=f13e2]:
+  - generic [ref=f13e4]:
+    - generic [ref=f13e5]:
+      - generic [ref=f13e6]: tuesday 7 july
+      - heading "Good morning, Aanya" [level=1] [ref=f13e7]
+      - generic [ref=f13e8]: mistakes are just data with feelings
+      - generic [ref=f13e10]:
+        - textbox "Talk to Vidya…" [ref=f13e11]
+        - button "Talk by voice" [ref=f13e12] [cursor=pointer]
+      - generic [ref=f13e21]:
+        - button "Learn something cool" [ref=f13e22] [cursor=pointer]:
+          - img [ref=f13e23]
+          - text: Learn something cool
+        - button "Open a rabbit hole" [ref=f13e25] [cursor=pointer]:
+          - img [ref=f13e26]
+          - text: Open a rabbit hole
+        - button "What should I do today" [ref=f13e28] [cursor=pointer]:
+          - img [ref=f13e29]
+          - text: What should I do today
+      - generic [ref=f13e31]:
+        - button "Learn" [ref=f13e32] [cursor=pointer]:
+          - generic [ref=f13e33]: Learn
+        - button "Practice" [ref=f13e34] [cursor=pointer]:
+          - generic [ref=f13e35]: Practice
+    - generic [ref=f13e37]:
+      - generic [ref=f13e38]: +
+      - generic [ref=f13e39]: ·
+      - generic [ref=f13e40]: ·
+      - generic [ref=f13e41]: +
+      - generic [ref=f13e42]: ·
+      - generic [ref=f13e43]: +
+      - generic [ref=f13e44]: ·
+      - generic [ref=f13e45]: +
+      - img [ref=f13e46]
+      - button "Warm-up day 2 of being a learner · done" [ref=f13e70] [cursor=pointer]:
+        - img [ref=f13e71]
+        - generic [ref=f13e81]:
+          - generic [ref=f13e82]: Warm-up
+          - generic [ref=f13e83]: day 2 of being a learner · done
+        - img [ref=f13e85]
+      - button "Exhaustible and inexhaustible resources done · revisit any time" [ref=f13e88] [cursor=pointer]:
+        - img [ref=f13e89]
+        - generic [ref=f13e92]:
+          - generic [ref=f13e93]: Exhaustible and inexhaustible resources
+          - generic [ref=f13e94]: done · revisit any time
+        - img [ref=f13e96]
+      - button "Why dates matter in history done · revisit any time" [ref=f13e99] [cursor=pointer]:
+        - img [ref=f13e100]
+        - generic [ref=f13e103]:
+          - generic [ref=f13e104]: Why dates matter in history
+          - generic [ref=f13e105]: done · revisit any time
+        - img [ref=f13e107]
+      - button "What makes a number rational next up · a fresh idea" [ref=f13e110] [cursor=pointer]:
+        - img [ref=f13e111]
+        - generic [ref=f13e114]:
+          - generic [ref=f13e115]: What makes a number rational
+          - generic [ref=f13e116]: next up · a fresh idea
+        - img [ref=f13e118]
+      - button "Review refresh what’s fading" [ref=f13e121] [cursor=pointer]:
+        - img [ref=f13e122]
+        - generic [ref=f13e127]:
+          - generic [ref=f13e128]: Review
+          - generic [ref=f13e129]: refresh what’s fading
+        - img [ref=f13e131]
+      - button "Boss gate locked · finish today’s topic" [ref=f13e134] [cursor=pointer]:
+        - img [ref=f13e135]
+        - generic [ref=f13e138]:
+          - generic [ref=f13e139]: Boss gate
+          - generic [ref=f13e140]: locked · finish today’s topic
+        - img [ref=f13e142]
+      - button "Something is hiding here — open the sandbox" [ref=f13e145] [cursor=pointer]:
+        - img [ref=f13e146]
+      - generic: something is hiding here
+      - generic [ref=f13e150]:
+        - img "Vidya" [ref=f13e151]:
+          - img [ref=f13e155]
+        - generic [ref=f13e179]: I marked today’s walk for you
+    - generic [ref=f13e180]:
+      - generic [ref=f13e181]: ⌘K
+      - text: Anything, anywhere
+  - banner:
+    - img "Classess" [ref=f13e183]
+    - generic [ref=f13e184]:
+      - button "Did you know" [ref=f13e185] [cursor=pointer]:
+        - img [ref=f13e186]
+        - text: Did you know
+      - generic "day 2 of being a learner" [ref=f13e188]:
+        - img [ref=f13e189]
+        - text: "2"
+      - generic [ref=f13e192]: 935 xp
+      - generic [ref=f13e193]:
+        - generic "level 6 · 135/280 xp to level 7" [ref=f13e194]:
+          - img [ref=f13e195]
+          - generic [ref=f13e198]: "6"
+        - button "You — level 6, profile and settings" [ref=f13e199] [cursor=pointer]:
+          - generic "fox" [ref=f13e200]:
+            - img [ref=f13e202]
