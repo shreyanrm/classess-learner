@@ -75,6 +75,15 @@ function Sparks({ hue }: { hue: string }) {
   );
 }
 
+/** The "what you proved" headline. Course-aware via the run's real performance rather than a
+ *  topic-specific metaphor — "you kept the scale level" is the equations balance, and read as
+ *  nonsense in a chemistry or biology course. Stars come from this run's graded evidence. */
+function provedLine(stars: number): string {
+  if (stars >= 3) return 'You never put a foot wrong, the whole way through.';
+  if (stars >= 2) return 'You found the through-line and held it.';
+  return 'You got there — and that is what counts.';
+}
+
 export function Greeting({
   topic,
   nodeId,
@@ -298,7 +307,7 @@ export function Greeting({
             color: 'var(--clss-ink-900)',
           }}
         >
-          {replay ? 'You walked it again.' : 'You kept the scale level, every single time.'}
+          {replay ? 'You walked it again.' : provedLine(stars)}
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}

@@ -8,6 +8,7 @@
 
 import { createSdk, type Sdk } from '@classess/sdk';
 import {
+  hasSyncAnchor,
   parseActions,
   useVidyaBus,
   type VidyaHandlers,
@@ -63,7 +64,7 @@ import {
   writeArchive,
 } from './vidya/chat';
 import { resolveTurnExtras, type TurnExtras } from './vidya/paths';
-import { SpeechNarrator, speakLine } from './vidya/speech';
+import { registerPerformance, SpeechNarrator, speakLine } from './vidya/speech';
 
 const LLM_MODE = (import.meta.env.VITE_LLM_MODE as 'mock' | 'live' | undefined) ?? 'mock';
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
@@ -432,7 +433,9 @@ function AppInner({ sdk }: { sdk: Sdk }) {
             });
           }
         }
-      } else {
+      }
+      let spokenTurnId: string | undefined;
+      if (forgets.length === 0) {
         // The five-path orchestrator (VIDYA.md §6): the gateway's classification wins; unclassified
         // turns fall to the deterministic keyword classifier so every mode works keyless.
         const extras = resolveTurnExtras(
@@ -440,11 +443,11 @@ function AppInner({ sdk }: { sdk: Sdk }) {
           text,
           context.curriculum?.nodeName,
         );
-        say({
+        spokenTurnId = say({
           role: 'vidya',
           text: output.say ?? 'Let us look at this together.',
           ...(extras.path !== 'inline' ? { extras } : {}),
-        });
+        }).id;
         // the route path: she takes you there herself, docked — after her line lands
         if (extras.route) {
           const dest = NAV_ROUTES[extras.route.to];
@@ -460,7 +463,13 @@ function AppInner({ sdk }: { sdk: Sdk }) {
         track: result.track,
         handed_answer: false,
       });
-      bus.dispatch(actions);
+      // THE ACTION TIMELINE: anchored ink rides her speech beats (the conductor plays it as she
+      // speaks the line just said); the rest dispatches at once for an instant reaction. A turn
+      // with no anchors keeps the original all-at-once behavior.
+      const anchored = actions.filter(hasSyncAnchor);
+      const immediate = actions.filter((a) => !hasSyncAnchor(a));
+      if (spokenTurnId && anchored.length > 0) registerPerformance(spokenTurnId, anchored);
+      bus.dispatch(immediate);
       setMood(actions.length > 0 ? 'explaining' : 'idle');
     } catch {
       say({ role: 'vidya', text: 'Give me a moment, then ask me again.' });

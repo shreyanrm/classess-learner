@@ -102,6 +102,66 @@ def test_cache_returns_hit_on_repeat() -> None:
     assert second.tokens == 0  # served from cache, no model call
 
 
+# --- grade.attempt: a real live handler + honest telemetry (fix, 2026-07-07) ----------
+def test_grade_attempt_live_returns_correct_and_feedback(monkeypatch) -> None:
+    """The live path has a DEDICATED handler returning {correct, feedback} (the mock's shape),
+    not the generic {capability, message} — and it reports the model that actually answered."""
+    import sys
+    import types
+
+    from classess_gateway.providers import _grade_attempt
+
+    fake = types.ModuleType("litellm")
+    fake.drop_params = False
+    resp_obj = types.SimpleNamespace(
+        choices=[
+            types.SimpleNamespace(
+                message=types.SimpleNamespace(content='{"correct": true, "feedback": "clean work"}')
+            )
+        ],
+        model="anthropic/claude-opus-4-8",  # the fallback answered (the placeholder failed over)
+        usage=types.SimpleNamespace(total_tokens=42),
+    )
+    fake.completion = lambda **kwargs: resp_obj
+    monkeypatch.setitem(sys.modules, "litellm", fake)
+
+    out = _grade_attempt(
+        provider_model="classess/grade-slm",
+        payload={"prompt": "2x = 4", "answer": "2"},
+        fallbacks=("anthropic/claude-opus-4-8",),
+    )
+    assert out.output == {"correct": True, "feedback": "clean work"}
+    assert out.tokens == 42
+    assert (
+        out.model == "anthropic/claude-opus-4-8"
+    )  # telemetry gets the real model, not the placeholder
+
+
+def test_gateway_reports_the_model_that_actually_answered_on_fallback() -> None:
+    """When a provider reports a fallback model, telemetry and the response carry IT — never the
+    Track-2 placeholder primary that never ran."""
+    from classess_gateway.providers import ProviderResponse
+
+    class FallbackProvider:
+        def complete(self, *, provider_model, capability, payload, fallbacks=()):  # noqa: ANN001
+            return ProviderResponse(
+                output={"correct": True, "feedback": "ok"},
+                tokens=5,
+                model="anthropic/claude-opus-4-8",
+            )
+
+    sink = MetricsSink()
+    gw = Gateway(FallbackProvider(), InMemoryCache(), sink)
+    resp = gw.invoke("grade.attempt", req(ConsentTier.UN_ELEVATED, attempt="2x=4"))
+    # the policy primary is the grade SLM placeholder; the fallback (Opus) actually answered
+    assert (
+        resolve(policy("grade.attempt").primary, policy("grade.attempt").track).provider_model
+        == "classess/grade-slm"
+    )
+    assert resp.model == "anthropic/claude-opus-4-8"
+    assert sink.events[-1].model == "anthropic/claude-opus-4-8"
+
+
 def test_peakcut_never_caches() -> None:
     gw = make_gateway()
     first = gw.invoke("peakcut.evaluate", req(ConsentTier.ELEVATED, learner="a"))
@@ -220,7 +280,12 @@ def test_mock_turn_answers_the_name_question() -> None:
     from classess_gateway.vidya import mock_vidya_turn
 
     out = mock_vidya_turn(
-        {"context": {"lifetime": {"learner": {"name": "Ravi"}}, "turn": {"lastUserInput": "what's my name?"}}}
+        {
+            "context": {
+                "lifetime": {"learner": {"name": "Ravi"}},
+                "turn": {"lastUserInput": "what's my name?"},
+            }
+        }
     )
     assert "Ravi" in out["say"]
 

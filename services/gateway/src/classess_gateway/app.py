@@ -249,21 +249,26 @@ class Gateway:
         if capability == "vidya.turn":
             output = screen_vidya_outbound(output, self.classifier)
 
+        # The model that actually answered: a provider reports it when a fallback took over (e.g. a
+        # Track-2 placeholder that failed over to the frontier), else the policy's primary. The
+        # cache and telemetry record the real model, never one that never ran.
+        served_model = result.model or spec.provider_model
+
         self.cache.set(
             key,
-            CacheEntry(output=output, model=spec.provider_model, tokens=result.tokens),
+            CacheEntry(output=output, model=served_model, tokens=result.tokens),
             pol.cache_tier,
         )
         emit(
             self.sink,
             TelemetryEvent(
-                capability, spec.track.value, spec.provider_model, latency_ms, result.tokens, False
+                capability, spec.track.value, served_model, latency_ms, result.tokens, False
             ),
         )
         return CapabilityResponse(
             capability=capability,
             track=spec.track.value,
-            model=spec.provider_model,
+            model=served_model,
             cache_hit=False,
             latency_ms=latency_ms,
             tokens=result.tokens,

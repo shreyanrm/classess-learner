@@ -20,9 +20,10 @@ import re
 from pathlib import Path
 from typing import Any
 
-# v2: composer type-selection doctrine — cards may carry a guided-discovery spec and an imageSpec
-# for organic visuals; a bump regenerates pre-doctrine caches into the richer courses.
-PROMPT_VERSION = "plexus-v2"
+# v3: full type universe — cards may carry any rich activity (perturbation, whatIf, compare,
+# conceptMap, mini-workbook, flashcards, derivation, wordProblem, podcast, arcade) alongside the
+# guided-discovery spec and imageSpec; a bump regenerates pre-doctrine caches into richer courses.
+PROMPT_VERSION = "plexus-v3"
 
 
 def cache_dir() -> Path:

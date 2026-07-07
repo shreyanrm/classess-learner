@@ -26,6 +26,7 @@ const FLEW_KEY = 'clss-vidya-flew';
 export function FlyingVidya({
   routeKey,
   mood,
+  gestureAngle,
   onTap,
   onHoldStart,
   onHoldEnd,
@@ -33,6 +34,8 @@ export function FlyingVidya({
 }: {
   routeKey: string;
   mood: VidyaMood;
+  /** Direction (radians) she leans + gazes toward while explaining — toward the ink she's drawing. */
+  gestureAngle?: number;
   onTap: () => void;
   /** Push-to-talk on her docked body — forwarded straight to VidyaBody. */
   onHoldStart?: () => void;
@@ -210,7 +213,10 @@ export function FlyingVidya({
           <VidyaBody
             size={size}
             mood={flying ? 'hint' : mood}
-            gaze={flying ? undefined : 'pointer'}
+            // While inking she turns to the board (gestureAngle); otherwise her eyes drift to the
+            // cursor. Flight owns her gaze during arrival, so neither applies until she's landed.
+            gaze={flying ? undefined : gestureAngle !== undefined ? undefined : 'pointer'}
+            gestureAngle={flying ? undefined : gestureAngle}
             onTap={onTap}
             // Push-to-talk only once she has landed — a hold during the arrival would fight it.
             onHoldStart={flying ? undefined : onHoldStart}

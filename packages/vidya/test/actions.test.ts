@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'bun:test';
-import { isConsequential, parseActions, reduceActions, type VidyaAction } from '../src/actions';
+import {
+  hasSyncAnchor,
+  isConsequential,
+  parseActions,
+  planPerformance,
+  reduceActions,
+  syncAnchorOf,
+  type VidyaAction,
+} from '../src/actions';
 
 describe('parseActions', () => {
   it('keeps valid actions and drops malformed ones', () => {
@@ -142,5 +150,60 @@ describe('reduceActions', () => {
     expect(e.says).toEqual(['it faded — here it is again']);
     // default is false when she draws normally
     expect(reduceActions([{ type: 'say', text: 'x' }]).redrawMarks).toBe(false);
+  });
+});
+
+// --- THE ACTION TIMELINE: sync anchors + performance planning ------------------------------------
+
+describe('sync anchors', () => {
+  it('parseActions preserves withSentence / afterSentence on drawing actions', () => {
+    const actions = parseActions([
+      { type: 'highlight', targetId: 't', withSentence: 2 },
+      { type: 'annotate', targetId: 't', mark: 'circle', afterSentence: 1 },
+      { type: 'write', targetId: 't', text: 'undo the +3', withSentence: 0 },
+    ]);
+    expect(syncAnchorOf(actions[0] as VidyaAction)).toEqual({ withSentence: 2 });
+    expect(syncAnchorOf(actions[1] as VidyaAction)).toEqual({ afterSentence: 1 });
+    expect(syncAnchorOf(actions[2] as VidyaAction)).toEqual({ withSentence: 0 });
+  });
+
+  it('hasSyncAnchor is true only when an anchor is present', () => {
+    expect(hasSyncAnchor({ type: 'point', targetId: 't', withSentence: 1 } as VidyaAction)).toBe(true);
+    expect(hasSyncAnchor({ type: 'point', targetId: 't', afterSentence: 0 } as VidyaAction)).toBe(true);
+    expect(hasSyncAnchor({ type: 'point', targetId: 't' } as VidyaAction)).toBe(false);
+    expect(hasSyncAnchor({ type: 'say', text: 'x' } as VidyaAction)).toBe(false);
+  });
+});
+
+describe('planPerformance', () => {
+  it('buckets actions onto their beats; unanchored ride immediate', () => {
+    const actions = parseActions([
+      { type: 'setMood', mood: 'thinking' }, // no anchor -> immediate
+      { type: 'annotate', targetId: 'a', mark: 'circle', withSentence: 1 },
+      { type: 'write', targetId: 'a', text: 'undo the +3', withSentence: 1 },
+      { type: 'annotate', targetId: 'b', mark: 'check', afterSentence: 2 },
+    ]);
+    const plan = planPerformance(actions, 3);
+    expect(plan.immediate.map((a) => a.type)).toEqual(['setMood']);
+    expect(plan.atStart.get(1)?.map((a) => a.type)).toEqual(['annotate', 'write']);
+    expect(plan.atEnd.get(2)?.map((a) => a.type)).toEqual(['annotate']);
+  });
+
+  it('clamps an out-of-range anchor to the last sentence (ink still lands)', () => {
+    const actions = parseActions([{ type: 'point', targetId: 'a', withSentence: 9 }]);
+    const plan = planPerformance(actions, 3);
+    expect(plan.atStart.get(2)?.length).toBe(1); // clamped to sentence index 2
+    expect(plan.immediate).toEqual([]);
+  });
+
+  it('with no sentences, everything is immediate (backward compatible)', () => {
+    const actions = parseActions([
+      { type: 'annotate', targetId: 'a', mark: 'circle', withSentence: 1 },
+      { type: 'say', text: 'x' },
+    ]);
+    const plan = planPerformance(actions, 0);
+    expect(plan.immediate.length).toBe(2);
+    expect(plan.atStart.size).toBe(0);
+    expect(plan.atEnd.size).toBe(0);
   });
 });

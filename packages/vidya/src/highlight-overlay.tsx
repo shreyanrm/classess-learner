@@ -9,10 +9,14 @@ import { highlighterSwipe, inkRng, type Mark, markPath, noteRotation } from './f
 
 const DEFAULT_TTL = 6000;
 const FADE = 500;
-/** How long a single stroke takes to draw itself on, tied to the shared age clock. */
-const DRAW_MS = 520;
-/** Handwriting speed for Vidya's notes — a natural ~22 chars/sec. */
-const MS_PER_CHAR = 45;
+/** A highlighter wash is attention, not a pen — it blooms in softly over this window (owner law). */
+const WASH_FADE_IN = 260;
+/** Natural handwriting pace when her voice isn't pacing the note — ~28ms/char (owner: muted fallback). */
+const MS_PER_CHAR = 28;
+/** How fast the pen travels along a stroke, px/ms — a believable hand, not an instant reveal. */
+const PEN_PX_PER_MS = 0.6;
+const MIN_STROKE_MS = 380;
+const MAX_STROKE_MS = 1200;
 
 /** Keep marks glued to their moving targets AND drive the draw/fade/typing clock: re-measure every frame. */
 function useLiveTick(active: boolean): number {
@@ -32,29 +36,61 @@ function useLiveTick(active: boolean): number {
 
 /** 1 while alive, ramps to 0 over the last FADE ms of the mark's life. */
 function fadeOpacity(age: number, ttl: number): number {
-  if (age <= ttl - FADE) return 1;
   if (age >= ttl) return 0;
+  if (age <= ttl - FADE) return 1;
   return Math.max(0, (ttl - age) / FADE);
 }
 
 const clamp01 = (n: number): number => (n < 0 ? 0 : n > 1 ? 1 : n);
+/** Ease-out cubic — the pen decelerates into the finish of a stroke, the way a hand lifts. */
+const easeOutCubic = (t: number): number => 1 - (1 - t) ** 3;
 
-/** Dash-offset props that draw a path on over DRAW_MS on the SAME age clock (0 = fully drawn). */
+/** Rough drawn length of a mark, in px, so a long arrow takes longer to ink than a short tick. */
+function strokeLen(mark: Mark, w: number, h: number): number {
+  switch (mark) {
+    case 'underline':
+      return w + 6;
+    case 'circle':
+      return 2.15 * Math.PI * ((w + h) / 2 + 9); // two passes round the term
+    case 'crossOut':
+      return 2 * Math.hypot(w, h * 0.25);
+    case 'arrow':
+      return Math.hypot(Math.max(48, w * 0.5), Math.max(18, h * 0.35)) + 26; // shaft, then the head
+    case 'bracket':
+      return h + 12;
+    case 'check':
+      return Math.min(Math.max(Math.min(w, h), 22), 40) * 1.7;
+    default:
+      return 46; // lookHere — a small quick tick
+  }
+}
+
+/** How long this stroke takes to draw itself on — pen speed, with a seeded ±10% micro-variation. */
+function strokeDurationMs(mark: Mark, w: number, h: number, rng: () => number): number {
+  const raw = (strokeLen(mark, w, h) / PEN_PX_PER_MS) * (0.9 + rng() * 0.2);
+  return Math.max(MIN_STROKE_MS, Math.min(MAX_STROKE_MS, raw));
+}
+
+/** Dash-offset props that draw a path on over `duration` ms, eased like a moving pen (0 = fully drawn). */
 function drawOn(
   age: number,
+  duration: number,
   reduced: boolean,
 ): { pathLength: number; strokeDasharray: string; strokeDashoffset: number } {
-  const progress = reduced ? 1 : clamp01(age / DRAW_MS);
+  const progress = reduced ? 1 : easeOutCubic(clamp01(age / duration));
   return { pathLength: 1, strokeDasharray: '1', strokeDashoffset: 1 - progress };
 }
 
 /**
  * VidyaOverlay — the visible half of "every page is a canvas she's plugged into", drawn in her own
- * hand. Highlights are highlighter swipes, marks are seeded freehand strokes (no two identical), and
- * notes are written on letter-by-letter in Caveat at a slight margin tilt. Every stroke draws itself
- * on and then fades — TRANSIENT, living only for the ttl Vidya chose. Nothing is scaled: paths are
- * built to each target's real rect, so the pen nib stays a constant width. The overlay never
- * intercepts pointer events and casts no shadow.
+ * hand. Highlighter washes bloom in softly (attention, not a pen); every stroke mark DRAWS ITSELF
+ * ON like a moving pen — the arrow grows along its shaft with the head arriving last, the circle
+ * sweeps its arc, the underline travels left to right — at a believable, slightly varying hand
+ * speed. Notes are written on letter-by-letter in Caveat, paced to her voice when a sentence beat
+ * carries them (THE SYNCED HAND) or at a natural handwriting pace when muted. Each mark runs on its
+ * OWN birth clock, so a choreographed turn accumulates ink beat by beat instead of popping in at
+ * once. Nothing is scaled: paths are built to each target's real rect, so the pen nib stays a
+ * constant width. The overlay never intercepts pointer events and casts no shadow.
  */
 export function VidyaOverlay() {
   const bus = useVidyaBus();
@@ -64,7 +100,9 @@ export function VidyaOverlay() {
 
   if (!active) return null;
 
-  const age = performance.now() - bus.marksBornAt;
+  const now = performance.now();
+  /** Each mark ages from its own paint time; a pre-timeline turn shares the dispatch clock. */
+  const ageOf = (bornAt: number | undefined): number => now - (bornAt ?? bus.marksBornAt);
   // When she re-inks a faded set, the nonce reseeds every stroke so the redraw is genuinely fresh
   // (a new hand-drawn pass), not a pixel-identical copy of what faded.
   const reink = bus.reinkNonce ? String(bus.reinkNonce) : '';
@@ -84,11 +122,14 @@ export function VidyaOverlay() {
         zIndex: zIndex.vidyaPresence - 10,
       }}
     >
-      {bus.highlights.map((h: ActiveHighlight) => {
+      {bus.highlights.map((h: ActiveHighlight, i) => {
         const rect = rectOf(h.targetId);
         if (!rect) return null;
-        const opacity = fadeOpacity(age, h.ttl ?? DEFAULT_TTL);
-        if (opacity <= 0) return null;
+        const age = ageOf(h.bornAt);
+        const life = fadeOpacity(age, h.ttl ?? DEFAULT_TTL);
+        if (life <= 0) return null;
+        // The wash is attention, not a pen: it blooms in softly rather than drawing on.
+        const bloom = reduced ? 1 : clamp01(age / WASH_FADE_IN);
         const color = vidyaHighlight[h.level];
         const pad = 6;
         const w = rect.width + pad * 2;
@@ -97,7 +138,7 @@ export function VidyaOverlay() {
         const d = highlighterSwipe(w, hh, rng);
         return (
           <svg
-            key={`hl-${h.targetId}-${h.level}`}
+            key={`hl-${h.targetId}-${h.level}-${i}`}
             width={w}
             height={hh}
             aria-hidden="true"
@@ -106,7 +147,7 @@ export function VidyaOverlay() {
               left: rect.left - pad,
               top: rect.top - pad,
               overflow: 'visible',
-              opacity: opacity * 0.28, // a broad, soft marker pass — ink, never a border box
+              opacity: life * bloom * 0.28, // a broad, soft marker pass — ink, never a border box
               transform: `skewX(-4deg)`,
             }}
           >
@@ -116,22 +157,25 @@ export function VidyaOverlay() {
               stroke={color}
               strokeWidth={hh * 0.92}
               strokeLinecap="round"
-              {...drawOn(age, reduced)}
             />
           </svg>
         );
       })}
 
-      {bus.annotations.map((a: ActiveAnnotation) => {
+      {bus.annotations.map((a: ActiveAnnotation, i) => {
         const rect = rectOf(a.targetId);
         if (!rect) return null;
+        const age = ageOf(a.bornAt);
         const opacity = fadeOpacity(age, a.ttl ?? DEFAULT_TTL);
         if (opacity <= 0) return null;
         const rng = inkRng(a.targetId, a.mark, a.level + reink);
-        const d = markPath(a.mark as Mark, rect.width, rect.height, rng);
+        const mark = a.mark as Mark;
+        const d = markPath(mark, rect.width, rect.height, rng);
+        // A fresh rng for the duration so the seeded ±10% pen-speed variation doesn't disturb the path.
+        const duration = strokeDurationMs(mark, rect.width, rect.height, inkRng(a.targetId, a.mark, `dur${a.level}${reink}`));
         return (
           <svg
-            key={`an-${a.targetId}-${a.mark}-${a.level}`}
+            key={`an-${a.targetId}-${a.mark}-${a.level}-${i}`}
             width={rect.width}
             height={rect.height}
             aria-hidden="true"
@@ -150,27 +194,33 @@ export function VidyaOverlay() {
               strokeWidth={2.5}
               strokeLinecap="round"
               strokeLinejoin="round"
-              {...drawOn(age, reduced)}
+              {...drawOn(age, duration, reduced)}
             />
           </svg>
         );
       })}
 
-      {bus.notes.map((n: ActiveNote) => {
+      {bus.notes.map((n: ActiveNote, i) => {
         const rect = rectOf(n.targetId);
         if (!rect) return null;
         const ttl = n.ttl ?? DEFAULT_TTL;
+        const age = ageOf(n.bornAt);
         const opacity = fadeOpacity(age, ttl);
         if (opacity <= 0) return null;
-        // Type the note on, letter by letter, like a hand writing it.
-        const shown = Math.min(n.text.length, Math.max(0, Math.floor(age / MS_PER_CHAR)));
-        const typing = shown < n.text.length && age < ttl - FADE;
         const rng = inkRng(n.targetId, 'note', n.level + reink);
+        // Write the note on letter by letter. When a sentence beat set durationMs, the hand keeps
+        // pace with her voice; otherwise a natural pace with a per-note pen-speed variation.
+        const speedVar = 0.88 + rng() * 0.24;
+        const writeDur = n.durationMs ?? n.text.length * MS_PER_CHAR * speedVar;
+        const shown = reduced
+          ? n.text.length
+          : Math.min(n.text.length, Math.max(0, Math.floor(clamp01(age / writeDur) * n.text.length)));
+        const typing = shown < n.text.length && age < ttl - FADE;
         const tilt = reduced ? 0 : noteRotation(rng);
         const nudgeX = Math.round((rng() * 2 - 1) * 6); // a small margin drift, not pinned to the edge
         return (
           <div
-            key={`nt-${n.targetId}-${n.level}`}
+            key={`nt-${n.targetId}-${n.level}-${i}`}
             style={{
               position: 'absolute',
               left: rect.left + nudgeX,

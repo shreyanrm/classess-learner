@@ -798,7 +798,599 @@ export function Robin({ size, animate = true, flip, seed = 0 }: CastFigureProps)
   );
 }
 
-// --- the buddies: eight kids ported from the character catalog ------------------------------------
+// ponytail: the ten below repeat one kid skeleton (legs/arms/head/face) with different paint +
+// one accessory — same shape the catalog ships and the eight above already follow. A shared <Kid>
+// base would cut the repetition but would also mean refactoring the working eight; kept additive.
+
+/** Wren — The dreamer. Sky blue, a thought bubble drifting overhead. */
+export function Wren({ size, animate = true, flip, seed = 0 }: CastFigureProps) {
+  return (
+    <CatalogFigure
+      viewBox="0 0 120 178"
+      size={size}
+      animate={animate}
+      seed={seed}
+      flip={flip}
+      label="wren"
+    >
+      <ellipse cx="60" cy="173" rx="32" ry="5" fill={A_GROUND} />
+      <Idle kind="float">
+        <path
+          d="M55 9v15M55 9l11-2v13"
+          stroke="#8E6FC4"
+          strokeWidth="2.5"
+          fill="none"
+          strokeLinecap="round"
+        />
+        <circle cx="52" cy="24.5" r="3.6" fill="#8E6FC4" />
+        <circle cx="63" cy="22.5" r="3.6" fill="#8E6FC4" />
+      </Idle>
+      <Idle kind="bob2">
+        <rect x="49" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <rect x="61" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <ellipse cx="52" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <ellipse cx="68" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <path d="M34 146C34 116 42 104 60 104 78 104 86 116 86 146Z" fill="#39A0DE" />
+        <rect x="28" y="106" width="11" height="34" rx="5.5" fill="#39A0DE" />
+        <circle cx="33.5" cy="143" r="6" fill="#F2C9A0" />
+        <rect x="81" y="106" width="11" height="34" rx="5.5" fill="#39A0DE" />
+        <circle cx="86.5" cy="143" r="6" fill="#F2C9A0" />
+        <rect x="53" y="90" width="14" height="14" rx="6" fill="#F2C9A0" />
+        <circle cx="37" cy="74" r="5" fill="#F2C9A0" />
+        <circle cx="83" cy="74" r="5" fill="#F2C9A0" />
+        <circle cx="60" cy="74" r="24" fill="#F2C9A0" />
+        <ellipse cx="51" cy="65" rx="8" ry="6" fill="#FFFFFF" opacity=".12" />
+        <path
+          d="M36 74C36 54 47 46 60 46 73 46 84 54 84 74 84 66 78 60 60 60 42 60 36 66 36 74Z"
+          fill="#6B4A2C"
+        />
+        <path d="M37 66 q14 -16 34 -12 q-20 0 -34 12Z" fill="#6B4A2C" />
+        <circle cx="47" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <circle cx="73" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <Blink>
+          <circle cx="52" cy="75" r="3" fill="#241F1B" />
+          <circle cx="53.2" cy="73.8" r="1" fill="#fff" />
+          <circle cx="68" cy="75" r="3" fill="#241F1B" />
+          <circle cx="69.2" cy="73.8" r="1" fill="#fff" />
+        </Blink>
+        <path
+          d="M54 84Q60 89 66 84"
+          fill="none"
+          stroke="#9C6B3F"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </Idle>
+    </CatalogFigure>
+  );
+}
+
+/** Juno — The captain. Coral with a dark cape and a raised flag. */
+export function Juno({ size, animate = true, flip, seed = 0 }: CastFigureProps) {
+  return (
+    <CatalogFigure
+      viewBox="0 0 120 178"
+      size={size}
+      animate={animate}
+      seed={seed}
+      flip={flip}
+      label="juno"
+    >
+      <ellipse cx="60" cy="173" rx="32" ry="5" fill={A_GROUND} />
+      <Idle kind="bob">
+        <path d="M80 58 q21 4 17 37 q-2 11 -12 7 q8 -25 -9 -42Z" fill="#2B2B30" />
+        <rect x="49" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <rect x="61" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <ellipse cx="52" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <ellipse cx="68" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <path d="M34 146C34 116 42 104 60 104 78 104 86 116 86 146Z" fill="#E2674A" />
+        <rect x="28" y="106" width="11" height="34" rx="5.5" fill="#E2674A" />
+        <circle cx="33.5" cy="143" r="6" fill="#C68642" />
+        <rect x="81" y="106" width="11" height="34" rx="5.5" fill="#E2674A" />
+        <circle cx="86.5" cy="143" r="6" fill="#C68642" />
+        <rect x="53" y="90" width="14" height="14" rx="6" fill="#C68642" />
+        <circle cx="37" cy="74" r="5" fill="#C68642" />
+        <circle cx="83" cy="74" r="5" fill="#C68642" />
+        <circle cx="60" cy="74" r="24" fill="#C68642" />
+        <ellipse cx="51" cy="65" rx="8" ry="6" fill="#FFFFFF" opacity=".12" />
+        <path
+          d="M36 74C36 54 47 46 60 46 73 46 84 54 84 74 84 66 78 60 60 60 42 60 36 66 36 74Z"
+          fill="#2B2B30"
+        />
+        <circle cx="47" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <circle cx="73" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <Blink>
+          <circle cx="52" cy="75" r="3" fill="#241F1B" />
+          <circle cx="53.2" cy="73.8" r="1" fill="#fff" />
+          <circle cx="68" cy="75" r="3" fill="#241F1B" />
+          <circle cx="69.2" cy="73.8" r="1" fill="#fff" />
+        </Blink>
+        <path
+          d="M54 84Q60 89 66 84"
+          fill="none"
+          stroke="#7A4B28"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <rect x="91" y="92" width="3" height="56" rx="1.5" fill="#6A6C75" />
+        <path d="M94 95h22l-6 8 6 8H94z" fill="#2563EB" />
+      </Idle>
+    </CatalogFigure>
+  );
+}
+
+/** Pax — The friend. Grass green, a mandarin scarf, one arm waving. */
+export function Pax({ size, animate = true, flip, seed = 0 }: CastFigureProps) {
+  return (
+    <CatalogFigure
+      viewBox="0 0 120 178"
+      size={size}
+      animate={animate}
+      seed={seed}
+      flip={flip}
+      label="pax"
+    >
+      <ellipse cx="60" cy="173" rx="32" ry="5" fill={A_GROUND} />
+      <Idle kind="bob3">
+        <rect x="49" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <rect x="61" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <ellipse cx="52" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <ellipse cx="68" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <path d="M34 146C34 116 42 104 60 104 78 104 86 116 86 146Z" fill="#1CA363" />
+        <rect x="28" y="106" width="11" height="34" rx="5.5" fill="#1CA363" />
+        <circle cx="33.5" cy="143" r="6" fill="#E3A977" />
+        <Idle kind="wave">
+          <rect x="83" y="80" width="11" height="34" rx="5.5" fill="#1CA363" />
+          <circle cx="88.5" cy="79" r="6" fill="#E3A977" />
+        </Idle>
+        <rect x="53" y="90" width="14" height="14" rx="6" fill="#E3A977" />
+        <circle cx="37" cy="74" r="5" fill="#E3A977" />
+        <circle cx="83" cy="74" r="5" fill="#E3A977" />
+        <circle cx="60" cy="74" r="24" fill="#E3A977" />
+        <ellipse cx="51" cy="65" rx="8" ry="6" fill="#FFFFFF" opacity=".12" />
+        <path
+          d="M36 74C36 54 47 46 60 46 73 46 84 54 84 74 84 66 78 60 60 60 42 60 36 66 36 74Z"
+          fill="#5A3A22"
+        />
+        <path d="M34 64 q26 -25 52 -2 q-26 -11 -52 2Z" fill="#F26A38" />
+        <path d="M83 62 q13 -1 13 6 q-9 -2 -15 1Z" fill="#F26A38" />
+        <circle cx="47" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <circle cx="73" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <Blink>
+          <circle cx="52" cy="75" r="3" fill="#241F1B" />
+          <circle cx="53.2" cy="73.8" r="1" fill="#fff" />
+          <circle cx="68" cy="75" r="3" fill="#241F1B" />
+          <circle cx="69.2" cy="73.8" r="1" fill="#fff" />
+        </Blink>
+        <path
+          d="M54 84Q60 89 66 84"
+          fill="none"
+          stroke="#9C6B3F"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </Idle>
+    </CatalogFigure>
+  );
+}
+
+/** Remy — The tinkerer. Amber, spiky hair, a wrench in hand. */
+export function Remy({ size, animate = true, flip, seed = 0 }: CastFigureProps) {
+  return (
+    <CatalogFigure
+      viewBox="0 0 120 178"
+      size={size}
+      animate={animate}
+      seed={seed}
+      flip={flip}
+      label="remy"
+    >
+      <ellipse cx="60" cy="173" rx="32" ry="5" fill={A_GROUND} />
+      <Idle kind="bob">
+        <rect x="49" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <rect x="61" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <ellipse cx="52" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <ellipse cx="68" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <path d="M34 146C34 116 42 104 60 104 78 104 86 116 86 146Z" fill="#E8881A" />
+        <rect x="28" y="106" width="11" height="34" rx="5.5" fill="#E8881A" />
+        <circle cx="33.5" cy="143" r="6" fill="#F2C9A0" />
+        <rect x="81" y="106" width="11" height="34" rx="5.5" fill="#E8881A" />
+        <circle cx="86.5" cy="143" r="6" fill="#F2C9A0" />
+        <rect x="53" y="90" width="14" height="14" rx="6" fill="#F2C9A0" />
+        <circle cx="37" cy="74" r="5" fill="#F2C9A0" />
+        <circle cx="83" cy="74" r="5" fill="#F2C9A0" />
+        <circle cx="60" cy="74" r="24" fill="#F2C9A0" />
+        <ellipse cx="51" cy="65" rx="8" ry="6" fill="#FFFFFF" opacity=".12" />
+        <path
+          d="M36 74C36 54 47 46 60 46 73 46 84 54 84 74 84 66 78 60 60 60 42 60 36 66 36 74Z"
+          fill="#6B4A2C"
+        />
+        <path d="M45 49l3 -8 4 8zM57 46l3 -9 4 9zM69 49l3 -8 4 8z" fill="#6B4A2C" />
+        <circle cx="47" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <circle cx="73" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <Blink>
+          <circle cx="52" cy="75" r="3" fill="#241F1B" />
+          <circle cx="53.2" cy="73.8" r="1" fill="#fff" />
+          <circle cx="68" cy="75" r="3" fill="#241F1B" />
+          <circle cx="69.2" cy="73.8" r="1" fill="#fff" />
+        </Blink>
+        <path
+          d="M54 84Q60 89 66 84"
+          fill="none"
+          stroke="#9C6B3F"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <g transform="rotate(16 88 128)">
+          <rect x="84" y="116" width="7" height="30" rx="3.5" fill="#5B6473" />
+          <circle cx="87.5" cy="114" r="7.5" fill="none" stroke="#5B6473" strokeWidth="3.4" />
+        </g>
+      </Idle>
+    </CatalogFigure>
+  );
+}
+
+/** Bo — The little one. Lime, a balloon on a string, a curl of hair. */
+export function Bo({ size, animate = true, flip, seed = 0 }: CastFigureProps) {
+  return (
+    <CatalogFigure
+      viewBox="0 0 120 178"
+      size={size}
+      animate={animate}
+      seed={seed}
+      flip={flip}
+      label="bo"
+    >
+      <ellipse cx="60" cy="173" rx="32" ry="5" fill={A_GROUND} />
+      <Idle kind="float">
+        <circle cx="60" cy="15" r="11" fill="#E0518A" />
+        <path d="M60 26v16" stroke="#6A6C75" strokeWidth="1.4" fill="none" />
+      </Idle>
+      <Idle kind="bob">
+        <rect x="49" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <rect x="61" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <ellipse cx="52" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <ellipse cx="68" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <path d="M34 146C34 116 42 104 60 104 78 104 86 116 86 146Z" fill="#82B23A" />
+        <rect x="28" y="106" width="11" height="34" rx="5.5" fill="#82B23A" />
+        <circle cx="33.5" cy="143" r="6" fill="#F7D7B5" />
+        <rect x="81" y="106" width="11" height="34" rx="5.5" fill="#82B23A" />
+        <circle cx="86.5" cy="143" r="6" fill="#F7D7B5" />
+        <rect x="53" y="90" width="14" height="14" rx="6" fill="#F7D7B5" />
+        <circle cx="37" cy="74" r="5" fill="#F7D7B5" />
+        <circle cx="83" cy="74" r="5" fill="#F7D7B5" />
+        <circle cx="60" cy="74" r="24" fill="#F7D7B5" />
+        <ellipse cx="51" cy="65" rx="8" ry="6" fill="#FFFFFF" opacity=".12" />
+        <path
+          d="M36 74C36 54 47 46 60 46 73 46 84 54 84 74 84 66 78 60 60 60 42 60 36 66 36 74Z"
+          fill="#8C5A2B"
+        />
+        <path d="M53 48 q7 -11 14 0 q-7 -4 -14 0Z" fill="#8C5A2B" />
+        <circle cx="47" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <circle cx="73" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <Blink>
+          <circle cx="52" cy="75" r="3" fill="#241F1B" />
+          <circle cx="53.2" cy="73.8" r="1" fill="#fff" />
+          <circle cx="68" cy="75" r="3" fill="#241F1B" />
+          <circle cx="69.2" cy="73.8" r="1" fill="#fff" />
+        </Blink>
+        <path
+          d="M54 84Q60 89 66 84"
+          fill="none"
+          stroke="#9C6B3F"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </Idle>
+    </CatalogFigure>
+  );
+}
+
+/** Vera — The guide. Rose, side braids, a clipboard. */
+export function Vera({ size, animate = true, flip, seed = 0 }: CastFigureProps) {
+  return (
+    <CatalogFigure
+      viewBox="0 0 120 178"
+      size={size}
+      animate={animate}
+      seed={seed}
+      flip={flip}
+      label="vera"
+    >
+      <ellipse cx="60" cy="173" rx="32" ry="5" fill={A_GROUND} />
+      <Idle kind="bob2">
+        <rect x="49" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <rect x="61" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <ellipse cx="52" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <ellipse cx="68" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <path d="M34 146C34 116 42 104 60 104 78 104 86 116 86 146Z" fill="#E0518A" />
+        <rect x="28" y="106" width="11" height="34" rx="5.5" fill="#E0518A" />
+        <circle cx="33.5" cy="143" r="6" fill="#E3A977" />
+        <rect x="81" y="106" width="11" height="34" rx="5.5" fill="#E0518A" />
+        <circle cx="86.5" cy="143" r="6" fill="#E3A977" />
+        <rect x="53" y="90" width="14" height="14" rx="6" fill="#E3A977" />
+        <circle cx="37" cy="74" r="5" fill="#E3A977" />
+        <circle cx="83" cy="74" r="5" fill="#E3A977" />
+        <circle cx="60" cy="74" r="24" fill="#E3A977" />
+        <ellipse cx="51" cy="65" rx="8" ry="6" fill="#FFFFFF" opacity=".12" />
+        <path
+          d="M36 74C36 54 47 46 60 46 73 46 84 54 84 74 84 66 78 60 60 60 42 60 36 66 36 74Z"
+          fill="#2B2B30"
+        />
+        <g fill="#2B2B30">
+          <rect x="31" y="76" width="6" height="28" rx="3" />
+          <circle cx="34" cy="106" r="5" />
+          <rect x="83" y="76" width="6" height="28" rx="3" />
+          <circle cx="86" cy="106" r="5" />
+        </g>
+        <circle cx="47" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <circle cx="73" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <Blink>
+          <circle cx="52" cy="75" r="3" fill="#241F1B" />
+          <circle cx="53.2" cy="73.8" r="1" fill="#fff" />
+          <circle cx="68" cy="75" r="3" fill="#241F1B" />
+          <circle cx="69.2" cy="73.8" r="1" fill="#fff" />
+        </Blink>
+        <path
+          d="M54 84Q60 89 66 84"
+          fill="none"
+          stroke="#9C6B3F"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <rect
+          x="60"
+          y="112"
+          width="42"
+          height="28"
+          rx="4"
+          fill="#FFFFFF"
+          stroke="#0E0E10"
+          strokeWidth="2"
+        />
+        <path d="M68 122h26M68 130h17" stroke="#6A6C75" strokeWidth="2" strokeLinecap="round" />
+      </Idle>
+    </CatalogFigure>
+  );
+}
+
+/** Otis — The maker. Slate, a mandarin cap, a wrench in hand. */
+export function Otis({ size, animate = true, flip, seed = 0 }: CastFigureProps) {
+  return (
+    <CatalogFigure
+      viewBox="0 0 120 178"
+      size={size}
+      animate={animate}
+      seed={seed}
+      flip={flip}
+      label="otis"
+    >
+      <ellipse cx="60" cy="173" rx="32" ry="5" fill={A_GROUND} />
+      <Idle kind="bob">
+        <rect x="49" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <rect x="61" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <ellipse cx="52" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <ellipse cx="68" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <path d="M34 146C34 116 42 104 60 104 78 104 86 116 86 146Z" fill="#5B6473" />
+        <rect x="28" y="106" width="11" height="34" rx="5.5" fill="#5B6473" />
+        <circle cx="33.5" cy="143" r="6" fill="#9C6B3F" />
+        <rect x="81" y="106" width="11" height="34" rx="5.5" fill="#5B6473" />
+        <circle cx="86.5" cy="143" r="6" fill="#9C6B3F" />
+        <rect x="53" y="90" width="14" height="14" rx="6" fill="#9C6B3F" />
+        <circle cx="37" cy="74" r="5" fill="#9C6B3F" />
+        <circle cx="83" cy="74" r="5" fill="#9C6B3F" />
+        <circle cx="60" cy="74" r="24" fill="#9C6B3F" />
+        <ellipse cx="51" cy="65" rx="8" ry="6" fill="#FFFFFF" opacity=".12" />
+        <path d="M35 74q0 -29 25 -29 q25 0 25 29Z" fill="#F26A38" />
+        <rect x="33" y="69" width="54" height="9" rx="4.5" fill="#F26A38" />
+        <circle cx="60" cy="43" r="4.5" fill="#F26A38" />
+        <circle cx="47" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <circle cx="73" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <Blink>
+          <circle cx="52" cy="75" r="3" fill="#241F1B" />
+          <circle cx="53.2" cy="73.8" r="1" fill="#fff" />
+          <circle cx="68" cy="75" r="3" fill="#241F1B" />
+          <circle cx="69.2" cy="73.8" r="1" fill="#fff" />
+        </Blink>
+        <path
+          d="M54 84Q60 89 66 84"
+          fill="none"
+          stroke="#6B4A2C"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <g transform="rotate(16 88 128)">
+          <rect x="84" y="116" width="7" height="30" rx="3.5" fill="#5B6473" />
+          <circle cx="87.5" cy="114" r="7.5" fill="none" stroke="#5B6473" strokeWidth="3.4" />
+        </g>
+      </Idle>
+    </CatalogFigure>
+  );
+}
+
+/** Lumi — The spark. Mandarin, spiky hair, a magenta star overhead. */
+export function Lumi({ size, animate = true, flip, seed = 0 }: CastFigureProps) {
+  return (
+    <CatalogFigure
+      viewBox="0 0 120 178"
+      size={size}
+      animate={animate}
+      seed={seed}
+      flip={flip}
+      label="lumi"
+    >
+      <ellipse cx="60" cy="173" rx="32" ry="5" fill={A_GROUND} />
+      <Idle kind="float">
+        <path d="M60 6l2.4 7 7 2.4-7 2.4L60 27l-2.4-7.2-7-2.4 7-2.4z" fill="#D6196F" />
+      </Idle>
+      <Idle kind="bob3">
+        <rect x="49" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <rect x="61" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <ellipse cx="52" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <ellipse cx="68" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <path d="M34 146C34 116 42 104 60 104 78 104 86 116 86 146Z" fill="#F26A38" />
+        <rect x="28" y="106" width="11" height="34" rx="5.5" fill="#F26A38" />
+        <circle cx="33.5" cy="143" r="6" fill="#F2C9A0" />
+        <rect x="81" y="106" width="11" height="34" rx="5.5" fill="#F26A38" />
+        <circle cx="86.5" cy="143" r="6" fill="#F2C9A0" />
+        <rect x="53" y="90" width="14" height="14" rx="6" fill="#F2C9A0" />
+        <circle cx="37" cy="74" r="5" fill="#F2C9A0" />
+        <circle cx="83" cy="74" r="5" fill="#F2C9A0" />
+        <circle cx="60" cy="74" r="24" fill="#F2C9A0" />
+        <ellipse cx="51" cy="65" rx="8" ry="6" fill="#FFFFFF" opacity=".12" />
+        <path
+          d="M36 74C36 54 47 46 60 46 73 46 84 54 84 74 84 66 78 60 60 60 42 60 36 66 36 74Z"
+          fill="#2B2B30"
+        />
+        <path d="M45 49l3 -8 4 8zM57 46l3 -9 4 9zM69 49l3 -8 4 8z" fill="#2B2B30" />
+        <circle cx="47" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <circle cx="73" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <Blink>
+          <circle cx="52" cy="75" r="3" fill="#241F1B" />
+          <circle cx="53.2" cy="73.8" r="1" fill="#fff" />
+          <circle cx="68" cy="75" r="3" fill="#241F1B" />
+          <circle cx="69.2" cy="73.8" r="1" fill="#fff" />
+        </Blink>
+        <path
+          d="M54 84Q60 89 66 84"
+          fill="none"
+          stroke="#9C6B3F"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </Idle>
+    </CatalogFigure>
+  );
+}
+
+/** Dev — The coder. Cobalt, a laptop with glowing code. */
+export function Dev({ size, animate = true, flip, seed = 0 }: CastFigureProps) {
+  return (
+    <CatalogFigure
+      viewBox="0 0 120 178"
+      size={size}
+      animate={animate}
+      seed={seed}
+      flip={flip}
+      label="dev"
+    >
+      <ellipse cx="60" cy="173" rx="32" ry="5" fill={A_GROUND} />
+      <Idle kind="bob">
+        <rect x="49" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <rect x="61" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <ellipse cx="52" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <ellipse cx="68" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <path d="M34 146C34 116 42 104 60 104 78 104 86 116 86 146Z" fill="#1F4FD8" />
+        <rect x="28" y="106" width="11" height="34" rx="5.5" fill="#1F4FD8" />
+        <circle cx="33.5" cy="143" r="6" fill="#C68642" />
+        <rect x="81" y="106" width="11" height="34" rx="5.5" fill="#1F4FD8" />
+        <circle cx="86.5" cy="143" r="6" fill="#C68642" />
+        <rect x="53" y="90" width="14" height="14" rx="6" fill="#C68642" />
+        <circle cx="37" cy="74" r="5" fill="#C68642" />
+        <circle cx="83" cy="74" r="5" fill="#C68642" />
+        <circle cx="60" cy="74" r="24" fill="#C68642" />
+        <ellipse cx="51" cy="65" rx="8" ry="6" fill="#FFFFFF" opacity=".12" />
+        <path
+          d="M36 74C36 54 47 46 60 46 73 46 84 54 84 74 84 66 78 60 60 60 42 60 36 66 36 74Z"
+          fill="#2B2B30"
+        />
+        <circle cx="47" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <circle cx="73" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <Blink>
+          <circle cx="52" cy="75" r="3" fill="#241F1B" />
+          <circle cx="53.2" cy="73.8" r="1" fill="#fff" />
+          <circle cx="68" cy="75" r="3" fill="#241F1B" />
+          <circle cx="69.2" cy="73.8" r="1" fill="#fff" />
+        </Blink>
+        <path
+          d="M54 84Q60 89 66 84"
+          fill="none"
+          stroke="#7A4B28"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <rect x="44" y="116" width="32" height="26" rx="3" fill="#141418" />
+        <path d="M50 124h20M50 130h14" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" />
+      </Idle>
+    </CatalogFigure>
+  );
+}
+
+/** Suri — The performer. Gold, arms up, a rose star, mid-sway. */
+export function Suri({ size, animate = true, flip, seed = 0 }: CastFigureProps) {
+  return (
+    <CatalogFigure
+      viewBox="0 0 120 178"
+      size={size}
+      animate={animate}
+      seed={seed}
+      flip={flip}
+      label="suri"
+    >
+      <ellipse cx="60" cy="173" rx="32" ry="5" fill={A_GROUND} />
+      <Idle kind="float">
+        <path
+          d="M60 5l2.3 5.1 5.6.7-4.1 3.8 1 5.5L60 23.4 55.2 20.1l1-5.5L52 10.8l5.6-.7z"
+          fill="#E0518A"
+        />
+      </Idle>
+      <Idle kind="sway">
+        <rect x="49" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <rect x="61" y="142" width="10" height="28" rx="5" fill="#454953" />
+        <ellipse cx="52" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <ellipse cx="68" cy="170" rx="9" ry="5" fill="#2B2D33" />
+        <path d="M34 146C34 116 42 104 60 104 78 104 86 116 86 146Z" fill="#DFA21F" />
+        <rect
+          x="22"
+          y="78"
+          width="11"
+          height="34"
+          rx="5.5"
+          fill="#DFA21F"
+          transform="rotate(-28 33 110)"
+        />
+        <circle cx="17" cy="80" r="6" fill="#E3A977" />
+        <rect
+          x="87"
+          y="78"
+          width="11"
+          height="34"
+          rx="5.5"
+          fill="#DFA21F"
+          transform="rotate(28 87 110)"
+        />
+        <circle cx="103" cy="80" r="6" fill="#E3A977" />
+        <rect x="53" y="90" width="14" height="14" rx="6" fill="#E3A977" />
+        <circle cx="37" cy="74" r="5" fill="#E3A977" />
+        <circle cx="83" cy="74" r="5" fill="#E3A977" />
+        <circle cx="60" cy="74" r="24" fill="#E3A977" />
+        <ellipse cx="51" cy="65" rx="8" ry="6" fill="#FFFFFF" opacity=".12" />
+        <path
+          d="M36 74C36 54 47 46 60 46 73 46 84 54 84 74 84 66 78 60 60 60 42 60 36 66 36 74Z"
+          fill="#3A2A22"
+        />
+        <circle cx="60" cy="44" r="8" fill="#3A2A22" />
+        <circle cx="47" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <circle cx="73" cy="81" r="4" fill="#E0518A" opacity=".16" />
+        <Blink>
+          <circle cx="52" cy="75" r="3" fill="#241F1B" />
+          <circle cx="53.2" cy="73.8" r="1" fill="#fff" />
+          <circle cx="68" cy="75" r="3" fill="#241F1B" />
+          <circle cx="69.2" cy="73.8" r="1" fill="#fff" />
+        </Blink>
+        <path
+          d="M54 84Q60 89 66 84"
+          fill="none"
+          stroke="#9C6B3F"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </Idle>
+    </CatalogFigure>
+  );
+}
+
+// --- the buddies: eighteen kids ported from the character catalog ---------------------------------
 // Full-figure companions on their own 120x178 canvas; the avatar system crops to the head. They
 // carry a fixed catalog expression, so mood is accepted for cast-compatibility but not used.
 export const BUDDIES = {
@@ -807,9 +1399,19 @@ export const BUDDIES = {
   theo: { name: 'Theo', role: 'the explorer', Component: Theo },
   maya: { name: 'Maya', role: 'the builder', Component: Maya },
   sol: { name: 'Sol', role: 'the achiever', Component: Sol },
+  wren: { name: 'Wren', role: 'the dreamer', Component: Wren },
+  juno: { name: 'Juno', role: 'the captain', Component: Juno },
+  pax: { name: 'Pax', role: 'the friend', Component: Pax },
+  remy: { name: 'Remy', role: 'the tinkerer', Component: Remy },
   nova: { name: 'Nova', role: 'the scientist', Component: Nova },
   indi: { name: 'Indi', role: 'the artist', Component: Indi },
+  bo: { name: 'Bo', role: 'the little one', Component: Bo },
+  vera: { name: 'Vera', role: 'the guide', Component: Vera },
+  otis: { name: 'Otis', role: 'the maker', Component: Otis },
+  lumi: { name: 'Lumi', role: 'the spark', Component: Lumi },
+  dev: { name: 'Dev', role: 'the coder', Component: Dev },
   robin: { name: 'Robin', role: 'the helper', Component: Robin },
+  suri: { name: 'Suri', role: 'the performer', Component: Suri },
 } satisfies Record<
   string,
   { name: string; role: string; Component: ComponentType<CastFigureProps> }

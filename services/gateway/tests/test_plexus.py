@@ -227,6 +227,210 @@ def test_compose_emits_image_spec_for_organic_visual() -> None:
     assert out["cards"][0]["imageSpec"] == {"subject": "the human eye"}
 
 
+# --- compose: the FULL type universe preserved through the verifier ----------------------
+
+
+def _valid_activities() -> dict:
+    """One valid spec per rich activity field — mirrors each client parser's accept shape."""
+    return {
+        "perturbation": {
+            "id": "p1",
+            "title": "break ohm",
+            "law": "I = V / R",
+            "param": {
+                "id": "R",
+                "label": "resistance",
+                "min": 0,
+                "max": 50,
+                "from": 25,
+                "unit": "Ω",
+            },
+            "output": {"label": "current", "expr": "12 / R", "unit": "A"},
+            "breakpoint": {
+                "at": 0,
+                "approach": "below",
+                "assumption": "wires are ideal",
+                "revelation": "real wires carry internal resistance",
+            },
+        },
+        "whatIf": {
+            "id": "w1",
+            "title": "ladder",
+            "problem": "a ladder rises {h} m",
+            "values": [
+                {"id": "h", "label": "height", "value": 10, "min": 1, "max": 30, "unit": "m"}
+            ],
+            "scene": {
+                "marks": [{"id": "m1", "shape": "line", "x": 10, "y": 10, "x2": 50, "y2": 50}]
+            },
+            "solve": [{"id": "s1", "label": "double it", "expr": "h * 2"}],
+        },
+        "compare": {
+            "id": "cmp",
+            "title": "cells",
+            "left": {
+                "label": "animal",
+                "marks": [{"id": "a1", "shape": "circle", "x": 30, "y": 30, "r": 10}],
+            },
+            "right": {
+                "label": "plant",
+                "marks": [{"id": "b1", "shape": "rect", "x": 30, "y": 30, "w": 20, "h": 20}],
+            },
+            "links": [
+                {
+                    "id": "l1",
+                    "left": "a1",
+                    "right": "b1",
+                    "note": "both hold a nucleus",
+                    "kind": "same",
+                }
+            ],
+        },
+        "conceptMap": {
+            "id": "cm",
+            "title": "map",
+            "nodes": [{"id": "n1", "label": "acids"}, {"id": "n2", "label": "bases"}],
+            "edges": [{"from": "n1", "to": "n2", "label": "neutralise"}],
+        },
+        "workbook": {
+            "id": "wb",
+            "title": "order it",
+            "items": [
+                {
+                    "id": "i1",
+                    "kind": "order",
+                    "prompt": "order the steps",
+                    "steps": ["first", "then", "last"],
+                }
+            ],
+        },
+        "flashcards": {
+            "id": "fc",
+            "title": "deck",
+            "cards": [{"id": "c1", "front": "H2O?", "back": "water"}],
+        },
+        "derivation": {
+            "id": "d1",
+            "formula": "(a+b)^2",
+            "label": "the identity",
+            "steps": [{"expr": "a^2 + 2ab + b^2", "note": "expand the square"}],
+        },
+        "wordProblem": {
+            "id": "wp",
+            "title": "trip",
+            "problem": "a car covers 120 km at 60 km/h",
+            "given": ["distance 120 km", "speed 60 km/h"],
+            "find": "the time taken",
+            "plan": ["divide distance by speed"],
+            "solve": [{"expr": "120 / 60", "note": "time is distance over speed"}],
+            "answer": "2 hours",
+        },
+        "podcast": {
+            "id": "pc",
+            "title": "revision",
+            "chapters": [
+                {
+                    "id": "ch1",
+                    "title": "intro",
+                    "script": "a calm walk back through acids and bases",
+                }
+            ],
+        },
+        "arcade": {
+            "id": "ar",
+            "title": "catch it",
+            "game": "catch",
+            "rounds": [{"id": "r1", "prompt": "2 + 2", "answer": "4", "distractors": ["3", "5"]}],
+        },
+    }
+
+
+def test_compose_preserves_every_rich_activity_field() -> None:
+    """The verifier orchestrates the full type universe: every valid card activity survives to the
+    client verbatim; a malformed one is dropped, never the card (fix, 2026-07-07)."""
+    from classess_gateway.plexus.engines import _CARD_ACTIVITIES, _verify_compose
+
+    activities = _valid_activities()
+    assert set(activities) == set(
+        _CARD_ACTIVITIES
+    )  # the test covers every field the verifier gates
+    spec = _compose_spec(
+        [
+            {"kind": "sim", **activities},  # card 0: all ten valid activities preserved
+            {
+                "kind": "text",
+                "perturbation": {"law": "x", "param": {}},
+            },  # card 1: malformed → dropped
+        ]
+    )
+    out = _verify_compose(spec, "acids and bases", "core")
+    assert out is not None
+    assert len(out["cards"]) == 3
+    for field in _CARD_ACTIVITIES:
+        assert out["cards"][0][field] == activities[field], f"{field} must survive verbatim"
+    assert "perturbation" not in out["cards"][1]  # malformed dropped — the card still teaches
+
+
+@pytest.mark.parametrize(
+    "field,mangle",
+    [
+        ("whatIf", lambda s: {**s, "values": []}),  # no values
+        (
+            "compare",
+            lambda s: {**s, "links": [{"id": "x", "left": "ghost", "right": "b1", "note": "n"}]},
+        ),
+        ("conceptMap", lambda s: {**s, "nodes": s["nodes"][:1]}),  # <2 nodes
+        (
+            "workbook",
+            lambda s: {**s, "items": [{"kind": "order", "prompt": "p", "steps": ["only one"]}]},
+        ),
+        ("arcade", lambda s: {**s, "rounds": [{"prompt": "p", "answer": "a", "distractors": []}]}),
+        ("derivation", lambda s: {**s, "steps": []}),
+    ],
+)
+def test_compose_drops_malformed_activity_but_keeps_card(field: str, mangle) -> None:
+    from classess_gateway.plexus.engines import _verify_compose
+
+    bad = mangle(_valid_activities()[field])
+    out = _verify_compose(_compose_spec([{field: bad}]), "topic", "core")
+    assert out is not None and len(out["cards"]) == 3
+    assert field not in out["cards"][0]  # dropped, but the card and course stand
+
+
+def test_verify_video_has_no_upper_duration_cap() -> None:
+    """Video beats carry no upper duration cap — length serves understanding (fix, 2026-07-07)."""
+    long_scene = {
+        "scenes": [
+            {
+                "id": "s1",
+                "durationMs": 10_000_000,
+                "narration": "one long, unhurried beat",
+                "visual": {
+                    "kind": "svg",
+                    "payload": '<svg viewBox="0 0 10 10"><rect width="5" height="5"/></svg>',
+                },
+            }
+        ]
+    }
+    out = _verify_video(long_scene)
+    assert out is not None and out["scenes"][0]["durationMs"] == 10_000_000
+    # a non-positive duration is still refused
+    bad = {
+        "scenes": [
+            {
+                "id": "s1",
+                "durationMs": 0,
+                "narration": "x",
+                "visual": {
+                    "kind": "svg",
+                    "payload": '<svg viewBox="0 0 10 10"><rect width="5" height="5"/></svg>',
+                },
+            }
+        ]
+    }
+    assert _verify_video(bad) is None
+
+
 def test_seed_compose_teaches_via_guided_discovery() -> None:
     """Guided-discovery is the DEFAULT format — the honest floor demonstrates it too, so the shell
     is exercised in mock mode, not only reachable through a live model."""
@@ -315,6 +519,60 @@ def test_simulate_refuses_non_mathematical_formula() -> None:
     )
 
 
+# --- simulate: topic-aware seed + retry (fix, 2026-07-07) -------------------------------
+
+
+def test_seed_sim_is_topic_aware_and_never_wrong_subject() -> None:
+    from classess_gateway.plexus.engines import _seed_sim
+
+    assert _seed_sim("Ohm's law and circuits")["formula"] == "V = I*R"
+    assert _seed_sim("speed, distance and time")["formula"] == "d = v*t"
+    assert _seed_sim("Newton's force and mass")["formula"] == "F = m*a"
+    # an unrecognised (e.g. biology) concept NEVER gets a wrong-subject law — a neutral relationship
+    bio = _seed_sim("photosynthesis in plants")
+    assert bio["formula"] == "y = k*x"
+    # every seed is CAS-verifiable by construction (so the always-verify floor never fails)
+    for concept in ("ohm's law", "speed", "force", "photosynthesis"):
+        assert _verify_sim(_seed_sim(concept)) is not None
+
+
+_BAD_SIM = '{"formula":"V equals I times R, roughly"}'
+_GOOD_SIM = (
+    '{"params":[{"name":"I","min":0,"max":5,"default":2,"unit":"A"}],'
+    '"formula":"V = 2*I","outputs":["V"],"layout":"sliders-left"}'
+)
+
+
+def test_generate_sim_live_retries_once_feeding_the_verifier_reason(monkeypatch) -> None:
+    from classess_gateway.plexus import engines
+
+    drafts = iter([_BAD_SIM, _GOOD_SIM])
+    seen: list[str] = []
+
+    def fake(model, modality, user, fbs):  # noqa: ANN001
+        seen.append(user)
+        return next(drafts), 5
+
+    monkeypatch.setattr(engines, "_complete", fake)
+    artifact, model_used, tokens = engines._generate_sim_live(
+        "ohm's law", "core", "m", (), "Concept: ohm"
+    )
+    parse_equation(artifact["formula"])  # the retry produced a CAS-valid formula
+    assert len(seen) == 2  # drafted once, then retried once
+    assert "did NOT pass the CAS verifier" in seen[1]  # the verifier reason was fed back
+    assert tokens == 10
+
+
+def test_generate_sim_live_raises_after_a_failed_retry(monkeypatch) -> None:
+    """A sim that refuses even after the retry raises — the caller seeds a topic-aware floor rather
+    than swallowing the refusal and serving a wrong sim."""
+    from classess_gateway.plexus import engines
+
+    monkeypatch.setattr(engines, "_complete", lambda *a, **k: (_BAD_SIM, 3))
+    with pytest.raises(ValueError):
+        engines._generate_sim_live("some mystery topic", "core", "m", (), "user")
+
+
 # --- diagram ----------------------------------------------------------------------------
 
 
@@ -336,7 +594,7 @@ def test_video_scenes_shape_and_keyless_null_audio() -> None:
     assert scenes
     for scene in scenes:
         assert scene["id"] and scene["narration"]
-        assert 0 < scene["durationMs"] <= 120_000
+        assert scene["durationMs"] > 0  # positive; no upper cap — length serves understanding
         assert scene["visual"]["kind"] in {"svg", "sim", "diagram"}
         if scene["visual"]["kind"] in {"svg", "diagram"}:
             assert "<svg" in scene["visual"]["payload"]

@@ -289,6 +289,16 @@ export function VidyaCompanion() {
         <FlyingVidya
           routeKey={route.name}
           mood={busy ? 'thinking' : mood}
+          // Realism: while she's inking, her body turns toward the mark on the page (the bus reports
+          // where). The docked orb sits bottom-right; the angle runs from her to the ink.
+          gestureAngle={
+            bus.focusPoint && typeof window !== 'undefined'
+              ? Math.atan2(
+                  bus.focusPoint.y - (window.innerHeight - 60),
+                  bus.focusPoint.x - (window.innerWidth - 56),
+                )
+              : undefined
+          }
           onTap={() => {
             sfx.breath(true); // a soft breath as her drawer slides open
             setOpen(true);

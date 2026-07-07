@@ -160,6 +160,24 @@ def test_system_prompt_carries_truth_and_warmth_tier() -> None:
     assert "draw me a dragon" in p  # play-and-make create widening
 
 
+def test_system_prompt_carries_the_choreography() -> None:
+    from classess_gateway.vidya import VIDYA_SYSTEM
+
+    p = VIDYA_SYSTEM
+    # THE SYNCED HAND + THE ACTION TIMELINE — ink rides the beats of her spoken line
+    assert "withSentence" in p
+    assert "afterSentence" in p
+    assert "Your voice and your hand are ONE performance" in p
+    # a write note is her hand ON THE PAGE, never in the chat bubble (owner addendum)
+    assert "your hand ON THE PAGE" in p
+    # THE GUIDANCE LOOP — one step, check, wait, react, then advance
+    assert "one step at a time" in p
+    assert "never dump the whole solution" in p
+    assert "your turn" in p.lower()
+    # a concrete worked choreography she can pattern-match against
+    assert "2x + 3 = 7" in p
+
+
 def test_prompt_carries_local_time_when_present() -> None:
     ctx = {
         "turn": {"lastUserInput": "one more chapter", "localTime": "Tuesday, 11:52 PM"},

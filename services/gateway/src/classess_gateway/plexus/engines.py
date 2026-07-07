@@ -17,8 +17,11 @@ learner, honest in provenance (``model: "seed"``).
 
 from __future__ import annotations
 
+import copy
 import hashlib
+import logging
 import math
+import re
 import threading
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -34,6 +37,8 @@ from classess_gateway.plexus.media import synthesize_narration, wav_duration_ms
 from classess_gateway.plexus.sanitize import sanitize_svg
 from classess_gateway.providers import ProviderResponse
 
+logger = logging.getLogger("classess.gateway.plexus")
+
 MODALITIES = ("compose", "simulate", "diagram", "video")
 _DEFAULT_CONCEPT = "linear equations in one variable"
 
@@ -41,7 +46,7 @@ _INTERACTION_KINDS = {"tap", "drag", "slide", "type"}
 _CARD_KINDS = {"sim", "diagram", "text"}
 _ITEM_TYPES = {"mcq", "fill"}
 _VISUAL_KINDS = {"svg", "sim", "diagram"}
-_MAX_SCENE_MS = 120_000
+_IDENT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 # guided-discovery (Discovery.tsx) — the keystone teaching format a card may embed. These mirror
 # the client's parseDiscoverySpec EXACTLY so a spec that would be dropped at the door is refused
@@ -181,7 +186,14 @@ def _verify_interaction(raw: Any, mark_ids: set[str]) -> dict[str, Any] | None:
         lo, hi = float(lo), float(hi)
         frm = min(hi, max(lo, float(raw["from"]))) if _fnum(raw.get("from")) else lo
         at = min(hi, max(lo, float(raw["at"]))) if _fnum(raw.get("at")) else hi
-        out: dict[str, Any] = {"kind": "slide", "prompt": prompt, "min": lo, "max": hi, "from": frm, "at": at}
+        out: dict[str, Any] = {
+            "kind": "slide",
+            "prompt": prompt,
+            "min": lo,
+            "max": hi,
+            "from": frm,
+            "at": at,
+        }
         if _nes(raw.get("unit")):
             out["unit"] = raw["unit"]
         if _nes(raw.get("valueLabel")):
@@ -196,7 +208,11 @@ def _verify_interaction(raw: Any, mark_ids: set[str]) -> dict[str, Any] | None:
                 and _fnum(rng[0])
                 and _fnum(rng[1])
             ):
-                out["bind"] = {"mark": bind["mark"], "prop": prop, "at": [float(rng[0]), float(rng[1])]}
+                out["bind"] = {
+                    "mark": bind["mark"],
+                    "prop": prop,
+                    "at": [float(rng[0]), float(rng[1])],
+                }
         return out
     return None
 
@@ -254,6 +270,271 @@ def _verify_image_spec(raw: Any) -> dict[str, Any] | None:
     return out
 
 
+# --- card-level rich activities (physics-of-understanding engines) ----------------------
+# The client (Composing.tsx parseActivity) reads ONE of these OPTIONAL fields off a card and
+# hydrates the matching engine; each engine's parser is the authoritative gate and re-validates
+# every field. Here we mirror each parser's ACCEPT/REJECT predicate and PRESERVE the spec verbatim
+# when it passes — a malformed spec is dropped (the card still teaches via its base kind), never
+# the whole card. We gate on structure only; deeper coercion (clamping, slicing, expression
+# evaluation) is the client's job, so there is one source of truth for the display shape.
+
+
+def _ident(v: Any) -> bool:
+    return isinstance(v, str) and bool(_IDENT_RE.match(v))
+
+
+def _as_dict(v: Any) -> dict[str, Any] | None:
+    return v if isinstance(v, dict) else None
+
+
+def _as_list(v: Any) -> list[Any]:
+    return v if isinstance(v, list) else []
+
+
+def _strs(v: Any) -> list[str]:
+    return [s for s in v if _nes(s)] if isinstance(v, list) else []
+
+
+def _num_or_expr(v: Any) -> bool:
+    return _fnum(v) or _nes(v)
+
+
+_WHATIF_SHAPES = {"line", "circle", "rect", "text", "arc"}
+_COMPARE_SHAPES = {"circle", "ring", "ellipse", "rect", "line", "text"}
+
+
+def _ok_perturbation(raw: Any) -> dict[str, Any] | None:
+    r = _as_dict(raw)
+    if not r:
+        return None
+    p, o, b = _as_dict(r.get("param")), _as_dict(r.get("output")), _as_dict(r.get("breakpoint"))
+    if not (p and o and b and _nes(r.get("law"))):
+        return None
+    if not (
+        _ident(p.get("id")) and _nes(p.get("label")) and _fnum(p.get("min")) and _fnum(p.get("max"))
+    ):
+        return None
+    if float(p["min"]) >= float(p["max"]):
+        return None
+    if not (_nes(o.get("label")) and _nes(o.get("expr"))):
+        return None
+    if not (_fnum(b.get("at")) and b.get("approach") in ("below", "above")):
+        return None
+    if not (_nes(b.get("assumption")) and _nes(b.get("revelation"))):
+        return None
+    return raw
+
+
+def _ok_whatif(raw: Any) -> dict[str, Any] | None:
+    r = _as_dict(raw)
+    if not r:
+        return None
+    values = [
+        v
+        for v in _as_list(r.get("values"))
+        if isinstance(v, dict)
+        and _ident(v.get("id"))
+        and _nes(v.get("label"))
+        and _fnum(v.get("value"))
+        and _fnum(v.get("min"))
+        and _fnum(v.get("max"))
+        and float(v["min"]) < float(v["max"])
+    ]
+    if not 1 <= len(values) <= 6:
+        return None
+    solve = [
+        s
+        for s in _as_list(r.get("solve"))
+        if isinstance(s, dict)
+        and _ident(s.get("id"))
+        and _nes(s.get("label"))
+        and _nes(s.get("expr"))
+    ]
+    if not solve:
+        return None
+    scene = _as_dict(r.get("scene"))
+    marks = [
+        m
+        for m in (_as_list(scene.get("marks")) if scene else [])
+        if isinstance(m, dict)
+        and _nes(m.get("id"))
+        and m.get("shape") in _WHATIF_SHAPES
+        and _num_or_expr(m.get("x"))
+        and _num_or_expr(m.get("y"))
+    ]
+    return raw if marks else None
+
+
+def _panel_ids(raw: Any) -> set[str] | None:
+    p = _as_dict(raw)
+    if not p:
+        return None
+    ids = {
+        m["id"]
+        for m in _as_list(p.get("marks"))
+        if isinstance(m, dict)
+        and _nes(m.get("id"))
+        and m.get("shape") in _COMPARE_SHAPES
+        and _fnum(m.get("x"))
+        and _fnum(m.get("y"))
+    }
+    return ids or None
+
+
+def _ok_compare(raw: Any) -> dict[str, Any] | None:
+    r = _as_dict(raw)
+    if not r:
+        return None
+    lids, rids = _panel_ids(r.get("left")), _panel_ids(r.get("right"))
+    if not (lids and rids):
+        return None
+    links = [
+        link
+        for link in _as_list(r.get("links"))
+        if isinstance(link, dict)
+        and _nes(link.get("id"))
+        and link.get("left") in lids
+        and link.get("right") in rids
+        and _nes(link.get("note"))
+    ]
+    return raw if links else None
+
+
+def _ok_conceptmap(raw: Any) -> dict[str, Any] | None:
+    r = _as_dict(raw)
+    if not r:
+        return None
+    nodes = [
+        n
+        for n in _as_list(r.get("nodes"))
+        if isinstance(n, dict) and _nes(n.get("id")) and _nes(n.get("label"))
+    ]
+    if not 2 <= len(nodes) <= 12:
+        return None
+    ids = {n["id"] for n in nodes}
+    edges = [
+        e
+        for e in _as_list(r.get("edges"))
+        if isinstance(e, dict)
+        and e.get("from") in ids
+        and e.get("to") in ids
+        and e.get("from") != e.get("to")
+    ]
+    return raw if edges else None
+
+
+def _ok_workbook_item(it: Any) -> bool:
+    r = _as_dict(it)
+    if not r or not _nes(r.get("prompt")):
+        return False
+    kind = r.get("kind")
+    if kind == "match":
+        pairs = [
+            p
+            for p in _as_list(r.get("pairs"))
+            if isinstance(p, dict) and _nes(p.get("left")) and _nes(p.get("right"))
+        ]
+        return 2 <= len(pairs) <= 5
+    if kind == "fill":
+        blanks = _strs(r.get("blanks"))
+        return _nes(r.get("text")) and len(blanks) > 0 and str(r["text"]).count("{}") == len(blanks)
+    if kind == "label":
+        pts = [
+            p
+            for p in _as_list(r.get("points"))
+            if isinstance(p, dict)
+            and _fnum(p.get("x"))
+            and _fnum(p.get("y"))
+            and _nes(p.get("label"))
+        ]
+        return 2 <= len(pts) <= 6
+    if kind == "order":
+        return 2 <= len(_strs(r.get("steps"))) <= 6
+    return False
+
+
+def _ok_workbook(raw: Any) -> dict[str, Any] | None:
+    r = _as_dict(raw)
+    if not r:
+        return None
+    items = [it for it in _as_list(r.get("items")) if _ok_workbook_item(it)]
+    return raw if 1 <= len(items) <= 5 else None
+
+
+def _ok_flashcards(raw: Any) -> dict[str, Any] | None:
+    r = _as_dict(raw)
+    if not r:
+        return None
+    cards = [
+        c
+        for c in _as_list(r.get("cards"))
+        if isinstance(c, dict) and _nes(c.get("front")) and _nes(c.get("back"))
+    ]
+    return raw if 1 <= len(cards) <= 20 else None
+
+
+def _ok_derivation(raw: Any) -> dict[str, Any] | None:
+    r = _as_dict(raw)
+    if not r or not _nes(r.get("formula")):
+        return None
+    steps = [s for s in _as_list(r.get("steps")) if isinstance(s, dict) and _nes(s.get("expr"))]
+    return raw if steps else None
+
+
+def _ok_wordproblem(raw: Any) -> dict[str, Any] | None:
+    r = _as_dict(raw)
+    if not r:
+        return None
+    if not (_nes(r.get("problem")) and _nes(r.get("find")) and _nes(r.get("answer"))):
+        return None
+    if not (_strs(r.get("given")) and _strs(r.get("plan"))):
+        return None
+    solve = [s for s in _as_list(r.get("solve")) if isinstance(s, dict) and _nes(s.get("expr"))]
+    return raw if solve else None
+
+
+def _ok_podcast(raw: Any) -> dict[str, Any] | None:
+    r = _as_dict(raw)
+    if not r:
+        return None
+    chapters = [
+        c
+        for c in _as_list(r.get("chapters"))
+        if isinstance(c, dict) and _nes(c.get("title")) and _nes(c.get("script"))
+    ]
+    return raw if 1 <= len(chapters) <= 12 else None
+
+
+def _ok_arcade(raw: Any) -> dict[str, Any] | None:
+    r = _as_dict(raw)
+    if not r:
+        return None
+    rounds = [
+        rd
+        for rd in _as_list(r.get("rounds"))
+        if isinstance(rd, dict)
+        and _nes(rd.get("prompt"))
+        and _nes(rd.get("answer"))
+        and _strs(rd.get("distractors"))
+    ]
+    return raw if 1 <= len(rounds) <= 12 else None
+
+
+# field name (as the client reads it off a card) -> its accept/preserve gate
+_CARD_ACTIVITIES = {
+    "perturbation": _ok_perturbation,
+    "whatIf": _ok_whatif,
+    "compare": _ok_compare,
+    "conceptMap": _ok_conceptmap,
+    "workbook": _ok_workbook,
+    "flashcards": _ok_flashcards,
+    "derivation": _ok_derivation,
+    "wordProblem": _ok_wordproblem,
+    "podcast": _ok_podcast,
+    "arcade": _ok_arcade,
+}
+
+
 def _verify_compose(spec: Any, concept: str, difficulty: str) -> dict[str, Any] | None:
     if not isinstance(spec, dict):
         return None
@@ -292,6 +573,12 @@ def _verify_compose(spec: Any, concept: str, difficulty: str) -> dict[str, Any] 
         image_spec = _verify_image_spec(card.get("imageSpec"))
         if image_spec is not None:
             clean_card["imageSpec"] = image_spec
+        # The full type universe: at most one rich activity rides alongside the card. Each valid one
+        # is preserved verbatim; a malformed one is dropped (the card still teaches via its kind).
+        for field, gate in _CARD_ACTIVITIES.items():
+            value = gate(card.get(field))
+            if value is not None:
+                clean_card[field] = value
         clean.append(clean_card)
     # the mini-workbook and the boss both ship WITH the outline, answers verified here
     workbook = _verify_items(spec.get("workbook"))
@@ -386,7 +673,9 @@ def _verify_video(spec: Any) -> dict[str, Any] | None:
         except (KeyError, TypeError, ValueError):
             return None
         narration = str(scene.get("narration") or "").strip()
-        if not narration or not 0 < duration <= _MAX_SCENE_MS:
+        # No upper duration cap: a beat is as long as understanding needs (the measured narration
+        # audio is the authoritative length anyway; durationMs is only the muted-mode fallback).
+        if not narration or duration <= 0:
             return None
         out: dict[str, Any] = {
             "id": str(scene.get("id") or f"s{i + 1}"),
@@ -443,9 +732,30 @@ def _seed_compose(concept: str, difficulty: str) -> dict[str, Any]:
                         {
                             "visual": {
                                 "marks": [
-                                    {"id": "beam", "shape": "line", "x": 28, "y": 30, "x2": 72, "y2": 30},
-                                    {"id": "pivot", "shape": "circle", "x": 50, "y": 34, "r": 2, "tone": "muted"},
-                                    {"id": "load", "shape": "circle", "x": 70, "y": 40, "r": 4, "tone": "hue"},
+                                    {
+                                        "id": "beam",
+                                        "shape": "line",
+                                        "x": 28,
+                                        "y": 30,
+                                        "x2": 72,
+                                        "y2": 30,
+                                    },
+                                    {
+                                        "id": "pivot",
+                                        "shape": "circle",
+                                        "x": 50,
+                                        "y": 34,
+                                        "r": 2,
+                                        "tone": "muted",
+                                    },
+                                    {
+                                        "id": "load",
+                                        "shape": "circle",
+                                        "x": 70,
+                                        "y": 40,
+                                        "r": 4,
+                                        "tone": "hue",
+                                    },
                                 ]
                             },
                             "interaction": {
@@ -555,27 +865,101 @@ def _seed_compose(concept: str, difficulty: str) -> dict[str, Any]:
     }
 
 
-def _seed_sim() -> dict[str, Any]:
-    # Verified by construction: V = I*R parses, solves, and covers every symbol.
-    return {
-        "params": [
-            {"name": "I", "min": 0.0, "max": 5.0, "default": 2.0, "unit": "A"},
-            {"name": "R", "min": 0.0, "max": 100.0, "default": 10.0, "unit": "ohm"},
-        ],
-        "formula": "V = I*R",
-        "outputs": ["V"],
-        "breakpoints": [
-            {
-                "param": "R",
-                "at": 0.0,
-                "why": (
-                    "at zero resistance the model predicts unbounded current; real wires "
-                    "and cells carry internal resistance, which is where the ideal law stops"
-                ),
-            }
-        ],
-        "layout": "sliders-left",
-    }
+# Topic-aware sim fallbacks. Each is CAS-verifiable by construction (single-letter symbols, since
+# the verifier applies implicit multiplication — a multi-letter name would split into a product).
+# The seed picks the law whose subject vocabulary the concept mentions; an unrecognised concept
+# gets a subject-NEUTRAL proportional relationship — NEVER a wrong-subject law (e.g. Ohm's V=I*R
+# dressed onto a biology card). ``owner: derive from the subject, or a neutral relationship — never
+# a wrong-subject sim`` (fix, 2026-07-07).
+_SIM_LAWS: tuple[tuple[tuple[str, ...], dict[str, Any]], ...] = (
+    (
+        ("ohm", "resist", "voltage", "current", "circuit", "electric"),
+        {
+            "params": [
+                {"name": "I", "min": 0.0, "max": 5.0, "default": 2.0, "unit": "A"},
+                {"name": "R", "min": 0.0, "max": 100.0, "default": 10.0, "unit": "ohm"},
+            ],
+            "formula": "V = I*R",
+            "outputs": ["V"],
+            "breakpoints": [
+                {
+                    "param": "R",
+                    "at": 0.0,
+                    "why": (
+                        "at zero resistance the model predicts unbounded current; real wires "
+                        "and cells carry internal resistance, which is where the ideal law stops"
+                    ),
+                }
+            ],
+            "layout": "sliders-left",
+        },
+    ),
+    (
+        ("speed", "velocit", "distance", "displacement", "motion", "travel"),
+        {
+            "params": [
+                {"name": "v", "min": 0.0, "max": 50.0, "default": 10.0, "unit": "m/s"},
+                {"name": "t", "min": 0.0, "max": 60.0, "default": 5.0, "unit": "s"},
+            ],
+            "formula": "d = v*t",
+            "outputs": ["d"],
+            "breakpoints": [
+                {
+                    "param": "v",
+                    "at": 0.0,
+                    "why": "at zero speed no distance accrues however long you wait — the model has nothing to give",
+                }
+            ],
+            "layout": "sliders-left",
+        },
+    ),
+    (
+        ("force", "newton", "acceler", "mass", "momentum"),
+        {
+            "params": [
+                {"name": "m", "min": 0.0, "max": 20.0, "default": 2.0, "unit": "kg"},
+                {"name": "a", "min": 0.0, "max": 20.0, "default": 5.0, "unit": "m/s^2"},
+            ],
+            "formula": "F = m*a",
+            "outputs": ["F"],
+            "breakpoints": [
+                {
+                    "param": "m",
+                    "at": 0.0,
+                    "why": "a massless body would accelerate with no force at all — real matter always has mass, where the idealisation breaks",
+                }
+            ],
+            "layout": "sliders-left",
+        },
+    ),
+)
+
+# The honest neutral floor: a bare proportional relationship, meaningful for any quantitative idea
+# and wrong for none. Single-letter symbols keep the CAS parser happy.
+_SIM_NEUTRAL: dict[str, Any] = {
+    "params": [
+        {"name": "x", "min": 0.0, "max": 20.0, "default": 5.0, "unit": ""},
+        {"name": "k", "min": 0.0, "max": 10.0, "default": 2.0, "unit": ""},
+    ],
+    "formula": "y = k*x",
+    "outputs": ["y"],
+    "breakpoints": [
+        {
+            "param": "x",
+            "at": 0.0,
+            "why": "with nothing to scale, the result is zero whatever the rate — the relationship has a floor",
+        }
+    ],
+    "layout": "sliders-left",
+}
+
+
+def _seed_sim(concept: str) -> dict[str, Any]:
+    c = concept.lower()
+    for keys, law in _SIM_LAWS:
+        if any(k in c for k in keys):
+            return copy.deepcopy(law)
+    return copy.deepcopy(_SIM_NEUTRAL)
 
 
 def _seed_diagram(concept: str) -> str:
@@ -667,7 +1051,7 @@ def _seed(modality: str, concept: str, difficulty: str) -> Any:
     if modality == "compose":
         built: Any = _seed_compose(concept, difficulty)
     elif modality == "simulate":
-        built = _seed_sim()
+        built = _seed_sim(concept)
     elif modality == "diagram":
         built = _seed_diagram(concept)
     else:
@@ -697,7 +1081,9 @@ _SYSTEMS = {
         '"interaction":{"kind":"tap|drag|slide|type","prompt":"<what the learner does first>"},'
         '"reveal":"<what the action uncovers, at most ~40 words>",'
         '"discovery":<OPTIONAL guided-discovery spec, see below — the default teaching format>,'
-        '"imageSpec":<OPTIONAL {"subject":"...","caption":"..."} for organic/complex visuals>}],'
+        '"imageSpec":<OPTIONAL {"subject":"...","caption":"..."} for organic/complex visuals>,'
+        "<OPTIONAL: at most ONE rich activity field — perturbation | whatIf | compare | conceptMap | "
+        "workbook | flashcards | derivation | wordProblem | podcast | arcade, schemas below>}],"
         '"workbook":[{"id":"w1","type":"mcq","prompt":"...",'
         '"options":["...","...","..."],"answer":"<copied character-for-character from options>"},'
         '{"id":"w2","type":"fill","prompt":"<a sentence with a ________ gap>",'
@@ -710,21 +1096,73 @@ _SYSTEMS = {
         "  4. FORMALIZE — name the rule that the exploration just revealed.\n"
         "  5. PRACTICE-READY / EDGE — apply it, or push it to where the model breaks.\n\n"
         # Fable's type-selection doctrine — which teaching format each beat reaches for.
-        "FORMAT SELECTION — reach for the format that TEACHES the beat, in this priority:\n"
-        "  • GUIDED-DISCOVERY is the DEFAULT. For any teaching beat that can be discovered by "
-        "acting on a picture, attach a 'discovery' spec to the card (schema below): one idea per "
-        "stage, act-to-reveal, zero lecturing. Prefer this over a plain 'text' card every time.\n"
-        "  • SIM ('kind':'sim') when a quantitative LAW with 1-3 parameters drives the idea and the "
-        "learner should perturb it — 'bend it until it breaks'. At most one 'sim' card.\n"
-        "  • DIAGRAM ('kind':'diagram') for a spatial or structural idea a clean labelled line-drawing "
-        "carries. When the subject is ORGANIC or complex — a plant cell, the human eye, a leaf's "
-        "veins — line-art SVG cannot express it: keep 'kind':'diagram' AND add an 'imageSpec' "
-        "({'subject': a precise noun phrase to illustrate}); the app renders it as a real image.\n"
-        "  • TEXT is the exception — connective tissue only, never where a visual could carry it.\n"
-        "  • The workbook is the mini-workbook that consolidates recall after the teaching beats; the "
-        "boss proves mastery. (Longer companions — the revision podcast, flashcard decks, the motion "
-        "video, chapter concept-maps — are produced by their own engines around this course; here you "
-        "author the discovery spine and its checks.)\n\n"
+        "FORMAT SELECTION — reach for the format that TEACHES the beat; attach it as a field on the "
+        "card. Never decorate: a format you attach must genuinely carry that idea, be factually "
+        "correct, and be complete (a spec that cannot run is silently dropped). Priority:\n"
+        "  • GUIDED-DISCOVERY is the DEFAULT. For any teaching beat that can be discovered by acting "
+        "on a picture, attach a 'discovery' spec (schema below): one idea per stage, act-to-reveal.\n"
+        "  • PERTURBATION ('perturbation' field) for a LAW-like model with a telling edge — bend the "
+        "one parameter until the ideal breaks (Ohm's law R→0, an ideal gas, a sampling statistic).\n"
+        "  • WHATIF ('whatIf') or WORDPROBLEM ('wordProblem') for a NUMERICAL word problem — whatIf "
+        "when the figure and worked solution are worth making live and editable; wordProblem when the "
+        "METHOD of reading the problem (given→find→plan→solve) is the lesson.\n"
+        "  • COMPARE ('compare') for two paired concepts (animal vs plant cell, series vs parallel).\n"
+        "  • CONCEPTMAP ('conceptMap') for an overview beat: how the pieces connect, as a web.\n"
+        "  • WORKBOOK ('workbook') is a hands-on mini-workbook — include ONE roughly every ~3 "
+        "teaching beats to consolidate.\n"
+        "  • FLASHCARDS ('flashcards') for crisp recall pairs worth spacing out over time.\n"
+        "  • DERIVATION ('derivation') — attach the quiet ⓘ to ANY card whose reveal lands a FORMULA "
+        "(most learners never open it; the curious go deeper).\n"
+        "  • PODCAST ('podcast') — a chaptered audio revision companion for the whole topic; attach "
+        "to a late card. Each chapter 'script' is ≤ ~600 characters (one narration call).\n"
+        "  • ARCADE ('arcade') ONLY where playing the mechanic IS the concept — otherwise never.\n"
+        "  • SIM ('kind':'sim') stays the card kind for a simple perturbable law; DIAGRAM "
+        "('kind':'diagram', + 'imageSpec' {'subject': a precise noun phrase} when the subject is "
+        "ORGANIC — a plant cell, the human eye — so the app renders a real image). TEXT is the "
+        "exception: connective tissue only, never where a visual could carry it.\n"
+        "Attach AT MOST ONE rich activity field per card; a card may instead carry a discovery spec. "
+        "The top-level 'workbook' and 'boss' arrays (mcq/fill recall) always ship with the course. "
+        "The motion video and per-chapter concept-maps are produced by their own engines around this "
+        "course.\n\n"
+        # Compact schemas for the rich activity fields. Coordinates on a 0..100 by 0..62 canvas.
+        "RICH ACTIVITY SCHEMAS — attach the object as the named field on a card:\n"
+        '  perturbation: {"id","title","law":"I = V / R","param":{"id":"R","label":"resistance",'
+        '"min":0,"max":50,"from":25,"unit":"Ω"},"output":{"label":"current","expr":"12 / R",'
+        '"unit":"A"},"breakpoint":{"at":0,"approach":"below","assumption":"<the hidden ideal>",'
+        '"revelation":"<why reality refuses to diverge>"}} (output.expr is arithmetic over param id)\n'
+        '  whatIf: {"id","title","problem":"<text with {id} tokens>","values":[{"id":"h",'
+        '"label":"height","value":10,"min":1,"max":30,"unit":"m"}],"scene":{"marks":[{"id":"m1",'
+        '"shape":"line|circle|rect|text|arc","x":<number OR arithmetic string over value ids>,"y":.,'
+        '"x2":?,"y2":?,"r":?,"text":"{h}","tone":"ink|muted|hue"}]},"solve":[{"id":"s1",'
+        '"label":"<what this line does>","expr":"<arithmetic over value ids + earlier step ids>"}],'
+        '"answerLabel":"..."} (1..6 values, ≥1 solve step, ≥1 mark)\n'
+        '  compare: {"id","title","left":{"label","marks":[{"id","shape":"circle|ring|ellipse|rect|'
+        'line|text","x":.,"y":.,"r":?,"text":?,"tone":?}]},"right":{"label","marks":[...]},'
+        '"links":[{"id","left":"<left mark id>","right":"<right mark id>","note":"...",'
+        '"kind":"same|diff"}]} (≥1 mark per panel, ≥1 link)\n'
+        '  conceptMap: {"id","title","nodes":[{"id","label"}],"edges":[{"from":"<node id>",'
+        '"to":"<node id>","label":"<how they relate>"}],"root":"<optional centre node id>"} '
+        "(2..12 nodes, ≥1 edge)\n"
+        '  workbook: {"id","title","items":[ '
+        '{"id","kind":"match","prompt","pairs":[{"left","right"}]} (2..5 pairs) | '
+        '{"id","kind":"fill","prompt","text":"water is {} parts H to {} O","blanks":["2","1"],'
+        '"distractors":["3"]} (one blank per {}) | '
+        '{"id","kind":"label","prompt","points":[{"id","x":<0..100>,"y":<0..62>,"label"}],'
+        '"distractors":[...]} (2..6 points) | '
+        '{"id","kind":"order","prompt","steps":["first","then","last"]} (2..6, CORRECT order) ]} '
+        "(1..5 items)\n"
+        '  flashcards: {"id","title","cards":[{"id","front":"<prompt>","back":"<answer>"}]} '
+        "(1..20 cards)\n"
+        '  derivation: {"id","formula":"(a+b)^2","label":"the identity","steps":[{"expr":'
+        '"a^2 + 2ab + b^2","note":"<one clause why it follows>","sub":<OPTIONAL one-level nested '
+        "derivation>}]} (≥1 step)\n"
+        '  wordProblem: {"id","title","problem":"<full statement>","given":["...","..."],'
+        '"find":"...","plan":["...","..."],"solve":[{"expr":"<a line of working>","note":"<why>"}],'
+        '"answer":"..."} (≥1 given, ≥1 plan, ≥1 solve line)\n'
+        '  podcast: {"id","title","chapters":[{"id","title","script":"<spoken, calm, ≤600 chars>"}]} '
+        "(1..12 chapters)\n"
+        '  arcade: {"id","title","game":"catch","rounds":[{"id","prompt","answer",'
+        '"distractors":["...","..."]}]} (1..12 rounds, ≥1 distractor each)\n\n'
         "GUIDED-DISCOVERY SPEC — a card's optional 'discovery' object, rendered on the discovery shell "
         "(a large reactive SVG the learner acts on). 1 to 6 stages, ONE idea each:\n"
         '{"id":"...","title":"...","stages":[{'
@@ -758,14 +1196,22 @@ _SYSTEMS = {
         '"breakpoints":[{"param":"R","at":0,"why":"..."}],"layout":"sliders-left"}\n' + _JSON_RULES
     ),
     "diagram": (
-        "You draw clean, glanceable inline SVG diagrams for Classess: ink on white "
-        "(#111 strokes on transparent), hairline weights, labeled sparingly, one idea "
-        "readable at a glance. Requirements: a viewBox attribute; no script, "
-        "foreignObject, external references, or event handlers; no <style> element — "
-        "style every element with presentation attributes only (stroke, fill, "
-        "font-size, ...), since style blocks are stripped before serving. Stay compact: "
-        "the whole SVG must fit comfortably in the reply, so prefer a few strong shapes "
-        "over many small ones.\n\n"
+        "You draw clean, glanceable inline SVG diagrams for Classess: editorial ink line-work on a "
+        "white ground, one idea readable at a glance. Requirements: a viewBox attribute; no script, "
+        "foreignObject, external references, or event handlers; no <style> element — style every "
+        "element with presentation attributes only (stroke, fill, font-size, ...), since style "
+        "blocks are stripped before serving. Stay compact: prefer a few strong shapes over many "
+        "small ones.\n\n"
+        # one-hue ink law (VIDEO-QUALITY.md §1, §4) — the same restraint the motion engine obeys.
+        "COLOUR LAW — one hue, everything else ink:\n"
+        "  • Line-work is ink only: strokes #0D0D10 (primary) and #6E6E76 (secondary lines, labels) "
+        "at ONE hairline weight (stroke-width 1.5). White ground, no coloured background.\n"
+        "  • Exactly ONE subject hue may carry the single most meaningful element and its label — "
+        "nothing else is coloured. Pick by subject: chemistry #CC1E7A, biology/life #66B300, "
+        "physics/maths/mastery #1F35E0. NEVER molten #FF5A1F (that is Vidya's warmth alone).\n"
+        "  • A reactive tint is that hue at 0.12–0.25 opacity, never a saturated fill. NO gradients, "
+        "shadows, glows, bevels, or glass — depth is line weight, nothing more. No rainbow palettes, "
+        "no more than one hue in the whole figure.\n\n"
         "Reply with exactly one <svg>...</svg> element and nothing else."
     ),
     "video": (
@@ -779,7 +1225,7 @@ _SYSTEMS = {
         "When a topic naturally teaches in bits, use MORE, SHORTER scenes — one clean idea "
         "per scene, each as long as it needs (a few seconds to ~30s). Do not pad.\n\n"
         # visual-quality bar (VIDEO-QUALITY.md) — the owner's reference-film standard, verbatim
-        'VISUAL BAR — every PAUSED frame must read as a premium editorial diagram, not a slide: '
+        "VISUAL BAR — every PAUSED frame must read as a premium editorial diagram, not a slide: "
         "ink line-work on white, ONE hue, deep margins, at most 7 marks, one focal subject. If a "
         'frame reads as "title + bullets", redraw it.\n'
         "Two type voices only, set as presentation attributes (no <style>): an editorial serif for "
@@ -832,7 +1278,7 @@ _SYSTEMS = {
 # tight budget gets exhausted mid-thought and returns EMPTY content — which parses to {} and
 # silently seeds. Give real headroom so the answer actually lands. Video (multi-scene self-
 # animating SVG) is the most verbose and needs the most; compose grew richer too.
-_MAX_TOKENS = {"compose": 8000, "simulate": 2000, "diagram": 6000, "video": 16000}
+_MAX_TOKENS = {"compose": 16000, "simulate": 2000, "diagram": 6000, "video": 16000}
 
 
 def _complete(
@@ -930,6 +1376,64 @@ def _generate_video_live(
     return artifact, model_used, tokens, False
 
 
+def _sim_reason(obj: Any) -> str:
+    """Why a sim draft failed verification — fed back to the model on the retry so it can fix it,
+    instead of the failure being swallowed. The CAS parse error is the most useful signal."""
+    if not isinstance(obj, dict):
+        return "the reply was not a JSON object"
+    formula = obj.get("formula")
+    if not _nes(formula):
+        return "no 'formula' field was present"
+    try:
+        parse_equation(str(formula))
+    except Exception as exc:  # CasError and friends carry the exact parse failure
+        return f"the formula {formula!r} is not CAS-parseable ({exc})"
+    return (
+        "the formula did not solve for the output at the default parameter values, or a param/output "
+        "was malformed (every symbol must be a param or an output; min <= default <= max)"
+    )
+
+
+def _generate_sim_live(
+    concept: str,
+    difficulty: str,
+    provider_model: str,
+    fallbacks: tuple[str, ...],
+    user: str,
+) -> tuple[Any, str, int]:
+    """engine.simulate: draft -> CAS-verify -> ONE retry feeding the verifier's reason back. A sim
+    that still refuses raises (the caller seeds a TOPIC-AWARE floor, never a wrong-subject law)."""
+    from classess_gateway.vidya import _extract_json
+
+    text, tokens = _complete(provider_model, "simulate", user, fallbacks)
+    obj = _extract_json(text)
+    artifact = _verify_sim(obj)
+    if artifact is not None:
+        return artifact, provider_model, tokens
+
+    reason = _sim_reason(obj)
+    logger.warning(
+        "engine.simulate draft refused — retrying once with the verifier reason",
+        extra={"fields": {"concept": concept, "reason": reason}},
+    )
+    retry_user = (
+        f"{user}\n\nYour previous simulator draft did NOT pass the CAS verifier: {reason}\n"
+        "Return a corrected spec: a single equation OUT = expression, explicit * for multiplication "
+        "and ^ for powers, ONE variable per symbol, every symbol a declared param or output, and the "
+        "formula must actually solve for the output at the default parameter values."
+    )
+    text2, tokens2 = _complete(provider_model, "simulate", retry_user, fallbacks)
+    tokens += tokens2
+    artifact2 = _verify_sim(_extract_json(text2))
+    if artifact2 is not None:
+        return artifact2, provider_model, tokens
+    logger.warning(
+        "engine.simulate refused after retry — seeding a topic-aware floor",
+        extra={"fields": {"concept": concept, "reason": _sim_reason(_extract_json(text2))}},
+    )
+    raise ValueError("sim verification failed after one retry")
+
+
 def _generate_live(
     modality: str,
     concept: str,
@@ -951,6 +1455,11 @@ def _generate_live(
         user = f"Concept: {concept}\nDifficulty: {difficulty}\nAudience: Indian K-12 learner."
         if modality == "video":
             return _generate_video_live(concept, difficulty, provider_model, fallbacks, user)
+        if modality == "simulate":
+            artifact, model_used, tokens = _generate_sim_live(
+                concept, difficulty, provider_model, fallbacks, user
+            )
+            return artifact, model_used, tokens, False
         text, tokens = _complete(provider_model, modality, user, fallbacks)
         obj: Any = text
         if modality != "diagram":
@@ -960,8 +1469,18 @@ def _generate_live(
         artifact = _verify_artifact(modality, obj, concept, difficulty)
         if artifact is not None:
             return artifact, provider_model, tokens, False
-    except Exception:  # ponytail: refusal invisible by contract — any live failure seeds
-        pass
+        logger.warning(
+            "engine.%s draft failed verification — seeding",
+            modality,
+            extra={"fields": {"concept": concept}},
+        )
+    except Exception:  # refusal invisible by contract — but never silent: log, then seed
+        logger.warning(
+            "engine.%s live generation raised — seeding",
+            modality,
+            extra={"fields": {"concept": concept}},
+            exc_info=True,
+        )
     return _seed(modality, concept, difficulty), "seed", tokens, True
 
 

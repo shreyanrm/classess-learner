@@ -7,6 +7,13 @@
  * always speaks back and ignores this switch entirely.
  */
 
+import {
+  planPerformance,
+  type VidyaAction,
+  type VidyaBus,
+  type VidyaMood,
+  useVidyaBus,
+} from '@classess/vidya';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { currentFidelity, isOffline } from '../shell/resilience';
 import { type ChatTurn, useVidyaChat } from './chat';
@@ -206,13 +213,114 @@ export async function speakLine(text: string, opts?: { onDone?: () => void }): P
   }
 }
 
+// --- THE CONDUCTOR: one continuous performance, voice and hand together ---------------------------
+//
+// A choreographed turn's ink no longer lands all at once. She speaks her line sentence by sentence,
+// and each action's sync anchor (withSentence / afterSentence, set by the gateway) fires its ink on
+// that exact beat — the underline lands as she says the term, the arrow arrives as she references it,
+// and a written note is paced to the audio length of the sentence carrying it, so the hand keeps up
+// with the voice. Unanchored actions were already dispatched at once by the caller (backward compat).
+
+/** Hold a beat on the reading clock (muted / keyless / a sentence that failed to synth). */
+function waitMs(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 /**
- * Always-mounted: watches the one conversation and speaks each new line of hers as it lands —
- * the same moment her ink actions dispatch, so sound and hand move together.
- * ponytail: sync = same starting beat; word-level ink timing is the upgrade path.
+ * Speak a line sentence by sentence, calling back on each sentence's start (with its measured audio
+ * length when voiced) and end. The first sentence plays while the next synthesizes. Muted/keyless/
+ * low-fi still run the callbacks on the reading clock so the ink stays paced.
+ */
+async function speakSentences(
+  segs: string[],
+  gen: number,
+  hooks?: { onStart?: (i: number, voicedMs?: number) => void; onEnd?: (i: number) => void },
+): Promise<void> {
+  const canVoice = Boolean(GATEWAY_URL) && !isMuted();
+  const voiceCount = currentFidelity() === 'low' ? Math.min(2, segs.length) : segs.length;
+  let pending = canVoice && segs.length > 0 ? synth(segs[0] as string) : null;
+  for (let i = 0; i < segs.length; i++) {
+    const cur = pending ? await pending : null;
+    if (gen !== speechGen) return;
+    pending = canVoice && i + 1 < voiceCount ? synth(segs[i + 1] as string) : null;
+    const voicedMs = cur ? (cur.samples.length / cur.rate) * 1000 : undefined;
+    hooks?.onStart?.(i, voicedMs);
+    if (cur && !isMuted()) await playSamples(cur.samples, cur.rate, gen);
+    else await waitMs(estimateReadMs(segs[i] as string));
+    if (gen !== speechGen) return;
+    hooks?.onEnd?.(i);
+  }
+}
+
+/** A tiny timing trail the live verifier reads off `window` — proves ink lands on its beat. */
+function traceBeat(kind: string, i: number, count: number, voicedMs?: number): void {
+  if (typeof window === 'undefined') return;
+  const w = window as unknown as { __vidyaTiming?: unknown[] };
+  if (!Array.isArray(w.__vidyaTiming)) return; // opt-in: the verifier sets it to []
+  w.__vidyaTiming.push({ t: Math.round(performance.now()), kind, sentence: i, marks: count, voicedMs });
+}
+
+const moodOfBeat = (beat: VidyaAction[]): VidyaMood | undefined => {
+  const m = beat.find((a) => a.type === 'setMood');
+  return m && 'mood' in m ? (m.mood as VidyaMood) : undefined;
+};
+
+/**
+ * Perform one choreographed turn: speak `text` and land each anchored action on its sentence beat.
+ * The caller has already dispatched the unanchored (immediate) actions. Mood follows content —
+ * anchored setMood beats drive her body as she writes (thinking on the setup, bright on the reveal).
+ */
+export async function performTurn(
+  text: string,
+  actions: VidyaAction[],
+  bus: Pick<VidyaBus, 'addBeat'>,
+  opts?: { onMood?: (m: VidyaMood) => void },
+): Promise<void> {
+  const segs = sentences(text);
+  const plan = planPerformance(actions, segs.length);
+  stopSpeaking();
+  const gen = ++speechGen;
+  const runBeat = (beat: VidyaAction[] | undefined, i: number, voicedMs: number | undefined, kind: string) => {
+    if (!beat?.length) return;
+    const mood = moodOfBeat(beat);
+    if (mood) opts?.onMood?.(mood);
+    bus.addBeat(beat, voicedMs !== undefined ? { noteDurationMs: voicedMs } : undefined);
+    traceBeat(kind, i, beat.length, voicedMs);
+  };
+  try {
+    await speakSentences(segs, gen, {
+      onStart: (i, voicedMs) => runBeat(plan.atStart.get(i), i, voicedMs, 'withSentence'),
+      onEnd: (i) => runBeat(plan.atEnd.get(i), i, undefined, 'afterSentence'),
+    });
+  } finally {
+    // Never strand ink: if the performance was cut short, land any un-fired beats at once.
+    if (gen === speechGen) {
+      for (const [i, beat] of plan.atStart) if (i >= segs.length) runBeat(beat, i, undefined, 'flush');
+      for (const beat of plan.atEnd.values()) bus.addBeat(beat);
+    }
+  }
+}
+
+// A turn's anchored actions, handed from App's ask() to the conductor and consumed once, keyed by
+// the vidya turn's id (so it never mis-fires on an identical-looking line).
+const pendingPerformances = new Map<string, VidyaAction[]>();
+export function registerPerformance(turnId: string, anchored: VidyaAction[]): void {
+  if (anchored.length > 0) pendingPerformances.set(turnId, anchored);
+}
+function takePerformance(turnId: string): VidyaAction[] | undefined {
+  const p = pendingPerformances.get(turnId);
+  if (p) pendingPerformances.delete(turnId);
+  return p;
+}
+
+/**
+ * Always-mounted: the conductor. It watches the one conversation and, as each new line of hers
+ * lands, either performs it (speak + choreographed ink beats, when App registered anchors) or simply
+ * speaks it. Sound and hand move together — one continuous performance, like a tutor at a whiteboard.
  */
 export function SpeechNarrator() {
-  const { turns } = useVidyaChat();
+  const { turns, setMood } = useVidyaChat();
+  const bus = useVidyaBus();
   // Mark everything already said before this mount as spoken — she only voices NEW lines.
   // Initialized synchronously (not in the effect) so a mount that happens mid-exchange, while
   // the newest turn is the learner's, can never swallow the reply that follows it.
@@ -228,8 +336,10 @@ export function SpeechNarrator() {
     if (last?.role !== 'vidya' || last.id === 'seed') return;
     if (spokenUpTo.current === last.id) return;
     spokenUpTo.current = last.id;
-    void speakLine(last.text);
-  }, [turns]);
+    const anchored = takePerformance(last.id);
+    if (anchored) void performTurn(last.text, anchored, bus, { onMood: setMood });
+    else void speakLine(last.text);
+  }, [turns, bus, setMood]);
   return null;
 }
 

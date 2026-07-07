@@ -27,31 +27,41 @@ const MOODS = ['idle', 'thinking', 'listening', 'correct', 'celebrate', 'waiting
 const level = z.enum(HIGHLIGHT_LEVELS).optional();
 /** How long a mark lives before it fades, in ms. Vidya decides per mark; omitted = a sensible default. */
 const ttl = z.number().int().positive().optional();
+// Sync anchors (THE ACTION TIMELINE): an action may ride a beat of her spoken line so ink lands on
+// the word she says. `withSentence:n` fires as sentence n begins; `afterSentence:n` fires when it
+// ends. Both optional — an action with neither dispatches immediately (backward compatible). The
+// conductor (speech.tsx) reads these off the parsed action; the reducer ignores them.
+const withSentence = z.number().int().nonnegative().optional();
+const afterSentence = z.number().int().nonnegative().optional();
+const sync = { withSentence, afterSentence };
 
 export const VidyaActionSchema = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('say'), text: z.string() }),
-  z.object({ type: z.literal('setMood'), mood: z.enum(MOODS) }),
-  z.object({ type: z.literal('highlight'), targetId: z.string(), level, ttl }),
+  z.object({ type: z.literal('say'), text: z.string(), ...sync }),
+  z.object({ type: z.literal('setMood'), mood: z.enum(MOODS), ...sync }),
+  z.object({ type: z.literal('highlight'), targetId: z.string(), level, ttl, ...sync }),
   z.object({
     type: z.literal('annotate'),
     targetId: z.string(),
     mark: z.enum(ANNOTATION_KINDS),
     level,
     ttl,
+    ...sync,
   }),
-  // Vidya writes a handwritten note (Caveat) beside a target — typed on letter by letter.
-  z.object({ type: z.literal('write'), targetId: z.string(), text: z.string(), level, ttl }),
-  z.object({ type: z.literal('point'), targetId: z.string(), ttl }),
+  // Vidya writes a handwritten note (Caveat) beside a target — typed on letter by letter, paced to
+  // her voice when it rides a sentence beat.
+  z.object({ type: z.literal('write'), targetId: z.string(), text: z.string(), level, ttl, ...sync }),
+  z.object({ type: z.literal('point'), targetId: z.string(), ttl, ...sync }),
   // Demonstrate by doing — drive an interactive's own state through its applyTutorAction seam
   // (VIDYA.md §4 setState). Only targets that expose scene state accept it.
   z.object({
     type: z.literal('setState'),
     targetId: z.string(),
     patch: z.record(z.string(), z.unknown()),
+    ...sync,
   }),
   // Voice-locked speech (VIDYA.md §4 speak): plays through the voice path when live, otherwise
   // rendered as her handwritten line.
-  z.object({ type: z.literal('speak'), text: z.string() }),
+  z.object({ type: z.literal('speak'), text: z.string(), ...sync }),
   // Learn a durable fact the learner just shared — a preferred name, a goal, an exam date. Persisted
   // to the mind and rendered into every future dossier (VIDYA.md §7). Never for transient chatter.
   z.object({ type: z.literal('remember'), text: z.string() }),
@@ -125,12 +135,16 @@ export interface ActiveHighlight {
   level: HighlightLevel;
   /** Lifetime in ms before it fades; undefined = default. */
   ttl?: number;
+  /** performance.now() when this mark was painted; the overlay draws + fades each on its own clock.
+   * Undefined = born with the shared dispatch clock (a single all-at-once turn). */
+  bornAt?: number;
 }
 export interface ActiveAnnotation {
   targetId: string;
   mark: AnnotationKind;
   level: HighlightLevel;
   ttl?: number;
+  bornAt?: number;
 }
 /** A handwritten (Caveat) note Vidya writes beside a target, typed on letter by letter. */
 export interface ActiveNote {
@@ -138,6 +152,10 @@ export interface ActiveNote {
   text: string;
   level: HighlightLevel;
   ttl?: number;
+  bornAt?: number;
+  /** How long the full note should take to write on, in ms — set to the spoken sentence's audio
+   * length so the hand keeps pace with her voice. Undefined = a natural handwriting pace. */
+  durationMs?: number;
 }
 
 /** A tutor-driven state patch aimed at a registered scene's applyTutorAction seam. */
@@ -283,5 +301,56 @@ export function describeActionVocabulary(): string {
     '- navigate/startPractice/switchModality — consequential; these are OFFERED to the learner, not forced.',
     'ttl (milliseconds) sets how long a mark stays before it fades — YOU decide per mark: a quick point ~2500, a note you want read ~6000, a lasting circle ~9000. Keep the screen uncluttered; marks are transient, not permanent.',
     'Only reference targetId values that appear in the provided target registry.',
+    'Sync your ink to your voice (THE ACTION TIMELINE): number your spoken sentences from 0, and add "withSentence":<n> to an action so its ink lands exactly as you begin saying that sentence, or "afterSentence":<n> so it lands the moment you finish it. A write note paced to "withSentence":<n> is written on at the speed you speak that sentence — like a tutor writing on the board while talking. Anchor the mark to the sentence that references it (underline the term as you name it, draw the arrow as you say "moves to"). Leave anchors off anything you want at once. Walk a multi-step problem one step per turn; never dump the whole solution.',
   ].join('\n');
+}
+
+// --- THE ACTION TIMELINE: a spoken turn choreographed into beats --------------------------------
+
+/** An action's sync anchor, read by the conductor before the action is reduced. */
+export function syncAnchorOf(a: VidyaAction): { withSentence?: number; afterSentence?: number } {
+  const withS = (a as { withSentence?: unknown }).withSentence;
+  const afterS = (a as { afterSentence?: unknown }).afterSentence;
+  return {
+    ...(typeof withS === 'number' ? { withSentence: withS } : {}),
+    ...(typeof afterS === 'number' ? { afterSentence: afterS } : {}),
+  };
+}
+
+/** True when an action rides a sentence beat rather than dispatching at once. */
+export function hasSyncAnchor(a: VidyaAction): boolean {
+  const { withSentence: w, afterSentence: f } = syncAnchorOf(a);
+  return w !== undefined || f !== undefined;
+}
+
+export interface PerformancePlan {
+  /** No anchor — dispatch at once (backward compatible with every pre-timeline turn). */
+  immediate: VidyaAction[];
+  /** withSentence:i — fire as sentence i begins. */
+  atStart: Map<number, VidyaAction[]>;
+  /** afterSentence:i — fire when sentence i finishes. */
+  atEnd: Map<number, VidyaAction[]>;
+}
+
+/**
+ * Bucket a turn's actions onto the beats of her spoken line. Pure — no DOM, no audio — so the
+ * conductor stays testable. An out-of-range anchor clamps to the last sentence (it still lands,
+ * never silently vanishes); when she speaks nothing (sentenceCount 0) everything is immediate.
+ */
+export function planPerformance(actions: VidyaAction[], sentenceCount: number): PerformancePlan {
+  const plan: PerformancePlan = { immediate: [], atStart: new Map(), atEnd: new Map() };
+  const last = Math.max(0, sentenceCount - 1);
+  const push = (m: Map<number, VidyaAction[]>, i: number, a: VidyaAction) => {
+    const k = Math.min(last, Math.max(0, i));
+    const arr = m.get(k);
+    if (arr) arr.push(a);
+    else m.set(k, [a]);
+  };
+  for (const a of actions) {
+    const { withSentence: w, afterSentence: f } = syncAnchorOf(a);
+    if (sentenceCount > 0 && w !== undefined) push(plan.atStart, w, a);
+    else if (sentenceCount > 0 && f !== undefined) push(plan.atEnd, f, a);
+    else plan.immediate.push(a);
+  }
+  return plan;
 }

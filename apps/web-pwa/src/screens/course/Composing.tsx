@@ -366,7 +366,12 @@ function useArtifact(card: GenCard, topic: string, courseId: string): Artifact {
         const body =
           isRecord(res.output) && 'artifact' in res.output ? res.output.artifact : res.output;
         if (card.kind === 'sim') {
-          const spec = simSpecFromGateway(res.output, card.title) ?? parseSimSpec(body);
+          // A seeded sim is a generic fallback (the live generation refused). Rather than risk a
+          // wrong-subject sandbox on this card, degrade to the idea + act — the honest floor.
+          const seeded = isRecord(res.output) && res.output.seeded === true;
+          const spec = seeded
+            ? null
+            : (simSpecFromGateway(res.output, card.title) ?? parseSimSpec(body));
           setArtifact(spec ? { status: 'ready', kind: 'sim', spec } : { status: 'failed' });
         } else {
           const svg =

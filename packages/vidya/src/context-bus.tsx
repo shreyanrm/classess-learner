@@ -184,7 +184,15 @@ export interface VidyaBus {
   /** Bumped each time she re-inks a faded mark set, so the overlay reseeds the strokes fresh. */
   reinkNonce: number;
   pendingOffer: ConsequentialAction | null;
+  /** Where she is inking now (viewport coords), for her body to lean/gaze toward. Null when idle. */
+  focusPoint: { x: number; y: number } | null;
   dispatch(actions: VidyaAction[]): void;
+  /**
+   * THE ACTION TIMELINE: paint one beat of a choreographed turn — accumulating onto the marks
+   * already on the board (unlike dispatch, which replaces). Each mark draws + fades on its own
+   * clock; pass noteDurationMs to pace a written note to the sentence's spoken length.
+   */
+  addBeat(actions: VidyaAction[], opts?: { noteDurationMs?: number }): void;
   /**
    * Re-ink the marks she last drew (family M): her ink is transient and fades, so this brings the
    * last set back — freshly drawn — when the learner refers to a drawing no longer on screen.
@@ -199,6 +207,12 @@ export interface VidyaBus {
 /** Default mark lifetime + fade window, when Vidya doesn't name a ttl. Marks are always transient. */
 const DEFAULT_MARK_TTL = 6000;
 const MARK_FADE_MS = 500;
+
+/** When (performance.now clock) the last of these marks, born at `born`, will have fully faded. */
+function deadlineOf(born: number, marks: { ttl?: number }[]): number {
+  if (marks.length === 0) return 0;
+  return born + Math.max(...marks.map((m) => m.ttl ?? DEFAULT_MARK_TTL)) + MARK_FADE_MS;
+}
 
 const BusContext = createContext<VidyaBus | null>(null);
 
@@ -253,7 +267,13 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
   const [notes, setNotes] = useState<ActiveNote[]>([]);
   const [marksBornAt, setMarksBornAt] = useState(0);
   const [reinkNonce, setReinkNonce] = useState(0);
+  // Where she is inking right now (viewport coords of the active mark's centre) — her body leans and
+  // gazes toward it, like a tutor turning to the board. Null when nothing is inked.
+  const [focusPoint, setFocusPoint] = useState<{ x: number; y: number } | null>(null);
   const clearTimer = useRef<number | undefined>(undefined);
+  // Absolute (performance.now) time at which the last live mark dies — so an accumulating performance
+  // keeps the residue-clear timer alive across beats instead of each beat cutting the last short.
+  const clearAtRef = useRef(0);
   // The last non-empty mark set she drew — kept so she can re-ink it after it has faded (family M).
   const lastMarksRef = useRef<{
     highlights: ActiveHighlight[];
@@ -319,47 +339,55 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
     setHighlights([]);
     setAnnotations([]);
     setNotes([]);
+    setFocusPoint(null);
+    clearAtRef.current = 0;
   }, []);
 
-  // Arm the fade timer for a set of live marks — each fades by its own ttl; this clears the residue.
-  const scheduleClear = useCallback((marks: { ttl?: number }[]) => {
+  // Point her body at the target she's inking so she leans/gazes toward the board (realism detail).
+  const focusOnTarget = useCallback((targetId: string | undefined) => {
+    if (!targetId) return;
+    const rect = targetsRef.current.get(targetId)?.getRect();
+    if (rect) setFocusPoint({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+  }, []);
+
+  // Arm the residue-clear timer to fire once the last live mark has died. Accumulating: a later
+  // beat only ever EXTENDS the deadline, never cuts an earlier beat's ink short.
+  const armClear = useCallback((deadline: number) => {
+    clearAtRef.current = Math.max(clearAtRef.current, deadline);
     if (clearTimer.current !== undefined) window.clearTimeout(clearTimer.current);
-    if (marks.length > 0) {
-      const maxTtl = Math.max(...marks.map((m) => m.ttl ?? DEFAULT_MARK_TTL));
-      clearTimer.current = window.setTimeout(() => {
-        setHighlights([]);
-        setAnnotations([]);
-        setNotes([]);
-      }, maxTtl + MARK_FADE_MS);
-    } else {
-      clearTimer.current = undefined;
-    }
+    const delay = Math.max(0, clearAtRef.current - performance.now());
+    clearTimer.current = window.setTimeout(() => {
+      setHighlights([]);
+      setAnnotations([]);
+      setNotes([]);
+      setFocusPoint(null);
+      clearAtRef.current = 0;
+    }, delay);
   }, []);
 
   const redrawLastMarks = useCallback((): boolean => {
     const last = lastMarksRef.current;
     const marks = [...last.highlights, ...last.annotations, ...last.notes];
     if (marks.length === 0) return false;
-    setHighlights(last.highlights);
-    setAnnotations(last.annotations);
-    setNotes(last.notes);
-    setMarksBornAt(performance.now());
+    const born = performance.now();
+    // Strip the original birth stamps so the re-ink draws fresh from one shared clock, not stale ages.
+    const strip = <T extends { bornAt?: number }>(m: T[]): T[] => m.map(({ bornAt: _b, ...r }) => r as T);
+    setHighlights(strip(last.highlights));
+    setAnnotations(strip(last.annotations));
+    setNotes(strip(last.notes.map(({ durationMs: _d, ...r }) => r as ActiveNote)));
+    setMarksBornAt(born);
     setReinkNonce((n) => n + 1); // reseed the strokes so the re-ink is fresh, not a photocopy
-    scheduleClear(marks);
+    clearAtRef.current = 0;
+    armClear(deadlineOf(born, marks));
     return true;
-  }, [scheduleClear]);
+  }, [armClear]);
 
-  const dispatch = useCallback(
-    (actions: VidyaAction[]) => {
-      // Each dispatch is Vidya's fresh focus: replace the marks, keep the mood unless she changes it.
-      const effects = reduceActions(actions);
+  // The non-ink side-effects of a turn (mood, voice, setState, hints, remembers) — shared by the
+  // all-at-once dispatch and each choreographed beat.
+  const fireSideEffects = useCallback(
+    (effects: ReturnType<typeof reduceActions>) => {
       const h = handlersRef.current;
-      setHighlights(effects.highlights);
-      setAnnotations(effects.annotations);
-      setNotes(effects.notes);
-      setMarksBornAt(performance.now());
       if (effects.mood) setMood(effects.mood);
-      setPendingOffer(effects.offer);
       for (const text of effects.says) h?.onSay?.(text);
       // speak is voice-locked: through the voice path when the app wires onSpeak (live), otherwise it
       // degrades to her written line.
@@ -374,25 +402,75 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
       for (let i = 0; i < effects.escalateHints; i += 1) h?.onEscalateHint?.();
       // she writes to her own dossier — a fact learned here rides every future turn
       for (const text of effects.remembers) h?.onRemember?.(text);
+    },
+    [applyTutorAction],
+  );
 
-      // Marks are ephemeral: clear them once the longest ttl elapses (each fades by its own ttl in the
-      // overlay). Vidya decides the ttl per mark; nothing lingers permanently.
-      const marks = [...effects.highlights, ...effects.annotations, ...effects.notes];
+  const dispatch = useCallback(
+    (actions: VidyaAction[]) => {
+      // Each dispatch is Vidya's fresh focus: replace the marks, keep the mood unless she changes it.
+      const effects = reduceActions(actions);
+      const born = performance.now();
+      const stamp = <T extends { bornAt?: number }>(m: T[]): T[] => m.map((x) => ({ ...x, bornAt: born }));
+      const hs = stamp(effects.highlights);
+      const as = stamp(effects.annotations);
+      const ns = stamp(effects.notes);
+      setHighlights(hs);
+      setAnnotations(as);
+      setNotes(ns);
+      setMarksBornAt(born);
+      setPendingOffer(effects.offer);
+      fireSideEffects(effects);
+      focusOnTarget(as[0]?.targetId ?? hs[0]?.targetId ?? ns[0]?.targetId);
+
+      // Marks are ephemeral: clear the residue once the longest ttl elapses (each fades by its own ttl
+      // in the overlay). Vidya decides the ttl per mark; nothing lingers permanently.
+      const marks = [...hs, ...as, ...ns];
       if (effects.redrawMarks && marks.length === 0) {
         // she asked to bring her last drawing back and drew nothing new this turn — re-ink it fresh
         redrawLastMarks();
       } else {
-        if (marks.length > 0) {
-          lastMarksRef.current = {
-            highlights: effects.highlights,
-            annotations: effects.annotations,
-            notes: effects.notes,
-          };
-        }
-        scheduleClear(marks);
+        if (marks.length === 0) setFocusPoint(null);
+        else lastMarksRef.current = { highlights: hs, annotations: as, notes: ns };
+        clearAtRef.current = 0; // a fresh turn resets the accumulation deadline
+        armClear(deadlineOf(born, marks));
       }
     },
-    [applyTutorAction, redrawLastMarks, scheduleClear],
+    [armClear, fireSideEffects, focusOnTarget, redrawLastMarks],
+  );
+
+  // THE ACTION TIMELINE: paint one beat of a choreographed turn. Unlike dispatch (fresh focus,
+  // replace-all), a beat ACCUMULATES — earlier beats' ink stays on the board while this one lands,
+  // so a worked example builds up stroke by stroke. Each mark is born now (its own draw/fade clock),
+  // and notes are paced to the sentence that carries them (noteDurationMs = the sentence's audio).
+  const addBeat = useCallback(
+    (actions: VidyaAction[], opts?: { noteDurationMs?: number }) => {
+      const effects = reduceActions(actions);
+      const born = performance.now();
+      const hs = effects.highlights.map((m) => ({ ...m, bornAt: born }));
+      const as = effects.annotations.map((m) => ({ ...m, bornAt: born }));
+      const ns = effects.notes.map((m) => ({
+        ...m,
+        bornAt: born,
+        ...(opts?.noteDurationMs !== undefined ? { durationMs: opts.noteDurationMs } : {}),
+      }));
+      if (hs.length) setHighlights((prev) => [...prev, ...hs]);
+      if (as.length) setAnnotations((prev) => [...prev, ...as]);
+      if (ns.length) setNotes((prev) => [...prev, ...ns]);
+      fireSideEffects(effects);
+      focusOnTarget(as[0]?.targetId ?? hs[0]?.targetId ?? ns[0]?.targetId);
+      const marks = [...hs, ...as, ...ns];
+      if (marks.length > 0) {
+        // grow the redrawable set so "draw it again" brings back the whole accumulated diagram
+        lastMarksRef.current = {
+          highlights: [...lastMarksRef.current.highlights, ...hs],
+          annotations: [...lastMarksRef.current.annotations, ...as],
+          notes: [...lastMarksRef.current.notes, ...ns],
+        };
+        armClear(deadlineOf(born, marks));
+      }
+    },
+    [armClear, fireSideEffects, focusOnTarget],
   );
 
   const acceptOffer = useCallback(() => {
@@ -430,7 +508,9 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
       marksBornAt,
       reinkNonce,
       pendingOffer,
+      focusPoint,
       dispatch,
+      addBeat,
       redrawLastMarks,
       acceptOffer,
       dismissOffer,
@@ -456,7 +536,9 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
       marksBornAt,
       reinkNonce,
       pendingOffer,
+      focusPoint,
       dispatch,
+      addBeat,
       redrawLastMarks,
       acceptOffer,
       dismissOffer,

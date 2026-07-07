@@ -29,6 +29,11 @@ _ARCHETYPES = (
 class ProviderResponse:
     output: dict[str, Any]
     tokens: int
+    # The model that ACTUALLY produced the output, when it differs from the policy's primary (a
+    # fallback took over). None means "the primary" — the gateway reports the primary in that case.
+    # This keeps telemetry honest when a Track-2 placeholder (e.g. grade-slm) fails over to a
+    # frontier model, instead of logging a model that never ran.
+    model: str | None = None
 
 
 class Provider(Protocol):
@@ -169,6 +174,66 @@ def _generate_course(
     return ProviderResponse(output=parsed, tokens=tokens)
 
 
+_GRADE_SYSTEM = (
+    "You grade one K-12 learner's answer to a single practice item for Classess. Decide whether "
+    "the answer is correct, and give ONE short, kind, specific line of feedback — never shaming; "
+    "when it is wrong, nudge toward the idea without handing over the full solution. Reply with "
+    'strict JSON only, no prose outside it:\n{"correct": true|false, "feedback": "<one sentence>"}'
+)
+
+
+def _grade_attempt(
+    *,
+    provider_model: str,
+    payload: dict[str, Any],
+    fallbacks: tuple[str, ...] = (),
+) -> ProviderResponse:
+    """Grade an attempt into {correct, feedback} (the shape the mock and the client expect).
+
+    The Track-2 grade SLM is a placeholder today, so the frontier fallback does the real work;
+    ``response.model`` reports the model that actually answered, so telemetry never lies.
+    """
+    import litellm
+
+    litellm.drop_params = True
+
+    from classess_gateway.vidya import _extract_json  # same robust code-fence/JSON parser
+
+    prompt = str(
+        payload.get("prompt") or payload.get("question") or payload.get("equation") or ""
+    ).strip()
+    answer = str(payload.get("answer") or payload.get("attempt") or "").strip()
+    expected = str(
+        payload.get("expected") or payload.get("reference") or payload.get("solution") or ""
+    ).strip()
+    user = f"Question: {prompt}\nLearner's answer: {answer}"
+    if expected:
+        user += f"\nReference answer: {expected}"
+
+    response = litellm.completion(
+        model=provider_model,
+        messages=[
+            {"role": "system", "content": _GRADE_SYSTEM},
+            {"role": "user", "content": user},
+        ],
+        fallbacks=list(fallbacks) or None,
+        max_tokens=300,
+        temperature=0.2,
+    )
+    text = response.choices[0].message.content or ""
+    parsed = _extract_json(text)
+    correct = bool(parsed.get("correct"))
+    feedback = str(parsed.get("feedback") or "").strip() or (
+        "That's right." if correct else "Not quite — take another look at the idea."
+    )
+    actual_model = str(getattr(response, "model", "") or "") or None
+    usage = getattr(response, "usage", None)
+    tokens = int(getattr(usage, "total_tokens", 0) or 0)
+    return ProviderResponse(
+        output={"correct": correct, "feedback": feedback}, tokens=tokens, model=actual_model
+    )
+
+
 class LiveProvider:
     def complete(
         self,
@@ -189,6 +254,11 @@ class LiveProvider:
 
         if capability == "generate.course":
             return _generate_course(
+                provider_model=provider_model, payload=payload, fallbacks=fallbacks
+            )
+
+        if capability == "grade.attempt":
+            return _grade_attempt(
                 provider_model=provider_model, payload=payload, fallbacks=fallbacks
             )
 

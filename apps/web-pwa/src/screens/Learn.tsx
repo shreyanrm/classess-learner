@@ -38,12 +38,14 @@ export function Whisper({
   onClick: () => void;
   style?: CSSProperties;
 }) {
+  // String(array) inserts commas ("◦ ,learn") — join keeps the accessible name honest.
+  const label = Array.isArray(children) ? children.join('') : String(children);
   const button = (
     <motion.button
       type="button"
       onClick={onClick}
-      aria-label={`Back — ${String(children)}`}
-      title={String(children)}
+      aria-label={`Back — ${label}`}
+      title={label}
       whileHover={{ x: -3 }}
       whileTap={{ scale: 0.95 }}
       transition={{ type: 'spring', stiffness: 380, damping: 24 }}

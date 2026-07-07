@@ -24,23 +24,33 @@ export {
 export {
   // the buddies — ported catalog kids
   Ace,
+  Bo,
   BUDDIES,
   type BuddyId,
+  Dev,
   Ember,
   Indi,
   Iris,
   Juni,
+  Juno,
+  Lumi,
   Maya,
   Nova,
+  Otis,
+  Pax,
   Pico,
   Pip,
+  Remy,
   Robin,
   Sage,
   Sol,
   Sprout,
+  Suri,
   Theo,
   Torto,
+  Vera,
   Volt,
+  Wren,
 } from './characters';
 export { Beaker, Books, Bulb, Flag, Pencil, Planet, Plant, Trophy } from './props';
 export {

@@ -26,7 +26,7 @@ import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
 import { hash } from '../ui/art';
 import { type BiomePalette, biomeFor, resolveBiome } from '../ui/biomes';
-import { CAST, type CastId } from '../ui/cast';
+import { Animal, type AnimalKind, CAST, type CastId } from '../ui/cast';
 import type { SubjectTone } from '../ui/hues';
 import { FROST, MagneticButton } from '../ui/kit';
 import { ambience, sfx } from '../ui/sound';
@@ -60,6 +60,7 @@ interface Checkpoint {
 
 interface Region {
   chapterId: string;
+  biomeId: string;
   pal: BiomePalette;
   seed: number;
   yTop: number;
@@ -217,6 +218,56 @@ function Grazer({
   );
 }
 
+// --- the expedition's inhabitants: a small biome-native troupe per region ----------------------
+// Sparse (2–3 a region), small (28–48px), seeded off region.seed, sat at the region edges away
+// from the road. Each catalog figure carries its own soft ground shadow + one calm idle (which
+// halts for reduced-motion), so the world reads lived-in without ever competing with the path.
+const TROUPE: Record<string, AnimalKind[]> = {
+  forest: ['fox', 'deer', 'squirrel', 'hedgehog', 'owl', 'rabbit', 'bear'],
+  snow: ['penguin', 'rabbit', 'owl', 'deer', 'bear'],
+  lava: ['fox', 'hedgehog', 'squirrel'],
+  ocean: ['koi', 'duck', 'turtle', 'frog', 'bird'],
+  night: ['owl', 'fox', 'hedgehog', 'bear'],
+  desert: ['fox', 'squirrel', 'snail', 'hedgehog'],
+  meadow: ['rabbit', 'butterfly', 'bee', 'ladybug', 'sheep', 'deer', 'hen', 'dog', 'cow', 'duck'],
+  canyon: ['fox', 'squirrel', 'hedgehog', 'bird'],
+};
+
+/** One inhabitant, feet anchored at (x, y) in valley px (= viewBox units, 1:1). */
+function Inhabitant({
+  x,
+  y,
+  size,
+  kind,
+  flip,
+  reduced,
+  seed,
+}: {
+  x: number;
+  y: number;
+  size: number;
+  kind: AnimalKind;
+  flip: boolean;
+  reduced: boolean;
+  seed: number;
+}) {
+  return (
+    <span
+      aria-hidden
+      style={{
+        position: 'absolute',
+        left: x,
+        top: y,
+        transform: 'translate(-50%, -100%)',
+        opacity: 0.9,
+        pointerEvents: 'none',
+      }}
+    >
+      <Animal kind={kind} size={size} animate={!reduced} flip={flip} seed={seed} />
+    </span>
+  );
+}
+
 function CampSmoke({ x, y, reduced }: { x: number; y: number; reduced: boolean }) {
   return (
     <g transform={`translate(${x} ${y})`}>
@@ -333,9 +384,11 @@ export function AdventureRoadmap({
       const head = mine[0];
       const tail = mine[mine.length - 1];
       if (!head || !tail) continue;
+      const biome = biomeFor(chapter.id);
       out.push({
         chapterId: chapter.id,
-        pal: resolveBiome(biomeFor(chapter.id), dark),
+        biomeId: biome.id,
+        pal: resolveBiome(biome, dark),
         seed: hash(`region:${chapter.id}`),
         yTop: head.p.y - STEP_Y * 0.55,
         yBot: tail.p.y + STEP_Y * 0.55,
