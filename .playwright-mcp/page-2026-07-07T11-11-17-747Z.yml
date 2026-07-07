@@ -1,0 +1,23 @@
+- generic [ref=f50e4]:
+  - button "Unmute Vidya" [pressed] [ref=f50e6] [cursor=pointer]:
+    - img [ref=f50e7]
+  - button "Vidya" [ref=f50e11] [cursor=pointer]:
+    - img [ref=f50e15]
+  - generic [ref=f50e120]:
+    - generic [ref=f50e121]: Last fun one, Aarav — what are you into these days?
+    - generic [ref=f50e123]:
+      - generic [ref=f50e124]:
+        - button "cricket" [ref=f50e125] [cursor=pointer]
+        - button "football" [ref=f50e126] [cursor=pointer]
+        - button "video games" [ref=f50e127] [cursor=pointer]
+        - button "music" [ref=f50e128] [cursor=pointer]
+        - button "movies" [ref=f50e129] [cursor=pointer]
+        - button "drawing" [ref=f50e130] [cursor=pointer]
+        - button "reading" [ref=f50e131] [cursor=pointer]
+        - button "space" [ref=f50e132] [cursor=pointer]
+        - button "coding" [ref=f50e133] [cursor=pointer]
+        - button "animals" [ref=f50e134] [cursor=pointer]
+        - button "dancing" [ref=f50e135] [cursor=pointer]
+        - button "food" [ref=f50e136] [cursor=pointer]
+      - button "A bit of everything" [ref=f50e137] [cursor=pointer]
+  - button "Skip for now" [ref=f50e43] [cursor=pointer]

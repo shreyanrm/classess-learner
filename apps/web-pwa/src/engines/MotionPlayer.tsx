@@ -18,6 +18,7 @@ import {
   useState,
 } from 'react';
 import { lead, whisper } from '../screens/course/shared';
+import { ClassessLogo } from '../ui/Logo';
 import { SafeSvg, svgIsClean } from './DiagramView';
 
 // --- The motion-scene spec ------------------------------------------------------------------------
@@ -367,6 +368,19 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
             )}
           </motion.div>
         </AnimatePresence>
+        {/* Classess watermark — owner law: bottom-right of every video, both themes */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            right: 10,
+            bottom: 8,
+            opacity: 0.7,
+            pointerEvents: 'none',
+          }}
+        >
+          <ClassessLogo height={12} />
+        </div>
       </div>
 
       {/* the caption of the scene on stage */}

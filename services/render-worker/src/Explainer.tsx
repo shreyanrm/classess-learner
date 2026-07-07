@@ -99,6 +99,20 @@ export function Explainer({ scenes, bedFile, bgmFile, bgmGain }: ExplainerProps)
           ))}
         </Sequence>
       ))}
+      {/* Classess watermark — owner law: bottom-right of every video. Above scenes, always on. */}
+      <img
+        src={staticFile('classess-logo.png')}
+        alt=""
+        style={{
+          position: 'absolute',
+          right: '2.5%',
+          bottom: '2.5%',
+          height: '3.75%', // ~27px at 720p; scales with the frame
+          width: 'auto',
+          opacity: 0.8,
+          pointerEvents: 'none',
+        }}
+      />
     </AbsoluteFill>
   );
 }

@@ -1,0 +1,16 @@
+- generic [ref=f50e4]:
+  - button "Unmute Vidya" [pressed] [ref=f50e6] [cursor=pointer]:
+    - img [ref=f50e7]
+  - button "Vidya" [ref=f50e11] [cursor=pointer]:
+    - img [ref=f50e15]
+  - generic [ref=f50e106]:
+    - generic [ref=f50e107]: And which class, Aarav?
+    - generic [ref=f50e110]:
+      - generic [ref=f50e111]: Your grade
+      - generic [ref=f50e112]:
+        - button "Class 6" [ref=f50e113] [cursor=pointer]
+        - button "Class 7" [ref=f50e114] [cursor=pointer]
+        - button "Class 8" [ref=f50e115] [cursor=pointer]
+        - button "Class 9" [ref=f50e116] [cursor=pointer]
+        - button "Class 10" [ref=f50e117] [cursor=pointer]
+  - button "Skip for now" [ref=f50e43] [cursor=pointer]
