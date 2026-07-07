@@ -131,7 +131,7 @@ export function Home() {
   const progress = useProgress();
   const { publishPage } = useVidyaBus();
   const [draft, setDraft] = useState('');
-  const [voiceNote, setVoiceNote] = useState(false);
+  const [voiceNote, setVoiceNote] = useState<string | null>(null);
   const voice = useVidyaVoice({ setMood });
 
   // The day, derived from real state — every stop routes somewhere real.
@@ -191,9 +191,16 @@ export function Home() {
   const toggleVoice = () => {
     if (voiceOn) return voice.stop();
     void voice.start().then((state) => {
-      if (state === 'unavailable') {
-        setVoiceNote(true);
-        window.setTimeout(() => setVoiceNote(false), 3000);
+      // 'idle' back from start() means getUserMedia was denied/blocked — don't fail silently.
+      const note =
+        state === 'unavailable'
+          ? 'Voice arrives with a key'
+          : state === 'idle'
+            ? 'Allow microphone access to talk with her'
+            : null;
+      if (note) {
+        setVoiceNote(note);
+        window.setTimeout(() => setVoiceNote(null), 3000);
       }
     });
   };
@@ -405,7 +412,7 @@ export function Home() {
         </motion.form>
         {voiceNote && (
           <div style={{ marginTop: 8, color: 'var(--clss-ink-500)', fontSize: fluidType.small }}>
-            Voice arrives with a key
+            {voiceNote}
           </div>
         )}
 

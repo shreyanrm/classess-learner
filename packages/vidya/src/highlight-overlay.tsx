@@ -122,7 +122,7 @@ export function VidyaOverlay() {
         zIndex: zIndex.vidyaPresence - 10,
       }}
     >
-      {bus.highlights.map((h: ActiveHighlight, i) => {
+      {bus.highlights.map((h: ActiveHighlight) => {
         const rect = rectOf(h.targetId);
         if (!rect) return null;
         const age = ageOf(h.bornAt);
@@ -138,7 +138,8 @@ export function VidyaOverlay() {
         const d = highlighterSwipe(w, hh, rng);
         return (
           <svg
-            key={`hl-${h.targetId}-${h.level}-${i}`}
+            // bornAt is distinct per beat, so accumulated marks on one target still key uniquely
+            key={`hl-${h.targetId}-${h.level}-${h.bornAt ?? 'shared'}`}
             width={w}
             height={hh}
             aria-hidden="true"
@@ -151,18 +152,12 @@ export function VidyaOverlay() {
               transform: `skewX(-4deg)`,
             }}
           >
-            <path
-              d={d}
-              fill="none"
-              stroke={color}
-              strokeWidth={hh * 0.92}
-              strokeLinecap="round"
-            />
+            <path d={d} fill="none" stroke={color} strokeWidth={hh * 0.92} strokeLinecap="round" />
           </svg>
         );
       })}
 
-      {bus.annotations.map((a: ActiveAnnotation, i) => {
+      {bus.annotations.map((a: ActiveAnnotation) => {
         const rect = rectOf(a.targetId);
         if (!rect) return null;
         const age = ageOf(a.bornAt);
@@ -172,10 +167,15 @@ export function VidyaOverlay() {
         const mark = a.mark as Mark;
         const d = markPath(mark, rect.width, rect.height, rng);
         // A fresh rng for the duration so the seeded ±10% pen-speed variation doesn't disturb the path.
-        const duration = strokeDurationMs(mark, rect.width, rect.height, inkRng(a.targetId, a.mark, `dur${a.level}${reink}`));
+        const duration = strokeDurationMs(
+          mark,
+          rect.width,
+          rect.height,
+          inkRng(a.targetId, a.mark, `dur${a.level}${reink}`),
+        );
         return (
           <svg
-            key={`an-${a.targetId}-${a.mark}-${a.level}-${i}`}
+            key={`an-${a.targetId}-${a.mark}-${a.level}-${a.bornAt ?? 'shared'}`}
             width={rect.width}
             height={rect.height}
             aria-hidden="true"
@@ -200,7 +200,7 @@ export function VidyaOverlay() {
         );
       })}
 
-      {bus.notes.map((n: ActiveNote, i) => {
+      {bus.notes.map((n: ActiveNote) => {
         const rect = rectOf(n.targetId);
         if (!rect) return null;
         const ttl = n.ttl ?? DEFAULT_TTL;
@@ -214,13 +214,16 @@ export function VidyaOverlay() {
         const writeDur = n.durationMs ?? n.text.length * MS_PER_CHAR * speedVar;
         const shown = reduced
           ? n.text.length
-          : Math.min(n.text.length, Math.max(0, Math.floor(clamp01(age / writeDur) * n.text.length)));
+          : Math.min(
+              n.text.length,
+              Math.max(0, Math.floor(clamp01(age / writeDur) * n.text.length)),
+            );
         const typing = shown < n.text.length && age < ttl - FADE;
         const tilt = reduced ? 0 : noteRotation(rng);
         const nudgeX = Math.round((rng() * 2 - 1) * 6); // a small margin drift, not pinned to the edge
         return (
           <div
-            key={`nt-${n.targetId}-${n.level}-${i}`}
+            key={`nt-${n.targetId}-${n.level}-${n.bornAt ?? 'shared'}`}
             style={{
               position: 'absolute',
               left: rect.left + nudgeX,

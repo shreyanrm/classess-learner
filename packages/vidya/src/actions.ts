@@ -49,7 +49,14 @@ export const VidyaActionSchema = z.discriminatedUnion('type', [
   }),
   // Vidya writes a handwritten note (Caveat) beside a target — typed on letter by letter, paced to
   // her voice when it rides a sentence beat.
-  z.object({ type: z.literal('write'), targetId: z.string(), text: z.string(), level, ttl, ...sync }),
+  z.object({
+    type: z.literal('write'),
+    targetId: z.string(),
+    text: z.string(),
+    level,
+    ttl,
+    ...sync,
+  }),
   z.object({ type: z.literal('point'), targetId: z.string(), ttl, ...sync }),
   // Demonstrate by doing — drive an interactive's own state through its applyTutorAction seam
   // (VIDYA.md §4 setState). Only targets that expose scene state accept it.

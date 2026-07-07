@@ -31,7 +31,7 @@ export function ChatScreen() {
   const { turns, ask, busy, mood, setMood, hasOlder, loadOlder, offline, pending } = useVidyaChat();
   const bus = useVidyaBus();
   const [draft, setDraft] = useState('');
-  const [voiceNote, setVoiceNote] = useState(false);
+  const [voiceNote, setVoiceNote] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   // The chat page is the one full-screen route that used to publish nothing — so the bus kept the
   // last content screen's page/curriculum/canvas, and she would answer about a page already left.
@@ -109,9 +109,16 @@ export function ChatScreen() {
   const toggleVoice = () => {
     if (voiceOn) return voice.stop();
     void voice.start().then((state) => {
-      if (state === 'unavailable') {
-        setVoiceNote(true);
-        window.setTimeout(() => setVoiceNote(false), 3000);
+      // 'idle' back from start() means getUserMedia was denied/blocked — don't fail silently.
+      const note =
+        state === 'unavailable'
+          ? 'Voice arrives with a key'
+          : state === 'idle'
+            ? 'Allow microphone access to talk with her'
+            : null;
+      if (note) {
+        setVoiceNote(note);
+        window.setTimeout(() => setVoiceNote(null), 3000);
       }
     });
   };
@@ -391,7 +398,7 @@ export function ChatScreen() {
             fontSize: fluidType.small,
           }}
         >
-          Voice arrives with a key
+          {voiceNote}
         </div>
       )}
     </div>

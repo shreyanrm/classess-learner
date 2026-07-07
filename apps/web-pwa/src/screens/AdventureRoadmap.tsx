@@ -748,6 +748,60 @@ export function AdventureRoadmap({
               )}
             </svg>
 
+            {/* the inhabitants — a calm biome-native troupe living at the region edges */}
+            {regions.map((r) => {
+              const rand = mulberry((r.seed ^ 0x51ed21) >>> 0);
+              const troupe = TROUPE[r.biomeId] ?? [];
+              const n = 2 + Math.floor(rand() * 2);
+              return Array.from({ length: n }, (_, i) => {
+                const side = rand() < 0.5 ? -1 : 1;
+                const x = side < 0 ? W * (0.07 + rand() * 0.12) : W * (0.81 + rand() * 0.12);
+                const span = Math.max(40, r.yBot - r.yTop - 170);
+                const y = r.yTop + 120 + rand() * span;
+                const kind = troupe[Math.floor(rand() * troupe.length)] ?? 'fox';
+                const size = 30 + rand() * 16;
+                const cx = Math.max(30, Math.min(W - 30, x));
+                return (
+                  <Inhabitant
+                    key={`inh:${r.chapterId}:${cx.toFixed(0)}:${y.toFixed(0)}`}
+                    x={cx}
+                    y={y}
+                    size={size}
+                    kind={kind}
+                    flip={side > 0}
+                    reduced={reduced}
+                    seed={i + 1}
+                  />
+                );
+              });
+            })}
+
+            {/* the camp companion — a friend by the current fire (the learner is never alone) */}
+            {(() => {
+              const cur = cps[currentIdx];
+              if (!cur) return null;
+              const onLeft = cur.p.x < W / 2;
+              const campX = cur.p.x + (onLeft ? 74 : -74);
+              const compId =
+                CAST_IDS[hash(`camp:${cur.topic.id}`) % CAST_IDS.length] ?? ('sage' as CastId);
+              const Companion = CAST[compId].Component;
+              return (
+                <span
+                  aria-hidden
+                  style={{
+                    position: 'absolute',
+                    left: campX + (onLeft ? 26 : -26),
+                    top: cur.p.y + 22,
+                    transform: 'translate(-50%, -100%)',
+                    opacity: 0.92,
+                    pointerEvents: 'none',
+                  }}
+                >
+                  <Companion size={46} animate={!reduced} flip={!onLeft} />
+                </span>
+              );
+            })()}
+
             {/* checkpoints — real buttons seated on the road */}
             {cps.map((c) => {
               const size = c.state === 'current' ? CUR : CHECK;

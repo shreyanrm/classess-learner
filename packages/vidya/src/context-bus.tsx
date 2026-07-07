@@ -371,7 +371,8 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
     if (marks.length === 0) return false;
     const born = performance.now();
     // Strip the original birth stamps so the re-ink draws fresh from one shared clock, not stale ages.
-    const strip = <T extends { bornAt?: number }>(m: T[]): T[] => m.map(({ bornAt: _b, ...r }) => r as T);
+    const strip = <T extends { bornAt?: number }>(m: T[]): T[] =>
+      m.map(({ bornAt: _b, ...r }) => r as T);
     setHighlights(strip(last.highlights));
     setAnnotations(strip(last.annotations));
     setNotes(strip(last.notes.map(({ durationMs: _d, ...r }) => r as ActiveNote)));
@@ -411,7 +412,8 @@ export function VidyaProvider({ children, handlers }: VidyaProviderProps) {
       // Each dispatch is Vidya's fresh focus: replace the marks, keep the mood unless she changes it.
       const effects = reduceActions(actions);
       const born = performance.now();
-      const stamp = <T extends { bornAt?: number }>(m: T[]): T[] => m.map((x) => ({ ...x, bornAt: born }));
+      const stamp = <T extends { bornAt?: number }>(m: T[]): T[] =>
+        m.map((x) => ({ ...x, bornAt: born }));
       const hs = stamp(effects.highlights);
       const as = stamp(effects.annotations);
       const ns = stamp(effects.notes);

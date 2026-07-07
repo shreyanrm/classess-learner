@@ -84,7 +84,7 @@ export function VidyaCompanion() {
   const { mode } = useTutor();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState('');
-  const [voiceNote, setVoiceNote] = useState(false);
+  const [voiceNote, setVoiceNote] = useState<string | null>(null);
   const [tb, setTb] = useState<TeachBack | null>(null);
   // Push-to-talk on her docked body: the live-voice halo, and a docked note when she can't answer.
   const [ptt, setPtt] = useState(false);
@@ -184,9 +184,16 @@ export function VidyaCompanion() {
   const toggleVoice = () => {
     if (voiceOn) return voice.stop();
     void voice.start().then((landed) => {
-      if (landed === 'unavailable') {
-        setVoiceNote(true);
-        window.setTimeout(() => setVoiceNote(false), 3000);
+      // 'idle' back from start() means getUserMedia was denied/blocked — don't fail silently.
+      const note =
+        landed === 'unavailable'
+          ? 'voice arrives with a key'
+          : landed === 'idle'
+            ? 'allow microphone access to talk'
+            : null;
+      if (note) {
+        setVoiceNote(note);
+        window.setTimeout(() => setVoiceNote(null), 3000);
       }
     });
   };
@@ -212,6 +219,7 @@ export function VidyaCompanion() {
         setPtt(false);
         setMood('idle');
         if (landed === 'unavailable') flashPttNote('voice arrives with a key');
+        else if (landed === 'idle') flashPttNote('allow microphone access to talk');
       }
     });
   };
@@ -628,7 +636,7 @@ export function VidyaCompanion() {
                   fontSize: '0.78rem',
                 }}
               >
-                voice arrives with a key
+                {voiceNote}
               </div>
             )}
           </motion.aside>

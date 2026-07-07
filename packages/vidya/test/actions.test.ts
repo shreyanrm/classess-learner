@@ -168,8 +168,12 @@ describe('sync anchors', () => {
   });
 
   it('hasSyncAnchor is true only when an anchor is present', () => {
-    expect(hasSyncAnchor({ type: 'point', targetId: 't', withSentence: 1 } as VidyaAction)).toBe(true);
-    expect(hasSyncAnchor({ type: 'point', targetId: 't', afterSentence: 0 } as VidyaAction)).toBe(true);
+    expect(hasSyncAnchor({ type: 'point', targetId: 't', withSentence: 1 } as VidyaAction)).toBe(
+      true,
+    );
+    expect(hasSyncAnchor({ type: 'point', targetId: 't', afterSentence: 0 } as VidyaAction)).toBe(
+      true,
+    );
     expect(hasSyncAnchor({ type: 'point', targetId: 't' } as VidyaAction)).toBe(false);
     expect(hasSyncAnchor({ type: 'say', text: 'x' } as VidyaAction)).toBe(false);
   });

@@ -9,10 +9,10 @@
 
 import {
   planPerformance,
+  useVidyaBus,
   type VidyaAction,
   type VidyaBus,
   type VidyaMood,
-  useVidyaBus,
 } from '@classess/vidya';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { currentFidelity, isOffline } from '../shell/resilience';
@@ -257,7 +257,13 @@ function traceBeat(kind: string, i: number, count: number, voicedMs?: number): v
   if (typeof window === 'undefined') return;
   const w = window as unknown as { __vidyaTiming?: unknown[] };
   if (!Array.isArray(w.__vidyaTiming)) return; // opt-in: the verifier sets it to []
-  w.__vidyaTiming.push({ t: Math.round(performance.now()), kind, sentence: i, marks: count, voicedMs });
+  w.__vidyaTiming.push({
+    t: Math.round(performance.now()),
+    kind,
+    sentence: i,
+    marks: count,
+    voicedMs,
+  });
 }
 
 const moodOfBeat = (beat: VidyaAction[]): VidyaMood | undefined => {
@@ -280,7 +286,12 @@ export async function performTurn(
   const plan = planPerformance(actions, segs.length);
   stopSpeaking();
   const gen = ++speechGen;
-  const runBeat = (beat: VidyaAction[] | undefined, i: number, voicedMs: number | undefined, kind: string) => {
+  const runBeat = (
+    beat: VidyaAction[] | undefined,
+    i: number,
+    voicedMs: number | undefined,
+    kind: string,
+  ) => {
     if (!beat?.length) return;
     const mood = moodOfBeat(beat);
     if (mood) opts?.onMood?.(mood);
@@ -295,7 +306,8 @@ export async function performTurn(
   } finally {
     // Never strand ink: if the performance was cut short, land any un-fired beats at once.
     if (gen === speechGen) {
-      for (const [i, beat] of plan.atStart) if (i >= segs.length) runBeat(beat, i, undefined, 'flush');
+      for (const [i, beat] of plan.atStart)
+        if (i >= segs.length) runBeat(beat, i, undefined, 'flush');
       for (const beat of plan.atEnd.values()) bus.addBeat(beat);
     }
   }
