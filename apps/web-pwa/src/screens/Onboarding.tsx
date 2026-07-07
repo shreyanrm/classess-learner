@@ -192,7 +192,7 @@ export function Onboarding() {
   // --- the beats -------------------------------------------------------------------------------
   const toName = () => {
     setPhase('name');
-    say('so — what can I call you?');
+    say('Hey there, what can I call you?');
   };
   const toAge = (who: string) => {
     setPhase('age');
@@ -241,7 +241,7 @@ export function Onboarding() {
       return;
     }
     say(
-      "hi — I'm Vidya. let's get to know each other, so I can build you a plan that's all yours.",
+      "Hi — I'm Vidya. Let's get to know each other, so I can build you a plan that's all yours.",
       () => window.setTimeout(toName, 600),
     );
   }, [sdk]);
@@ -294,7 +294,7 @@ export function Onboarding() {
   const sendCode = async () => {
     const normalized = normalizePhone(phone);
     if (normalized.replace(/\D/g, '').length < 10) {
-      setAuthErr('that number looks short — check it once more');
+      setAuthErr('That number looks short — check it once more');
       return;
     }
     setAuthBusy(true);
@@ -305,7 +305,7 @@ export function Onboarding() {
       setAuthStage('code');
       setMood('listening');
     } catch {
-      setAuthErr('the code could not go out — check the number and try again');
+      setAuthErr('The code could not go out — check the number and try again');
       setMood('hint');
     } finally {
       setAuthBusy(false);
@@ -322,7 +322,7 @@ export function Onboarding() {
       setAuthed(true);
       toReady();
     } catch {
-      setAuthErr('that code did not match — take another look and try again');
+      setAuthErr('That code did not match — take another look and try again');
       setMood('oops');
     } finally {
       setAuthBusy(false);
