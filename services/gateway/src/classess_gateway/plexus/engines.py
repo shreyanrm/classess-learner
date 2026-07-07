@@ -34,7 +34,7 @@ from xml.sax.saxutils import quoteattr
 import sympy as sp
 from classess_verifier.cas import parse_equation
 
-from classess_gateway.plexus import image, store
+from classess_gateway.plexus import chem, image, physics, store
 from classess_gateway.plexus.media import synthesize_narration, wav_duration_ms
 from classess_gateway.plexus.sanitize import sanitize_svg
 from classess_gateway.providers import ProviderResponse
@@ -522,6 +522,106 @@ def _ok_arcade(raw: Any) -> dict[str, Any] | None:
     return raw if 1 <= len(rounds) <= 12 else None
 
 
+_MATHSCENE_KINDS = {"plot", "geometry", "numberline", "areaProof", "probability"}
+
+
+def _ms_pair(v: Any) -> bool:
+    return isinstance(v, list) and len(v) >= 2 and _num_or_expr(v[0]) and _num_or_expr(v[1])
+
+
+def _ok_mathscene(raw: Any) -> dict[str, Any] | None:
+    r = _as_dict(raw)
+    if not r or r.get("kind") not in _MATHSCENE_KINDS:
+        return None
+    handles = []
+    for h in _as_list(r.get("handles")):
+        hd = _as_dict(h)
+        if not hd or not _ident(hd.get("id")) or not _nes(hd.get("label")):
+            return None
+        if hd.get("along") not in ("x", "y", "free"):
+            return None
+        if not (_fnum(hd.get("min")) and _fnum(hd.get("max"))) or float(hd["min"]) >= float(hd["max"]):
+            return None
+        handles.append(hd)
+    if not 1 <= len(handles) <= 4:
+        return None
+    for rd in _as_list(r.get("readouts")):
+        d = _as_dict(rd)
+        if not d or not _nes(d.get("id")) or not _nes(d.get("label")) or not _nes(d.get("expr")):
+            return None
+    for c in _as_list(r.get("curves")):
+        d = _as_dict(c)
+        if not d or not _nes(d.get("id")) or not _nes(d.get("expr")):
+            return None
+    for p in _as_list(r.get("polys")):
+        d = _as_dict(p)
+        pts = _as_list(d.get("points")) if d else []
+        if not d or not _nes(d.get("id")) or len([1 for pt in pts if _ms_pair(pt)]) < 3:
+            return None
+    for s in _as_list(r.get("segments")):
+        d = _as_dict(s)
+        if not d or not _nes(d.get("id")) or not _ms_pair(d.get("from")) or not _ms_pair(d.get("to")):
+            return None
+    k = r["kind"]
+    has_body = (
+        (k == "plot" and (_as_list(r.get("curves")) or _as_list(r.get("points"))))
+        or (k == "numberline" and (_as_list(r.get("segments")) or _as_list(r.get("points"))))
+        or _as_list(r.get("polys"))
+    )
+    return raw if has_body else None
+
+
+_CHEM_3D_FORMATS = ("mol", "sdf", "pdb", "xyz")
+
+
+def _chem_terms(v: Any) -> list[tuple[int, str]] | None:
+    """Client ChemTerm list -> [(coefficient, formula)]; None if any term is malformed."""
+    out: list[tuple[int, str]] = []
+    for t in _as_list(v):
+        d = _as_dict(t)
+        if not d or not _nes(d.get("formula")):
+            return None
+        formula = str(d["formula"]).strip()
+        if chem.parse_formula(formula) is None:
+            return None
+        coeff = d.get("coefficient", 1)
+        if isinstance(coeff, bool) or not isinstance(coeff, int) or coeff <= 0:
+            return None
+        out.append((coeff, formula))
+    return out or None
+
+
+def _ok_chemscene(raw: Any) -> dict[str, Any] | None:
+    r = _as_dict(raw)
+    if not r:
+        return None
+    kind = r.get("kind")
+    if kind == "balance":
+        reactants = _chem_terms(r.get("reactants"))
+        products = _chem_terms(r.get("products"))
+        if not reactants or not products or len(reactants) + len(products) > 8:
+            return None
+        # the AUTHORED coefficients must conserve every element — a wrong answer never ships
+        return raw if chem.is_balanced(reactants, products) else None
+    if kind == "titration":
+        a, t = _as_dict(r.get("analyte")), _as_dict(r.get("titrant"))
+        if not (a and t and _nes(a.get("name")) and _nes(t.get("name"))):
+            return None
+        if a.get("kind") not in ("acid", "base") or t.get("kind") not in ("acid", "base"):
+            return None
+        for spec_dict, needs_volume in ((a, True), (t, False)):
+            if not (_fnum(spec_dict.get("concentrationM")) and float(spec_dict["concentrationM"]) > 0):
+                return None
+            if needs_volume and not (_fnum(spec_dict.get("volumeMl")) and float(spec_dict["volumeMl"]) > 0):
+                return None
+        return raw
+    if kind == "structure":
+        return raw if _nes(r.get("smiles")) and chem.valid_smiles(str(r["smiles"])) else None
+    if kind == "molecule3d":
+        return raw if _nes(r.get("data")) and r.get("format") in _CHEM_3D_FORMATS else None
+    return None
+
+
 # field name (as the client reads it off a card) -> its accept/preserve gate
 _CARD_ACTIVITIES = {
     "perturbation": _ok_perturbation,
@@ -534,6 +634,9 @@ _CARD_ACTIVITIES = {
     "wordProblem": _ok_wordproblem,
     "podcast": _ok_podcast,
     "arcade": _ok_arcade,
+    "mathScene": _ok_mathscene,
+    "physicsScene": physics.verify_physics_scene,
+    "chemScene": _ok_chemscene,
 }
 
 
@@ -1085,7 +1188,8 @@ _SYSTEMS = {
         '"discovery":<OPTIONAL guided-discovery spec, see below — the default teaching format>,'
         '"imageSpec":<OPTIONAL {"subject":"...","caption":"..."} for organic/complex visuals>,'
         "<OPTIONAL: at most ONE rich activity field — perturbation | whatIf | compare | conceptMap | "
-        "workbook | flashcards | derivation | wordProblem | podcast | arcade, schemas below>}],"
+        "workbook | flashcards | derivation | wordProblem | podcast | arcade | mathScene | "
+        "physicsScene | chemScene, schemas below>}],"
         '"workbook":[{"id":"w1","type":"mcq","prompt":"...",'
         '"options":["...","...","..."],"answer":"<copied character-for-character from options>"},'
         '{"id":"w2","type":"fill","prompt":"<a sentence with a ________ gap>",'
@@ -1118,6 +1222,16 @@ _SYSTEMS = {
         "  • PODCAST ('podcast') — a chaptered audio revision companion for the whole topic; attach "
         "to a late card. Each chapter 'script' is ≤ ~600 characters (one narration call).\n"
         "  • ARCADE ('arcade') ONLY where playing the mechanic IS the concept — otherwise never.\n"
+        "  • MATHSCENE ('mathScene') for a MATH beat best felt on real axes — a draggable plot, a "
+        "geometry figure, a number line, an area proof, or a probability square. Handles drag, every "
+        "curve/readout re-evaluates live.\n"
+        "  • PHYSICSSCENE ('physicsScene') for a MECHANICS/WAVE beat — projectile with live "
+        "angle/velocity sliders, a free-body diagram with draggable force arrows, or wave "
+        "superposition. Formulas must be dimensionally EXACT (they are machine-checked; a wrong "
+        "unit or constant is refused).\n"
+        "  • CHEMSCENE ('chemScene') for a CHEMISTRY beat — an equation the learner balances "
+        "coefficient-by-coefficient (element conservation live), a drop-by-drop titration with an "
+        "indicator colour law, or a 2D molecular structure from SMILES.\n"
         "  • SIM ('kind':'sim') stays the card kind for a simple perturbable law; DIAGRAM "
         "('kind':'diagram', + 'imageSpec' {'subject': a precise noun phrase} when the subject is "
         "ORGANIC — a plant cell, the human eye — so the app renders a real image). TEXT is the "
@@ -1164,7 +1278,27 @@ _SYSTEMS = {
         '  podcast: {"id","title","chapters":[{"id","title","script":"<spoken, calm, ≤600 chars>"}]} '
         "(1..12 chapters)\n"
         '  arcade: {"id","title","game":"catch","rounds":[{"id","prompt","answer",'
-        '"distractors":["...","..."]}]} (1..12 rounds, ≥1 distractor each)\n\n'
+        '"distractors":["...","..."]}]} (1..12 rounds, ≥1 distractor each)\n'
+        '  mathScene: {"id","kind":"plot|geometry|numberline|areaProof|probability","title",'
+        '"view":{"x":[min,max],"y":[min,max]},"handles":[{"id","label","along":"x|y|free","min",'
+        '"max","initial"?,"at"?,"initialX"?,"initialY"?}] (1..4),"curves"?:[{"id","expr":"2*x + 1",'
+        '"color":"ink|hue|muted"}],"polys"?:[{"id","points":[[x,y] ≥3],"color","label"?,'
+        '"labelAt"?}],"segments"?:[{"id","from":[x,y],"to":[x,y]}],"points"?:[{"id","at":[x,y]}],'
+        '"labels"?:[{"id","at":[x,y],"text":"x = {x}"}],"readouts":[{"id","label","expr":'
+        '"<arithmetic over handle ids>","solveTarget"?}]} (coords/exprs are numbers OR arithmetic '
+        "over handle ids; an x/y handle binds its id, a free handle binds idx & idy)\n"
+        '  physicsScene: {"id","kind":"projectile|freeBody|wave","title","caption"?,"law"?,'
+        '"gravity"?,"params":[{"id","label","min","max","initial","unit"}],"outputs":[{"id",'
+        '"label","expr","unit"}],"forces":[{"id","label","mag","angle","unit"?}] (freeBody),'
+        '"components":[{"id","amp","freq","phase"}] (wave)} (every output expr must be '
+        "DIMENSIONALLY consistent with its declared unit — checked, not trusted)\n"
+        '  chemScene: {"id","kind":"balance","title","reactants":[{"formula":"H2",'
+        '"coefficient":2}],"products":[{"formula":"H2O","coefficient":2}]} (coefficients are the '
+        "CORRECT balanced answer — element conservation is machine-checked) | "
+        '{"id","kind":"titration","title","analyte":{"name","kind":"acid|base","concentrationM",'
+        '"volumeMl"},"titrant":{"name","kind":"acid|base","concentrationM"},"indicator"?:'
+        '"phenolphthalein|methyl-orange|bromothymol-blue"} | '
+        '{"id","kind":"structure","title","smiles":"CCO","label"?:"ethanol"}\n\n'
         "GUIDED-DISCOVERY SPEC — a card's optional 'discovery' object, rendered on the discovery shell "
         "(a large reactive SVG the learner acts on). 1 to 6 stages, ONE idea each:\n"
         '{"id":"...","title":"...","stages":[{'

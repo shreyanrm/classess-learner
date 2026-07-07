@@ -12,7 +12,7 @@ Two gates govern every piece of content: **correctness** (it is never wrong) and
 
 One principle makes the whole thing buildable by a small team: **the model authors validated, structured scene specs — it never draws pixels.** The scene spec is the intermediate representation; renderers turn it into interactive components; the validator proves it correct; Vidya reads the same scene state to tutor over it. One substrate, every subject.
 
-- **Spec contract:** Pydantic → JSON Schema → generated TypeScript types. One contract; backend and frontend cannot drift.
+- **Spec contract:** Pydantic → JSON Schema → generated TypeScript types. One contract; backend and frontend cannot drift. (DONE — see §7)
 - **Concepts, not board paths:** content is keyed to board-agnostic concepts; boards are mappings over those concepts, so a new board is nearly free and every artifact is reused across learners and overlapping boards (the cost economy in `CONTEXT.md`).
 - **Generation is async, never the spinner:** Fable 5 orchestrates, Opus 4.8 generates inside the pipeline; a course is generated with notification when ready, so quality never competes with latency. Generated content is verified, cached, and reused. Claude Code builds the machine; it is not the runtime generator.
 
@@ -82,7 +82,7 @@ Short explanatory videos per sub-topic or activity, high-craft animation, narrat
 
 | Layer | Technology |
 |---|---|
-| Spec contract | Pydantic → JSON Schema → generated TypeScript types |
+| Spec contract | DONE — Pydantic (`gateway/plexus/specs.py`) → JSON Schema (`packages/contracts/schemas/plexus.schema.json`) → generated TS (`packages/contracts/src/generated/plexus.ts`); regen `uv run python -m classess_gateway.plexus.codegen` + `bun run --filter @classess/contracts codegen:plexus`; drift-gated on both stacks |
 | 2D math / geometry | Mafs (+ JSXGraph for heavy draggable Euclidean geometry) |
 | Plots / functions | Mafs / D3 |
 | 3D | Three.js + react-three-fiber (R3F) |

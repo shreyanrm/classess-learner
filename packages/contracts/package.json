@@ -5,12 +5,14 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./plexus": "./src/generated/plexus.ts",
     "./schemas": "./schemas/contracts.bundle.json"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "bun test",
-    "codegen": "bun run codegen/emit-schemas.ts"
+    "codegen": "bun run codegen/emit-schemas.ts && bun run codegen/emit-plexus-types.ts",
+    "codegen:plexus": "bun run codegen/emit-plexus-types.ts"
   },
   "dependencies": {
     "uuidv7": "^1.0.2",

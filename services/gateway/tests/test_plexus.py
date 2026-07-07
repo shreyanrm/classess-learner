@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 
 import pytest
@@ -341,6 +342,63 @@ def _valid_activities() -> dict:
             "title": "catch it",
             "game": "catch",
             "rounds": [{"id": "r1", "prompt": "2 + 2", "answer": "4", "distractors": ["3", "5"]}],
+        },
+        "mathScene": {
+            "id": "ms",
+            "kind": "plot",
+            "title": "where the two sides meet",
+            "view": {"x": [-1, 6], "y": [-1, 10]},
+            "handles": [
+                {"id": "x", "label": "x", "along": "x", "min": 0, "max": 5, "initial": 1}
+            ],
+            "curves": [
+                {"id": "lhs", "expr": "2*x + 1", "color": "hue"},
+                {"id": "rhs", "expr": "x + 4", "color": "ink"},
+            ],
+            "readouts": [
+                {
+                    "id": "gap",
+                    "label": "difference",
+                    "expr": "(2*x + 1) - (x + 4)",
+                    "solveTarget": 0,
+                }
+            ],
+        },
+        "physicsScene": {
+            "id": "ps",
+            "kind": "projectile",
+            "title": "projectile motion",
+            "gravity": 9.8,
+            "params": [
+                {"id": "v", "label": "speed", "min": 5, "max": 40, "initial": 20, "unit": "m/s"},
+                {
+                    "id": "theta",
+                    "label": "angle",
+                    "min": 10,
+                    "max": 80,
+                    "initial": 45,
+                    "unit": "deg",
+                },
+            ],
+            "outputs": [
+                {"id": "R", "label": "range", "expr": "v^2*sin(2*theta*pi/180)/g", "unit": "m"},
+                {
+                    "id": "T",
+                    "label": "time of flight",
+                    "expr": "2*v*sin(theta*pi/180)/g",
+                    "unit": "s",
+                },
+            ],
+        },
+        "chemScene": {
+            "id": "ch",
+            "kind": "balance",
+            "title": "burning hydrogen",
+            "reactants": [
+                {"formula": "H2", "coefficient": 2},
+                {"formula": "O2", "coefficient": 1},
+            ],
+            "products": [{"formula": "H2O", "coefficient": 2}],
         },
     }
 
@@ -791,29 +849,68 @@ def test_artifact_cached_on_disk_keyed_by_concept_modality_difficulty(cache_dir)
     assert store.artifact_path("fractions", "compose", "stretch") != path
 
 
-# --- board-shared cache: keyed board+grade+subject+chapter+topic+contentVersion ---------
+# --- board-agnostic concept keying (SUBJECTS.md §9: never key content to board paths) ----
 
 
-def test_cache_key_widens_with_curriculum_scope() -> None:
-    # empty scope reproduces the original concept x modality x difficulty digest exactly, so
-    # every pre-scope warm file still hits.
-    assert store.artifact_path("fractions", "compose", "core", {}) == store.artifact_path(
-        "fractions", "compose", "core"
+def test_same_concept_across_boards_is_one_artifact() -> None:
+    cbse = {"board": "CBSE", "grade": "8", "subject": "maths", "chapter": "c2"}
+    telangana = {
+        "board": "Telangana State Board",
+        "grade": "Class 8",
+        "subject": "maths",
+        "chapter": "c9",
+    }
+    assert store.artifact_path("linear equations", "compose", "core", cbse) == store.artifact_path(
+        "linear equations", "compose", "core", telangana
     )
-    cbse = {"board": "CBSE", "grade": "7", "subject": "maths", "chapter": "c1"}
-    icse = {**cbse, "board": "ICSE"}
-    v2 = {**cbse, "contentVersion": "v2"}
-    # same topic under a different board / contentVersion is a distinct verified artifact
-    assert store.artifact_path("fractions", "compose", "core", cbse) != store.artifact_path(
-        "fractions", "compose", "core", icse
+    assert store.artifact_path("linear equations", "compose", "core", {}) == store.artifact_path(
+        "linear equations", "compose", "core", cbse
     )
-    assert store.artifact_path("fractions", "compose", "core", cbse) != store.artifact_path(
-        "fractions", "compose", "core", v2
+    assert store.artifact_path("linear equations", "compose", "core") != store.artifact_path(
+        "linear equations", "compose", "stretch"
     )
-    # identical scope is stable (a real cache hit)
-    assert store.artifact_path("fractions", "compose", "core", dict(cbse)) == store.artifact_path(
-        "fractions", "compose", "core", dict(cbse)
+    assert store.artifact_path("fractions", "compose", "core") != store.artifact_path(
+        "linear equations", "compose", "core"
     )
+
+
+def test_two_boards_same_concept_generate_once_serve_both(cache_dir) -> None:
+    cbse = {"board": "CBSE", "grade": "8", "subject": "maths", "chapter": "c2"}
+    telangana = {
+        "board": "Telangana State Board",
+        "grade": "Class 8",
+        "subject": "maths",
+        "chapter": "c9",
+    }
+    first = invoke("engine.compose", concept="linear equations", user="cbse-kid", **cbse)
+    assert first.tokens > 0
+    second = invoke("engine.compose", concept="linear equations", user="tel-kid", **telangana)
+    assert second.tokens == 0
+    assert first.output == second.output
+    base = store.artifact_path("linear equations", "compose", "core")
+    assert len(list(base.parent.glob("linear-equations--core--*.json"))) == 1
+
+
+def test_migration_reindexes_legacy_key_and_writes_alias(cache_dir) -> None:
+    concept, modality, difficulty = "photosynthesis", "compose", "core"
+    legacy_body = f"{concept}\x00{modality}\x00{difficulty}\x00CBSE\x007\x00science\x00c1\x00"
+    legacy_digest = hashlib.sha256(legacy_body.encode()).hexdigest()[:12]
+    legacy = store.cache_dir() / modality / f"photosynthesis--{difficulty}--{legacy_digest}.json"
+    legacy.parent.mkdir(parents=True, exist_ok=True)
+    record = {
+        "concept": concept,
+        "modality": modality,
+        "difficulty": difficulty,
+        "verified": True,
+        "artifact": "leaf",
+        "provenance": {"model": "seed"},
+    }
+    legacy.write_text(json.dumps(record))
+    assert store.load(concept, modality, difficulty) is None
+    aliases = store.migrate()
+    assert store.load(concept, modality, difficulty) == record
+    assert legacy.exists()
+    assert any(a["concept"] == concept and a["from"] == legacy.name for a in aliases)
 
 
 def test_board_shared_hit_reuses_and_personalization_never_baked_in(cache_dir) -> None:

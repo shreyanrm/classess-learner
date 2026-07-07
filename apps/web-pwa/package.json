@@ -12,14 +12,22 @@
     "test:e2e:headed": "playwright test --headed"
   },
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
     "@classess/config": "workspace:*",
-    "@classess/ui": "workspace:*",
+    "@classess/contracts": "workspace:*",
     "@classess/motion": "workspace:*",
-    "@classess/vidya": "workspace:*",
     "@classess/sdk": "workspace:*",
-    "framer-motion": "^11.11.0"
+    "@classess/ui": "workspace:*",
+    "@classess/vidya": "workspace:*",
+    "@codemirror/lang-python": "^6.2.1",
+    "@codemirror/state": "^6.7.1",
+    "@codemirror/view": "^6.43.6",
+    "@rdkit/rdkit": "^2025.3.4-1.0.0",
+    "3dmol": "^2.5.5",
+    "codemirror": "^6.0.2",
+    "framer-motion": "^11.11.0",
+    "mafs": "^0.21.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "vite": "^6.0.0",

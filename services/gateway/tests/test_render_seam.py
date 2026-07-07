@@ -50,7 +50,7 @@ def _promote_video(monkeypatch, record, *, score=92.0):
     monkeypatch.setattr(
         validate,
         "_judge",
-        lambda *_a: {"score": score, "critical": False, "weak": [], "notes": "ok"},
+        lambda *_a, **_k: {"score": score, "critical": False, "weak": [], "notes": "ok"},
     )
     return validate_and_promote(
         concept="refraction of light",
@@ -107,7 +107,9 @@ def test_compose_promotion_does_not_enqueue_a_render(monkeypatch, cache_dir) -> 
         "artifact": {"cards": ["base"]},
     }
     monkeypatch.setattr(
-        validate, "_judge", lambda *_a: {"score": 90.0, "critical": False, "weak": [], "notes": ""}
+        validate,
+        "_judge",
+        lambda *_a, **_k: {"score": 90.0, "critical": False, "weak": [], "notes": ""},
     )
     validate_and_promote(
         concept="fractions",

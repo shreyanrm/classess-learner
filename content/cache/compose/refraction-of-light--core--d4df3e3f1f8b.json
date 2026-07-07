@@ -1,0 +1,134 @@
+{
+ "concept": "Refraction of light",
+ "modality": "compose",
+ "difficulty": "core",
+ "verified": true,
+ "seeded": false,
+ "provenance": {
+  "engine": "engine.compose",
+  "model": "anthropic/claude-opus-4-8",
+  "prompt_version": "plexus-v1"
+ },
+ "artifact": {
+  "topic": "Refraction of light",
+  "difficulty": "core",
+  "cards": [
+   {
+    "id": "c1",
+    "kind": "diagram",
+    "title": "The bent straw",
+    "idea": "A straw in a glass of water looks broken at the surface. Nothing touched it — only the light path changed as it crossed into water.",
+    "interaction": {
+     "kind": "tap",
+     "prompt": "Tap the exact spot on the straw where it appears to bend."
+    },
+    "reveal": "You tapped the water surface. Light bends there because it enters a new medium, and your eye traces it back to the wrong place."
+   },
+   {
+    "id": "c2",
+    "kind": "sim",
+    "title": "Crossing the boundary",
+    "idea": "A light ray travels from air into water. Watch how its direction changes at the surface, not before or after.",
+    "interaction": {
+     "kind": "slide",
+     "prompt": "Slide to change the angle of the incoming ray from air into water."
+    },
+    "reveal": "A bigger incoming angle gives a bigger bend. Going air to water, the ray always bends toward the normal, the line perpendicular to the surface."
+   },
+   {
+    "id": "c3",
+    "kind": "diagram",
+    "title": "Fast to slow, and back",
+    "idea": "Light moves slower in water and glass than in air. Speed change is why the ray turns at the boundary.",
+    "interaction": {
+     "kind": "drag",
+     "prompt": "Drag the ray so it exits water back into air, and predict its new direction."
+    },
+    "reveal": "Water to air: light speeds up and bends away from the normal. Denser medium slows light and bends it toward the normal."
+   },
+   {
+    "id": "c4",
+    "kind": "text",
+    "title": "Naming it",
+    "idea": "Refraction is the bending of light when it passes from one transparent medium into another because its speed changes.",
+    "interaction": {
+     "kind": "type",
+     "prompt": "Type the word for the bending of light as it changes medium."
+    },
+    "reveal": "Refraction. Toward the normal entering a denser medium, away from the normal entering a rarer one. No speed change means no bending."
+   },
+   {
+    "id": "c5",
+    "kind": "diagram",
+    "title": "When it does not bend",
+    "idea": "A ray hitting the surface head-on, straight along the normal, passes through without bending at all.",
+    "interaction": {
+     "kind": "tap",
+     "prompt": "Tap the incoming ray that will pass straight through with no bending."
+    },
+    "reveal": "The ray along the normal, at 0 degrees, goes straight. Refraction needs the ray to strike at an angle to the surface."
+   }
+  ],
+  "workbook": [
+   {
+    "id": "w1",
+    "type": "mcq",
+    "prompt": "When light passes from air into water, it bends",
+    "options": [
+     "toward the normal",
+     "away from the normal",
+     "along the surface"
+    ],
+    "answer": "toward the normal"
+   },
+   {
+    "id": "w2",
+    "type": "fill",
+    "prompt": "The bending of light as it moves from one transparent medium to another is called ________.",
+    "answer": "refraction"
+   },
+   {
+    "id": "w3",
+    "type": "mcq",
+    "prompt": "A straw in water looks broken because",
+    "options": [
+     "the water cuts the straw",
+     "light bends at the water surface",
+     "the straw dissolves slightly"
+    ],
+    "answer": "light bends at the water surface"
+   }
+  ],
+  "boss": [
+   {
+    "id": "b1",
+    "type": "mcq",
+    "prompt": "Light travels from glass back into air. Compared to inside the glass, it",
+    "options": [
+     "slows down and bends toward the normal",
+     "speeds up and bends away from the normal",
+     "keeps the same speed and direction"
+    ],
+    "answer": "speeds up and bends away from the normal"
+   },
+   {
+    "id": "b2",
+    "type": "fill",
+    "prompt": "A ray entering a denser medium exactly along the normal bends by ________ degrees.",
+    "answer": "0"
+   },
+   {
+    "id": "b3",
+    "type": "mcq",
+    "prompt": "Which change is the real cause of refraction at a boundary?",
+    "options": [
+     "the change in the speed of light",
+     "the change in the colour of light",
+     "the change in the brightness of light"
+    ],
+    "answer": "the change in the speed of light"
+   }
+  ]
+ },
+ "createdAt": "2026-07-07T07:52:31+00:00"
+}

@@ -1,0 +1,144 @@
+{
+  "concept": "Pressure",
+  "modality": "compose",
+  "difficulty": "core",
+  "verified": true,
+  "seeded": false,
+  "provenance": {
+    "engine": "engine.compose",
+    "model": "anthropic/claude-opus-4-8",
+    "prompt_version": "plexus-v1"
+  },
+  "artifact": {
+    "topic": "Pressure",
+    "difficulty": "core",
+    "cards": [
+      {
+        "id": "c1",
+        "kind": "text",
+        "title": "What is pressure?",
+        "idea": "Pressure is the force pushing on a surface, spread over the area of that surface. A smaller area means the same force creates more pressure.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Think of pressing a thumbtack into wood with your thumb. Tap to see why the sharp point hurts more than the flat end."
+        },
+        "reveal": "The sharp point has a tiny area, so your finger's force concentrates there, creating high pressure. The flat end spreads the same force over a larger area, creating low pressure."
+      },
+      {
+        "id": "c2",
+        "kind": "diagram",
+        "title": "The pressure formula",
+        "idea": "Pressure equals force divided by area: P = F ÷ A. Measured in pascals (Pa) in SI units, or in N/m².",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the diagram to label force, area, and pressure in the formula."
+        },
+        "reveal": "A labeled diagram showing: Force (in newtons) at the top, Area (in m²) at the bottom, and Pressure = Force ÷ Area (in Pa or N/m²) as the result."
+      },
+      {
+        "id": "c3",
+        "kind": "sim",
+        "title": "How area changes pressure",
+        "idea": "When you keep force constant but change the area, pressure changes inversely—smaller area means larger pressure.",
+        "interaction": {
+          "kind": "slide",
+          "prompt": "Slide the area slider left and right. Watch how pressure changes when force stays at 100 N."
+        },
+        "reveal": "A simulation showing: Force fixed at 100 N. As area decreases from 10 m² to 1 m², pressure increases from 10 Pa to 100 Pa. The graph shows the inverse relationship."
+      },
+      {
+        "id": "c4",
+        "kind": "diagram",
+        "title": "Pressure in everyday life",
+        "idea": "High pressure in small areas is why sharp objects pierce easily, and why we spread weight over larger areas to reduce pressure on soft ground.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap each image to see the pressure at work."
+        },
+        "reveal": "Three labeled examples: (1) A needle point on skin—tiny area, high pressure, pierces easily. (2) A camel's wide feet on sand—large area, low pressure, doesn't sink. (3) A knife blade cutting—concentrated force on thin edge creates high pressure."
+      },
+      {
+        "id": "c5",
+        "kind": "text",
+        "title": "Pressure in liquids and gases",
+        "idea": "Fluids (liquids and gases) exert pressure in all directions equally. Deeper in a liquid, pressure increases because more weight pushes down from above.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Imagine a diver going deeper underwater. Tap to see how pressure changes."
+        },
+        "reveal": "At the surface, water pressure is low. As the diver goes deeper, more water sits above them, so pressure increases. Pressure acts equally in all directions—up, down, and sideways."
+      },
+      {
+        "id": "c6",
+        "kind": "text",
+        "title": "Atmospheric pressure",
+        "idea": "The air around us has weight and exerts pressure on everything—about 101,325 Pa at sea level. We don't feel it because pressure acts equally in all directions.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap to discover why you don't feel the weight of the air above you."
+        },
+        "reveal": "Atmospheric pressure pushes down on your head, but it also pushes up from below with equal force. These forces balance, so you feel no net pressure. This is why a barometer can measure air pressure—it shows how high air pressure can push a column of mercury."
+      }
+    ],
+    "workbook": [
+      {
+        "id": "w1",
+        "type": "mcq",
+        "prompt": "A 500 N force is applied to two different surfaces: one with area 10 m² and one with area 2 m². Which surface experiences greater pressure?",
+        "options": [
+          "The 10 m² surface",
+          "The 2 m² surface",
+          "Both surfaces experience equal pressure",
+          "It depends on the material"
+        ],
+        "answer": "The 2 m² surface"
+      },
+      {
+        "id": "w2",
+        "type": "fill",
+        "prompt": "Pressure is calculated using the formula P = F ÷ A, where F is force in newtons and A is ________ in square meters.",
+        "answer": "area"
+      },
+      {
+        "id": "w3",
+        "type": "mcq",
+        "prompt": "Why does a camel not sink into sand while a person in the same spot might?",
+        "options": [
+          "Camels are lighter than people",
+          "Camels have wider feet that spread their weight over a larger area, reducing pressure on the sand",
+          "Sand under camels is harder than sand under people",
+          "Camels have special oils on their feet that prevent sinking"
+        ],
+        "answer": "Camels have wider feet that spread their weight over a larger area, reducing pressure on the sand"
+      }
+    ],
+    "boss": [
+      {
+        "id": "b1",
+        "type": "mcq",
+        "prompt": "A hydraulic press applies a force of 2000 N over an area of 0.5 m². A second press applies 3000 N over an area of 1.5 m². Which press creates greater pressure?",
+        "options": [
+          "The first press (2000 N)",
+          "The second press (3000 N)",
+          "Both create equal pressure",
+          "Cannot be determined without knowing the fluid type"
+        ],
+        "answer": "The first press (2000 N)"
+      },
+      {
+        "id": "b2",
+        "type": "fill",
+        "prompt": "A scuba diver experiences a pressure of 250,000 Pa underwater. If atmospheric pressure at sea level is 101,325 Pa, the gauge pressure (pressure above atmospheric) is approximately ________ Pa.",
+        "answer": "148675"
+      },
+      {
+        "id": "b3",
+        "type": "mcq",
+        "prompt": "A rectangular block of wood (mass 10 kg) can be placed on a table in two ways: flat side down (area 0.5 m²) or on its edge (area 0.1 m²). If g = 10 m/s², how many times greater is the pressure when the block stands on its edge compared to lying flat?",
+        "options": ["2 times greater", "5 times greater", "10 times greater", "50 times greater"],
+        "answer": "5 times greater"
+      }
+    ]
+  },
+  "createdAt": "2026-07-06T12:31:22+00:00"
+}

@@ -1,0 +1,147 @@
+{
+ "concept": "Refraction of Light Through a Glass Slab",
+ "modality": "compose",
+ "difficulty": "core",
+ "verified": true,
+ "seeded": false,
+ "provenance": {
+  "engine": "engine.compose",
+  "model": "anthropic/claude-opus-4-8",
+  "prompt_version": "plexus-v1"
+ },
+ "artifact": {
+  "topic": "Refraction of Light Through a Glass Slab",
+  "difficulty": "core",
+  "cards": [
+   {
+    "id": "c1",
+    "kind": "diagram",
+    "title": "The bending straw",
+    "idea": "A straw in a glass of water looks broken at the surface. Light from the straw bends as it leaves water into air, fooling your eye.",
+    "interaction": {
+     "kind": "tap",
+     "prompt": "Tap the spot where the straw looks broken"
+    },
+    "reveal": "The break sits exactly at the water surface, where light crosses from one medium into another and changes direction."
+   },
+   {
+    "id": "c2",
+    "kind": "sim",
+    "title": "Bending at the boundary",
+    "idea": "A ray hits a glass slab at an angle. Slide the incoming angle and watch how the ray bends as it enters and exits.",
+    "interaction": {
+     "kind": "slide",
+     "prompt": "Slide the angle of incidence from 0 to 60 degrees"
+    },
+    "reveal": "Entering glass, the ray bends toward the normal (denser medium). Leaving glass, it bends away. Bigger incidence, bigger bend."
+   },
+   {
+    "id": "c3",
+    "kind": "diagram",
+    "title": "In and out",
+    "idea": "Trace the ray through the slab: air, glass, air. Compare the direction it entered with the direction it left.",
+    "interaction": {
+     "kind": "drag",
+     "prompt": "Drag the arrow to show the direction of the ray after it leaves the slab"
+    },
+    "reveal": "The emergent ray is parallel to the incident ray. It is only shifted sideways, not turned. This shift is called lateral displacement."
+   },
+   {
+    "id": "c4",
+    "kind": "text",
+    "title": "Naming the rule",
+    "idea": "Denser medium bends light toward the normal; rarer medium bends it away. A parallel-sided slab shifts the ray sideways but keeps its final direction unchanged.",
+    "interaction": {
+     "kind": "tap",
+     "prompt": "Tap the term that means the sideways shift"
+    },
+    "reveal": "Lateral displacement. It grows with a thicker slab and a larger angle of incidence, and it is zero when light enters straight along the normal."
+   },
+   {
+    "id": "c5",
+    "kind": "diagram",
+    "title": "Straight through",
+    "idea": "Send a ray straight into the slab, along the normal, at 90 degrees to the surface.",
+    "interaction": {
+     "kind": "tap",
+     "prompt": "Tap the ray that passes without bending"
+    },
+    "reveal": "At zero angle of incidence the ray goes straight through, no bending, no shift. Refraction needs the ray to strike at an angle."
+   },
+   {
+    "id": "c6",
+    "kind": "diagram",
+    "title": "Which way it bends",
+    "idea": "Air to glass, then glass to air. Match each crossing to whether the ray bends toward or away from the normal.",
+    "interaction": {
+     "kind": "drag",
+     "prompt": "Drag each label to the correct crossing"
+    },
+    "reveal": "Air to glass: toward the normal. Glass to air: away from the normal. Entering denser slows and bends toward; leaving denser speeds and bends away."
+   }
+  ],
+  "workbook": [
+   {
+    "id": "w1",
+    "type": "mcq",
+    "prompt": "When light passes from air into a glass slab, it bends",
+    "options": [
+     "toward the normal",
+     "away from the normal",
+     "along the surface"
+    ],
+    "answer": "toward the normal"
+   },
+   {
+    "id": "w2",
+    "type": "fill",
+    "prompt": "The sideways shift between the incident ray and the emergent ray from a slab is called ________.",
+    "answer": "lateral displacement"
+   },
+   {
+    "id": "w3",
+    "type": "mcq",
+    "prompt": "How does the emergent ray compare with the incident ray for a parallel glass slab",
+    "options": [
+     "it is parallel to the incident ray",
+     "it is perpendicular to the incident ray",
+     "it is reflected back"
+    ],
+    "answer": "it is parallel to the incident ray"
+   }
+  ],
+  "boss": [
+   {
+    "id": "b1",
+    "type": "mcq",
+    "prompt": "A ray hits a glass slab along the normal (angle of incidence zero). What happens",
+    "options": [
+     "it passes straight through without bending",
+     "it bends toward the normal",
+     "it bends away from the normal",
+     "it reflects back to the source"
+    ],
+    "answer": "it passes straight through without bending"
+   },
+   {
+    "id": "b2",
+    "type": "fill",
+    "prompt": "To increase the lateral displacement of a ray through a slab, you can use a ________ slab.",
+    "answer": "thicker"
+   },
+   {
+    "id": "b3",
+    "type": "mcq",
+    "prompt": "Why does a ray bend away from the normal as it leaves the glass and re-enters air",
+    "options": [
+     "it moves into a rarer, faster medium",
+     "it moves into a denser, slower medium",
+     "it stops changing speed at the boundary",
+     "air reflects all the light"
+    ],
+    "answer": "it moves into a rarer, faster medium"
+   }
+  ]
+ },
+ "createdAt": "2026-07-07T07:43:09+00:00"
+}

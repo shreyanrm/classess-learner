@@ -60,9 +60,20 @@ _JUDGE_SYSTEM = (
 )
 
 
-def _judge(judge_model: str, modality: str, concept: str, artifact: Any) -> dict[str, Any] | None:
+def _judge(
+    judge_model: str,
+    modality: str,
+    concept: str,
+    artifact: Any,
+    facts: list[str] | None = None,
+    contradictions: list[str] | None = None,
+) -> dict[str, Any] | None:
     """Score the artifact via the LLM judge. Returns the parsed verdict, or ``None`` when the
-    judge is unreachable or unparseable (the caller then keeps the artifact, never blocks)."""
+    judge is unreachable or unparseable (the caller then keeps the artifact, never blocks).
+
+    ``facts`` (verified NCERT ground truth for the concept) and ``contradictions``
+    (deterministic fact-base conflicts) are appended for bio/social subjects so the judge
+    scores correctness against the fact base — SUBJECTS.md §2."""
     import litellm  # lazy: mock mode and tests never import litellm
 
     from classess_gateway.vidya import _extract_json
@@ -73,6 +84,17 @@ def _judge(judge_model: str, modality: str, concept: str, artifact: Any) -> dict
         # cap the payload so a huge video/compose spec cannot blow the judge's context
         + json.dumps(artifact, ensure_ascii=False)[:12000]
     )
+    if facts:
+        user += (
+            "\n\nNCERT GROUND TRUTH (verified fact base) — the artifact MUST NOT contradict"
+            " these:\n"
+        )
+        user += "\n".join(f"- {c}" for c in facts[:40])
+    if contradictions:
+        user += (
+            "\n\nDETECTED CONTRADICTIONS (deterministic, high-confidence) — each is a CRITICAL "
+            "correctness error:\n" + "\n".join(f"- {c}" for c in contradictions)
+        )
     try:
         response = litellm.completion(
             model=judge_model,
@@ -116,6 +138,36 @@ def _rank(verdict: dict[str, Any] | None) -> float:
     if verdict is None:
         return -1.0
     return verdict["score"] - 1000.0 if verdict["critical"] else verdict["score"]
+
+
+def _factcheck(artifact: Any, concept: str, scope: dict[str, str]) -> tuple[list[str], list[str]]:
+    """(contradictions, verified-facts) from the NCERT fact base — empty unless this is a
+    bio/social subject. bio/social have no CAS: the fact base is the correctness solver
+    (SUBJECTS.md §2)."""
+    from classess_gateway.plexus import store
+    from classess_gateway.plexus.factcheck import FACTBASE_SUBJECTS, facts_for, validate_claims
+
+    if (scope or {}).get("subject") not in FACTBASE_SUBJECTS:
+        return [], []
+    cid = store.concept_id(concept, scope)
+    return validate_claims(artifact, cid), facts_for(cid)
+
+
+def _with_factbase(
+    verdict: dict[str, Any] | None, contradictions: list[str]
+) -> dict[str, Any] | None:
+    """A deterministic contradiction against a VERIFIED NCERT fact is a CRITICAL correctness
+    failure — force it onto the verdict so a fact-contradicting artifact never promotes
+    unchecked (even if the judge was lenient or unreachable)."""
+    if not contradictions:
+        return verdict
+    base = verdict or {"score": 0.0, "weak": [], "notes": ""}
+    return {
+        **base,
+        "critical": True,
+        "weak": sorted(set(base.get("weak", []) + ["correctness"])),
+        "notes": (base.get("notes", "") + " | fact-base: " + "; ".join(contradictions))[:500],
+    }
 
 
 def _promote_after_lint_failure(
@@ -378,7 +430,14 @@ def validate_and_promote(
         _maybe_enqueue_render(concept, modality, difficulty, scope, canonical)
         return canonical
 
-    verdict = _judge(judge_model, modality, concept, artifact)
+    contradictions, fact_context = _factcheck(artifact, concept, scope)
+    verdict = _with_factbase(
+        _judge(
+            judge_model, modality, concept, artifact,
+            facts=fact_context, contradictions=contradictions,
+        ),
+        contradictions,
+    )
     best_artifact, best_model, best_verdict = artifact, base_model, verdict
 
     # Escalation candidate (the GPT-5.5 rebuild), if the gate fires. Kept in scope so its version —
@@ -410,7 +469,14 @@ def validate_and_promote(
             alt, alt_seeded = None, True
         # a seeded escalation is the honest floor, not a real regeneration — never best-of a seed
         if alt is not None and not alt_seeded:
-            alt_verdict = _judge(judge_model, modality, concept, alt)
+            alt_contra, _ = _factcheck(alt, concept, scope)
+            alt_verdict = _with_factbase(
+                _judge(
+                    judge_model, modality, concept, alt,
+                    facts=fact_context, contradictions=alt_contra,
+                ),
+                alt_contra,
+            )
             if _rank(alt_verdict) > _rank(verdict):
                 best_artifact, best_model, best_verdict = alt, alt_model, alt_verdict
                 logger.info(
@@ -483,7 +549,7 @@ if __name__ == "__main__":  # runnable self-check — no framework, no network
     # as `python -m ...validate`: this module IS __main__, so rebinding the global `_judge` here is
     # what validate_and_promote (also in __main__) resolves. _generate_live and lint_artifact are
     # imported fresh from their real modules, so patch them there.
-    _judge = lambda jm, mo, co, art: {  # type: ignore[assignment] # noqa: E731
+    _judge = lambda jm, mo, co, art, **_k: {  # type: ignore[assignment] # noqa: E731
         "score": 90.0 if art == {"cards": ["alt"]} else 40.0,
         "critical": False,
         "weak": [],

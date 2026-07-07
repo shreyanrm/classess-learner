@@ -12,12 +12,14 @@
  * course — invisible to the learner, never an error (CONTEXT.md §6).
  */
 
+import type { Item as WireItem } from '@classess/contracts/plexus';
 import { useVidyaBus } from '@classess/vidya';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { topicById } from '../../data/catalog';
 import type { Topic } from '../../data/model';
 import { ArcadeShell, type ArcadeSpec, parseArcade } from '../../engines/ArcadeShell';
+import { ChemScene, type ChemSceneSpec, parseChemScene } from '../../engines/ChemScene';
 import {
   CompareInteractive,
   type CompareSpec,
@@ -32,6 +34,7 @@ import {
 import { DiagramView, svgIsClean } from '../../engines/DiagramView';
 import { Discovery, type DiscoverySpec, parseDiscoverySpec } from '../../engines/Discovery';
 import { Flashcards, type FlashcardsSpec, parseFlashcards } from '../../engines/Flashcards';
+import { MathScene, type MathSceneSpec, parseMathScene } from '../../engines/MathScene';
 import { MiniWorkbook, type MiniWorkbookSpec, parseMiniWorkbook } from '../../engines/MiniWorkbook';
 import { MotionPlayer, type MotionScene, parseMotionScene } from '../../engines/MotionPlayer';
 import {
@@ -39,6 +42,7 @@ import {
   type PerturbSpec,
   parsePerturbSpec,
 } from '../../engines/PerturbationSandbox';
+import { PhysicsScene, parsePhysicsScene } from '../../engines/PhysicsScene';
 import { PodcastPlayer, type PodcastSpec, parsePodcast } from '../../engines/PodcastPlayer';
 import { parseSimSpec, SimRunner, type SimSpec, simSpecFromGateway } from '../../engines/SimRunner';
 import { parseWhatIfSpec, WhatIfNumerical, type WhatIfSpec } from '../../engines/WhatIfNumerical';
@@ -85,7 +89,11 @@ type CardActivity =
   | { type: 'derivation'; spec: DerivationSpec }
   | { type: 'wordProblem'; spec: WordProblemSpec }
   | { type: 'podcast'; spec: PodcastSpec }
-  | { type: 'arcade'; spec: ArcadeSpec };
+  | { type: 'arcade'; spec: ArcadeSpec }
+  // the substrate — subject-true scenes (math axes, exact physics, real chemistry)
+  | { type: 'mathScene'; spec: MathSceneSpec }
+  | { type: 'physics'; spec: PhysicsScene }
+  | { type: 'chemScene'; spec: ChemSceneSpec };
 
 /** Try each activity parser in turn; the first field that yields a valid spec wins (refusal → none). */
 function parseActivity(c: Record<string, unknown>): CardActivity | undefined {
@@ -109,6 +117,12 @@ function parseActivity(c: Record<string, unknown>): CardActivity | undefined {
   if (podcast) return { type: 'podcast', spec: podcast };
   const arcade = parseArcade(c.arcade);
   if (arcade) return { type: 'arcade', spec: arcade };
+  const mathScene = parseMathScene(c.mathScene);
+  if (mathScene) return { type: 'mathScene', spec: mathScene };
+  const physics = parsePhysicsScene(c.physicsScene);
+  if (physics) return { type: 'physics', spec: physics };
+  const chemScene = parseChemScene(c.chemScene);
+  if (chemScene) return { type: 'chemScene', spec: chemScene };
   return undefined;
 }
 
@@ -125,13 +139,8 @@ interface GenCard {
   activity?: CardActivity;
 }
 
-interface GenItem {
-  id: string;
-  type: 'mcq' | 'fill';
-  prompt: string;
-  options?: string[];
-  answer: string;
-}
+/** The wire Item from the generated contract, with options narrowed to the client's parsed shape. */
+type GenItem = Omit<WireItem, 'options'> & { options?: string[] };
 
 interface GenCourse {
   courseId: string;
@@ -1393,6 +1402,15 @@ export function Composing({
             setBar={setBar}
             onDone={advance}
           />
+        )}
+        {a.type === 'mathScene' && (
+          <MathScene spec={a.spec} hue={hue} setBar={setBar} onDone={advance} />
+        )}
+        {a.type === 'physics' && (
+          <PhysicsScene spec={a.spec} hue={hue} setBar={setBar} onDone={advance} />
+        )}
+        {a.type === 'chemScene' && (
+          <ChemScene spec={a.spec} hue={hue} setBar={setBar} onDone={advance} />
         )}
       </Deck>
     );

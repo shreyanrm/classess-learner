@@ -1,0 +1,122 @@
+{
+  "concept": "Organising and grouping data",
+  "modality": "compose",
+  "difficulty": "core",
+  "verified": true,
+  "seeded": false,
+  "provenance": {
+    "engine": "engine.compose",
+    "model": "anthropic/claude-opus-4-8",
+    "prompt_version": "plexus-v1"
+  },
+  "artifact": {
+    "topic": "Organising and grouping data",
+    "difficulty": "core",
+    "cards": [
+      {
+        "id": "c1",
+        "kind": "text",
+        "title": "Raw data is hard to read",
+        "idea": "A long list of unsorted values is called raw data, and it is difficult to make sense of at a glance.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the list of marks to try to spot how many students scored 7"
+        },
+        "reveal": "The marks 5, 7, 6, 7, 8, 5, 7, 6, 9, 7 are jumbled, so you have to hunt through the whole list to count the 7s"
+      },
+      {
+        "id": "c2",
+        "kind": "text",
+        "title": "Tally marks help you count",
+        "idea": "A tally mark is a small stroke you make each time a value appears; the fifth stroke crosses the first four, forming groups of five.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap each 7 in the list to add a tally stroke for it"
+        },
+        "reveal": "Four upright strokes and one crossing stroke show that 7 appears four times, written as one group of five would be, but here you get four strokes"
+      },
+      {
+        "id": "c3",
+        "kind": "diagram",
+        "title": "The frequency table",
+        "idea": "When you count how many times each value occurs, that count is its frequency, and arranging values with their frequencies makes a frequency table.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap a row to see the value, its tally, and its frequency lined up"
+        },
+        "reveal": "Value 7 has a tally of four strokes and a frequency of 4, so the table turns raw data into an ordered summary"
+      },
+      {
+        "id": "c4",
+        "kind": "diagram",
+        "title": "Grouping into class intervals",
+        "idea": "When there are many different values, you group them into equal ranges called class intervals to keep the table short.",
+        "interaction": {
+          "kind": "drag",
+          "prompt": "Drag the mark 27 into the correct interval among 0-10, 10-20, 20-30"
+        },
+        "reveal": "27 falls into the 20-30 interval; grouping lets you summarise a wide spread of values into a few neat rows"
+      },
+      {
+        "id": "c5",
+        "kind": "text",
+        "title": "Reading the grouped table",
+        "idea": "Each row of a grouped table tells you how many data values fall inside that interval, which helps you compare ranges quickly.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the interval that has the highest frequency in the table shown"
+        },
+        "reveal": "The 20-30 interval has frequency 8, the largest, so most values lie in that range"
+      }
+    ],
+    "workbook": [
+      {
+        "id": "w1",
+        "type": "mcq",
+        "prompt": "In a frequency table, what does the frequency of a value tell you?",
+        "options": [
+          "How many times that value occurs",
+          "The largest value in the data",
+          "The sum of all the values"
+        ],
+        "answer": "How many times that value occurs"
+      },
+      {
+        "id": "w2",
+        "type": "fill",
+        "prompt": "A small stroke made each time a value appears while counting is called a ________ mark.",
+        "answer": "tally"
+      },
+      {
+        "id": "w3",
+        "type": "mcq",
+        "prompt": "Equal ranges used to group many different data values are called",
+        "options": ["class intervals", "frequencies", "tally marks"],
+        "answer": "class intervals"
+      }
+    ],
+    "boss": [
+      {
+        "id": "b1",
+        "type": "mcq",
+        "prompt": "For the marks 12, 18, 25, 9, 27, 14, 3, using intervals 0-10, 10-20, 20-30, which interval has frequency 3?",
+        "options": ["10-20", "0-10", "20-30"],
+        "answer": "10-20"
+      },
+      {
+        "id": "b2",
+        "type": "fill",
+        "prompt": "If a value of 30 must go into either the interval 20-30 or 30-40, the usual rule places it in the interval ________.",
+        "answer": "30-40"
+      },
+      {
+        "id": "b3",
+        "type": "mcq",
+        "prompt": "A frequency table shows shoe sizes with frequencies: size 5 is 3, size 6 is 7, size 7 is 5, size 8 is 2. Which size is worn by the most students?",
+        "options": ["6", "7", "5"],
+        "answer": "6"
+      }
+    ]
+  },
+  "createdAt": "2026-07-06T19:31:43+00:00"
+}

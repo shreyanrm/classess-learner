@@ -1,0 +1,130 @@
+{
+  "concept": "Why dates matter in history",
+  "modality": "compose",
+  "difficulty": "core",
+  "verified": true,
+  "seeded": false,
+  "provenance": {
+    "engine": "engine.compose",
+    "model": "anthropic/claude-opus-4-8",
+    "prompt_version": "plexus-v1"
+  },
+  "artifact": {
+    "topic": "Why dates matter in history",
+    "difficulty": "core",
+    "cards": [
+      {
+        "id": "c1",
+        "kind": "text",
+        "title": "Order of events",
+        "idea": "Dates let us put events in the correct order, so we know what happened before and what came after.",
+        "interaction": {
+          "kind": "drag",
+          "prompt": "Drag these three events into the order they happened: India becomes independent (1947), the first railway runs in India (1853), the Constitution comes into force (1950)"
+        },
+        "reveal": "Correct order: 1853, 1947, 1950. Without dates you could not tell which came first."
+      },
+      {
+        "id": "c2",
+        "kind": "text",
+        "title": "Cause and effect",
+        "idea": "Knowing the order of events helps us see how one event may have led to another.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the event that came first: the freedom struggle grew (before 1947) or India became independent (1947)"
+        },
+        "reveal": "The freedom struggle came first. A cause must happen before its effect, so dates help us test whether one event could have caused another."
+      },
+      {
+        "id": "c3",
+        "kind": "diagram",
+        "title": "The timeline",
+        "idea": "A timeline is a line marked with dates, used to place events at their correct spots and see the gaps between them.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the point on the timeline where 1947 should sit, between 1900 and 2000"
+        },
+        "reveal": "1947 sits just under halfway between 1900 and 2000. A timeline shows both order and the distance in years between events."
+      },
+      {
+        "id": "c4",
+        "kind": "text",
+        "title": "BCE and CE",
+        "idea": "Years are counted from a fixed point. Years before it are labelled BCE and years after it are labelled CE, and BCE years count backwards.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the earlier year: 300 BCE or 100 CE"
+        },
+        "reveal": "300 BCE is earlier. BCE years get smaller as time moves forward, so 300 BCE comes long before 100 CE."
+      },
+      {
+        "id": "c5",
+        "kind": "text",
+        "title": "Sources decide dates",
+        "idea": "Historians work out dates from evidence like inscriptions, coins and old writings, so a date is a careful conclusion, not a guess.",
+        "interaction": {
+          "kind": "type",
+          "prompt": "Type one source a historian could use to fix the date of an old event"
+        },
+        "reveal": "Inscriptions, coins, monuments and written records all carry clues that help historians date events."
+      }
+    ],
+    "workbook": [
+      {
+        "id": "w1",
+        "type": "mcq",
+        "prompt": "Why do dates matter in history",
+        "options": [
+          "They let us place events in the correct order",
+          "They make history harder to read",
+          "They replace the need for any evidence"
+        ],
+        "answer": "They let us place events in the correct order"
+      },
+      {
+        "id": "w2",
+        "type": "mcq",
+        "prompt": "Which year is earlier",
+        "options": ["200 BCE", "50 CE", "100 CE"],
+        "answer": "200 BCE"
+      },
+      {
+        "id": "w3",
+        "type": "fill",
+        "prompt": "A line marked with years, used to show events in order, is called a ________.",
+        "answer": "timeline"
+      }
+    ],
+    "boss": [
+      {
+        "id": "b1",
+        "type": "mcq",
+        "prompt": "An event in 400 BCE and an event in 200 BCE both happened. Which is correct",
+        "options": [
+          "The 400 BCE event happened first",
+          "The 200 BCE event happened first",
+          "They happened in the same year"
+        ],
+        "answer": "The 400 BCE event happened first"
+      },
+      {
+        "id": "b2",
+        "type": "mcq",
+        "prompt": "A historian claims a war in 1850 was caused by a treaty signed in 1870. Why must this claim be wrong",
+        "options": [
+          "A cause must come before its effect, but 1870 is after 1850",
+          "Treaties can never cause wars",
+          "1870 and 1850 are the same period"
+        ],
+        "answer": "A cause must come before its effect, but 1870 is after 1850"
+      },
+      {
+        "id": "b3",
+        "type": "fill",
+        "prompt": "How many years passed between an event in 500 BCE and an event in 300 CE? Answer in years: ________.",
+        "answer": "800"
+      }
+    ]
+  },
+  "createdAt": "2026-07-06T19:11:15+00:00"
+}

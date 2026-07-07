@@ -1,0 +1,43 @@
+{
+ "concept": "Ohm's Law: Feel the Current Move",
+ "modality": "simulate",
+ "difficulty": "core",
+ "verified": true,
+ "seeded": true,
+ "provenance": {
+  "engine": "engine.simulate",
+  "model": "seed",
+  "prompt_version": "plexus-v1"
+ },
+ "artifact": {
+  "params": [
+   {
+    "name": "I",
+    "min": 0.0,
+    "max": 5.0,
+    "default": 2.0,
+    "unit": "A"
+   },
+   {
+    "name": "R",
+    "min": 0.0,
+    "max": 100.0,
+    "default": 10.0,
+    "unit": "ohm"
+   }
+  ],
+  "formula": "V = I*R",
+  "outputs": [
+   "V"
+  ],
+  "breakpoints": [
+   {
+    "param": "R",
+    "at": 0.0,
+    "why": "at zero resistance the model predicts unbounded current; real wires and cells carry internal resistance, which is where the ideal law stops"
+   }
+  ],
+  "layout": "sliders-left"
+ },
+ "createdAt": "2026-07-07T07:47:00+00:00"
+}

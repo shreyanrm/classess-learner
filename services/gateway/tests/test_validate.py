@@ -88,7 +88,7 @@ def test_pass_promotes_to_canonical_without_escalation(monkeypatch, cache_dir) -
     out = _promote(
         monkeypatch,
         record,
-        judge=lambda *_a: {"score": 92.0, "critical": False, "weak": [], "notes": "clean"},
+        judge=lambda *_a, **_k: {"score": 92.0, "critical": False, "weak": [], "notes": "clean"},
         regen=regen,
     )
     assert out["status"] == store.CANONICAL
@@ -114,7 +114,7 @@ _OPUS = "anthropic/claude-opus-4-8"
 def test_fail_escalates_and_best_of_promotes_opus_rebuild(monkeypatch, cache_dir) -> None:
     record = _provisional({"cards": ["base"]})  # GPT-5.5 primary
 
-    def judge(_jm, _mo, _co, art):
+    def judge(_jm, _mo, _co, art, **_k):
         score = 88.0 if art == {"cards": ["alt"]} else 45.0  # GPT base fails, Opus rebuild wins
         return {"score": score, "critical": False, "weak": ["correctness"], "notes": ""}
 
@@ -135,7 +135,7 @@ def test_fail_but_base_still_best_keeps_base(monkeypatch, cache_dir) -> None:
     (best-of never downgrades)."""
     record = _provisional({"cards": ["base"]})
 
-    def judge(_jm, _mo, _co, art):
+    def judge(_jm, _mo, _co, art, **_k):
         return {"score": 60.0 if art == {"cards": ["base"]} else 30.0, "critical": False,
                 "weak": [], "notes": ""}
 
@@ -155,7 +155,7 @@ def test_fail_but_base_still_best_keeps_base(monkeypatch, cache_dir) -> None:
 def test_critical_error_escalates_even_with_high_score(monkeypatch, cache_dir) -> None:
     record = _provisional({"cards": ["base"]})
 
-    def judge(_jm, _mo, _co, art):
+    def judge(_jm, _mo, _co, art, **_k):
         if art == {"cards": ["alt"]}:
             return {"score": 80.0, "critical": False, "weak": [], "notes": ""}
         return {"score": 95.0, "critical": True, "weak": ["correctness"], "notes": "wrong fact"}
@@ -183,7 +183,7 @@ def test_unreachable_judge_promotes_unscored(monkeypatch, cache_dir) -> None:
         escalated["called"] = True
         return {"cards": ["alt"]}, "openai/gpt-5.5", 1, False
 
-    out = _promote(monkeypatch, record, judge=lambda *_a: None, regen=regen)
+    out = _promote(monkeypatch, record, judge=lambda *_a, **_k: None, regen=regen)
     assert out["status"] == store.CANONICAL
     assert out["artifact"] == {"cards": ["base"]}  # kept as-is
     assert out["provenance"]["validation"]["score"] is None
@@ -197,7 +197,7 @@ def test_unreachable_judge_promotes_unscored(monkeypatch, cache_dir) -> None:
 def test_seeded_escalation_is_not_chosen(monkeypatch, cache_dir) -> None:
     record = _provisional({"cards": ["base"]})
 
-    def judge(_jm, _mo, _co, _art):
+    def judge(_jm, _mo, _co, _art, **_k):
         return {"score": 40.0, "critical": False, "weak": [], "notes": ""}
 
     # the escalation regeneration itself fell back to a seed — must NOT be promoted over the base
@@ -263,7 +263,7 @@ def test_superseded_loser_survives_promotion(monkeypatch, cache_dir) -> None:
     persists in the immutable version ledger as a superseded record, artifact intact."""
     record = _provisional({"cards": ["base"]})  # GPT-5.5 primary
 
-    def judge(_jm, _mo, _co, art):
+    def judge(_jm, _mo, _co, art, **_k):
         return {"score": 88.0 if art == {"cards": ["alt"]} else 40.0, "critical": False,
                 "weak": [], "notes": ""}
 
@@ -291,7 +291,7 @@ def test_rejected_loser_survives_when_base_wins(monkeypatch, cache_dir) -> None:
     generated version persists, even the ones that never served."""
     record = _provisional({"cards": ["base"]})
 
-    def judge(_jm, _mo, _co, art):
+    def judge(_jm, _mo, _co, art, **_k):
         return {"score": 60.0 if art == {"cards": ["base"]} else 20.0, "critical": False,
                 "weak": [], "notes": ""}
 
@@ -343,7 +343,7 @@ def _run_lint_gate(monkeypatch, *, modality, artifact, rebuild_artifact, rebuild
     judge_calls: list = []
     rebuild_calls: list = []
 
-    def judge(*a):
+    def judge(*a, **_k):
         judge_calls.append(a)
         return {"score": 99.0, "critical": False, "weak": [], "notes": "should never run"}
 
@@ -466,7 +466,7 @@ def test_lint_clean_artifact_takes_the_normal_judge_path(monkeypatch, cache_dir)
     """A lint-clean provisional is NOT short-circuited: the LLM judge still runs and promotes it."""
     judged: list = []
 
-    def judge(_jm, _mo, _co, _art):
+    def judge(_jm, _mo, _co, _art, **_k):
         judged.append(True)
         return {"score": 91.0, "critical": False, "weak": [], "notes": "clean"}
 

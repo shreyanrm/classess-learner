@@ -13,6 +13,18 @@ export default defineConfig({
       // Icons are cropped from the wordmark's C-mark (public/classess-logo.png).
       // Regenerate with the snippet in DEPLOY.md §1.4 if the logo changes.
       includeAssets: ['classess-logo.png', 'apple-touch-icon.png', 'robots.txt'],
+      workbox: {
+        // RDKit's 6.9 MB wasm is lazy-loaded only when a chem structure card renders —
+        // never precache it on every visit; cache it on first real use instead.
+        globIgnores: ['**/RDKit_minimal*.wasm'],
+        runtimeCaching: [
+          {
+            urlPattern: /RDKit_minimal.*\.wasm$/,
+            handler: 'CacheFirst',
+            options: { cacheName: 'rdkit-wasm', expiration: { maxEntries: 2 } },
+          },
+        ],
+      },
       manifest: {
         name: 'Classess Learner',
         short_name: 'Classess',

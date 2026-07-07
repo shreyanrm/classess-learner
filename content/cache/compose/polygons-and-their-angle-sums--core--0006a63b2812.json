@@ -1,0 +1,118 @@
+{
+  "concept": "Polygons and their angle sums",
+  "modality": "compose",
+  "difficulty": "core",
+  "verified": true,
+  "seeded": false,
+  "provenance": {
+    "engine": "engine.compose",
+    "model": "anthropic/claude-opus-4-8",
+    "prompt_version": "plexus-v1"
+  },
+  "artifact": {
+    "topic": "Polygons and their angle sums",
+    "difficulty": "core",
+    "cards": [
+      {
+        "id": "c1",
+        "kind": "diagram",
+        "title": "What makes a polygon",
+        "idea": "A polygon is a closed flat shape made only of straight line segments joined end to end.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the shapes that are polygons"
+        },
+        "reveal": "A triangle, a square and a pentagon are polygons. A circle and an open figure with a curved side are not, because a polygon needs straight sides and must be closed."
+      },
+      {
+        "id": "c2",
+        "kind": "diagram",
+        "title": "Splitting into triangles",
+        "idea": "From one corner of a polygon, you can draw diagonals that split it into triangles.",
+        "interaction": {
+          "kind": "drag",
+          "prompt": "Drag diagonals from one vertex of the pentagon to the other corners"
+        },
+        "reveal": "A pentagon splits into 3 triangles. A polygon with n sides always splits into (n minus 2) triangles from a single vertex."
+      },
+      {
+        "id": "c3",
+        "kind": "sim",
+        "title": "Adding up the angles",
+        "idea": "Since each triangle holds 180 degrees, the interior angles of a polygon add to (n minus 2) times 180 degrees.",
+        "interaction": {
+          "kind": "slide",
+          "prompt": "Slide to change the number of sides n and watch the interior angle sum"
+        },
+        "reveal": "At n=3 the sum is 180, at n=4 it is 360, at n=5 it is 540. Each extra side adds one triangle, which adds 180 degrees."
+      },
+      {
+        "id": "c4",
+        "kind": "text",
+        "title": "Regular polygons",
+        "idea": "In a regular polygon all sides and all angles are equal, so each interior angle equals the total sum divided by n.",
+        "interaction": {
+          "kind": "type",
+          "prompt": "A regular hexagon has 6 sides. Type the size of one interior angle in degrees"
+        },
+        "reveal": "The sum is (6 minus 2) times 180 = 720 degrees. Divide by 6 to get 120 degrees for each angle."
+      },
+      {
+        "id": "c5",
+        "kind": "text",
+        "title": "Exterior angles",
+        "idea": "The exterior angles of any polygon always add up to 360 degrees, no matter how many sides it has.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the exterior angle sum that stays the same for every polygon"
+        },
+        "reveal": "The exterior angles always total 360 degrees. So for a regular polygon each exterior angle is 360 divided by n."
+      }
+    ],
+    "workbook": [
+      {
+        "id": "w1",
+        "type": "mcq",
+        "prompt": "How many triangles do you get when you split a hexagon (6 sides) from one vertex?",
+        "options": ["4", "6", "5"],
+        "answer": "4"
+      },
+      {
+        "id": "w2",
+        "type": "fill",
+        "prompt": "The interior angles of a quadrilateral add up to ________ degrees.",
+        "answer": "360"
+      },
+      {
+        "id": "w3",
+        "type": "mcq",
+        "prompt": "Each interior angle of a regular pentagon is",
+        "options": ["108 degrees", "90 degrees", "120 degrees"],
+        "answer": "108 degrees"
+      }
+    ],
+    "boss": [
+      {
+        "id": "b1",
+        "type": "mcq",
+        "prompt": "The interior angles of a polygon add up to 1080 degrees. How many sides does it have?",
+        "options": ["8", "6", "9"],
+        "answer": "8"
+      },
+      {
+        "id": "b2",
+        "type": "fill",
+        "prompt": "Each exterior angle of a regular polygon is 40 degrees, so the polygon has ________ sides.",
+        "answer": "9"
+      },
+      {
+        "id": "b3",
+        "type": "mcq",
+        "prompt": "Each interior angle of a regular polygon is 150 degrees. What is the number of sides?",
+        "options": ["12", "10", "15"],
+        "answer": "12"
+      }
+    ]
+  },
+  "createdAt": "2026-07-06T18:57:59+00:00"
+}

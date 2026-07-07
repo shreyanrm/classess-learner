@@ -243,6 +243,46 @@ def _lint_whatif(wi: object) -> list[str]:
     return out
 
 
+def _lint_mathscene(ms: object) -> list[str]:
+    """Every expression a mathScene will evaluate live must parse: readout/curve exprs, plus any
+    coordinate that is an arithmetic string (poly points, labelAt, segment ends, point/label at)."""
+    if not isinstance(ms, dict):
+        return []
+    out: list[str] = []
+    for section, key in (("readouts", "expr"), ("curves", "expr")):
+        for entry in ms.get(section) or []:
+            expr = entry.get(key) if isinstance(entry, dict) else None
+            if isinstance(expr, str) and not _expr_parses(expr):
+                out.append(
+                    f"mathScene {section}.{key} {expr!r} is not parseable by the safe evaluator"
+                )
+
+    def _coords(pair: object, where: str) -> None:
+        if isinstance(pair, list):
+            for val in pair:
+                if isinstance(val, str) and not _expr_parses(val):
+                    out.append(
+                        f"mathScene {where} coordinate {val!r} is not parseable by the safe"
+                        " evaluator"
+                    )
+
+    for poly in ms.get("polys") or []:
+        if not isinstance(poly, dict):
+            continue
+        for pt in poly.get("points") or []:
+            _coords(pt, "polys.points")
+        _coords(poly.get("labelAt"), "polys.labelAt")
+    for seg in ms.get("segments") or []:
+        if isinstance(seg, dict):
+            _coords(seg.get("from"), "segments.from")
+            _coords(seg.get("to"), "segments.to")
+    for section in ("points", "labels"):
+        for entry in ms.get(section) or []:
+            if isinstance(entry, dict):
+                _coords(entry.get("at"), f"{section}.at")
+    return out
+
+
 def _lint_compose(artifact: dict) -> list[str]:
     out: list[str] = []
     for card in artifact.get("cards") or []:
@@ -264,6 +304,7 @@ def _lint_compose(artifact: dict) -> list[str]:
                     out.append(f"discovery interaction.kind {k!r} outside vocabulary")
         out += _lint_perturbation(card.get("perturbation"))
         out += _lint_whatif(card.get("whatIf"))
+        out += _lint_mathscene(card.get("mathScene"))
     for bank in ("workbook", "boss"):
         for item in artifact.get(bank) or []:
             if isinstance(item, dict) and (t := item.get("type", "mcq")) not in _ITEM_TYPES:

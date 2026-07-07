@@ -7,13 +7,27 @@
  */
 
 import { ARCADE_DEMO, ArcadeShell } from '../../engines/ArcadeShell';
+import {
+  CHEM_BALANCE_DEMO,
+  CHEM_STRUCTURE_DEMO,
+  CHEM_TITRATION_DEMO,
+  ChemScene,
+} from '../../engines/ChemScene';
 import { COMPARE_DEMO, CompareInteractive } from '../../engines/CompareInteractive';
 import { CONCEPTMAP_DEMO, ConceptMap } from '../../engines/ConceptMap';
+import { CsRampDemos } from '../../engines/cs/gallery';
 import { DERIVATION_DEMO, DerivationCard } from '../../engines/DerivationDepth';
 import { DISCOVERY_DEMO, Discovery } from '../../engines/Discovery';
 import { FLASHCARDS_DEMO, Flashcards } from '../../engines/Flashcards';
+import { MATHSCENE_DEMOS, MathScene } from '../../engines/MathScene';
 import { MiniWorkbook, WORKBOOK_DEMO } from '../../engines/MiniWorkbook';
 import { PERTURB_DEMO, PerturbationSandbox } from '../../engines/PerturbationSandbox';
+import {
+  PHYSICS_FREEBODY_DEMO,
+  PHYSICS_PROJECTILE_DEMO,
+  PHYSICS_WAVE_DEMO,
+  PhysicsScene,
+} from '../../engines/PhysicsScene';
 import { PODCAST_DEMO, PodcastPlayer } from '../../engines/PodcastPlayer';
 import { WHATIF_DEMO, WhatIfNumerical } from '../../engines/WhatIfNumerical';
 import { WORDPROBLEM_DEMO, WordProblemBreakdown } from '../../engines/WordProblemBreakdown';
@@ -75,6 +89,77 @@ export function EnginesGallery() {
       <Bench id="engine-conceptmap" name="concept map — seeded, tappable">
         <ConceptMap spec={CONCEPTMAP_DEMO} hue={hueForTopic('chem')} setBar={noop} onDone={noop} />
       </Bench>
+
+      <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
+        <div style={{ ...whisper }}>
+          math engines · Mafs scenes — draggable, live-bound, Vidya-drivable
+        </div>
+      </div>
+      {MATHSCENE_DEMOS.map((spec) => (
+        <Bench
+          key={spec.id}
+          id={`engine-mathscene-${spec.kind}`}
+          name={`math scene · ${spec.kind} — ${spec.title}`}
+        >
+          <MathScene spec={spec} hue={hueForTopic('math')} setBar={noop} onDone={noop} />
+        </Bench>
+      ))}
+
+      <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
+        <div style={{ ...whisper }}>physics engines · exact closed forms, dimension-checked</div>
+      </div>
+      <Bench id="engine-physics-projectile" name="physics — projectile, live angle + velocity">
+        <PhysicsScene
+          spec={PHYSICS_PROJECTILE_DEMO}
+          hue={hueForTopic('phys-mechanics')}
+          setBar={noop}
+          onDone={noop}
+        />
+      </Bench>
+      <Bench id="engine-physics-freebody" name="physics — free-body diagram, draggable forces">
+        <PhysicsScene
+          spec={PHYSICS_FREEBODY_DEMO}
+          hue={hueForTopic('phys-mechanics')}
+          setBar={noop}
+          onDone={noop}
+        />
+      </Bench>
+      <Bench id="engine-physics-wave" name="physics — wave superposition">
+        <PhysicsScene
+          spec={PHYSICS_WAVE_DEMO}
+          hue={hueForTopic('phys-mechanics')}
+          setBar={noop}
+          onDone={noop}
+        />
+      </Bench>
+
+      <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
+        <div style={{ ...whisper }}>chemistry engines · conservation is law, RDKit + 3Dmol</div>
+      </div>
+      <Bench id="engine-chem-balance" name="chem — equation balancer, live element conservation">
+        <ChemScene spec={CHEM_BALANCE_DEMO} hue={hueForTopic('chem')} setBar={noop} onDone={noop} />
+      </Bench>
+      <Bench id="engine-chem-titration" name="chem — titration lab, drop-by-drop pH curve">
+        <ChemScene
+          spec={CHEM_TITRATION_DEMO}
+          hue={hueForTopic('chem')}
+          setBar={noop}
+          onDone={noop}
+        />
+      </Bench>
+      <Bench id="engine-chem-structure" name="chem — 2D structure from SMILES, RDKit-js">
+        <ChemScene
+          spec={CHEM_STRUCTURE_DEMO}
+          hue={hueForTopic('chem')}
+          setBar={noop}
+          onDone={noop}
+        />
+      </Bench>
+
+      <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
+        <div style={{ ...whisper }}>cs ramp · blocks → parsons → real python, Pyodide-run</div>
+      </div>
+      <CsRampDemos />
 
       <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
         <div style={{ ...whisper }}>type-batch b · practice & delight</div>

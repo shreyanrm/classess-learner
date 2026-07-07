@@ -1,0 +1,438 @@
+{
+ "concept": "Nutrition",
+ "modality": "compose",
+ "difficulty": "core",
+ "verified": true,
+ "seeded": false,
+ "provenance": {
+  "engine": "engine.compose",
+  "model": "anthropic/claude-opus-4-8",
+  "prompt_version": "plexus-v3"
+ },
+ "artifact": {
+  "topic": "Nutrition",
+  "difficulty": "core",
+  "cards": [
+   {
+    "id": "c1",
+    "kind": "diagram",
+    "title": "What is on the plate",
+    "idea": "A balanced meal on a thali carries different foods that do different jobs inside you.",
+    "interaction": {
+     "kind": "tap",
+     "prompt": "Tap each item on the thali to see what job it does"
+    },
+    "reveal": "Rice and roti give energy, dal and paneer build the body, sabzi and salad keep you healthy. Different foods, different jobs.",
+    "imageSpec": {
+     "subject": "an Indian steel thali with rice, dal, roti, sabzi and salad",
+     "caption": "One thali, many nutrients"
+    }
+   },
+   {
+    "id": "c2",
+    "kind": "diagram",
+    "title": "The five workers",
+    "idea": "Food is made of nutrients. Each nutrient class does one main job: energy, building, protecting.",
+    "interaction": {
+     "kind": "tap",
+     "prompt": "Match each nutrient to the job you think it does"
+    },
+    "reveal": "Carbohydrates and fats give energy, proteins build and repair, vitamins and minerals protect and regulate.",
+    "discovery": {
+     "id": "d2",
+     "title": "Sort the nutrients",
+     "stages": [
+      {
+       "visual": {
+        "marks": [
+         {
+          "id": "m1",
+          "shape": "text",
+          "x": 25.0,
+          "y": 12.0,
+          "tone": "ink",
+          "text": "Carbohydrate"
+         },
+         {
+          "id": "m2",
+          "shape": "rect",
+          "x": 50.0,
+          "y": 30.0,
+          "tone": "muted",
+          "w": 30.0,
+          "h": 10.0,
+          "text": "ENERGY"
+         }
+        ]
+       },
+       "interaction": {
+        "kind": "drag",
+        "prompt": "Drag carbohydrate to the job it does",
+        "handle": "m1",
+        "to": {
+         "x": 50.0,
+         "y": 30.0
+        },
+        "radius": 14.0
+       },
+       "reveal": "Carbohydrates are the body's main fuel for daily activity.",
+       "caption": "Rice and roti keep you running."
+      },
+      {
+       "visual": {
+        "marks": [
+         {
+          "id": "m3",
+          "shape": "text",
+          "x": 25.0,
+          "y": 12.0,
+          "tone": "hue",
+          "text": "Protein"
+         },
+         {
+          "id": "m4",
+          "shape": "rect",
+          "x": 50.0,
+          "y": 30.0,
+          "tone": "muted",
+          "w": 34.0,
+          "h": 10.0,
+          "text": "BUILD & REPAIR"
+         }
+        ]
+       },
+       "interaction": {
+        "kind": "drag",
+        "prompt": "Drag protein to its job",
+        "handle": "m3",
+        "to": {
+         "x": 50.0,
+         "y": 30.0
+        },
+        "radius": 14.0
+       },
+       "reveal": "Proteins build muscles and repair worn-out parts. Dal, paneer, egg and fish are rich in protein.",
+       "caption": "Proteins are the body's bricks."
+      }
+     ]
+    }
+   },
+   {
+    "id": "c3",
+    "kind": "sim",
+    "title": "Energy in food",
+    "idea": "Different foods release different amounts of energy, measured in kilocalories.",
+    "interaction": {
+     "kind": "slide",
+     "prompt": "Slide to change how much rice you eat and watch the energy"
+    },
+    "reveal": "More rice means more energy taken in. Energy scales with the amount eaten.",
+    "perturbation": {
+     "id": "p3",
+     "title": "Energy from rice",
+     "law": "E = 130 * g / 100",
+     "param": {
+      "id": "g",
+      "label": "cooked rice eaten",
+      "min": 0,
+      "max": 400,
+      "from": 150,
+      "unit": "g"
+     },
+     "output": {
+      "label": "energy",
+      "expr": "130 * g / 100",
+      "unit": "kcal"
+     },
+     "breakpoint": {
+      "at": 0,
+      "approach": "below",
+      "assumption": "eating nothing gives zero energy",
+      "revelation": "at zero grams there is no food, so no energy enters the body; energy cannot be negative"
+     }
+    }
+   },
+   {
+    "id": "c4",
+    "kind": "diagram",
+    "title": "Deficiency diseases",
+    "idea": "When a nutrient is missing for a long time, the body shows a deficiency disease.",
+    "interaction": {
+     "kind": "tap",
+     "prompt": "Tap a missing nutrient to see what happens"
+    },
+    "reveal": "No vitamin C causes scurvy, no vitamin D or calcium causes weak bones, no iron causes anaemia, no protein causes wasting.",
+    "compare": {
+     "id": "cmp4",
+     "title": "Missing nutrient, matching problem",
+     "left": {
+      "label": "Nutrient missing",
+      "marks": [
+       {
+        "id": "l1",
+        "shape": "text",
+        "x": 30,
+        "y": 12,
+        "text": "Vitamin C",
+        "tone": "ink"
+       },
+       {
+        "id": "l2",
+        "shape": "text",
+        "x": 30,
+        "y": 30,
+        "text": "Iron",
+        "tone": "ink"
+       },
+       {
+        "id": "l3",
+        "shape": "text",
+        "x": 30,
+        "y": 48,
+        "text": "Protein",
+        "tone": "hue"
+       }
+      ]
+     },
+     "right": {
+      "label": "Disease",
+      "marks": [
+       {
+        "id": "r1",
+        "shape": "text",
+        "x": 70,
+        "y": 12,
+        "text": "Scurvy",
+        "tone": "muted"
+       },
+       {
+        "id": "r2",
+        "shape": "text",
+        "x": 70,
+        "y": 30,
+        "text": "Anaemia",
+        "tone": "muted"
+       },
+       {
+        "id": "r3",
+        "shape": "text",
+        "x": 70,
+        "y": 48,
+        "text": "Wasting",
+        "tone": "muted"
+       }
+      ]
+     },
+     "links": [
+      {
+       "id": "k1",
+       "left": "l1",
+       "right": "r1",
+       "note": "bleeding gums, weak joints",
+       "kind": "same"
+      },
+      {
+       "id": "k2",
+       "left": "l2",
+       "right": "r2",
+       "note": "tiredness, low blood",
+       "kind": "same"
+      },
+      {
+       "id": "k3",
+       "left": "l3",
+       "right": "r3",
+       "note": "poor growth and muscle loss",
+       "kind": "same"
+      }
+     ]
+    }
+   },
+   {
+    "id": "c5",
+    "kind": "diagram",
+    "title": "How plants eat",
+    "idea": "Green plants make their own food from sunlight, water and carbon dioxide by photosynthesis.",
+    "interaction": {
+     "kind": "tap",
+     "prompt": "Tap the leaf, sun, water and air to build the recipe"
+    },
+    "reveal": "Leaves use chlorophyll to trap sunlight and combine water and carbon dioxide into glucose, releasing oxygen. This is autotrophic nutrition.",
+    "imageSpec": {
+     "subject": "a green leaf with sunlight arrows, water rising from roots and carbon dioxide entering",
+     "caption": "Plants: the only kitchen that runs on light"
+    },
+    "derivation": {
+     "id": "dv5",
+     "formula": "6CO2 + 6H2O -> C6H12O6 + 6O2",
+     "label": "the photosynthesis equation",
+     "steps": [
+      {
+       "expr": "CO2 + H2O -> food + O2",
+       "note": "raw ingredients air and water become food and oxygen"
+      },
+      {
+       "expr": "6CO2 + 6H2O -> C6H12O6 + 6O2",
+       "note": "balanced: six molecules each of carbon dioxide and water make one glucose"
+      }
+     ]
+    }
+   },
+   {
+    "id": "c6",
+    "kind": "text",
+    "title": "Two ways to eat",
+    "idea": "Plants make food (autotrophs); animals must take food from outside (heterotrophs).",
+    "interaction": {
+     "kind": "tap",
+     "prompt": "Tap to reveal the two kinds of nutrition"
+    },
+    "reveal": "Autotrophic nutrition builds food from simple raw materials. Heterotrophic nutrition takes ready-made food from plants or other animals.",
+    "conceptMap": {
+     "id": "cm6",
+     "title": "Kinds of nutrition",
+     "nodes": [
+      {
+       "id": "n1",
+       "label": "Nutrition"
+      },
+      {
+       "id": "n2",
+       "label": "Autotrophic"
+      },
+      {
+       "id": "n3",
+       "label": "Heterotrophic"
+      },
+      {
+       "id": "n4",
+       "label": "Green plants"
+      },
+      {
+       "id": "n5",
+       "label": "Animals and humans"
+      },
+      {
+       "id": "n6",
+       "label": "Photosynthesis"
+      }
+     ],
+     "edges": [
+      {
+       "from": "n1",
+       "to": "n2",
+       "label": "makes own food"
+      },
+      {
+       "from": "n1",
+       "to": "n3",
+       "label": "takes food"
+      },
+      {
+       "from": "n2",
+       "to": "n4",
+       "label": "seen in"
+      },
+      {
+       "from": "n2",
+       "to": "n6",
+       "label": "uses"
+      },
+      {
+       "from": "n3",
+       "to": "n5",
+       "label": "seen in"
+      }
+     ],
+     "root": "n1"
+    },
+    "podcast": {
+     "id": "pod6",
+     "title": "Nutrition revision",
+     "chapters": [
+      {
+       "id": "ch1",
+       "title": "The balanced plate",
+       "script": "Picture your thali. Rice and roti give carbohydrates for energy. Dal and paneer give protein to build and repair. Sabzi and fruit give vitamins and minerals to protect you. A meal with all of these in the right amount is a balanced diet."
+      },
+      {
+       "id": "ch2",
+       "title": "When nutrients go missing",
+       "script": "Leave out a nutrient too long and the body complains. No vitamin C brings scurvy. Too little iron brings anaemia. Weak protein means poor growth. This is why variety on the plate matters more than any single food."
+      },
+      {
+       "id": "ch3",
+       "title": "Plants and animals",
+       "script": "Plants are autotrophs. Using chlorophyll they trap sunlight and turn carbon dioxide and water into glucose, giving out oxygen. Animals and humans are heterotrophs; we cannot make food, so we eat plants or other animals. Two paths, one goal: energy and building blocks for life."
+      }
+     ]
+    }
+   }
+  ],
+  "workbook": [
+   {
+    "id": "w1",
+    "type": "mcq",
+    "prompt": "Which nutrient mainly builds and repairs the body?",
+    "options": [
+     "Protein",
+     "Carbohydrate",
+     "Vitamin",
+     "Fat"
+    ],
+    "answer": "Protein"
+   },
+   {
+    "id": "w2",
+    "type": "fill",
+    "prompt": "The process by which green plants make their own food using sunlight is called ________.",
+    "answer": "photosynthesis"
+   },
+   {
+    "id": "w3",
+    "type": "mcq",
+    "prompt": "A long shortage of iron in the diet causes",
+    "options": [
+     "anaemia",
+     "scurvy",
+     "weak bones",
+     "wasting"
+    ],
+    "answer": "anaemia"
+   }
+  ],
+  "boss": [
+   {
+    "id": "b1",
+    "type": "mcq",
+    "prompt": "A child eats mostly rice with almost no dal, egg or milk for months. Which problem is most likely?",
+    "options": [
+     "Poor growth from low protein",
+     "Scurvy from low vitamin C",
+     "Too much energy stored as fat",
+     "Anaemia from low carbohydrate"
+    ],
+    "answer": "Poor growth from low protein"
+   },
+   {
+    "id": "b2",
+    "type": "fill",
+    "prompt": "In photosynthesis, plants take in carbon dioxide and water and release the gas ________.",
+    "answer": "oxygen"
+   },
+   {
+    "id": "b3",
+    "type": "mcq",
+    "prompt": "Why is a mango tree called an autotroph but a goat a heterotroph?",
+    "options": [
+     "The tree makes its own food while the goat must eat plants",
+     "The tree needs no water but the goat does",
+     "The goat makes food from sunlight but the tree cannot",
+     "Both make their own food equally"
+    ],
+    "answer": "The tree makes its own food while the goat must eat plants"
+   }
+  ]
+ },
+ "createdAt": "2026-07-07T10:33:51+00:00"
+}

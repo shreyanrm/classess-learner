@@ -1,0 +1,53 @@
+{
+ "concept": "Lens formula: image distance from object distance",
+ "modality": "simulate",
+ "difficulty": "core",
+ "verified": true,
+ "seeded": false,
+ "provenance": {
+  "engine": "engine.simulate",
+  "model": "anthropic/claude-opus-4-8",
+  "prompt_version": "plexus-v1"
+ },
+ "artifact": {
+  "params": [
+   {
+    "name": "f",
+    "min": -50.0,
+    "max": 50.0,
+    "default": 20.0,
+    "unit": "cm"
+   },
+   {
+    "name": "u",
+    "min": -100.0,
+    "max": 100.0,
+    "default": -30.0,
+    "unit": "cm"
+   }
+  ],
+  "formula": "v = (f*u)/(u + f)",
+  "outputs": [
+   "v"
+  ],
+  "breakpoints": [
+   {
+    "param": "u",
+    "at": -20.0,
+    "why": "when the object sits at the focal point, u equals negative f, the denominator becomes zero and v tends to infinity, so no real image forms"
+   },
+   {
+    "param": "f",
+    "at": 0.0,
+    "why": "a zero focal length has no physical meaning for a lens, the formula breaks down"
+   },
+   {
+    "param": "u",
+    "at": 0.0,
+    "why": "an object placed at the lens itself is not a valid case, the thin lens formula assumes the object lies away from the lens"
+   }
+  ],
+  "layout": "sliders-left"
+ },
+ "createdAt": "2026-07-07T07:46:35+00:00"
+}

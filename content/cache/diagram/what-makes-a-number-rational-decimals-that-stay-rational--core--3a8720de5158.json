@@ -1,0 +1,14 @@
+{
+  "concept": "What makes a number rational: Decimals that stay rational",
+  "modality": "diagram",
+  "difficulty": "core",
+  "verified": true,
+  "seeded": false,
+  "provenance": {
+    "engine": "engine.diagram",
+    "model": "anthropic/claude-opus-4-8",
+    "prompt_version": "plexus-v1"
+  },
+  "artifact": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 400 300\">\n  <text x=\"200\" y=\"26\" text-anchor=\"middle\" class=\"title\">Which decimals are rational?</text>\n  <text x=\"200\" y=\"44\" text-anchor=\"middle\" class=\"small\">rational = can be written as p/q</text>\n\n  \n  <rect x=\"24\" y=\"60\" width=\"160\" height=\"180\" rx=\"6\" />\n  <text x=\"104\" y=\"82\" text-anchor=\"middle\" class=\"head\">Terminating</text>\n  <line x1=\"34\" y1=\"90\" x2=\"174\" y2=\"90\" />\n  <text x=\"104\" y=\"112\" text-anchor=\"middle\" class=\"lbl\">0.5</text>\n  <text x=\"104\" y=\"134\" text-anchor=\"middle\" class=\"lbl\">0.75</text>\n  <text x=\"104\" y=\"156\" text-anchor=\"middle\" class=\"lbl\">3.125</text>\n  <text x=\"104\" y=\"186\" text-anchor=\"middle\" class=\"small\">ends after few digits</text>\n  <text x=\"104\" y=\"212\" text-anchor=\"middle\" class=\"lbl\">0.75 = 3/4</text>\n  <path d=\"M60 224 L148 224\" class=\"tick\" />\n  <text x=\"104\" y=\"236\" text-anchor=\"middle\" class=\"small\">✓ rational</text>\n\n  \n  <rect x=\"216\" y=\"60\" width=\"160\" height=\"180\" rx=\"6\" />\n  <text x=\"296\" y=\"82\" text-anchor=\"middle\" class=\"head\">Repeating</text>\n  <line x1=\"226\" y1=\"90\" x2=\"366\" y2=\"90\" />\n  <text x=\"296\" y=\"112\" text-anchor=\"middle\" class=\"lbl\">0.333…</text>\n  <text x=\"296\" y=\"134\" text-anchor=\"middle\" class=\"lbl\">0.1666…</text>\n  <text x=\"296\" y=\"156\" text-anchor=\"middle\" class=\"lbl\">0.142857…</text>\n  <line x1=\"278\" y1=\"102\" x2=\"288\" y2=\"102\" class=\"tick\" />\n  <text x=\"296\" y=\"186\" text-anchor=\"middle\" class=\"small\">a block repeats forever</text>\n  <text x=\"296\" y=\"212\" text-anchor=\"middle\" class=\"lbl\">0.333… = 1/3</text>\n  <path d=\"M252 224 L340 224\" class=\"tick\" />\n  <text x=\"296\" y=\"236\" text-anchor=\"middle\" class=\"small\">✓ rational</text>\n\n  \n  <text x=\"200\" y=\"266\" text-anchor=\"middle\" class=\"small\">Non-terminating &amp; non-repeating (e.g. 0.101001000…)</text>\n  <text x=\"200\" y=\"282\" text-anchor=\"middle\" class=\"small\">→ NOT rational (irrational)</text>\n</svg>",
+  "createdAt": "2026-07-06T13:55:13+00:00"
+}
