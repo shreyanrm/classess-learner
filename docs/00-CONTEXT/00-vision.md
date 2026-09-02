@@ -2,12 +2,12 @@
 
 ## The entity
 We are building the **Dot eVentures education ecosystem**. The ecosystem is the product.
-Its citizens: **KGtoPG** (platform citizen), **Classess Learner** (flagship, this build), and future
+Its citizens: **KGtoPG** (platform citizen), **Wobo** (the flagship consumer product of the Classess ecosystem, this build), and future
 products. Architect ecosystem-first (canonical identity, ontology, contracts, governance), then build each
-product to plug in. Classess Learner is the **reference implementation** that proves the plug-in pattern.
+product to plug in. Wobo is the **reference implementation** that proves the plug-in pattern.
 
-## Classess Learner — what it is
-A premium, AI-native, B2C learning app. **Learners only** — no teachers, no schools inside it.
+## Wobo — what it is
+A premium, AI-native, B2C learning app, and the tutor who lives inside it — one name for both. **Learners only** — no teachers, no schools inside it.
 Quality education at affordable cost; a real profit model with a genuine social cause.
 It is the **Independent Student** entry point into the larger identity model: a learner starts solo,
 on one permanent KGtoPG profile that can later gain tutor/school spaces without ever fracturing.
@@ -16,7 +16,7 @@ Strategic role: top-of-funnel for the whole ecosystem (the Physics Wallah patter
 ## The thesis
 - **Brilliant, but AI-native, India-first, premium**, with first-in-category mechanics.
 - Governing reframe: **cognitive fitness / a gym for the mind** — ritual, aspirational, premium, identity-forming.
-  "I did my Classess" sits in the same mental slot as "I went to the gym."
+  "I did my Wobo" sits in the same mental slot as "I went to the gym."
 - 5-year endgame: a **trusted mastery credential**, not a subscription.
 
 ## Two doors, one machine

@@ -6,7 +6,7 @@
  * who learns beside you, the note home, the plan, and three quiet dials at the end.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   type ChangeEvent,
@@ -291,7 +291,7 @@ const PROACTIVITY_LINES: Record<Proactivity, string> = {
   proactive: 'she speaks up when she sees something worth your time',
 };
 
-/** Three quiet notches — how forward Vidya is allowed to be. */
+/** Three quiet notches — how forward Wobo is allowed to be. */
 function ProactivityRow({
   value,
   onChange,
@@ -716,7 +716,7 @@ function strengthLine(name: string, mastered: Topic[], xp: number): string {
 export function You() {
   const router = useRouter();
   const sdk = useSdk();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const { xp, streakDays, completed, award, streakRepair, freezesLeft, repairStreak } =
     useProgress();
   const level = levelInfo(xp);
@@ -929,7 +929,7 @@ export function You() {
     window.location.reload();
   };
 
-  // --- Vidya reads this page ---------------------------------------------
+  // --- Wobo reads this page ---------------------------------------------
   const ledgerRef = useRegisterTarget<HTMLDivElement>('you-ledger', {
     kind: 'stat',
     label: 'the xp ledger — total xp, learner days, and the seven-day activity filament',
@@ -948,7 +948,7 @@ export function You() {
   });
   const mindRef = useRegisterTarget<HTMLDivElement>('you-mind', {
     kind: 'card',
-    label: 'the card showing what Vidya has learned about this learner, with a clear-memory door',
+    label: 'the card showing what Wobo has learned about this learner, with a clear-memory door',
   });
 
   useEffect(() => {
@@ -1558,9 +1558,9 @@ export function You() {
 
         <Hairline />
 
-        {/* ---- what Vidya knows about you ---- */}
+        {/* ---- what Wobo knows about you ---- */}
         <motion.div variants={rise} ref={mindRef}>
-          <Section label="What Vidya knows about you">
+          <Section label="What Wobo knows about you">
             <Card style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 12 }}>
               {knownItems.length === 0 && observations.length === 0 ? (
                 <div style={bodyLine}>
@@ -1654,7 +1654,7 @@ export function You() {
           <Section label="Settings">
             <div>
               <DialRow
-                title="Vidya's voice"
+                title="Wobo's voice"
                 line="She speaks her replies out loud"
                 on={voice}
                 onChange={(v) => {
@@ -1715,7 +1715,7 @@ export function You() {
                     the language I learn in
                   </div>
                   <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
-                    Vidya teaches and replies in this language until you change it — English by
+                    Wobo teaches and replies in this language until you change it — English by
                     default
                   </div>
                 </div>
@@ -1759,7 +1759,7 @@ export function You() {
                     redo my setup
                   </div>
                   <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
-                    walk through the intro with Vidya again — your xp, streak, and mastery all stay
+                    walk through setup with Wobo again — your xp, streak, and mastery all stay
                   </div>
                 </button>
               </div>

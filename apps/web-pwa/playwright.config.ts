@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * E2E config for the Classess Learner journey suite. One browser (chromium), one dev server
+ * E2E config for the Wobo journey suite. One browser (chromium), one dev server
  * (vite) on a dedicated strict port so it never collides with a fleet agent's server. Tests are
  * serial per-file and the whole run is single-worker: the journey mutates localStorage and shared
  * app state, and flakiness from parallel animation timing is not worth the speed.

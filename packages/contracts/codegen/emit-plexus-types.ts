@@ -28,11 +28,20 @@ type JsonSchema = {
 
 const refName = (ref: string): string => ref.replace('#/$defs/', '');
 
+/**
+ * A literal, quoted the way the repo formatter (biome, `quoteStyle: "single"`) would quote it,
+ * so the generated file is byte-identical before and after `biome check --write`.
+ */
+function lit(value: unknown): string {
+  if (typeof value !== 'string') return JSON.stringify(value);
+  return `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+}
+
 /** One property/leaf schema → a TypeScript type expression. */
 function tsType(schema: JsonSchema): string {
   if (schema.$ref) return refName(schema.$ref);
-  if ('const' in schema && schema.const !== undefined) return JSON.stringify(schema.const);
-  if (schema.enum) return schema.enum.map((v) => JSON.stringify(v)).join(' | ');
+  if ('const' in schema && schema.const !== undefined) return lit(schema.const);
+  if (schema.enum) return schema.enum.map(lit).join(' | ');
   if (schema.anyOf) {
     const parts = schema.anyOf.map(tsType);
     return [...new Set(parts)].join(' | ');
@@ -59,7 +68,7 @@ function emitInterface(name: string, def: JsonSchema): string {
   lines.push(`export interface ${name} {`);
   for (const [prop, sub] of Object.entries(def.properties ?? {})) {
     const optional = required.has(prop) ? '' : '?';
-    const key = /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(prop) ? prop : JSON.stringify(prop);
+    const key = /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(prop) ? prop : lit(prop);
     lines.push(`  ${key}${optional}: ${tsType(sub)};`);
   }
   lines.push('}');
@@ -84,7 +93,7 @@ export function emitPlexusTypes(schema: { $defs: Record<string, JsonSchema> }): 
   for (const [name, def] of Object.entries(schema.$defs)) {
     if (def.enum && !def.properties) {
       // a bare enum def (none today, but keep the emitter total)
-      blocks.push(`export type ${name} = ${def.enum.map((v) => JSON.stringify(v)).join(' | ')};`);
+      blocks.push(`export type ${name} = ${def.enum.map(lit).join(' | ')};`);
       continue;
     }
     blocks.push(emitInterface(name, def));

@@ -7,10 +7,10 @@
  * chord sounds. Then the "what you proved" line and the door onward. A boss-closed topic earns a
  * bigger theatre and a trophy note. When the earn crosses a level curve threshold, a distinct
  * full-screen level moment forges in as a second beat. Reduced-motion, dark theme, and mute all
- * respected. Docked Vidya celebrates, then settles.
+ * respected. Docked Wobo celebrates, then settles.
  */
 
-import { useVidyaBus } from '@classess/vidya';
+import { useWoboBus } from '@classess/wobo';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import type { Topic } from '../../data/model';
@@ -27,7 +27,7 @@ import {
   XpTally,
 } from '../../ui/celebration';
 import { hueForTopic } from '../../ui/hues';
-import { useVidyaChat } from '../../vidya/chat';
+import { useWoboChat } from '../../wobo/chat';
 import type { BarState } from './shared';
 import {
   CardBody,
@@ -114,9 +114,9 @@ export function Greeting({
   replay?: boolean;
 }) {
   const sdk = useSdk();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const { completeTopic, xp } = useProgress();
-  const { setMood } = useVidyaChat();
+  const { setMood } = useWoboChat();
   const reduced = useReducedMotion() ?? false;
   const fired = useRef(false);
 

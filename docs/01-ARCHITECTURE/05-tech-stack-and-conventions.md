@@ -6,7 +6,7 @@
 - **Content:** Plexus RAG pipeline grounded on NCERT (~3,500 items); pgvector retrieval cache.
 - **Mastery/scheduling:** FSRS for spaced retrieval; Bayesian/IRT for ability/difficulty estimation.
 - **Cache/queue:** Redis (gateway cache tiers, meter, rate, ephemeral session signals).
-- **Clients:** Expo React Native (mobile) + React PWA (web). Shared design-system/motion/Vidya packages.
+- **Clients:** Expo React Native (mobile) + React PWA (web). Shared design-system/motion/Wobo packages.
 - **Interactive content:** JSXGraph + Mafs (2D math), Three.js / React-Three-Fiber (3D). (GeoGebra eliminated.)
 - **Video pipeline:** Remotion 4 for cached nugget rendering.
 - **Payments:** Razorpay + native IAP (subscription; final phase alongside auth).
@@ -25,7 +25,7 @@
   (WCAG AA) and responsive on every surface; observable (structured logs + gateway telemetry + event stream).
 
 ## Fonts (bundled locally, no CDN)
-Google Sans Flex (display/system; web stand-in Plus Jakarta Sans until licensed), Caveat (handwritten — Vidya's annotations),
+Google Sans Flex (display/system; web stand-in Plus Jakarta Sans until licensed), Caveat (handwritten — Wobo's annotations),
 Fraunces / Inter / JetBrains Mono available but **mono is NOT used in product UI** (it was a vibe-coded tell). Bundle from fontsource.
 
 ## Definition of done (every unit)

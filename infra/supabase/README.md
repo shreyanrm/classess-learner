@@ -23,7 +23,7 @@ client query. There are no cross-schema foreign keys; canonical references are o
 | `0002_learner_operational_plane.sql` | the `learner` schema: tables, RLS, the outbox + `outbox_append` / `op_start_session`, grants |
 | `0003_realtime_and_storage.sql` | realtime publication (canvas/meter/mastery) + private storage buckets |
 | `0004_seed_dev.sql` | deterministic dev seed (mock subject "Aanya") |
-| `0005_learner_state_threads_relay.sql` | `learner_state` (XP/streak/topic progress/mind, device-merged) + `learner_threads` (Vidya conversation), RLS, `outbox_append_batch`, PostgREST exposure of `learner` |
+| `0005_learner_state_threads_relay.sql` | `learner_state` (XP/streak/topic progress/mind, device-merged) + `learner_threads` (Wobo conversation), RLS, `outbox_append_batch`, PostgREST exposure of `learner` |
 
 ## RLS
 

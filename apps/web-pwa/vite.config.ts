@@ -10,9 +10,9 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      // Icons are cropped from the wordmark's C-mark (public/classess-logo.png).
+      // Icons are cropped from the wordmark's W-mark (public/wobo-logo.png).
       // Regenerate with the snippet in DEPLOY.md §1.4 if the logo changes.
-      includeAssets: ['classess-logo.png', 'apple-touch-icon.png', 'robots.txt'],
+      includeAssets: ['wobo-logo.png', 'favicon.svg', 'apple-touch-icon.png', 'robots.txt'],
       workbox: {
         // A new deploy must take over IMMEDIATELY, not after every tab closes. Without these, the
         // old service worker keeps serving its cached (stale) bundle — so a shipped feature looks
@@ -38,10 +38,10 @@ export default defineConfig({
         ],
       },
       manifest: {
-        name: 'Classess Learner',
-        short_name: 'Classess',
+        name: 'Wobo',
+        short_name: 'Wobo',
         description:
-          'Learn with Vidya — mastery-first courses, practice, and a companion who knows you.',
+          'Learn with Wobo — mastery-first courses, practice, and your AI wobot beside you.',
         id: '/',
         start_url: '/',
         scope: '/',

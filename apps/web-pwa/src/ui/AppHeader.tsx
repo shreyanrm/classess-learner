@@ -13,7 +13,7 @@ import { useViewport } from '../shell/useViewport';
 import { levelInfo, useProgress, type XpBloom } from '../store/progress';
 import { AVATAR_CHANGED_EVENT, readAvatarProfile, renderAvatar } from './avatars';
 import { SparkIcon } from './icons';
-import { ClassessLogo } from './Logo';
+import { WoboLogo } from './Logo';
 
 const STAR_PATH =
   'M7 0.5 C7.9 4 8.9 5 12.5 7 C8.9 9 7.9 10 7 13.5 C6.1 10 5.1 9 1.5 7 C5.1 5 6.1 4 7 0.5 Z';
@@ -481,7 +481,7 @@ export function AppHeader() {
       }}
     >
       <div style={{ pointerEvents: 'auto', display: 'flex', alignItems: 'center' }}>
-        <ClassessLogo height={17} />
+        <WoboLogo height={17} />
       </div>
 
       <div

@@ -1,6 +1,6 @@
 -- 0005 — the live persistence seams (additive only).
 -- learner_state: the device-merged working state (XP, streak, topic progress, the mind snapshot).
--- learner_threads: Vidya's conversation, one row per (subject, thread).
+-- learner_threads: Wobo's conversation, one row per (subject, thread).
 -- outbox_append_batch: batch entry into the transactional outbox (the relay publishes UP).
 -- Plus the deferred Phase-1 step from the README: expose `learner` to PostgREST for client access.
 
@@ -23,7 +23,7 @@ create table learner.learner_state (
 create table learner.learner_threads (
   id uuid primary key default gen_random_uuid(),
   subject_id uuid not null,
-  thread text not null default 'vidya',
+  thread text not null default 'wobo',
   turns jsonb not null default '[]'::jsonb,
   client_updated_at timestamptz,
   created_at timestamptz not null default now(),

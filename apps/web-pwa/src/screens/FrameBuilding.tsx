@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * FrameBuilding — the moment right after setup, before the world opens. Vidya narrates, playfully
+ * FrameBuilding — the moment right after setup, before the world opens. Wobo narrates, playfully
  * and honestly, what she's actually doing while a skeleton constellation forms (MOTION.md §1/§3):
  * nodes settle in and faint edges draw between them, the shape of a course assembling. She's honest
  * about speed — a cached frame opens almost at once; a fresh board takes a breath while its catalog
@@ -16,7 +16,7 @@
  * own textbook chapter names. Every path ends with the learner stepping into a home that's truly theirs.
  */
 
-import { useVidyaBus, VidyaBody, type VidyaMood } from '@classess/vidya';
+import { useWoboBus, WoboBody, type WoboMood } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ONBOARDED_KEY } from '../App';
@@ -31,7 +31,7 @@ import { Confetti } from '../ui/ceremony';
 import { toneForSubject } from '../ui/hues';
 import { AmbientWash, fluidSpace, MagneticButton } from '../ui/kit';
 import { sfx } from '../ui/sound';
-import { speakLine } from '../vidya/speech';
+import { speakLine } from '../wobo/speech';
 import { boardName, loadProfile } from './you/profile';
 
 const ULTRA = '#1F35E0';
@@ -197,7 +197,7 @@ function WelcomeDoors({ frame, reduced }: { frame: Frame; reduced: boolean }) {
 export function FrameBuilding() {
   const router = useRouter();
   const sdk = useSdk();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const { award } = useProgress();
   const reduced = useReducedMotion() ?? false;
 
@@ -207,7 +207,7 @@ export function FrameBuilding() {
 
   const [phase, setPhase] = useState<Phase>('building');
   const [frame, setFrame] = useState<Frame | null>(null);
-  const [mood, setMood] = useState<VidyaMood>('thinking');
+  const [mood, setMood] = useState<WoboMood>('thinking');
   const [narration, setNarration] = useState(0);
   const ran = useRef(false);
 
@@ -311,7 +311,7 @@ export function FrameBuilding() {
       <AmbientWash gradient={BUILDING_WASH} />
       {phase === 'welcome' && !reduced && <Confetti hue={ULTRA} />}
 
-      {/* the constellation stage behind Vidya — the skeleton of the course, forming */}
+      {/* the constellation stage behind Wobo — the skeleton of the course, forming */}
       <div style={{ position: 'relative', width: 'min(560px, 86vw)', height: 300 }}>
         <AnimatePresence>
           {phase === 'building' && (
@@ -327,7 +327,7 @@ export function FrameBuilding() {
           )}
         </AnimatePresence>
 
-        {/* Vidya at the centre — thinking as she builds, jumping as she welcomes */}
+        {/* Wobo at the centre — thinking as she builds, jumping as she welcomes */}
         <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}>
           <motion.div
             animate={
@@ -343,7 +343,7 @@ export function FrameBuilding() {
                 : { duration: 3, repeat: Infinity, ease: 'easeInOut' }
             }
           >
-            <VidyaBody size={112} mood={mood} label="Vidya" />
+            <WoboBody size={112} mood={mood} label="Wobo" />
           </motion.div>
         </div>
       </div>
@@ -456,7 +456,7 @@ export function FrameBuilding() {
                 onClick={() => finish('home')}
                 style={{ minWidth: 190, justifyContent: 'center' }}
               >
-                Build one with Vidya
+                Build one with Wobo
               </MagneticButton>
             </motion.div>
           )}

@@ -23,7 +23,7 @@ bun run --filter @classess/web-pwa build   # Vite build: 435 modules, PWA + serv
 Total: **96 tests green.** The learner walkable shell builds to a real PWA bundle.
 
 To walk the app: `bun run --filter @classess/web-pwa dev` → a monochrome shell that greets Aanya,
-shows the next-best node + its mastery band from the KGtoPG reference, and docks Vidya (tap her to
+shows the next-best node + its mastery band from the KGtoPG reference, and docks Wobo (tap her to
 open the frosted panel; her replies come through the LLM seam in mock mode).
 
 ---
@@ -38,9 +38,9 @@ open the frosted panel; her replies come through the LLM seam in mock mode).
 | **Learner operational plane** | `infra/supabase` + MSR Build `learner` schema | 9 RLS-ready tables, the transactional outbox, `outbox_append`/`op_start_session`, realtime + storage |
 | **KGtoPG contract seed** | `platform/kgtopg-contract-seed` | governed-view interface, DTOs, event→`platform.events` mapping, atom ontology seed, outbox relay, in-repo reference impl |
 | Identity + SDK | `packages/sdk` | dev-mock identity (opaque subject, typed auth seams stubbed for Phase 4), provider seams (LLM/content/messaging/payment), KGtoPG binding, `createSdk()` |
-| Design tokens | `packages/config` | the locked tokens (Molten reserved for Vidya, no shadows, frost, 2px radius) + derived CSS variables |
+| Design tokens | `packages/config` | the locked tokens (Molten reserved for Wobo, no shadows, frost, 2px radius) + derived CSS variables |
 | Motion | `packages/motion` | ignite + constellation-ignite signatures, full primitive set, annotation kit, reduced-motion parity |
-| **Vidya** | `packages/vidya` | identity locked in code (round matte molten jelly, two eyes, ever-present flickering flame) + frosted panel with gooey-metaball listening |
+| **Wobo** | `packages/wobo` | identity locked in code (round matte molten jelly, two eyes, ever-present flickering flame) + frosted panel with gooey-metaball listening |
 | UI | `packages/ui` | token-driven primitives + signature ConceptTile (monochrome→ignite) and MasteryBand |
 | Model gateway | `services/gateway` | FastAPI + LiteLLM, capability registry, Track 1/2 separated, consent-tier gating, mock mode, telemetry |
 | Verifier | `services/verifier` | FastAPI + SymPy, CAS equivalence for linear equations, confidence gate that refuses to serve, verification hash |
@@ -59,13 +59,13 @@ the platform's columns (`canonical_uuid`, `app`, `type`, `purpose`, `consent_ref
 ## Phase 0 verification checklist
 
 - [x] **Monorepo builds; typecheck/lint/CI green across TS + Python.** Biome clean, 8/8 typecheck, 62 TS tests, ruff clean, 34 Python tests. CI workflow present (`.github/workflows/ci.yml`).
-- [x] **`ClassessEvent` envelope + typed payloads; taxonomy documented; example events validate.** 36 event types, all payloads typed (no untyped blobs), tests validate real events and reject malformed ones (e.g. Vidya `handed_answer: true` is refused).
+- [x] **`ClassessEvent` envelope + typed payloads; taxonomy documented; example events validate.** 36 event types, all payloads typed (no untyped blobs), tests validate real events and reject malformed ones (e.g. Wobo `handed_answer: true` is refused).
 - [x] **Outbox append transactional; relay at-least-once, ordered, idempotent; consumer dedupes on `event_id`.** Proven in-DB (`op_start_session` writes session + event atomically) and in tests (relay: publish-all, dedup replay, ordered fetch, failure-then-replay).
 - [x] **KGtoPG contract seed present; institutional surfaces excluded.** Interface (identity/ontology/mastery/twin/consent), DTOs, mastery model (6 factors / 5 bands / 10 gap types via the contract), ontology types, event mapping, consent primitives, reference impl. No school app code reused.
 - [x] **Supabase migrations apply; RLS enabled + policies pass against the mock subject; Realtime/Storage/pgvector configured.** All applied via the MCP; pgtap proves isolation + cross-subject write denial against the mock subject; realtime on canvas/meter/mastery; 3 storage buckets; pgvector enabled.
 - [x] **Auth deferred-but-wired: identity abstraction returns mock user with `DEV_AUTH=true`; phone-OTP/consent/linking seams typed & stubbed; no auth logic.** `DevMockIdentity` returns the opaque subject; `AuthSeams` throw `AuthNotEnabledError` (Phase 4). No real auth anywhere.
 - [x] **Gateway routes via capability registry; Track 1/Track 2 separated; verifier confidence-gate + SymPy harness; gateway telemetry emits.** 11 capabilities, two disjoint track configs, profiling capabilities refused under un_elevated; verifier gate + CAS tested; telemetry sink present.
-- [x] **Design/motion/Vidya packages scaffolded; tokens defined; Vidya identity locked in code.** Tokens locked, motion library complete, Vidya identity frozen and asserted by tests (molten only, round jelly, two eyes, flame always).
+- [x] **Design/motion/Wobo packages scaffolded; tokens defined; Wobo identity locked in code.** Tokens locked, motion library complete, Wobo identity frozen and asserted by tests (molten only, round jelly, two eyes, flame always).
 
 ---
 
@@ -104,5 +104,5 @@ reference until the service-role key connects).
 ---
 
 **Next:** I stop here for your verification. On your go, Phase 1 is **The Atom** — linear equations taught
-end to end, Vidya transcendent on the topic, the perception + grading spikes, practice/evidence, mastery
+end to end, Wobo transcendent on the topic, the perception + grading spikes, practice/evidence, mastery
 and ignite. I will not start it until you approve.

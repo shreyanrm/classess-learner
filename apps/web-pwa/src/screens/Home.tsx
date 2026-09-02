@@ -1,14 +1,14 @@
 'use client';
 
 /**
- * The home — the day as one walkable thread (Concept B, productionised). Vidya arrives first
+ * The home — the day as one walkable thread (Concept B, productionised). Wobo arrives first
  * (swoop → land → typed greeting, once per session), then the page IS the journey: a machined
- * bezier drawn down the canvas with data-driven stops that each route somewhere real. Vidya
+ * bezier drawn down the canvas with data-driven stops that each route somewhere real. Wobo
  * sits on the thread beside the current stop; the chat bar lives beneath the thread's start;
  * the aurora doors wait at the thread's end.
  */
 
-import { useRegisterTarget, useVidyaBus, VidyaBody } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus, WoboBody } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -28,8 +28,8 @@ import {
   useParallax,
   usePointerTilt,
 } from '../ui/kit';
-import { useVidyaChat } from '../vidya/chat';
-import { useVidyaVoice } from '../vidya/voice';
+import { useWoboChat } from '../wobo/chat';
+import { useWoboVoice } from '../wobo/voice';
 import { claimDailyQuest, deriveStops } from './home/stops';
 import { Thread } from './home/Thread';
 import { loadProfile } from './you/profile';
@@ -98,7 +98,7 @@ const CHIPS: { label: string; prompt: string }[] = [
 ];
 
 /**
- * The sky plane (MOTION.md §1) — a calm ultramarine wash and Vidya's warm beam, drifting at the
+ * The sky plane (MOTION.md §1) — a calm ultramarine wash and Wobo's warm beam, drifting at the
  * 0.08 sky rate behind the whole home. Portaled to <body> so it stays viewport-pinned past the
  * route wrapper's residual transform (the same escape the back pill makes). Decorative, muted.
  */
@@ -134,14 +134,14 @@ function HomeSky() {
 export function Home() {
   const router = useRouter();
   const still = useReducedMotion();
-  const { ask, busy, mood, setMood } = useVidyaChat();
+  const { ask, busy, mood, setMood } = useWoboChat();
   // Pointer parallax on the hero (MOTION.md §1): desktop only, ±6px, spring-lagged.
   const tilt = usePointerTilt(6);
   const progress = useProgress();
-  const { publishPage } = useVidyaBus();
+  const { publishPage } = useWoboBus();
   const [draft, setDraft] = useState('');
   const [voiceNote, setVoiceNote] = useState<string | null>(null);
-  const voice = useVidyaVoice({ setMood });
+  const voice = useWoboVoice({ setMood });
 
   // The day, derived from real state — every stop routes somewhere real.
   const { stops, currentIndex } = useMemo(() => deriveStops(progress), [progress]);
@@ -166,7 +166,7 @@ export function Home() {
     return extra ? [...CHIPS, extra] : CHIPS;
   }, [dial]);
 
-  // The opening — once per session, Vidya arrives before anything else exists.
+  // The opening — once per session, Wobo arrives before anything else exists.
   const [firstVisit] = useState(() => sessionStorage.getItem('clss-home-opened') !== '1');
   const [landed, setLanded] = useState(!firstVisit);
   const [greetShown, setGreetShown] = useState(!firstVisit ? 999 : 0);
@@ -232,7 +232,7 @@ export function Home() {
 
   const currentKind = stops[currentIndex]?.kind;
   // Under the quiet dial she never volunteers a line — presence without a nudge.
-  const vidyaLine = busy
+  const woboLine = busy
     ? 'Thinking…'
     : dial === 'quiet'
       ? 'Here when you need me'
@@ -240,8 +240,8 @@ export function Home() {
         ? 'Right where we left it'
         : 'I marked today’s walk for you';
 
-  // Vidya, on the journey — the Thread seats her beside the current stop.
-  const vidyaNode = (
+  // Wobo, on the journey — the Thread seats her beside the current stop.
+  const woboNode = (
     <motion.div
       initial={firstVisit ? { x: '30vw', y: '-70vh', rotate: 16, opacity: 0 } : false}
       animate={{
@@ -266,7 +266,7 @@ export function Home() {
       style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}
     >
       <motion.div style={{ x: tilt.x, y: tilt.y }}>
-        <VidyaBody size={96} mood={busy ? 'thinking' : mood} gaze="pointer" label="Vidya" />
+        <WoboBody size={96} mood={busy ? 'thinking' : mood} gaze="pointer" label="Wobo" />
       </motion.div>
       <div
         style={{
@@ -279,7 +279,7 @@ export function Home() {
           maxWidth: 126,
         }}
       >
-        {vidyaLine}
+        {woboLine}
       </div>
     </motion.div>
   );
@@ -367,7 +367,7 @@ export function Home() {
               onChange={(e) => setDraft(e.target.value)}
               onFocus={() => setMood('listening')}
               onBlur={() => setMood('idle')}
-              placeholder="Talk to Vidya…"
+              placeholder="Talk to Wobo…"
               style={{
                 flex: 1,
                 height: 52,
@@ -429,7 +429,7 @@ export function Home() {
                 transition={{ type: 'spring', stiffness: 380, damping: 26 }}
                 style={{ display: 'inline-flex' }}
               >
-                <MagneticButton variant="primary" onClick={() => {}} ariaLabel="Ask Vidya">
+                <MagneticButton variant="primary" onClick={() => {}} ariaLabel="Ask Wobo">
                   <SendIcon size={13} /> Ask
                 </MagneticButton>
               </motion.span>
@@ -526,12 +526,12 @@ export function Home() {
         </motion.div>
       </motion.div>
 
-      {/* the day, drawn — one thread, stops on it, Vidya walking it */}
+      {/* the day, drawn — one thread, stops on it, Wobo walking it */}
       <div ref={threadRef} style={{ marginTop: fluidSpace.md }}>
         <Thread
           stops={stops}
           currentIndex={currentIndex}
-          vidya={vidyaNode}
+          wobo={woboNode}
           onGo={(route) => router.navigate(route)}
           onArrive={(stop) => {
             // The bonus chest pays out its shown bounty as real XP, once per day.

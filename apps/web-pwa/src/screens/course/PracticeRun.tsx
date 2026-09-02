@@ -8,16 +8,16 @@
  */
 
 import { type PracticeItem, reviewCard } from '@classess/sdk';
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useProgress, XP_AWARDS } from '../../store/progress';
 import { useSdk } from '../../store/sdk';
 import { ComboMeter, comboBreak, comboHit, XpTick } from '../../ui/combo';
 import { sfx } from '../../ui/sound';
-import { useVidyaChat } from '../../vidya/chat';
-import { announceCard } from '../../vidya/speech';
-import { hintFor, maxHintDepth, noteCorrect, noteMiss, regrade, useTutor } from '../../vidya/tutor';
+import { useWoboChat } from '../../wobo/chat';
+import { announceCard } from '../../wobo/speech';
+import { hintFor, maxHintDepth, noteCorrect, noteMiss, regrade, useTutor } from '../../wobo/tutor';
 import { firstMove, fmt, linearize } from './equations';
 import type { BarState } from './shared';
 import { CardBody, cardTitle, lead, ParticlePop, rgba, Stage, whisper } from './shared';
@@ -195,9 +195,9 @@ export function PracticeRun({
   replay?: boolean;
 }) {
   const sdk = useSdk();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const { award } = useProgress();
-  const { setMood } = useVidyaChat();
+  const { setMood } = useWoboChat();
   const { mode } = useTutor();
 
   const [queue, setQueue] = useState<PracticeItem[]>(items);
@@ -315,7 +315,7 @@ export function PracticeRun({
     lastHintRef.current = text;
     setHintLevel(next);
     sdk.events.record(
-      'vidya.hint.escalated.v1',
+      'wobo.hint.escalated.v1',
       { node_id: nodeId, from_level: hintLevel, to_level: next, reason: 'explicit_request' },
       { ontologyNodeId: nodeId },
     );
@@ -549,7 +549,7 @@ export function PracticeRun({
         {item.equation}
       </div>
 
-      {/* one hint, one surface: her handwritten ink beside the equation (VidyaOverlay 'write'). */}
+      {/* one hint, one surface: her handwritten ink beside the equation (WoboOverlay 'write'). */}
 
       <AnimatePresence mode="wait" initial={false}>
         {phase === 'detonate' ? (

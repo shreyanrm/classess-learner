@@ -6,8 +6,8 @@ import {
   subjectAccents,
   tokens,
   ultramarine,
-  vidyaHighlight,
-  vidyaMolten,
+  woboHighlight,
+  woboMolten,
 } from '../src/index';
 
 describe('design tokens (DESIGN.md §2 is law)', () => {
@@ -15,8 +15,8 @@ describe('design tokens (DESIGN.md §2 is law)', () => {
     expect(ultramarine).toBe('#1F35E0');
   });
 
-  it('reserves Molten for Vidya and never assigns it to a subject', () => {
-    expect(vidyaMolten).toBe('#FF5A1F');
+  it('reserves Molten for Wobo and never assigns it to a subject', () => {
+    expect(woboMolten).toBe('#FF5A1F');
     expect(accent.molten).toBe('#FF5A1F');
     expect(subjectAccents).not.toContain('molten');
   });
@@ -27,7 +27,7 @@ describe('design tokens (DESIGN.md §2 is law)', () => {
     expect(accent.acid).toBe('#66B300');
   });
 
-  it('uses sharp corners: 3px default radius; large radii only for Vidya and overlays', () => {
+  it('uses sharp corners: 3px default radius; large radii only for Wobo and overlays', () => {
     expect(radius.sm).toBe(3);
     expect(radius.jelly).toBeGreaterThan(radius.lg);
   });
@@ -42,17 +42,17 @@ describe('design tokens (DESIGN.md §2 is law)', () => {
     const css = cssVariables();
     expect(css).toContain('--clss-ink-900: #0D0D10;');
     expect(css).toContain('--clss-ultramarine: #1F35E0;');
-    expect(css).toContain('--clss-vidya-molten: #FF5A1F;');
+    expect(css).toContain('--clss-wobo-molten: #FF5A1F;');
     expect(css).toContain('--clss-radius-sm: 3px;');
   });
 
-  it("carries Vidya's annotation palette: molten leads, ultramarine seconds, acid third", () => {
-    expect(vidyaHighlight.primary).toBe(vidyaMolten);
-    expect(vidyaHighlight.secondary).toBe(ultramarine);
-    expect(vidyaHighlight.tertiary).toBe(accent.acid);
+  it("carries Wobo's annotation palette: molten leads, ultramarine seconds, acid third", () => {
+    expect(woboHighlight.primary).toBe(woboMolten);
+    expect(woboHighlight.secondary).toBe(ultramarine);
+    expect(woboHighlight.tertiary).toBe(accent.acid);
     const css = cssVariables();
-    expect(css).toContain('--clss-vidya-highlight-primary: #FF5A1F;');
-    expect(css).toContain(`--clss-vidya-highlight-secondary: ${ultramarine};`);
-    expect(css).toContain('--clss-vidya-highlight-tertiary: #66B300;');
+    expect(css).toContain('--clss-wobo-highlight-primary: #FF5A1F;');
+    expect(css).toContain(`--clss-wobo-highlight-secondary: ${ultramarine};`);
+    expect(css).toContain('--clss-wobo-highlight-tertiary: #66B300;');
   });
 });

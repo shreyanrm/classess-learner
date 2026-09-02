@@ -36,7 +36,7 @@ export interface LLMProvider {
 const ELEVATED_ONLY = new Set(['archetype.classify', 'peakcut.evaluate']);
 
 /** Her voice, canned: warm, playful, page-aware. Rotated deterministically by the input. */
-const MOCK_VIDYA_TURNS = [
+const MOCK_WOBO_TURNS = [
   {
     say: 'Oh, I like this page — I can see the whole thing from where I sit. Want to take the first step together?',
     actions: [
@@ -75,10 +75,10 @@ function mockOutputFor(capability: string, input: CapabilityInput): unknown {
         interactive: true,
         verification_hash: 'seed-opener-linear-eq-1',
       };
-    case 'vidya.turn': {
-      const turn = MOCK_VIDYA_TURNS[
-        mockSeed(input) % MOCK_VIDYA_TURNS.length
-      ] as (typeof MOCK_VIDYA_TURNS)[number];
+    case 'wobo.turn': {
+      const turn = MOCK_WOBO_TURNS[
+        mockSeed(input) % MOCK_WOBO_TURNS.length
+      ] as (typeof MOCK_WOBO_TURNS)[number];
       return { ...turn, grounded: true, handed_answer: false };
     }
     case 'generate.course':

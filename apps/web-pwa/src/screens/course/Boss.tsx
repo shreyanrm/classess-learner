@@ -8,7 +8,7 @@
  */
 
 import type { PracticeItem } from '@classess/sdk';
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { motion } from 'framer-motion';
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import { useSdk } from '../../store/sdk';
@@ -113,7 +113,7 @@ export function Boss({
   onPass: (correct: number) => void;
 }) {
   const sdk = useSdk();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const bossRef = useRegisterTarget<HTMLDivElement>('course-boss', {
     kind: 'workbook',
     label: 'the boss workbook — solve, missing step, find the error',

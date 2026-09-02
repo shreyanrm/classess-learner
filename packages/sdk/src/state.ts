@@ -2,7 +2,7 @@ import type { SupabaseRest } from './supabase';
 
 /**
  * The learner-state persistence seam. One shape (`LearnerState`) backs XP, the identity streak,
- * topic progress, and the mind snapshot; one shape (`ThreadSnapshot`) backs Vidya's conversation.
+ * topic progress, and the mind snapshot; one shape (`ThreadSnapshot`) backs Wobo's conversation.
  * Mock/local mode persists to localStorage only. Live mode keeps localStorage as the offline cache
  * and reconciles with `learner.learner_state` / `learner.learner_threads` (RLS: subject_id =
  * auth.uid()) — hydrate on boot, merge on write. The merge functions are pure and tested.
@@ -30,7 +30,7 @@ export interface LearnerState {
 
 export interface ThreadTurn {
   id: string;
-  role: 'user' | 'vidya';
+  role: 'user' | 'wobo';
   text: string;
 }
 
@@ -117,7 +117,11 @@ export function mergeLearnerState(a: LearnerState, b: LearnerState): LearnerStat
   // Streak-freeze budget: within one month keep the higher spend; a newer month resets naturally.
   const [fa, fb] = [a.streakFreezes, b.streakFreezes];
   const streakFreezes =
-    fa.month === fb.month ? { month: fa.month, used: Math.max(fa.used, fb.used) } : fa.month > fb.month ? fa : fb;
+    fa.month === fb.month
+      ? { month: fa.month, used: Math.max(fa.used, fb.used) }
+      : fa.month > fb.month
+        ? fa
+        : fb;
   // ponytail: the fresher write wins on the pending break, so a repair (which clears it) propagates;
   // freeze state is local-first (not in the remote row) so this only matters across real devices.
   const brokenStreak = fresher.brokenStreak;
@@ -172,7 +176,25 @@ function defaultStorage(): KVStorage {
 /** The same keys the app has always used, so existing devices carry their progress over. */
 export const STATE_CACHE_KEY = 'clss-progress-v1';
 function threadCacheKey(thread: string): string {
-  return thread === 'vidya' ? 'clss-vidya-conversation-v1' : `clss-thread-${thread}-v1`;
+  return thread === 'wobo' ? 'clss-wobo-conversation-v1' : `clss-thread-${thread}-v1`;
+}
+
+/**
+ * Pre-rebrand thread ids. The tutor was called Vidya, so her thread — its localStorage key, its
+ * `learner_threads.thread` value, and the `role` on every turn she spoke — was written as 'vidya'.
+ * Reads fall back through this map so a device or account that predates the rename carries its
+ * conversation over; writes only ever use the new id, so each thread migrates on first save.
+ */
+const LEGACY_THREAD_IDS: Record<string, string> = { wobo: 'vidya' };
+
+/** The pre-rebrand localStorage key for a thread (unscoped); null when the thread has no past. */
+function legacyThreadCacheKey(thread: string): string | null {
+  return thread === 'wobo' ? 'clss-vidya-conversation-v1' : null;
+}
+
+/** Rewrite the speaker on turns persisted before the rename. */
+function normalizeTurns(turns: ThreadTurn[]): ThreadTurn[] {
+  return turns.map((t) => ((t.role as string) === 'vidya' ? { ...t, role: 'wobo' as const } : t));
 }
 
 export interface StateProvider {
@@ -201,9 +223,13 @@ export class LocalStateProvider implements StateProvider {
     return this.scope ? `${STATE_CACHE_KEY}:${this.scope}` : STATE_CACHE_KEY;
   }
 
-  protected threadKey(thread: string): string {
-    const base = threadCacheKey(thread);
+  /** Apply the account scope to a cache key. */
+  protected scoped(base: string): string {
     return this.scope ? `${base}:${this.scope}` : base;
+  }
+
+  protected threadKey(thread: string): string {
+    return this.scoped(threadCacheKey(thread));
   }
 
   loadCache(): LearnerState {
@@ -229,12 +255,16 @@ export class LocalStateProvider implements StateProvider {
 
   loadThreadCache(thread: string): ThreadSnapshot | null {
     try {
-      const raw = this.storage.getItem(this.threadKey(thread));
+      const legacyKey = legacyThreadCacheKey(thread);
+      const raw =
+        this.storage.getItem(this.threadKey(thread)) ??
+        (legacyKey ? this.storage.getItem(this.scoped(legacyKey)) : null);
       if (!raw) return null;
       const parsed = JSON.parse(raw) as ThreadSnapshot | ThreadTurn[];
       // The pre-live cache stored the bare turns array.
-      if (Array.isArray(parsed)) return { turns: parsed, updatedAt: new Date(0).toISOString() };
-      return parsed.turns ? parsed : null;
+      if (Array.isArray(parsed))
+        return { turns: normalizeTurns(parsed), updatedAt: new Date(0).toISOString() };
+      return parsed.turns ? { ...parsed, turns: normalizeTurns(parsed.turns) } : null;
     } catch {
       return null;
     }
@@ -332,16 +362,28 @@ export class SupabaseStateProvider extends LocalStateProvider {
     }, this.debounceMs);
   }
 
+  /** The thread row, falling back to its pre-rebrand id so an existing account keeps its history. */
+  private async selectThreadRow(thread: string): Promise<Record<string, unknown> | null> {
+    const row = await this.rest.selectOne(
+      'learner_threads',
+      `subject_id=eq.${this.subjectId}&thread=eq.${thread}&select=*`,
+    );
+    if (row) return row;
+    const legacy = LEGACY_THREAD_IDS[thread];
+    if (!legacy) return null;
+    return this.rest.selectOne(
+      'learner_threads',
+      `subject_id=eq.${this.subjectId}&thread=eq.${legacy}&select=*`,
+    );
+  }
+
   override async hydrateThread(thread: string): Promise<ThreadSnapshot | null> {
     const local = this.loadThreadCache(thread);
     try {
-      const row = await this.rest.selectOne(
-        'learner_threads',
-        `subject_id=eq.${this.subjectId}&thread=eq.${thread}&select=*`,
-      );
+      const row = await this.selectThreadRow(thread);
       const remote: ThreadSnapshot | null = row
         ? {
-            turns: (row.turns as ThreadTurn[]) ?? [],
+            turns: normalizeTurns((row.turns as ThreadTurn[]) ?? []),
             updatedAt: (row.client_updated_at as string) ?? new Date(0).toISOString(),
           }
         : null;

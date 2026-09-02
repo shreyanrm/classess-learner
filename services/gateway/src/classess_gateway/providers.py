@@ -55,7 +55,7 @@ def _seed(capability: str, payload: dict[str, Any]) -> int:
 def _shape(capability: str, seed: int) -> dict[str, Any]:
     """A deterministic, capability-shaped mock payload. Calm copy: no emoji, no hype."""
     flag = seed % 2 == 0
-    # vidya.turn never reaches here — MockProvider routes it to vidya.mock_vidya_turn
+    # wobo.turn never reaches here — MockProvider routes it to wobo.mock_wobo_turn
     if capability in {"tutor.turn", "parent.companion.turn"}:
         return {
             "message": f"mock {capability} response",
@@ -110,11 +110,11 @@ class MockProvider:
                 capability=capability, payload=payload, provider_model=provider_model, live=False
             )
         seed = _seed(capability, payload)
-        if capability == "vidya.turn":
+        if capability == "wobo.turn":
             # her mock brain classifies by keyword into the five paths — works keyless
-            from classess_gateway.vidya import mock_vidya_turn
+            from classess_gateway.wobo import mock_wobo_turn
 
-            return ProviderResponse(output=mock_vidya_turn(payload), tokens=(seed % 500) + 1)
+            return ProviderResponse(output=mock_wobo_turn(payload), tokens=(seed % 500) + 1)
         return ProviderResponse(output=_shape(capability, seed), tokens=(seed % 500) + 1)
 
 
@@ -143,7 +143,7 @@ def _generate_course(
     # Claude 5 family accepts only default sampling; drop unsupported params instead of erroring.
     litellm.drop_params = True
 
-    from classess_gateway.vidya import _extract_json  # same robust code-fence/JSON parser
+    from classess_gateway.wobo import _extract_json  # same robust code-fence/JSON parser
 
     goal = str(payload.get("goal") or "").strip() or "learn the basics of this topic"
 
@@ -197,7 +197,7 @@ def _grade_attempt(
 
     litellm.drop_params = True
 
-    from classess_gateway.vidya import _extract_json  # same robust code-fence/JSON parser
+    from classess_gateway.wobo import _extract_json  # same robust code-fence/JSON parser
 
     prompt = str(
         payload.get("prompt") or payload.get("question") or payload.get("equation") or ""
@@ -243,11 +243,11 @@ class LiveProvider:
         payload: dict[str, Any],
         fallbacks: tuple[str, ...] = (),
     ) -> ProviderResponse:
-        # Vidya's turn is capability-specific: grounded by the verifier and returning say + actions.
-        if capability == "vidya.turn":
-            from classess_gateway.vidya import run_vidya_turn
+        # Wobo's turn is capability-specific: grounded by the verifier and returning say + actions.
+        if capability == "wobo.turn":
+            from classess_gateway.wobo import run_wobo_turn
 
-            output, tokens = run_vidya_turn(
+            output, tokens = run_wobo_turn(
                 provider_model=provider_model, payload=payload, fallbacks=fallbacks
             )
             return ProviderResponse(output=output, tokens=tokens)

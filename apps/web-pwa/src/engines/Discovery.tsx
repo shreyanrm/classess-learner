@@ -30,12 +30,12 @@
  *     { kind:'slide', prompt, min, max, from, at, unit?, valueLabel?,   // slide until value crosses `at`
  *                     bind?:{ mark, prop:'x'|'y'|'r', at:[number,number] } }  // live-drives one mark
  *
- * The stage registers as a Vidya scene target: she reads current stage + the learner's live action
+ * The stage registers as a Wobo scene target: she reads current stage + the learner's live action
  * (getSceneState / getValidActions) and can DRIVE it to demonstrate (applyTutorAction). Reduced-motion
  * and mute aware; both themes; no new deps.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   type PointerEvent as ReactPointerEvent,
@@ -48,7 +48,7 @@ import type { BarState } from '../screens/course/shared';
 import { CardBody, lead, rgba, Stage } from '../screens/course/shared';
 import { hueForTopic } from '../ui/hues';
 import { sfx } from '../ui/sound';
-import { useVidyaChat } from '../vidya/chat';
+import { useWoboChat } from '../wobo/chat';
 
 // --- The spec ------------------------------------------------------------------------------------
 
@@ -370,8 +370,8 @@ function DiscoveryStageView({
   onComplete: () => void;
 }) {
   const reduced = useReducedMotion();
-  const bus = useVidyaBus();
-  const { setMood } = useVidyaChat();
+  const bus = useWoboBus();
+  const { setMood } = useWoboChat();
   const svgRef = useRef<SVGSVGElement>(null);
   const it = stage.interaction;
 
@@ -455,7 +455,7 @@ function DiscoveryStageView({
     );
   }, [stage.visual.marks, it, state.value]);
 
-  // --- publish scene state to Vidya's bus + register the stage as a target she can read/drive ---
+  // --- publish scene state to Wobo's bus + register the stage as a target she can read/drive ---
   const didText =
     it.kind === 'tap'
       ? `tapped ${state.tapped.length}/${it.need ?? it.targets.length}`

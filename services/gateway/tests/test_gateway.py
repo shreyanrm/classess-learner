@@ -55,8 +55,8 @@ def test_tracks_are_never_conflated() -> None:
         assert resolve(pol.primary, pol.track).track is pol.track
     # routine volume targets track 2; the live tutor turn rides frontier (uncached,
     # per the 2026-07-06 routing law) until the real tutor SLM fills its slot
-    assert policy("vidya.turn").track is Track.TRACK_1
-    assert policy("vidya.turn").cache_tier.value == "none"
+    assert policy("wobo.turn").track is Track.TRACK_1
+    assert policy("wobo.turn").cache_tier.value == "none"
     assert policy("grade.attempt").track is Track.TRACK_2
     assert policy("verify.math").track is Track.TRACK_1
 
@@ -172,10 +172,10 @@ def test_peakcut_never_caches() -> None:
 # --- telemetry ------------------------------------------------------------------------
 def test_telemetry_records_each_invocation() -> None:
     sink = MetricsSink()
-    make_gateway(sink).invoke("vidya.turn", req(ConsentTier.UN_ELEVATED, t=1))
+    make_gateway(sink).invoke("wobo.turn", req(ConsentTier.UN_ELEVATED, t=1))
     assert len(sink.events) == 1
     ev = sink.events[0]
-    assert ev.capability == "vidya.turn"
+    assert ev.capability == "wobo.turn"
     assert ev.track == "track_1"
     assert ev.cache_hit is False
     assert ev.tokens > 0
@@ -213,9 +213,9 @@ def test_http_surface() -> None:
     assert unknown.status_code == 404
 
 
-# --- the dossier: identity + facts ride every Vidya turn (VIDYA.md §7) -----------------
+# --- the dossier: identity + facts ride every Wobo turn (WOBO.md §7) -----------------
 def test_dossier_renders_identity_and_facts() -> None:
-    from classess_gateway.vidya import _build_user_prompt
+    from classess_gateway.wobo import _build_user_prompt
 
     context = {
         "lifetime": {
@@ -232,14 +232,14 @@ def test_dossier_renders_identity_and_facts() -> None:
 
 
 def test_dossier_is_empty_when_nothing_is_known() -> None:
-    from classess_gateway.vidya import _build_user_prompt
+    from classess_gateway.wobo import _build_user_prompt
 
     prompt = _build_user_prompt({}, None)
     assert "Who you are teaching" not in prompt
 
 
 def test_machine_room_renders_internal_state() -> None:
-    from classess_gateway.vidya import _build_user_prompt
+    from classess_gateway.wobo import _build_user_prompt
 
     context = {
         "machine": {
@@ -270,16 +270,16 @@ def test_machine_room_renders_internal_state() -> None:
 
 
 def test_machine_room_is_empty_when_nothing_is_known() -> None:
-    from classess_gateway.vidya import _build_user_prompt
+    from classess_gateway.wobo import _build_user_prompt
 
     prompt = _build_user_prompt({}, None)
     assert "Machine room" not in prompt
 
 
 def test_mock_turn_answers_the_name_question() -> None:
-    from classess_gateway.vidya import mock_vidya_turn
+    from classess_gateway.wobo import mock_wobo_turn
 
-    out = mock_vidya_turn(
+    out = mock_wobo_turn(
         {
             "context": {
                 "lifetime": {"learner": {"name": "Ravi"}},
@@ -291,9 +291,9 @@ def test_mock_turn_answers_the_name_question() -> None:
 
 
 def test_mock_turn_remembers_a_preferred_name() -> None:
-    from classess_gateway.vidya import mock_vidya_turn
+    from classess_gateway.wobo import mock_wobo_turn
 
-    out = mock_vidya_turn({"context": {"turn": {"lastUserInput": "call me Ravi"}}})
+    out = mock_wobo_turn({"context": {"turn": {"lastUserInput": "call me Ravi"}}})
     remembers = [a for a in out["actions"] if a.get("type") == "remember"]
     assert remembers and "Ravi" in remembers[0]["text"]
 
@@ -313,7 +313,7 @@ def test_cors_allows_our_vercel_preview_origins_in_prod(monkeypatch: pytest.Monk
     monkeypatch.setenv("ENV", "prod")
     client = TestClient(create_app(make_gateway()))
     r = client.options(
-        "/v1/capability/vidya.turn",
+        "/v1/capability/wobo.turn",
         headers={
             "origin": "https://classess-learner-abc123xyz-depl-shreyan.vercel.app",
             "access-control-request-method": "POST",
@@ -322,7 +322,7 @@ def test_cors_allows_our_vercel_preview_origins_in_prod(monkeypatch: pytest.Monk
     assert r.status_code == 200
     # arbitrary third-party vercel apps stay blocked
     r2 = client.options(
-        "/v1/capability/vidya.turn",
+        "/v1/capability/wobo.turn",
         headers={
             "origin": "https://evil-depl-shreyan.vercel.app",
             "access-control-request-method": "POST",

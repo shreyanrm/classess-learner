@@ -6,7 +6,7 @@
  * ("how we got here") — most move on; the curious go deep. Doubles as the free-play sandbox.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type ReactNode, useEffect, useState } from 'react';
 import { fmt, fractionText } from './equations';
@@ -167,7 +167,7 @@ export function WhatIf({
   setBar: (b: BarState | null) => void;
   onDone?: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const [a, setA] = useState(2);
   const [b, setB] = useState(3);
   const [c, setC] = useState(11);
@@ -372,7 +372,7 @@ export function WhatIf({
 
       {freePlay && (
         <div style={{ ...whisper, textAlign: 'center' }}>
-          no task here — bend the equation until it makes sense. Vidya is watching the numbers.
+          no task here — bend the equation until it makes sense. Wobo is watching the numbers.
         </div>
       )}
     </CardBody>

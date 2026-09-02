@@ -1,138 +1,138 @@
 {
- "concept": "why the sky is blue",
- "modality": "compose",
- "difficulty": "core",
- "verified": true,
- "seeded": false,
- "provenance": {
-  "engine": "engine.compose",
-  "model": "anthropic/claude-opus-4-8",
-  "prompt_version": "plexus-v1"
- },
- "artifact": {
-  "topic": "why the sky is blue",
+  "concept": "why the sky is blue",
+  "modality": "compose",
   "difficulty": "core",
-  "cards": [
-   {
-    "id": "c1",
-    "kind": "diagram",
-    "title": "Look up at noon",
-    "idea": "On a clear afternoon the sky overhead glows blue, but the sun itself looks white-yellow. The same sunlight is doing both.",
-    "interaction": {
-     "kind": "tap",
-     "prompt": "Tap the patch of sky far from the sun"
-    },
-    "reveal": "That patch is blue even though no blue lamp is up there. The blue must come from sunlight bouncing off the air itself."
-   },
-   {
-    "id": "c2",
-    "kind": "diagram",
-    "title": "Sunlight is a mix",
-    "idea": "White sunlight is really all colours packed together. A raindrop or prism can spread them into a rainbow band.",
-    "interaction": {
-     "kind": "tap",
-     "prompt": "Tap the prism to split the sunlight beam"
-    },
-    "reveal": "Out comes red, orange, yellow, green, blue, violet. Each colour is light of a different wavelength: red long, blue and violet short."
-   },
-   {
-    "id": "c3",
-    "kind": "sim",
-    "title": "Air scatters short waves more",
-    "idea": "Tiny air molecules deflect light in all directions. This scattering is much stronger for short blue waves than for long red ones.",
-    "interaction": {
-     "kind": "slide",
-     "prompt": "Slide from red end to blue end and watch the scattering"
-    },
-    "reveal": "Near red, light passes almost straight. Near blue, molecules fling it everywhere, so blue light fills the whole sky."
-   },
-   {
-    "id": "c4",
-    "kind": "text",
-    "title": "Rayleigh scattering",
-    "idea": "Scattering of sunlight by air molecules, far stronger for shorter wavelengths, is called Rayleigh scattering. Scattered blue light reaches your eyes from every direction.",
-    "interaction": {
-     "kind": "tap",
-     "prompt": "Tap to name why the sky looks blue"
-    },
-    "reveal": "Blue is scattered most, so it comes at you from all over the sky. That is why the daytime sky looks blue."
-   },
-   {
-    "id": "c5",
-    "kind": "diagram",
-    "title": "Why sunsets go red",
-    "idea": "At sunset light travels through much more air. So much blue is scattered away that mostly red and orange survive the long path to you.",
-    "interaction": {
-     "kind": "drag",
-     "prompt": "Drag the sun down to the horizon"
-    },
-    "reveal": "The longer path strips out blue, leaving red-orange light. Same scattering rule, different geometry, gives a red sunset."
-   }
-  ],
-  "workbook": [
-   {
-    "id": "w1",
-    "type": "mcq",
-    "prompt": "Why does the daytime sky look blue?",
-    "options": [
-     "Blue light is scattered by air more than red light",
-     "The sky is made of blue gas",
-     "The sun gives out only blue light",
-     "The ocean colours the sky blue"
+  "verified": true,
+  "seeded": false,
+  "provenance": {
+    "engine": "engine.compose",
+    "model": "anthropic/claude-opus-4-8",
+    "prompt_version": "plexus-v1"
+  },
+  "artifact": {
+    "topic": "why the sky is blue",
+    "difficulty": "core",
+    "cards": [
+      {
+        "id": "c1",
+        "kind": "diagram",
+        "title": "Look up at noon",
+        "idea": "On a clear afternoon the sky overhead glows blue, but the sun itself looks white-yellow. The same sunlight is doing both.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the patch of sky far from the sun"
+        },
+        "reveal": "That patch is blue even though no blue lamp is up there. The blue must come from sunlight bouncing off the air itself."
+      },
+      {
+        "id": "c2",
+        "kind": "diagram",
+        "title": "Sunlight is a mix",
+        "idea": "White sunlight is really all colours packed together. A raindrop or prism can spread them into a rainbow band.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the prism to split the sunlight beam"
+        },
+        "reveal": "Out comes red, orange, yellow, green, blue, violet. Each colour is light of a different wavelength: red long, blue and violet short."
+      },
+      {
+        "id": "c3",
+        "kind": "sim",
+        "title": "Air scatters short waves more",
+        "idea": "Tiny air molecules deflect light in all directions. This scattering is much stronger for short blue waves than for long red ones.",
+        "interaction": {
+          "kind": "slide",
+          "prompt": "Slide from red end to blue end and watch the scattering"
+        },
+        "reveal": "Near red, light passes almost straight. Near blue, molecules fling it everywhere, so blue light fills the whole sky."
+      },
+      {
+        "id": "c4",
+        "kind": "text",
+        "title": "Rayleigh scattering",
+        "idea": "Scattering of sunlight by air molecules, far stronger for shorter wavelengths, is called Rayleigh scattering. Scattered blue light reaches your eyes from every direction.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap to name why the sky looks blue"
+        },
+        "reveal": "Blue is scattered most, so it comes at you from all over the sky. That is why the daytime sky looks blue."
+      },
+      {
+        "id": "c5",
+        "kind": "diagram",
+        "title": "Why sunsets go red",
+        "idea": "At sunset light travels through much more air. So much blue is scattered away that mostly red and orange survive the long path to you.",
+        "interaction": {
+          "kind": "drag",
+          "prompt": "Drag the sun down to the horizon"
+        },
+        "reveal": "The longer path strips out blue, leaving red-orange light. Same scattering rule, different geometry, gives a red sunset."
+      }
     ],
-    "answer": "Blue light is scattered by air more than red light"
-   },
-   {
-    "id": "w2",
-    "type": "fill",
-    "prompt": "The scattering of sunlight by air molecules, stronger for shorter wavelengths, is called ________ scattering.",
-    "answer": "Rayleigh"
-   },
-   {
-    "id": "w3",
-    "type": "mcq",
-    "prompt": "White sunlight is actually made of",
-    "options": [
-     "only white light",
-     "all the colours of the rainbow",
-     "just blue and red",
-     "no colour at all"
+    "workbook": [
+      {
+        "id": "w1",
+        "type": "mcq",
+        "prompt": "Why does the daytime sky look blue?",
+        "options": [
+          "Blue light is scattered by air more than red light",
+          "The sky is made of blue gas",
+          "The sun gives out only blue light",
+          "The ocean colours the sky blue"
+        ],
+        "answer": "Blue light is scattered by air more than red light"
+      },
+      {
+        "id": "w2",
+        "type": "fill",
+        "prompt": "The scattering of sunlight by air molecules, stronger for shorter wavelengths, is called ________ scattering.",
+        "answer": "Rayleigh"
+      },
+      {
+        "id": "w3",
+        "type": "mcq",
+        "prompt": "White sunlight is actually made of",
+        "options": [
+          "only white light",
+          "all the colours of the rainbow",
+          "just blue and red",
+          "no colour at all"
+        ],
+        "answer": "all the colours of the rainbow"
+      }
     ],
-    "answer": "all the colours of the rainbow"
-   }
-  ],
-  "boss": [
-   {
-    "id": "b1",
-    "type": "mcq",
-    "prompt": "At sunset the sky near the horizon turns red because",
-    "options": [
-     "the sun changes colour in the evening",
-     "light travels a longer path through air, so most blue is scattered away",
-     "clouds add red dye to the light",
-     "red light is scattered more than blue at night"
-    ],
-    "answer": "light travels a longer path through air, so most blue is scattered away"
-   },
-   {
-    "id": "b2",
-    "type": "fill",
-    "prompt": "Compared with red light, blue light has a ________ wavelength.",
-    "answer": "shorter"
-   },
-   {
-    "id": "b3",
-    "type": "mcq",
-    "prompt": "An astronaut in space sees the sky as black rather than blue mainly because",
-    "options": [
-     "there is no sun in space",
-     "there is almost no air to scatter sunlight",
-     "space is too cold for blue light",
-     "all light stops in a vacuum"
-    ],
-    "answer": "there is almost no air to scatter sunlight"
-   }
-  ]
- },
- "createdAt": "2026-07-06T20:26:06+00:00"
+    "boss": [
+      {
+        "id": "b1",
+        "type": "mcq",
+        "prompt": "At sunset the sky near the horizon turns red because",
+        "options": [
+          "the sun changes colour in the evening",
+          "light travels a longer path through air, so most blue is scattered away",
+          "clouds add red dye to the light",
+          "red light is scattered more than blue at night"
+        ],
+        "answer": "light travels a longer path through air, so most blue is scattered away"
+      },
+      {
+        "id": "b2",
+        "type": "fill",
+        "prompt": "Compared with red light, blue light has a ________ wavelength.",
+        "answer": "shorter"
+      },
+      {
+        "id": "b3",
+        "type": "mcq",
+        "prompt": "An astronaut in space sees the sky as black rather than blue mainly because",
+        "options": [
+          "there is no sun in space",
+          "there is almost no air to scatter sunlight",
+          "space is too cold for blue light",
+          "all light stops in a vacuum"
+        ],
+        "answer": "there is almost no air to scatter sunlight"
+      }
+    ]
+  },
+  "createdAt": "2026-07-06T20:26:06+00:00"
 }

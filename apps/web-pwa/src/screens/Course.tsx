@@ -3,7 +3,7 @@
 /**
  * The course player — the keystone (DESIGN.md §8, §9). A guided-discovery shell: full-bleed card
  * area, a thin segmented progress bar (endowed, eased), close top-left, and one action bar at the
- * bottom. Cards slide horizontally on springs. Vidya stays docked (mounted globally) and reads
+ * bottom. Cards slide horizontally on springs. Wobo stays docked (mounted globally) and reads
  * every interactive card at code level through the bus.
  *
  * Three journeys share the shell: the atom (topic m2-1 — the complete proven course), the honest
@@ -11,7 +11,7 @@
  * sandbox (route `sandbox`) that opens straight into the what-if card.
  */
 
-import { useVidyaBus } from '@classess/vidya';
+import { useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { chapterById, topicById } from '../data/catalog';
@@ -20,7 +20,7 @@ import { enqueue as enqueueDownload, getDownload } from '../store/downloads';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { CloseIcon } from '../ui/icons';
-import { MuteButton, ReplayButton, useCardNarration } from '../vidya/speech';
+import { MuteButton, ReplayButton, useCardNarration } from '../wobo/speech';
 import { AtomJourney } from './course/AtomJourney';
 import { Composing } from './course/Composing';
 import { ActionBar, type BarState, SegmentedProgress, whisper } from './course/shared';
@@ -29,12 +29,12 @@ import { WhatIf } from './course/WhatIf';
 export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?: boolean }) {
   const router = useRouter();
   const sdk = useSdk();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const still = useReducedMotion();
   // the close affordance comes forward on hover/focus — ink lifts from quiet grey to full ink
   const [closeLit, setCloseLit] = useState(false);
 
-  // A custom course Vidya composed from a free-text ask: topicId carries the concept itself
+  // A custom course Wobo composed from a free-text ask: topicId carries the concept itself
   // (`custom:black holes`), so the composing player gets the real title, never "a new course".
   const custom = topicId.startsWith('custom:') ? topicId.slice('custom:'.length).trim() : null;
   const topic = custom ? undefined : topicById(topicId);
@@ -52,7 +52,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
 
   // THE DOWNLOAD-FIRST CHOKEPOINT (CONTEXT.md content law). Every path into a course routes through
   // here, so the gate lives here once — not on each of the N call sites (subject rows, the Learn
-  // continue card, home thread stops, expedition checkpoints, the command palette, Vidya's route
+  // continue card, home thread stops, expedition checkpoints, the command palette, Wobo's route
   // actions, custom courses, progress). A composed course the learner does not yet own is NEVER
   // opened cold into an in-page skeleton: if its content is not generated/cached and it is not
   // already on its way, enqueue it and bounce back — the downloading pill + the ready notification

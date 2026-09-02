@@ -8,11 +8,11 @@
  * evidence (learn.attempt.submitted.v1); a wrong catch (or letting the answer fall past) costs a
  * life. Three lives, then restart.
  *
- * Registers as a Vidya scene target (she can nudge the catcher / restart). Keyboard + pointer
+ * Registers as a Wobo scene target (she can nudge the catcher / restart). Keyboard + pointer
  * driven, reduced-motion aware (calmer fall), mute-aware via sfx, both themes, no new deps.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   type PointerEvent as ReactPointerEvent,
@@ -122,7 +122,7 @@ export function ArcadeShell({
   onDone?: () => void;
 }) {
   const sdk = useSdk();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const reduced = useReducedMotion();
 
   const [phase, setPhase] = useState<Phase>('ready');

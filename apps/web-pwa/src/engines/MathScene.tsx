@@ -14,13 +14,13 @@
  * is either a number OR an arithmetic expression over the draggable handle values — evaluated by
  * SimRunner's safe recursive-descent parser, never eval / never Function.
  *
- * Vidya-drivable: registers as a scene target with getSceneState / getValidActions / applyTutorAction
+ * Wobo-drivable: registers as a scene target with getSceneState / getValidActions / applyTutorAction
  * and publishes its working state to the bus, so she reasons about it at code level and can drag a
  * handle herself to demonstrate. Both themes (Mafs vars bound to the app's ink tokens), reduced-motion
  * aware, mute-aware sfx.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Coordinates, Line, Mafs, MovablePoint, Plot, Point, Polygon, Text } from 'mafs';
 import 'mafs/core.css';
@@ -377,7 +377,7 @@ export function MathScene({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const reduced = useReducedMotion() ?? false;
   const [state, setState] = useState<State>(() => initialState(spec.handles));
   const [touched, setTouched] = useState(false);
@@ -422,7 +422,7 @@ export function MathScene({
     setBar({ primary: { label: 'continue', disabled: !touched, onClick: onDone } });
   }, [touched, setBar, onDone]);
 
-  // Vidya reads the live scene and can drive a handle herself to demonstrate.
+  // Wobo reads the live scene and can drive a handle herself to demonstrate.
   const applyTutorAction = (raw: Record<string, unknown>) => {
     const set = isRecord(raw.set) ? raw.set : raw;
     const id = typeof set.id === 'string' ? set.id : undefined;

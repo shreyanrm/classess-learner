@@ -4,7 +4,7 @@ These are decided. Do not relitigate; build to them.
 
 ## Pedagogy
 - **Build, don't watch.** Universal loop: **pose → struggle → reveal**, never explain-first. Openers are always active.
-  Video/reading/podcast are *fading reveals*, never openers. Video is NOT the spine — Vidya annotating a live canvas is
+  Video/reading/podcast are *fading reveals*, never openers. Video is NOT the spine — Wobo annotating a live canvas is
   the primary explanatory modality; short cached nuggets are the library (15–30s typical).
 - **Not "learning styles" (VAK/VARK is discredited)** → **adaptive multi-representation**. Switch representation on failure.
 - **Simulators & mini-games = parametric, pre-verified templates ONLY.** Never freeform LLM generation in that surface.

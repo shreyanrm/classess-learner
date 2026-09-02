@@ -82,7 +82,7 @@ class GenericVerifyRequest(BaseModel):
     threshold: float = Field(default=DEFAULT_THRESHOLD, ge=0.0, le=1.0)
 
 
-app = FastAPI(title="Classess correctness verifier", version="v1")
+app = FastAPI(title="Wobo correctness verifier", version="v1")
 
 
 @app.get("/healthz")

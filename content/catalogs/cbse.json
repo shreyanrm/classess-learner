@@ -10,10 +10,7 @@
           "id": "math",
           "name": "Mathematics",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/demm1ps.pdf; topics=model-knowledge",
-          "ncertCodes": [
-            "demm1",
-            "demh1"
-          ],
+          "ncertCodes": ["demm1", "demh1"],
           "chapters": [
             {
               "index": 1,
@@ -221,10 +218,7 @@
           "id": "evs",
           "name": "Environmental Studies",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/deev1ps.pdf; topics=model-knowledge",
-          "ncertCodes": [
-            "deev1",
-            "deap1"
-          ],
+          "ncertCodes": ["deev1", "deap1"],
           "chapters": [
             {
               "index": 1,
@@ -377,10 +371,7 @@
           "id": "math",
           "name": "Mathematics",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/eemm1ps.pdf; topics=model-knowledge",
-          "ncertCodes": [
-            "eemm1",
-            "eemh1"
-          ],
+          "ncertCodes": ["eemm1", "eemh1"],
           "chapters": [
             {
               "index": 1,
@@ -598,10 +589,7 @@
           "id": "evs",
           "name": "Environmental Studies",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/eeev1ps.pdf; topics=model-knowledge",
-          "ncertCodes": [
-            "eeev1",
-            "eeap1"
-          ],
+          "ncertCodes": ["eeev1", "eeap1"],
           "chapters": [
             {
               "index": 1,
@@ -754,9 +742,7 @@
           "id": "math",
           "name": "Mathematics",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/fegp1ps.pdf (chapters + topics from real chapter-PDF subsection headings)",
-          "ncertCodes": [
-            "fegp1"
-          ],
+          "ncertCodes": ["fegp1"],
           "chapters": [
             {
               "index": 1,
@@ -964,9 +950,7 @@
           "id": "science",
           "name": "Science",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/fecu1ps.pdf (chapters + topics from real chapter-PDF subsection headings)",
-          "ncertCodes": [
-            "fecu1"
-          ],
+          "ncertCodes": ["fecu1"],
           "chapters": [
             {
               "index": 1,
@@ -1210,9 +1194,7 @@
           "id": "social",
           "name": "Social science",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/fees1ps.pdf (chapters from official contents; topics from chapter-PDF section headings, partly model-assisted)",
-          "ncertCodes": [
-            "fees1"
-          ],
+          "ncertCodes": ["fees1"],
           "chapters": [
             {
               "index": 1,
@@ -1481,10 +1463,7 @@
           "id": "math",
           "name": "Mathematics",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/gegp1ps.pdf, https://ncert.nic.in/textbook/pdf/gegp2ps.pdf; topics=model-knowledge",
-          "ncertCodes": [
-            "gegp1",
-            "gegp2"
-          ],
+          "ncertCodes": ["gegp1", "gegp2"],
           "chapters": [
             {
               "index": 1,
@@ -1762,9 +1741,7 @@
           "id": "science",
           "name": "Science",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/gecu1ps.pdf; topics=model-knowledge",
-          "ncertCodes": [
-            "gecu1"
-          ],
+          "ncertCodes": ["gecu1"],
           "chapters": [
             {
               "index": 1,
@@ -1988,10 +1965,7 @@
           "id": "social",
           "name": "Social science",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/gees1ps.pdf, https://ncert.nic.in/textbook/pdf/gees2ps.pdf; topics=model-knowledge",
-          "ncertCodes": [
-            "gees1",
-            "gees2"
-          ],
+          "ncertCodes": ["gees1", "gees2"],
           "chapters": [
             {
               "index": 1,
@@ -2364,10 +2338,7 @@
           "id": "math",
           "name": "Mathematics",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/hegp1ps.pdf, https://ncert.nic.in/textbook/pdf/hegp2ps.pdf; topics=model-knowledge",
-          "ncertCodes": [
-            "hegp1",
-            "hegp2"
-          ],
+          "ncertCodes": ["hegp1", "hegp2"],
           "chapters": [
             {
               "index": 1,
@@ -2627,9 +2598,7 @@
           "id": "science",
           "name": "Science",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/hecu1ps.pdf; topics=model-knowledge",
-          "ncertCodes": [
-            "hecu1"
-          ],
+          "ncertCodes": ["hecu1"],
           "chapters": [
             {
               "index": 1,
@@ -2871,12 +2840,7 @@
           "id": "social",
           "name": "Social science",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/hess2ps.pdf, https://ncert.nic.in/textbook/pdf/hess4ps.pdf, https://ncert.nic.in/textbook/pdf/hess3ps.pdf, https://ncert.nic.in/textbook/pdf/hees1ps.pdf (History Our Pasts III + Resource and Development + Social and Political Life III + Exploring Society India and Beyond Part-I); topics=model-knowledge",
-          "ncertCodes": [
-            "hess2",
-            "hess4",
-            "hess3",
-            "hees1"
-          ],
+          "ncertCodes": ["hess2", "hess4", "hess3", "hees1"],
           "chapters": [
             {
               "index": 1,
@@ -3393,9 +3357,7 @@
           "id": "math",
           "name": "Mathematics",
           "provenance": "cross-checked against owner-supplied NCERT catalog 2026-07-07",
-          "ncertCodes": [
-            "iemh1"
-          ],
+          "ncertCodes": ["iemh1"],
           "chapters": [
             {
               "index": 1,
@@ -3619,9 +3581,7 @@
           "id": "science",
           "name": "Science",
           "provenance": "cross-checked against owner-supplied NCERT catalog 2026-07-07",
-          "ncertCodes": [
-            "iesc1"
-          ],
+          "ncertCodes": ["iesc1"],
           "chapters": [
             {
               "index": 1,
@@ -3845,12 +3805,7 @@
           "id": "social",
           "name": "Social science",
           "provenance": "cross-checked against owner-supplied NCERT catalog 2026-07-07",
-          "ncertCodes": [
-            "iess1",
-            "iess2",
-            "iess3",
-            "iess4"
-          ],
+          "ncertCodes": ["iess1", "iess2", "iess3", "iess4"],
           "chapters": [
             {
               "index": 1,
@@ -4223,9 +4178,7 @@
           "id": "math",
           "name": "Mathematics",
           "provenance": "cross-checked against owner-supplied NCERT catalog 2026-07-07",
-          "ncertCodes": [
-            "jemh1"
-          ],
+          "ncertCodes": ["jemh1"],
           "chapters": [
             {
               "index": 1,
@@ -4485,9 +4438,7 @@
           "id": "science",
           "name": "Science",
           "provenance": "cross-checked against owner-supplied NCERT catalog 2026-07-07",
-          "ncertCodes": [
-            "jesc1"
-          ],
+          "ncertCodes": ["jesc1"],
           "chapters": [
             {
               "index": 1,
@@ -4729,12 +4680,7 @@
           "id": "social",
           "name": "Social science",
           "provenance": "cross-checked against owner-supplied NCERT catalog 2026-07-07",
-          "ncertCodes": [
-            "jess1",
-            "jess2",
-            "jess3",
-            "jess4"
-          ],
+          "ncertCodes": ["jess1", "jess2", "jess3", "jess4"],
           "chapters": [
             {
               "index": 1,
@@ -5143,9 +5089,7 @@
           "id": "math",
           "name": "Mathematics",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/kemh1ps.pdf",
-          "ncertCodes": [
-            "kemh1"
-          ],
+          "ncertCodes": ["kemh1"],
           "chapters": [
             {
               "index": 1,
@@ -5417,10 +5361,7 @@
           "id": "physics",
           "name": "Physics",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/keph1ps.pdf, https://ncert.nic.in/textbook/pdf/keph2ps.pdf",
-          "ncertCodes": [
-            "keph1",
-            "keph2"
-          ],
+          "ncertCodes": ["keph1", "keph2"],
           "chapters": [
             {
               "index": 1,
@@ -5696,10 +5637,7 @@
           "id": "chemistry",
           "name": "Chemistry",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/kech1ps.pdf, https://ncert.nic.in/textbook/pdf/kech2ps.pdf",
-          "ncertCodes": [
-            "kech1",
-            "kech2"
-          ],
+          "ncertCodes": ["kech1", "kech2"],
           "chapters": [
             {
               "index": 1,
@@ -5881,9 +5819,7 @@
           "id": "biology",
           "name": "Biology",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/kebo1ps.pdf; topics=model-knowledge",
-          "ncertCodes": [
-            "kebo1"
-          ],
+          "ncertCodes": ["kebo1"],
           "chapters": [
             {
               "index": 1,
@@ -6233,9 +6169,7 @@
           "id": "cs",
           "name": "Computer Science",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/kecs1ps.pdf",
-          "ncertCodes": [
-            "kecs1"
-          ],
+          "ncertCodes": ["kecs1"],
           "chapters": [
             {
               "index": 1,
@@ -6446,10 +6380,7 @@
           "id": "math",
           "name": "Mathematics",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/lemh1ps.pdf, https://ncert.nic.in/textbook/pdf/lemh2ps.pdf",
-          "ncertCodes": [
-            "lemh1",
-            "lemh2"
-          ],
+          "ncertCodes": ["lemh1", "lemh2"],
           "chapters": [
             {
               "index": 1,
@@ -6663,10 +6594,7 @@
           "id": "physics",
           "name": "Physics",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/leph1ps.pdf, https://ncert.nic.in/textbook/pdf/leph2ps.pdf",
-          "ncertCodes": [
-            "leph1",
-            "leph2"
-          ],
+          "ncertCodes": ["leph1", "leph2"],
           "chapters": [
             {
               "index": 1,
@@ -6910,10 +6838,7 @@
           "id": "chemistry",
           "name": "Chemistry",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/lech1ps.pdf, https://ncert.nic.in/textbook/pdf/lech2ps.pdf",
-          "ncertCodes": [
-            "lech1",
-            "lech2"
-          ],
+          "ncertCodes": ["lech1", "lech2"],
           "chapters": [
             {
               "index": 1,
@@ -7061,9 +6986,7 @@
           "id": "biology",
           "name": "Biology",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/lebo1ps.pdf (chapter titles verified from official ToC); topics=model-knowledge",
-          "ncertCodes": [
-            "lebo1"
-          ],
+          "ncertCodes": ["lebo1"],
           "chapters": [
             {
               "index": 1,
@@ -7253,9 +7176,7 @@
           "id": "cs",
           "name": "Computer Science",
           "provenance": "fetched:https://ncert.nic.in/textbook/pdf/lecs1ps.pdf",
-          "ncertCodes": [
-            "lecs1"
-          ],
+          "ncertCodes": ["lecs1"],
           "chapters": [
             {
               "index": 1,

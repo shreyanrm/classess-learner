@@ -16,7 +16,7 @@ import {
   surface,
   ultramarine,
   ultramarineShades,
-  vidyaHighlight,
+  woboHighlight,
   zIndex,
 } from './tokens';
 
@@ -47,10 +47,10 @@ export function cssVariables(): string {
   for (const [name, hex] of Object.entries(accent)) push(`--clss-accent-${name}`, hex);
   for (const [name, value] of Object.entries(molten)) push(`--clss-molten-${name}`, value);
   for (const [name, value] of Object.entries(feedback)) push(`--clss-feedback-${name}`, value);
-  push('--clss-vidya-molten', accent.molten);
-  push('--clss-vidya-highlight-primary', vidyaHighlight.primary);
-  push('--clss-vidya-highlight-secondary', vidyaHighlight.secondary);
-  push('--clss-vidya-highlight-tertiary', vidyaHighlight.tertiary);
+  push('--clss-wobo-molten', accent.molten);
+  push('--clss-wobo-highlight-primary', woboHighlight.primary);
+  push('--clss-wobo-highlight-secondary', woboHighlight.secondary);
+  push('--clss-wobo-highlight-tertiary', woboHighlight.tertiary);
 
   for (const [name, px] of Object.entries(radius)) push(`--clss-radius-${name}`, `${px}px`);
   push('--clss-frost-blur', frost.blur);

@@ -19,11 +19,11 @@
  *
  * The genotype math (validGenotype / canonical / punnettCross / phenotypeRatio) mirrors the gateway
  * gate plexus/bio.py exactly, so a scene the server would refuse is refused here too (client parity).
- * Registers a Vidya scene target every kind (she reads live state + drives it); reduced-motion + mute
+ * Registers a Wobo scene target every kind (she reads live state + drives it); reduced-motion + mute
  * aware; both themes via CSS vars + the passed hue; sentence-case copy.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -420,7 +420,7 @@ function DragLabel({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const reduced = useReducedMotion();
   const svgRef = useRef<SVGSVGElement>(null);
   const [placed, setPlaced] = useState<Record<string, true>>({});
@@ -631,7 +631,7 @@ function Punnett({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const a = spec.parentA;
   const b = spec.parentB;
   const geneUp = (a[0] as string).toUpperCase();
@@ -903,7 +903,7 @@ function FoodWeb({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const pos = useMemo(() => layoutNodes(spec.nodes), [spec.nodes]);
   const [removed, setRemoved] = useState<string | null>(null);
   const touchedRef = useRef(false);
@@ -1119,7 +1119,7 @@ function Taxonomy({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const [step, setStep] = useState(0); // current rank the learner is on
   const [shake, setShake] = useState(0);
   const touchedRef = useRef(false);

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="t">
+  <title id="t">Wobo</title>
+  <defs>
+    <radialGradient id="jelly" cx="32%" cy="28%" r="80%">
+      <stop offset="0" stop-color="#FFA24A"/>
+      <stop offset="0.42" stop-color="#FF5A1F"/>
+      <stop offset="1" stop-color="#C93A7A"/>
+    </radialGradient>
+  </defs>
+  <circle cx="256" cy="256" r="236" fill="url(#jelly)"/>
+  <ellipse cx="196" cy="232" rx="48" ry="55" fill="#FFFFFF"/>
+  <ellipse cx="316" cy="232" rx="48" ry="55" fill="#FFFFFF"/>
+  <circle cx="206" cy="242" r="24" fill="#1A1215"/>
+  <circle cx="326" cy="242" r="24" fill="#1A1215"/>
+  <circle cx="214" cy="232" r="7" fill="#FFFFFF"/>
+  <circle cx="334" cy="232" r="7" fill="#FFFFFF"/>
+  <path d="M218 330 Q256 358 294 330" fill="none" stroke="#1A1215" stroke-width="14" stroke-linecap="round"/>
+</svg>

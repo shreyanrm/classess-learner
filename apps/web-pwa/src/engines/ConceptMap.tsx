@@ -3,7 +3,7 @@
 /**
  * ConceptMap — a concept map (DESIGN.md §9): a web of relationships drawn from the real graph,
  * structural not decorative. Nodes are laid out by a deterministic seeded layout, each is tappable,
- * and each registers as a Vidya target so she can annotate ("this one connects back to…") on the
+ * and each registers as a Wobo target so she can annotate ("this one connects back to…") on the
  * exact node. Tapping a node lights it and its relationships; the edges name how ideas connect.
  *
  * Spec-driven: the composer emits { nodes, edges, seed?, root? }. Registers a map-level scene target
@@ -11,7 +11,7 @@
  * target each. Reduced-motion + mute aware; both themes; no new deps.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -177,7 +177,7 @@ export function ConceptMap({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const [selected, setSelected] = useState<string | null>(null);
   const [visited, setVisited] = useState<Set<string>>(() => new Set());
 

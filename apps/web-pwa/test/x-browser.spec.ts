@@ -5,7 +5,7 @@ import { seedOnboarded, watchConsole } from '../tests/helpers';
  * The cross-browser × responsive matrix. One walk covers every major surface — home, learn,
  * subject list, expedition, course entry, practice, progress, chat, you — plus a fresh
  * onboarding. Each stop asserts: no horizontal body scroll, key affordances visible (header,
- * back affordance, Vidya orb), and zero real console errors across the whole walk. Screenshots
+ * back affordance, Wobo orb), and zero real console errors across the whole walk. Screenshots
  * land in <repo>/xbrowser/<engine>/<width>-<theme>/<NN-route>.png for eyeball review.
  *
  * Engines come from x-browser.config.ts projects (chromium, webkit, firefox); widths and themes
@@ -50,7 +50,7 @@ async function checkCell(
   // let route transitions (framer-motion, ~220-400ms) land before measuring
   await page.waitForTimeout(600);
   if (opts.header) await expect(page.locator('header').first()).toBeVisible();
-  if (opts.orb) await expect(page.getByLabel('Talk to Vidya')).toBeVisible();
+  if (opts.orb) await expect(page.getByLabel('Talk to Wobo')).toBeVisible();
   const overflow = await page.evaluate(() => {
     const d = document.documentElement;
     return Math.max(d.scrollWidth - d.clientWidth, document.body.scrollWidth - d.clientWidth);
@@ -81,7 +81,7 @@ for (const { width, height } of SIZES) {
       await page.setViewportSize({ width, height });
       await page.goto('/');
 
-      // 1 — home: the two doors, the header identity cluster. Vidya IS the home, no docked orb.
+      // 1 — home: the two doors, the header identity cluster. Wobo IS the home, no docked orb.
       await expect(page.getByRole('button', { name: 'Learn', exact: true })).toBeVisible({
         timeout: 15_000,
       });

@@ -7,11 +7,11 @@
  * answer). Nothing is dumped at once — the learner taps to uncover the next pane, so the *method*
  * of reading a problem is what's taught, not just the answer.
  *
- * Registers as a Vidya scene target she can advance (applyTutorAction: { next } / { revealAll }).
+ * Registers as a Wobo scene target she can advance (applyTutorAction: { next } / { revealAll }).
  * Reduced-motion + mute aware; both themes; no new deps.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -137,7 +137,7 @@ export function WordProblemBreakdown({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const reduced = useReducedMotion();
   // revealed = number of panes uncovered (0..4). answer shows once solve is open.
   const [revealed, setRevealed] = useState(0);

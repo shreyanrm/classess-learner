@@ -4,11 +4,11 @@
  * Practice, reorganized (DESIGN.md §8, Fable's forge). One intention: sharpen what you already
  * hold. The page reads top-down as a workshop — what's fading first (FSRS due), the bosses you can
  * re-challenge, the sandboxes keyed to your own chapters, and then the forge, where you bind your
- * own workbook from what you've touched and keep it on a shelf. Vidya watches at code level
+ * own workbook from what you've touched and keep it on a shelf. Wobo watches at code level
  * throughout; the copy never guilts, memory fades on a real curve.
  */
 
-import { useVidyaBus } from '@classess/vidya';
+import { useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type ReactNode, useEffect, useState } from 'react';
 import { chaptersBySubject, subjects, topicById } from '../data/catalog';
@@ -276,7 +276,7 @@ function ShelfCard({ w, onRun }: { w: ForgedWorkbook; onRun: () => void }) {
 
 export function Practice() {
   const router = useRouter();
-  const { publishPage } = useVidyaBus();
+  const { publishPage } = useWoboBus();
   const { completed } = useProgress();
   const forged = useForged();
   const [view, setView] = useState<'home' | 'builder'>('home');
@@ -440,7 +440,7 @@ export function Practice() {
             <motion.section variants={rise}>
               <SectionHead
                 title="Sandboxes"
-                line="an open canvas on your own chapters — no task, Vidya watching"
+                line="an open canvas on your own chapters — no task, Wobo watching"
               />
               <Rail>
                 {sandboxChapters.map((s) => (

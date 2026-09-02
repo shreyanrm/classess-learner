@@ -10,18 +10,18 @@
  * V→0; an n-slider for a sampling statistic. All spec-driven: the composer emits
  * { model(law), param, range, breakpoint, revelation } and this shell renders and drives it.
  *
- * Registers as a Vidya scene target: she reads the slider + output + broken state (getSceneState),
+ * Registers as a Wobo scene target: she reads the slider + output + broken state (getSceneState),
  * and can DRIVE it to demonstrate the divergence herself (applyTutorAction). Output arithmetic is
  * evaluated by SimRunner's safe parser — never eval. Reduced-motion + mute aware; both themes.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type CSSProperties, useEffect, useMemo, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
 import { CardBody, cardTitle, lead, Stage, whisper } from '../screens/course/shared';
 import { sfx } from '../ui/sound';
-import { useVidyaChat } from '../vidya/chat';
+import { useWoboChat } from '../wobo/chat';
 import { evaluateExpr, formatSimNumber } from './SimRunner';
 
 // --- The spec ------------------------------------------------------------------------------------
@@ -127,8 +127,8 @@ export function PerturbationSandbox({
   onDone: () => void;
 }) {
   const reduced = useReducedMotion();
-  const bus = useVidyaBus();
-  const { setMood } = useVidyaChat();
+  const bus = useWoboBus();
+  const { setMood } = useWoboChat();
   const [value, setValue] = useState(spec.param.from);
   const [broke, setBroke] = useState(false);
 

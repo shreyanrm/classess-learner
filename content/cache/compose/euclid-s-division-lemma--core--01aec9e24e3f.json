@@ -1,370 +1,344 @@
 {
- "concept": "Euclid's division lemma",
- "modality": "compose",
- "difficulty": "core",
- "verified": true,
- "seeded": false,
- "provenance": {
-  "engine": "engine.compose",
-  "model": "anthropic/claude-opus-4-8",
-  "prompt_version": "plexus-v3"
- },
- "artifact": {
-  "topic": "Euclid's division lemma",
+  "concept": "Euclid's division lemma",
+  "modality": "compose",
   "difficulty": "core",
-  "cards": [
-   {
-    "id": "c1",
-    "kind": "diagram",
-    "title": "Sharing sweets",
-    "idea": "You have 17 sweets to share equally among 5 friends. Each gets a whole number; a few are left over.",
-    "interaction": {
-     "kind": "tap",
-     "prompt": "Tap to hand out the sweets one round at a time"
-    },
-    "reveal": "Each friend gets 3 sweets, and 2 are left over. You cannot split them further as whole sweets.",
-    "discovery": {
-     "id": "d1",
-     "title": "17 into 5 groups",
-     "stages": [
+  "verified": true,
+  "seeded": false,
+  "provenance": {
+    "engine": "engine.compose",
+    "model": "anthropic/claude-opus-4-8",
+    "prompt_version": "plexus-v3"
+  },
+  "artifact": {
+    "topic": "Euclid's division lemma",
+    "difficulty": "core",
+    "cards": [
       {
-       "visual": {
-        "marks": [
-         {
-          "id": "m1",
-          "shape": "text",
-          "x": 50.0,
-          "y": 10.0,
-          "tone": "ink",
-          "text": "17 sweets, 5 friends"
-         },
-         {
-          "id": "g1",
-          "shape": "circle",
-          "x": 20.0,
-          "y": 35.0,
-          "tone": "muted",
-          "r": 6.0
-         },
-         {
-          "id": "g2",
-          "shape": "circle",
-          "x": 35.0,
-          "y": 35.0,
-          "tone": "muted",
-          "r": 6.0
-         },
-         {
-          "id": "g3",
-          "shape": "circle",
-          "x": 50.0,
-          "y": 35.0,
-          "tone": "muted",
-          "r": 6.0
-         },
-         {
-          "id": "g4",
-          "shape": "circle",
-          "x": 65.0,
-          "y": 35.0,
-          "tone": "muted",
-          "r": 6.0
-         },
-         {
-          "id": "g5",
-          "shape": "circle",
-          "x": 80.0,
-          "y": 35.0,
-          "tone": "muted",
-          "r": 6.0
-         },
-         {
-          "id": "r",
-          "shape": "text",
-          "x": 50.0,
-          "y": 55.0,
-          "tone": "hue",
-          "text": "2 left over"
-         }
-        ]
-       },
-       "interaction": {
-        "kind": "tap",
-        "prompt": "Tap the groups to fill them",
-        "targets": [
-         "g1",
-         "g2",
-         "g3",
-         "g4",
-         "g5"
+        "id": "c1",
+        "kind": "diagram",
+        "title": "Sharing sweets",
+        "idea": "You have 17 sweets to share equally among 5 friends. Each gets a whole number; a few are left over.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap to hand out the sweets one round at a time"
+        },
+        "reveal": "Each friend gets 3 sweets, and 2 are left over. You cannot split them further as whole sweets.",
+        "discovery": {
+          "id": "d1",
+          "title": "17 into 5 groups",
+          "stages": [
+            {
+              "visual": {
+                "marks": [
+                  {
+                    "id": "m1",
+                    "shape": "text",
+                    "x": 50.0,
+                    "y": 10.0,
+                    "tone": "ink",
+                    "text": "17 sweets, 5 friends"
+                  },
+                  {
+                    "id": "g1",
+                    "shape": "circle",
+                    "x": 20.0,
+                    "y": 35.0,
+                    "tone": "muted",
+                    "r": 6.0
+                  },
+                  {
+                    "id": "g2",
+                    "shape": "circle",
+                    "x": 35.0,
+                    "y": 35.0,
+                    "tone": "muted",
+                    "r": 6.0
+                  },
+                  {
+                    "id": "g3",
+                    "shape": "circle",
+                    "x": 50.0,
+                    "y": 35.0,
+                    "tone": "muted",
+                    "r": 6.0
+                  },
+                  {
+                    "id": "g4",
+                    "shape": "circle",
+                    "x": 65.0,
+                    "y": 35.0,
+                    "tone": "muted",
+                    "r": 6.0
+                  },
+                  {
+                    "id": "g5",
+                    "shape": "circle",
+                    "x": 80.0,
+                    "y": 35.0,
+                    "tone": "muted",
+                    "r": 6.0
+                  },
+                  {
+                    "id": "r",
+                    "shape": "text",
+                    "x": 50.0,
+                    "y": 55.0,
+                    "tone": "hue",
+                    "text": "2 left over"
+                  }
+                ]
+              },
+              "interaction": {
+                "kind": "tap",
+                "prompt": "Tap the groups to fill them",
+                "targets": ["g1", "g2", "g3", "g4", "g5"],
+                "need": 5
+              },
+              "reveal": "Each of the 5 friends gets 3 sweets. That uses 15. The remaining 2 cannot be shared as whole sweets.",
+              "caption": "So 17 splits as five threes plus two."
+            }
+          ]
+        }
+      },
+      {
+        "id": "c2",
+        "kind": "sim",
+        "title": "The leftover is always small",
+        "idea": "Divide any number by 5. Watch the remainder as the number climbs. It never reaches 5.",
+        "interaction": {
+          "kind": "slide",
+          "prompt": "Slide the number being divided by 5"
+        },
+        "reveal": "The remainder cycles 0,1,2,3,4 then back to 0. It always stays below the divisor 5.",
+        "perturbation": {
+          "id": "p1",
+          "title": "Remainder on dividing by 5",
+          "law": "r = a mod 5",
+          "param": {
+            "id": "a",
+            "label": "number",
+            "min": 0,
+            "max": 30,
+            "from": 17,
+            "unit": ""
+          },
+          "output": {
+            "label": "remainder",
+            "expr": "a - 5 * (a - (a % 5)) / 5 * 0 + a % 5 - a % 5 + a % 5",
+            "unit": ""
+          },
+          "breakpoint": {
+            "at": 5,
+            "approach": "below",
+            "assumption": "maybe a big number gives a big remainder",
+            "revelation": "the remainder can never equal or exceed the divisor, because one more group would fit"
+          }
+        }
+      },
+      {
+        "id": "c3",
+        "kind": "diagram",
+        "title": "Quotient and remainder",
+        "idea": "Splitting a by b gives two whole numbers: q groups of b, plus a remainder r left over.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap each part of the split to name it"
+        },
+        "reveal": "a is the dividend, b the divisor, q the quotient, r the remainder. Together: a = b times q plus r.",
+        "discovery": {
+          "id": "d3",
+          "title": "Naming the pieces",
+          "stages": [
+            {
+              "visual": {
+                "marks": [
+                  {
+                    "id": "a",
+                    "shape": "text",
+                    "x": 25.0,
+                    "y": 15.0,
+                    "tone": "ink",
+                    "text": "a = 17"
+                  },
+                  {
+                    "id": "b",
+                    "shape": "text",
+                    "x": 25.0,
+                    "y": 30.0,
+                    "tone": "ink",
+                    "text": "b = 5"
+                  },
+                  {
+                    "id": "q",
+                    "shape": "text",
+                    "x": 25.0,
+                    "y": 45.0,
+                    "tone": "ink",
+                    "text": "q = 3"
+                  },
+                  {
+                    "id": "eq",
+                    "shape": "text",
+                    "x": 65.0,
+                    "y": 30.0,
+                    "tone": "hue",
+                    "text": "17 = 5x3 + 2"
+                  }
+                ]
+              },
+              "interaction": {
+                "kind": "tap",
+                "prompt": "Tap the equation to check the pieces fit",
+                "targets": ["eq"],
+                "need": 1
+              },
+              "reveal": "a = b times q + r means 17 = 5x3 + 2. The remainder r = 2 is smaller than the divisor b = 5.",
+              "caption": "Every division hides this one tidy equation."
+            }
+          ]
+        }
+      },
+      {
+        "id": "c4",
+        "kind": "text",
+        "title": "Euclid's division lemma",
+        "idea": "For any two positive integers a and b, there exist unique whole numbers q and r such that a = bq + r, where 0 is less than or equal to r, which is less than b.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap to reveal the exact condition on r"
+        },
+        "reveal": "The remainder r is squeezed: at least 0, always less than b. This pair q and r is unique for each a and b.",
+        "derivation": {
+          "id": "dv1",
+          "formula": "a = bq + r",
+          "label": "the division lemma",
+          "steps": [
+            {
+              "expr": "0 <= r < b",
+              "note": "the remainder is what is left after taking out as many whole b's as possible, so it cannot reach b"
+            },
+            {
+              "expr": "q = floor(a / b)",
+              "note": "q counts how many full groups of b fit inside a"
+            }
+          ]
+        }
+      },
+      {
+        "id": "c5",
+        "kind": "diagram",
+        "title": "Using the lemma on 258 and 13",
+        "idea": "Read a division problem the lemma way: find q and r so that 258 = 13q + r.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Work through the given, find, and steps"
+        },
+        "reveal": "258 = 13 x 19 + 11, with remainder 11 less than 13. The lemma is just careful long division.",
+        "wordProblem": {
+          "id": "wp1",
+          "title": "258 divided by 13",
+          "problem": "Apply Euclid's division lemma to a = 258 and b = 13. Find q and r.",
+          "given": ["a = 258", "b = 13"],
+          "find": "whole numbers q and r with 258 = 13q + r and 0 <= r < 13",
+          "plan": [
+            "divide 258 by 13 to get the quotient q",
+            "subtract 13q from 258 to get the remainder r",
+            "check that r is less than 13"
+          ],
+          "solve": [
+            {
+              "expr": "q = 19",
+              "note": "13 x 19 = 247, and 13 x 20 = 260 is too big"
+            },
+            {
+              "expr": "r = 258 - 247 = 11",
+              "note": "the leftover after 19 full groups of 13"
+            },
+            {
+              "expr": "0 <= 11 < 13",
+              "note": "r is a valid remainder, so the pair is correct"
+            }
+          ],
+          "answer": "258 = 13 x 19 + 11, so q = 19 and r = 11"
+        }
+      },
+      {
+        "id": "c6",
+        "kind": "text",
+        "title": "Why it matters",
+        "idea": "The lemma is the seed of the Euclid algorithm for HCF and it proves facts about which remainders any integer can leave.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap a chapter to listen"
+        },
+        "reveal": "Repeatedly applying a = bq + r to the divisor and remainder marches down to the highest common factor.",
+        "podcast": {
+          "id": "pod1",
+          "title": "Euclid's division lemma, revised",
+          "chapters": [
+            {
+              "id": "ch1",
+              "title": "The one equation",
+              "script": "Whenever you divide one whole number by another, something tidy happens. Take a, divide by b. You get a quotient q, the number of full groups, and a remainder r, what is left over. Euclid's division lemma says this can always be written as a equals b times q plus r, and the remainder r sits between zero and b, never reaching b. If it did reach b, one more full group would fit. That single equation is the whole idea."
+            },
+            {
+              "id": "ch2",
+              "title": "From lemma to HCF",
+              "script": "Here is where it earns its keep. To find the highest common factor of two numbers, apply the lemma, then apply it again to the old divisor and the new remainder, and keep going. Each remainder is smaller than the last, so you must reach zero. The last non-zero remainder is the HCF. That repeated use of a equals b q plus r is called Euclid's division algorithm. One quiet equation, doing serious work."
+            }
+          ]
+        }
+      }
+    ],
+    "workbook": [
+      {
+        "id": "w1",
+        "type": "mcq",
+        "prompt": "In the lemma a = bq + r, what must always be true of the remainder r?",
+        "options": ["0 <= r < b", "0 < r <= b", "r can be any whole number", "r = b always"],
+        "answer": "0 <= r < b"
+      },
+      {
+        "id": "w2",
+        "type": "fill",
+        "prompt": "When 47 is divided by 6, the quotient is 7 and the remainder is ________.",
+        "answer": "5"
+      },
+      {
+        "id": "w3",
+        "type": "mcq",
+        "prompt": "Which statement writes 90 = 7q + r correctly by the lemma?",
+        "options": ["90 = 7 x 12 + 6", "90 = 7 x 13 + 1", "90 = 7 x 11 + 13", "90 = 6 x 15 + 0"],
+        "answer": "90 = 7 x 12 + 6"
+      }
+    ],
+    "boss": [
+      {
+        "id": "b1",
+        "type": "mcq",
+        "prompt": "By the lemma, dividing any positive integer by 4 can leave which remainders only?",
+        "options": ["0, 1, 2 or 3", "1, 2, 3 or 4", "0, 1, 2, 3 or 4", "only 0 or 4"],
+        "answer": "0, 1, 2 or 3"
+      },
+      {
+        "id": "b2",
+        "type": "fill",
+        "prompt": "Apply the lemma to a = 1234 and b = 25. The remainder r equals ________.",
+        "answer": "9"
+      },
+      {
+        "id": "b3",
+        "type": "mcq",
+        "prompt": "Why is the pair (q, r) in a = bq + r said to be unique?",
+        "options": [
+          "Only one q and r can satisfy both a = bq + r and 0 <= r < b",
+          "Because a is always prime",
+          "Because r can be chosen freely",
+          "Because b is always larger than a"
         ],
-        "need": 5
-       },
-       "reveal": "Each of the 5 friends gets 3 sweets. That uses 15. The remaining 2 cannot be shared as whole sweets.",
-       "caption": "So 17 splits as five threes plus two."
+        "answer": "Only one q and r can satisfy both a = bq + r and 0 <= r < b"
       }
-     ]
-    }
-   },
-   {
-    "id": "c2",
-    "kind": "sim",
-    "title": "The leftover is always small",
-    "idea": "Divide any number by 5. Watch the remainder as the number climbs. It never reaches 5.",
-    "interaction": {
-     "kind": "slide",
-     "prompt": "Slide the number being divided by 5"
-    },
-    "reveal": "The remainder cycles 0,1,2,3,4 then back to 0. It always stays below the divisor 5.",
-    "perturbation": {
-     "id": "p1",
-     "title": "Remainder on dividing by 5",
-     "law": "r = a mod 5",
-     "param": {
-      "id": "a",
-      "label": "number",
-      "min": 0,
-      "max": 30,
-      "from": 17,
-      "unit": ""
-     },
-     "output": {
-      "label": "remainder",
-      "expr": "a - 5 * (a - (a % 5)) / 5 * 0 + a % 5 - a % 5 + a % 5",
-      "unit": ""
-     },
-     "breakpoint": {
-      "at": 5,
-      "approach": "below",
-      "assumption": "maybe a big number gives a big remainder",
-      "revelation": "the remainder can never equal or exceed the divisor, because one more group would fit"
-     }
-    }
-   },
-   {
-    "id": "c3",
-    "kind": "diagram",
-    "title": "Quotient and remainder",
-    "idea": "Splitting a by b gives two whole numbers: q groups of b, plus a remainder r left over.",
-    "interaction": {
-     "kind": "tap",
-     "prompt": "Tap each part of the split to name it"
-    },
-    "reveal": "a is the dividend, b the divisor, q the quotient, r the remainder. Together: a = b times q plus r.",
-    "discovery": {
-     "id": "d3",
-     "title": "Naming the pieces",
-     "stages": [
-      {
-       "visual": {
-        "marks": [
-         {
-          "id": "a",
-          "shape": "text",
-          "x": 25.0,
-          "y": 15.0,
-          "tone": "ink",
-          "text": "a = 17"
-         },
-         {
-          "id": "b",
-          "shape": "text",
-          "x": 25.0,
-          "y": 30.0,
-          "tone": "ink",
-          "text": "b = 5"
-         },
-         {
-          "id": "q",
-          "shape": "text",
-          "x": 25.0,
-          "y": 45.0,
-          "tone": "ink",
-          "text": "q = 3"
-         },
-         {
-          "id": "eq",
-          "shape": "text",
-          "x": 65.0,
-          "y": 30.0,
-          "tone": "hue",
-          "text": "17 = 5x3 + 2"
-         }
-        ]
-       },
-       "interaction": {
-        "kind": "tap",
-        "prompt": "Tap the equation to check the pieces fit",
-        "targets": [
-         "eq"
-        ],
-        "need": 1
-       },
-       "reveal": "a = b times q + r means 17 = 5x3 + 2. The remainder r = 2 is smaller than the divisor b = 5.",
-       "caption": "Every division hides this one tidy equation."
-      }
-     ]
-    }
-   },
-   {
-    "id": "c4",
-    "kind": "text",
-    "title": "Euclid's division lemma",
-    "idea": "For any two positive integers a and b, there exist unique whole numbers q and r such that a = bq + r, where 0 is less than or equal to r, which is less than b.",
-    "interaction": {
-     "kind": "tap",
-     "prompt": "Tap to reveal the exact condition on r"
-    },
-    "reveal": "The remainder r is squeezed: at least 0, always less than b. This pair q and r is unique for each a and b.",
-    "derivation": {
-     "id": "dv1",
-     "formula": "a = bq + r",
-     "label": "the division lemma",
-     "steps": [
-      {
-       "expr": "0 <= r < b",
-       "note": "the remainder is what is left after taking out as many whole b's as possible, so it cannot reach b"
-      },
-      {
-       "expr": "q = floor(a / b)",
-       "note": "q counts how many full groups of b fit inside a"
-      }
-     ]
-    }
-   },
-   {
-    "id": "c5",
-    "kind": "diagram",
-    "title": "Using the lemma on 258 and 13",
-    "idea": "Read a division problem the lemma way: find q and r so that 258 = 13q + r.",
-    "interaction": {
-     "kind": "tap",
-     "prompt": "Work through the given, find, and steps"
-    },
-    "reveal": "258 = 13 x 19 + 11, with remainder 11 less than 13. The lemma is just careful long division.",
-    "wordProblem": {
-     "id": "wp1",
-     "title": "258 divided by 13",
-     "problem": "Apply Euclid's division lemma to a = 258 and b = 13. Find q and r.",
-     "given": [
-      "a = 258",
-      "b = 13"
-     ],
-     "find": "whole numbers q and r with 258 = 13q + r and 0 <= r < 13",
-     "plan": [
-      "divide 258 by 13 to get the quotient q",
-      "subtract 13q from 258 to get the remainder r",
-      "check that r is less than 13"
-     ],
-     "solve": [
-      {
-       "expr": "q = 19",
-       "note": "13 x 19 = 247, and 13 x 20 = 260 is too big"
-      },
-      {
-       "expr": "r = 258 - 247 = 11",
-       "note": "the leftover after 19 full groups of 13"
-      },
-      {
-       "expr": "0 <= 11 < 13",
-       "note": "r is a valid remainder, so the pair is correct"
-      }
-     ],
-     "answer": "258 = 13 x 19 + 11, so q = 19 and r = 11"
-    }
-   },
-   {
-    "id": "c6",
-    "kind": "text",
-    "title": "Why it matters",
-    "idea": "The lemma is the seed of the Euclid algorithm for HCF and it proves facts about which remainders any integer can leave.",
-    "interaction": {
-     "kind": "tap",
-     "prompt": "Tap a chapter to listen"
-    },
-    "reveal": "Repeatedly applying a = bq + r to the divisor and remainder marches down to the highest common factor.",
-    "podcast": {
-     "id": "pod1",
-     "title": "Euclid's division lemma, revised",
-     "chapters": [
-      {
-       "id": "ch1",
-       "title": "The one equation",
-       "script": "Whenever you divide one whole number by another, something tidy happens. Take a, divide by b. You get a quotient q, the number of full groups, and a remainder r, what is left over. Euclid's division lemma says this can always be written as a equals b times q plus r, and the remainder r sits between zero and b, never reaching b. If it did reach b, one more full group would fit. That single equation is the whole idea."
-      },
-      {
-       "id": "ch2",
-       "title": "From lemma to HCF",
-       "script": "Here is where it earns its keep. To find the highest common factor of two numbers, apply the lemma, then apply it again to the old divisor and the new remainder, and keep going. Each remainder is smaller than the last, so you must reach zero. The last non-zero remainder is the HCF. That repeated use of a equals b q plus r is called Euclid's division algorithm. One quiet equation, doing serious work."
-      }
-     ]
-    }
-   }
-  ],
-  "workbook": [
-   {
-    "id": "w1",
-    "type": "mcq",
-    "prompt": "In the lemma a = bq + r, what must always be true of the remainder r?",
-    "options": [
-     "0 <= r < b",
-     "0 < r <= b",
-     "r can be any whole number",
-     "r = b always"
-    ],
-    "answer": "0 <= r < b"
-   },
-   {
-    "id": "w2",
-    "type": "fill",
-    "prompt": "When 47 is divided by 6, the quotient is 7 and the remainder is ________.",
-    "answer": "5"
-   },
-   {
-    "id": "w3",
-    "type": "mcq",
-    "prompt": "Which statement writes 90 = 7q + r correctly by the lemma?",
-    "options": [
-     "90 = 7 x 12 + 6",
-     "90 = 7 x 13 + 1",
-     "90 = 7 x 11 + 13",
-     "90 = 6 x 15 + 0"
-    ],
-    "answer": "90 = 7 x 12 + 6"
-   }
-  ],
-  "boss": [
-   {
-    "id": "b1",
-    "type": "mcq",
-    "prompt": "By the lemma, dividing any positive integer by 4 can leave which remainders only?",
-    "options": [
-     "0, 1, 2 or 3",
-     "1, 2, 3 or 4",
-     "0, 1, 2, 3 or 4",
-     "only 0 or 4"
-    ],
-    "answer": "0, 1, 2 or 3"
-   },
-   {
-    "id": "b2",
-    "type": "fill",
-    "prompt": "Apply the lemma to a = 1234 and b = 25. The remainder r equals ________.",
-    "answer": "9"
-   },
-   {
-    "id": "b3",
-    "type": "mcq",
-    "prompt": "Why is the pair (q, r) in a = bq + r said to be unique?",
-    "options": [
-     "Only one q and r can satisfy both a = bq + r and 0 <= r < b",
-     "Because a is always prime",
-     "Because r can be chosen freely",
-     "Because b is always larger than a"
-    ],
-    "answer": "Only one q and r can satisfy both a = bq + r and 0 <= r < b"
-   }
-  ]
- },
- "createdAt": "2026-07-07T10:33:54+00:00"
+    ]
+  },
+  "createdAt": "2026-07-07T10:33:54+00:00"
 }

@@ -17,12 +17,12 @@
  * and constant-correct before serving. A wrong constant ships a wrong mental model, so nothing here
  * is "merely plausible".
  *
- * Every kind registers a Vidya scene target (useRegisterTarget): she reads the live state at code
+ * Every kind registers a Wobo scene target (useRegisterTarget): she reads the live state at code
  * level (getSceneState) and can DRIVE it (applyTutorAction) to demonstrate. Mute-aware, both themes,
  * reduced-motion aware.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { useReducedMotion } from 'framer-motion';
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -290,7 +290,7 @@ function ProjectileScene({
   onDone: () => void;
 }) {
   const reduced = useReducedMotion();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const params = spec.params ?? [];
   const g = spec.gravity ?? 9.8;
   const angleP = pickAngleParam(params);
@@ -517,7 +517,7 @@ function FreeBodyScene({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const svgRef = useRef<SVGSVGElement>(null);
   const forces = spec.forces ?? [];
   const unit = forces[0]?.unit ?? 'N';
@@ -747,7 +747,7 @@ function WaveScene({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const comps = spec.components ?? [];
   const [amps, setAmps] = useState<Record<string, number>>(() =>
     Object.fromEntries(comps.map((c) => [c.id, c.amp])),

@@ -3,24 +3,24 @@
 /**
  * PodcastPlayer — an audio lecture for learning and revision (DESIGN.md §9, "podcasts"). The
  * composer emits a chaptered script; the client synthesizes each chapter through the same TTS seam
- * Vidya speaks with (the gateway /v1/voice/tts endpoint + base64ToFloat32), so no audio ships in the
+ * Wobo speaks with (the gateway /v1/voice/tts endpoint + base64ToFloat32), so no audio ships in the
  * artifact. A chaptered scrubber, playback speed, and a minimize toggle let it keep playing while
  * the learner browses the rest of the card. Keyless / offline / muted → it degrades to a transcript
  * reader that auto-advances on a reading clock; the words are always there, the voice is the grace.
  *
- * Registers as a Vidya scene target (she can play, pause, and jump chapters). No new deps.
+ * Registers as a Wobo scene target (she can play, pause, and jump chapters). No new deps.
  * ponytail: minimize collapses within the card; a truly floating cross-page dock is the upgrade path.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
 import { CardBody, cardTitle, lead, rgba, whisper } from '../screens/course/shared';
 import { isOffline } from '../shell/resilience';
 import { hueForTopic } from '../ui/hues';
-import { isMuted } from '../vidya/speech';
-import { base64ToFloat32 } from '../vidya/voice';
+import { isMuted } from '../wobo/speech';
+import { base64ToFloat32 } from '../wobo/voice';
 
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
 
@@ -83,7 +83,7 @@ export function PodcastPlayer({
   setBar?: (b: BarState | null) => void;
   onDone?: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const audioMode = Boolean(GATEWAY_URL) && !isOffline() && !isMuted();
 
   const [chapter, setChapter] = useState(0);

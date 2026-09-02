@@ -88,7 +88,10 @@ async function main(): Promise<void> {
   console.log('[render] ensuring headless browser…');
   await ensureBrowser();
   console.log('[render] bundling composition…');
-  const serveUrl = await bundle({ entryPoint: join(PKG_DIR, 'src', 'Root.tsx'), publicDir: PUBLIC_DIR });
+  const serveUrl = await bundle({
+    entryPoint: join(PKG_DIR, 'src', 'Root.tsx'),
+    publicDir: PUBLIC_DIR,
+  });
   const composition = await selectComposition({ serveUrl, id: 'Explainer', inputProps });
   console.log(`[render] rendering ${composition.durationInFrames} frames → ${cacheOut}`);
 
@@ -98,7 +101,8 @@ async function main(): Promise<void> {
     codec: 'h264',
     outputLocation: cacheOut,
     inputProps,
-    onProgress: ({ progress }) => process.stdout.write(`\r[render] ${Math.round(progress * 100)}%   `),
+    onProgress: ({ progress }) =>
+      process.stdout.write(`\r[render] ${Math.round(progress * 100)}%   `),
   });
   process.stdout.write('\n');
 

@@ -1,9 +1,9 @@
-"""Vidya's voice — Gemini Live through the gateway, the key never reaching the client.
+"""Wobo's voice — Gemini Live through the gateway, the key never reaching the client.
 
 ``GET /v1/voice/session`` tells the client which voice mode it may use. With a
 ``GEMINI_API_KEY`` in the environment the answer is ``relay`` plus a short-lived,
 single-use token: the browser connects to ``/v1/voice/relay?token=...`` and the gateway
-proxies frames bidirectionally to Gemini Live, sending the setup (model + Vidya's persona
+proxies frames bidirectionally to Gemini Live, sending the setup (model + Wobo's persona
 as the system instruction) itself so neither the key nor the persona ever leave the
 server. Without a key: ``unavailable``.
 
@@ -26,13 +26,13 @@ from typing import Any
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 
-from classess_gateway.vidya import VIDYA_PERSONA
+from classess_gateway.wobo import WOBO_PERSONA
 
 # The typed-turn streaming voice reads her EXACT line aloud (verified verbatim against Gemini Live),
 # so playback starts at the first ~200ms chunk instead of waiting on the whole clip — ~4s faster to
 # first sound than the buffered /v1/voice/tts. This instruction keeps it reading, never replying.
 _READ_VERBATIM = (
-    "You are Vidya's text-to-speech voice. Read the user's message aloud EXACTLY as written — word "
+    "You are Wobo's text-to-speech voice. Read the user's message aloud EXACTLY as written — word "
     "for word, verbatim, in a warm, natural voice. Do NOT answer it, add to it, or rephrase it. "
     "Speak only the given text."
 )
@@ -83,7 +83,7 @@ def _setup_message() -> dict[str, Any]:
         "setup": {
             "model": f"models/{VOICE_MODEL}",
             "generationConfig": {"responseModalities": ["AUDIO"]},
-            "systemInstruction": {"parts": [{"text": VIDYA_PERSONA}]},
+            "systemInstruction": {"parts": [{"text": WOBO_PERSONA}]},
             # Transcribe both sides so a spoken turn can land in the one chat archive
             # (same thread law) — the browser reads these off serverContent, never the audio.
             "inputAudioTranscription": {},

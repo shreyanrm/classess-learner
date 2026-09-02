@@ -11,12 +11,12 @@ Skeleton (tonal shimmer), ProgressBar (spring-bars), Badge.
 - **ConceptTile** — the monochrome→ignite unit. States: locked / not-started / in-progress / mastered (ignited to accent).
 - **MasteryBand** — band as label + shape + (earned) color; never color alone. Bands: not-started/emerging/developing/secure/independent.
 - **OpenerCard** — the active "pose" of pose→struggle→reveal. Holds an interactive prompt (JSXGraph/Mafs/custom), submit, attempt history.
-- **RevealPanel** — the fading reveal (Vidya annotation / nugget video / reading), only after a struggle.
-- **CanvasSurface** — the shared working canvas Vidya perceives (expression input / strokes); emits canvas events.
+- **RevealPanel** — the fading reveal (Wobo annotation / nugget video / reading), only after a struggle.
+- **CanvasSurface** — the shared working canvas Wobo perceives (expression input / strokes); emits canvas events.
 - **PracticeItem** — FSRS-scheduled retrieval item; independence-aware (records aided vs unaided).
 - **ConstellationMap** — the prerequisite-graph view; nodes monochrome until mastered, edges carry constellation-ignite.
 - **MeterSheet** — the daily behavioural budget surface (frost sheet); shows concepts-mastered budget, never a raw clock.
-- **VidyaPresence** + **VidyaPanel** — from `/packages/vidya`; the presence (floating jelly + flame) and the frosted panel.
+- **WoboPresence** + **WoboPanel** — from `/packages/wobo`; the presence (floating jelly + flame) and the frosted panel.
 - **ParentDigestCard** — pride-first weekly artifact (used in the parent/WhatsApp surface generation).
 
 ## States to never skip

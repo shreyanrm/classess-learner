@@ -1,7 +1,7 @@
 /**
  * Fuzzy destination resolution — the one place free text becomes a Route.
  *
- * She navigates on command (VIDYA.md §10): "take me to practice", "show my progress", "open
+ * She navigates on command (WOBO.md §10): "take me to practice", "show my progress", "open
  * chemistry" all resolve to a real surface here, and App.ask navigates directly — no approval card,
  * a spoken + inked confirmation, and never silence on a clear miss. This runs on the raw text, so
  * it works identically from the chat page and the docked drawer (both call the one App-level ask),
@@ -12,7 +12,7 @@
  */
 
 import { subjectById, topicById } from '../data/catalog';
-import { findTopic } from '../vidya/capabilities';
+import { findTopic } from '../wobo/capabilities';
 import type { Route } from './router';
 
 /** She resolved a place and will go there; or the intent was clearly navigational but unknown. */
@@ -122,7 +122,7 @@ function subjectName(id: string): string {
   return subjectById(id)?.name ?? (id === 'science' ? 'Science' : id);
 }
 
-/** Her one-line confirmation as she goes — sentence case, no exclamation (VIDYA.md §1). */
+/** Her one-line confirmation as she goes — sentence case, no exclamation (WOBO.md §1). */
 function destSay(route: Route): string {
   switch (route.name) {
     case 'home':

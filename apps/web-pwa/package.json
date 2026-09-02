@@ -18,7 +18,7 @@
     "@classess/motion": "workspace:*",
     "@classess/sdk": "workspace:*",
     "@classess/ui": "workspace:*",
-    "@classess/vidya": "workspace:*",
+    "@classess/wobo": "workspace:*",
     "@codemirror/lang-python": "^6.2.1",
     "@codemirror/state": "^6.7.1",
     "@codemirror/view": "^6.43.6",

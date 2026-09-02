@@ -7,7 +7,7 @@
 
 ## State at handoff
 
-**LIVE at https://learner.classess.com** (launched today): waves 1–16 — Vidya presence (sees
+**LIVE at https://learner.classess.com** (launched today): waves 1–16 — Wobo presence (sees
 screens code-level, dossier, freehand drawing ink synced to voice via The Tutor's Hand,
 navigation, push-to-talk, guardianship + wellbeing tiers), gamification (victory theatre,
 combos, daily quests, XP rings, Ceremony trophies), the Expedition world (inhabited, cast
@@ -18,7 +18,7 @@ gate, content universe (discovery shell + 10 interactive types), video pipeline 
 promotion, MotionPlayer prefers rendered MP4; Manim rung armed, renderer future), Google
 sign-in live (bundle-verified), Singapore gateway ~1.3s turns.
 **Model order (owner verdict, live-verified):** content engines primary = `frontier.reason`
-(Opus), quality-backup = `openai.frontier` (GPT-5.5), best-of promotes; `vidya.turn` = haiku.
+(Opus), quality-backup = `openai.frontier` (GPT-5.5), best-of promotes; `wobo.turn` = haiku.
 Gateway 174 tests green at commit `998d599`; last pushed commit `0b7c8bb`+.
 
 ## CRITICAL: the mid-session lockout

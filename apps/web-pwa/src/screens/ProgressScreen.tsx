@@ -8,7 +8,7 @@
  */
 
 import { ATOM_NODE_IDS, type OntologyNode } from '@classess/sdk';
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from '../shell/router';
@@ -26,7 +26,7 @@ import {
   Reveal,
   useParallax,
 } from '../ui/kit';
-import { useVidyaChat } from '../vidya/chat';
+import { useWoboChat } from '../wobo/chat';
 import { Whisper } from './Learn';
 import { Constellation } from './progress/Constellation';
 import { ProgressReport } from './progress/Report';
@@ -57,8 +57,8 @@ export function ProgressScreen() {
   const router = useRouter();
   const sdk = useSdk();
   const { completed, streakDays } = useProgress();
-  const { ask, busy } = useVidyaChat();
-  const { publishPage, publishCurriculum } = useVidyaBus();
+  const { ask, busy } = useWoboChat();
+  const { publishPage, publishCurriculum } = useWoboBus();
   const { isDesktop } = useViewport();
   const reduced = useReducedMotion();
 
@@ -323,7 +323,7 @@ export function ProgressScreen() {
                 minHeight: 18,
               }}
             >
-              {busy ? 'Vidya is thinking…' : ''}
+              {busy ? 'Wobo is thinking…' : ''}
             </div>
             <div className="twin-ask-row" style={{ ...FROST, display: 'flex' }}>
               <input

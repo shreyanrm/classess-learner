@@ -10,13 +10,13 @@
  *
  * Every figure sits on the same ground line with a soft contact shadow, blinks every
  * few seconds, and breathes on a slow 3–4s loop. Motion always halts for
- * prefers-reduced-motion. Vidya is not in this file — the cast are her world, never her.
+ * prefers-reduced-motion. Wobo is not in this file — the cast are her world, never her.
  */
 
 import { motion, useReducedMotion } from 'framer-motion';
 import type { ReactNode } from 'react';
 
-// --- paint (brand-kit rich hues + our accents; molten is Vidya's alone) -----------------------
+// --- paint (brand-kit rich hues + our accents; molten is Wobo's alone) -----------------------
 export const PAINT = {
   grass: '#1CA363',
   violet: '#6D4AE0',

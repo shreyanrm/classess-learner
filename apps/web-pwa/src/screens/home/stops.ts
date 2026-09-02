@@ -205,7 +205,7 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
         : { name: 'sandbox' }) as Route,
     },
     ask: {
-      title: 'Ask Vidya something',
+      title: 'Ask Wobo something',
       meta: 'Daily quest · one good question',
       bounty: XP_AWARDS.bonus,
       route: { name: 'chat' } as Route,

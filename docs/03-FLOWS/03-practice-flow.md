@@ -7,7 +7,7 @@ measured when help is absent. FSRS makes memory durable; retention is one of the
 
 **WHAT (steps):**
 1. **Serve item** — FSRS picks what is due; orchestrator/IRT picks difficulty to be informative (not crushing). Verified content only.
-2. **Unaided attempt** — Vidya is *not* helping here (she may quietly wait/dim). The response is the evidence.
+2. **Unaided attempt** — Wobo is *not* helping here (she may quietly wait/dim). The response is the evidence.
 3. **Grade** — deterministic where possible (CAS/numeric); model-graded with verifier cross-check otherwise. Grading calibration harness
    keeps model-grading aligned to human judgement (a first-class subsystem).
 4. **Record evidence** — attempt → evidence, attributed, linked in the Evidence Graph; updates the six mastery factors (esp. Independence,

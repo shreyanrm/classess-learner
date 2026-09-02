@@ -1,4 +1,4 @@
--- Realtime: Vidya canvas co-presence, meter updates, mastery/ignite echoes.
+-- Realtime: Wobo canvas co-presence, meter updates, mastery/ignite echoes.
 alter publication supabase_realtime add table learner.canvas_state;
 alter publication supabase_realtime add table learner.meter_state;
 alter publication supabase_realtime add table learner.mastery_cache;

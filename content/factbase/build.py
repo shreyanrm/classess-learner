@@ -20,8 +20,9 @@ import argparse
 import hashlib
 import json
 import re
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 VERSION = "v1"
 KINDS = frozenset({"definition", "process-step", "date", "place", "structure", "relation"})
@@ -109,15 +110,17 @@ def extract_catalog_facts(catalog_path: Path) -> list[dict[str, Any]]:
             sname = subj.get("name", sid)
             prov = subj.get("provenance", "")
 
-            def src() -> dict[str, Any]:
-                return {
-                    "type": "catalog",
-                    "file": rel,
-                    "board": board,
-                    "grade": gname,
-                    "subject": sid,
-                    "provenance": prov,
-                }
+            # Bound per subject, not captured by a closure: a nested `src()` would read
+            # `gname`/`sid`/`prov` late, at call time (ruff B023). Each fact gets its own copy
+            # so callers can never mutate a shared dict.
+            catalog_src: dict[str, Any] = {
+                "type": "catalog",
+                "file": rel,
+                "board": board,
+                "grade": gname,
+                "subject": sid,
+                "provenance": prov,
+            }
 
             prev_ch: str | None = None
             for ch in subj.get("chapters", []):
@@ -128,13 +131,13 @@ def extract_catalog_facts(catalog_path: Path) -> list[dict[str, Any]]:
                 add(make_fact(
                     conceptId=cid,
                     claim=f"In {board} {gname} {sname}, '{cname}' is a chapter.",
-                    kind="structure", subject=sid, source=src(), confidence="verified",
+                    kind="structure", subject=sid, source=dict(catalog_src), confidence="verified",
                 ))
                 if prev_ch:
                     add(make_fact(
                         conceptId=cid,
                         claim=f"In {board} {gname} {sname}, the chapter '{prev_ch}' comes before '{cname}'.",
-                        kind="relation", subject=sid, source=src(), confidence="verified",
+                        kind="relation", subject=sid, source=dict(catalog_src), confidence="verified",
                     ))
                 prev_ch = cname
                 for t in ch.get("topics", []):
@@ -145,14 +148,14 @@ def extract_catalog_facts(catalog_path: Path) -> list[dict[str, Any]]:
                     add(make_fact(
                         conceptId=tid,
                         claim=f"In {board} {gname} {sname}, '{tname}' is a topic in the chapter '{cname}'.",
-                        kind="structure", subject=sid, source=src(), confidence="verified",
+                        kind="structure", subject=sid, source=dict(catalog_src), confidence="verified",
                     ))
                     blurb = (t.get("blurb") or "").strip()
                     if blurb:
                         add(make_fact(
                             conceptId=tid,
                             claim=f"'{tname}' covers: {blurb}",
-                            kind="definition", subject=sid, source=src(), confidence="verified",
+                            kind="definition", subject=sid, source=dict(catalog_src), confidence="verified",
                         ))
     return facts
 

@@ -7,7 +7,7 @@
  * the act: pose, struggle, reveal.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { BarState } from './shared';
@@ -162,7 +162,7 @@ export function BalanceScale({
   onReveal: (struggles: number) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const stageRef = useRegisterTarget<HTMLDivElement>('course-scale', {
     kind: 'sim',
     label: 'the balance scale holding x + 3 = 8',

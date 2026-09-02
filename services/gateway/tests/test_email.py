@@ -19,12 +19,12 @@ def test_every_template_renders(kind: str) -> None:
     assert out["subject"].strip()
     assert out["text"].strip()
     html = out["html"]
-    assert "Classess" in html  # the wordmark
+    assert "Wobo" in html  # the wordmark
     assert "#1F35E0" in html  # the one ultramarine button
     assert 'href=' in html  # the button is a real link
     assert "made for curious minds" in html  # the quiet footer
     assert "unsubscribe" in html
-    assert "&mdash; Vidya" in html  # the sign-off
+    assert "&mdash; Wobo" in html  # the sign-off
 
 
 def test_there_are_ten_templates() -> None:
@@ -60,7 +60,7 @@ def test_console_mode_never_sends(monkeypatch: pytest.MonkeyPatch) -> None:
 
     monkeypatch.setattr(email_mod.urllib.request, "urlopen", _boom)
     result = send_email("account_created", "learner@example.com", {"name": "Aarav"})
-    assert result == {"ok": True, "mode": "console", "subject": "welcome to Classess"}
+    assert result == {"ok": True, "mode": "console", "subject": "welcome to Wobo"}
 
 
 def test_send_unknown_kind_is_graceful(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -117,7 +117,7 @@ def test_endpoint_sends_in_console_with_header_and_consent(monkeypatch: pytest.M
             "data": {"name": "Aarav"}}
     r = client.post("/v1/email/send", json=body, headers=INTERNAL_HEADER)
     assert r.status_code == 200
-    assert r.json() == {"ok": True, "mode": "console", "subject": "welcome to Classess"}
+    assert r.json() == {"ok": True, "mode": "console", "subject": "welcome to Wobo"}
 
 
 def test_endpoint_404s_on_unknown_kind(monkeypatch: pytest.MonkeyPatch) -> None:

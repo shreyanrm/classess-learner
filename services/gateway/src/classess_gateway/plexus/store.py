@@ -6,7 +6,7 @@ artifact — that reuse is the whole cost economy (CONTEXT.md) and keying to boa
 the SUBJECTS.md §9 anti-pattern that kills it. board / grade / subject / chapter are a *mapping
 layer* only: they resolve a request to a conceptId at serve time (via ``concept_id``), they never
 enter the artifact key. Difficulty DOES stay in the key (a stretch variant is genuinely different
-content). Personalization is NEVER in the key or the record — Vidya personalizes the shared
+content). Personalization is NEVER in the key or the record — Wobo personalizes the shared
 artifact at runtime. Each record carries provenance ``{engine, model, prompt_version}``.
 
 Server-side only for now. ``learner.content_cache`` (Supabase) is the eventual shared-sync

@@ -29,10 +29,10 @@ test('onboarding walks four beats and opens the home', async ({ page }, info) =>
   const errors = watchConsole(page);
   await page.goto('/');
 
-  // beat one — the typed hello, then the door
-  await expect(page.getByText("hi — I'm Vidya")).toBeVisible({ timeout: 15_000 });
-  const begin = page.getByRole('button', { name: "let's begin" });
+  // beat one — the door, then her introduction written in her own hand
+  const begin = page.getByRole('button', { name: 'begin' });
   await begin.click({ timeout: 15_000 });
+  await expect(page.getByText("I'm Wobo, your AI wobot").first()).toBeVisible({ timeout: 15_000 });
 
   // beat two — the name
   const nameField = page.getByLabel('your name');

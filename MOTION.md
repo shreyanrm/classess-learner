@@ -11,7 +11,7 @@ Every scene with vertical scroll gets three depth planes, moving at these scroll
 - **Content** 1.0 — everything the learner reads or touches. NEVER parallax interactive elements.
 Implementation: one rAF-throttled scroll listener per scene writing `translateY` to refs
 (AdventureRoadmap.tsx has the canonical pattern). Reduced-motion: all planes at 1.0.
-Where to apply: Expedition (done), Home thread (sky wash + Vidya's beam at 0.08; thread at 1.0),
+Where to apply: Expedition (done), Home thread (sky wash + Wobo's beam at 0.08; thread at 1.0),
 SubjectScreen poster band (glyph stage at 0.16 under the scrolling chapter list), Progress
 (constellation at 0.16), Course intro (constellation field at 0.08 behind the sigil).
 Pointer parallax (desktop only, ±6px max, spring-lagged): hero art on Home and course intros.

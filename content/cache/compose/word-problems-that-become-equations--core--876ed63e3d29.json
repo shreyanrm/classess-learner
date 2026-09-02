@@ -1,136 +1,118 @@
 {
- "concept": "Word problems that become equations",
- "modality": "compose",
- "difficulty": "core",
- "verified": true,
- "seeded": false,
- "provenance": {
-  "engine": "engine.compose",
-  "model": "anthropic/claude-opus-4-8",
-  "prompt_version": "plexus-v1"
- },
- "artifact": {
-  "topic": "Word problems that become equations",
+  "concept": "Word problems that become equations",
+  "modality": "compose",
   "difficulty": "core",
-  "cards": [
-   {
-    "id": "c1",
-    "kind": "text",
-    "title": "A hidden number",
-    "idea": "Riya thinks of a number. She adds 5 and gets 12. What number is hidden inside her sentence?",
-    "interaction": {
-     "kind": "tap",
-     "prompt": "Tap the number you think is hidden"
-    },
-    "reveal": "The hidden number is 7, because 7 plus 5 makes 12. We can call the unknown number x and write the sentence as maths."
-   },
-   {
-    "id": "c2",
-    "kind": "diagram",
-    "title": "Words become symbols",
-    "idea": "Each phrase maps to one symbol. Match everyday words to their maths.",
-    "interaction": {
-     "kind": "drag",
-     "prompt": "Drag each phrase onto its symbol"
-    },
-    "reveal": "'A number' to x, 'added to' to +, 'is' to =, 'less than' to -. Once mapped, the sentence turns into an equation."
-   },
-   {
-    "id": "c3",
-    "kind": "sim",
-    "title": "Balance the story",
-    "idea": "'Three times a number equals 15.' Slide the value of x until both pans balance.",
-    "interaction": {
-     "kind": "slide",
-     "prompt": "Slide x until 3x equals 15"
-    },
-    "reveal": "At x = 5 the pans balance, since 3 times 5 is 15. The correct value makes both sides equal."
-   },
-   {
-    "id": "c4",
-    "kind": "text",
-    "title": "The four steps",
-    "idea": "Turn any word problem into an equation: name the unknown, translate each phrase, form the equation, then solve.",
-    "interaction": {
-     "kind": "tap",
-     "prompt": "Tap the step that comes first"
-    },
-    "reveal": "First name the unknown, usually x. Then translate the words, build the equation, and solve for x."
-   },
-   {
-    "id": "c5",
-    "kind": "diagram",
-    "title": "Age puzzle",
-    "idea": "'Arun is 4 years older than Meena. Together they are 20.' Let Meena be x. Fill each box.",
-    "interaction": {
-     "kind": "drag",
-     "prompt": "Drag expressions into the boxes"
-    },
-    "reveal": "Meena = x, Arun = x + 4, and x + (x + 4) = 20. Solving gives x = 8, so Meena is 8 and Arun is 12."
-   }
-  ],
-  "workbook": [
-   {
-    "id": "w1",
-    "type": "mcq",
-    "prompt": "'7 less than a number is 10.' Which equation matches?",
-    "options": [
-     "x - 7 = 10",
-     "7 - x = 10",
-     "x + 7 = 10"
+  "verified": true,
+  "seeded": false,
+  "provenance": {
+    "engine": "engine.compose",
+    "model": "anthropic/claude-opus-4-8",
+    "prompt_version": "plexus-v1"
+  },
+  "artifact": {
+    "topic": "Word problems that become equations",
+    "difficulty": "core",
+    "cards": [
+      {
+        "id": "c1",
+        "kind": "text",
+        "title": "A hidden number",
+        "idea": "Riya thinks of a number. She adds 5 and gets 12. What number is hidden inside her sentence?",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the number you think is hidden"
+        },
+        "reveal": "The hidden number is 7, because 7 plus 5 makes 12. We can call the unknown number x and write the sentence as maths."
+      },
+      {
+        "id": "c2",
+        "kind": "diagram",
+        "title": "Words become symbols",
+        "idea": "Each phrase maps to one symbol. Match everyday words to their maths.",
+        "interaction": {
+          "kind": "drag",
+          "prompt": "Drag each phrase onto its symbol"
+        },
+        "reveal": "'A number' to x, 'added to' to +, 'is' to =, 'less than' to -. Once mapped, the sentence turns into an equation."
+      },
+      {
+        "id": "c3",
+        "kind": "sim",
+        "title": "Balance the story",
+        "idea": "'Three times a number equals 15.' Slide the value of x until both pans balance.",
+        "interaction": {
+          "kind": "slide",
+          "prompt": "Slide x until 3x equals 15"
+        },
+        "reveal": "At x = 5 the pans balance, since 3 times 5 is 15. The correct value makes both sides equal."
+      },
+      {
+        "id": "c4",
+        "kind": "text",
+        "title": "The four steps",
+        "idea": "Turn any word problem into an equation: name the unknown, translate each phrase, form the equation, then solve.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the step that comes first"
+        },
+        "reveal": "First name the unknown, usually x. Then translate the words, build the equation, and solve for x."
+      },
+      {
+        "id": "c5",
+        "kind": "diagram",
+        "title": "Age puzzle",
+        "idea": "'Arun is 4 years older than Meena. Together they are 20.' Let Meena be x. Fill each box.",
+        "interaction": {
+          "kind": "drag",
+          "prompt": "Drag expressions into the boxes"
+        },
+        "reveal": "Meena = x, Arun = x + 4, and x + (x + 4) = 20. Solving gives x = 8, so Meena is 8 and Arun is 12."
+      }
     ],
-    "answer": "x - 7 = 10"
-   },
-   {
-    "id": "w2",
-    "type": "fill",
-    "prompt": "In a word problem, the first step is to name the unknown quantity using a ________.",
-    "answer": "variable"
-   },
-   {
-    "id": "w3",
-    "type": "mcq",
-    "prompt": "'Twice a number equals 18.' What is the number?",
-    "options": [
-     "9",
-     "36",
-     "16"
+    "workbook": [
+      {
+        "id": "w1",
+        "type": "mcq",
+        "prompt": "'7 less than a number is 10.' Which equation matches?",
+        "options": ["x - 7 = 10", "7 - x = 10", "x + 7 = 10"],
+        "answer": "x - 7 = 10"
+      },
+      {
+        "id": "w2",
+        "type": "fill",
+        "prompt": "In a word problem, the first step is to name the unknown quantity using a ________.",
+        "answer": "variable"
+      },
+      {
+        "id": "w3",
+        "type": "mcq",
+        "prompt": "'Twice a number equals 18.' What is the number?",
+        "options": ["9", "36", "16"],
+        "answer": "9"
+      }
     ],
-    "answer": "9"
-   }
-  ],
-  "boss": [
-   {
-    "id": "b1",
-    "type": "mcq",
-    "prompt": "'A number multiplied by 3, then increased by 4, gives 19.' Which equation is correct?",
-    "options": [
-     "3x + 4 = 19",
-     "3(x + 4) = 19",
-     "4x + 3 = 19",
-     "x + 3 + 4 = 19"
-    ],
-    "answer": "3x + 4 = 19"
-   },
-   {
-    "id": "b2",
-    "type": "fill",
-    "prompt": "Sita is 3 years older than Ravi. Their ages add to 25. If Ravi is x, Ravi's age is ________ years.",
-    "answer": "11"
-   },
-   {
-    "id": "b3",
-    "type": "mcq",
-    "prompt": "The sum of two consecutive numbers is 27. Which equation finds the smaller number x?",
-    "options": [
-     "x + (x + 1) = 27",
-     "x + (x + 2) = 27",
-     "2x = 27",
-     "x + 1 = 27"
-    ],
-    "answer": "x + (x + 1) = 27"
-   }
-  ]
- },
- "createdAt": "2026-07-07T08:29:48+00:00"
+    "boss": [
+      {
+        "id": "b1",
+        "type": "mcq",
+        "prompt": "'A number multiplied by 3, then increased by 4, gives 19.' Which equation is correct?",
+        "options": ["3x + 4 = 19", "3(x + 4) = 19", "4x + 3 = 19", "x + 3 + 4 = 19"],
+        "answer": "3x + 4 = 19"
+      },
+      {
+        "id": "b2",
+        "type": "fill",
+        "prompt": "Sita is 3 years older than Ravi. Their ages add to 25. If Ravi is x, Ravi's age is ________ years.",
+        "answer": "11"
+      },
+      {
+        "id": "b3",
+        "type": "mcq",
+        "prompt": "The sum of two consecutive numbers is 27. Which equation finds the smaller number x?",
+        "options": ["x + (x + 1) = 27", "x + (x + 2) = 27", "2x = 27", "x + 1 = 27"],
+        "answer": "x + (x + 1) = 27"
+      }
+    ]
+  },
+  "createdAt": "2026-07-07T08:29:48+00:00"
 }

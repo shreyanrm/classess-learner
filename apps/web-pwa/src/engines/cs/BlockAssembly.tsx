@@ -7,11 +7,11 @@
  * ever type one. The validator is the world — did the robot reach the goal? — so "correct" is a
  * deterministic simulation, never a guess.
  *
- * Vidya-drivable: she reads the program and the robot's position at code level, and can add blocks
+ * Wobo-drivable: she reads the program and the robot's position at code level, and can add blocks
  * or run the program to demonstrate (getSceneState / getValidActions / applyTutorAction).
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, Reorder, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../../screens/course/shared';
@@ -268,7 +268,7 @@ export function BlockAssembly({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const reduce = useReducedMotion();
   const [program, setProgram] = useState<Block[]>([]);
   const [playIndex, setPlayIndex] = useState<number | null>(null); // null = editing
@@ -377,7 +377,7 @@ export function BlockAssembly({
     return () => setBar(null);
   }, [setBar, reset, running, reached, program.length, playIndex]);
 
-  // --- Vidya seams ---
+  // --- Wobo seams ---
   const humanProgram = () =>
     program.length === 0
       ? 'empty'

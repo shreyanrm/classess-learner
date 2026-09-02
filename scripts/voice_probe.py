@@ -44,7 +44,7 @@ def main() -> None:
     name, key = got
     print(f"using key from: {name} (len={len(key)}, prefix={key[:3]}…)  # value NOT printed")
     body = {
-        "contents": [{"parts": [{"text": "Hello from Vidya"}]}],
+        "contents": [{"parts": [{"text": "Hello from Wobo"}]}],
         "generationConfig": {
             "responseModalities": ["AUDIO"],
             "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": VOICE}}},

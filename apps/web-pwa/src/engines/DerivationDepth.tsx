@@ -7,11 +7,11 @@
  * level: a step may carry its own sub-derivation with its own ⓘ (the curious go deeper; everyone
  * else moves on). Most learners never open it — that is the point.
  *
- * Registers as a Vidya scene target so she can expand it to walk the derivation herself
+ * Registers as a Wobo scene target so she can expand it to walk the derivation herself
  * (applyTutorAction: { expand } / { collapse }). Reduced-motion + mute aware; both themes; no deps.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -235,7 +235,7 @@ export function DerivationDepth({
   spec: DerivationSpec;
   hue?: string;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const [open, setOpen] = useState(false);
 
   useRegisterTarget<HTMLDivElement>(`derivation-${spec.id}`, {

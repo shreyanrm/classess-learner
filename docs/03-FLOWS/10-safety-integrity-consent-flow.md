@@ -3,7 +3,7 @@
 These run **under every flow**. They are not a screen; they are always-on subsystems. Build them as first-class.
 
 ## Child-safety subsystem
-**WHEN:** any free-text or UGC surface (create-anything input, Vidya chat, any social/shared surface).
+**WHEN:** any free-text or UGC surface (create-anything input, Wobo chat, any social/shared surface).
 **WHAT:** moderation **before** any generated response acts on input and **before** any UGC reaches another learner; crisis/harm detection
 with **escalation to a responsible adult**; no unmonitored channels. **WHY:** the base is children; safety is existential, not a feature.
 **EVENTS:** `safety.flag.raised.v1`. **AI:** `safety.moderate`, `safety.crisis-detect`. **GUARDRAIL:** fail closed — when unsure, withhold.
@@ -17,7 +17,7 @@ with **escalation to a responsible adult**; no unmonitored channels. **WHY:** th
 **WHEN:** every event carries `consent_tier`; set at the door (age branch), elevated via verified parental consent (parent flow / auth phase).
 **WHAT:**
 - **Un-elevated (default for under-18, or pre-consent):** behavioural engine OFF — **no archetype detection, no behavioural peak-cut, no
-  profiling, no behavioural notifications**. Teaching, mastery, Vidya, the honest twin, the constellation map all fully work.
+  profiling, no behavioural notifications**. Teaching, mastery, Wobo, the honest twin, the constellation map all fully work.
 - **Elevated (verified parental consent, or 18+ on own consent):** deep engine on, **pointed at teaching**; archetype/peak-cut/optimal-timing
   active — **never** to target the commercial ask at a minor.
 - **Age at the door is the branch:** 18+ → own consent → full engine; under-18 → consented path. Country is a policy dimension (India-under-18

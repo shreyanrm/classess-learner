@@ -454,7 +454,7 @@ export interface TrophyAward {
   title: string;
   engrave: string;
   standingLine: string;
-  vidyaLine: string;
+  woboLine: string;
   cohortPercentile?: number;
 }
 
@@ -479,7 +479,7 @@ export function trophyAwardFor(key: string): Omit<TrophyAward, 'id'> {
       title: `${n}-day streak`,
       engrave: `${n} days`,
       standingLine: 'your longest streak yet',
-      vidyaLine: `${n} days in a row — you keep showing up, and it shows.`,
+      woboLine: `${n} days in a row — you keep showing up, and it shows.`,
     };
   }
   return {
@@ -489,7 +489,7 @@ export function trophyAwardFor(key: string): Omit<TrophyAward, 'id'> {
     title: `${fmtXp(n)} xp`,
     engrave: `${shortXp(n)} xp`,
     standingLine: 'more xp than you have ever earned',
-    vidyaLine: 'look how far you have come — this is real ground you have covered.',
+    woboLine: 'look how far you have come — this is real ground you have covered.',
   };
 }
 

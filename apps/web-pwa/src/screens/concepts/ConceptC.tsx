@@ -5,19 +5,19 @@
  *
  * Compositional idea: the home is a daily edition — a front page typeset for one reader.
  * Typography does all the layout work: a masthead with rules, one enormous headline whose
- * living punctuation is Vidya herself, a lede with a drop cap, a contents index with dotted
+ * living punctuation is Wobo herself, a lede with a drop cap, a contents index with dotted
  * leaders, and a boxed "did you know" dispatch. The lesson is the feature spread below the
  * fold: the equation set as display type, solved with a letterpress stamp, annotated by
- * Vidya's own hand in the margin.
+ * Wobo's own hand in the margin.
  *
  * Apple lens: a strict typographic grid, optical alignment, hairline rules instead of boxes,
  * one pigment (magenta, the edition's accent), and micro-detail in how everything settles.
  */
 
-import { VidyaBody, type VidyaMood } from '@classess/vidya';
+import { WoboBody, type WoboMood } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ClassessLogo } from '../../ui/Logo';
+import { WoboLogo } from '../../ui/Logo';
 
 const INK = 'var(--clss-ink-900)';
 const INK_60 = 'color-mix(in srgb, var(--clss-ink) 58%, transparent)';
@@ -317,7 +317,7 @@ export function ConceptC() {
     return () => clearInterval(t);
   }, []);
 
-  const mood: VidyaMood = solved
+  const mood: WoboMood = solved
     ? 'celebrate'
     : status === 'wrong'
       ? 'hint'
@@ -354,7 +354,7 @@ export function ConceptC() {
             paddingBottom: 14,
           }}
         >
-          <ClassessLogo height={15} />
+          <WoboLogo height={15} />
           <span style={CAPS}>The daily edition · printed for Arya</span>
           <span style={{ ...CAPS, color: INK_60 }}>Monday 6 July 2026</span>
         </motion.div>
@@ -465,7 +465,7 @@ export function ConceptC() {
               paddingBottom: 6,
             }}
           >
-            <VidyaBody size={116} mood={mood} gaze="pointer" />
+            <WoboBody size={116} mood={mood} gaze="pointer" />
             <span
               style={{
                 fontFamily: 'Caveat, cursive',

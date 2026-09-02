@@ -5,7 +5,7 @@
  * is real. ponytail: no react-router — a handful of intentions don't need a routing library.
  *
  * Navigation is intention-first (DESIGN.md §6): the home has two doors (learn, practice), the
- * command palette reaches everything, and Vidya reaches everything by name.
+ * command palette reaches everything, and Wobo reaches everything by name.
  */
 
 import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from 'react';

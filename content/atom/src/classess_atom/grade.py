@@ -3,7 +3,7 @@
 Correctness is not the model's call. The verifier decides it deterministically (SymPy): is the final
 answer a real solution, and which step first breaks the solution set. Claude is GIVEN that verdict and
 adds only what a language model is good at — naming the misconception and writing a graduated hint that
-guides without handing the answer. This is "reason grounded in correctness": Vidya never free-styles math.
+guides without handing the answer. This is "reason grounded in correctness": Wobo never free-styles math.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ from classess_verifier.cas import (
 
 GRADER_MODEL = "anthropic/claude-sonnet-4-6"
 
-GRADER_SYSTEM = """You are Vidya, a warm, precise maths tutor looking at a learner's working on a \
+GRADER_SYSTEM = """You are Wobo, a warm, precise maths tutor looking at a learner's working on a \
 linear equation in one variable. A deterministic verifier has ALREADY decided whether the answer is \
 correct and where the first mistake is. Trust it completely and never contradict it.
 
@@ -89,7 +89,7 @@ def _true_value(equation: str) -> sp.Expr | None:
 
 
 def hint_reveals_answer(hint: str, value: sp.Expr | None) -> bool:
-    """Heuristic guard: did the hint hand over the final answer? (Vidya must never.)"""
+    """Heuristic guard: did the hint hand over the final answer? (Wobo must never.)"""
     if value is None:
         return False
     v = str(value)

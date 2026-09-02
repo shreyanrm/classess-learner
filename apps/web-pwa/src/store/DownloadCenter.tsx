@@ -10,7 +10,7 @@
  *     is an instant cache hit. LLM_MODE=mock returns immediately; the flow is identical live.
  *
  *  2. The notify moment. The instant a course is ready it lands wherever the learner now is: a soft
- *     sfx tick, Vidya says it aloud (mute-aware), and a frosted toast they can tap to dive in.
+ *     sfx tick, Wobo says it aloud (mute-aware), and a frosted toast they can tap to dive in.
  */
 
 import { AnimatePresence, motion } from 'framer-motion';
@@ -19,7 +19,7 @@ import { claimNextForge, settleForge, useForged } from '../screens/practice/forg
 import { composeWorkbook } from '../screens/practice/pools';
 import { useRouter } from '../shell/router';
 import { sfx } from '../ui/sound';
-import { speakLine } from '../vidya/speech';
+import { speakLine } from '../wobo/speech';
 import {
   acknowledge,
   claimNext,

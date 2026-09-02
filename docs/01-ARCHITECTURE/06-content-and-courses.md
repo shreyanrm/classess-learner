@@ -33,9 +33,9 @@ For **linear equations in one variable**, seed a **verified content set** into t
 verifier-passed):
 - The node(s) + their local prerequisite edges.
 - A handful of **openers** (active pose prompts, interactive where possible).
-- A graduated **hint ladder** per opener (for Vidya to draw from, grounded + verified).
+- A graduated **hint ladder** per opener (for Wobo to draw from, grounded + verified).
 - A set of **practice items** across difficulties (for unaided evidence; IRT-tagged).
-- A few **reveals** (a Vidya-annotation script + one or two short nuggets).
+- A few **reveals** (a Wobo-annotation script + one or two short nuggets).
 This seed set doubles as the permanent tier-1 cache for this topic. It is real content, not a stub.
 
 ## Who produces the atom's seed content

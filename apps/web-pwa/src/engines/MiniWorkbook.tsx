@@ -12,12 +12,12 @@
  *   label  — tap a point on a small SVG diagram, then tap its label from the bank
  *   order  — put shuffled steps into sequence by tapping them in order
  *
- * Publishes its working state to the Vidya bus and registers as a scene target she can read and
+ * Publishes its working state to the Wobo bus and registers as a scene target she can read and
  * drive (applyTutorAction: { check } grades, { reveal } fills the answers). Reduced-motion + mute
  * aware; both themes; no new deps.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -625,7 +625,7 @@ export function MiniWorkbook({
   onDone: (result?: { correct: number; total: number }) => void;
 }) {
   const sdk = useSdk();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const reduced = useReducedMotion();
   const [answers, setAnswers] = useState<ItemAnswer[]>(() => spec.items.map(initialAnswer));
   const [graded, setGraded] = useState(false);

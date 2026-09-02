@@ -30,6 +30,7 @@ from classess_gateway.providers import Provider, build_provider
 from classess_gateway.registry import (
     ConsentTier,
     RoutingPolicy,
+    canonical_capability,
     capabilities,
     policy,
 )
@@ -38,8 +39,8 @@ from classess_gateway.safety import (
     DEFAULT_CLASSIFIER,
     SafetyClassifier,
     moderate,
-    screen_vidya_inbound,
-    screen_vidya_outbound,
+    screen_wobo_inbound,
+    screen_wobo_outbound,
 )
 from classess_gateway.telemetry import MetricsSink, TelemetryEvent, emit
 from classess_gateway.voice import register_voice
@@ -193,13 +194,13 @@ class Gateway:
                 output=output,
             )
 
-        # Inbound safety on Vidya's free-text surface (VIDYA.md §11): a crisis or moderation hit
+        # Inbound safety on Wobo's free-text surface (WOBO.md §11): a crisis or moderation hit
         # never reaches a model — she answers with the calm supportive line herself.
-        if capability == "vidya.turn":
-            gated = screen_vidya_inbound(request.payload, self.classifier)
+        if capability == "wobo.turn":
+            gated = screen_wobo_inbound(request.payload, self.classifier)
             if gated is not None:
                 logger.warning(
-                    "vidya turn gated by safety",
+                    "wobo turn gated by safety",
                     extra={"fields": {"category": gated["safety"]["category"]}},
                 )
                 emit(
@@ -245,9 +246,9 @@ class Gateway:
         latency_ms = (time.perf_counter() - start) * 1000
 
         output = result.output
-        # Outbound safety: whatever the model wants Vidya to say is screened before serving.
-        if capability == "vidya.turn":
-            output = screen_vidya_outbound(output, self.classifier)
+        # Outbound safety: whatever the model wants Wobo to say is screened before serving.
+        if capability == "wobo.turn":
+            output = screen_wobo_outbound(output, self.classifier)
 
         # The model that actually answered: a provider reports it when a fallback took over (e.g. a
         # Track-2 placeholder that failed over to the frontier), else the policy's primary. The
@@ -284,7 +285,7 @@ def build_gateway() -> Gateway:
 def create_app(gateway: Gateway | None = None) -> FastAPI:
     configure_logging()
     validate_env()
-    app = FastAPI(title="Classess model gateway", version="0.0.0")
+    app = FastAPI(title="Wobo model gateway", version="0.0.0")
     app.add_middleware(
         CORSMiddleware,
         allow_origins=_cors_origins(),
@@ -374,6 +375,8 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
 
     @app.post("/v1/capability/{name}")
     def invoke(name: str, request: CapabilityRequest) -> Response:
+        # Accept the pre-rebrand capability name from already-deployed clients.
+        name = canonical_capability(name)
         if name not in set(capabilities()):
             raise HTTPException(status_code=404, detail=f"unknown capability: {name}")
         # Content engines enforce one generation at a time per user (strict queue). A second

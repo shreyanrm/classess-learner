@@ -58,7 +58,7 @@ _TRACK_1: dict[str, str] = {
 # ponytail: placeholder identifiers; the trained fine-tuned / edge models route through a
 # LiteLLM custom provider once they exist — swap the strings, the policies do not change.
 _TRACK_2: dict[str, str] = {
-    "slm.tutor": "classess/vidya-tutor-slm",
+    "slm.tutor": "classess/wobo-tutor-slm",
     "slm.grade": "classess/grade-slm",
     "slm.companion": "classess/parent-companion-slm",
     "edge.opener": "classess/opener-edge-slm",

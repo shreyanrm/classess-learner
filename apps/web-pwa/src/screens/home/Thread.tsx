@@ -661,14 +661,14 @@ const SEEN_KEY = 'clss-thread-seen-v1';
 export function Thread({
   stops,
   currentIndex,
-  vidya,
+  wobo,
   onGo,
   onArrive,
 }: {
   stops: ThreadStop[];
   currentIndex: number;
-  /** Vidya's body (with her own choreography) — seated beside the current stop. */
-  vidya?: ReactNode;
+  /** Wobo's body (with her own choreography) — seated beside the current stop. */
+  wobo?: ReactNode;
   onGo: (route: Route) => void;
   /** Fired the instant a stop is tapped — lets the home claim the bonus quest before it routes. */
   onArrive?: (stop: ThreadStop) => void;
@@ -769,25 +769,25 @@ export function Thread({
         .join(' ')}`
     : undefined;
 
-  // Cards sit opposite the thread's lean; Vidya sits on the other flank of the current stop.
+  // Cards sit opposite the thread's lean; Wobo sits on the other flank of the current stop.
   const CW = Math.round(Math.max(222, Math.min(300, w * 0.24)));
   const cardRight = (p: Pt) => p.x <= cx;
   const cardX = (p: Pt) =>
     cardRight(p) ? Math.min(p.x + 42, w - CW - 10) : Math.max(p.x - 42 - CW, 10);
   const cp = pts[Math.min(currentIndex, pts.length - 1)] as Pt;
-  // Seating Vidya beside the current stop only works when there's breathing room next to its card.
+  // Seating Wobo beside the current stop only works when there's breathing room next to its card.
   // On a phone the card eats nearly the full width, so the beside-clamp lands her block on the path's
   // own node and the caption becomes unreadable. Below ~560px she instead drops into the open
   // vertical gap under the current node (there's a full ~190px stride to the next stop), clear of
   // both the node and the card.
   const VB = 128; // her block's width
   const narrow = w < 560;
-  const vidyaX = narrow
+  const woboX = narrow
     ? Math.max(4, Math.min(cp.x - VB / 2, w - VB - 4))
     : cardRight(cp)
       ? Math.max(4, cp.x - 42 - VB)
       : Math.min(w - VB - 4, cp.x + 40);
-  const vidyaY = narrow ? cp.y + 34 : cp.y - 114;
+  const woboY = narrow ? cp.y + 34 : cp.y - 114;
 
   // Node entrances ride the draw-in — each pops as the pen reaches it.
   const DRAW = Math.min(2.3, 0.9 + stops.length * 0.28);
@@ -1002,10 +1002,10 @@ export function Thread({
         Something is hiding here
       </motion.div>
 
-      {/* Vidya walks the thread — she sits beside the current stop */}
-      {vidya && (
-        <div style={{ position: 'absolute', left: vidyaX, top: vidyaY, width: 128, zIndex: 2 }}>
-          {vidya}
+      {/* Wobo walks the thread — she sits beside the current stop */}
+      {wobo && (
+        <div style={{ position: 'absolute', left: woboX, top: woboY, width: 128, zIndex: 2 }}>
+          {wobo}
         </div>
       )}
     </div>

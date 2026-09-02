@@ -1,15 +1,15 @@
 'use client';
 
 /**
- * The per-learner mind (VIDYA.md §7) — behavioural signals accumulated locally and folded into
- * every Vidya call through the bus's lifetime slot: median item latency, the wrong-answer slip
+ * The per-learner mind (WOBO.md §7) — behavioural signals accumulated locally and folded into
+ * every Wobo call through the bus's lifetime slot: median item latency, the wrong-answer slip
  * log (each one detonated on screen), which surfaces the learner lingers on, and session cadence.
  * Visible and clearable in You — her memory of you is steerable, never hidden.
  * ponytail: localStorage until the mind syncs through KGtoPG; shapes mirror what that sync needs.
  */
 
 import type { Sdk } from '@classess/sdk';
-import { type LifetimeContext, useVidyaBus } from '@classess/vidya';
+import { type LifetimeContext, useWoboBus } from '@classess/wobo';
 import { useCallback, useEffect, useRef } from 'react';
 import { boardName, getFlag, loadProfile, VOICE_KEY } from '../screens/you/profile';
 import { useRouter } from '../shell/router';
@@ -98,7 +98,7 @@ export function rememberFact(text: string): void {
   saveMind(mind);
 }
 
-/** Onboarding writes what the learner is into — folded into every Vidya call via the lifetime slot. */
+/** Onboarding writes what the learner is into — folded into every Wobo call via the lifetime slot. */
 export function rememberInterests(interests: string[]): void {
   const mind = loadMind();
   mind.interests = interests.slice(0, 8);
@@ -114,7 +114,7 @@ export function saveMind(mind: MindState): void {
 }
 
 /**
- * Pure fact purge (the forget verb, VIDYA-CAPABILITIES.md family E): drop every fact matching `target`
+ * Pure fact purge (the forget verb, WOBO-CAPABILITIES.md family E): drop every fact matching `target`
  * (case-insensitive, substring in either direction, so "exam" forgets "exam on Friday" and vice versa).
  * Returns the kept facts and exactly what was removed — so she can confirm the removal honestly.
  */
@@ -341,7 +341,7 @@ export function mindLines(mind: MindState): string[] {
 
 /**
  * The dossier the concierge reasons over — identity from the onboarding profile plus the behavioural
- * twin and the facts she has learned. Every vidya.turn payload carries this (VIDYA.md §7); rendered
+ * twin and the facts she has learned. Every wobo.turn payload carries this (WOBO.md §7); rendered
  * by the gateway into a "who you are teaching" block.
  */
 export function lifetimeSnapshot(): LifetimeContext {
@@ -367,7 +367,7 @@ export function lifetimeSnapshot(): LifetimeContext {
   };
 }
 
-/** One compact string for the lifetime slot — every Vidya call is conditioned on this. */
+/** One compact string for the lifetime slot — every Wobo call is conditioned on this. */
 export function summarizeMind(mind: MindState): string | undefined {
   const parts: string[] = [];
   if (mind.interests.length > 0) parts.push(`into ${mind.interests.join(', ')}`);
@@ -424,11 +424,11 @@ export function proactiveChip(mind: MindState): { label: string; prompt: string 
 /**
  * Mounted once inside the app: marks the session, folds the event log into the mind on a slow
  * pulse, tracks dwell per surface, and keeps the bus's lifetime slot current so assembleContext
- * carries the mind into every Vidya call.
+ * carries the mind into every Wobo call.
  */
 export function MindObserver() {
   const sdk = useSdk();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const { route } = useRouter();
   const mindRef = useRef<MindState | null>(null);
   const cursor = useRef(0);

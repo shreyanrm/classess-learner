@@ -9,17 +9,17 @@
 - [ ] Supabase migrations apply; **RLS enabled + policies pass against the mock subject**; Realtime/Storage/pgvector configured.
 - [ ] **Auth deferred-but-wired:** identity abstraction returns mock user with `DEV_AUTH=true`; phone-OTP / consent / linking seams typed & stubbed; no auth logic implemented.
 - [ ] Gateway routes via capability registry; **Track 1/Track 2 config separated**; verifier confidence-gate + SymPy harness run; gateway telemetry emits.
-- [ ] Design/motion/Vidya packages scaffolded; tokens defined; Vidya identity locked in code.
+- [ ] Design/motion/Wobo packages scaffolded; tokens defined; Wobo identity locked in code.
 
 ## Phase 1 — The Atom (the big one)
-- [ ] **Perception spike:** Vidya reliably reads on-canvas working + spoken Hinglish for linear equations via event/state stream (not screen-share). Measured, reported.
+- [ ] **Perception spike:** Wobo reliably reads on-canvas working + spoken Hinglish for linear equations via event/state stream (not screen-share). Measured, reported.
 - [ ] **Grading spike:** grounded+verifier grading agrees with human judgement within the calibration threshold. Measured, reported.
 - [ ] Learn loop runs pose→struggle→reveal; never explain-first; canvas state persisted.
-- [ ] Vidya's five capabilities live on the atom; graduated hints never hand the answer; sub-second feel; gooey listening; memory writes.
+- [ ] Wobo's five capabilities live on the atom; graduated hints never hand the answer; sub-second feel; gooey listening; memory writes.
 - [ ] Practice is unaided; FSRS schedules; evidence updates the six factors (Independence keystone) + gap types.
 - [ ] Mastery band reaches **independent** on a real run; **ignite** + **constellation-ignite** fire on real mastery.
 - [ ] **Nothing unverified served**; all events emitted; efficacy pre→post captured.
-- [ ] Vidya-cute license visibly applied on this surface; identity unaltered.
+- [ ] Wobo-cute license visibly applied on this surface; identity unaltered.
 
 ## Phase 2 — The Loops
 - [ ] Orchestrator's three reactive rules demonstrably fire on a multi-node graph.
@@ -31,7 +31,7 @@
 - [ ] **Un-elevated vs elevated** difference demonstrated: un-elevated path wires **zero** profiling capabilities.
 
 ## Phase 3 — Breadth
-- [ ] Content widened via Plexus, every node verified; Vidya widened with measured perception on new scope.
+- [ ] Content widened via Plexus, every node verified; Wobo widened with measured perception on new scope.
 - [ ] New surfaces respect independence + safety rules (no leaderboards/leagues, no answer-giving, no BYO dark patterns).
 - [ ] Remotion library consistent with design system; reduced-motion parity everywhere; full polish.
 - [ ] Cost economy: three-tier routing live; more turns on Track-2; cost dashboard.

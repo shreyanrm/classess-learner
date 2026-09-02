@@ -55,7 +55,7 @@ create table learner.canvas_state (
   node_id uuid not null,
   expression jsonb,
   strokes jsonb,
-  last_seen_by_vidya_at timestamptz,
+  last_seen_by_wobo_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (subject_id, node_id)

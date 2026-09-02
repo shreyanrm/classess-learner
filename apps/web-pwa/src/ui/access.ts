@@ -2,7 +2,7 @@
  * The durable accessibility profile — larger text and high contrast, applied for real (no fake
  * behavior law). Mirrors the theme module's pattern: attributes on the document root drive a small
  * token-override stylesheet. The settings themselves live on the learner profile so they also ride
- * Vidya's dossier and reload with the learner.
+ * Wobo's dossier and reload with the learner.
  */
 
 import { loadProfile } from '../screens/you/profile';

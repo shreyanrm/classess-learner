@@ -4,7 +4,7 @@
  * The ceremony (Fable's design) — the award moment for a genuine milestone. On earn: the world
  * blurs and dims, a column of light opens, the trophy DESCENDS with weight and a puff of light-
  * dust, a specular sweep crosses it, a physics-true confetti burst fires once, the warm fanfare
- * sounds (sfx.fanfare, mute-aware), and Vidya jumps and speaks one honest line. It rests on a
+ * sounds (sfx.fanfare, mute-aware), and Wobo jumps and speaks one honest line. It rests on a
  * quiet self-superlative from real data — never a fabricated percentile — then the trophy shrinks
  * and arcs toward its shelf as the blur lifts and a whisper points there.
  *
@@ -14,13 +14,13 @@
  * confetti, no descent, no dust.
  */
 
-import { VidyaBody } from '@classess/vidya';
+import { WoboBody } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { GOLD } from '../screens/course/shared';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
-import { speakLine } from '../vidya/speech';
+import { speakLine } from '../wobo/speech';
 import { sfx } from './sound';
 import { Trophy, type TrophyAward } from './trophies';
 
@@ -165,8 +165,8 @@ export function Ceremony({ award, onDismiss }: { award: TrophyAward; onDismiss: 
   // sound + voice land on the same beat as the light (DESIGN law): the fanfare, then her one line.
   useEffect(() => {
     sfx.fanfare();
-    void speakLine(award.vidyaLine);
-  }, [award.vidyaLine]);
+    void speakLine(award.woboLine);
+  }, [award.woboLine]);
 
   // she rests on screen a moment, then the trophy leaves for its shelf. A tap skips the wait.
   const leave = () => {
@@ -357,7 +357,7 @@ export function Ceremony({ award, onDismiss }: { award: TrophyAward; onDismiss: 
         )}
       </motion.div>
 
-      {/* Vidya — she jumps as the trophy lands, and her one line arrives in her hand */}
+      {/* Wobo — she jumps as the trophy lands, and her one line arrives in her hand */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: going ? 0 : 1 }}
@@ -379,7 +379,7 @@ export function Ceremony({ award, onDismiss }: { award: TrophyAward; onDismiss: 
             times: [0, 0.3, 0.6, 0.8, 1],
           }}
         >
-          <VidyaBody size={64} mood="celebrate" />
+          <WoboBody size={64} mood="celebrate" />
         </motion.div>
         <div
           style={{
@@ -390,7 +390,7 @@ export function Ceremony({ award, onDismiss }: { award: TrophyAward; onDismiss: 
             maxWidth: 320,
           }}
         >
-          {award.vidyaLine}
+          {award.woboLine}
         </div>
       </motion.div>
 

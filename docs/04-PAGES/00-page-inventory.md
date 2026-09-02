@@ -5,10 +5,10 @@ a11y, responsive (mobile-first, PWA parity), motion-aware, consent-tier-aware, e
 
 ## Primary navigation (learner)
 - **Today** — the ritual home. One clear next action, the meter, today's win, the constellation peeking. (Next-best-action, not a feed.)
-- **Learn** — the node loop surface (opener + canvas + Vidya + reveal). The heart.
+- **Learn** — the node loop surface (opener + canvas + Wobo + reveal). The heart.
 - **Create** — the create-anything door.
 - **Progress** — the constellation map + knowledge-twin queries.
-- **Vidya** is not a tab — she is **present across all surfaces** (floating presence + panel), choreographed per page (cute license).
+- **Wobo** is not a tab — she is **present across all surfaces** (floating presence + panel), choreographed per page (cute license).
 
 ## Supporting surfaces
 - **Onboarding** (door, age-branch, goal, diagnostic, aha node).

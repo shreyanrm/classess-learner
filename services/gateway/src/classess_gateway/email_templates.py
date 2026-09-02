@@ -1,12 +1,12 @@
 """Transactional email templates — every one a pure function returning {subject, html, text}.
 
 A single shared shell (`_shell`) carries the brand law so no template drifts: a 600px
-white card, ink text on a hairline grid, the Classess wordmark as text, exactly one
+white card, ink text on a hairline grid, the Wobo wordmark as text, exactly one
 ultramarine bulletproof button (with a VML fallback so Outlook draws it too), a cursive
-"— Vidya" sign-off, and a quiet footer. No remote images anywhere — every visual is built
+"— Wobo" sign-off, and a quiet footer. No remote images anywhere — every visual is built
 from nested tables and inline styles, so Gmail, Outlook, and Apple Mail render it clean.
 
-Voice is Vidya's: warm, playful, sentence case, no emoji, no exclamation marks. Templates
+Voice is Wobo's: warm, playful, sentence case, no emoji, no exclamation marks. Templates
 take a plain `data` dict and fall back to sensible copy for any missing field, so a render
 never raises and the visual proof needs no live data.
 """
@@ -160,7 +160,7 @@ def _shell(
         '<head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
         '<meta name="x-apple-disable-message-reformatting">'
-        "<title>Classess</title></head>"
+        "<title>Wobo</title></head>"
         f'<body style="margin:0;padding:0;background-color:{PAGE};">'
         f'<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;color:{PAGE};'
         f'font-size:1px;line-height:1px;">{_esc(preheader)}</div>'
@@ -172,7 +172,7 @@ def _shell(
         # wordmark
         '<tr><td style="padding:38px 44px 0 44px;">'
         f'<span style="font-family:{FONT};font-size:20px;font-weight:700;letter-spacing:-0.6px;'
-        f'color:{INK};">Classess</span></td></tr>'
+        f'color:{INK};">Wobo</span></td></tr>'
         '<tr><td style="padding:22px 44px 0 44px;">' + _hairline() + "</td></tr>"
         # heading + body
         '<tr><td style="padding:30px 44px 0 44px;">'
@@ -184,12 +184,12 @@ def _shell(
         # sign-off
         '<tr><td style="padding:26px 44px 34px 44px;">'
         f'<div style="font-family:{CURSIVE};font-size:27px;color:{INK};line-height:1;">'
-        "&mdash; Vidya</div></td></tr>"
+        "&mdash; Wobo</div></td></tr>"
         '<tr><td style="padding:0 44px;">' + _hairline() + "</td></tr>"
         # footer
         '<tr><td style="padding:22px 44px 36px 44px;">'
         f'<p style="margin:0 0 6px 0;font-family:{FONT};font-size:12px;color:{FOOTER};">'
-        "Classess &middot; made for curious minds</p>"
+        "Wobo &middot; made for curious minds</p>"
         f'<p style="margin:0 0 6px 0;font-family:{FONT};font-size:12px;color:{FOOTER};">'
         "[street address placeholder] &middot; [city, country]</p>"
         f'<p style="margin:0;font-family:{FONT};font-size:12px;color:{FOOTER};">'
@@ -207,8 +207,8 @@ def _name(data: dict[str, Any], key: str = "name", default: str = "there") -> st
 def account_created(data: dict[str, Any]) -> dict[str, str]:
     name = _name(data)
     body = (
-        _p("i'm Vidya. i'll be the one learning how you think, so every idea meets you "
-           "where you are, not where a textbook assumes you are.")
+        _p("i'm Wobo, your AI wobot. i'll be the one learning how you think, so every idea "
+           "meets you where you are, not where a textbook assumes you are.")
         + _p("there's nothing to set up. pick something you're curious about and we'll start "
              "there. your first course is on me, written for you the moment you open it.")
     )
@@ -221,13 +221,13 @@ def account_created(data: dict[str, Any]) -> dict[str, str]:
     )
     text = (
         f"welcome, {data.get('name') or 'there'}\n\n"
-        "i'm Vidya. i'll be the one learning how you think, so every idea meets you where "
-        "you are.\n\nthere's nothing to set up. pick something you're curious about and "
+        "i'm Wobo, your AI wobot. i'll be the one learning how you think, so every idea meets "
+        "you where you are.\n\nthere's nothing to set up. pick something you're curious about and "
         "we'll start there. your first course is on me.\n\n"
         f"start your first course: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n"
-        "— Vidya\nClassess · made for curious minds"
+        "— Wobo\nWobo · made for curious minds"
     )
-    return {"subject": "welcome to Classess", "html": html_out, "text": text}
+    return {"subject": "welcome to Wobo", "html": html_out, "text": text}
 
 
 def verify_email(data: dict[str, Any]) -> dict[str, str]:
@@ -255,7 +255,7 @@ def verify_email(data: dict[str, Any]) -> dict[str, str]:
         "let's confirm it's you\n\n"
         "tap the link below to confirm your email and open your account. it works once and "
         f"expires shortly.\n\nverify: {link}\n\nor enter this code: {data.get('code', '482913')}"
-        "\n\nif you didn't ask for this, you can ignore it.\n\n— Vidya"
+        "\n\nif you didn't ask for this, you can ignore it.\n\n— Wobo"
     )
     return {"subject": "confirm your email", "html": html_out, "text": text}
 
@@ -285,7 +285,7 @@ def course_ready(data: dict[str, Any]) -> dict[str, str]:
         "i built it for you just now. inside:\n"
         + "".join(f"- {i}\n" for i in inside)
         + "\ncome in when you have ten quiet minutes.\n\n"
-        f"open your course: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Vidya"
+        f"open your course: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Wobo"
     )
     return {"subject": f"your course on {data.get('topic', 'your topic')} is ready",
             "html": html_out, "text": text}
@@ -315,7 +315,7 @@ def boss_victory(data: dict[str, Any]) -> dict[str, str]:
         f"you beat the {raw_topic} boss\n\n+{data.get('xp', 250)} XP\n\n"
         "that wasn't a quiz, it was the real thing, and you worked it out yourself.\n\n"
         "i've marked what you're solid on and what's worth a revisit later.\n\n"
-        f"see what's next: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Vidya"
+        f"see what's next: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Wobo"
     )
     return {"subject": f"you beat the {raw_topic} boss", "html": html_out, "text": text}
 
@@ -345,7 +345,7 @@ def level_up(data: dict[str, Any]) -> dict[str, str]:
         f"level {data.get('level', 4)}\n\nyou've been showing up, and it shows. what just "
         "opened up:\n" + "".join(f"- {u}\n" for u in unlocked)
         + "\nno rush to use all of it today.\n\n"
-        f"keep going: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Vidya"
+        f"keep going: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Wobo"
     )
     return {"subject": f"you reached level {data.get('level', 4)}", "html": html_out, "text": text}
 
@@ -371,7 +371,7 @@ def streak_milestone(data: dict[str, Any]) -> dict[str, str]:
         f"{data.get('days', 24)} days of being a learner\n\n"
         f"that's {data.get('days', 24)} days you chose to think a little harder than you had "
         "to.\n\nif you need a rest day, take it. i'll hold your place.\n\n"
-        f"continue: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Vidya"
+        f"continue: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Wobo"
     )
     return {"subject": f"{data.get('days', 24)} days of being a learner",
             "html": html_out, "text": text}
@@ -411,7 +411,7 @@ def weekly_digest(data: dict[str, Any]) -> dict[str, str]:
         f"+{data.get('xp', 640)} xp · {len(topics)} topics · {data.get('minutes', 82)}m\n\n"
         + "".join(f"- {lbl}: {val} ({pct}%)\n" for lbl, val, pct in bars)
         + f"\n{data.get('line', '')}\n\n"
-        f"pick up: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Vidya"
+        f"pick up: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Wobo"
     )
     return {"subject": f"your week, {data.get('name') or 'there'}", "html": html_out, "text": text}
 
@@ -455,9 +455,9 @@ def parent_report(data: dict[str, Any]) -> dict[str, str]:
         + "\nworth a nudge: " + ", ".join(focus) + "\n\n"
         f"trajectory: {data.get('trajectory', '')}\n\n"
         f"see the full picture: {data.get('cta_url', 'https://learner.classess.com/parent')}\n\n"
-        "— Vidya"
+        "— Wobo"
     )
-    return {"subject": f"{data.get('learner_name', 'your child')}'s week at Classess",
+    return {"subject": f"{data.get('learner_name', 'your child')}'s week at Wobo",
             "html": html_out, "text": text}
 
 
@@ -484,7 +484,7 @@ def reengage(data: dict[str, Any]) -> dict[str, str]:
         f"it's been a minute, {data.get('name') or 'there'}\n\n"
         "no guilt here. but you left something half-finished, the good kind.\n\n"
         f"{data.get('hook', '')}\n\ngive it ten minutes. i'll pick up where we stopped.\n\n"
-        f"come back: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Vidya"
+        f"come back: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Wobo"
     )
     return {"subject": f"it's been a minute, {data.get('name') or 'there'}",
             "html": html_out, "text": text}
@@ -515,7 +515,7 @@ def premium_surprise(data: dict[str, Any]) -> dict[str, str]:
         f"premium\n\n{data.get('reason', '')}, so i've unlocked {data.get('days', 14)} days "
         "of premium for you, no strings.\n\ngo deeper, follow a rabbit hole, build something "
         "out of syllabus.\n\n"
-        f"enjoy premium: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Vidya"
+        f"enjoy premium: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Wobo"
     )
     return {"subject": f"a gift: {data.get('days', 14)} days of premium",
             "html": html_out, "text": text}

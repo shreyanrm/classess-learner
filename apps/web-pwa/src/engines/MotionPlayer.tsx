@@ -7,7 +7,7 @@
  * never video files (DESIGN.md §9) — the narration track is the TTS pipeline's output.
  */
 
-import { useRegisterTarget } from '@classess/vidya';
+import { useRegisterTarget } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   type KeyboardEvent,
@@ -18,7 +18,7 @@ import {
   useState,
 } from 'react';
 import { lead, whisper } from '../screens/course/shared';
-import { ClassessLogo } from '../ui/Logo';
+import { WoboLogo } from '../ui/Logo';
 import { SafeSvg, svgIsClean } from './DiagramView';
 
 // --- The motion-scene spec ------------------------------------------------------------------------
@@ -331,7 +331,7 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
     setPlaying(true);
   };
 
-  // Prefer the baked MP4 when the render worker has produced one (its Classess watermark is already
+  // Prefer the baked MP4 when the render worker has produced one (its Wobo watermark is already
   // burned in, so no overlay here). Native <video controls> — reduced-motion safe (no autoplay),
   // both themes via the token-styled stage. Falls back to the live SMIL scenes when absent.
   if (scene.renderedUrl) {
@@ -404,7 +404,7 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
             )}
           </motion.div>
         </AnimatePresence>
-        {/* Classess watermark — owner law: bottom-right of every video, both themes */}
+        {/* Wobo watermark — owner law: bottom-right of every video, both themes */}
         <div
           aria-hidden
           style={{
@@ -415,7 +415,7 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
             pointerEvents: 'none',
           }}
         >
-          <ClassessLogo height={12} />
+          <WoboLogo height={12} />
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 # SUBJECTS.md — Plexus per-subject rendering and validation
 
-How Plexus renders and verifies content in each subject: the interaction primitives, the technologies that draw them, and the validators that prove them correct before a learner ever sees them. Companion to `CONTEXT.md` (Plexus and the cost economy), `DESIGN.md` (how surfaces look), and `VIDYA.md` (how she reads and annotates them). This file is law for the content substrate.
+How Plexus renders and verifies content in each subject: the interaction primitives, the technologies that draw them, and the validators that prove them correct before a learner ever sees them. Companion to `CONTEXT.md` (Plexus and the cost economy), `DESIGN.md` (how surfaces look), and `WOBO.md` (how she reads and annotates them). This file is law for the content substrate.
 
 Initial content focus per the locked instructions: mathematics, the three sciences, and social science (not languages). The vertical-slice atom is linear equations (math). Computer science is part of the designed palette and sequenced per the build order below. All six subjects share one substrate.
 
@@ -10,7 +10,7 @@ Initial content focus per the locked instructions: mathematics, the three scienc
 
 Two gates govern every piece of content: **correctness** (it is never wrong) and **feel** (Brilliant-grade, smooth, buttery, beautiful — built for school students). Everything below serves those two gates.
 
-One principle makes the whole thing buildable by a small team: **the model authors validated, structured scene specs — it never draws pixels.** The scene spec is the intermediate representation; renderers turn it into interactive components; the validator proves it correct; Vidya reads the same scene state to tutor over it. One substrate, every subject.
+One principle makes the whole thing buildable by a small team: **the model authors validated, structured scene specs — it never draws pixels.** The scene spec is the intermediate representation; renderers turn it into interactive components; the validator proves it correct; Wobo reads the same scene state to tutor over it. One substrate, every subject.
 
 - **Spec contract:** Pydantic → JSON Schema → generated TypeScript types. One contract; backend and frontend cannot drift. (DONE — see §7)
 - **Concepts, not board paths:** content is keyed to board-agnostic concepts; boards are mappings over those concepts, so a new board is nearly free and every artifact is reused across learners and overlapping boards (the cost economy in `CONTEXT.md`).
@@ -110,7 +110,7 @@ Do not start with biology or history: that builds the fact base before the pipel
 
 - Letting the model freehand lessons instead of authoring validated scene specs.
 - Keying content to board paths instead of concepts (kills the reuse economics).
-- Letting Vidya act on pixels instead of code-level scene state (kills grounding — see `VIDYA.md`).
+- Letting Wobo act on pixels instead of code-level scene state (kills grounding — see `WOBO.md`).
 - Shipping a subject before its validator exists (a wrong constant or a wrong date is existential).
 - Auto-generating interpretive open response instead of structured primitives.
 

@@ -76,7 +76,7 @@ def _judge(
     scores correctness against the fact base — SUBJECTS.md §2."""
     import litellm  # lazy: mock mode and tests never import litellm
 
-    from classess_gateway.vidya import _extract_json
+    from classess_gateway.wobo import _extract_json
 
     litellm.drop_params = True
     user = (

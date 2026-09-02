@@ -132,12 +132,12 @@
     "practice.retrieval.scheduled.v1",
     "evidence.recorded.v1",
     "mastery.band.changed.v1",
-    "vidya.opened.v1",
-    "vidya.turn.user.v1",
-    "vidya.turn.assistant.v1",
-    "vidya.hint.escalated.v1",
-    "vidya.perceived.work.v1",
-    "vidya.offer.outcome.v1",
+    "wobo.opened.v1",
+    "wobo.turn.user.v1",
+    "wobo.turn.assistant.v1",
+    "wobo.hint.escalated.v1",
+    "wobo.perceived.work.v1",
+    "wobo.offer.outcome.v1",
     "create.request.submitted.v1",
     "create.course.compiled.v1",
     "create.node.mapped.v1",
@@ -1215,7 +1215,7 @@
       ],
       "additionalProperties": false
     },
-    "vidya.opened.v1": {
+    "wobo.opened.v1": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -1237,7 +1237,7 @@
       ],
       "additionalProperties": false
     },
-    "vidya.turn.user.v1": {
+    "wobo.turn.user.v1": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -1270,7 +1270,7 @@
       ],
       "additionalProperties": false
     },
-    "vidya.turn.assistant.v1": {
+    "wobo.turn.assistant.v1": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -1332,7 +1332,7 @@
       ],
       "additionalProperties": false
     },
-    "vidya.hint.escalated.v1": {
+    "wobo.hint.escalated.v1": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -1367,7 +1367,7 @@
       ],
       "additionalProperties": false
     },
-    "vidya.perceived.work.v1": {
+    "wobo.perceived.work.v1": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -1397,7 +1397,7 @@
       ],
       "additionalProperties": false
     },
-    "vidya.offer.outcome.v1": {
+    "wobo.offer.outcome.v1": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -4891,7 +4891,7 @@
       ],
       "additionalProperties": false
     },
-    "vidya.opened.v1": {
+    "wobo.opened.v1": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -4901,7 +4901,7 @@
         },
         "event_type": {
           "type": "string",
-          "const": "vidya.opened.v1"
+          "const": "wobo.opened.v1"
         },
         "occurred_at": {
           "type": "string"
@@ -5026,7 +5026,7 @@
       ],
       "additionalProperties": false
     },
-    "vidya.turn.user.v1": {
+    "wobo.turn.user.v1": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -5036,7 +5036,7 @@
         },
         "event_type": {
           "type": "string",
-          "const": "vidya.turn.user.v1"
+          "const": "wobo.turn.user.v1"
         },
         "occurred_at": {
           "type": "string"
@@ -5172,7 +5172,7 @@
       ],
       "additionalProperties": false
     },
-    "vidya.turn.assistant.v1": {
+    "wobo.turn.assistant.v1": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -5182,7 +5182,7 @@
         },
         "event_type": {
           "type": "string",
-          "const": "vidya.turn.assistant.v1"
+          "const": "wobo.turn.assistant.v1"
         },
         "occurred_at": {
           "type": "string"
@@ -5347,7 +5347,7 @@
       ],
       "additionalProperties": false
     },
-    "vidya.hint.escalated.v1": {
+    "wobo.hint.escalated.v1": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -5357,7 +5357,7 @@
         },
         "event_type": {
           "type": "string",
-          "const": "vidya.hint.escalated.v1"
+          "const": "wobo.hint.escalated.v1"
         },
         "occurred_at": {
           "type": "string"
@@ -5495,7 +5495,7 @@
       ],
       "additionalProperties": false
     },
-    "vidya.perceived.work.v1": {
+    "wobo.perceived.work.v1": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -5505,7 +5505,7 @@
         },
         "event_type": {
           "type": "string",
-          "const": "vidya.perceived.work.v1"
+          "const": "wobo.perceived.work.v1"
         },
         "occurred_at": {
           "type": "string"
@@ -5638,7 +5638,7 @@
       ],
       "additionalProperties": false
     },
-    "vidya.offer.outcome.v1": {
+    "wobo.offer.outcome.v1": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -5648,7 +5648,7 @@
         },
         "event_type": {
           "type": "string",
-          "const": "vidya.offer.outcome.v1"
+          "const": "wobo.offer.outcome.v1"
         },
         "occurred_at": {
           "type": "string"

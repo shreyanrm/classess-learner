@@ -1484,7 +1484,7 @@ _SYSTEMS = {
         "at ONE hairline weight (stroke-width 1.5). White ground, no coloured background.\n"
         "  • Exactly ONE subject hue may carry the single most meaningful element and its label — "
         "nothing else is coloured. Pick by subject: chemistry #CC1E7A, biology/life #66B300, "
-        "physics/maths/mastery #1F35E0. NEVER molten #FF5A1F (that is Vidya's warmth alone).\n"
+        "physics/maths/mastery #1F35E0. NEVER molten #FF5A1F (that is Wobo's warmth alone).\n"
         "  • A reactive tint is that hue at 0.12–0.25 opacity, never a saturated fill. NO gradients, "
         "shadows, glows, bevels, or glass — depth is line weight and stacked flat tone, nothing more. "
         "No rainbow palettes, no more than one hue in the whole figure.\n"
@@ -1626,7 +1626,7 @@ def _generate_video_live(
     DEFAULT, and get a GPT-5.5 second opinion (the first fallback) ONLY when necessary: the scene
     plan flags itself complex, or the Opus draft fails structural verification. The second draft is
     taken only when it actually verifies, so a second opinion never degrades the result."""
-    from classess_gateway.vidya import _extract_json
+    from classess_gateway.wobo import _extract_json
 
     text, tokens = _complete(provider_model, "video", user, fallbacks)
     obj = _extract_json(text)
@@ -1686,7 +1686,7 @@ def _generate_sim_live(
 ) -> tuple[Any, str, int]:
     """engine.simulate: draft -> CAS-verify -> ONE retry feeding the verifier's reason back. A sim
     that still refuses raises (the caller seeds a TOPIC-AWARE floor, never a wrong-subject law)."""
-    from classess_gateway.vidya import _extract_json
+    from classess_gateway.wobo import _extract_json
 
     text, tokens = _complete(provider_model, "simulate", user, fallbacks)
     obj = _extract_json(text)
@@ -1746,7 +1746,7 @@ def _generate_live(
         text, tokens = _complete(provider_model, modality, user, fallbacks)
         obj: Any = text
         if modality != "diagram":
-            from classess_gateway.vidya import _extract_json
+            from classess_gateway.wobo import _extract_json
 
             obj = _extract_json(text)
         artifact = _verify_artifact(modality, obj, concept, difficulty)

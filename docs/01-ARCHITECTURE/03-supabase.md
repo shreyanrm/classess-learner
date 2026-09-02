@@ -23,7 +23,7 @@ Write migrations in `/infra/supabase/migrations`. Every table: `id uuid pk defau
 - `profiles_cache` — cached governed identity/profile view (display name, grade, board, archetype slot [elevated only]).
 - `sessions` — session_id, started_at, ended_at, surface.
 - `attempts` — node_id, item_id, response jsonb, correct bool, independence_signal, latency_ms.
-- `canvas_state` — node_id, strokes/expression jsonb, last_seen_by_vidya_at (Vidya perception cache).
+- `canvas_state` — node_id, strokes/expression jsonb, last_seen_by_wobo_at (Wobo perception cache).
 - `content_cache` — generated+verified content keyed by (node_id, modality, difficulty, verification_hash).
 - `mastery_cache` — node_id, band, updated_from_event_id (read cache of KGtoPG governed view).
 - `meter_state` — date, budget_total, budget_consumed, peak_detected bool, day_had_real_win bool.
@@ -31,7 +31,7 @@ Write migrations in `/infra/supabase/migrations`. Every table: `id uuid pk defau
 - `outbox` — the event outbox (see contract doc).
 
 ## Realtime, Storage, pgvector
-- **Realtime**: Vidya turn streaming + canvas co-presence + meter updates.
+- **Realtime**: Wobo turn streaming + canvas co-presence + meter updates.
 - **Storage**: cached media nuggets, generated illustration assets, Remotion renders.
 - **pgvector**: Plexus retrieval cache + content dedupe by semantic hash.
 

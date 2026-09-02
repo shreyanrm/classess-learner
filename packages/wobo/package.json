@@ -1,0 +1,27 @@
+{
+  "name": "@classess/wobo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@classess/config": "workspace:*",
+    "@classess/motion": "workspace:*",
+    "framer-motion": "^11.11.0",
+    "zod": "^4.0.5"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0"
+  }
+}

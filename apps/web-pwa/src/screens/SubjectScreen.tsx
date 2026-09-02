@@ -8,7 +8,7 @@
  * appears only where mastery is real: ignited sigils and the earned stretch of each filament.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import {
@@ -29,7 +29,7 @@ import { hueForTopic, type SubjectTone, toneForSubject } from '../ui/hues';
 import { ChevronIcon } from '../ui/icons';
 import { cascade, MagneticButton, PARALLAX, rise, useParallax } from '../ui/kit';
 import { loadViewPref, type SubjectView, saveViewPref } from '../ui/viewPref';
-import { type BridgePlan, composeBridge, masteredGround } from '../vidya/tutor';
+import { type BridgePlan, composeBridge, masteredGround } from '../wobo/tutor';
 import { AdventureRoadmap } from './AdventureRoadmap';
 import { SubjectSceneBackdrop, Whisper } from './Learn';
 import { boardName, loadProfile } from './you/profile';
@@ -156,7 +156,7 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
               : downloading
                 ? position > 1
                   ? `${position - 1} ahead in line — she composes one at a time`
-                  : 'vidya is composing this for you — it will land on its own'
+                  : 'wobo is composing this for you — it will land on its own'
                 : ready
                   ? 'ready when you are — tap to dive in'
                   : slipped
@@ -683,7 +683,7 @@ function ChapterRow({
                       padding: '4px 4px 2px',
                     }}
                   >
-                    Vidya composes this chapter's course when you open it
+                    Wobo composes this chapter's course when you open it
                   </motion.div>
                   <motion.button
                     variants={rise}
@@ -733,7 +733,7 @@ function ChapterRow({
 
 export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent: Intent }) {
   const router = useRouter();
-  const { publishPage } = useVidyaBus();
+  const { publishPage } = useWoboBus();
   const { isDesktop } = useViewport();
   // the door may be a clubbed display group (CBSE "Science" = physics + chemistry + biology);
   // chapters keep canonical subjectIds underneath, so each section carries its own hue and glyph

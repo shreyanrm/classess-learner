@@ -19,7 +19,7 @@ So: **mock the data and the outside world; never mock the spine.**
 | KGtoPG governed views | in-repo reference implementation + seed | real platform services | as platform matures |
 | Content / Plexus | **seeded verified content cache** (atom) | live generate→verify→cache on miss | Phase 1→3 |
 | LLM providers (Track 1) | recorded/deterministic mock responses | real Anthropic/Gemini/OpenAI via gateway | when proving the atom |
-| Vidya perception | replayed sample working + transcripts | live event/state-stream perception | Phase 1 (the spike) |
+| Wobo perception | replayed sample working + transcripts | live event/state-stream perception | Phase 1 (the spike) |
 | WhatsApp (parent) | rendered digest preview, no send | WhatsApp Cloud API send | Phase 2→3 |
 | Email / push | console/preview | Resend / push provider | Phase 2→3 |
 | Payments | mock subscription state | Razorpay / IAP | Phase 4 |
@@ -36,5 +36,5 @@ So: **mock the data and the outside world; never mock the spine.**
 
 ## The build arc, restated
 1. **Walkable on mock** — the whole atom experience runs on seed data + mock providers; you can see and understand it.
-2. **Flip the intelligence live** — real LLMs through the gateway, live Vidya perception, live generate→verify→cache (still narrow content).
+2. **Flip the intelligence live** — real LLMs through the gateway, live Wobo perception, live generate→verify→cache (still narrow content).
 3. **Flip the rest live, harden, launch** — WhatsApp/email/push, then (Phase 4) auth + consent + payments → production-ready & releasable.

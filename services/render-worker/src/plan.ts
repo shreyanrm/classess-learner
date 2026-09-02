@@ -15,8 +15,7 @@ export const WIDTH = 1280; // 2× the 640×360 storyboard grid (VIDEO-QUALITY.md
 export const HEIGHT = 720;
 const DEFAULT_BEAT_MS = 6000; // authored fallback used by the app when a scene has neither measure
 
-const isRecord = (v: unknown): v is Record<string, unknown> =>
-  typeof v === 'object' && v !== null;
+const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
 const asNum = (v: unknown): number | null =>
   typeof v === 'number' && Number.isFinite(v) ? v : null;
 const asStr = (v: unknown): string | null => (typeof v === 'string' ? v : null);
@@ -94,7 +93,9 @@ export function buildPlan(raw: unknown): RenderPlan {
     if (!payload || (kind !== 'svg' && kind !== 'diagram')) return;
 
     const audio = readAudio(s.audio);
-    const measured = isRecord(s.audio) ? asNum((s.audio as Record<string, unknown>).durationMs) : null;
+    const measured = isRecord(s.audio)
+      ? asNum((s.audio as Record<string, unknown>).durationMs)
+      : null;
     const authored = asNum(s.durationMs);
     const beatMs = measured ?? authored ?? DEFAULT_BEAT_MS; // measured wins (beat-sync law)
 

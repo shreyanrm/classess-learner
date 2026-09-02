@@ -28,7 +28,7 @@ from classess_gateway.registry import ConsentTier
 
 logger = logging.getLogger("classess.gateway.email")
 
-_FROM = "Vidya at Classess <vidya@mail.classess.com>"
+_FROM = "Wobo <wobo@mail.classess.com>"
 _REPLY_TO = "hello@mail.classess.com"
 _RESEND_URL = "https://api.resend.com/emails"
 _HTTP_TIMEOUT_S = 20.0

@@ -59,8 +59,8 @@ the gateway gets a custom domain, edit that line and redeploy.
 ### 1.2 PWA icons
 
 `apps/web-pwa/public/pwa-{192,512}.png`, `pwa-maskable-512.png`, and
-`apple-touch-icon.png` are cropped from the wordmark's C-mark. If the logo changes,
-regenerate: crop `classess-logo.png` to `(0, 0, 109, 200)` (C + sparkles), alpha-bbox
+`apple-touch-icon.png` are cropped from the wordmark's W-mark. If the logo changes,
+regenerate: crop `wobo-logo.png` to the W-mark box, alpha-bbox
 it, composite centered on a white square at 72% (52% for maskable), export the four
 sizes — e.g. `uv run --with pillow python` and PIL's `crop`/`alpha_composite`/`resize`.
 
@@ -121,7 +121,7 @@ curl -s https://classess-gateway.fly.dev/healthz
 
 - [ ] **Auth round-trip** — fresh browser → onboarding sign-in beat → phone OTP (or
       Google) → lands home; You → sign out → back to onboarding.
-- [ ] **Vidya turn live** — open Vidya, ask something about the current screen → a
+- [ ] **Wobo turn live** — open Wobo, ask something about the current screen → a
       grounded (non-canned) reply; `fly logs -a classess-gateway` shows the
       capability invoke.
 - [ ] **Voice session** — mic permission prompt → speak → she answers (WS

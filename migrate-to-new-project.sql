@@ -1,4 +1,4 @@
--- Classess Learner — Supabase extensions.
+-- Wobo — Supabase extensions.
 -- pgvector: Plexus retrieval cache + semantic dedupe. moddatetime: updated_at. pgtap: in-DB RLS tests.
 create extension if not exists vector;
 create extension if not exists moddatetime schema extensions;
@@ -60,7 +60,7 @@ create table learner.canvas_state (
   node_id uuid not null,
   expression jsonb,
   strokes jsonb,
-  last_seen_by_vidya_at timestamptz,
+  last_seen_by_wobo_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (subject_id, node_id)
@@ -217,7 +217,7 @@ revoke all on function learner.outbox_append(jsonb) from public;
 revoke all on function learner.op_start_session(jsonb) from public;
 grant execute on function learner.outbox_append(jsonb) to authenticated, service_role;
 grant execute on function learner.op_start_session(jsonb) to authenticated, service_role;
--- Realtime: Vidya canvas co-presence, meter updates, mastery/ignite echoes.
+-- Realtime: Wobo canvas co-presence, meter updates, mastery/ignite echoes.
 alter publication supabase_realtime add table learner.canvas_state;
 alter publication supabase_realtime add table learner.meter_state;
 alter publication supabase_realtime add table learner.mastery_cache;
@@ -232,7 +232,7 @@ values
 on conflict (id) do nothing;
 -- 0005 — the live persistence seams (additive only).
 -- learner_state: the device-merged working state (XP, streak, topic progress, the mind snapshot).
--- learner_threads: Vidya's conversation, one row per (subject, thread).
+-- learner_threads: Wobo's conversation, one row per (subject, thread).
 -- outbox_append_batch: batch entry into the transactional outbox (the relay publishes UP).
 -- Plus the deferred Phase-1 step from the README: expose `learner` to PostgREST for client access.
 
@@ -255,7 +255,7 @@ create table learner.learner_state (
 create table learner.learner_threads (
   id uuid primary key default gen_random_uuid(),
   subject_id uuid not null,
-  thread text not null default 'vidya',
+  thread text not null default 'wobo',
   turns jsonb not null default '[]'::jsonb,
   client_updated_at timestamptz,
   created_at timestamptz not null default now(),

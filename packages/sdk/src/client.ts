@@ -35,7 +35,7 @@ export interface Sdk {
   content: ContentProvider;
   messaging: MessagingProvider;
   payment: PaymentProvider;
-  /** Learner state + Vidya threads: localStorage in local mode; Supabase-reconciled in live mode. */
+  /** Learner state + Wobo threads: localStorage in local mode; Supabase-reconciled in live mode. */
   state: StateProvider;
   /**
    * The optional account layer — Supabase Auth as an ADDITIVE identity+sync layer, present whenever

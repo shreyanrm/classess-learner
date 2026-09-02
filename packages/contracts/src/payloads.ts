@@ -108,7 +108,7 @@ export const LearnAttemptSubmitted = z.object({
   item_id: zUuid.optional(),
   response: AttemptResponse,
   correct: z.boolean(),
-  /** Whether help (Vidya/hint/reveal) was active when this attempt was made. */
+  /** Whether help (Wobo/hint/reveal) was active when this attempt was made. */
   aided: z.boolean(),
   /** 0 = fully supported, 1 = fully independent. Feeds the Independence keystone. */
   independence_signal: zUnitInterval,
@@ -191,14 +191,14 @@ export const MasteryBandChanged = z.object({
   ignite: z.boolean(),
 });
 
-// --- Vidya ------------------------------------------------------------------
+// --- Wobo ------------------------------------------------------------------
 
-export const VidyaOpened = z.object({
+export const WoboOpened = z.object({
   node_id: zUuid.optional(),
   trigger: z.enum(['tap', 'struggle_threshold', 'orchestrator']),
 });
 
-export const VidyaTurnUser = z.object({
+export const WoboTurnUser = z.object({
   node_id: zUuid.optional(),
   turn_id: zUuid,
   input_mode: z.enum(['text', 'voice']),
@@ -206,7 +206,7 @@ export const VidyaTurnUser = z.object({
   has_audio: z.boolean(),
 });
 
-export const VidyaTurnAssistant = z.object({
+export const WoboTurnAssistant = z.object({
   node_id: zUuid.optional(),
   turn_id: zUuid,
   assistance_level: AssistanceLevel,
@@ -215,18 +215,18 @@ export const VidyaTurnAssistant = z.object({
   grounded: z.boolean(),
   verification_hash: z.string().optional(),
   track: Track,
-  /** Hard contract guarantee: Vidya never hands over the answer. */
+  /** Hard contract guarantee: Wobo never hands over the answer. */
   handed_answer: z.literal(false),
 });
 
-export const VidyaHintEscalated = z.object({
+export const WoboHintEscalated = z.object({
   node_id: zUuid,
   from_level: z.number().int().nonnegative(),
   to_level: z.number().int().nonnegative(),
   reason: z.enum(['repeated_miss', 'explicit_request', 'time']),
 });
 
-export const VidyaPerceivedWork = z.object({
+export const WoboPerceivedWork = z.object({
   node_id: zUuid,
   /** Perception is via the app event/state stream, never screen-share. Locked in the contract. */
   via: z.literal('event_stream'),
@@ -234,8 +234,8 @@ export const VidyaPerceivedWork = z.object({
   signal_summary: z.string().optional(),
 });
 
-/** The learner's response to an action Vidya offered — every recommendation is accountable. */
-export const VidyaOfferOutcome = z.object({
+/** The learner's response to an action Wobo offered — every recommendation is accountable. */
+export const WoboOfferOutcome = z.object({
   /** Correlates with the offer card shown in the thread. */
   offer_id: zUuid,
   /** Capability id from the app-side registry (e.g. open_course, prepare_parent_note). */

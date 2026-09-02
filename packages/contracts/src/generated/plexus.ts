@@ -9,7 +9,7 @@
 /** One teaching card. Owned fields are strict; rich activities pass through verbatim. */
 export interface Card {
   id: string;
-  kind: "sim" | "diagram" | "text";
+  kind: 'sim' | 'diagram' | 'text';
   title: string;
   idea: string;
   interaction: Interaction;
@@ -56,7 +56,7 @@ export interface DiscoveryVisual {
 }
 
 export interface DragInteraction {
-  kind: "drag";
+  kind: 'drag';
   prompt: string;
   handle: string;
   to: DragTo;
@@ -76,14 +76,14 @@ export interface ImageSpec {
 
 /** The single act a card asks for before it reveals anything. */
 export interface Interaction {
-  kind: "tap" | "drag" | "slide" | "type";
+  kind: 'tap' | 'drag' | 'slide' | 'type';
   prompt: string;
 }
 
 /** A workbook / boss recall item with a structurally verified answer. */
 export interface Item {
   id: string;
-  type: "mcq" | "fill";
+  type: 'mcq' | 'fill';
   prompt: string;
   options?: string[] | null;
   answer: string;
@@ -92,10 +92,10 @@ export interface Item {
 /** One shape on a discovery stage's reactive canvas (0..100 by 0..62). */
 export interface Mark {
   id: string;
-  shape: "circle" | "rect" | "line" | "ring" | "text";
+  shape: 'circle' | 'rect' | 'line' | 'ring' | 'text';
   x: number;
   y: number;
-  tone?: "ink" | "muted" | "hue";
+  tone?: 'ink' | 'muted' | 'hue';
   x2?: number | null;
   y2?: number | null;
   r?: number | null;
@@ -120,7 +120,7 @@ export interface SceneAudio {
 }
 
 export interface SceneVisual {
-  kind: "svg" | "diagram" | "sim";
+  kind: 'svg' | 'diagram' | 'sim';
   payload: string | SimSpec;
 }
 
@@ -149,12 +149,12 @@ export interface SimSpec {
 
 export interface SlideBind {
   mark: string;
-  prop: "x" | "y" | "r";
+  prop: 'x' | 'y' | 'r';
   at: number[];
 }
 
 export interface SlideInteraction {
-  kind: "slide";
+  kind: 'slide';
   prompt: string;
   min: number;
   max: number;
@@ -166,7 +166,7 @@ export interface SlideInteraction {
 }
 
 export interface TapInteraction {
-  kind: "tap";
+  kind: 'tap';
   prompt: string;
   targets: string[];
   need: number;

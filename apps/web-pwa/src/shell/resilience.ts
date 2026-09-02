@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * Resilience (VIDYA-CAPABILITIES.md family N — the struggler on a 2G connection and a cheap phone).
+ * Resilience (WOBO-CAPABILITIES.md family N — the struggler on a 2G connection and a cheap phone).
  * India-reality law: help still lands on bad network and a laggy device. This module is the one
  * place that decides HOW MUCH grace the moment can afford and whether we're reachable at all —
  * grace degrades, help never does.

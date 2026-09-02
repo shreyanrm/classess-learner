@@ -54,7 +54,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             cache_tier=CacheTier.SEMANTIC,
         ),
         RoutingPolicy(
-            capability="vidya.turn",
+            capability="wobo.turn",
             # A live tutor turn is NEVER cached — context differs every time, and a cached
             # reply is a groundedness bug (she answers a different moment). Track 1 frontier
             # until the real tutor SLM lands in the Track-2 slot.
@@ -148,7 +148,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
         # validation gate's rebuild target (a failed Opus draft is rebuilt on GPT-5.5, best-of
         # promoted — plexus.validate; both minds compete on every quality failure). The chain here
         # is litellm's on-ERROR failover (an Opus outage still yields content): Opus -> GPT-5.5 ->
-        # Haiku. Vidya's turn routing is UNTOUCHED.
+        # Haiku. Wobo's turn routing is UNTOUCHED.
         RoutingPolicy(
             capability="engine.compose",
             track=Track.TRACK_1,
@@ -215,7 +215,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
 
 EXPECTED_CAPABILITIES: tuple[str, ...] = (
     "tutor.turn",
-    "vidya.turn",
+    "wobo.turn",
     "grade.attempt",
     "generate.opener",
     "verify.math",
@@ -235,6 +235,16 @@ EXPECTED_CAPABILITIES: tuple[str, ...] = (
 
 def capabilities() -> tuple[str, ...]:
     return tuple(_POLICIES)
+
+
+# Rebrand compatibility: the deployed web bundle still POSTs the pre-rebrand capability name
+# until it redeploys. Retire this map once no client calls the legacy name.
+_LEGACY_CAPABILITY_ALIASES: dict[str, str] = {"vidya.turn": "wobo.turn"}
+
+
+def canonical_capability(name: str) -> str:
+    """Legacy capability name -> its current name; any other name passes through unchanged."""
+    return _LEGACY_CAPABILITY_ALIASES.get(name, name)
 
 
 def policy(name: str) -> RoutingPolicy:

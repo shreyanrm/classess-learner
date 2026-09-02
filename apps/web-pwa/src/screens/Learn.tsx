@@ -7,7 +7,7 @@
  * quiet, nothing bare, nothing floating. End-to-end layout, cascade entrance.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { motion } from 'framer-motion';
 import { type CSSProperties, type ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -456,7 +456,7 @@ export function GridHero({ prompt, support }: { prompt: string; support?: string
 
 export function Learn() {
   const router = useRouter();
-  const { publishPage } = useVidyaBus();
+  const { publishPage } = useWoboBus();
   const [coursesLit, setCoursesLit] = useState(false);
   const gridRef = useRegisterTarget<HTMLDivElement>('learn-subjects', {
     kind: 'grid',
@@ -473,7 +473,7 @@ export function Learn() {
   });
   const coursesRef = useRegisterTarget<HTMLButtonElement>('learn-courses', {
     kind: 'door',
-    label: 'the custom courses shelf — asking Vidya composes one',
+    label: 'the custom courses shelf — asking Wobo composes one',
   });
 
   useEffect(() => {
@@ -586,7 +586,7 @@ export function Learn() {
               color: 'var(--clss-ink-900)',
             }}
           >
-            Ask Vidya for a course on anything
+            Ask Wobo for a course on anything
           </span>
           <span style={{ fontSize: '0.88rem', color: 'var(--clss-ink-500)', lineHeight: 1.55 }}>
             Black holes, cricket physics, the history of zero — your custom courses will live here

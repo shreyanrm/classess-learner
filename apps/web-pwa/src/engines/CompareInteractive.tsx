@@ -7,12 +7,12 @@
  * differences shown, never tabulated.
  *
  * Spec-driven: the composer emits { left(label,marks), right(label,marks), links[] } where each link
- * ties a left mark to a right mark with a note. Registers as a Vidya scene target so she can read
+ * ties a left mark to a right mark with a note. Registers as a Wobo scene target so she can read
  * what's selected (getSceneState) and DRIVE the comparison — light a pairing to demonstrate
  * (applyTutorAction). Reduced-motion + mute aware; both themes; no new deps.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -268,7 +268,7 @@ export function CompareInteractive({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const [selected, setSelected] = useState<string | null>(null);
   const [revealed, setRevealed] = useState<Set<string>>(() => new Set());
 

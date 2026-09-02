@@ -6,7 +6,7 @@
  * paint, the image fades in when it lands, and a refusal stays quiet — never an error state.
  */
 
-import { useRegisterTarget } from '@classess/vidya';
+import { useRegisterTarget } from '@classess/wobo';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { whisper } from '../screens/course/shared';

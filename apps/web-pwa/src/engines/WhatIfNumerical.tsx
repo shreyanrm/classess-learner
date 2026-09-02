@@ -11,11 +11,11 @@
  * and each solve step is an expression over the values and earlier steps — all evaluated by
  * SimRunner's safe parser, never eval.
  *
- * Registers as a Vidya scene target: she reads the current values + answer (getSceneState) and can
+ * Registers as a Wobo scene target: she reads the current values + answer (getSceneState) and can
  * DRIVE a value to show a what-if herself (applyTutorAction). Reduced-motion + mute aware; both themes.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -180,7 +180,7 @@ export function WhatIfNumerical({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const [values, setValues] = useState<Record<string, number>>(() =>
     Object.fromEntries(spec.values.map((v) => [v.id, v.value])),
   );

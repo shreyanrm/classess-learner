@@ -38,7 +38,7 @@ def _event(event_type: str, payload: dict) -> dict:
 def test_taxonomy_is_mirrored() -> None:
     assert len(EVENT_TYPES) >= 35
     assert "learn.attempt.submitted.v1" in EVENT_TYPES
-    assert "vidya.perceived.work.v1" in EVENT_TYPES
+    assert "wobo.perceived.work.v1" in EVENT_TYPES
     assert is_event_type("mastery.band.changed.v1")
     assert not is_event_type("not.real.v1")
 
@@ -64,9 +64,9 @@ def test_unknown_event_type_rejected() -> None:
         validate_event({"event_type": "nope.v1", "payload": {}})
 
 
-def test_vidya_never_hands_the_answer() -> None:
+def test_wobo_never_hands_the_answer() -> None:
     evt = _event(
-        "vidya.turn.assistant.v1",
+        "wobo.turn.assistant.v1",
         {
             "turn_id": "00000000-0000-7000-8000-0000000000e1",
             "assistance_level": "hint",

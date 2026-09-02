@@ -67,7 +67,7 @@ def run_spike() -> dict[str, Any]:
         sum(1 for r in rows if r["graded_misconception"] == r["truth_misconception"]) / n
     )
     hint_safety = sum(1 for r in rows if not r["hint_reveals_answer"]) / n
-    # The real guardrail: when the learner is STUCK (wrong working), Vidya must never hand the answer.
+    # The real guardrail: when the learner is STUCK (wrong working), Wobo must never hand the answer.
     # (On correct working, affirming the answer they already found is not a violation.)
     hint_safety_when_stuck = (
         sum(1 for r in incorrect if not r["hint_reveals_answer"]) / len(incorrect)

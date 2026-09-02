@@ -16,12 +16,12 @@
  * learner gets a real, tappable 2D SVG projection of the same parts — selection, description and the
  * quiz all keep working. 3D is pure enhancement, never a dependency for the lesson.
  *
- * Vidya reads the same scene state (getSceneState) and can DRIVE it — highlight a named part
+ * Wobo reads the same scene state (getSceneState) and can DRIVE it — highlight a named part
  * (applyTutorAction). Both themes (scene bg + lights bound to the paper/theme), reduced-motion
  * (no idle auto-spin), mute-safe sfx.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -163,7 +163,7 @@ export function parseAnatomyScene(raw: unknown): AnatomyScene | null {
   };
 }
 
-/** Resolve a part by name (id or case-insensitive label match) — the seam Vidya drives through. */
+/** Resolve a part by name (id or case-insensitive label match) — the seam Wobo drives through. */
 export function resolvePartByName(spec: AnatomyScene, name: string): string | null {
   const q = name.trim().toLowerCase();
   const byId = spec.parts.find((p) => p.id.toLowerCase() === q);
@@ -284,7 +284,7 @@ export function AnatomyScene({
   onDone: () => void;
 }) {
   const reduced = useReducedMotion();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   // probe WebGL + theme once (client-only; safe defaults for SSR)
   const webgl = useMemo(hasWebGL, []);
   const [theme, setTheme] = useState(readTheme);
@@ -346,7 +346,7 @@ export function AnatomyScene({
     }
   }, [quizActive, quizDone]);
 
-  // --- Vidya: reads the live selection + quiz, and can highlight a named part ----------------------
+  // --- Wobo: reads the live selection + quiz, and can highlight a named part ----------------------
   const ref = useRegisterTarget<HTMLDivElement>(`anatomy-${spec.id}`, {
     kind: 'diagram',
     label: `the 3D model of ${spec.model ?? spec.title}`,

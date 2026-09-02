@@ -23,7 +23,7 @@ Motion is a **named, shared library** in `/packages/motion`. Build these primiti
 - **spring-bars** — progress/mastery bars settle with a single calm spring (no bounce-fest).
 
 ## Annotation kit (Caveat, hand-drawn — use generously)
-A library of hand-drawn marks Vidya and the system draw onto the canvas: underline, circle, arrow, bracket, check, cross-out,
+A library of hand-drawn marks Wobo and the system draw onto the canvas: underline, circle, arrow, bracket, check, cross-out,
 "look here" tick. Drawn as if by hand (path-draw animation), in Caveat where text. These make the experience feel human and tutored.
 
 ## Rules

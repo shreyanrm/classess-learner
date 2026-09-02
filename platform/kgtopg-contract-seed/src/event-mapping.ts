@@ -31,7 +31,7 @@ export function purposeForEventType(eventType: string): string {
     case 'practice':
     case 'evidence':
     case 'mastery':
-    case 'vidya':
+    case 'wobo':
     case 'create':
       return 'learning';
     case 'meter':

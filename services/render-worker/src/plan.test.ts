@@ -4,10 +4,10 @@
  * `bun test`.
  */
 
+import { expect, test } from 'bun:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { expect, test } from 'bun:test';
-import { FPS, buildPlan, msToFrames } from './plan.ts';
+import { buildPlan, FPS, msToFrames } from './plan.ts';
 
 const REPO = join(import.meta.dir, '..', '..', '..');
 const REFRACTION = join(REPO, 'content/cache/video/refraction-of-light--core--8994385bde32.json');

@@ -10,7 +10,7 @@
 - **Supabase** (you have the project + the Supabase MCP):
   - `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (service role for migrations/RLS via the MCP; keep server-side only).
 - **At least one Track-1 LLM provider** (for when the atom flips from mock → live AI; can stay mocked at first):
-  - `ANTHROPIC_API_KEY` (primary; powers Vidya/generation/grading via the gateway). **Minimum required to go live on the atom.**
+  - `ANTHROPIC_API_KEY` (primary; powers Wobo/generation/grading via the gateway). **Minimum required to go live on the atom.**
   - Optional now, useful soon: `GOOGLE_AI_API_KEY` (Gemini), `OPENAI_API_KEY` — for per-capability routing + second-model cross-checks.
 - **LiteLLM** (the gateway) — no key of its own; it uses the provider keys above.
 - **Observability (recommended, optional):** `LANGFUSE_PUBLIC_KEY` + `LANGFUSE_SECRET_KEY` (LLM cost/latency/quality), `SENTRY_DSN`.

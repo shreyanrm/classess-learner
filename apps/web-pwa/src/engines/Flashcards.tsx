@@ -8,12 +8,12 @@
  * queue and mastery actually move. Per-card schedule persists locally, so a card the learner keeps
  * getting right grows its interval across sessions, exactly as spaced retrieval should.
  *
- * Registers as a Vidya scene target (she can flip and grade to demonstrate). Reduced-motion aware
+ * Registers as a Wobo scene target (she can flip and grade to demonstrate). Reduced-motion aware
  * (the flip becomes a crossfade); mute-aware via sfx; both themes; no new deps.
  */
 
 import { type RetrievalCard, reviewCard } from '@classess/sdk';
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -108,7 +108,7 @@ export function Flashcards({
   onDone: () => void;
 }) {
   const sdk = useSdk();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const reduced = useReducedMotion();
   const [idx, setIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);

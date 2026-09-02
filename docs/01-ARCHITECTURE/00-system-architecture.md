@@ -4,7 +4,7 @@
 Two physically separate data planes, connected only through services and an event contract — never through SQL.
 
 ```
-            ┌──────────────────────────── CLASSESS LEARNER (this repo) ─────────────────────────────┐
+            ┌────────────────────────────────── WOBO (this repo) ───────────────────────────────────┐
             │                                                                                        │
   Clients   │   Expo RN app  ·  React PWA   ──►  BFF / API (FastAPI)  ──►  Domain services           │
             │        │                                   │                      │                    │
@@ -28,7 +28,7 @@ Two physically separate data planes, connected only through services and an even
 
 ## Planes
 1. **Learner Operational Plane (this repo, Supabase):** everything operational — sessions, attempts, canvas state,
-   content cache, the meter, UI state, notifications. RLS-ready, multi-tenant-shaped even though Learner is single-tenant per user.
+   content cache, the meter, UI state, notifications. RLS-ready, multi-tenant-shaped even though Wobo is single-tenant per user.
 2. **Platform Plane (KGtoPG, separate):** canonical identity, the immutable event store, the ontology/prerequisite graph,
    profile, evidence & mastery, the feature store, the platform intelligence layer. **This repo never connects to it via DB.**
 
@@ -51,7 +51,7 @@ Two physically separate data planes, connected only through services and an even
 /apps        expo-app, web-pwa
 /services    api (FastAPI BFF), gateway (LiteLLM router + capability registry), verifier (python sidecar)
 /packages    contracts (TS event + DTO types, generated), ui (design-system components), motion (motion library),
-             vidya (Vidya component + behaviors), config (tokens), sdk (typed client to api/gateway)
+             wobo (Wobo component + behaviors), config (tokens), sdk (typed client to api/gateway)
 /platform    kgtopg-contract-seed (interfaces, event schemas, governed-view DTOs, migrations lifted from School)
 /content     plexus pipeline scaffolding, ontology seed for the atom
 /infra       supabase (migrations, RLS policies), env, ci

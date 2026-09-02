@@ -4,13 +4,13 @@
  * The bindery — where a learner forges their own practice workbook. You pick only from what you
  * have already touched (completed or attempted chapters and topics); untouched topics are visible
  * but honestly unpickable, with a playful note, because you can't drill what you haven't met yet.
- * Each pick stacks as a page in a growing workbook; you choose its size and its balance; Vidya
+ * Each pick stacks as a page in a growing workbook; you choose its size and its balance; Wobo
  * suggests through her normal action path (she reads the builder at code level and can add a pick,
  * set the size, or forge it herself). Binding fires a spring and a sound, then it goes to the
  * downloading queue and lands on your shelf.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import { chaptersBySubject, subjects, topicById } from '../../data/catalog';
@@ -26,12 +26,12 @@ import { createForge } from './forge-store';
 import { type ForgeMix, type ForgeSize, MIX_LABEL, SIZE_LABEL } from './pools';
 
 const SIZES: ForgeSize[] = [10, 20, 40];
-const MIXES: ForgeMix[] = ['recall', 'problem', 'balanced', 'vidya'];
+const MIXES: ForgeMix[] = ['recall', 'problem', 'balanced', 'wobo'];
 const MAX_PICKS = 8;
 
 export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
   const { completed, topicProgress } = useProgress();
-  const { publishPage } = useVidyaBus();
+  const { publishPage } = useWoboBus();
   const reduced = useReducedMotion();
   const [picks, setPicks] = useState<string[]>([]);
   const [size, setSize] = useState<ForgeSize>(20);
@@ -59,7 +59,7 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
     return out;
   }, [pickable]);
 
-  // Vidya's suggestion — a topic the learner recently slipped on that isn't in the stack yet
+  // Wobo's suggestion — a topic the learner recently slipped on that isn't in the stack yet
   const suggestion = useMemo(() => {
     const slipNodes = new Set(loadMind().slips.map((s) => s.nodeId));
     for (const g of groups) {
@@ -332,7 +332,7 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
           </div>
         </div>
 
-        {/* Vidya's suggestion — her normal action path, offered as a tap */}
+        {/* Wobo's suggestion — her normal action path, offered as a tap */}
         <AnimatePresence>
           {suggestion && (
             <motion.button
@@ -354,7 +354,7 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
                 lineHeight: 1.5,
               }}
             >
-              <span style={{ ...whisper, color: 'var(--clss-ultramarine)' }}>Vidya</span>
+              <span style={{ ...whisper, color: 'var(--clss-ultramarine)' }}>Wobo</span>
               <div style={{ marginTop: 3 }}>
                 you slipped on “{suggestion.name}” lately — add it to the forge?
               </div>

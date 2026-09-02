@@ -12,7 +12,7 @@
  * the output.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { python } from '@codemirror/lang-python';
 import { EditorState, StateEffect, StateField } from '@codemirror/state';
 import { Decoration, type DecorationSet, EditorView, type ViewUpdate } from '@codemirror/view';
@@ -208,7 +208,7 @@ export function ExecViz({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const reduce = Boolean(useReducedMotion());
 
   const [steps, setSteps] = useState<TraceStep[] | null>(null);
@@ -335,7 +335,7 @@ export function ExecViz({
     return () => setBar(null);
   }, [setBar, loading, steps]);
 
-  // --- Vidya seams ---
+  // --- Wobo seams ---
   const applyTutorAction = (patch: Record<string, unknown>) => {
     if (patch.run === true) void run();
     if (patch.step === 'forward') stepTo(cursor + 1);
@@ -364,7 +364,7 @@ export function ExecViz({
     applyTutorAction,
   });
 
-  // publish the machine's state so Vidya reasons at code level, never on pixels
+  // publish the machine's state so Wobo reasons at code level, never on pixels
   useEffect(() => {
     bus.publishCanvas({
       nodeId: nodeId ?? spec.nodeId ?? `execviz-${spec.id}`,

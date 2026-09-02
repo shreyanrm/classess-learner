@@ -63,7 +63,7 @@ coloured. Pick by subject, reusing our accents as a semantic thread (the hue *me
 - **Chemistry** → magenta `#CC1E7A` (it is literally the phenolphthalein pink — use it as the reactive bloom).
 - **Biology / life** → acid `#66B300`.
 - **Physics / maths / any brand-mastery or "ignite" beat** → ultramarine `#1F35E0`.
-- **Never molten `#FF5A1F`** — that is Vidya's warmth alone (DESIGN §token law).
+- **Never molten `#FF5A1F`** — that is Wobo's warmth alone (DESIGN §token law).
 
 For a fleeting reactive tint (the flash inside a vessel), use the subject hue at low opacity (0.12–0.25) as a
 soft wash, never a saturated fill. **No gradients, shadows, glows, bevels, or glass** — depth is line weight and

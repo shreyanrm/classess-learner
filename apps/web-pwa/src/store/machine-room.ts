@@ -1,8 +1,8 @@
 'use client';
 
 /**
- * The machine-room selector (VIDYA-CAPABILITIES.md family J — the total-context law). Folds the
- * system's internal truth into one lean digest Vidya reads every turn: a mastery-band snapshot, the
+ * The machine-room selector (WOBO-CAPABILITIES.md family J — the total-context law). Folds the
+ * system's internal truth into one lean digest Wobo reads every turn: a mastery-band snapshot, the
  * FSRS spaced-review due queue, XP/level/streak, the recent event-stream tail (what they clicked,
  * answered, hesitated on), and any in-flight content generation.
  *
@@ -10,7 +10,7 @@
  * event log) and hands them here, so the whole digest is testable without a DOM or a network.
  */
 
-import type { MachineRoomContext } from '@classess/vidya';
+import type { MachineRoomContext } from '@classess/wobo';
 import { levelInfo } from './progress';
 
 /** The event fields the machine room reads — a structural subset of the backbone envelope. */

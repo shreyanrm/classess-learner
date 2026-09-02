@@ -6,11 +6,11 @@
  * distractor line (a plausible-but-wrong line) turns it into a debugging exercise. Verify runs the
  * assembled program (when an expected output is given) or checks the order — deterministic either way.
  *
- * Vidya-drivable: she reads the tray, the assembled order, and correctness, and can arrange the
+ * Wobo-drivable: she reads the tray, the assembled order, and correctness, and can arrange the
  * solution or verify it to demonstrate.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, Reorder, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../../screens/course/shared';
@@ -159,7 +159,7 @@ export function Parsons({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const reduce = useReducedMotion();
 
   const { canonical, initialTray } = useMemo(() => {
@@ -255,7 +255,7 @@ export function Parsons({
     return () => setBar(null);
   }, [setBar, solution.length, busy]);
 
-  // --- Vidya seams ---
+  // --- Wobo seams ---
   const applyTutorAction = (patch: Record<string, unknown>) => {
     if (patch.solve === true) {
       // arrange the canonical solution, drop distractors back to the tray

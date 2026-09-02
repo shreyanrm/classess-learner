@@ -15,11 +15,11 @@
  *
  * All pure SVG / hand-rolled — no heavy deps. Lines are authored slope/intercept (numbers), so
  * nothing is evaluated; the gateway gate (plexus/social.py) mirrors parseSocialScene exactly.
- * Every kind registers a Vidya scene target: she reads the live state (getSceneState) and can
+ * Every kind registers a Wobo scene target: she reads the live state (getSceneState) and can
  * drive it (applyTutorAction). Mute-aware sfx, both themes, reduced-motion aware.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { Reorder, useReducedMotion } from 'framer-motion';
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -263,7 +263,7 @@ function TimelineScene({
   onDone: () => void;
 }) {
   const reduced = useReducedMotion();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const svgRef = useRef<SVGSVGElement>(null);
   const events = [...(spec.events ?? [])].sort((a, b) => a.year - b.year);
   const place = spec.place;
@@ -569,7 +569,7 @@ function EventOrderScene({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const events = spec.events ?? [];
   const byId = new Map(events.map((e) => [e.id, e]));
   const correct = [...events].sort((a, b) => a.year - b.year).map((e) => e.id);
@@ -814,7 +814,7 @@ function SupplyDemandScene({
   onDone: () => void;
 }) {
   const reduced = useReducedMotion();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const svgRef = useRef<SVGSVGElement>(null);
   // parseSocialScene guarantees these for kind 'supplyDemand'
   const supply = spec.supply ?? { label: 'supply', intercept: 0, slope: 1 };

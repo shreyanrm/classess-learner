@@ -2,25 +2,25 @@
 
 /**
  * The conversation — one page where only chat happens. It is the same never-ending thread the
- * docked Vidya carries everywhere: scroll up and the past pages itself in (the archive loads
+ * docked Wobo carries everywhere: scroll up and the past pages itself in (the archive loads
  * lazily, WhatsApp-style); type below and she answers from wherever you actually are. Her ink
  * belongs on the other screens — here she speaks in regular type, person to person.
  */
 
-import { useRegisterTarget, useVidyaBus, VidyaBody } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus, WoboBody } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { OFFLINE_LINE } from '../shell/resilience';
 import { useRouter } from '../shell/router';
 import { SendIcon, WaveformIcon } from '../ui/icons';
 import { AmbientWash, FROST, fluidType, MagneticButton } from '../ui/kit';
-import { useVidyaChat } from '../vidya/chat';
-import { TurnAttachments } from '../vidya/paths';
-import { MuteButton } from '../vidya/speech';
-import { useVidyaVoice } from '../vidya/voice';
+import { useWoboChat } from '../wobo/chat';
+import { TurnAttachments } from '../wobo/paths';
+import { MuteButton } from '../wobo/speech';
+import { useWoboVoice } from '../wobo/voice';
 import { Whisper } from './Learn';
 
-// The conversation's atmosphere (§1 ambient depth) — paper warmth at the crown, Vidya's warm
+// The conversation's atmosphere (§1 ambient depth) — paper warmth at the crown, Wobo's warm
 // molten pool rising at the composer's foot, so the thread sits inside her light. One layer.
 const CHAT_WASH =
   'radial-gradient(72% 32% at 50% 0%, rgba(255,201,60,0.05) 0%, transparent 66%),' +
@@ -28,8 +28,8 @@ const CHAT_WASH =
 
 export function ChatScreen() {
   const router = useRouter();
-  const { turns, ask, busy, mood, setMood, hasOlder, loadOlder, offline, pending } = useVidyaChat();
-  const bus = useVidyaBus();
+  const { turns, ask, busy, mood, setMood, hasOlder, loadOlder, offline, pending } = useWoboChat();
+  const bus = useWoboBus();
   const [draft, setDraft] = useState('');
   const [voiceNote, setVoiceNote] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -57,7 +57,7 @@ export function ChatScreen() {
   // scroll bookkeeping: keep the reader's place when the past prepends, follow the newest line
   const restore = useRef<{ height: number; top: number } | null>(null);
   const lastLen = useRef(turns.length);
-  const voice = useVidyaVoice({ setMood });
+  const voice = useWoboVoice({ setMood });
   const voiceOn =
     voice.status === 'listening' || voice.status === 'speaking' || voice.status === 'connecting';
 
@@ -158,9 +158,9 @@ export function ChatScreen() {
             padding: '7px 12px 7px 10px',
           }}
         >
-          <VidyaBody size={44} mood={busy ? 'thinking' : mood} gaze="pointer" label="Vidya" />
+          <WoboBody size={44} mood={busy ? 'thinking' : mood} gaze="pointer" label="Wobo" />
           <div>
-            <div style={{ fontWeight: 600, color: 'var(--clss-ink)', lineHeight: 1.1 }}>Vidya</div>
+            <div style={{ fontWeight: 600, color: 'var(--clss-ink)', lineHeight: 1.1 }}>Wobo</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--clss-ink-faint)' }}>
               {busy ? 'Thinking…' : 'One conversation, always'}
             </div>
@@ -301,7 +301,7 @@ export function ChatScreen() {
                 padding: '2px 4px',
               }}
             >
-              Vidya is thinking…
+              Wobo is thinking…
             </motion.div>
           )}
         </div>
@@ -328,7 +328,7 @@ export function ChatScreen() {
             onChange={(e) => setDraft(e.target.value)}
             onFocus={() => setMood('listening')}
             onBlur={() => setMood('idle')}
-            placeholder="Talk to Vidya…"
+            placeholder="Talk to Wobo…"
             style={{
               flex: 1,
               height: 52,
@@ -382,7 +382,7 @@ export function ChatScreen() {
               transition={{ type: 'spring', stiffness: 380, damping: 26 }}
               style={{ display: 'inline-flex' }}
             >
-              <MagneticButton variant="primary" onClick={() => {}} ariaLabel="Ask Vidya">
+              <MagneticButton variant="primary" onClick={() => {}} ariaLabel="Ask Wobo">
                 <SendIcon size={13} /> Ask
               </MagneticButton>
             </motion.span>

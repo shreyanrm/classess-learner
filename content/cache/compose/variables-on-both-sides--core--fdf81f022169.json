@@ -1,136 +1,126 @@
 {
- "concept": "Variables on both sides",
- "modality": "compose",
- "difficulty": "core",
- "verified": true,
- "seeded": false,
- "provenance": {
-  "engine": "engine.compose",
-  "model": "anthropic/claude-opus-4-8",
-  "prompt_version": "plexus-v1"
- },
- "artifact": {
-  "topic": "Variables on both sides",
+  "concept": "Variables on both sides",
+  "modality": "compose",
   "difficulty": "core",
-  "cards": [
-   {
-    "id": "c1",
-    "kind": "diagram",
-    "title": "A balanced scale",
-    "idea": "A pan balance holds 3x + 2 on the left and x + 8 on the right, resting level. Both sides are equal.",
-    "interaction": {
-     "kind": "tap",
-     "prompt": "Tap the pan that carries more x blocks"
-    },
-    "reveal": "The left pan has 3 x-blocks, the right has 1. The scale stays level only because equality holds: 3x + 2 = x + 8."
-   },
-   {
-    "id": "c2",
-    "kind": "diagram",
-    "title": "Move the x blocks together",
-    "idea": "To solve, gather all x on one side. Remove one x-block from both pans so the balance stays level.",
-    "interaction": {
-     "kind": "drag",
-     "prompt": "Drag one x-block off each pan"
-    },
-    "reveal": "Removing x from both sides keeps balance: 3x + 2 - x = x + 8 - x, giving 2x + 2 = 8. All x now sits on the left."
-   },
-   {
-    "id": "c3",
-    "kind": "sim",
-    "title": "Isolate x",
-    "idea": "Now 2x + 2 = 8. Remove 2 units from each side, then split what remains between the 2 x-blocks.",
-    "interaction": {
-     "kind": "slide",
-     "prompt": "Slide to subtract 2 from both sides, then share equally"
-    },
-    "reveal": "2x + 2 - 2 = 8 - 2 gives 2x = 6, so x = 3. The same move on both sides keeps the equation true."
-   },
-   {
-    "id": "c4",
-    "kind": "text",
-    "title": "The rule",
-    "idea": "With variables on both sides: do the same operation to both sides. Collect variables on one side, numbers on the other, then divide.",
-    "interaction": {
-     "kind": "tap",
-     "prompt": "Tap to confirm the goal of each step"
-    },
-    "reveal": "Every valid step keeps both sides equal. The aim is to reach x = a single number."
-   },
-   {
-    "id": "c5",
-    "kind": "diagram",
-    "title": "When it flips",
-    "idea": "Solve 5x - 4 = 2x + 5. Collecting x on the left needs subtracting 2x from both sides.",
-    "interaction": {
-     "kind": "drag",
-     "prompt": "Drag 2x off both sides"
-    },
-    "reveal": "5x - 4 - 2x = 2x + 5 - 2x gives 3x - 4 = 5. Then 3x = 9, so x = 3."
-   }
-  ],
-  "workbook": [
-   {
-    "id": "w1",
-    "type": "mcq",
-    "prompt": "To solve 4x + 1 = 2x + 9, what is a correct first step?",
-    "options": [
-     "Subtract 2x from both sides",
-     "Add 2x to the left side only",
-     "Subtract 1 from the left side only"
+  "verified": true,
+  "seeded": false,
+  "provenance": {
+    "engine": "engine.compose",
+    "model": "anthropic/claude-opus-4-8",
+    "prompt_version": "plexus-v1"
+  },
+  "artifact": {
+    "topic": "Variables on both sides",
+    "difficulty": "core",
+    "cards": [
+      {
+        "id": "c1",
+        "kind": "diagram",
+        "title": "A balanced scale",
+        "idea": "A pan balance holds 3x + 2 on the left and x + 8 on the right, resting level. Both sides are equal.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the pan that carries more x blocks"
+        },
+        "reveal": "The left pan has 3 x-blocks, the right has 1. The scale stays level only because equality holds: 3x + 2 = x + 8."
+      },
+      {
+        "id": "c2",
+        "kind": "diagram",
+        "title": "Move the x blocks together",
+        "idea": "To solve, gather all x on one side. Remove one x-block from both pans so the balance stays level.",
+        "interaction": {
+          "kind": "drag",
+          "prompt": "Drag one x-block off each pan"
+        },
+        "reveal": "Removing x from both sides keeps balance: 3x + 2 - x = x + 8 - x, giving 2x + 2 = 8. All x now sits on the left."
+      },
+      {
+        "id": "c3",
+        "kind": "sim",
+        "title": "Isolate x",
+        "idea": "Now 2x + 2 = 8. Remove 2 units from each side, then split what remains between the 2 x-blocks.",
+        "interaction": {
+          "kind": "slide",
+          "prompt": "Slide to subtract 2 from both sides, then share equally"
+        },
+        "reveal": "2x + 2 - 2 = 8 - 2 gives 2x = 6, so x = 3. The same move on both sides keeps the equation true."
+      },
+      {
+        "id": "c4",
+        "kind": "text",
+        "title": "The rule",
+        "idea": "With variables on both sides: do the same operation to both sides. Collect variables on one side, numbers on the other, then divide.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap to confirm the goal of each step"
+        },
+        "reveal": "Every valid step keeps both sides equal. The aim is to reach x = a single number."
+      },
+      {
+        "id": "c5",
+        "kind": "diagram",
+        "title": "When it flips",
+        "idea": "Solve 5x - 4 = 2x + 5. Collecting x on the left needs subtracting 2x from both sides.",
+        "interaction": {
+          "kind": "drag",
+          "prompt": "Drag 2x off both sides"
+        },
+        "reveal": "5x - 4 - 2x = 2x + 5 - 2x gives 3x - 4 = 5. Then 3x = 9, so x = 3."
+      }
     ],
-    "answer": "Subtract 2x from both sides"
-   },
-   {
-    "id": "w2",
-    "type": "fill",
-    "prompt": "Solve 3x + 2 = x + 8. The value of x is ________.",
-    "answer": "3"
-   },
-   {
-    "id": "w3",
-    "type": "mcq",
-    "prompt": "Why can you subtract x from both sides of an equation?",
-    "options": [
-     "It keeps both sides equal",
-     "It makes the numbers smaller",
-     "It removes the equals sign"
+    "workbook": [
+      {
+        "id": "w1",
+        "type": "mcq",
+        "prompt": "To solve 4x + 1 = 2x + 9, what is a correct first step?",
+        "options": [
+          "Subtract 2x from both sides",
+          "Add 2x to the left side only",
+          "Subtract 1 from the left side only"
+        ],
+        "answer": "Subtract 2x from both sides"
+      },
+      {
+        "id": "w2",
+        "type": "fill",
+        "prompt": "Solve 3x + 2 = x + 8. The value of x is ________.",
+        "answer": "3"
+      },
+      {
+        "id": "w3",
+        "type": "mcq",
+        "prompt": "Why can you subtract x from both sides of an equation?",
+        "options": [
+          "It keeps both sides equal",
+          "It makes the numbers smaller",
+          "It removes the equals sign"
+        ],
+        "answer": "It keeps both sides equal"
+      }
     ],
-    "answer": "It keeps both sides equal"
-   }
-  ],
-  "boss": [
-   {
-    "id": "b1",
-    "type": "mcq",
-    "prompt": "Solve 7x - 3 = 3x + 13. What is x?",
-    "options": [
-     "x = 4",
-     "x = 2",
-     "x = 5",
-     "x = 10"
-    ],
-    "answer": "x = 4"
-   },
-   {
-    "id": "b2",
-    "type": "fill",
-    "prompt": "Solve 6x + 5 = 2x + 21. The value of x is ________.",
-    "answer": "4"
-   },
-   {
-    "id": "b3",
-    "type": "mcq",
-    "prompt": "Solve 5x + 8 = 8x - 7. What is x?",
-    "options": [
-     "x = 5",
-     "x = 3",
-     "x = 15",
-     "x = -5"
-    ],
-    "answer": "x = 5"
-   }
-  ]
- },
- "createdAt": "2026-07-06T20:18:17+00:00"
+    "boss": [
+      {
+        "id": "b1",
+        "type": "mcq",
+        "prompt": "Solve 7x - 3 = 3x + 13. What is x?",
+        "options": ["x = 4", "x = 2", "x = 5", "x = 10"],
+        "answer": "x = 4"
+      },
+      {
+        "id": "b2",
+        "type": "fill",
+        "prompt": "Solve 6x + 5 = 2x + 21. The value of x is ________.",
+        "answer": "4"
+      },
+      {
+        "id": "b3",
+        "type": "mcq",
+        "prompt": "Solve 5x + 8 = 8x - 7. What is x?",
+        "options": ["x = 5", "x = 3", "x = 15", "x = -5"],
+        "answer": "x = 5"
+      }
+    ]
+  },
+  "createdAt": "2026-07-06T20:18:17+00:00"
 }

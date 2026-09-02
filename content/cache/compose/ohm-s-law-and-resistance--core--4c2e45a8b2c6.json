@@ -1,134 +1,122 @@
 {
- "concept": "Ohm's law and resistance",
- "modality": "compose",
- "difficulty": "core",
- "verified": true,
- "seeded": false,
- "provenance": {
-  "engine": "engine.compose",
-  "model": "anthropic/claude-opus-4-8",
-  "prompt_version": "plexus-v1"
- },
- "artifact": {
-  "topic": "Ohm's law and resistance",
+  "concept": "Ohm's law and resistance",
+  "modality": "compose",
   "difficulty": "core",
-  "cards": [
-   {
-    "id": "c1",
-    "kind": "diagram",
-    "title": "A simple torch circuit",
-    "idea": "A cell pushes charge through a bulb. The push is voltage; the flow is current. A thin filament resists that flow.",
-    "interaction": {
-     "kind": "tap",
-     "prompt": "Tap the bulb in the circuit to see what lights it up"
-    },
-    "reveal": "Charge flows from the cell, through the wire, into the filament. The filament glows because it resists the current and heats up."
-   },
-   {
-    "id": "c2",
-    "kind": "sim",
-    "title": "Push harder, flow faster",
-    "idea": "For a fixed resistor, more voltage means more current. Double the voltage and the current doubles too.",
-    "interaction": {
-     "kind": "slide",
-     "prompt": "Slide the voltage from 0 V up to 6 V and watch the current reading"
-    },
-    "reveal": "Current rises in step with voltage. Their ratio stays constant. That fixed ratio is the resistance of the wire."
-   },
-   {
-    "id": "c3",
-    "kind": "diagram",
-    "title": "Thin wire, thick wire",
-    "idea": "A thin, long wire resists flow more than a short, thick one, just like a narrow pipe slows water.",
-    "interaction": {
-     "kind": "tap",
-     "prompt": "Tap the wire that lets more current through"
-    },
-    "reveal": "The thick short wire has lower resistance, so more current flows. Thin and long means higher resistance and dimmer glow."
-   },
-   {
-    "id": "c4",
-    "kind": "text",
-    "title": "Naming the rule",
-    "idea": "Ohm's law: V = I R. Voltage equals current times resistance. Resistance R is measured in ohms, symbol omega.",
-    "interaction": {
-     "kind": "type",
-     "prompt": "Type the current when V = 6 V and R = 2 ohm"
-    },
-    "reveal": "I = V divided by R = 6 divided by 2 = 3 A. Rearranging V = I R gives current directly."
-   },
-   {
-    "id": "c5",
-    "kind": "diagram",
-    "title": "When Ohm's law breaks",
-    "idea": "Ohmic conductors keep R constant, so V-I is a straight line. A bulb filament heats up, its R rises, and the line bends.",
-    "interaction": {
-     "kind": "tap",
-     "prompt": "Tap the graph that shows an ohmic resistor"
-    },
-    "reveal": "The straight line is ohmic: R stays fixed. The curved one is the hot filament, where resistance grows as current increases."
-   }
-  ],
-  "workbook": [
-   {
-    "id": "w1",
-    "type": "mcq",
-    "prompt": "A resistor has V = 10 V across it and current I = 2 A. What is its resistance?",
-    "options": [
-     "5 ohm",
-     "20 ohm",
-     "0.2 ohm"
+  "verified": true,
+  "seeded": false,
+  "provenance": {
+    "engine": "engine.compose",
+    "model": "anthropic/claude-opus-4-8",
+    "prompt_version": "plexus-v1"
+  },
+  "artifact": {
+    "topic": "Ohm's law and resistance",
+    "difficulty": "core",
+    "cards": [
+      {
+        "id": "c1",
+        "kind": "diagram",
+        "title": "A simple torch circuit",
+        "idea": "A cell pushes charge through a bulb. The push is voltage; the flow is current. A thin filament resists that flow.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the bulb in the circuit to see what lights it up"
+        },
+        "reveal": "Charge flows from the cell, through the wire, into the filament. The filament glows because it resists the current and heats up."
+      },
+      {
+        "id": "c2",
+        "kind": "sim",
+        "title": "Push harder, flow faster",
+        "idea": "For a fixed resistor, more voltage means more current. Double the voltage and the current doubles too.",
+        "interaction": {
+          "kind": "slide",
+          "prompt": "Slide the voltage from 0 V up to 6 V and watch the current reading"
+        },
+        "reveal": "Current rises in step with voltage. Their ratio stays constant. That fixed ratio is the resistance of the wire."
+      },
+      {
+        "id": "c3",
+        "kind": "diagram",
+        "title": "Thin wire, thick wire",
+        "idea": "A thin, long wire resists flow more than a short, thick one, just like a narrow pipe slows water.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the wire that lets more current through"
+        },
+        "reveal": "The thick short wire has lower resistance, so more current flows. Thin and long means higher resistance and dimmer glow."
+      },
+      {
+        "id": "c4",
+        "kind": "text",
+        "title": "Naming the rule",
+        "idea": "Ohm's law: V = I R. Voltage equals current times resistance. Resistance R is measured in ohms, symbol omega.",
+        "interaction": {
+          "kind": "type",
+          "prompt": "Type the current when V = 6 V and R = 2 ohm"
+        },
+        "reveal": "I = V divided by R = 6 divided by 2 = 3 A. Rearranging V = I R gives current directly."
+      },
+      {
+        "id": "c5",
+        "kind": "diagram",
+        "title": "When Ohm's law breaks",
+        "idea": "Ohmic conductors keep R constant, so V-I is a straight line. A bulb filament heats up, its R rises, and the line bends.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the graph that shows an ohmic resistor"
+        },
+        "reveal": "The straight line is ohmic: R stays fixed. The curved one is the hot filament, where resistance grows as current increases."
+      }
     ],
-    "answer": "5 ohm"
-   },
-   {
-    "id": "w2",
-    "type": "fill",
-    "prompt": "For a fixed resistor, if you double the voltage, the current becomes ________ as much.",
-    "answer": "twice"
-   },
-   {
-    "id": "w3",
-    "type": "mcq",
-    "prompt": "Which wire has the highest resistance?",
-    "options": [
-     "short and thick",
-     "long and thin",
-     "short and thin"
+    "workbook": [
+      {
+        "id": "w1",
+        "type": "mcq",
+        "prompt": "A resistor has V = 10 V across it and current I = 2 A. What is its resistance?",
+        "options": ["5 ohm", "20 ohm", "0.2 ohm"],
+        "answer": "5 ohm"
+      },
+      {
+        "id": "w2",
+        "type": "fill",
+        "prompt": "For a fixed resistor, if you double the voltage, the current becomes ________ as much.",
+        "answer": "twice"
+      },
+      {
+        "id": "w3",
+        "type": "mcq",
+        "prompt": "Which wire has the highest resistance?",
+        "options": ["short and thick", "long and thin", "short and thin"],
+        "answer": "long and thin"
+      }
     ],
-    "answer": "long and thin"
-   }
-  ],
-  "boss": [
-   {
-    "id": "b1",
-    "type": "mcq",
-    "prompt": "A 12 V battery drives 4 A through a wire. If the same wire is used with a 6 V battery, what current flows?",
-    "options": [
-     "2 A",
-     "4 A",
-     "8 A"
-    ],
-    "answer": "2 A"
-   },
-   {
-    "id": "b2",
-    "type": "fill",
-    "prompt": "On a straight-line V-I graph through the origin, the resistance equals the ________ of the line.",
-    "answer": "slope"
-   },
-   {
-    "id": "b3",
-    "type": "mcq",
-    "prompt": "A bulb filament shows a curved V-I graph that bends towards the voltage axis as current rises. This means its resistance is:",
-    "options": [
-     "increasing as it heats up",
-     "constant like an ohmic resistor",
-     "decreasing as it heats up"
-    ],
-    "answer": "increasing as it heats up"
-   }
-  ]
- },
- "createdAt": "2026-07-07T07:51:02+00:00"
+    "boss": [
+      {
+        "id": "b1",
+        "type": "mcq",
+        "prompt": "A 12 V battery drives 4 A through a wire. If the same wire is used with a 6 V battery, what current flows?",
+        "options": ["2 A", "4 A", "8 A"],
+        "answer": "2 A"
+      },
+      {
+        "id": "b2",
+        "type": "fill",
+        "prompt": "On a straight-line V-I graph through the origin, the resistance equals the ________ of the line.",
+        "answer": "slope"
+      },
+      {
+        "id": "b3",
+        "type": "mcq",
+        "prompt": "A bulb filament shows a curved V-I graph that bends towards the voltage axis as current rises. This means its resistance is:",
+        "options": [
+          "increasing as it heats up",
+          "constant like an ohmic resistor",
+          "decreasing as it heats up"
+        ],
+        "answer": "increasing as it heats up"
+      }
+    ]
+  },
+  "createdAt": "2026-07-07T07:51:02+00:00"
 }

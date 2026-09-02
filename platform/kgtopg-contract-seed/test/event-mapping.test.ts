@@ -18,7 +18,7 @@ describe('purpose taxonomy', () => {
     for (const t of [
       'learn.node.entered.v1',
       'practice.item.served.v1',
-      'vidya.opened.v1',
+      'wobo.opened.v1',
       'onboarding.goal.set.v1',
     ]) {
       expect(purposeForEventType(t)).toBe('learning');

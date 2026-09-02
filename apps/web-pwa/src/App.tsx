@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * The spine. Identity → SDK → Vidya's bus → the router → screens. Vidya is the runtime the app
+ * The spine. Identity → SDK → Wobo's bus → the router → screens. Wobo is the runtime the app
  * executes inside (DESIGN.md §4): the home is her front door; everywhere else she is docked,
  * reading the page at code level through the context bus, one tap from expanding.
  */
@@ -10,12 +10,12 @@ import { createSdk, type Sdk } from '@classess/sdk';
 import {
   hasSyncAnchor,
   parseActions,
-  useVidyaBus,
-  type VidyaHandlers,
-  type VidyaMood,
-  VidyaOverlay,
-  VidyaProvider,
-} from '@classess/vidya';
+  useWoboBus,
+  type WoboHandlers,
+  type WoboMood,
+  WoboOverlay,
+  WoboProvider,
+} from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChatScreen } from './screens/ChatScreen';
@@ -54,18 +54,18 @@ import { AppHeader } from './ui/AppHeader';
 import { ClickInk } from './ui/ClickInk';
 import { CeremonyHost } from './ui/ceremony';
 import { sfx } from './ui/sound';
-import { VidyaCompanion } from './vidya/Companion';
+import { WoboCompanion } from './wobo/Companion';
 import {
   appendToArchive,
   CHAT_PAGE,
   type ChatTurn,
   readArchive,
   updateArchiveTurn,
-  VidyaChatProvider,
+  WoboChatProvider,
   writeArchive,
-} from './vidya/chat';
-import { resolveTurnExtras, type TurnExtras } from './vidya/paths';
-import { registerPerformance, SpeechNarrator, speakLine } from './vidya/speech';
+} from './wobo/chat';
+import { resolveTurnExtras, type TurnExtras } from './wobo/paths';
+import { registerPerformance, SpeechNarrator, speakLine } from './wobo/speech';
 
 const LLM_MODE = (import.meta.env.VITE_LLM_MODE as 'mock' | 'live' | undefined) ?? 'mock';
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
@@ -77,7 +77,7 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 const SUPABASE_DEV_JWT = import.meta.env.VITE_SUPABASE_DEV_JWT as string | undefined;
 
-/** Zero-argument destinations Vidya may offer to navigate to. */
+/** Zero-argument destinations Wobo may offer to navigate to. */
 const NAV_ROUTES: Record<string, Route> = {
   home: { name: 'home' },
   chat: { name: 'chat' },
@@ -88,6 +88,8 @@ const NAV_ROUTES: Record<string, Route> = {
 };
 
 export const ONBOARDED_KEY = 'clss-onboarded-v1';
+/** Set once the learner has taken their first turn with her — their first meeting is over. */
+const MET_TURN_KEY = 'clss-wobo-first-turn-v1';
 /** Set by the sign-in beat; the next boot records identity.subject.created.v1 fully attributed. */
 export const SIGNIN_SOURCE_KEY = 'clss-signin-source-v1';
 
@@ -197,12 +199,12 @@ function Screen() {
 }
 
 function AppInner({ sdk }: { sdk: Sdk }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const router = useRouter();
   const { route } = router;
   const { xp, streakDays } = useProgress();
   const [busy, setBusy] = useState(false);
-  const [mood, setMood] = useState<VidyaMood>('idle');
+  const [mood, setMood] = useState<WoboMood>('idle');
   // Offline resilience lives here in the shared chat layer, not in one screen — so every composer
   // (the home front door, the chat page, a suggestion chip) gets the same safe behavior: a message
   // typed with no connection is queued, shown as a pending bubble, and fired once on reconnect,
@@ -216,7 +218,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     let archive = readArchive();
     if (archive.length === 0) {
       // migrate the old tail-only thread cache into the archive, once
-      const cached = sdk.state.loadThreadCache('vidya');
+      const cached = sdk.state.loadThreadCache('wobo');
       if (cached && cached.turns.length > 0) {
         archive = cached.turns
           .filter((t) => t.id !== 'seed')
@@ -230,7 +232,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   const [turns, setTurns] = useState<ChatTurn[]>(() =>
     boot.tail.length > 0
       ? boot.tail
-      : [{ id: 'seed', role: 'vidya', text: 'Ask me anything — I can see the page you are on.' }],
+      : [{ id: 'seed', role: 'wobo', text: 'Ask me anything — I can see the page you are on.' }],
   );
   const loadedStart = useRef(boot.start);
   const [hasOlder, setHasOlder] = useState(boot.start > 0);
@@ -246,7 +248,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   const emptyAtBoot = useRef(boot.tail.length === 0);
   useEffect(() => {
     let cancelled = false;
-    sdk.state.hydrateThread('vidya').then((snapshot) => {
+    sdk.state.hydrateThread('wobo').then((snapshot) => {
       if (cancelled || !snapshot || !emptyAtBoot.current || snapshot.turns.length === 0) return;
       const migrated = snapshot.turns
         .filter((t) => t.id !== 'seed')
@@ -268,10 +270,10 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       bootTurns.current = false;
       return;
     }
-    sdk.state.saveThread('vidya', turns.slice(-60));
+    sdk.state.saveThread('wobo', turns.slice(-60));
   }, [sdk, turns]);
 
-  // A real Vidya turn: she reasons over the page she is plugged into, then speaks and acts on it.
+  // A real Wobo turn: she reasons over the page she is plugged into, then speaks and acts on it.
   const ask = async (text: string) => {
     // No connection — hold it rather than dropping it on the floor. It renders as a pending bubble
     // on the chat page and the reconnect effect below drains the queue once, in order.
@@ -283,7 +285,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       const turn = { ...t, id: `t${readArchive().length}-${t.role}` };
       appendToArchive(turn);
       setTurns((prev) => [...prev, turn]);
-      if (t.role === 'vidya') sfx.chime(); // a gentle chime as she arrives
+      if (t.role === 'wobo') sfx.chime(); // a gentle chime as she arrives
       return turn;
     };
     const userTurn = say({ role: 'user', text });
@@ -300,11 +302,11 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     const recent = [...turns.slice(-7), userTurn].map((t) => ({
       role: t.role,
       text:
-        t.role === 'vidya' && t.text.length > 220
+        t.role === 'wobo' && t.text.length > 220
           ? `${t.text.slice(0, 220)}…`
           : t.text.slice(0, 600),
     }));
-    // The clock rides the context (VIDYA-CAPABILITIES.md family O): a human-readable local
+    // The clock rides the context (WOBO-CAPABILITIES.md family O): a human-readable local
     // wall-clock so wellbeing turns — late-night on a school night, "I'm exhausted" — reason about
     // the real time, not a guess. Weekday + time is all she needs to sanction rest.
     const now = new Date();
@@ -315,7 +317,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     });
     bus.publishTurn({ recentTurns: recent, lastUserInput: text, localTime });
     // What the learner has actually been doing — the last few backbone events, compacted. Carries
-    // her interaction history into the assembled context so Vidya grounds in real activity, not just
+    // her interaction history into the assembled context so Wobo grounds in real activity, not just
     // the static page (context-bus SessionContext.recentEvents; rendered by the gateway).
     const recentEvents = sdk.events
       .getLog()
@@ -330,8 +332,18 @@ function AppInner({ sdk }: { sdk: Sdk }) {
               : '';
         return `${e.event_type.replace(/\.v1$/, '')}${tail}`;
       });
-    bus.publishSession({ sessionId: 'dev-session', recentEvents });
-    // The machine room (VIDYA-CAPABILITIES.md family J — the total-context law): the system's live
+    // The first turn a learner ever takes with her. She introduced herself during setup, so the
+    // gateway greets by name here and never re-introduces (owner law: one introduction, ever).
+    const firstMeeting = !localStorage.getItem(MET_TURN_KEY);
+    if (firstMeeting) {
+      try {
+        localStorage.setItem(MET_TURN_KEY, '1');
+      } catch {
+        // private mode — worst case she is warm twice, never a second introduction
+      }
+    }
+    bus.publishSession({ sessionId: 'dev-session', recentEvents, firstMeeting });
+    // The machine room (WOBO-CAPABILITIES.md family J — the total-context law): the system's live
     // internal truth for this turn — the mastery-band snapshot, the FSRS due queue, XP/level/streak,
     // the event-stream tail, and any in-flight generation. The selector digests it; the gateway
     // renders it compactly so she references it naturally ("3 reviews due", "how far to level 5").
@@ -352,11 +364,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     );
     try {
       const context = bus.assembleContext();
-      const result = await sdk.llm.invoke(
-        'vidya.turn',
-        { context },
-        { consentTier: 'un_elevated' },
-      );
+      const result = await sdk.llm.invoke('wobo.turn', { context }, { consentTier: 'un_elevated' });
       const output = result.output as {
         say?: string;
         actions?: unknown[];
@@ -367,22 +375,22 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       if (output.safety?.flagged) {
         const s = output.safety;
         sdk.events.record('safety.flag.raised.v1', {
-          surface: 'vidya_chat',
+          surface: 'wobo_chat',
           category: s.category === 'crisis' ? 'crisis' : 'moderation',
           severity: s.severity === 'low' || s.severity === 'high' ? s.severity : 'medium',
           action: s.action === 'escalated' ? 'escalated' : 'blocked',
           ...(s.category === 'crisis' ? { escalated_to: 'guardian' as const } : {}),
         });
       }
-      // Navigation on command (VIDYA.md §10) — the one nav path, shared by the chat page and the
+      // Navigation on command (WOBO.md §10) — the one nav path, shared by the chat page and the
       // drawer. Any phrasing that resolves to a place navigates directly: no approval card, a spoken
       // + inked confirmation (SpeechNarrator voices her line), and never silence on a clear miss.
       // Runs on the raw text, so it works even when the classifier would have split it into an
       // approval-gated action or dropped it to inline.
       const nav = resolveDestination(text);
       if (nav) {
-        say({ role: 'vidya', text: 'route' in nav ? nav.say : nav.unknown });
-        sdk.events.record('vidya.turn.assistant.v1', {
+        say({ role: 'wobo', text: 'route' in nav ? nav.say : nav.unknown });
+        sdk.events.record('wobo.turn.assistant.v1', {
           turn_id: crypto.randomUUID(),
           assistance_level: 'coach',
           hint_level: 0,
@@ -400,7 +408,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       }
 
       const actions = parseActions(output.actions ?? []);
-      // Data rights (VIDYA-CAPABILITIES.md family E, the forget verb): show or purge her memory,
+      // Data rights (WOBO-CAPABILITIES.md family E, the forget verb): show or purge her memory,
       // grounded in the real on-device dossier — never the model's guess. Deleting is honest: she
       // reports exactly what left (or that there was nothing), so no fake confirmation ever lands.
       // The forget action is destructive; the gateway prompt gates it (confirm-before-execute) so
@@ -412,7 +420,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
           if (a.scope === 'show') {
             const lines = mindLines(loadMind());
             say({
-              role: 'vidya',
+              role: 'wobo',
               text:
                 lines.length > 0
                   ? `Here is everything I am keeping about you:\n${lines
@@ -424,14 +432,14 @@ function AppInner({ sdk }: { sdk: Sdk }) {
             clearMind();
             bus.publishLifetime({});
             say({
-              role: 'vidya',
+              role: 'wobo',
               text: 'Done — I cleared everything I was keeping about you. We start fresh from here.',
             });
           } else {
             const removed = forgetMatching(a.target ?? '');
             bus.publishLifetime(lifetimeSnapshot());
             say({
-              role: 'vidya',
+              role: 'wobo',
               text:
                 removed.length > 0
                   ? `Forgotten — I let go of “${removed.join('”, “')}”.`
@@ -442,7 +450,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       }
       let spokenTurnId: string | undefined;
       if (forgets.length === 0) {
-        // The five-path orchestrator (VIDYA.md §6): the gateway's classification wins; unclassified
+        // The five-path orchestrator (WOBO.md §6): the gateway's classification wins; unclassified
         // turns fall to the deterministic keyword classifier so every mode works keyless.
         const extras = resolveTurnExtras(
           output as Record<string, unknown>,
@@ -450,7 +458,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
           context.curriculum?.nodeName,
         );
         spokenTurnId = say({
-          role: 'vidya',
+          role: 'wobo',
           text: output.say ?? 'Let us look at this together.',
           ...(extras.path !== 'inline' ? { extras } : {}),
         }).id;
@@ -461,7 +469,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
         }
       }
       // her turn on the event backbone — attributed, grounded, accountable
-      sdk.events.record('vidya.turn.assistant.v1', {
+      sdk.events.record('wobo.turn.assistant.v1', {
         turn_id: crypto.randomUUID(),
         assistance_level: 'coach',
         hint_level: 0,
@@ -478,7 +486,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       bus.dispatch(immediate);
       setMood(actions.length > 0 ? 'explaining' : 'idle');
     } catch {
-      say({ role: 'vidya', text: 'Give me a moment, then ask me again.' });
+      say({ role: 'wobo', text: 'Give me a moment, then ask me again.' });
       setMood('idle');
     } finally {
       setBusy(false);
@@ -546,7 +554,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   }, [sdk]);
 
   // The guard: unauthenticated in live mode always lands on onboarding — the sign-in beat lives
-  // there, in her flow. No route (palette, Vidya nav) can walk around it.
+  // there, in her flow. No route (palette, Wobo nav) can walk around it.
   const locked = !sdk.config.devAuth && !sdk.identity.isAuthenticated();
 
   // Onboarding, the frame-building theatre, and design concepts render standalone — no app chrome
@@ -556,13 +564,13 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   const onHome = route.name === 'home';
 
   return (
-    <VidyaChatProvider value={chat}>
+    <WoboChatProvider value={chat}>
       {locked && route.name !== 'onboarding' ? <Onboarding /> : <Screen />}
       {/* Her ink over the current screen — annotations anchored to real elements. */}
-      <VidyaOverlay />
+      <WoboOverlay />
       {!inFlow && <AppHeader />}
       {/* the chat page IS her — no docked twin over it */}
-      {!inFlow && !onHome && route.name !== 'chat' && <VidyaCompanion />}
+      {!inFlow && !onHome && route.name !== 'chat' && <WoboCompanion />}
       <CommandPalette />
       {/* the award ceremony for a milestone crossing — blur, descend, confetti, fanfare, her jump */}
       <CeremonyHost />
@@ -573,13 +581,13 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       <SpeechNarrator />
       {/* the course-download queue: composes ungened courses one at a time, notifies on ready */}
       <DownloadCenter />
-    </VidyaChatProvider>
+    </WoboChatProvider>
   );
 }
 
-function WithVidya({ sdk }: { sdk: Sdk }) {
+function WithWobo({ sdk }: { sdk: Sdk }) {
   const router = useRouter();
-  const handlers = useMemo<VidyaHandlers>(
+  const handlers = useMemo<WoboHandlers>(
     () => ({
       navigate: (route: string) => {
         const r = NAV_ROUTES[route];
@@ -597,9 +605,9 @@ function WithVidya({ sdk }: { sdk: Sdk }) {
     [router],
   );
   return (
-    <VidyaProvider handlers={handlers}>
+    <WoboProvider handlers={handlers}>
       <AppInner sdk={sdk} />
-    </VidyaProvider>
+    </WoboProvider>
   );
 }
 
@@ -629,7 +637,7 @@ export function App() {
     <SdkProvider value={sdk}>
       <ProgressProvider>
         <RouterProvider initial={initial}>
-          <WithVidya sdk={sdk} />
+          <WithWobo sdk={sdk} />
         </RouterProvider>
       </ProgressProvider>
     </SdkProvider>

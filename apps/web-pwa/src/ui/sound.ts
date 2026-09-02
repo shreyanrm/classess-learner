@@ -4,7 +4,7 @@
  * The sound layer — a tiny synthesized WebAudio voice for the interface. No assets, no files:
  * every sound is a few oscillators and an envelope, generated on the fly. Subtle and premium,
  * never noisy — a soft tick as you advance, a small bloom when you are right, a warm chord when
- * XP lands, a whoosh between pages, a gentle chime when Vidya arrives.
+ * XP lands, a whoosh between pages, a gentle chime when Wobo arrives.
  *
  * ONE global switch: the same mute preference that silences her voice (clss-voice-muted-v1)
  * silences everything here too. We read the key fresh on every play, so a toggle takes effect
@@ -231,7 +231,7 @@ export const sfx = {
     tone(ac, { freq: 2093, type: 'sine', at: 0.34, dur: 0.5, peak: 0.018, attack: 0.01 });
   },
 
-  /** Gentle chime — Vidya lands. A single bell: fundamental plus a soft high partial. */
+  /** Gentle chime — Wobo lands. A single bell: fundamental plus a soft high partial. */
   chime() {
     const ac = audio();
     if (!ac) return;
@@ -274,7 +274,7 @@ export const sfx = {
 
 // --- scoped ambience — a soft nature + play bed, alive ONLY while the adventure world is open ----
 // A looping wind bed, sparse bird chirps, and rare pentatonic plucks, all synthesized. It routes
-// through one gain so it fades in on start, ducks under Vidya, and fully stops on unmount. Muted
+// through one gain so it fades in on start, ducks under Wobo, and fully stops on unmount. Muted
 // (clss-voice-muted-v1) → start() is a no-op, so it never plays and never leaks to other pages.
 
 interface Amb {
@@ -384,7 +384,7 @@ export const ambience = {
     state.timers.push(window.setTimeout(schedulePluck, 1800 + Math.random() * 3000));
   },
 
-  /** Dip under Vidya's voice, or lift back. Safe to call when idle. */
+  /** Dip under Wobo's voice, or lift back. Safe to call when idle. */
   duck(on: boolean) {
     if (!amb || !ctx) return;
     const t = ctx.currentTime;

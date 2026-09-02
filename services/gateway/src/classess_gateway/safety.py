@@ -1,6 +1,6 @@
-"""The child-safety subsystem (VIDYA.md §11) — moderation and crisis detection on Vidya's text.
+"""The child-safety subsystem (WOBO.md §11) — moderation and crisis detection on Wobo's text.
 
-Vidya is a free-text surface used by children, so this runs on her from line one:
+Wobo is a free-text surface used by children, so this runs on her from line one:
 
 - Inbound: every learner message is screened BEFORE it reaches a model. A crisis message is
   answered with a calm supportive line that routes to a responsible adult and real helplines —
@@ -104,7 +104,7 @@ class KeywordClassifier:
 DEFAULT_CLASSIFIER: SafetyClassifier = KeywordClassifier()
 
 
-# --- Vidya's safety copy — calm, warm, certain; no emoji, no exclamation marks -------------------
+# --- Wobo's safety copy — calm, warm, certain; no emoji, no exclamation marks -------------------
 
 CRISIS_SAY = (
     "that sounds really heavy, and I'm glad you told me. you deserve support from a real person "
@@ -145,7 +145,7 @@ def _gated_output(verdict: SafetyVerdict) -> dict[str, Any]:
 
 
 def inbound_text(payload: dict[str, Any]) -> str:
-    """The learner's words inside a vidya.turn payload — last input plus the recent window."""
+    """The learner's words inside a wobo.turn payload — last input plus the recent window."""
     context = payload.get("context") or {}
     turn = context.get("turn") or {}
     parts = [str(turn.get("lastUserInput") or "")]
@@ -155,7 +155,7 @@ def inbound_text(payload: dict[str, Any]) -> str:
     return "\n".join(p for p in parts if p)
 
 
-def screen_vidya_inbound(
+def screen_wobo_inbound(
     payload: dict[str, Any], classifier: SafetyClassifier = DEFAULT_CLASSIFIER
 ) -> dict[str, Any] | None:
     """Screen the learner's message. Returns a full replacement output when the turn must not
@@ -166,7 +166,7 @@ def screen_vidya_inbound(
     return _gated_output(verdict)
 
 
-def screen_vidya_outbound(
+def screen_wobo_outbound(
     output: dict[str, Any], classifier: SafetyClassifier = DEFAULT_CLASSIFIER
 ) -> dict[str, Any]:
     """Screen what the model wants to say. A flagged reply is replaced, never served."""

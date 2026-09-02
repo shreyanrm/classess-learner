@@ -18,7 +18,7 @@
  * (geoMercator + geoPath). No MapLibre, no tiles, no API key: works offline, CSP-safe. topojson-client
  * decodes the bundle if it is ever shipped as a Topology (today it is a plain GeoJSON FeatureCollection).
  *
- * Registers as a Vidya scene target (kind 'region'): she reads the mode/prompt/solved state
+ * Registers as a Wobo scene target (kind 'region'): she reads the mode/prompt/solved state
  * (getSceneState), knows the valid moves (getValidActions) and can DRIVE the map — highlight a named
  * state, reveal the answer (applyTutorAction). Reduced-motion + mute aware; both themes (land / water /
  * stroke bind to CSS vars + the passed hue); sentence-case copy.
@@ -27,7 +27,7 @@
  * spec returns null and is dropped silently — the card still teaches via its base kind.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import type { GeoPermissibleObjects } from 'd3-geo';
 import { geoContains, geoDistance, geoMercator, geoPath } from 'd3-geo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
@@ -270,13 +270,13 @@ function MapSceneImpl({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const reduced = useReducedMotion();
   const it = spec.interaction;
   const [solved, setSolved] = useState(false);
   const [touched, setTouched] = useState(false);
   const [wrongId, setWrongId] = useState<string | null>(null); // last wrong region (feedback flash)
-  const [highlightId, setHighlightId] = useState<string | null>(null); // Vidya-driven highlight
+  const [highlightId, setHighlightId] = useState<string | null>(null); // Wobo-driven highlight
   const [pin, setPin] = useState<[number, number] | null>(null); // locate: placed point (lon,lat)
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -356,7 +356,7 @@ function MapSceneImpl({
     return () => clearTimeout(t);
   }, [wrongId]);
 
-  // Vidya seams — she reads mode/prompt/solved and can highlight a named state or reveal the answer
+  // Wobo seams — she reads mode/prompt/solved and can highlight a named state or reveal the answer
   const answerId =
     it.mode === 'label' ? it.targetId : it.mode === 'choropleth' ? (choro?.answer ?? null) : null;
   const applyTutorAction = (patch: Record<string, unknown>) => {

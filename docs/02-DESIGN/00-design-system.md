@@ -1,10 +1,10 @@
-# 00 · Design System (Classess Learner)
+# 00 · Design System (Wobo)
 
 ## The governing idea
 **Black and white is the world before you understand something. Color is what understanding looks like.**
 - **Black/white = architecture:** chrome, type, canvas, structure are monochrome.
 - **Color = content/meaning:** color belongs to concepts and is **earned** (the *ignite* moment), never used as decoration.
-- **No signature brand hue.** The brand is the *behaviour of color*, not a color. (The one exception: **Vidya owns molten** as her identity — see Vidya doc.)
+- **No signature brand hue.** The brand is the *behaviour of color*, not a color. (The one exception: the tutor **owns molten** as her identity — see `02-wobo.md`.)
 
 ## Tokens (define once in `/packages/config`, consume everywhere)
 
@@ -22,18 +22,18 @@ Hot Red #EC1C2D · Molten #FF4D1A · Tangerine #FF8A00 · Amber #FFB020 · Acid 
 Tiffany #0FC2C0 · Cyan #00B5D8 · (one open slot for future subject)
 ```
 Each subject/concept is assigned one accent; that hue is what its nodes *ignite* into.
-**Molten #FF4D1A is reserved for Vidya** — do not assign it as a subject accent.
+**Molten #FF4D1A is reserved for Wobo** — do not assign it as a subject accent.
 
 ### Type
 - **Display + system:** Google Sans Flex (weights 300–700). Web stand-in: Plus Jakarta Sans until licensed.
-- **Handwritten/human:** Caveat — Vidya's annotations, margin notes, "thinking out loud" marks. Use generously but purposefully.
+- **Handwritten/human:** Caveat — Wobo's annotations, margin notes, "thinking out loud" marks. Use generously but purposefully.
 - **No monospace in product UI.**
 - Scale (fluid): display / h1 / h2 / h3 / body-lg / body / caption. Sentence case everywhere. Generous line-height.
 
 ### Shape & depth
-- **Corners: radius-sm = 2px default** (subtle, not boxy); larger radii only for Vidya's jelly and her panel.
+- **Corners: radius-sm = 2px default** (subtle, not boxy); larger radii only for Wobo's jelly and her panel.
 - **No drop shadows anywhere.** Depth via: 0.5px hairlines (`--ink-100` on paper, low-alpha white on dark), tonal surface steps,
-  and **frost** (backdrop blur) — frost is used **only on overlays** (Vidya's panel, modals, the meter sheet).
+  and **frost** (backdrop blur) — frost is used **only on overlays** (Wobo's panel, modals, the meter sheet).
 
 ### Spacing
 - European-spacey: generous whitespace, calm density. An 8px base grid; sections breathe. Not cramped, not Korean-dense.

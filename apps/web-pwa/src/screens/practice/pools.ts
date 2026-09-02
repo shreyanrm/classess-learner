@@ -22,14 +22,14 @@ import type { MiniWorkbookSpec, WorkbookItem } from '../../engines/MiniWorkbook'
 import { topicNodeUuid } from '../course/Composing';
 
 export type ForgeSize = 10 | 20 | 40;
-export type ForgeMix = 'recall' | 'problem' | 'balanced' | 'vidya';
+export type ForgeMix = 'recall' | 'problem' | 'balanced' | 'wobo';
 
 export const SIZE_LABEL: Record<ForgeSize, string> = { 10: 'quick', 20: 'solid', 40: 'marathon' };
 export const MIX_LABEL: Record<ForgeMix, string> = {
   recall: 'recall-heavy',
   problem: 'problem-heavy',
   balanced: 'balanced',
-  vidya: 'let Vidya balance it',
+  wobo: 'let Wobo balance it',
 };
 
 /** A composed workbook: pages the run steps through, each attributed to one ontology node. */
@@ -38,7 +38,7 @@ export interface ComposedWorkbook {
   total: number;
   /** True when the picks could not honestly fill the requested size — the run is shorter. */
   short: boolean;
-  /** One plain line about how it was composed (Vidya's reasoning for the "balance" mix). */
+  /** One plain line about how it was composed (Wobo's reasoning for the "balance" mix). */
   note: string;
 }
 
@@ -216,14 +216,14 @@ const SIZE_MIX: Record<ForgeMix, { recall: number; problem: number }> = {
   recall: { recall: 0.8, problem: 0.2 },
   problem: { recall: 0.2, problem: 0.8 },
   balanced: { recall: 0.5, problem: 0.5 },
-  vidya: { recall: 0.5, problem: 0.5 },
+  wobo: { recall: 0.5, problem: 0.5 },
 };
 
 const PAGE = 5;
 
 /**
  * Compose picks into a runnable workbook. `slipNodeIds` are the ontology nodes the learner has
- * recently slipped on (mind.slips) — the "let Vidya balance it" mix weighs those topics up.
+ * recently slipped on (mind.slips) — the "let Wobo balance it" mix weighs those topics up.
  */
 export function composeWorkbook(
   picks: string[],
@@ -250,10 +250,10 @@ export function composeWorkbook(
   }
   for (const g of groupItems(topics)) recall.push(g);
 
-  // "let Vidya balance it" — float the slipped topics to the front of each bucket
+  // "let Wobo balance it" — float the slipped topics to the front of each bucket
   const slipped = new Set(slipNodeIds);
   const weigh = (arr: TaggedItem[]): TaggedItem[] => {
-    if (mix !== 'vidya' || slipped.size === 0) return arr;
+    if (mix !== 'wobo' || slipped.size === 0) return arr;
     return [...arr].sort(
       (a, b) =>
         (slipped.has(topicNodeUuid(b.topicId)) ? 1 : 0) -
@@ -308,7 +308,7 @@ export function composeWorkbook(
   const total = chosen.length;
   const short = total < size;
   const note =
-    mix === 'vidya'
+    mix === 'wobo'
       ? slipped.size > 0
         ? 'i weighed this toward what you last slipped on — those come first.'
         : 'nothing recent to catch, so i kept it evenly balanced.'

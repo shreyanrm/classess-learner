@@ -5,7 +5,7 @@
  * @react-three/fiber never enter the bundle unless an anatomy card actually renders and WebGL is
  * present. Pure view: it draws the spec's primitive meshes, hand-rolls a pointer-drag rotation of
  * the whole group (no @react-three/drei — not installed), and reports mesh taps up to the parent,
- * which owns all selection / quiz / Vidya state. Default export because React.lazy needs one.
+ * which owns all selection / quiz / Wobo state. Default export because React.lazy needs one.
  */
 
 import { Canvas, useFrame } from '@react-three/fiber';

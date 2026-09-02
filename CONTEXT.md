@@ -1,4 +1,4 @@
-# CONTEXT.md — Classess Learner, at ecosystem altitude
+# CONTEXT.md — Wobo, at ecosystem altitude
 
 This file is what you are building and why. Read it before you interpret any task. `DESIGN.md` is its companion — how it looks and behaves. Both are law.
 
@@ -8,13 +8,13 @@ Register: precise, dense, opinionated. Product copy is sentence case, no emoji, 
 
 ## 0. How to hold this
 
-The entity being built is the **Dot eVentures education ecosystem**. That is the product. Every app is a participant within it. Do not treat any single app as the center, and never treat KGtoPG as one app's database. Architect ecosystem-first — canonical identity, the ontology, the platform contracts, governance, the truths shared across all products — then build each product to plug in correctly. Classess Learner is the first and flagship product: build it as the reference implementation that proves the pattern every future product follows.
+The entity being built is the **Dot eVentures education ecosystem**. That is the product. Every app is a participant within it. Do not treat any single app as the center, and never treat KGtoPG as one app's database. Architect ecosystem-first — canonical identity, the ontology, the platform contracts, governance, the truths shared across all products — then build each product to plug in correctly. Wobo is the first and flagship product: build it as the reference implementation that proves the pattern every future product follows.
 
 ## 1. The citizens
 
 **Ecosystem (the entity)** → its citizens:
 - **KGtoPG** — the platform citizen (identity + data + intelligence platform every product plugs into).
-- **Classess Learner** — the flagship consumer product. *This build.*
+- **Wobo** — the flagship consumer product of the Classess ecosystem, and the tutor who lives inside it: one name for both. *This build.*
 - Classess Teacher, Classess School (Admin / Teacher / Student / Parent), LearnEng, Edmissions, Feesable, future ventures, and partner apps that connect partially.
 
 Apps share a platform, never tables. Each owns its operational data and runs independently; it joins the ecosystem by authenticating through KGtoPG, emitting attributed events upward, and reading only governed, scoped views downward.
@@ -31,17 +31,17 @@ Properties: full app independence; plug-and-play onboarding via SDK; **data grav
 
 Named services KGtoPG exposes (from the conscience docs): Learner Identity Service · Relationship Service · Consent & Permission Service · Academic Ontology Service · Learning Record Store · Evidence Engine · Learner Graph · Gap Detection Engine · Intervention Orchestrator · Analytics Access Layer.
 
-**What Learner consumes from KGtoPG:** identity and sign-in, the canonical profile, the academic ontology, the prerequisite graph, consent and age gating, the learning record store, and the governed read views. What Learner owns locally: its operational data and its own surfaces. Learner emits its full event firehose upward.
+**What Wobo consumes from KGtoPG:** identity and sign-in, the canonical profile, the academic ontology, the prerequisite graph, consent and age gating, the learning record store, and the governed read views. What it owns locally: its operational data and its own surfaces. It emits its full event firehose upward.
 
-## 3. Classess Learner — the flagship
+## 3. Wobo — the flagship
 
 A B2C, AI-native consumer learning app. **Learners only — no teachers, no schools inside it.** Quality education at an affordable cost; a real profit model with a genuine social cause.
 
 North star: *Brilliant.org, but AI-native, built for India, premium, with mechanics nobody in edtech has shipped.*
 
-It is the **Independent Student entry point** into the larger identity model — a learner starts solo, and the same permanent KGtoPG profile later gains tutor or school spaces if they connect one, without ever fracturing into separate accounts. Learner stays pure; KGtoPG holds the door open.
+It is the **Independent Student entry point** into the larger identity model — a learner starts solo, and the same permanent KGtoPG profile later gains tutor or school spaces if they connect one, without ever fracturing into separate accounts. Wobo stays pure; KGtoPG holds the door open.
 
-Strategic frame: Learner is **top-of-funnel for the entire ecosystem** (Physics Wallah model — a beautiful free consumer brand pulls students and parents, which pulls schools toward the B2B products). The second product is a demand engine, not a distraction.
+Strategic frame: Wobo is **top-of-funnel for the entire ecosystem** (Physics Wallah model — a beautiful free consumer brand pulls students and parents, which pulls schools toward the B2B products). The second product is a demand engine, not a distraction.
 
 ## 4. Locked decisions — non-negotiable
 
@@ -53,7 +53,7 @@ Strategic frame: Learner is **top-of-funnel for the entire ecosystem** (Physics 
 
 ## 5. The intelligence spine
 
-Learner is a citizen; it plugs in by doing exactly three things, and this pattern is the reference for every future product.
+Wobo is a citizen; it plugs in by doing exactly three things, and this pattern is the reference for every future product.
 
 1. **Authenticate through KGtoPG** — one canonical UUID for life, valid across every future product.
 2. **Emit attributed events upward** — a firehose of every meaningful action, each stamped app / user / purpose / consent / type, clean from the first commit.
@@ -85,7 +85,7 @@ Never folded into "guardrails." Each is its own owned component.
 1. **Generation / cost economy.** The three-tier economy of §6, with the tracked margin-per-free-DAU.
 2. **Consent-and-age-tiered intelligence model.** The engine that powers the product must be legally permitted for the exact (often minor) user it is built for. §5.
 3. **Correctness / verification substrate.** No generated content reaches a learner unverified — symbolic CAS verification for maths and physics, re-run unit-tested simulations, numeric bounds, golden second-model cross-checks, and a confidence gate that refuses to serve unverified content. A wrong answer to a child is existential.
-4. **Child-safety subsystem (its own owner).** Moderation on every UGC artifact before another learner sees it; crisis detection and escalation on Vidya conversations; conversation-safety classifiers; no private unmonitored channels between users. Ethical imperative and the fastest way the brand could go radioactive.
+4. **Child-safety subsystem (its own owner).** Moderation on every UGC artifact before another learner sees it; crisis detection and escalation on conversations with Wobo; conversation-safety classifiers; no private unmonitored channels between users. Ethical imperative and the fastest way the brand could go radioactive.
 5. **Grading calibration harness.** Free-reasoning evaluation (text + voice, Indian-English / Hinglish / vernacular) on versioned rubrics, calibrated against human-graded sets with tracked agreement; confidence-banded (auto-accept high, escalate the middle); an "I think I'm right" re-grade path; adversarially hardened against gaming.
 6. **Prerequisite graph.** The edges between the ~3,500 catalog nodes are an owned, expert-validated artifact — Plexus may propose edges, a validation pipeline confirms them before the knowledge twin trusts them. The twin, the budget meter, FSRS scheduling, rabbit-hole bridges, and boss battles all rest on it.
 7. **Integrity / anti-abuse layer.** Earn-it-forward, referrals, and sponsored seats are a fraud surface (Sybil farming, referral abuse). Build the integrity layer from line one.
@@ -96,7 +96,7 @@ Never folded into "guardrails." Each is its own owned component.
 - **The mastery model — two 80%s are not equal.** `Mastery = Performance × Reliability × Independence × Difficulty × Recency × Consistency`. The decisive dimension is **Independence** — what a learner can do alone versus only with support. Shown to learners as plain language ("you understand this with guidance," "you can solve this independently," "revision is now due"), never a raw score or the formula. Bayesian / IRT-style estimation over the evidence underneath.
 - **The ten learning-gap types**, each firing a different intervention: prerequisite, conceptual, procedural, application, retention, language, accuracy, speed, confidence, support-dependency. A gap is never confirmed from one bad answer — validated against a pattern first.
 - **Adaptive explanation.** The system infers *why* a specific wrong answer happened and adapts — never one explanation repeated louder. When it identifies the broken mental model it surfaces the what-if misconception and, where warranted, detonates it (§10).
-- **What the AI learns.** Time-on-item and performance-per-item across the course build each learner's cognitive fingerprint — pace, hesitation, which formats land — which conditions everything Vidya does.
+- **What the AI learns.** Time-on-item and performance-per-item across the course build each learner's cognitive fingerprint — pace, hesitation, which formats land — which conditions everything Wobo does.
 - **The Evidence Graph.** Every conclusion links to the evidence that produced it; no permanent conclusion from a single interaction; every insight carries source lineage and recalculates when permissions change (also the DPDP-clean trust layer).
 - **Honest memory — FSRS spaced retrieval** against the real forgetting curve, reviewing when memory is genuinely fading. Never Duolingo guilt. A detonated misconception is scheduled for re-testing.
 - **The knowledge twin.** The learner's queryable map of their own cognition — "what am I weakest at," "what unlocks astrophysics" — showing not just lit versus dark but **independent versus support-dependent** mastery. The product's signature icon; see `DESIGN.md`.
@@ -112,7 +112,7 @@ Never folded into "guardrails." Each is its own owned component.
 - **Cliffhanger cap** (Zeigarnik + peak-end + variable anticipation): stop one step before the reveal; the cap is a save point and the conversion moment, not a wall.
 - **Endowed progress** (diagnostic credits what they know; the map opens already lit) + **goal-gradient** (many short ~80%-done arcs).
 - **Identity over motivation** — convert fleeting motivation into durable identity in the first ~2 weeks. "Learners." Identity streaks ("24 days of being a learner"). Milestones as titles of self.
-- **Build-don't-watch** (generation effect + productive failure): pose → struggle → reveal, never explain-first; predict-then-check sims, drag-to-assemble proofs, fill-the-missing-step, teach-it-back to Vidya (protégé effect); scaffolding visibly fades (ZPD).
+- **Build-don't-watch** (generation effect + productive failure): pose → struggle → reveal, never explain-first; predict-then-check sims, drag-to-assemble proofs, fill-the-missing-step, teach-it-back to Wobo (protégé effect); scaffolding visibly fades (ZPD).
 - **Two share loops:** challenge loop (share hard problems, never answers; WhatsApp-native) for acquisition; proof loop (a beautiful branded mastery artifact) for credibility. Referrals reward in learning, not cash.
 - **Wanting vs. liking:** weeks 1–2 maximize anticipation (wanting); from week 3 every session must deliver real satisfaction (liking) or wanting curdles into anxiety. The ratio inverts across the first month — the slot-to-ritual crossover at the neural level.
 - Plus: curiosity / information-gap as master drive; Hook model (Investment — attempts train the model, use-improves-product = switching cost); honest loss aversion (real forgetting curve, never guilt); ethically-bounded variable reward (content, never loot boxes); aesthetics as psychology (processing fluency — premium feel makes learning feel achievable, load-bearing).
@@ -121,7 +121,7 @@ Never folded into "guardrails." Each is its own owned component.
 
 - **Misconception detonation** — name the broken mental model, generate the demolishing counterexample from the learner's own numbers. Flagged in FSRS for re-testing.
 - **Earn-it-forward** — a learner's effort funds sponsored free seats, seen landing ("your streak funded a week for a student in Warangal"); felt not claimed; CSR-fundable; defended by the anti-abuse layer.
-- **Teach-to-unlock + protégé UGC economy** — pass by teaching Vidya; great explanations curated into content others see (moderated before any learner sees them).
+- **Teach-to-unlock + protégé UGC economy** — pass by teaching Wobo; great explanations curated into content others see (moderated before any learner sees them).
 - **Free-reasoning as primary input** — the keystone that makes the above possible.
 - **"Written for you" live problems** — personalization as scarcity.
 - **The conversational knowledge twin** — query your own cognition; independent vs. support-dependent.
@@ -132,7 +132,7 @@ Never folded into "guardrails." Each is its own owned component.
 
 ## 11. Category & positioning
 
-- **We are not edtech. We are cognitive fitness — a gym for the mind.** A gym is a ritual, aspirational not remedial, premium without apology, identity-forming. The daily budget is a workout, not a paywall. "I did my Classess" sits in the same mental slot as "I went to the gym." This reframe governs everything downstream.
+- **We are not edtech. We are cognitive fitness — a gym for the mind.** A gym is a ritual, aspirational not remedial, premium without apology, identity-forming. The daily budget is a workout, not a paywall. "I did my Wobo" sits in the same mental slot as "I went to the gym." This reframe governs everything downstream.
 - **The five-year endgame is a trusted mastery credential, not a subscription** — assessment backed by free-reasoning evaluation that parents, colleges, and eventually employers trust (the Duolingo-English-Test / credit-score pattern). Plant the flag early even if it activates later; let it shape every assessment decision now.
 
 ## 12. Business, growth, retention
@@ -142,8 +142,8 @@ Never folded into "guardrails." Each is its own owned component.
 - **Sell the future, not fear** (~80% aspiration). Three honest, closeable gaps: capability (the version of you that mastered it — the twin, future-pacing), status (velvet rope), peer (someone just ahead — pulls, doesn't demoralize). Always show the next self, visible and close.
 - **Monetization** — decoy-structured tiers; annual-first (banks cashflow, lifts LTV); charm pricing; never discount — **gift** instead; "unlimited weekends" to taste-then-lose unlimited; conversion fires at the emotional peak, never on a timer. **Surprise generosity:** learners with strong streaks and real mastery are granted free premium for days or weeks, unannounced — reward the ones who genuinely want to learn; the surprise is the gift. The subscription ask itself is behaviour-timed: it lands just before the wow moment it would unlock, framed as pushing limits, never as a necessity — and its timing varies per user.
 - **The parent surface is an absolution engine, not a dashboard.** Indian parents buy the relief of duty done and visible proof their sacrifice works. A weekly, beautiful, WhatsApp-native artifact from the child's own learning — a visual projection of who the learner is becoming, as a short video, a shareable page, or a graph, in the parent's language — converts anxiety into pride (renewable monthly, zero coercion). Let the child trigger "show mom what I just cracked," wiring renewal into a love relationship, not a fear one. Notifications are timed to genuine progress moments, not a schedule.
-- **WhatsApp is a surface where the product partly lives**, not a notification channel: daily challenge attemptable in-thread, Vidya conversable where the learner already lives, the install-and-onboard cliff collapsed to near zero.
-- **Growth loops** — velvet rope; near-zero-CAC challenge loop; B2B2C both directions (Learner feeds the School sale; schools resell seats); cross-subsidy social model (paid + CSR fund free seats via earn-it-forward); seasonal exam-calendar surges. **Data flywheel** underneath everything — every attempt and hesitation sharpens Plexus and the personalization / churn models. **Build in public** as an acquisition engine — the solo-founder-plus-AI flagship story earns the creator / educator audience Brilliant spent a decade buying.
+- **WhatsApp is a surface where the product partly lives**, not a notification channel: daily challenge attemptable in-thread, Wobo conversable where the learner already lives, the install-and-onboard cliff collapsed to near zero.
+- **Growth loops** — velvet rope; near-zero-CAC challenge loop; B2B2C both directions (Wobo feeds the Classess School sale; schools resell seats); cross-subsidy social model (paid + CSR fund free seats via earn-it-forward); seasonal exam-calendar surges. **Data flywheel** underneath everything — every attempt and hesitation sharpens Plexus and the personalization / churn models. **Build in public** as an acquisition engine — the solo-founder-plus-AI flagship story earns the creator / educator audience Brilliant spent a decade buying.
 
 ## 13. AI, infra, admin
 
@@ -158,7 +158,7 @@ Supabase (Postgres + Auth [phone / OTP-first, Google / Apple] + Realtime + pgvec
 
 ## 15. The conscience layer — adopt and fuse, do not follow blindly
 
-From the pedagogy / ethics vision docs: the Personal Academic OS / one-next-best-action Today spine; the assistance-mode ladder; academic-integrity-by-design + the AI Contribution Record; the Evidence Graph; the evidence-weighting mastery model; the ten learning-gap types feeding which intervention fires; source attribution on every insight (lineage + recalculate-when-permissions-change); the agent-permission ladder + parent controls for minors; "optimize for outcomes not screen time" (go offline, write on paper, take a break); the agentic loop; the academic ontology; multimodal "ask or do anything" + code-switching multilingual; "roles not apps" with the institution hierarchy so Learner interoperates cleanly with School across KGtoPG.
+From the pedagogy / ethics vision docs: the Personal Academic OS / one-next-best-action Today spine; the assistance-mode ladder; academic-integrity-by-design + the AI Contribution Record; the Evidence Graph; the evidence-weighting mastery model; the ten learning-gap types feeding which intervention fires; source attribution on every insight (lineage + recalculate-when-permissions-change); the agent-permission ladder + parent controls for minors; "optimize for outcomes not screen time" (go offline, write on paper, take a break); the agentic loop; the academic ontology; multimodal "ask or do anything" + code-switching multilingual; "roles not apps" with the institution hierarchy so Wobo interoperates cleanly with Classess School across KGtoPG.
 
 ## 16. The central tension — thread it, never resolve it by abandonment
 

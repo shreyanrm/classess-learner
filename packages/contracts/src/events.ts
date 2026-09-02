@@ -33,13 +33,13 @@ export const EventPayloads = {
   'evidence.recorded.v1': P.EvidenceRecorded,
   'mastery.band.changed.v1': P.MasteryBandChanged,
 
-  // Vidya
-  'vidya.opened.v1': P.VidyaOpened,
-  'vidya.turn.user.v1': P.VidyaTurnUser,
-  'vidya.turn.assistant.v1': P.VidyaTurnAssistant,
-  'vidya.hint.escalated.v1': P.VidyaHintEscalated,
-  'vidya.perceived.work.v1': P.VidyaPerceivedWork,
-  'vidya.offer.outcome.v1': P.VidyaOfferOutcome,
+  // Wobo
+  'wobo.opened.v1': P.WoboOpened,
+  'wobo.turn.user.v1': P.WoboTurnUser,
+  'wobo.turn.assistant.v1': P.WoboTurnAssistant,
+  'wobo.hint.escalated.v1': P.WoboHintEscalated,
+  'wobo.perceived.work.v1': P.WoboPerceivedWork,
+  'wobo.offer.outcome.v1': P.WoboOfferOutcome,
 
   // Create-anything
   'create.request.submitted.v1': P.CreateRequestSubmitted,

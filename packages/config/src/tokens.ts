@@ -1,5 +1,5 @@
 /**
- * Classess Learner design tokens — the locked source of truth (DESIGN.md §2).
+ * Wobo design tokens — the locked source of truth (DESIGN.md §2).
  *
  * Black and white carry the entire interface. Colour appears only where it means something:
  * ultramarine is the signature pigment, reserved for brand and mastery — "ignite" at rest.
@@ -63,25 +63,25 @@ export const accent = {
 
 export type AccentName = keyof typeof accent;
 
-/** Molten is Vidya's warmth — her glow, her celebratory pop. Reserved for her alone. */
-export const vidyaMolten = accent.molten;
+/** Molten is Wobo's warmth — her glow, her celebratory pop. Reserved for her alone. */
+export const woboMolten = accent.molten;
 
-/** Accents assignable to earned moments (molten excluded — it is Vidya's). */
+/** Accents assignable to earned moments (molten excluded — it is Wobo's). */
 export const subjectAccents = (Object.keys(accent) as AccentName[]).filter(
   (name): name is Exclude<AccentName, 'molten'> => name !== 'molten',
 );
 
 /**
- * Vidya's highlight + annotation palette — the colours she draws WITH when she points at the page.
+ * Wobo's highlight + annotation palette — the colours she draws WITH when she points at the page.
  * Molten leads (her warmth), ultramarine seconds (the brand's certainty), acid is the rare third.
  */
-export const vidyaHighlight = {
+export const woboHighlight = {
   primary: accent.molten,
   secondary: ultramarine,
   tertiary: accent.acid,
 } as const;
 
-/** Molten interaction shades — Vidya's warmth family; hers, not generic chrome. */
+/** Molten interaction shades — Wobo's warmth family; hers, not generic chrome. */
 export const molten = {
   base: accent.molten,
   hover: '#F04A0E',
@@ -119,19 +119,17 @@ export const chrome = {
   faint: '#B9BBC6',
   /** Soft pointer spotlight on cards — a dark wash on paper, a light glow on graphite. */
   spotlight: 'rgba(18,19,22,0.05)',
-  /** Vidya's light-beam beneath her (grounding glow); dimmed on graphite so it never over-blooms. */
-  vidyaBeam:
+  /** Wobo's light-beam beneath her (grounding glow); dimmed on graphite so it never over-blooms. */
+  woboBeam:
     'linear-gradient(to bottom, rgba(255,133,71,0.42), rgba(255,90,31,0.16) 55%, rgba(255,90,31,0) 88%)',
-  vidyaBeamPool: 'radial-gradient(ellipse at center, rgba(255,90,31,0.3), rgba(255,90,31,0) 70%)',
-  /** The black PNG wordmark inverts to white on graphite. */
-  logoFilter: 'none',
+  woboBeamPool: 'radial-gradient(ellipse at center, rgba(255,90,31,0.3), rgba(255,90,31,0) 70%)',
 } as const;
 
 /**
  * Dark theme — subtle graphite, never black (Fable's spec). Keyed by the full `--clss-*` var name;
  * `[data-theme="dark"]` on the document root swaps these in. Only theme-sensitive tokens appear:
  * neutrals flip, ultramarine lightens for contrast, feedback hues brighten, frost inverts.
- * Vidya's molten body and the decorative subject hues are deliberately absent — they glow on graphite.
+ * Wobo's molten body and the decorative subject hues are deliberately absent — they glow on graphite.
  */
 export const dark: Record<string, string> = {
   // chrome neutrals
@@ -175,7 +173,6 @@ export const dark: Record<string, string> = {
   // frost inverts to a dark graphite glass
   '--clss-frost-on-paper': 'rgba(23,24,28,0.62)',
   '--clss-spotlight': 'rgba(255,255,255,0.05)',
-  '--clss-logo-filter': 'brightness(0) invert(1)',
 };
 
 // --- Shape: sharp corners, 3px default ------------------------------------------------------------
@@ -183,9 +180,9 @@ export const radius = {
   sm: 3,
   md: 6,
   lg: 10,
-  /** Vidya's round jelly. */
+  /** Wobo's round jelly. */
   jelly: 9999,
-  /** Frosted overlays (Vidya's panel, sheets). */
+  /** Frosted overlays (Wobo's panel, sheets). */
   panel: 14,
 } as const;
 
@@ -210,7 +207,7 @@ export const space = {
   16: 128,
 } as const;
 
-// --- Type: Google Sans Flex for all product UI. Caveat only as Vidya's sparse hand. ---------------
+// --- Type: Google Sans Flex for all product UI. Caveat only as Wobo's sparse hand. ---------------
 export const fontFamily = {
   display: "'Google Sans Flex', 'Google Sans Text', 'Plus Jakarta Sans', system-ui, sans-serif",
   system: "'Google Sans Flex', 'Google Sans Text', 'Plus Jakarta Sans', system-ui, sans-serif",
@@ -246,7 +243,7 @@ export const easing = {
 export const zIndex = {
   base: 0,
   canvas: 10,
-  vidyaPresence: 800,
+  woboPresence: 800,
   panel: 900,
   modal: 1000,
   toast: 1100,
@@ -264,9 +261,9 @@ export const tokens = {
   ultramarine,
   ultramarineShades,
   accent,
-  vidyaMolten,
+  woboMolten,
   subjectAccents,
-  vidyaHighlight,
+  woboHighlight,
   molten,
   feedback,
   radius,

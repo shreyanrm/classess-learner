@@ -70,10 +70,10 @@ describe('envelope + factory', () => {
     expect(() => validateEvent({ event_type: 'not.a.real.event.v1', payload: {} })).toThrow();
   });
 
-  it('enforces the Vidya never-hands-the-answer guarantee', () => {
+  it('enforces the Wobo never-hands-the-answer guarantee', () => {
     const bad = {
       event_id: '00000000-0000-7000-8000-0000000000c1',
-      event_type: 'vidya.turn.assistant.v1',
+      event_type: 'wobo.turn.assistant.v1',
       occurred_at: new Date().toISOString(),
       actor,
       context,
@@ -108,7 +108,7 @@ describe('taxonomy registry', () => {
       'learn.attempt.submitted.v1',
       'evidence.recorded.v1',
       'mastery.band.changed.v1',
-      'vidya.perceived.work.v1',
+      'wobo.perceived.work.v1',
       'meter.peak.detected.v1',
       'safety.flag.raised.v1',
     ] as const) {

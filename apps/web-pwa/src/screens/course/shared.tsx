@@ -131,7 +131,7 @@ export function ActionBar({
   gate,
 }: {
   bar: BarState | null;
-  /** When present, the primary advance button is held closed and fills up as Vidya reads. */
+  /** When present, the primary advance button is held closed and fills up as Wobo reads. */
   gate?: { progress: number };
 }) {
   const still = useReducedMotion();
@@ -514,7 +514,7 @@ export function CardBody({
         width: '100%',
         maxWidth,
         margin: '0 auto',
-        // Bottom padding clears the globally docked Vidya orb (Companion.tsx: fixed, ~112px tall at
+        // Bottom padding clears the globally docked Wobo orb (Companion.tsx: fixed, ~112px tall at
         // bottom-right) so the last line of copy is never occluded on short/mobile viewports.
         padding: '28px 24px max(36px, 96px)',
         display: 'flex',

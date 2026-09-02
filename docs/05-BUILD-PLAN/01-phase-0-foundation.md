@@ -9,7 +9,7 @@
 4. **KGtoPG contract seed** (`/platform/kgtopg-contract-seed`): lift event schemas, mastery model, ontology types, evaluation contracts, AI-fabric interfaces, consent primitives, migrations from the School repo; trim institutional surfaces. Provide a **reference implementation** good enough to build/prove the atom (in-repo + Supabase-local).
 5. **Supabase** (`/infra/supabase`): initial operational migrations (`03-supabase.md`), RLS enabled + policies written against the **mock subject**, Realtime + Storage + pgvector configured. **Auth deferred-but-wired**: identity abstraction with `DEV_AUTH=true` mock user; stubbed typed seams for phone-OTP / parental-consent / linking.
 6. **Model gateway + verifier skeleton** (`/services/gateway`, `/services/verifier`): LiteLLM router, capability registry, two-track routing policy config, cache-tier scaffolding, telemetry events; verifier with SymPy deterministic-check harness + confidence gate (even before content exists).
-7. **Design/motion/Vidya packages** scaffolded (`/packages/config ui motion vidya`): tokens, motion primitives stubs, Vidya presence component (identity locked) — not yet wired to a screen.
+7. **Design/motion/Wobo packages** scaffolded (`/packages/config ui motion wobo`): tokens, motion primitives stubs, Wobo presence component (identity locked) — not yet wired to a screen.
 8. **SDK** (`/packages/sdk`): typed client to api + gateway + the KGtoPG governed-view interface + the identity abstraction.
 
 ## Gate (stop here)

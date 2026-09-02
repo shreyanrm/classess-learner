@@ -2,9 +2,9 @@
 
 /**
  * The command palette (DESIGN.md §6) — ⌘K reaches any surface, subject, chapter, topic, or action
- * in the product, and any miss falls through to Vidya. Frosted glass (FROST, ui/kit), sharp 3px
+ * in the product, and any miss falls through to Wobo. Frosted glass (FROST, ui/kit), sharp 3px
  * corners, hairline borders, a spring entrance and a staggered result cascade (MOTION.md §3).
- * Quiet chrome; one accent — the ultramarine spark that is Vidya herself.
+ * Quiet chrome; one accent — the ultramarine spark that is Wobo herself.
  */
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
@@ -14,8 +14,8 @@ import { useSdk } from '../store/sdk';
 import { FROST, fluidType, Kbd, SectionLabel, surface } from '../ui/kit';
 import { getThemePref, setThemePref } from '../ui/theme';
 import { loadViewPref, saveViewPref } from '../ui/viewPref';
-import { useVidyaChat } from '../vidya/chat';
-import { isMuted, setMuted } from '../vidya/speech';
+import { useWoboChat } from '../wobo/chat';
+import { isMuted, setMuted } from '../wobo/speech';
 import { type Route, useRouter } from './router';
 
 type Section = 'go' | 'subjects' | 'library' | 'actions';
@@ -102,7 +102,7 @@ function rank(item: Item, q: string): number {
 
 export function CommandPalette() {
   const router = useRouter();
-  const chat = useVidyaChat();
+  const chat = useWoboChat();
   const sdk = useSdk();
   const reduced = useReducedMotion() ?? false;
   const [open, setOpen] = useState(false);
@@ -120,7 +120,7 @@ export function CommandPalette() {
     const goto = (route: Route) => () => router.navigate(route);
     const items: Item[] = [
       { id: 'home', label: 'Home', hint: 'The front door', section: 'go', route: { name: 'home' } },
-      { id: 'chat', label: 'Chat', hint: 'Talk to Vidya', section: 'go', route: { name: 'chat' } },
+      { id: 'chat', label: 'Chat', hint: 'Talk to Wobo', section: 'go', route: { name: 'chat' } },
       {
         id: 'learn',
         label: 'Learn',
@@ -229,7 +229,7 @@ export function CommandPalette() {
       },
       {
         id: 'act-mute',
-        label: muted ? "Unmute Vidya's voice" : "Mute Vidya's voice",
+        label: muted ? "Unmute Wobo's voice" : "Mute Wobo's voice",
         hint: 'Sound',
         section: 'actions',
         search: 'mute unmute sound voice audio',
@@ -306,7 +306,7 @@ export function CommandPalette() {
   }, [query, corpus, byId]);
 
   const hasQuery = query.trim().length > 0;
-  // The flat navigable list, in visual order — the ask-Vidya row is always the last stop.
+  // The flat navigable list, in visual order — the ask-Wobo row is always the last stop.
   const navItems = useMemo(() => {
     const flat = groups.flatMap((g) => g.items);
     return hasQuery ? [...flat, { id: '__ask__' } as { id: string }] : flat;
@@ -504,7 +504,7 @@ export function CommandPalette() {
                 }
               }}
               placeholder="Where to, or what…"
-              aria-label="Search surfaces, subjects, and actions, or ask Vidya"
+              aria-label="Search surfaces, subjects, and actions, or ask Wobo"
               autoComplete="off"
               spellCheck={false}
               style={{
@@ -593,7 +593,7 @@ export function CommandPalette() {
                         transition: 'background 0.12s ease',
                       }}
                     >
-                      {/* the one accent — the ultramarine spark that is Vidya */}
+                      {/* the one accent — the ultramarine spark that is Wobo */}
                       <span
                         aria-hidden
                         style={{
@@ -608,7 +608,7 @@ export function CommandPalette() {
                       <span
                         style={{ fontSize: fluidType.body, color: surface.ink, fontWeight: 450 }}
                       >
-                        Ask Vidya
+                        Ask Wobo
                       </span>
                       <span
                         style={{

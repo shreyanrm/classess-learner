@@ -96,7 +96,7 @@ export function EnginesGallery() {
 
       <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
         <div style={{ ...whisper }}>
-          math engines · Mafs scenes — draggable, live-bound, Vidya-drivable
+          math engines · Mafs scenes — draggable, live-bound, Wobo-drivable
         </div>
       </div>
       {MATHSCENE_DEMOS.map((spec) => (

@@ -8,7 +8,7 @@
  */
 
 import type { PracticeItem } from '@classess/sdk';
-import { useVidyaBus } from '@classess/vidya';
+import { useWoboBus } from '@classess/wobo';
 import { motion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { chapterById } from '../../data/catalog';
@@ -18,7 +18,7 @@ import { useSdk } from '../../store/sdk';
 import { BossSigil } from '../../ui/art';
 import { CourseIntroScene } from '../../ui/courseIntro';
 import { hueForTopic } from '../../ui/hues';
-import { announceCard } from '../../vidya/speech';
+import { announceCard } from '../../wobo/speech';
 import { BalanceScale } from './BalanceScale';
 import { Boss } from './Boss';
 import { Greeting } from './Greeting';
@@ -79,7 +79,7 @@ export function AtomJourney({
   onResume?: () => void;
 }) {
   const sdk = useSdk();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const { award, completed, setReplay } = useProgress();
 
   // Owner replay law: a completed course can be redone freely, but earns no xp. Captured once at

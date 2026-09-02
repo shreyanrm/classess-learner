@@ -13,7 +13,7 @@
  */
 
 import type { Item as WireItem } from '@classess/contracts/plexus';
-import { useVidyaBus } from '@classess/vidya';
+import { useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { topicById } from '../../data/catalog';
@@ -60,7 +60,7 @@ import { useSdk } from '../../store/sdk';
 import { CourseIntroScene } from '../../ui/courseIntro';
 import { hueForTopic } from '../../ui/hues';
 import { cascade, rise } from '../../ui/kit';
-import { useVidyaChat } from '../../vidya/chat';
+import { useWoboChat } from '../../wobo/chat';
 import { Greeting } from './Greeting';
 import type { BarState } from './shared';
 import {
@@ -603,7 +603,7 @@ function ItemSet({
   awardCorrect: (item: GenItem, index: number) => void;
 }) {
   const sdk = useSdk();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const [entries, setEntries] = useState<string[]>(() => items.map(() => ''));
   const [results, setResults] = useState<boolean[] | null>(null);
   const round = useRef(0);
@@ -1088,7 +1088,7 @@ export function Composing({
   onResume?: () => void;
 }) {
   const sdk = useSdk();
-  const { setMood } = useVidyaChat();
+  const { setMood } = useWoboChat();
   const { award, completed, setReplay } = useProgress();
 
   // Owner replay law: a completed course replays freely but earns no xp. Captured once at mount —

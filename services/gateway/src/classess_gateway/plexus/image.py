@@ -1,6 +1,6 @@
 """engine.image — Nano Banana (Gemini) for complex imagery SVG cannot express.
 
-A Plexus content engine. Most diagrams are SVG (glanceable, annotatable by Vidya); this
+A Plexus content engine. Most diagrams are SVG (glanceable, annotatable by Wobo); this
 engine is reserved for the complex biological / structural imagery SVG cannot express —
 a plant cell, the human body. It composes an educational-diagram prompt from a concept,
 moderates it, generates a labeled diagram on a white background via ``gemini-2.5-flash-image``

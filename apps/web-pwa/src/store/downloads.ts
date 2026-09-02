@@ -2,7 +2,7 @@
 
 /**
  * The course-download queue — on-first-start generation, one in flight per learner (CONTEXT.md
- * content law). A learner taps an ungenerated course; instead of dropping into a spinner, Vidya
+ * content law). A learner taps an ungenerated course; instead of dropping into a spinner, Wobo
  * composes it in the background and lands a notification the moment it is ready. Further taps
  * queue politely behind it (strict FIFO, one at a time), each showing its place in line.
  *

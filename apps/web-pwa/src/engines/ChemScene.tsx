@@ -18,7 +18,7 @@
  * honest fallback (the SMILES + formula) if the library is unavailable — the same "refusal is
  * invisible" doctrine the rest of Plexus follows. The balancer and titration need no dependency.
  *
- * Registers as a Vidya scene target: she reads the live coefficients / pH (getSceneState), knows the
+ * Registers as a Wobo scene target: she reads the live coefficients / pH (getSceneState), knows the
  * valid moves (getValidActions), and can DRIVE the scene herself — set a coefficient, add a drop
  * (applyTutorAction). Reduced-motion + mute aware; both themes; sentence-case, playful copy.
  *
@@ -26,7 +26,7 @@
  * balance spec that would be refused server-side is refused here too (one grammar, both ends).
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -377,7 +377,7 @@ function Balancer({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const terms = useMemo(() => [...spec.reactants, ...spec.products], [spec]);
   // every coefficient starts at 1 — the learner rediscovers the conserving set
   const [coeffs, setCoeffs] = useState<number[]>(() => terms.map(() => 1));
@@ -683,7 +683,7 @@ function Titration({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const dropVol = spec.dropVolumeMl ?? 0.5;
   const equivMl = equivalenceVolumeMl(spec);
   // enough headroom to walk past the endpoint and see the curve's far arm
@@ -1012,7 +1012,7 @@ async function loadRDKit(): Promise<any> {
 }
 
 function Structure({ spec, hue }: { spec: ChemStructureSpec; hue: string }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const [svg, setSvg] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -1106,7 +1106,7 @@ async function load3Dmol(): Promise<any> {
 }
 
 function Molecule3D({ spec, hue }: { spec: ChemMolecule3DSpec; hue: string }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const holder = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState(false);
 

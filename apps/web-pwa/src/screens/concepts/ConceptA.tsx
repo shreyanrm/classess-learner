@@ -4,7 +4,7 @@
  * Concept A — "Stage & rail".
  *
  * Compositional idea: the screen is split into a persistent rail of life (left) and a stage
- * (right). Vidya is not a widget on the page — she owns a physical column of the product,
+ * (right). Wobo is not a widget on the page — she owns a physical column of the product,
  * breathing, watching, reacting, keeping the streak and the flame. Content plays on the stage
  * and she never leaves. Scroll from the home act into the lesson act; the rail stays.
  *
@@ -13,10 +13,10 @@
  * real objects.
  */
 
-import { VidyaBody, type VidyaMood } from '@classess/vidya';
+import { WoboBody, type WoboMood } from '@classess/wobo';
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { ClassessLogo } from '../../ui/Logo';
+import { WoboLogo } from '../../ui/Logo';
 
 const INK = 'var(--clss-ink-900)';
 const INK_60 = 'color-mix(in srgb, var(--clss-ink) 58%, transparent)';
@@ -354,7 +354,7 @@ function NumberPad({
 
 /* ----------------------------------------------------------------------- rail */
 
-function Rail({ mood, solved }: { mood: VidyaMood; solved: boolean }) {
+function Rail({ mood, solved }: { mood: WoboMood; solved: boolean }) {
   const week = useMemo(
     () => [true, true, true, true, true, false, false].map((on, i) => ({ on, id: `d${i}` })),
     [],
@@ -381,7 +381,7 @@ function Rail({ mood, solved }: { mood: VidyaMood; solved: boolean }) {
       }}
     >
       <div style={{ alignSelf: 'flex-start' }}>
-        <ClassessLogo height={14} />
+        <WoboLogo height={14} />
       </div>
 
       <div style={{ flex: 1 }} />
@@ -401,7 +401,7 @@ function Rail({ mood, solved }: { mood: VidyaMood; solved: boolean }) {
           }}
         />
         <div style={{ position: 'absolute', left: 14, top: 10 }}>
-          <VidyaBody size={140} mood={mood} gaze="pointer" />
+          <WoboBody size={140} mood={mood} gaze="pointer" />
         </div>
       </div>
 
@@ -855,7 +855,7 @@ function LessonAct({ practice }: { practice: ReturnType<typeof usePractice> }) {
 
 export function ConceptA() {
   const practice = usePractice('5');
-  const mood: VidyaMood =
+  const mood: WoboMood =
     practice.status === 'solved'
       ? 'celebrate'
       : practice.status === 'wrong'

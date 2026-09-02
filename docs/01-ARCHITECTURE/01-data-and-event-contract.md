@@ -42,7 +42,7 @@ Learn loop: `learn.node.entered.v1`, `learn.opener.posed.v1`, `learn.attempt.sub
   `learn.modality.switched.v1`, `learn.node.completed.v1`
 Practice/evidence: `practice.item.served.v1`, `practice.item.answered.v1`, `practice.retrieval.scheduled.v1` (FSRS),
   `evidence.recorded.v1`, `mastery.band.changed.v1`
-Vidya: `vidya.opened.v1`, `vidya.turn.user.v1`, `vidya.turn.assistant.v1`, `vidya.hint.escalated.v1`, `vidya.perceived.work.v1`
+Wobo: `wobo.opened.v1`, `wobo.turn.user.v1`, `wobo.turn.assistant.v1`, `wobo.hint.escalated.v1`, `wobo.perceived.work.v1`
 Create-anything: `create.request.submitted.v1`, `create.course.compiled.v1`, `create.node.mapped.v1`
 Meter/conversion: `meter.session.opened.v1`, `meter.budget.consumed.v1`, `meter.peak.detected.v1`, `conversion.moment.shown.v1`, `conversion.completed.v1`
 Parent: `parent.linked.v1`, `parent.digest.sent.v1`, `parent.query.asked.v1`

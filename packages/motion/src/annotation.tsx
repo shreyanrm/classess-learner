@@ -7,7 +7,7 @@ import { EASE, SEC } from './motion-tokens';
 import { useReducedMotion } from './use-reduced-motion';
 
 /**
- * Annotation kit — hand-drawn marks Vidya and the system draw onto the canvas. Each is an SVG
+ * Annotation kit — hand-drawn marks Wobo and the system draw onto the canvas. Each is an SVG
  * path-draw (`pathLength` 0 -> 1), so it appears as if drawn by hand. Text uses Caveat.
  *
  * Calm equivalent (prefers-reduced-motion): the mark appears already drawn, with a quiet fade — no

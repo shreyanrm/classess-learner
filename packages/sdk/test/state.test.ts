@@ -111,9 +111,9 @@ describe('mergeLearnerState reconciliation', () => {
 });
 
 describe('mergeThread reconciliation', () => {
-  const turnsA = [{ id: '1', role: 'vidya' as const, text: 'hello' }];
+  const turnsA = [{ id: '1', role: 'wobo' as const, text: 'hello' }];
   const turnsB = [
-    { id: '1', role: 'vidya' as const, text: 'hello' },
+    { id: '1', role: 'wobo' as const, text: 'hello' },
     { id: '2', role: 'user' as const, text: 'hi' },
   ];
 
@@ -138,22 +138,39 @@ describe('LocalStateProvider', () => {
     const s = state({ xp: 42, completedTopics: ['m1-1'] });
     provider.save(s);
     expect((await provider.hydrate()).xp).toBe(42);
-    provider.saveThread('vidya', [{ id: 't1', role: 'user', text: 'hey' }]);
-    const thread = provider.loadThreadCache('vidya');
+    provider.saveThread('wobo', [{ id: 't1', role: 'user', text: 'hey' }]);
+    const thread = provider.loadThreadCache('wobo');
     expect(thread?.turns[0]?.text).toBe('hey');
     // Same keys the app has always used.
     expect(storage.map.has(STATE_CACHE_KEY)).toBe(true);
-    expect(storage.map.has('clss-vidya-conversation-v1')).toBe(true);
+    expect(storage.map.has('clss-wobo-conversation-v1')).toBe(true);
   });
 
   it('reads a legacy bare-array conversation cache', () => {
     const storage = new FakeStorage();
     storage.setItem(
-      'clss-vidya-conversation-v1',
-      JSON.stringify([{ id: 'seed', role: 'vidya', text: 'ask me anything' }]),
+      'clss-wobo-conversation-v1',
+      JSON.stringify([{ id: 'seed', role: 'wobo', text: 'ask me anything' }]),
     );
-    const thread = new LocalStateProvider(storage).loadThreadCache('vidya');
+    const thread = new LocalStateProvider(storage).loadThreadCache('wobo');
     expect(thread?.turns).toHaveLength(1);
+  });
+
+  it("carries a pre-rebrand conversation over: the old key and the old 'vidya' role both read", () => {
+    const storage = new FakeStorage();
+    storage.setItem(
+      'clss-vidya-conversation-v1',
+      JSON.stringify({
+        turns: [{ id: 'a', role: 'vidya', text: 'from before the rename' }],
+        updatedAt: '2026-07-06T08:00:00Z',
+      }),
+    );
+    const provider = new LocalStateProvider(storage);
+    const thread = provider.loadThreadCache('wobo');
+    expect(thread?.turns).toEqual([{ id: 'a', role: 'wobo', text: 'from before the rename' }]);
+    // The next save migrates it onto the new key; the legacy one is left untouched.
+    provider.saveThread('wobo', thread?.turns ?? []);
+    expect(storage.map.has('clss-wobo-conversation-v1')).toBe(true);
   });
 });
 
@@ -162,7 +179,7 @@ describe('SupabaseStateProvider hydration', () => {
   // Live mode scopes the local cache to the account so two users on one browser never share a
   // bucket — the provider reads/writes under these per-subject keys, not the bare legacy keys.
   const SCOPED_STATE = `${STATE_CACHE_KEY}:${SUBJECT}`;
-  const SCOPED_VIDYA = `clss-vidya-conversation-v1:${SUBJECT}`;
+  const SCOPED_WOBO = `clss-wobo-conversation-v1:${SUBJECT}`;
 
   function fakeRest(remoteRow: Record<string, unknown> | null) {
     const upserts: { table: string; row: Record<string, unknown> }[] = [];
@@ -227,28 +244,55 @@ describe('SupabaseStateProvider hydration', () => {
   it('prefers the fresher remote conversation on thread hydrate', async () => {
     const storage = new FakeStorage();
     storage.setItem(
-      SCOPED_VIDYA,
+      SCOPED_WOBO,
       JSON.stringify({
-        turns: [{ id: 'a', role: 'vidya', text: 'old' }],
+        turns: [{ id: 'a', role: 'wobo', text: 'old' }],
         updatedAt: '2026-07-06T08:00:00Z',
       }),
     );
     const { rest } = fakeRest({
       subject_id: SUBJECT,
-      thread: 'vidya',
+      thread: 'wobo',
       turns: [
-        { id: 'a', role: 'vidya', text: 'old' },
+        { id: 'a', role: 'wobo', text: 'old' },
         { id: 'b', role: 'user', text: 'new from the other device' },
       ],
       client_updated_at: '2026-07-06T09:30:00Z',
     });
     const provider = new SupabaseStateProvider(rest, SUBJECT, storage, 1);
-    const merged = await provider.hydrateThread('vidya');
+    const merged = await provider.hydrateThread('wobo');
     expect(merged?.turns).toHaveLength(2);
     // The cache was reconciled too.
-    expect(
-      (JSON.parse(storage.map.get(SCOPED_VIDYA) ?? '{}') as ThreadSnapshot).turns,
-    ).toHaveLength(2);
+    expect((JSON.parse(storage.map.get(SCOPED_WOBO) ?? '{}') as ThreadSnapshot).turns).toHaveLength(
+      2,
+    );
+  });
+
+  it("falls back to the pre-rebrand 'vidya' thread row when no 'wobo' row exists yet", async () => {
+    const queries: string[] = [];
+    const rest = {
+      selectOne: async (_table: string, query: string) => {
+        queries.push(query);
+        if (query.includes('thread=eq.vidya')) {
+          return {
+            subject_id: SUBJECT,
+            thread: 'vidya',
+            turns: [{ id: 'a', role: 'vidya', text: 'from before the rename' }],
+            client_updated_at: '2026-07-06T09:30:00Z',
+          };
+        }
+        return null;
+      },
+      upsert: async () => {},
+    };
+    const merged = await new SupabaseStateProvider(
+      rest,
+      SUBJECT,
+      new FakeStorage(),
+      1,
+    ).hydrateThread('wobo');
+    expect(merged?.turns).toEqual([{ id: 'a', role: 'wobo', text: 'from before the rename' }]);
+    expect(queries.some((q) => q.includes('thread=eq.wobo'))).toBe(true);
   });
 });
 

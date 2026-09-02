@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * Onboarding — Vidya is the whole interface (owner redesign, 2026-07-07). She settles at the
+ * Onboarding — Wobo is the whole interface (owner redesign, 2026-07-07). She settles at the
  * centre of the screen and asks one thing at a time, aloud (voice + a line that fades in whole,
  * gently rising — no typing). There is no thread, no dots, no chrome: the last beat fades out as
  * the next fades in, so it reads as one continuous conversation. She greets, then — before any
@@ -13,9 +13,10 @@
  * (grounds her analogies from lesson one). She seals it with a personalised-plan promise, you step in.
  */
 
-import { useVidyaBus, VidyaBody, type VidyaMood } from '@classess/vidya';
+import { fontFamily } from '@classess/config';
+import { useWoboBus, WoboBody, type WoboMood } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { ONBOARDED_KEY, SIGNIN_SOURCE_KEY } from '../App';
 import { ensureFrame } from '../data/frame';
 import { useRouter } from '../shell/router';
@@ -23,11 +24,17 @@ import { rememberInterests } from '../store/mind';
 import { useSdk } from '../store/sdk';
 import { AmbientWash, cascade, fluidSpace, MagneticButton, rise } from '../ui/kit';
 import { sfx } from '../ui/sound';
-import { MuteButton, speakLine } from '../vidya/speech';
+import { estimateReadMs, MuteButton, speakLine } from '../wobo/speech';
 import { BoardPicker, GradePicker } from './you/GradeBoardPicker';
-import { ageFromBirthdate, loadProfile, resolveBoardId, saveProfile } from './you/profile';
+import {
+  ageFromBirthdate,
+  hasStoredName,
+  loadProfile,
+  resolveBoardId,
+  saveProfile,
+} from './you/profile';
 
-// The first-run atmosphere (§1 ambient depth) — a soft brand dawn blooming from where Vidya
+// The first-run atmosphere (§1 ambient depth) — a soft brand dawn blooming from where Wobo
 // settles at the centre, so she arrives inside her own light. Token-driven; both themes.
 const ONBOARDING_WASH =
   'radial-gradient(46% 40% at 50% 38%, var(--clss-ultramarine-soft) 0%, transparent 66%),' +
@@ -35,10 +42,67 @@ const ONBOARDING_WASH =
 
 /** Survives the Google round-trip in this tab: on return, resume at the name beat (given-name prefilled). */
 const ONB_RETURN_KEY = 'clss-onb-return';
+/**
+ * She introduces herself ONCE, ever (owner law, 2026-09-02). This marks that the first meeting has
+ * happened on this device; a learner who already knows her is greeted by name and never re-introduced.
+ */
+const MET_KEY = 'clss-wobo-met-v1';
+
+/**
+ * The first line a learner ever hears from her — owner copy, verbatim. "Hey there." is deliberately
+ * a two-word sentence: the TTS pipeline synthesizes sentence by sentence, so her voice starts on a
+ * short one and the rest streams behind it.
+ */
+const FIRST_MEETING_LINE =
+  "Hey there. I'm Wobo, your AI wobot. I'll help you learn, and I'll be with you every step of the way.";
+
+/** Her hand's pace when she writes a line letter by letter (matches the overlay's note pen, ms/char). */
+const MS_PER_CHAR = 34;
+
+/** Off-screen but announced — the written line reaches a screen reader whole, not letter by letter. */
+const SR_ONLY: CSSProperties = {
+  position: 'absolute',
+  width: 1,
+  height: 1,
+  padding: 0,
+  margin: -1,
+  overflow: 'hidden',
+  clipPath: 'inset(50%)',
+  whiteSpace: 'nowrap',
+  border: 0,
+};
+
+/**
+ * Has this learner met her before? A name they actually typed counts too — a re-run is never a first
+ * meeting. (Must not use loadProfile(): it fills in the seed name when nothing is stored, which would
+ * make every learner look like an old friend and silence the introduction for good.)
+ */
+function hasMet(): boolean {
+  try {
+    return localStorage.getItem(MET_KEY) === '1' || hasStoredName();
+  } catch {
+    return false;
+  }
+}
+function markMet(): void {
+  try {
+    localStorage.setItem(MET_KEY, '1');
+  } catch {
+    // private mode — she simply introduces herself again on a device that can't remember
+  }
+}
+/** The given name she already knows them by, if any. */
+function knownName(): string {
+  try {
+    return loadProfile().name?.trim().split(/\s+/)[0] ?? '';
+  } catch {
+    return '';
+  }
+}
 const spring = { type: 'spring', stiffness: 320, damping: 30 } as const;
 const softSpring = { type: 'spring', stiffness: 220, damping: 24 } as const;
 
-/** Framed as fun, gathered as signal — Vidya's analogies reach for these. */
+/** Framed as fun, gathered as signal — Wobo's analogies reach for these. */
 const LIKES = [
   'cricket',
   'football',
@@ -125,15 +189,19 @@ const fieldStyle: React.CSSProperties = {
 export function Onboarding() {
   const router = useRouter();
   const sdk = useSdk();
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const reduced = useReducedMotion() ?? false;
 
   const [phase, setPhase] = useState<Phase>('greet');
   // Her current line: it types on screen and plays aloud. `onDone` runs when the typing finishes
   // (reveal the beat's input, or — for a statement beat like the greeting — advance on its own).
   const [line, setLine] = useState('');
+  // Her introduction alone is WRITTEN, letter by letter in her hand (Caveat) — everything after it
+  // fades in whole. `written` is how many characters of the current line her pen has laid down.
+  const [handwriting, setHandwriting] = useState(false);
+  const [written, setWritten] = useState(0);
   const [promptReady, setPromptReady] = useState(false);
-  const [mood, setMood] = useState<VidyaMood>('idle');
+  const [mood, setMood] = useState<WoboMood>('idle');
 
   const [name, setName] = useState('');
   // She asks when they were born (free text — a year or a full date); age is derived, not asked.
@@ -167,22 +235,78 @@ export function Onboarding() {
   // --- she speaks a line: it fades in whole (gently rising — no typing) and plays aloud. The
   // input/continue reveal keys off a calm delay after the line settles, not a character count. -----
   const REVEAL_DELAY = 820;
-  const say = (text: string, onDone?: () => void) => {
+  const penTimer = useRef<number | undefined>(undefined);
+  /** A ceiling on waiting for her voice, so a dead TTS can never strand the learner on a beat. */
+  const voiceTimer = useRef<number | undefined>(undefined);
+  const say = (
+    text: string,
+    onDone?: () => void,
+    opts?: { hand?: boolean; awaitVoice?: boolean },
+  ) => {
     setPromptReady(false);
     setLine(text);
-    void speakLine(text);
-    window.clearTimeout(revealTimer.current);
-    revealTimer.current = window.setTimeout(
-      () => (onDone ? onDone() : setPromptReady(true)),
-      REVEAL_DELAY,
+    // Her hand, when the line is written rather than spoken-and-shown: one character per tick,
+    // instant under reduced motion. The pen and her voice start together — one performance.
+    window.clearInterval(penTimer.current);
+    const hand = Boolean(opts?.hand) && !reduced;
+    setHandwriting(Boolean(opts?.hand));
+    setWritten(hand ? 0 : text.length);
+    if (hand) {
+      penTimer.current = window.setInterval(() => {
+        setWritten((n) => {
+          if (n >= text.length) {
+            window.clearInterval(penTimer.current);
+            return n;
+          }
+          return n + 1;
+        });
+      }, MS_PER_CHAR);
+    }
+    // The reveal waits for the pen to finish the line, then the same calm beat as every other line.
+    // A line she must finish saying (her introduction) also waits for her voice, so advancing never
+    // cuts her off mid-word — with a ceiling, so a silent/failed TTS still releases the beat.
+    const writeMs = hand ? text.length * MS_PER_CHAR : 0;
+    let penDone = false;
+    let voiceDone = !opts?.awaitVoice;
+    const release = () => {
+      if (!penDone || !voiceDone) return;
+      window.clearTimeout(voiceTimer.current);
+      if (onDone) onDone();
+      else setPromptReady(true);
+    };
+    void speakLine(
+      text,
+      opts?.awaitVoice
+        ? {
+            onDone: () => {
+              voiceDone = true;
+              release();
+            },
+          }
+        : undefined,
     );
+    window.clearTimeout(voiceTimer.current);
+    if (opts?.awaitVoice) {
+      voiceTimer.current = window.setTimeout(
+        () => {
+          voiceDone = true;
+          release();
+        },
+        REVEAL_DELAY + writeMs + estimateReadMs(text) + 4000,
+      );
+    }
+    window.clearTimeout(revealTimer.current);
+    revealTimer.current = window.setTimeout(() => {
+      penDone = true;
+      release();
+    }, REVEAL_DELAY + writeMs);
   };
 
   // --- the beats (a soft tick marks each advance; nothing on typing / idle) ---------------------
   const toName = () => {
     sfx.tap();
     setPhase('name');
-    say('Hey there, what can I call you?');
+    say('So — what should I call you?');
   };
   const toAge = (who: string) => {
     sfx.tap();
@@ -244,14 +368,24 @@ export function Onboarding() {
   const afterGreet = () => (canAuth && !authed ? toAuth() : toName());
 
   // The first warm tap unlocks her voice inside the gesture, then she greets and the flow begins.
+  // A first meeting gets her introduction — verbatim owner copy, written in her hand and spoken.
+  // Anyone she has already met is greeted by name and NEVER introduced again.
   const begin = () => {
     if (begun) return;
     setBegun(true);
     sfx.tap(); // the gesture that unlocks her voice — and ticks the first beat in
-    say(
-      "Hi — I'm Vidya. Let's get to know each other, so I can build you a plan that's all yours.",
-      () => window.setTimeout(afterGreet, 600),
-    );
+    const known = knownName();
+    if (hasMet()) {
+      say(known ? `Good to see you again, ${known}.` : 'Good to see you again.', () =>
+        window.setTimeout(afterGreet, 600),
+      );
+      return;
+    }
+    markMet();
+    say(FIRST_MEETING_LINE, () => window.setTimeout(afterGreet, 600), {
+      hand: true,
+      awaitVoice: true,
+    });
   };
 
   // A Google return, resolved: an already-onboarded account skips every question and lands home
@@ -299,8 +433,15 @@ export function Onboarding() {
     }
   }, [sdk]);
 
-  // Don't leave the reveal timer running past unmount.
-  useEffect(() => () => window.clearTimeout(revealTimer.current), []);
+  // Don't leave the reveal timer or her pen running past unmount.
+  useEffect(
+    () => () => {
+      window.clearTimeout(revealTimer.current);
+      window.clearTimeout(voiceTimer.current);
+      window.clearInterval(penTimer.current);
+    },
+    [],
+  );
 
   useEffect(() => {
     bus.publishPage({
@@ -471,11 +612,11 @@ export function Onboarding() {
             zIndex: -1,
           }}
         />
-        <VidyaBody
+        <WoboBody
           size={112}
           mood={mood}
           gaze="pointer"
-          label={begun ? 'Vidya' : 'Vidya — tap to begin'}
+          label={begun ? 'Wobo' : 'Wobo — tap to begin'}
           onTap={() => {
             if (!begun) {
               begin(); // her body is the tap that unlocks her voice
@@ -557,26 +698,50 @@ export function Onboarding() {
               {/* her question — the only text on screen; the whole line fades in and gently rises
                 (MOTION §3 spring), no typing. Keyed by the line so each new one re-animates. */}
               <div
-                style={{
-                  fontSize: 'clamp(1.32rem, 1.05rem + 1.5vw, 1.9rem)',
-                  fontWeight: 550,
-                  letterSpacing: '-0.02em',
-                  lineHeight: 1.35,
-                  color: 'var(--clss-ink-900)',
-                  textAlign: 'center',
-                  textWrap: 'balance',
-                  maxWidth: 520,
-                  minHeight: '2.6em',
-                }}
+                style={
+                  handwriting
+                    ? {
+                        // her introduction, in her own hand — larger, warmer, and written on
+                        fontFamily: fontFamily.handwritten,
+                        fontSize: 'clamp(1.7rem, 1.2rem + 2.4vw, 2.6rem)',
+                        fontWeight: 600,
+                        lineHeight: 1.3,
+                        color: 'var(--clss-ink-900)',
+                        textAlign: 'center',
+                        textWrap: 'balance',
+                        maxWidth: 560,
+                        minHeight: '2.6em',
+                      }
+                    : {
+                        fontSize: 'clamp(1.32rem, 1.05rem + 1.5vw, 1.9rem)',
+                        fontWeight: 550,
+                        letterSpacing: '-0.02em',
+                        lineHeight: 1.35,
+                        color: 'var(--clss-ink-900)',
+                        textAlign: 'center',
+                        textWrap: 'balance',
+                        maxWidth: 520,
+                        minHeight: '2.6em',
+                      }
+                }
               >
-                <motion.div
-                  key={line}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={softSpring}
-                >
-                  {line}
-                </motion.div>
+                {handwriting ? (
+                  // The pen lays the line down letter by letter; assistive tech reads the whole
+                  // line at once (aria-label) rather than announcing every keystroke.
+                  <div>
+                    <span aria-hidden>{line.slice(0, written)}</span>
+                    <span style={SR_ONLY}>{line}</span>
+                  </div>
+                ) : (
+                  <motion.div
+                    key={line}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={softSpring}
+                  >
+                    {line}
+                  </motion.div>
+                )}
               </div>
 
               {/* the beat's single input, revealed once she has finished asking */}

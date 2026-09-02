@@ -6,7 +6,7 @@
  * Every claim here is standard, verifiable mathematics — nothing decorative, nothing invented.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Sage } from '../../ui/cast';
@@ -151,7 +151,7 @@ export function MysteryTease({
 
 /** The toy: one throw, drawn honestly — a throw numbered n lands n beats later. */
 function ThrowToy() {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const [n, setN] = useState(3);
   const toyRef = useRegisterTarget<HTMLDivElement>('course-mystery-toy', {
     kind: 'sim',
@@ -252,7 +252,7 @@ export function MysteryLesson({
   setBar: (b: BarState | null) => void;
   onDone: () => void;
 }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   useEffect(() => () => bus.publishCanvas(undefined), [bus]);
   useEffect(() => {
     setBar({ primary: { label: 'Done', onClick: onDone } });

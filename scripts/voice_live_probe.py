@@ -1,7 +1,7 @@
 """Gemini Live streaming-TTS feasibility probe. Answers the make-or-break question BEFORE we build
 the streaming voice path: when we send Gemini Live an EXACT text and ask it to read it aloud, does it
 (a) read it VERBATIM — streaming is viable — or (b) paraphrase/reply — streaming is NOT safe for
-Vidya's scripted lines. Also measures time-to-first-audio-chunk (the whole point of streaming).
+Wobo's scripted lines. Also measures time-to-first-audio-chunk (the whole point of streaming).
 
 Run from the gateway env (has aiohttp), reads the key from .env.local — never prints the key:
     cd services/gateway && uv run python ../../scripts/voice_live_probe.py

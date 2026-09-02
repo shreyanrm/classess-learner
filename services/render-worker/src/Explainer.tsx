@@ -9,7 +9,14 @@
  */
 
 import { useLayoutEffect, useRef } from 'react';
-import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
+import {
+  AbsoluteFill,
+  Audio,
+  Sequence,
+  staticFile,
+  useCurrentFrame,
+  useVideoConfig,
+} from 'remotion';
 
 // NB: `type` (not `interface`) — Remotion's <Composition component> constrains props to
 // `Record<string, unknown>`, which object-literal type aliases satisfy but interfaces do not.
@@ -49,17 +56,21 @@ function SvgStage({ svg }: { svg: string }) {
   // Remotion seeks frame-by-frame; SMIL must follow the frame, not wall-clock. Pin the SVG
   // animation timeline to this frame's time. useLayoutEffect => set before Remotion screenshots.
   useLayoutEffect(() => {
-    const el = host.current?.querySelector('svg') as (SVGSVGElement & {
-      pauseAnimations?: () => void;
-      setCurrentTime?: (t: number) => void;
-    }) | null;
+    const el = host.current?.querySelector('svg') as
+      | (SVGSVGElement & {
+          pauseAnimations?: () => void;
+          setCurrentTime?: (t: number) => void;
+        })
+      | null;
     if (!el) return;
     el.pauseAnimations?.();
     el.setCurrentTime?.(frame / fps);
   }, [frame, fps]);
 
   return (
-    <AbsoluteFill style={{ backgroundColor: PAPER, justifyContent: 'center', alignItems: 'center' }}>
+    <AbsoluteFill
+      style={{ backgroundColor: PAPER, justifyContent: 'center', alignItems: 'center' }}
+    >
       <div
         ref={host}
         style={{ width: '100%', height: '100%' }}
@@ -99,9 +110,9 @@ export function Explainer({ scenes, bedFile, bgmFile, bgmGain }: ExplainerProps)
           ))}
         </Sequence>
       ))}
-      {/* Classess watermark — owner law: bottom-right of every video. Above scenes, always on. */}
+      {/* Wobo watermark — owner law: bottom-right of every video. Above scenes, always on. */}
       <img
-        src={staticFile('classess-logo.png')}
+        src={staticFile('wobo-logo.png')}
         alt=""
         style={{
           position: 'absolute',

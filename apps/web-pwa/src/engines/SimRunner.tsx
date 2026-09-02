@@ -3,12 +3,12 @@
 /**
  * SimRunner — interprets a verified sim-spec JSON artifact (engine.simulate) into a live,
  * draggable simulation: scrubber params, live computed outputs, and breakpoint annotations —
- * "bend it until it breaks" (DESIGN.md §9). Publishes its working state to the Vidya bus so she
+ * "bend it until it breaks" (DESIGN.md §9). Publishes its working state to the Wobo bus so she
  * reasons about the sim at code level, and registers its surfaces as annotatable targets.
  * Expressions are evaluated by a tiny arithmetic parser — never eval, never Function.
  */
 
-import { useRegisterTarget, useVidyaBus } from '@classess/vidya';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { equationType, lead, Scrubber, whisper } from '../screens/course/shared';
@@ -346,7 +346,7 @@ function LiveNumber({ children }: { children: string }) {
 }
 
 export function SimRunner({ spec }: { spec: SimSpec }) {
-  const bus = useVidyaBus();
+  const bus = useWoboBus();
   const [values, setValues] = useState<Record<string, number>>(() =>
     Object.fromEntries(spec.params.map((p) => [p.id, p.initial])),
   );

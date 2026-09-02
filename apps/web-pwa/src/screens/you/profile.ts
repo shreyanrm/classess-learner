@@ -21,7 +21,7 @@ export interface StoredProfile {
   birthdate?: string;
   /** Derived from birthdate (drives the age-branch); may be stored on older saved profiles. */
   age?: number;
-  /** What they're into — folded into Vidya's analogies/examples. */
+  /** What they're into — folded into Wobo's analogies/examples. */
   interests?: string[];
   /** Durable accessibility profile — rides the dossier so she honors it every turn. */
   largeText?: boolean;
@@ -83,6 +83,18 @@ export function loadProfile(): StoredProfile {
     // unreadable — fall through to the seed learner
   }
   return { ...FALLBACK };
+}
+
+/** True only when a learner actually typed a name on this device — never the seed fallback. */
+export function hasStoredName(): boolean {
+  try {
+    const raw = localStorage.getItem(PROFILE_KEY);
+    if (!raw) return false;
+    const p = JSON.parse(raw) as Partial<StoredProfile>;
+    return Boolean(p.name?.trim());
+  } catch {
+    return false;
+  }
 }
 
 export function saveProfile(p: StoredProfile): void {

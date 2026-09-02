@@ -2,7 +2,7 @@
 
 /**
  * DiagramView — renders a generated SVG diagram after sanitization (the trust boundary between
- * model output and the DOM), registered on the Vidya bus so she can annotate it like any other
+ * model output and the DOM), registered on the Wobo bus so she can annotate it like any other
  * surface. SVG is the diagram medium of record (DESIGN.md §9, §10); imagery SVG cannot express
  * goes through GeneratedImage instead.
  *
@@ -10,7 +10,7 @@
  * and re-parsed as HTML, so there is no innerHTML/mXSS surface at all.
  */
 
-import { useRegisterTarget } from '@classess/vidya';
+import { useRegisterTarget } from '@classess/wobo';
 import { type CSSProperties, useEffect, useMemo, useRef } from 'react';
 import { whisper } from '../screens/course/shared';
 
@@ -119,7 +119,7 @@ export function DiagramView({
 }: {
   id: string;
   svg: string;
-  /** Plain description for Vidya and assistive tech. */
+  /** Plain description for Wobo and assistive tech. */
   label: string;
   caption?: string;
 }) {

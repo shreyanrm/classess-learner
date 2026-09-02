@@ -3,7 +3,7 @@ export const meta = {
   description: 'Every content type from DESIGN.md §9 + SUBJECTS.md, built on the scene-spec substrate in the law-mandated order (Math+CS → Physics+Chem → fact base → Bio+Social)',
   phases: [{ title: 'Substrate' }, { title: 'Math+CS' }, { title: 'Physics+Chem' }, { title: 'Factbase+Bio+Social' }, { title: 'Prove' }],
 }
-const PRE = `Read /Users/depl/Documents/classess-learner/SUBJECTS.md + VIDYA.md + DESIGN.md §9 + the fleet brief (second-cut design law) FIRST. Doctrine: the model authors VALIDATED SCENE SPECS, never pixels; every renderer implements the scene contract (publish state, register targets, applyTutorAction); every subject ships WITH its validator or not at all; concepts not board paths; async generation, never the spinner. MISSION:\n`
+const PRE = `Read /Users/depl/Documents/classess-learner/SUBJECTS.md + WOBO.md + DESIGN.md §9 + the fleet brief (second-cut design law) FIRST. Doctrine: the model authors VALIDATED SCENE SPECS, never pixels; every renderer implements the scene contract (publish state, register targets, applyTutorAction); every subject ships WITH its validator or not at all; concepts not board paths; async generation, never the spinner. MISSION:\n`
 const R = { type: 'object', properties: { built: { type: 'string' }, files: { type: 'array', items: { type: 'string' } }, typecheck: { type: 'string' }, unfinished: { type: 'string' } }, required: ['built', 'files', 'typecheck', 'unfinished'] }
 
 phase('Substrate')

@@ -5,7 +5,7 @@
  *
  * Compositional idea: the home is not a page, it is a place. The day is one continuous drawn
  * thread flowing down a tall white canvas; stops sit on the thread (done, current, boss, one
- * mystery off the road). The lesson board is itself a stop the thread passes through. Vidya
+ * mystery off the road). The lesson board is itself a stop the thread passes through. Wobo
  * walks beside you — she is sticky to the viewport, keeping pace as you descend the day.
  *
  * Apple lens: one machined bezier, nodes on a strict grid, frosted status bar, physics-true
@@ -13,10 +13,10 @@
  * thread and unlocks the boss.
  */
 
-import { VidyaBody, type VidyaMood } from '@classess/vidya';
+import { WoboBody, type WoboMood } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useMemo, useState } from 'react';
-import { ClassessLogo } from '../../ui/Logo';
+import { WoboLogo } from '../../ui/Logo';
 
 const INK = 'var(--clss-ink-900)';
 const INK_60 = 'color-mix(in srgb, var(--clss-ink) 58%, transparent)';
@@ -563,7 +563,7 @@ const DRIFT = [
 export function ConceptB() {
   const practice = usePractice('5');
   const solved = practice.status === 'solved';
-  const mood: VidyaMood = solved
+  const mood: WoboMood = solved
     ? 'celebrate'
     : practice.status === 'wrong'
       ? 'hint'
@@ -593,7 +593,7 @@ export function ConceptB() {
           borderBottom: `1px solid ${HAIR_SOFT}`,
         }}
       >
-        <ClassessLogo height={13} />
+        <WoboLogo height={13} />
         <div
           style={{
             display: 'flex',
@@ -643,7 +643,7 @@ export function ConceptB() {
       </motion.header>
 
       <div style={{ display: 'flex', width: 1270, margin: '0 auto' }}>
-        {/* Vidya walks the thread with you — she keeps pace with the scroll */}
+        {/* Wobo walks the thread with you — she keeps pace with the scroll */}
         <div style={{ width: 150, flexShrink: 0 }}>
           <motion.div
             initial={{ opacity: 0, x: -24 }}
@@ -659,7 +659,7 @@ export function ConceptB() {
               paddingTop: 24,
             }}
           >
-            <VidyaBody size={112} mood={mood} gaze="pointer" />
+            <WoboBody size={112} mood={mood} gaze="pointer" />
             <div
               style={{
                 fontFamily: 'Caveat, cursive',

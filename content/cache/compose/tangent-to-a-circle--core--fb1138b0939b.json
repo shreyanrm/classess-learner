@@ -1,134 +1,134 @@
 {
- "concept": "Tangent to a circle",
- "modality": "compose",
- "difficulty": "core",
- "verified": true,
- "seeded": false,
- "provenance": {
-  "engine": "engine.compose",
-  "model": "mock",
-  "prompt_version": "plexus-v1"
- },
- "artifact": {
-  "topic": "Tangent to a circle",
+  "concept": "Tangent to a circle",
+  "modality": "compose",
   "difficulty": "core",
-  "cards": [
-   {
-    "id": "c1",
-    "kind": "text",
-    "title": "Meet Tangent to a circle",
-    "idea": "One place in the real world where Tangent to a circle quietly shows up.",
-    "interaction": {
-     "kind": "tap",
-     "prompt": "Tap the part that looks unknown."
-    },
-    "reveal": "The unknown is what we are hunting. Everything else is a clue."
-   },
-   {
-    "id": "c2",
-    "kind": "sim",
-    "title": "Feel the rule",
-    "idea": "The idea behaves like a balance: change one side, the other follows.",
-    "interaction": {
-     "kind": "drag",
-     "prompt": "Drag the weight until it balances."
-    },
-    "reveal": "Whatever you do to one side, you do to the other."
-   },
-   {
-    "id": "c3",
-    "kind": "text",
-    "title": "Make a move",
-    "idea": "Undo one operation at a time to expose what is hidden.",
-    "interaction": {
-     "kind": "slide",
-     "prompt": "Slide to peel one layer off."
-    },
-    "reveal": "Each legal move keeps the answer set exactly the same."
-   },
-   {
-    "id": "c4",
-    "kind": "diagram",
-    "title": "Predict, then check",
-    "idea": "A claimed answer must survive the original problem.",
-    "interaction": {
-     "kind": "type",
-     "prompt": "Type your value and test it."
-    },
-    "reveal": "Substitute it back. If both sides agree, the answer stands."
-   },
-   {
-    "id": "c5",
-    "kind": "text",
-    "title": "Where it bends",
-    "idea": "Every model of Tangent to a circle has an edge where it stops working.",
-    "interaction": {
-     "kind": "slide",
-     "prompt": "Push the setting to its extreme."
-    },
-    "reveal": "Knowing where the rule breaks is part of knowing the rule."
-   }
-  ],
-  "workbook": [
-   {
-    "id": "w1",
-    "type": "mcq",
-    "prompt": "What tells you a claimed answer is trustworthy?",
-    "options": [
-     "it survives being tested against the original problem",
-     "it looks like the worked example",
-     "it was the first answer you found"
+  "verified": true,
+  "seeded": false,
+  "provenance": {
+    "engine": "engine.compose",
+    "model": "mock",
+    "prompt_version": "plexus-v1"
+  },
+  "artifact": {
+    "topic": "Tangent to a circle",
+    "difficulty": "core",
+    "cards": [
+      {
+        "id": "c1",
+        "kind": "text",
+        "title": "Meet Tangent to a circle",
+        "idea": "One place in the real world where Tangent to a circle quietly shows up.",
+        "interaction": {
+          "kind": "tap",
+          "prompt": "Tap the part that looks unknown."
+        },
+        "reveal": "The unknown is what we are hunting. Everything else is a clue."
+      },
+      {
+        "id": "c2",
+        "kind": "sim",
+        "title": "Feel the rule",
+        "idea": "The idea behaves like a balance: change one side, the other follows.",
+        "interaction": {
+          "kind": "drag",
+          "prompt": "Drag the weight until it balances."
+        },
+        "reveal": "Whatever you do to one side, you do to the other."
+      },
+      {
+        "id": "c3",
+        "kind": "text",
+        "title": "Make a move",
+        "idea": "Undo one operation at a time to expose what is hidden.",
+        "interaction": {
+          "kind": "slide",
+          "prompt": "Slide to peel one layer off."
+        },
+        "reveal": "Each legal move keeps the answer set exactly the same."
+      },
+      {
+        "id": "c4",
+        "kind": "diagram",
+        "title": "Predict, then check",
+        "idea": "A claimed answer must survive the original problem.",
+        "interaction": {
+          "kind": "type",
+          "prompt": "Type your value and test it."
+        },
+        "reveal": "Substitute it back. If both sides agree, the answer stands."
+      },
+      {
+        "id": "c5",
+        "kind": "text",
+        "title": "Where it bends",
+        "idea": "Every model of Tangent to a circle has an edge where it stops working.",
+        "interaction": {
+          "kind": "slide",
+          "prompt": "Push the setting to its extreme."
+        },
+        "reveal": "Knowing where the rule breaks is part of knowing the rule."
+      }
     ],
-    "answer": "it survives being tested against the original problem"
-   },
-   {
-    "id": "w2",
-    "type": "mcq",
-    "prompt": "Pushing a rule to its extreme shows you…",
-    "options": [
-     "where the ideal model stops matching reality",
-     "that the rule was never true",
-     "that extremes should be avoided"
+    "workbook": [
+      {
+        "id": "w1",
+        "type": "mcq",
+        "prompt": "What tells you a claimed answer is trustworthy?",
+        "options": [
+          "it survives being tested against the original problem",
+          "it looks like the worked example",
+          "it was the first answer you found"
+        ],
+        "answer": "it survives being tested against the original problem"
+      },
+      {
+        "id": "w2",
+        "type": "mcq",
+        "prompt": "Pushing a rule to its extreme shows you…",
+        "options": [
+          "where the ideal model stops matching reality",
+          "that the rule was never true",
+          "that extremes should be avoided"
+        ],
+        "answer": "where the ideal model stops matching reality"
+      },
+      {
+        "id": "w3",
+        "type": "fill",
+        "prompt": "Before trusting a result, test it against the ________ problem.",
+        "answer": "original"
+      }
     ],
-    "answer": "where the ideal model stops matching reality"
-   },
-   {
-    "id": "w3",
-    "type": "fill",
-    "prompt": "Before trusting a result, test it against the ________ problem.",
-    "answer": "original"
-   }
-  ],
-  "boss": [
-   {
-    "id": "b1",
-    "type": "mcq",
-    "prompt": "Which move is always legal while working a problem?",
-    "options": [
-     "one that keeps the answer set exactly the same",
-     "one that makes the numbers smaller",
-     "one that removes the hardest part"
-    ],
-    "answer": "one that keeps the answer set exactly the same"
-   },
-   {
-    "id": "b2",
-    "type": "mcq",
-    "prompt": "You substitute your answer back and the two sides disagree. What does that mean?",
-    "options": [
-     "the answer does not survive the original problem",
-     "the original problem must be wrong",
-     "substitution only works on easy problems"
-    ],
-    "answer": "the answer does not survive the original problem"
-   },
-   {
-    "id": "b3",
-    "type": "fill",
-    "prompt": "Each legal move keeps the answer set exactly the ________.",
-    "answer": "same"
-   }
-  ]
- },
- "createdAt": "2026-07-07T07:27:46+00:00"
+    "boss": [
+      {
+        "id": "b1",
+        "type": "mcq",
+        "prompt": "Which move is always legal while working a problem?",
+        "options": [
+          "one that keeps the answer set exactly the same",
+          "one that makes the numbers smaller",
+          "one that removes the hardest part"
+        ],
+        "answer": "one that keeps the answer set exactly the same"
+      },
+      {
+        "id": "b2",
+        "type": "mcq",
+        "prompt": "You substitute your answer back and the two sides disagree. What does that mean?",
+        "options": [
+          "the answer does not survive the original problem",
+          "the original problem must be wrong",
+          "substitution only works on easy problems"
+        ],
+        "answer": "the answer does not survive the original problem"
+      },
+      {
+        "id": "b3",
+        "type": "fill",
+        "prompt": "Each legal move keeps the answer set exactly the ________.",
+        "answer": "same"
+      }
+    ]
+  },
+  "createdAt": "2026-07-07T07:27:46+00:00"
 }

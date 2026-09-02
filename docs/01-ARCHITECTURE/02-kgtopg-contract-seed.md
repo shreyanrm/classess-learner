@@ -2,7 +2,7 @@
 
 KGtoPG is a separate plane and a separate maturing product. This repo carries the **contract seed** — the typed interfaces,
 event schemas, governed-view DTOs, and the migration set lifted from the School codebase (`shreyanrm/classess-school`) —
-so Learner is built against a stable boundary. The heavy platform services live and mature separately; here we hold the
+so Wobo is built against a stable boundary. The heavy platform services live and mature separately; here we hold the
 *interface* and a *reference implementation* good enough to build and prove the atom.
 
 ## What to lift from the School repo (TAKE)

@@ -1,13 +1,13 @@
 'use client';
 
 /**
- * The cast & the world — Classess' illustration system, alive.
+ * The cast & the world — Wobo's illustration system, alive.
  *
  * One soft, friendly, flat language: eight study buddies and a shelf of props built on a single
  * skeleton (see shared.tsx for the ten rules). Everything shares one baseline, one palette, and
  * one slow idle — so any mix drops into a single <Scene> and reads as one world.
  *
- * Vidya (packages/vidya) is untouched by this system: the cast are her world, not her rivals.
+ * Wobo (packages/wobo) is untouched by this system: the cast are her world, not her rivals.
  */
 
 import type { ComponentType, CSSProperties } from 'react';

@@ -1,7 +1,8 @@
-# Classess Learner
+# Wobo
 
-The flagship B2C, AI-native learning app of the Dot eVentures education ecosystem, and the
-reference implementation that proves the KGtoPG plug-in pattern.
+The flagship consumer product of the Classess ecosystem: the B2C, AI-native learning app of the
+Dot eVentures education group, and the reference implementation that proves the KGtoPG plug-in
+pattern. One name covers two things — Wobo the app, and Wobo the tutor who lives inside it.
 
 North star: Brilliant.org, but AI-native, India-first, premium, with mechanics nobody in edtech
 has shipped. Governing reframe: cognitive fitness, a gym for the mind.
@@ -27,7 +28,7 @@ fronted by a correctness verifier). Nothing reaches a learner unverified.
 ```
 /apps        web-pwa (React PWA), expo-app (React Native)
 /services    api (FastAPI BFF), gateway (LiteLLM + capability registry), verifier (SymPy + confidence gate)
-/packages    contracts, config (design tokens), ui, motion, vidya, sdk
+/packages    contracts, config (design tokens), ui, motion, wobo, sdk
 /platform    kgtopg-contract-seed (interfaces, mastery model, ontology types, reference impl)
 /content     plexus (pipeline), ontology-seed (the atom: linear equations)
 /infra       supabase (migrations, RLS), ci, env
