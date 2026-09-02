@@ -1,5 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { assertNoErrors, readXp, seedOnboarded, watchConsole } from './helpers';
+import {
+  assertNoErrors,
+  openAtomCourse,
+  profileButton,
+  readXp,
+  seedOnboarded,
+  watchConsole,
+} from './helpers';
 
 /**
  * Wobo's governed capabilities, exercised end to end in the default keyless (mock) mode — the
@@ -26,7 +33,7 @@ test('approval card: she proposes starting practice, approve executes', async ({
   await bar.press('Enter');
 
   // her turn carries the action card: the eyebrow, the labelled offer, and the confidence band
-  await expect(page.getByText('she can do this')).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText('She can do this')).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText('start practice', { exact: true })).toBeVisible();
   await expect(page.getByText(/confidence ·/)).toBeVisible();
 
@@ -54,12 +61,7 @@ test('teach-back: the learner teaches the atom, she plays the student, bonus lan
   await page.goto('/');
 
   // walk to the atom course so a topic is in view — teach-back only opens where there is a topic.
-  await page.getByRole('button', { name: 'Learn', exact: true }).click();
-  await page.getByRole('button', { name: /Mathematics — open the subject/ }).click();
-  await page.getByRole('button', { name: /Linear equations in one variable/ }).click();
-  await page
-    .getByRole('button', { name: /^Solving equations with the variable on one side/ })
-    .click();
+  await openAtomCourse(page);
 
   // open the docked drawer and step into teach-back. The orb flies and never rests (constant
   // idle micro-motion, WOBO.md §12), so a positional click races its animation — dispatch the
@@ -95,7 +97,7 @@ test('proactivity dial: the chosen notch survives a reload', async ({ page }, in
   await seedOnboarded(page);
   await page.goto('/');
 
-  await page.getByRole('button', { name: 'You — profile and settings' }).click();
+  await profileButton(page).click();
 
   const proactive = page.getByRole('button', { name: /^proactive —/ });
   await expect(proactive).toBeVisible({ timeout: 10_000 });
@@ -107,7 +109,7 @@ test('proactivity dial: the chosen notch survives a reload', async ({ page }, in
 
   // reload drops back to the home; re-open You and the notch is still the one she picked
   await page.reload();
-  await page.getByRole('button', { name: 'You — profile and settings' }).click();
+  await profileButton(page).click();
   await expect(page.getByRole('button', { name: /^proactive —/ })).toHaveAttribute(
     'aria-pressed',
     'true',

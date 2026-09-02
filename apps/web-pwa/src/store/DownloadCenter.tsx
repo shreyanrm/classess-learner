@@ -121,6 +121,10 @@ export function DownloadCenter() {
 
   // The forge build runner — one composition in flight, mirroring the course queue's discipline. The
   // short delay is the "binding" moment made real; composition itself (pools.ts) is deterministic.
+  // NO CLEANUP, deliberately (same discipline as the course runner above): claiming a forge fans a
+  // store event, which re-runs this effect, whose cleanup would have cancelled the very build it
+  // just started — leaving the workbook stranded in "building" for ever. The effect owns the work
+  // for its whole life; settleForge writes only to the module store, so an unmount is safe.
   // biome-ignore lint/correctness/useExhaustiveDependencies: `forged` re-triggers; the runner reads the store directly
   useEffect(() => {
     if (forgeRunning.current) return;
@@ -128,11 +132,10 @@ export function DownloadCenter() {
     if (!next) return;
     forgeRunning.current = true;
     const slipNodeIds = loadMind().slips.map((s) => s.nodeId);
-    const timer = window.setTimeout(() => {
+    window.setTimeout(() => {
       settleForge(next.id, composeWorkbook(next.picks, next.size, next.mix, slipNodeIds));
       forgeRunning.current = false;
     }, 1600);
-    return () => window.clearTimeout(timer);
   }, [forged]);
 
   // The forge notify moment — a workbook settling to ready lands wherever the learner now is. Ready

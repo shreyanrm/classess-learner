@@ -65,7 +65,7 @@ async function checkCell(
 /** Navigate via the command palette — the one road that reaches every surface. */
 async function paletteGo(page: Page, query: string): Promise<void> {
   await page.keyboard.press('Control+k');
-  const box = page.getByPlaceholder('where to, or what…');
+  const box = page.getByPlaceholder('Where to, or what…');
   await expect(box).toBeVisible();
   await box.fill(query);
   await page.keyboard.press('Enter');
@@ -145,7 +145,7 @@ for (const { width, height } of SIZES) {
 
       // 9 — you
       await page.getByRole('button', { name: /You — level \d+, profile and settings/ }).click();
-      await expect(page.getByText('learning is better shared')).toBeVisible({ timeout: 15_000 });
+      await expect(page.getByText('Learning is better shared')).toBeVisible({ timeout: 15_000 });
       await checkCell(page, { ...cell, name: '09-you', header: true, orb: true });
 
       // the whole walk must be console-clean
@@ -158,8 +158,12 @@ for (const { width, height } of SIZES) {
       await seedTheme(page, theme);
       await page.setViewportSize({ width, height });
       await page.goto('/');
-      // the redesigned flow opens directly on the name beat: her body, the field, the skip door
-      await expect(page.getByLabel('your name')).toBeVisible({ timeout: 15_000 });
+      // The flow opens on her door: one warm tap unlocks her voice, then she introduces herself
+      // (written letter by letter) and only afterwards asks for a name. The screenshot is taken on
+      // that first beat — the one every learner actually meets first.
+      await expect(page.getByRole('button', { name: 'begin', exact: true })).toBeVisible({
+        timeout: 15_000,
+      });
       await expect(page.getByRole('button', { name: 'Skip for now' })).toBeVisible();
       await checkCell(page, {
         engine: browserName,

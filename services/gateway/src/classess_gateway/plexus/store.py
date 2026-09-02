@@ -15,10 +15,12 @@ home; this file cache is the source of truth until that sync lands.
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
 import os
 import re
+import tempfile
 from datetime import UTC, datetime
 from functools import lru_cache
 from pathlib import Path
@@ -173,12 +175,35 @@ def _carry_manifests(src: Path, dst: Path) -> None:
     for man in src.parent.glob(f"{src.stem}.*.render-manifest.json"):
         target = dst.parent / man.name.replace(src.stem, dst.stem, 1)
         if not target.exists():
-            target.write_text(man.read_text())
+            _write_atomic(target, man.read_text(encoding="utf-8"))
+
+
+def _write_atomic(path: Path, text: str) -> None:
+    """Write a cache file so a concurrent reader never sees a half-written record.
+
+    A background thread (post-serve validation / promotion) rewrites the same path a reader may be
+    parsing, and ``Path.write_text`` truncates in place — a reader between the truncate and the
+    flush gets a torn file and a JSONDecodeError. Writing to a temp file in the SAME directory (so
+    the rename cannot cross a filesystem) and ``os.replace``-ing it makes the swap atomic: a reader
+    sees either the whole old record or the whole new one. The encoding is pinned to UTF-8 because
+    records carry non-ASCII content and the platform default is not guaranteed to be UTF-8."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=str(path.parent), prefix=f".{path.name}.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            fh.write(text)
+            fh.flush()
+            os.fsync(fh.fileno())
+        os.replace(tmp, path)
+    except BaseException:
+        with contextlib.suppress(OSError):
+            os.unlink(tmp)
+        raise
 
 
 def _read(path: Path) -> dict[str, Any] | None:
     try:
-        data = json.loads(path.read_text())
+        data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return None
     return data if isinstance(data, dict) else None
@@ -198,8 +223,7 @@ def load(
     if record is None:
         return None
     try:  # self-heal: re-index onto the current key. The old file is never touched.
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(legacy.read_text())
+        _write_atomic(path, legacy.read_text(encoding="utf-8"))
         _carry_manifests(legacy, path)
     except OSError:
         pass  # a read-only cache dir still serves the record; it just re-reads the legacy path
@@ -214,8 +238,7 @@ def save(
     scope: dict[str, str] | None = None,
 ) -> None:
     path = artifact_path(concept, modality, difficulty, scope)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(record, ensure_ascii=False, indent=1))
+    _write_atomic(path, json.dumps(record, ensure_ascii=False, indent=1))
 
 
 # --- immutable version ledger (owner law, 2026-07-07) ----------------------------------
@@ -253,7 +276,7 @@ def save_version(
     while path.exists():  # never overwrite a prior version — disambiguate a same-microsecond clash
         stamp += "x"
         path = vdir / f"{stamp}-{status}-{model}.json"
-    path.write_text(json.dumps(record, ensure_ascii=False, indent=1))
+    _write_atomic(path, json.dumps(record, ensure_ascii=False, indent=1))
     return path
 
 
@@ -267,7 +290,7 @@ def load_versions(
         return out
     for path in sorted(vdir.glob("*.json")):
         try:
-            out.append(json.loads(path.read_text()))
+            out.append(json.loads(path.read_text(encoding="utf-8")))
         except (OSError, json.JSONDecodeError):
             continue
     return out
@@ -317,7 +340,7 @@ def migrate() -> list[dict[str, Any]]:
             if path.name.endswith(".render-manifest.json"):
                 continue
             try:
-                record = json.loads(path.read_text())
+                record = json.loads(path.read_text(encoding="utf-8"))
             except (OSError, json.JSONDecodeError):
                 continue
             concept = str(record.get("concept") or "").strip()
@@ -330,8 +353,8 @@ def migrate() -> list[dict[str, Any]]:
             if (path.name, new_path.name) in already:
                 continue  # re-indexed on an earlier run
             if not new_path.exists():
-                new_path.parent.mkdir(parents=True, exist_ok=True)
-                new_path.write_text(path.read_text())  # re-index; old file untouched (retention)
+                # re-index; old file untouched (retention)
+                _write_atomic(new_path, path.read_text(encoding="utf-8"))
                 _carry_manifests(path, new_path)  # keep a re-keyed video's baked MP4
             alias = {
                 "from": path.name,

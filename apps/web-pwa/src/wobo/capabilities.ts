@@ -14,6 +14,8 @@ import type { Sdk } from '@classess/sdk';
 import { chaptersBySubject, topicById } from '../data/catalog';
 import type { Topic } from '../data/model';
 import type { Router } from '../shell/router';
+import { clearMind } from '../store/mind';
+import type { ActionAttachment } from './paths/types';
 
 export type PermissionRung = 'recommend' | 'prepare' | 'execute_with_permission' | 'safe_automatic';
 
@@ -22,7 +24,8 @@ export type CapabilityId =
   | 'start_practice'
   | 'start_boss'
   | 'go_to_twin'
-  | 'prepare_parent_note';
+  | 'prepare_parent_note'
+  | 'forget_all';
 
 export interface CapabilityContext {
   router: Router;
@@ -134,6 +137,21 @@ const CAPABILITIES: Record<CapabilityId, WoboCapability> = {
     },
   },
 
+  forget_all: {
+    id: 'forget_all',
+    // The whole memory, gone, with nothing to undo it — the most destructive thing she can do to
+    // the learner's world. A model reply saying "forget everything" is never enough on its own: the
+    // card asks in the thread, and the wipe happens on approval alone (WOBO.md §4, family E).
+    rung: 'execute_with_permission',
+    label: () => 'forget everything she knows about you',
+    run: async () => {
+      clearMind();
+      // MindObserver republishes the (now empty) dossier on its next pulse, so her very next turn
+      // reasons from a blank slate — no stale context surviving the erase.
+      return 'Done — I cleared everything I was keeping about you. We start fresh from here.';
+    },
+  },
+
   prepare_parent_note: {
     id: 'prepare_parent_note',
     // it communicates beyond the learner — always explicit approval (WOBO.md §4)
@@ -154,6 +172,25 @@ const CAPABILITIES: Record<CapabilityId, WoboCapability> = {
     },
   },
 };
+
+/**
+ * The confirm card for a whole-memory wipe. She says her line; this rides under it as the approval
+ * card, so nothing is erased until the learner taps approve (or walks away and it stays offered).
+ */
+export function forgetAllOffer(offerId: string): ActionAttachment {
+  return {
+    capability: 'forget_all',
+    params: {},
+    why: 'You asked me to forget everything I know about you.',
+    evidence: [
+      'this clears your whole memory page — preferences, facts, the twin marks',
+      'it cannot be undone, and I will not have it back',
+    ],
+    confidence: 'high',
+    offerId,
+    status: 'offered',
+  };
+}
 
 export const CAPABILITY_IDS: ReadonlySet<string> = new Set(Object.keys(CAPABILITIES));
 

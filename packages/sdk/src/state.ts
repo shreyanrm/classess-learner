@@ -122,8 +122,8 @@ export function mergeLearnerState(a: LearnerState, b: LearnerState): LearnerStat
       : fa.month > fb.month
         ? fa
         : fb;
-  // ponytail: the fresher write wins on the pending break, so a repair (which clears it) propagates;
-  // freeze state is local-first (not in the remote row) so this only matters across real devices.
+  // ponytail: the fresher write wins on the pending break, so a repair (which clears it) propagates
+  // across devices — the budget and the pending break both ride the row (migration 0007).
   const brokenStreak = fresher.brokenStreak;
 
   return {
@@ -180,6 +180,21 @@ function threadCacheKey(thread: string): string {
 }
 
 /**
+ * The unscoped buckets written before this device had a signed-in subject. The FIRST subject to
+ * claim the device inherits them; everyone after starts clean (store/scope.ts holds the same law
+ * for the app-side stores) — a sibling signing in on the family tablet must never be handed the
+ * other learner's progress or conversation.
+ */
+const ADOPTABLE_KEYS: readonly string[] = [
+  STATE_CACHE_KEY,
+  threadCacheKey('wobo'),
+  'clss-vidya-conversation-v1',
+];
+
+/** Records WHICH subject adopted the legacy bucket, so adoption happens exactly once per device. */
+export const ADOPTED_MARKER_KEY = 'clss-state-adopted-v1';
+
+/**
  * Pre-rebrand thread ids. The tutor was called Vidya, so her thread — its localStorage key, its
  * `learner_threads.thread` value, and the `role` on every turn she spoke — was written as 'vidya'.
  * Reads fall back through this map so a device or account that predates the rename carries its
@@ -217,7 +232,31 @@ export class LocalStateProvider implements StateProvider {
     // Empty = legacy single-user local build (keeps the historical key so existing devices carry
     // over). Live mode passes the per-user subjectId, so a different account reads an empty bucket.
     protected readonly scope = '',
-  ) {}
+  ) {
+    if (this.scope) this.adoptLegacyBucket();
+  }
+
+  /**
+   * One-time, per-subject: fill this subject's empty scoped keys from the pre-scope bucket. Gated
+   * on a marker that names the claiming subject, so it runs once for the learner who was already
+   * using this device and never again — a second account reads its own (empty) bucket.
+   */
+  private adoptLegacyBucket(): void {
+    try {
+      // One-time, full stop: the marker is written before anything is copied, so a learner who
+      // later clears their own bucket is never handed the stale legacy copy back on the next boot.
+      if (this.storage.getItem(ADOPTED_MARKER_KEY) !== null) return;
+      this.storage.setItem(ADOPTED_MARKER_KEY, this.scope);
+      for (const base of ADOPTABLE_KEYS) {
+        const legacy = this.storage.getItem(base);
+        if (legacy === null) continue;
+        if (this.storage.getItem(this.scoped(base)) !== null) continue; // never clobber
+        this.storage.setItem(this.scoped(base), legacy);
+      }
+    } catch {
+      // storage unavailable — a fresh bucket is the correct outcome, never a broken boot
+    }
+  }
 
   protected stateKey(): string {
     return this.scope ? `${STATE_CACHE_KEY}:${this.scope}` : STATE_CACHE_KEY;
@@ -286,6 +325,13 @@ export class LocalStateProvider implements StateProvider {
 
 type StateRest = Pick<SupabaseRest, 'selectOne' | 'upsert'>;
 
+/**
+ * Columns added by migration 0007. A project that has not applied it yet rejects the write with a
+ * schema-cache error naming the column, so the writer degrades to the legacy shape (below) rather
+ * than losing the whole row — the freeze budget is then local-only until the migration lands.
+ */
+const STREAK_COLUMNS = ['streak_freezes', 'broken_streak'] as const;
+
 function stateToRow(subjectId: string, s: LearnerState): Record<string, unknown> {
   return {
     subject_id: subjectId,
@@ -295,9 +341,26 @@ function stateToRow(subjectId: string, s: LearnerState): Record<string, unknown>
     completed_topics: s.completedTopics,
     topic_progress: s.topicProgress,
     awarded_once: s.awardedOnce,
+    // Family P: the streak-freeze budget and a pending break are the learner's, and must survive a
+    // reinstall or a second device — they ride the row like every other counter.
+    streak_freezes: s.streakFreezes,
+    broken_streak: s.brokenStreak ?? null,
     mind: s.mind,
     client_updated_at: s.updatedAt,
   };
+}
+
+/** The same row without the 0007 columns — what a database that predates the migration accepts. */
+function withoutStreakColumns(row: Record<string, unknown>): Record<string, unknown> {
+  const trimmed = { ...row };
+  for (const c of STREAK_COLUMNS) delete trimmed[c];
+  return trimmed;
+}
+
+/** True when a write failed BECAUSE the 0007 columns are absent (PostgREST names the column). */
+function isMissingStreakColumn(err: unknown): boolean {
+  const message = (err instanceof Error ? err.message : String(err)).toLowerCase();
+  return STREAK_COLUMNS.some((c) => message.includes(c)) || message.includes('pgrst204');
 }
 
 function stateFromRow(row: Record<string, unknown>): LearnerState {
@@ -308,6 +371,9 @@ function stateFromRow(row: Record<string, unknown>): LearnerState {
     completedTopics: (row.completed_topics as string[]) ?? [],
     topicProgress: (row.topic_progress as Record<string, number>) ?? {},
     awardedOnce: (row.awarded_once as string[]) ?? [],
+    // Absent (pre-0007 database) or null => normalizeLearnerState fills the defaults.
+    streakFreezes: (row.streak_freezes as LearnerState['streakFreezes']) ?? undefined,
+    brokenStreak: (row.broken_streak as LearnerState['brokenStreak']) ?? undefined,
     mind: (row.mind as Record<string, unknown>) ?? {},
     updatedAt: (row.client_updated_at as string) ?? undefined,
   });
@@ -323,6 +389,8 @@ function stateFromRow(row: Record<string, unknown>): LearnerState {
 export class SupabaseStateProvider extends LocalStateProvider {
   private pushTimer: ReturnType<typeof setTimeout> | null = null;
   private threadTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  /** Flips once a write proves this project predates migration 0007; the row then omits them. */
+  private streakColumnsAbsent = false;
 
   constructor(
     private readonly rest: StateRest,
@@ -335,6 +403,22 @@ export class SupabaseStateProvider extends LocalStateProvider {
     super(storage ?? defaultStorage(), subjectId);
   }
 
+  /** Write the state row, degrading to the pre-0007 shape if the streak columns are not there. */
+  private async upsertState(state: LearnerState): Promise<void> {
+    const row = stateToRow(this.subjectId, state);
+    if (this.streakColumnsAbsent) {
+      await this.rest.upsert('learner_state', withoutStreakColumns(row), 'subject_id');
+      return;
+    }
+    try {
+      await this.rest.upsert('learner_state', row, 'subject_id');
+    } catch (err) {
+      if (!isMissingStreakColumn(err)) throw err;
+      this.streakColumnsAbsent = true; // remember, so every later write skips the failed attempt
+      await this.rest.upsert('learner_state', withoutStreakColumns(row), 'subject_id');
+    }
+  }
+
   override async hydrate(): Promise<LearnerState> {
     const local = this.loadCache();
     try {
@@ -344,7 +428,7 @@ export class SupabaseStateProvider extends LocalStateProvider {
       );
       const merged = row ? mergeLearnerState(local, stateFromRow(row)) : local;
       super.save(merged);
-      await this.rest.upsert('learner_state', stateToRow(this.subjectId, merged), 'subject_id');
+      await this.upsertState(merged);
       return merged;
     } catch {
       return local; // offline — the cache is the session's truth; the next boot reconciles
@@ -356,9 +440,7 @@ export class SupabaseStateProvider extends LocalStateProvider {
     if (this.pushTimer) clearTimeout(this.pushTimer);
     this.pushTimer = setTimeout(() => {
       this.pushTimer = null;
-      void this.rest
-        .upsert('learner_state', stateToRow(this.subjectId, this.loadCache()), 'subject_id')
-        .catch(() => {}); // offline — cache holds; the next hydrate/save pushes
+      void this.upsertState(this.loadCache()).catch(() => {}); // offline — cache holds; next push
     }, this.debounceMs);
   }
 

@@ -16,7 +16,7 @@ import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { CloseIcon, SendIcon, WaveformIcon } from '../ui/icons';
 import { sfx } from '../ui/sound';
-import { appendToArchive, type ChatTurn, readArchive, useWoboChat } from './chat';
+import { appendToArchive, type ChatTurn, useWoboChat } from './chat';
 import { FlyingWobo } from './Flight';
 import { TurnAttachments } from './paths';
 import { isMuted, MuteButton } from './speech';
@@ -96,7 +96,9 @@ export function WoboCompanion() {
   const voice = useWoboVoice({
     setMood,
     onTranscript: ({ role, text }) => {
-      appendToArchive({ id: `t${readArchive().length}-${role}`, role, text } as ChatTurn);
+      // A minted id, not the archive length: two sides transcribed in the same tick (or a trimmed
+      // archive) both read the same length and collide, and React keys the thread by turn id.
+      appendToArchive({ id: crypto.randomUUID(), role, text } as ChatTurn);
     },
   });
   const voiceOn =

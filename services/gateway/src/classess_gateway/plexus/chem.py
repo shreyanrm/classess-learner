@@ -217,6 +217,7 @@ def valid_smiles(smiles: str) -> bool:
     valence: list[int] = []  # per-atom bond count, indexed by atom order
     atom_symbol: list[str] = []
     open_rings: dict[str, int] = {}  # ring digit -> atom index that opened it
+    branch_stack: list[int] = []  # atom index to return to when a "(" branch closes — call-local
     i = 0
     n = len(s)
     last_atom = -1
@@ -311,10 +312,6 @@ def valid_smiles(smiles: str) -> bool:
     return True
 
 
-# branch stack is module-local to keep valid_smiles readable; reset per call
-branch_stack: list[int] = []
-
-
 def _close_ring(digit: str, open_rings: dict[str, int], valence: list[int], atom: int) -> None:
     if atom < 0:
         return
@@ -324,13 +321,6 @@ def _close_ring(digit: str, open_rings: dict[str, int], valence: list[int], atom
         valence[atom] += 1
     else:
         open_rings[digit] = atom
-
-
-def valid_smiles_reset(smiles: str) -> bool:
-    """valid_smiles with the module-local branch stack reset — the public entry point."""
-    global branch_stack
-    branch_stack = []
-    return valid_smiles(smiles)
 
 
 if __name__ == "__main__":
@@ -366,18 +356,23 @@ if __name__ == "__main__":
     assert is_balanced([(0, "H2"), (1, "O2")], [(2, "H2O")]) is False
 
     # SMILES validity — syntax + coarse valence
-    assert valid_smiles_reset("O") is True  # water (as O)
-    assert valid_smiles_reset("CCO") is True  # ethanol
-    assert valid_smiles_reset("c1ccccc1") is True  # benzene (aromatic ring, closure paired)
-    assert valid_smiles_reset("CC(=O)O") is True  # acetic acid
-    assert valid_smiles_reset("C1CCCCC1") is True  # cyclohexane
-    assert valid_smiles_reset("[Na+]") is True  # bracketed ion
-    assert valid_smiles_reset("C(C)(C)(C)(C)C") is False  # carbon with 5 heavy bonds — over-valent
-    assert valid_smiles_reset("C1CCC") is False  # unpaired ring closure
-    assert valid_smiles_reset("CC(O") is False  # unbalanced paren
-    assert valid_smiles_reset("CC[O") is False  # unbalanced bracket
-    assert valid_smiles_reset("C$C") is False  # illegal character
-    assert valid_smiles_reset("") is False
-    assert valid_smiles_reset("[Zz]") is False  # unknown bracketed element
+    assert valid_smiles("O") is True  # water (as O)
+    assert valid_smiles("CCO") is True  # ethanol
+    assert valid_smiles("c1ccccc1") is True  # benzene (aromatic ring, closure paired)
+    assert valid_smiles("CC(=O)O") is True  # acetic acid
+    assert valid_smiles("C1CCCCC1") is True  # cyclohexane
+    assert valid_smiles("[Na+]") is True  # bracketed ion
+    assert valid_smiles("C(C)(C)(C)(C)C") is False  # carbon with 5 heavy bonds — over-valent
+    assert valid_smiles("C1CCC") is False  # unpaired ring closure
+    assert valid_smiles("CC(O") is False  # unbalanced paren
+    assert valid_smiles("CC[O") is False  # unbalanced bracket
+    assert valid_smiles("C$C") is False  # illegal character
+    assert valid_smiles("") is False
+    assert valid_smiles("[Zz]") is False  # unknown bracketed element
+    # nested branches must return to the right atom — and no state may leak between calls
+    assert valid_smiles("CC(C(C)C)C") is True  # 2,3-dimethylbutane, branch inside a branch
+    assert valid_smiles("C(C(C)(C)C)(C)(C)C") is True  # deep nesting, every atom within valence
+    assert valid_smiles("CC(C(C") is False  # unclosed nested branches
+    assert valid_smiles("CC(C(C)C)C") is True  # the same string again: no residue from the failure
 
     print("chem.py self-check passed: formula parse, molar mass, balance, SMILES validity")

@@ -24,6 +24,7 @@ import {
   type MakerPlanSpec,
 } from '../create';
 import { refusalLine } from '../refusals';
+import { answersMatch } from './answer';
 import { freshOffers } from './classify';
 import type { ActionAttachment, Flashcard, QuizItem, TurnExtras } from './types';
 
@@ -92,7 +93,9 @@ function QuizCard({ items }: { items: QuizItem[] }) {
   const [right, setRight] = useState(0);
   const item = items[idx];
   const answered = picked !== null;
-  const correct = answered && picked === item?.answer;
+  // One comparison point for both the tally and the verdict — normalised, so "Photosynthesis. "
+  // and "photosynthesis" are the same right answer (mcq options are exact strings either way).
+  const correct = answered && item !== undefined && answersMatch(picked, item.answer);
 
   if (!item) {
     return (
@@ -108,7 +111,7 @@ function QuizCard({ items }: { items: QuizItem[] }) {
   const settle = (value: string) => {
     if (answered) return;
     setPicked(value);
-    if (value === item.answer) setRight((n) => n + 1);
+    if (answersMatch(value, item.answer)) setRight((n) => n + 1);
   };
   const next = () => {
     setIdx((i) => i + 1);
@@ -697,12 +700,16 @@ export function TurnAttachments({ turn }: { turn: ChatTurn }) {
   if (extras.path === 'visualization' && extras.viz) {
     return (
       <Shell eyebrow="Drawn for you">
-        <DiagramView
-          id={turn.id}
-          svg={extras.viz.spec.svg}
-          label={extras.viz.spec.caption ?? 'a drawing from Wobo'}
-          caption={extras.viz.spec.caption}
-        />
+        {/* her ink inherits the page's ink colour — a drawing built on currentColor reads in both
+            themes instead of vanishing as black-on-black at night */}
+        <div style={{ color: 'var(--clss-ink-900)' }}>
+          <DiagramView
+            id={turn.id}
+            svg={extras.viz.spec.svg}
+            label={extras.viz.spec.caption ?? 'a drawing from Wobo'}
+            caption={extras.viz.spec.caption}
+          />
+        </div>
       </Shell>
     );
   }

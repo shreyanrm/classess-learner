@@ -1107,7 +1107,14 @@ def run_wobo_turn(
     record_cost(capability="wobo.turn", model=model, response=response)
     text = response.choices[0].message.content or ""
     data = _extract_json(text)
-    say = str(data.get("say", "Let us look at your working together."))
+    # A model that answered in plain prose (no JSON envelope at all) still said something useful;
+    # serving the canned line over it throws the real answer away and makes Wobo look deaf. So an
+    # unparseable reply becomes the say line verbatim, and the canned line is kept for the only case
+    # it fits: nothing came back. The outbound safety screen in app.py still runs over whatever this
+    # returns, so prose takes exactly the same pass as an enveloped say.
+    canned = "Let us look at your working together."
+    envelope_say = str(data.get("say") or "").strip() if data else text.strip()
+    say = envelope_say or canned
     actions = data.get("actions", [])
     if not isinstance(actions, list):
         actions = []

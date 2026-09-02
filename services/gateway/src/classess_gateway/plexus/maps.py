@@ -125,8 +125,17 @@ def verify_map_scene(raw: Any) -> dict[str, Any] | None:
                 continue
             seen.add(d["id"])
             values.append(d)
-        # ≥2 distinct values so a max/min is meaningful; the answer is derived client-side, never authored
-        return raw if len(values) >= 2 else None
+        # ≥2 entries so a max/min is meaningful; the answer is DERIVED client-side, never authored —
+        # which means the derivation has to have exactly one winner. Two regions tied at the extreme
+        # make the task unanswerable (the client picks one, the learner may tap the other and be told
+        # they are wrong), so the tie is refused here, before the scene can ever be cached.
+        if len(values) < 2:
+            return None
+        nums = [float(v["value"]) for v in values]
+        extreme = max(nums) if it["extreme"] == "max" else min(nums)
+        if sum(1 for x in nums if x == extreme) != 1:
+            return None  # tied extreme: no unique argmax/argmin, so no answerable task
+        return raw
 
     return None
 
@@ -213,5 +222,47 @@ if __name__ == "__main__":  # runnable self-check — no framework, no network
         )
         is None
     ), "off-map choropleth value slipped through"
+
+    # RIGGED TIE CASE: two states share the maximum — there is no unique answer, so it is REFUSED
+    tied_max = {
+        **good_choro,
+        "interaction": {
+            **good_choro["interaction"],
+            "values": [
+                {"id": "uttar-pradesh", "value": 20},
+                {"id": "maharashtra", "value": 20},
+                {"id": "gujarat", "value": 6},
+            ],
+        },
+    }
+    assert verify_map_scene(tied_max) is None, "tied maximum slipped through"
+    # the same shape under extreme=min: the tie is at the BOTTOM this time
+    tied_min = {
+        **good_choro,
+        "interaction": {
+            **good_choro["interaction"],
+            "extreme": "min",
+            "prompt": "tap the least populous state",
+            "values": [
+                {"id": "uttar-pradesh", "value": 20},
+                {"id": "maharashtra", "value": 6},
+                {"id": "gujarat", "value": 6},
+            ],
+        },
+    }
+    assert verify_map_scene(tied_min) is None, "tied minimum slipped through"
+    # a tie that is NOT at the extreme is fine — the argmax is still unique
+    tie_off_extreme = {
+        **good_choro,
+        "interaction": {
+            **good_choro["interaction"],
+            "values": [
+                {"id": "uttar-pradesh", "value": 20},
+                {"id": "maharashtra", "value": 6},
+                {"id": "gujarat", "value": 6},
+            ],
+        },
+    }
+    assert verify_map_scene(tie_off_extreme) is tie_off_extreme, "unique max wrongly refused"
 
     print("maps.py self-check passed: catalog, label target, locate bbox (MH vs GJ flagship), choropleth")

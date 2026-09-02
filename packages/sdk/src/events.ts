@@ -27,9 +27,19 @@ export interface EventProvider {
   countByType(): Record<string, number>;
 }
 
+/** A consumer rejection that could not be awaited — kept for diagnostics, never thrown at a tap. */
+export interface ConsumeFailure {
+  eventId: string;
+  error: string;
+}
+
+/** How many consumer failures are kept; the newest win (a diagnostic, not a queue). */
+const CONSUME_FAILURE_CAP = 20;
+
 export class InMemoryEventProvider implements EventProvider {
   private readonly log: ClassessEvent[] = [];
   private readonly sessionId = newId();
+  private readonly failures: ConsumeFailure[] = [];
 
   constructor(
     private readonly config: SdkConfig,
@@ -61,8 +71,25 @@ export class InMemoryEventProvider implements EventProvider {
     const stored = event as ClassessEvent;
     this.log.push(stored);
     // The consumer is idempotent; evidence-bearing events update the learner's mastery bands.
-    void this.consumer.consume(stored);
+    // Deliberately not awaited — recording an event must never block a tap — but a floating promise
+    // still has to answer for itself: a rejection is recorded here as a diagnostic instead of
+    // escaping as an unhandled rejection (which, in a browser, is a hard error on the page).
+    void this.consumer.consume(stored).catch((err: unknown) => this.noteFailure(stored, err));
     return event;
+  }
+
+  /** Record a consumer rejection: mastery just did not move for this event; nothing else breaks. */
+  private noteFailure(event: ClassessEvent, err: unknown): void {
+    this.failures.push({
+      eventId: event.event_id,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    if (this.failures.length > CONSUME_FAILURE_CAP) this.failures.shift();
+  }
+
+  /** Consumer rejections seen this session (visible for tests/diagnostics). */
+  get consumeFailures(): readonly ConsumeFailure[] {
+    return this.failures;
   }
 
   getLog(): ClassessEvent[] {
@@ -83,7 +110,8 @@ export class InMemoryEventProvider implements EventProvider {
  * batched inserts into `learner.outbox` via `outbox_append_batch` — the transactional-outbox side
  * of the existing relay pattern (relay.ts publishes rows UP; outbox_append dedupes on event_id, so
  * at-least-once retries are no-ops). A failed flush re-queues the batch and retries on the next
- * record/flush; the local log and mastery loop are never blocked by the network.
+ * record/flush (and on its own re-armed timer, so a batch is never left waiting on the learner);
+ * the local log and mastery loop are never blocked by the network.
  * ponytail: the pending queue is in-memory — events recorded fully offline that never see another
  * flush are lost with the tab; move the queue to localStorage if offline sessions must survive.
  */
@@ -110,10 +138,16 @@ export class SupabaseOutboxEventProvider extends InMemoryEventProvider {
     this.pending.push(event as ClassessEvent);
     if (this.pending.length >= this.maxBatch) {
       void this.flush();
-    } else if (!this.timer) {
-      this.timer = setTimeout(() => void this.flush(), this.flushAfterMs);
+    } else {
+      this.arm();
     }
     return event;
+  }
+
+  /** Arm the flush timer if nothing is armed — the batch always has a next attempt of its own. */
+  private arm(): void {
+    if (this.timer || this.pending.length === 0) return;
+    this.timer = setTimeout(() => void this.flush(), this.flushAfterMs);
   }
 
   /** Push the pending batch to the outbox. Resolves to the number of events accepted. */
@@ -130,6 +164,9 @@ export class SupabaseOutboxEventProvider extends InMemoryEventProvider {
       return batch.length;
     } catch {
       this.pending = [...batch, ...this.pending]; // keep order; retry on the next record/flush
+      // Re-arm: a failed flush cleared the timer, so without this the batch would sit until the
+      // learner happened to record another event — and a tab closed first takes it with them.
+      this.arm();
       return 0;
     }
   }

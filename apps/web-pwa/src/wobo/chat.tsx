@@ -47,6 +47,21 @@ const ARCHIVE_KEY = 'clss-wobo-archive-v1';
 const ARCHIVE_CAP = 2000; // ponytail: localStorage quota guard; move to IndexedDB if anyone outgrows it
 export const CHAT_PAGE = 40;
 
+/**
+ * A turn's id — minted here, once, for every turn that enters the conversation. Never derived from
+ * the archive's length: the archive is CAPPED, so past the cap that counter stops moving and every
+ * new turn is minted "t2000-user" again. Two turns with one id means updateTurn patches the wrong
+ * bubble (an approval outcome landing on someone else's card) and React renders duplicate keys.
+ */
+export function mintTurnId(): string {
+  try {
+    return crypto.randomUUID();
+  } catch {
+    // no secure context (a LAN dev build over http) — still unique enough for one conversation
+    return `t-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+  }
+}
+
 export function readArchive(): ChatTurn[] {
   try {
     const a = JSON.parse(scoped.getItem(ARCHIVE_KEY) ?? '[]');

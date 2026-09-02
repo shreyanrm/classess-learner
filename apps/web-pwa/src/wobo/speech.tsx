@@ -110,13 +110,90 @@ export function stopSpeaking(): void {
   // The context is shared and reused — stop the source, never tear the context down.
 }
 
-/** Split into speakable sentences so we can synth+play the first while the rest queues. */
-function sentences(text: string): string[] {
-  const parts = text
-    .match(/[^.!?\n]+[.!?]*/g)
-    ?.map((s) => s.trim())
-    .filter(Boolean);
-  return parts && parts.length > 0 ? parts : [text.trim()];
+// Words whose period never ends a sentence. A small, high-traffic list — a tutor's narration
+// splitter, not a tokenizer. Single letters ("e.g.", "U.S.", "Ph.D.") are handled as initials below.
+const ABBREVIATIONS = new Set([
+  'mr',
+  'mrs',
+  'ms',
+  'dr',
+  'prof',
+  'sr',
+  'jr',
+  'st',
+  'vs',
+  'etc',
+  'eg',
+  'ie',
+  'approx',
+  'fig',
+  'no',
+  'al',
+  'dept',
+  'est',
+  'inc',
+  'ltd',
+  'min',
+  'max',
+  'cf',
+]);
+
+const isUpperChar = (c: string): boolean => c !== c.toLowerCase() && c === c.toUpperCase();
+
+/** The word (letters/digits) immediately before position `i`, lowercased. */
+function wordBefore(text: string, i: number): string {
+  let start = i;
+  while (start > 0 && /[A-Za-z0-9]/.test(text[start - 1] as string)) start--;
+  return text.slice(start, i).toLowerCase();
+}
+
+/**
+ * Does the ender run text[i..end] actually close a sentence? `!` and `?` always do. A period only
+ * does when what follows is the end of the line, or whitespace and then a capital — so "3.14",
+ * "e.g." and "Dr. Rao" stay in one breath instead of shattering the beat (each fragment would
+ * otherwise get its own synth request and its own ink beat, drifting the choreography).
+ */
+function endsSegment(text: string, i: number, end: number): boolean {
+  const run = text.slice(i, end + 1);
+  if (run.includes('!') || run.includes('?')) return true;
+  const word = wordBefore(text, i);
+  if (word.length === 1 && /[A-Za-z]/.test(word)) return false; // an initial: e.g., U.S., Ph.D.
+  if (ABBREVIATIONS.has(word)) return false;
+  const rest = text.slice(end + 1);
+  if (rest.trim() === '') return true; // end of the line
+  if (!/^[\s]/.test(rest)) return false; // "3.14", "v1.2" — glued to what follows
+  const head = rest.trimStart().replace(/^["'“‘([]+/, '')[0];
+  return head !== undefined && isUpperChar(head);
+}
+
+/**
+ * Split into speakable sentences so we can synth+play the first while the rest queues. Newlines and
+ * `!`/`?` always break; a period breaks only where it really ends a sentence (see endsSegment).
+ */
+export function sentences(text: string): string[] {
+  const out: string[] = [];
+  let start = 0;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i] as string;
+    if (ch === '\n') {
+      const seg = text.slice(start, i).trim();
+      if (seg) out.push(seg);
+      start = i + 1;
+      continue;
+    }
+    if (ch !== '.' && ch !== '!' && ch !== '?') continue;
+    let end = i; // swallow a run of enders ("...", "?!") into one break
+    while (end + 1 < text.length && '.!?'.includes(text[end + 1] as string)) end++;
+    if (endsSegment(text, i, end)) {
+      const seg = text.slice(start, end + 1).trim();
+      if (seg) out.push(seg);
+      start = end + 1;
+    }
+    i = end;
+  }
+  const tail = text.slice(start).trim();
+  if (tail) out.push(tail);
+  return out.length > 0 ? out : [text.trim()];
 }
 
 /** Synthesize one sentence to PCM samples (or null when keyless/rate-limited/muted). */
@@ -301,17 +378,43 @@ async function speakStream(
   });
 }
 
+/**
+ * Wrap a callback so it runs at most once. `onDone` releases the course's advance button — firing
+ * it twice double-advances a card, never firing it locks the learner on one. Every exit of
+ * speakLine goes through one of these.
+ */
+export function onceCallback(fn?: () => void): () => void {
+  let done = false;
+  return () => {
+    if (done) return;
+    done = true;
+    fn?.();
+  };
+}
+
 export async function speakLine(text: string, opts?: { onDone?: () => void }): Promise<void> {
+  // Guaranteed-once: muted, keyless, superseded, thrown or finished — the gate always releases.
+  // (A whole-body finally can't do this: the streaming path resolves before its audio ends and
+  // fires onDone from a timer afterwards, so a finally here would pre-empt it.)
+  const finish = onceCallback(opts?.onDone);
   if (!GATEWAY_URL || isMuted() || !text.trim()) {
-    opts?.onDone?.();
+    finish();
     return;
   }
   stopSpeaking();
   const gen = ++speechGen;
   // Fast path: stream the whole line (first audio ~4s sooner). If it can't start, fall through to
   // the buffered sentence pipeline below — voice never regresses.
-  if (await speakStream(text, gen, opts)) return;
-  if (gen !== speechGen) return; // superseded while streaming attempted
+  if (await speakStream(text, gen, { onDone: finish })) {
+    // Handled — the stream fires `finish` when its audio drains. Unless it was superseded, in which
+    // case nothing more is coming and the gate would hang: release it now.
+    if (gen !== speechGen) finish();
+    return;
+  }
+  if (gen !== speechGen) {
+    finish(); // superseded while streaming attempted
+    return;
+  }
   try {
     // Low-fi (reduced-motion / Data Saver / 2G): shorter TTS — voice the first couple of sentences,
     // the rest stays on screen. Grace degrades, the words don't.
@@ -320,17 +423,26 @@ export async function speakLine(text: string, opts?: { onDone?: () => void }): P
     let pending = synth(parts[0] as string);
     for (let i = 0; i < parts.length; i++) {
       const cur = await pending;
-      if (gen !== speechGen) return; // a newer utterance took over
+      if (gen !== speechGen) {
+        finish(); // a newer utterance took over
+        return;
+      }
       pending = i + 1 < parts.length ? synth(parts[i + 1] as string) : Promise.resolve(null);
-      if (isMuted()) return; // muted mid-flight — respect it
+      if (isMuted()) {
+        finish(); // muted mid-flight — respect it, but never strand the gate
+        return;
+      }
       if (cur) await playSamples(cur.samples, cur.rate, gen);
-      if (gen !== speechGen) return;
+      if (gen !== speechGen) {
+        finish();
+        return;
+      }
     }
-    if (gen === speechGen) opts?.onDone?.();
+    finish();
   } catch {
     // Never fail silently: her words are already on screen — just release any gate waiting on us
     // (the course advance button) so a TTS hiccup can never strand the learner on a locked card.
-    if (gen === speechGen) opts?.onDone?.();
+    finish();
   }
 }
 
@@ -400,20 +512,30 @@ const moodOfBeat = (beat: WoboAction[]): WoboMood | undefined => {
 export async function performTurn(
   text: string,
   actions: WoboAction[],
-  bus: Pick<WoboBus, 'addBeat'>,
+  bus: Pick<WoboBus, 'addBeat' | 'beginTurn'>,
   opts?: { onMood?: (m: WoboMood) => void },
 ): Promise<void> {
   const segs = sentences(text);
   const plan = planPerformance(actions, segs.length);
   stopSpeaking();
   const gen = ++speechGen;
+  bus.beginTurn(); // this turn's ink starts a fresh redrawable set
+  // Every beat fires exactly once, keyed by its slot: `s${i}` for withSentence, `e${i}` for
+  // afterSentence. The end-of-turn flush replays the same runBeat, so a beat that already landed is
+  // a no-op — without this the flush re-fired every afterSentence beat (doubled ink, doubled say
+  // lines, doubled setState) on every completed performance.
+  const fired = new Set<string>();
   const runBeat = (
     beat: WoboAction[] | undefined,
     i: number,
     voicedMs: number | undefined,
     kind: string,
+    slot: 's' | 'e',
   ) => {
     if (!beat?.length) return;
+    const key = `${slot}${i}`;
+    if (fired.has(key)) return;
+    fired.add(key);
     const mood = moodOfBeat(beat);
     if (mood) opts?.onMood?.(mood);
     bus.addBeat(beat, voicedMs !== undefined ? { noteDurationMs: voicedMs } : undefined);
@@ -421,15 +543,15 @@ export async function performTurn(
   };
   try {
     await speakSentences(segs, gen, {
-      onStart: (i, voicedMs) => runBeat(plan.atStart.get(i), i, voicedMs, 'withSentence'),
-      onEnd: (i) => runBeat(plan.atEnd.get(i), i, undefined, 'afterSentence'),
+      onStart: (i, voicedMs) => runBeat(plan.atStart.get(i), i, voicedMs, 'withSentence', 's'),
+      onEnd: (i) => runBeat(plan.atEnd.get(i), i, undefined, 'afterSentence', 'e'),
     });
   } finally {
-    // Never strand ink: if the performance was cut short, land any un-fired beats at once.
+    // Never strand ink: if the performance was cut short, land the beats that never fired — through
+    // runBeat, so their mood and trace are honoured too.
     if (gen === speechGen) {
-      for (const [i, beat] of plan.atStart)
-        if (i >= segs.length) runBeat(beat, i, undefined, 'flush');
-      for (const beat of plan.atEnd.values()) bus.addBeat(beat);
+      for (const [i, beat] of plan.atStart) runBeat(beat, i, undefined, 'flush', 's');
+      for (const [i, beat] of plan.atEnd) runBeat(beat, i, undefined, 'flush', 'e');
     }
   }
 }
@@ -554,28 +676,26 @@ export function useCardNarration(): CardNarration {
     let raf = 0;
     let cancelled = false;
     let audioDone = false;
-    const muted = isMuted();
     const dur = estimateReadMs(narr.text);
+    // Hard ceiling: if her onDone is ever lost (a socket that neither closes nor errors), the gate
+    // degrades to the reading clock instead of locking the learner on the card forever.
+    const ceiling = dur * 2 + 5000;
     const started = performance.now();
-    if (!muted) void speakLine(narr.text, { onDone: () => (audioDone = true) });
+    if (!isMuted()) void speakLine(narr.text, { onDone: () => (audioDone = true) });
     const tick = () => {
       if (cancelled) return;
-      const t = (performance.now() - started) / dur;
-      if (muted) {
-        const p = Math.min(1, t);
-        setProgress(p);
-        if (p >= 1) {
-          setReady(true);
-          return;
-        }
-      } else {
-        // ramp toward 0.95 on the estimate, then snap to done when her audio actually ends
-        setProgress(audioDone ? 1 : Math.min(0.95, t * 0.95));
-        if (audioDone) {
-          setReady(true);
-          return;
-        }
+      const elapsed = performance.now() - started;
+      const t = elapsed / dur;
+      // Re-read the switch each frame: muting mid-line cuts her off, and from then on the reading
+      // clock — not an audio callback that will never come — has to carry the gate.
+      const muted = isMuted();
+      if (audioDone || elapsed >= ceiling || (muted && t >= 1)) {
+        setProgress(1);
+        setReady(true);
+        return;
       }
+      // ramp toward 0.95 on the estimate, then snap to done when her audio actually ends
+      setProgress(muted ? Math.min(1, t) : Math.min(0.95, t * 0.95));
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);

@@ -271,3 +271,62 @@ def test_mock_first_meeting_says_the_intro_verbatim() -> None:
     ).output
     assert out["say"] == WOBO_INTRO
     assert out["path"] == "inline"
+
+
+# --- Wave 3: a prose-only reply is spoken, not swallowed by the canned line -------------
+
+
+class _FakeChoiceMessage:
+    def __init__(self, content: str) -> None:
+        self.content = content
+
+
+class _FakeChoice:
+    def __init__(self, content: str) -> None:
+        self.message = _FakeChoiceMessage(content)
+
+
+class _FakeResponse:
+    def __init__(self, content: str) -> None:
+        self.choices = [_FakeChoice(content)]
+        self.usage = None
+
+
+def _turn_with_model_text(monkeypatch, text: str) -> dict:
+    import litellm
+    from classess_gateway.wobo import run_wobo_turn
+
+    monkeypatch.setattr(litellm, "completion", lambda **_kw: _FakeResponse(text))
+    out, _tokens = run_wobo_turn(
+        provider_model="anthropic/claude-sonnet-5",  # the turn tier
+        payload={"context": {"turn": {"lastUserInput": "I am stuck", "recentTurns": []}}},
+    )
+    return out
+
+
+CANNED = "Let us look at your working together."
+
+
+def test_prose_reply_without_a_json_envelope_becomes_the_say_line(monkeypatch) -> None:
+    prose = "Look at the line where you moved the 3 across — it kept its sign."
+    out = _turn_with_model_text(monkeypatch, f"  {prose}  ")
+    assert out["say"] == prose, "a real answer was thrown away for the canned line"
+    assert out["actions"] == []
+    assert out["path"] in ("inline", "component", "visualization", "action", "route")
+
+
+def test_unparseable_json_still_speaks_the_model_text(monkeypatch) -> None:
+    # a truncated envelope: _extract_json gives {}, but the words are still hers
+    out = _turn_with_model_text(monkeypatch, '{"say": "check the second step", "acti')
+    assert out["say"] != CANNED
+    assert "check the second step" in out["say"]
+
+
+def test_empty_model_text_falls_back_to_the_canned_line(monkeypatch) -> None:
+    assert _turn_with_model_text(monkeypatch, "   ")["say"] == CANNED
+
+
+def test_a_valid_envelope_still_wins(monkeypatch) -> None:
+    out = _turn_with_model_text(monkeypatch, '{"say": "Try isolating x first.", "path": "inline"}')
+    assert out["say"] == "Try isolating x first."
+    assert out["path"] == "inline"

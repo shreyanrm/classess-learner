@@ -739,18 +739,19 @@ def _video_routing():
     return primary, fallbacks
 
 
-def test_video_defaults_to_opus_and_escalates_to_gpt() -> None:
-    """engine.video storyboards on Opus (frontier.reason, the primary per the owner's 2026-07-07
-    content-order verdict) and competes on GPT-5.5 (openai.frontier) as its first fallback."""
-    from classess_gateway.registry import policy
-    from classess_gateway.routing import resolve, resolve_any
+def test_video_defaults_to_the_generate_tier_and_escalates_one_rung() -> None:
+    """The cost rule (owner, 2026-09-02): a storyboard runs on the GENERATE tier (Terra) and
+    escalates only on a rejection — one rung, to the REASON tier (Sol). The error-failover rung
+    underneath is the verify tier (Opus 5), so an outage still yields content from the other
+    provider."""
+    from classess_gateway.registry import escalate_for, policy
+    from classess_gateway.routing import Tier, resolve, resolve_any
 
     pol = policy("engine.video")
-    assert pol.primary == "frontier.reason"
-    assert resolve(pol.primary, pol.track).provider_model == "anthropic/claude-opus-4-8"
-    # the escalation target is the FIRST fallback: GPT-5.5, the quality-backup
-    assert pol.fallback[0] == "openai.frontier"
-    assert resolve_any(pol.fallback[0]).provider_model == "openai/gpt-5.5"
+    assert pol.tier is Tier.GENERATE
+    assert resolve(pol.primary, pol.track).provider_model == "openai/gpt-5.6-terra"
+    assert resolve_any(pol.fallback[0]).provider_model == "anthropic/claude-opus-5"
+    assert escalate_for("engine.video", "structural verification failed") == "openai/gpt-5.6-sol"
 
 
 def _patch_complete(monkeypatch, plans: dict[str, str]) -> list[str]:
@@ -967,7 +968,7 @@ def test_live_serve_regenerates_pre_doctrine_prompt_versions(monkeypatch, cache_
             "artifact": {"cards": [], "workbook": [], "boss": []},
             "provenance": {
                 "engine": "engine.compose",
-                "model": "anthropic/claude-opus-4-8",
+                "model": "openai/gpt-5.6-terra",
                 "prompt_version": version,
             },
         }
@@ -988,7 +989,7 @@ def test_live_serve_regenerates_pre_doctrine_prompt_versions(monkeypatch, cache_
         engines.run_engine(
             capability="engine.compose",
             payload={"concept": "pressure"},
-            provider_model="anthropic/claude-opus-4-8",
+            provider_model="openai/gpt-5.6-terra",
             live=True,
         )
 
@@ -997,7 +998,7 @@ def test_live_serve_regenerates_pre_doctrine_prompt_versions(monkeypatch, cache_
     out = engines.run_engine(
         capability="engine.compose",
         payload={"concept": "pressure"},
-        provider_model="anthropic/claude-opus-4-8",
+        provider_model="openai/gpt-5.6-terra",
         live=True,
     )
     assert out.tokens == 0
@@ -1142,3 +1143,238 @@ def test_sanitizer_allows_data_image_and_extracts_from_prose() -> None:
     assert clean is not None
     assert clean.startswith("<svg")
     assert "data:image/png" in clean
+
+
+# --- Wave 3: cache writes are atomic, migration is idempotent --------------------------
+
+
+def test_save_never_leaves_a_torn_record_for_a_concurrent_reader(cache_dir) -> None:
+    """The post-serve validation thread rewrites a record a serving thread may be reading.
+
+    A truncate-then-write would let the reader parse a half-file; the writer swaps the file in
+    with os.replace instead, so every read sees one whole record — old or new, never a splice."""
+    import threading
+
+    concept, modality, difficulty = "atomic writes", "compose", "core"
+    small = {"concept": concept, "artifact": {"body": "a"}, "status": store.CANONICAL}
+    big = {"concept": concept, "artifact": {"body": "b" * 200_000}, "status": store.CANONICAL}
+    store.save(concept, modality, difficulty, small)
+
+    stop = threading.Event()
+    torn: list[str] = []
+
+    def writer() -> None:
+        while not stop.is_set():
+            store.save(concept, modality, difficulty, big)
+            store.save(concept, modality, difficulty, small)
+
+    def reader() -> None:
+        for _ in range(400):
+            rec = store.load(concept, modality, difficulty)
+            if rec is None or rec.get("concept") != concept:
+                torn.append(repr(rec))
+
+    w = threading.Thread(target=writer, daemon=True)
+    w.start()
+    try:
+        reader()
+    finally:
+        stop.set()
+        w.join(timeout=5)
+    assert torn == [], f"a reader saw a torn / unparseable cache record: {torn[:2]}"
+
+
+def test_save_leaves_no_temp_files_behind(cache_dir) -> None:
+    store.save("tidy up", "compose", "core", {"concept": "tidy up", "artifact": {}})
+    store.save_version("tidy up", "compose", "core", {"concept": "tidy up", "artifact": {}})
+    leftovers = [p.name for p in cache_dir.rglob("*.tmp")]
+    assert leftovers == [], f"atomic write left temp files behind: {leftovers}"
+    # and the record still round-trips as UTF-8 with non-ASCII content intact
+    store.save("tidy up", "compose", "core", {"concept": "tidy up", "artifact": {"t": "प्रकाश °C"}})
+    assert store.load("tidy up", "compose", "core")["artifact"]["t"] == "प्रकाश °C"
+
+
+def test_migration_is_idempotent(cache_dir) -> None:
+    """A second migrate() reports nothing: the alias log is read once and already-recorded
+    files are skipped, so re-running the operator entrypoint never re-appends the same pair."""
+    concept, modality, difficulty = "refraction", "compose", "core"
+    legacy_body = f"{concept}\x00{modality}\x00{difficulty}\x00CBSE\x008\x00science\x00c2\x00"
+    legacy_digest = hashlib.sha256(legacy_body.encode()).hexdigest()[:12]
+    legacy = store.cache_dir() / modality / f"refraction--{difficulty}--{legacy_digest}.json"
+    legacy.parent.mkdir(parents=True, exist_ok=True)
+    legacy.write_text(
+        json.dumps(
+            {
+                "concept": concept,
+                "modality": modality,
+                "difficulty": difficulty,
+                "verified": True,
+                "artifact": "bent light",
+            }
+        )
+    )
+
+    first = store.migrate()
+    assert len(first) == 1
+    log = store.cache_dir() / "_migrations" / "aliases.jsonl"
+    lines_after_first = log.read_text(encoding="utf-8").splitlines()
+    assert len(lines_after_first) == 1
+
+    second = store.migrate()
+    assert second == [], "a re-run re-migrated an already-recorded file"
+    assert log.read_text(encoding="utf-8").splitlines() == lines_after_first
+    assert legacy.exists()  # retention: the source file is never touched
+
+
+# --- Wave 3: SMILES branch state is per-call, never module-global ----------------------
+
+
+def test_valid_smiles_handles_nested_branches_without_leaking_state() -> None:
+    from classess_gateway.plexus import chem
+
+    assert chem.valid_smiles("CC(C(C)C)C") is True  # branch inside a branch
+    assert chem.valid_smiles("C(C(C)(C)C)(C)(C)C") is True  # deeper nesting, still in valence
+    # a malformed string leaves NO residue: the same valid string passes immediately after
+    assert chem.valid_smiles("CC(C(C)C") is False  # unbalanced parens
+    assert chem.valid_smiles("CC(C(C)C)C") is True
+    # and the branch bookkeeping is not reachable from module scope any more
+    assert not hasattr(chem, "branch_stack")
+    assert not hasattr(chem, "valid_smiles_reset")
+
+
+def test_valid_smiles_is_thread_safe_across_concurrent_calls() -> None:
+    """Module-global branch state made two concurrent validations corrupt each other."""
+    import threading
+
+    from classess_gateway.plexus import chem
+
+    bad: list[str] = []
+
+    def hammer(smiles: str, expected: bool) -> None:
+        for _ in range(300):
+            if chem.valid_smiles(smiles) is not expected:
+                bad.append(smiles)
+                return
+
+    threads = [
+        threading.Thread(target=hammer, args=("CC(C(C)C)C", True)),
+        threading.Thread(target=hammer, args=("C(C(C)(C)C)(C)(C)C", True)),
+        threading.Thread(target=hammer, args=("CC(C(C)C", False)),
+    ]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join(timeout=30)
+    assert bad == [], f"concurrent SMILES validation disagreed with itself: {bad}"
+
+
+# --- Wave 3: a tied choropleth extreme has no unique answer, so it is refused ----------
+
+
+def _choro(values: list[dict[str, object]], extreme: str = "max") -> dict[str, object]:
+    return {
+        "kind": "map",
+        "id": "m-tie",
+        "title": "read the shading",
+        "regions": ["uttar-pradesh", "maharashtra", "gujarat"],
+        "interaction": {
+            "mode": "choropleth",
+            "prompt": "tap the most populous state",
+            "extreme": extreme,
+            "values": values,
+        },
+    }
+
+
+def test_choropleth_with_a_tied_extreme_is_refused() -> None:
+    from classess_gateway.plexus.maps import verify_map_scene
+
+    tied_max = _choro(
+        [
+            {"id": "uttar-pradesh", "value": 20},
+            {"id": "maharashtra", "value": 20},
+            {"id": "gujarat", "value": 6},
+        ]
+    )
+    assert verify_map_scene(tied_max) is None, "two states tied at the max slipped through"
+
+    tied_min = _choro(
+        [
+            {"id": "uttar-pradesh", "value": 20},
+            {"id": "maharashtra", "value": 6},
+            {"id": "gujarat", "value": 6},
+        ],
+        extreme="min",
+    )
+    assert verify_map_scene(tied_min) is None, "two states tied at the min slipped through"
+
+
+def test_choropleth_with_a_unique_extreme_still_passes() -> None:
+    from classess_gateway.plexus.maps import verify_map_scene
+
+    # a tie BELOW the extreme is harmless — the argmax is still exactly one state
+    scene = _choro(
+        [
+            {"id": "uttar-pradesh", "value": 20},
+            {"id": "maharashtra", "value": 6},
+            {"id": "gujarat", "value": 6},
+        ]
+    )
+    assert verify_map_scene(scene) is scene
+    # a duplicate id for the tying region is dropped before the tie check, not counted twice
+    dedup = _choro(
+        [
+            {"id": "uttar-pradesh", "value": 20},
+            {"id": "maharashtra", "value": 20},
+            {"id": "maharashtra", "value": 3},
+        ]
+    )
+    assert verify_map_scene(dedup) is None
+
+
+# --- Wave 3: telemetry emits under the key the JSON formatter actually reads -----------
+
+
+def test_telemetry_event_fields_survive_the_json_formatter() -> None:
+    """emit() must put the event under ``extra={"fields": ...}``: _JsonFormatter merges
+    ``record.fields`` and drops every other custom key, so any other name logs nothing."""
+    import logging
+
+    from classess_gateway.app import _JsonFormatter
+    from classess_gateway.telemetry import TelemetryEvent, emit
+
+    records: list[logging.LogRecord] = []
+
+    class _Capture(logging.Handler):
+        def emit(self, record: logging.LogRecord) -> None:
+            records.append(record)
+
+    logger = logging.getLogger("classess.gateway.telemetry")
+    handler = _Capture()
+    logger.addHandler(handler)
+    previous = logger.level
+    logger.setLevel(logging.INFO)
+    try:
+        emit(
+            MetricsSink(),
+            TelemetryEvent(
+                capability="engine.compose",
+                track="track-1",
+                model="test-model",
+                latency_ms=12.5,
+                tokens=42,
+                cache_hit=True,
+            ),
+        )
+    finally:
+        logger.removeHandler(handler)
+        logger.setLevel(previous)
+
+    assert len(records) == 1
+    line = json.loads(_JsonFormatter().format(records[0]))
+    assert line["capability"] == "engine.compose"
+    assert line["track"] == "track-1"
+    assert line["model"] == "test-model"
+    assert line["latency_ms"] == 12.5
+    assert line["tokens"] == 42
+    assert line["cache_hit"] is True

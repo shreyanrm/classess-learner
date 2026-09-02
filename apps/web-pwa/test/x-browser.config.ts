@@ -31,7 +31,18 @@ export default defineConfig({
     { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
   ],
   webServer: {
-    command: `VITE_LLM_MODE=mock VITE_GATEWAY_URL= VITE_DEV_AUTH=true VITE_PERSIST_MODE=local bunx vite --port ${PORT} --strictPort`,
+    // Blank Supabase vars too (.env.local carries real keys): with no account layer the walk
+    // never fires an auth request, so the console-clean gate measures the app, not the network.
+    command: [
+      'VITE_LLM_MODE=mock',
+      'VITE_GATEWAY_URL=',
+      'VITE_DEV_AUTH=true',
+      'VITE_PERSIST_MODE=local',
+      'VITE_SUPABASE_URL=',
+      'VITE_SUPABASE_ANON_KEY=',
+      'VITE_SUPABASE_DEV_JWT=',
+      `bunx vite --port ${PORT} --strictPort`,
+    ].join(' '),
     url: `http://localhost:${PORT}/`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

@@ -169,7 +169,13 @@ export interface WoboBus {
   publishSession(session: SessionContext): void;
   publishTurn(turn: TurnContext): void;
   publishLifetime(lifetime: LifetimeContext): void;
-  publishCanvas(canvas: CanvasWorking | undefined): void;
+  /**
+   * Publish (or clear) the working canvas. Pass an `owner` key — one stable string per surface —
+   * so an unmount hook only ever clears the canvas it published: screens overlap on a swap (the
+   * arriving one publishes before the leaving one's cleanup runs), and an ownerless clear in that
+   * window wipes the new screen's canvas out from under it.
+   */
+  publishCanvas(canvas: CanvasWorking | undefined, owner?: string): void;
   publishMachine(machine: MachineRoomContext | undefined): void;
   // perception (read)
   assembleContext(): WoboAssembledContext;
@@ -200,6 +206,12 @@ export interface WoboBus {
    */
   addBeat(actions: WoboAction[], opts?: { noteDurationMs?: number }): void;
   /**
+   * Open a choreographed turn: the beats that follow accumulate onto a clean board. Without it the
+   * redrawable set ("draw it again") grows for the whole session and re-inks every mark she has
+   * ever drawn. Called once per performance, before the first beat.
+   */
+  beginTurn(): void;
+  /**
    * Re-ink the marks she last drew (family M): her ink is transient and fades, so this brings the
    * last set back — freshly drawn — when the learner refers to a drawing no longer on screen.
    * Returns false when she has drawn nothing to bring back.
@@ -218,6 +230,44 @@ const MARK_FADE_MS = 500;
 function deadlineOf(born: number, marks: { ttl?: number }[]): number {
   if (marks.length === 0) return 0;
   return born + Math.max(...marks.map((m) => m.ttl ?? DEFAULT_MARK_TTL)) + MARK_FADE_MS;
+}
+
+/** The ink she can bring back ("draw it again") — one turn's worth, grown beat by beat. */
+export interface MarkSet {
+  highlights: ActiveHighlight[];
+  annotations: ActiveAnnotation[];
+  notes: ActiveNote[];
+}
+
+/** A clean board: what a turn starts from, so the redrawable set never spans the whole session. */
+export const emptyMarks = (): MarkSet => ({ highlights: [], annotations: [], notes: [] });
+
+/** Grow the redrawable set with one beat's marks — a worked example builds up stroke by stroke. */
+export const addMarks = (prev: MarkSet, add: MarkSet): MarkSet => ({
+  highlights: [...prev.highlights, ...add.highlights],
+  annotations: [...prev.annotations, ...add.annotations],
+  notes: [...prev.notes, ...add.notes],
+});
+
+/** The published working canvas and the surface that owns it. */
+export interface CanvasSlot {
+  canvas?: CanvasWorking;
+  owner?: string;
+}
+
+/**
+ * Resolve one publishCanvas call against the slot. Publishing always wins (and takes ownership);
+ * a clear only lands when it comes from the owner — a surface unmounting after its replacement has
+ * already published must not blank the new canvas. An ownerless clear still clears, as before.
+ */
+export function resolveCanvasSlot(
+  slot: CanvasSlot,
+  next: CanvasWorking | undefined,
+  owner?: string,
+): CanvasSlot {
+  if (next !== undefined) return { canvas: next, owner };
+  if (owner !== undefined && slot.owner !== owner) return slot; // not yours to clear
+  return {};
 }
 
 const BusContext = createContext<WoboBus | null>(null);
@@ -242,7 +292,7 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
   const sessionRef = useRef<SessionContext>({ sessionId: 'dev-session', recentEvents: [] });
   const turnRef = useRef<TurnContext>({ recentTurns: [] });
   const lifetimeRef = useRef<LifetimeContext>({});
-  const canvasRef = useRef<CanvasWorking | undefined>(undefined);
+  const canvasRef = useRef<CanvasSlot>({});
   const machineRef = useRef<MachineRoomContext | undefined>(undefined);
 
   const publishPage = useCallback((v: PageContext) => {
@@ -260,8 +310,8 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
   const publishLifetime = useCallback((v: LifetimeContext) => {
     lifetimeRef.current = v;
   }, []);
-  const publishCanvas = useCallback((v: CanvasWorking | undefined) => {
-    canvasRef.current = v;
+  const publishCanvas = useCallback((v: CanvasWorking | undefined, owner?: string) => {
+    canvasRef.current = resolveCanvasSlot(canvasRef.current, v, owner);
   }, []);
   const publishMachine = useCallback((v: MachineRoomContext | undefined) => {
     machineRef.current = v;
@@ -281,11 +331,9 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
   // keeps the residue-clear timer alive across beats instead of each beat cutting the last short.
   const clearAtRef = useRef(0);
   // The last non-empty mark set she drew — kept so she can re-ink it after it has faded (family M).
-  const lastMarksRef = useRef<{
-    highlights: ActiveHighlight[];
-    annotations: ActiveAnnotation[];
-    notes: ActiveNote[];
-  }>({ highlights: [], annotations: [], notes: [] });
+  // Scoped to one turn: beginTurn() wipes it, so "draw it again" brings back the drawing she just
+  // made, not every mark of the session.
+  const lastMarksRef = useRef<MarkSet>(emptyMarks());
   const [pendingOffer, setPendingOffer] = useState<ConsequentialAction | null>(null);
 
   const targetsRef = useRef<Map<string, AnnotatableTarget>>(new Map());
@@ -311,7 +359,7 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
       session: sessionRef.current,
       turn: turnRef.current,
       lifetime: lifetimeRef.current,
-      canvas: canvasRef.current,
+      canvas: canvasRef.current.canvas,
       machine: machineRef.current,
       targets: getTargets().map((t) => {
         const drivable = typeof t.applyTutorAction === 'function';
@@ -470,16 +518,24 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
       const marks = [...hs, ...as, ...ns];
       if (marks.length > 0) {
         // grow the redrawable set so "draw it again" brings back the whole accumulated diagram
-        lastMarksRef.current = {
-          highlights: [...lastMarksRef.current.highlights, ...hs],
-          annotations: [...lastMarksRef.current.annotations, ...as],
-          notes: [...lastMarksRef.current.notes, ...ns],
-        };
+        // (this turn's — beginTurn cleared the last one's)
+        lastMarksRef.current = addMarks(lastMarksRef.current, {
+          highlights: hs,
+          annotations: as,
+          notes: ns,
+        });
         armClear(deadlineOf(born, marks));
       }
     },
     [armClear, fireSideEffects, focusOnTarget],
   );
+
+  // Open a performance: the beats that follow accumulate onto a clean redrawable board, so the set
+  // she can re-ink is this turn's drawing and not every mark of the session.
+  const beginTurn = useCallback(() => {
+    lastMarksRef.current = emptyMarks();
+    clearAtRef.current = 0;
+  }, []);
 
   const acceptOffer = useCallback(() => {
     setPendingOffer((offer) => {
@@ -519,6 +575,7 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
       focusPoint,
       dispatch,
       addBeat,
+      beginTurn,
       redrawLastMarks,
       acceptOffer,
       dismissOffer,
@@ -547,6 +604,7 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
       focusPoint,
       dispatch,
       addBeat,
+      beginTurn,
       redrawLastMarks,
       acceptOffer,
       dismissOffer,

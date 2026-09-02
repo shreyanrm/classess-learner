@@ -150,9 +150,13 @@ export function createSdk(overrides: Partial<SdkConfig> = {}): Sdk {
     ? new SupabaseOutboxEventProvider(attribution, kgtopg, rest)
     : new InMemoryEventProvider(attribution, kgtopg);
 
+  // Local mode still knows who is signed in: the cache is scoped to the account (empty only in a
+  // keyless build), so a second learner on the same browser reads their own bucket instead of the
+  // previous one's XP, streak and conversation. The pre-scope bucket is adopted once, by the first
+  // subject to claim the device (state.ts).
   const state: StateProvider = rest
     ? new SupabaseStateProvider(rest, subjectId)
-    : new LocalStateProvider();
+    : new LocalStateProvider(undefined, supabaseAuth?.subjectId ?? '');
 
   // One anonymous sign-in per device, at most one in flight: the boot effect asks for it, and any
   // gateway call that arrives first asks for it too, so a turn taken in the first second of a

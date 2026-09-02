@@ -41,7 +41,6 @@ import { DownloadCenter } from './store/DownloadCenter';
 import { deviceMockSubject } from './store/device';
 import { machineRoomSnapshot } from './store/machine-room';
 import {
-  clearMind,
   forgetMatching,
   lifetimeSnapshot,
   loadMind,
@@ -57,10 +56,12 @@ import { ClickInk } from './ui/ClickInk';
 import { CeremonyHost } from './ui/ceremony';
 import { sfx } from './ui/sound';
 import { WoboCompanion } from './wobo/Companion';
+import { forgetAllOffer } from './wobo/capabilities';
 import {
   appendToArchive,
   CHAT_PAGE,
   type ChatTurn,
+  mintTurnId,
   readArchive,
   updateArchiveTurn,
   WoboChatProvider,
@@ -293,7 +294,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       return;
     }
     const say = (t: Omit<ChatTurn, 'id'>) => {
-      const turn = { ...t, id: `t${readArchive().length}-${t.role}` };
+      const turn = { ...t, id: mintTurnId() };
       appendToArchive(turn);
       setTurns((prev) => [...prev, turn]);
       if (t.role === 'wobo') sfx.chime(); // a gentle chime as she arrives
@@ -440,11 +441,13 @@ function AppInner({ sdk }: { sdk: Sdk }) {
                   : 'I have not saved anything about you yet — tell me what matters and I will keep it.',
             });
           } else if (a.scope === 'all') {
-            clearMind();
-            bus.publishLifetime({});
+            // The whole memory is not something a model reply gets to take. She offers the wipe as
+            // an approval card in the thread (approve / not now); clearMind runs inside the
+            // capability, on the learner's tap alone — and nothing is erased if they walk away.
             say({
               role: 'wobo',
-              text: 'Done — I cleared everything I was keeping about you. We start fresh from here.',
+              text: 'I can let go of everything I know about you — that cannot be undone, so tell me to go ahead and I will.',
+              extras: { path: 'action', action: forgetAllOffer(crypto.randomUUID()) },
             });
           } else {
             const removed = forgetMatching(a.target ?? '');

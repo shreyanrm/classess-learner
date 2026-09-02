@@ -57,11 +57,6 @@ jobs:
   e2e:
     name: E2E (Playwright journey suite)
     runs-on: ubuntu-latest
-    # TODO(wave-3): drop continue-on-error. The journey + capabilities specs are stale against the
-    # current UI (aria-labels changed in the design polish pass, e.g. "You — profile and settings"
-    # is now "You — level N, profile and settings"), so 5 of 6 fail locally today. Wave 3 owns the
-    # spec fixes; until then this job reports without gating the branch.
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 

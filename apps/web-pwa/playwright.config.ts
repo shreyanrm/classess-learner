@@ -27,10 +27,21 @@ export default defineConfig({
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
-    // Hermetic: force the keyless mock provider and no gateway so the suite never depends on a
-    // running service (dev's .env sets LLM_MODE=live + a gateway URL). Turns fall to the
-    // deterministic classifier; TTS/voice no-op without a gateway URL.
-    command: `VITE_LLM_MODE=mock VITE_GATEWAY_URL= VITE_DEV_AUTH=true VITE_PERSIST_MODE=local bunx vite --port ${PORT} --strictPort`,
+    // Hermetic: force the keyless mock provider, no gateway and NO account layer so the suite
+    // never touches a network service (dev's .env sets LLM_MODE=live + a gateway URL, and
+    // .env.local carries real Supabase keys). Turns fall to the deterministic classifier;
+    // TTS/voice no-op without a gateway URL; blank Supabase vars make `sdk.account` absent, so
+    // onboarding skips the mandatory sign-in beat and no auth request ever leaves the browser.
+    command: [
+      'VITE_LLM_MODE=mock',
+      'VITE_GATEWAY_URL=',
+      'VITE_DEV_AUTH=true',
+      'VITE_PERSIST_MODE=local',
+      'VITE_SUPABASE_URL=',
+      'VITE_SUPABASE_ANON_KEY=',
+      'VITE_SUPABASE_DEV_JWT=',
+      `bunx vite --port ${PORT} --strictPort`,
+    ].join(' '),
     url: `http://localhost:${PORT}/`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

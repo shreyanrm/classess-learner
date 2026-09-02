@@ -36,7 +36,10 @@ class MetricsSink:
 
 def emit(sink: MetricsSink, event: TelemetryEvent) -> None:
     sink.record(event)
-    logger.info("gateway.telemetry", extra={"telemetry": asdict(event)})
+    # The JSON log formatter (app._JsonFormatter) merges ``record.fields`` into the line; anything
+    # under another key is dropped on the floor, so telemetry emits under "fields" like every other
+    # structured log in the gateway.
+    logger.info("gateway.telemetry", extra={"fields": asdict(event)})
 
 
 def record_cost(

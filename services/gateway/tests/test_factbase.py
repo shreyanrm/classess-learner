@@ -66,7 +66,7 @@ def test_seed_slug_matches_runtime_keying():
 def _cand(claim: str) -> dict:
     return build.make_fact(
         conceptId="c", claim=claim, kind="date", subject="social",
-        source={"type": "model-generated-unverified", "model": "anthropic/claude-opus-4-8"},
+        source={"type": "model-generated-unverified", "model": "anthropic/claude-opus-5"},
         confidence="unverified",
     )
 

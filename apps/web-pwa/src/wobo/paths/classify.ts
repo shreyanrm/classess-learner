@@ -332,20 +332,28 @@ const esc = (s: string) =>
       ] as string,
   );
 
+/**
+ * The honest client-side drawing when the gateway sent no SVG. It is ink on paper, so it is drawn
+ * in the theme's own colours: `currentColor` for every stroke and label (the card sets `color` from
+ * the ink token) and `var(--clss-paper)` for the fills that must knock out the background. Hard
+ * `#111` on `#fff` disappeared into a dark page.
+ */
 export function seedVizSvg(kind: VizKind, concept: string): string {
   const label = esc(concept.length <= 38 ? concept : `${concept.slice(0, 37)}…`);
+  // var() is not honoured in a presentation attribute — the knockout fill rides an inline style.
+  const paper = 'style="fill:var(--clss-paper)"';
   if (kind === 'chart') {
     const bars = [46, 74, 58, 92]
       .map(
         (h, i) =>
-          `<rect x="${58 + i * 60}" y="${150 - h}" width="34" height="${h}" fill="none" stroke="#111" stroke-width="1"/>`,
+          `<rect x="${58 + i * 60}" y="${150 - h}" width="34" height="${h}" fill="none" stroke="currentColor" stroke-width="1"/>`,
       )
       .join('');
     return (
       `<svg viewBox="0 0 320 180" role="img" aria-label="${label}">` +
-      `<text x="160" y="24" text-anchor="middle" font-size="13" fill="#111">${label}</text>` +
-      `<line x1="44" y1="150" x2="292" y2="150" stroke="#111" stroke-width="1"/>` +
-      `<line x1="44" y1="150" x2="44" y2="36" stroke="#111" stroke-width="1"/>${bars}</svg>`
+      `<text x="160" y="24" text-anchor="middle" font-size="13" fill="currentColor">${label}</text>` +
+      `<line x1="44" y1="150" x2="292" y2="150" stroke="currentColor" stroke-width="1"/>` +
+      `<line x1="44" y1="150" x2="44" y2="36" stroke="currentColor" stroke-width="1"/>${bars}</svg>`
     );
   }
   if (kind === 'conceptmap') {
@@ -358,26 +366,26 @@ export function seedVizSvg(kind: VizKind, concept: string): string {
     const parts = spokes
       .map(
         ([x, y, t]) =>
-          `<line x1="160" y1="96" x2="${x}" y2="${y}" stroke="#111" stroke-width="0.5"/>` +
-          `<circle cx="${x}" cy="${y}" r="26" fill="#fff" stroke="#111" stroke-width="1"/>` +
-          `<text x="${x}" y="${y + 3}" text-anchor="middle" font-size="7.5" fill="#111">${t}</text>`,
+          `<line x1="160" y1="96" x2="${x}" y2="${y}" stroke="currentColor" stroke-width="0.5"/>` +
+          `<circle cx="${x}" cy="${y}" r="26" ${paper} stroke="currentColor" stroke-width="1"/>` +
+          `<text x="${x}" y="${y + 3}" text-anchor="middle" font-size="7.5" fill="currentColor">${t}</text>`,
       )
       .join('');
     return (
       `<svg viewBox="0 0 320 192" role="img" aria-label="${label}">${parts}` +
-      `<circle cx="160" cy="96" r="34" fill="#fff" stroke="#111" stroke-width="1.5"/>` +
-      `<text x="160" y="99" text-anchor="middle" font-size="9" fill="#111">${esc(concept.slice(0, 16))}</text></svg>`
+      `<circle cx="160" cy="96" r="34" ${paper} stroke="currentColor" stroke-width="1.5"/>` +
+      `<text x="160" y="99" text-anchor="middle" font-size="9" fill="currentColor">${esc(concept.slice(0, 16))}</text></svg>`
     );
   }
   return (
     `<svg viewBox="0 0 320 180" role="img" aria-label="${label}">` +
-    `<text x="160" y="28" text-anchor="middle" font-size="13" fill="#111">${label}</text>` +
-    `<circle cx="92" cy="106" r="34" fill="none" stroke="#111" stroke-width="1"/>` +
-    `<text x="92" y="110" text-anchor="middle" font-size="11" fill="#111">idea</text>` +
-    `<line x1="126" y1="106" x2="192" y2="106" stroke="#111" stroke-width="0.5"/>` +
-    `<polygon points="192,102 200,106 192,110" fill="#111"/>` +
-    `<circle cx="234" cy="106" r="34" fill="none" stroke="#111" stroke-width="1"/>` +
-    `<text x="234" y="110" text-anchor="middle" font-size="11" fill="#111">effect</text></svg>`
+    `<text x="160" y="28" text-anchor="middle" font-size="13" fill="currentColor">${label}</text>` +
+    `<circle cx="92" cy="106" r="34" fill="none" stroke="currentColor" stroke-width="1"/>` +
+    `<text x="92" y="110" text-anchor="middle" font-size="11" fill="currentColor">idea</text>` +
+    `<line x1="126" y1="106" x2="192" y2="106" stroke="currentColor" stroke-width="0.5"/>` +
+    `<polygon points="192,102 200,106 192,110" fill="currentColor"/>` +
+    `<circle cx="234" cy="106" r="34" fill="none" stroke="currentColor" stroke-width="1"/>` +
+    `<text x="234" y="110" text-anchor="middle" font-size="11" fill="currentColor">effect</text></svg>`
   );
 }
 

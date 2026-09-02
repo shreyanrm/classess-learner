@@ -277,25 +277,30 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     sdk.state.hydrate().then((remote) => {
       if (cancelled) return;
-      setState((prev) => {
-        const merged = rollForward(mergeLearnerState(prev, remote));
-        sdk.state.save(merged);
-        return merged;
-      });
+      setState((prev) => rollForward(mergeLearnerState(prev, remote)));
     });
     return () => {
       cancelled = true;
     };
   }, [sdk]);
 
-  /** Every mutation stamps updatedAt and goes through the seam (cache now, remote debounced). */
-  const persist = useCallback(
-    (next: LearnerState): LearnerState => {
-      const stamped = { ...next, updatedAt: new Date().toISOString() };
-      sdk.state.save(stamped);
-      return stamped;
-    },
-    [sdk],
+  // Persistence is an EFFECT of the state changing, never a side effect inside a setState updater:
+  // React may run an updater more than once for a single change (StrictMode, a re-render race, a
+  // dropped render), and each extra run would fire another cache write and another debounced remote
+  // push — with a half-applied state. One state, one save, after the render that made it real.
+  const savedAtBoot = useRef(false);
+  useEffect(() => {
+    if (!savedAtBoot.current) {
+      savedAtBoot.current = true; // the boot value came FROM the cache; writing it back is noise
+      return;
+    }
+    sdk.state.save(state);
+  }, [sdk, state]);
+
+  /** Every mutation stamps updatedAt; the save rides the effect above. Pure — safe to re-run. */
+  const stamp = useCallback(
+    (next: LearnerState): LearnerState => ({ ...next, updatedAt: new Date().toISOString() }),
+    [],
   );
 
   const pushBloom = useCallback((amount: number, reason: XpReason, hue?: string, fromXp = 0) => {
@@ -324,7 +329,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         if (onceKey && prev.awardedOnce.includes(onceKey)) return prev;
         granted = amount;
         fromXp = prev.xp;
-        return persist({
+        return stamp({
           ...prev,
           xp: prev.xp + amount,
           lastActiveDay: today(),
@@ -336,7 +341,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       setTimeout(() => granted > 0 && pushBloom(amount, reason, opts?.hue, fromXp), 0);
       return amount;
     },
-    [pushBloom, persist],
+    [pushBloom, stamp],
   );
 
   const completeTopic = useCallback(
@@ -348,7 +353,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         if (prev.completedTopics.includes(topicId)) return prev;
         fromXp = prev.xp;
         granted = true;
-        return persist({
+        return stamp({
           ...prev,
           xp: prev.xp + (xp ?? XP_AWARDS.topic),
           completedTopics: [...prev.completedTopics, topicId],
@@ -362,7 +367,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         0,
       );
     },
-    [pushBloom, persist],
+    [pushBloom, stamp],
   );
 
   const repairStreak = useCallback(
@@ -378,7 +383,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         const used = prev.streakFreezes.month === m ? prev.streakFreezes.used : 0;
         if (used >= FREEZE_BUDGET) return prev;
         ok = true;
-        return persist({
+        return stamp({
           ...prev,
           // the chain continues through the frozen gap; showing up today is the next day of it
           streakDays: pend.brokenDays + 1,
@@ -388,7 +393,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       });
       return ok;
     },
-    [persist],
+    [stamp],
   );
 
   const reportProgress = useCallback(
@@ -397,13 +402,13 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         const cur = prev.topicProgress[topicId] ?? 0;
         const f = Math.max(0, Math.min(1, fraction));
         if (f <= cur) return prev;
-        return persist({
+        return stamp({
           ...prev,
           topicProgress: { ...prev.topicProgress, [topicId]: f },
         });
       });
     },
-    [persist],
+    [stamp],
   );
 
   const dismissBloom = useCallback((id: number) => {

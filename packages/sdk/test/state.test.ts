@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 import { DEV_DEFAULTS } from '../src/config';
-import { SupabaseOutboxEventProvider } from '../src/events';
+import { InMemoryEventProvider, SupabaseOutboxEventProvider } from '../src/events';
 import {
+  ADOPTED_MARKER_KEY,
   emptyLearnerState,
   type KVStorage,
   type LearnerState,
@@ -332,5 +333,205 @@ describe('SupabaseOutboxEventProvider batching', () => {
 
     // The local log/mastery path was never blocked.
     expect(provider.getLog()).toHaveLength(2);
+  });
+});
+
+// --- Wave 3: the local cache is per-account, and the pre-scope bucket is adopted exactly once ----
+
+describe('LocalStateProvider account scoping', () => {
+  const SUB_A = '00000000-0000-7000-8000-00000000000a';
+  const SUB_B = '00000000-0000-7000-8000-00000000000b';
+
+  it('keys the cache to the signed-in subject, so a second learner reads their own bucket', () => {
+    const storage = new FakeStorage();
+    new LocalStateProvider(storage, SUB_A).save(state({ xp: 400 }));
+    expect(storage.map.has(`${STATE_CACHE_KEY}:${SUB_A}`)).toBe(true);
+    expect(new LocalStateProvider(storage, SUB_B).loadCache().xp).toBe(0);
+    expect(new LocalStateProvider(storage, SUB_A).loadCache().xp).toBe(400);
+  });
+
+  it('the FIRST subject inherits the pre-scope bucket; the next one starts clean', () => {
+    const storage = new FakeStorage();
+    // A device that was already in use before it had a session: unscoped keys, no marker.
+    storage.setItem(STATE_CACHE_KEY, JSON.stringify(state({ xp: 900 })));
+    storage.setItem(
+      'clss-wobo-conversation-v1',
+      JSON.stringify([{ id: 'a', role: 'wobo', text: 'from before the sign-in' }]),
+    );
+
+    const first = new LocalStateProvider(storage, SUB_A);
+    expect(first.loadCache().xp).toBe(900);
+    expect(first.loadThreadCache('wobo')?.turns).toHaveLength(1);
+    expect(storage.map.get(ADOPTED_MARKER_KEY)).toBe(SUB_A);
+
+    // The sibling who signs in next on the same browser gets nothing of theirs.
+    const second = new LocalStateProvider(storage, SUB_B);
+    expect(second.loadCache().xp).toBe(0);
+    expect(second.loadThreadCache('wobo')).toBeNull();
+  });
+
+  it('adopts once and never re-adopts: a cleared bucket stays cleared', () => {
+    const storage = new FakeStorage();
+    storage.setItem(STATE_CACHE_KEY, JSON.stringify(state({ xp: 900 })));
+    expect(new LocalStateProvider(storage, SUB_A).loadCache().xp).toBe(900);
+    // The learner wipes their own progress; the legacy bucket is still sitting there untouched.
+    storage.map.delete(`${STATE_CACHE_KEY}:${SUB_A}`);
+    expect(new LocalStateProvider(storage, SUB_A).loadCache().xp).toBe(0);
+  });
+
+  it('never clobbers a scoped value that already exists', () => {
+    const storage = new FakeStorage();
+    storage.setItem(STATE_CACHE_KEY, JSON.stringify(state({ xp: 900 })));
+    storage.setItem(`${STATE_CACHE_KEY}:${SUB_A}`, JSON.stringify(state({ xp: 12 })));
+    expect(new LocalStateProvider(storage, SUB_A).loadCache().xp).toBe(12);
+  });
+
+  it('keeps the historical key in a keyless build (no session, no scope)', () => {
+    const storage = new FakeStorage();
+    new LocalStateProvider(storage).save(state({ xp: 5 }));
+    expect(storage.map.has(STATE_CACHE_KEY)).toBe(true);
+    expect(storage.map.has(ADOPTED_MARKER_KEY)).toBe(false);
+  });
+});
+
+describe('streak-freeze persistence (migration 0007)', () => {
+  const SUBJECT = '00000000-0000-7000-8000-000000000007';
+
+  it('round-trips the freeze budget and the pending break through the row', async () => {
+    const upserts: Record<string, unknown>[] = [];
+    const rest = {
+      selectOne: async () => ({
+        subject_id: SUBJECT,
+        xp: 10,
+        streak_days: 4,
+        last_active_day: '2026-07-06',
+        completed_topics: [],
+        topic_progress: {},
+        awarded_once: [],
+        streak_freezes: { month: '2026-07', used: 2 },
+        broken_streak: { days: 9, brokenOn: '2026-07-04' },
+        mind: {},
+        client_updated_at: '2026-07-06T10:00:00Z',
+      }),
+      upsert: async (_t: string, row: Record<string, unknown>) => {
+        upserts.push(row);
+      },
+    };
+    // A local cache that is older than the row, so the remote copy is the fresher truth.
+    const storage = new FakeStorage();
+    storage.setItem(
+      `${STATE_CACHE_KEY}:${SUBJECT}`,
+      JSON.stringify(
+        state({
+          updatedAt: '2026-01-01T00:00:00Z',
+          streakFreezes: { month: '2026-07', used: 0 },
+        }),
+      ),
+    );
+    const provider = new SupabaseStateProvider(rest, SUBJECT, storage, 1);
+    const merged = await provider.hydrate();
+    expect(merged.streakFreezes).toEqual({ month: '2026-07', used: 2 });
+    expect(merged.brokenStreak).toEqual({ days: 9, brokenOn: '2026-07-04' });
+    expect(upserts[0]?.streak_freezes).toEqual({ month: '2026-07', used: 2 });
+    expect(upserts[0]?.broken_streak).toEqual({ days: 9, brokenOn: '2026-07-04' });
+  });
+
+  it('falls back to the local defaults when the columns are absent from the row', () => {
+    // stateFromRow is exercised through hydrate; a pre-0007 row simply carries neither column.
+    const normalized = normalizeLearnerState({ xp: 3 });
+    expect(normalized.streakFreezes.used).toBe(0);
+    expect(normalized.brokenStreak).toBeUndefined();
+  });
+
+  it('degrades to the pre-0007 row shape when the database rejects the new columns', async () => {
+    const accepted: Record<string, unknown>[] = [];
+    let rejections = 0;
+    const rest = {
+      selectOne: async () => null,
+      upsert: async (_t: string, row: Record<string, unknown>) => {
+        if ('streak_freezes' in row) {
+          rejections += 1;
+          throw new Error(
+            "PGRST204: Could not find the 'streak_freezes' column in the schema cache",
+          );
+        }
+        accepted.push(row);
+      },
+    };
+    const provider = new SupabaseStateProvider(rest, SUBJECT, new FakeStorage(), 1);
+    const hydrated = await provider.hydrate(); // must not throw, must not lose the row
+    expect(hydrated.xp).toBe(0);
+    expect(rejections).toBe(1);
+    expect(accepted).toHaveLength(1);
+    expect(accepted[0]).not.toHaveProperty('streak_freezes');
+    // The provider remembers: the next write skips the attempt it already knows fails.
+    await provider.hydrate();
+    expect(rejections).toBe(1);
+    expect(accepted).toHaveLength(2);
+  });
+
+  it('does not mistake a real write failure for a missing column (no blind retry)', async () => {
+    let attempts = 0;
+    const rest = {
+      selectOne: async () => null,
+      upsert: async () => {
+        attempts += 1;
+        throw new Error('row level security policy violation');
+      },
+    };
+    const provider = new SupabaseStateProvider(rest, SUBJECT, new FakeStorage(), 1);
+    // hydrate catches everything (the offline law) — the cache is still the session's truth —
+    // but the row is attempted exactly once: only a missing-column error earns the second shape.
+    expect((await provider.hydrate()).xp).toBe(0);
+    expect(attempts).toBe(1);
+  });
+});
+
+describe('the event backbone answers for its floating promises', () => {
+  const payload = {
+    surface: 'pwa' as const,
+    app_version: '0.0.0',
+    locale: 'en-IN',
+    resumed: false,
+  };
+
+  it('records a consumer rejection as a diagnostic instead of an unhandled rejection', async () => {
+    const provider = new InMemoryEventProvider(DEV_DEFAULTS, {
+      consume: async () => {
+        throw new Error('mastery view unreachable');
+      },
+    });
+    const event = provider.record('session.started.v1', payload);
+    await Promise.resolve(); // let the floating consume settle
+    await Promise.resolve();
+    expect(provider.consumeFailures).toHaveLength(1);
+    expect(provider.consumeFailures[0]?.eventId).toBe(event.event_id);
+    expect(provider.consumeFailures[0]?.error).toContain('mastery view unreachable');
+    expect(provider.getLog()).toHaveLength(1); // the local log is never blocked by the consumer
+  });
+
+  it('re-arms its own timer after a failed flush, so a batch retries without another tap', async () => {
+    let attempts = 0;
+    let fail = true;
+    const rest = {
+      rpc: async () => {
+        attempts += 1;
+        if (fail) throw new Error('offline');
+        return 1;
+      },
+    };
+    const kgtopg = { consume: async () => ({ accepted: true, deduped: false }) };
+    const provider = new SupabaseOutboxEventProvider(DEV_DEFAULTS, kgtopg, rest, 3);
+    provider.record('session.started.v1', payload);
+
+    // One recorded event, nothing else happens on this device: the armed timer fires, fails, and
+    // arms itself again — without the re-arm the batch would sit here until the tab closed.
+    await Bun.sleep(30);
+    expect(attempts).toBeGreaterThan(1);
+    expect(provider.pendingCount).toBe(1);
+
+    fail = false;
+    await Bun.sleep(30);
+    expect(provider.pendingCount).toBe(0);
   });
 });

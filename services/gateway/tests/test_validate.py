@@ -8,7 +8,7 @@ from __future__ import annotations
 import pytest
 from classess_gateway.plexus import store
 from classess_gateway.plexus.validate import PASS_THRESHOLD, validate_and_promote
-from classess_gateway.routing import Track, resolve, track_separation_holds
+from classess_gateway.routing import Tier, Track, resolve, tier_model, track_separation_holds
 
 
 @pytest.fixture(autouse=True)
@@ -17,7 +17,7 @@ def cache_dir(tmp_path, monkeypatch):
     return tmp_path
 
 
-def _provisional(artifact, *, model="openai/gpt-5.5"):
+def _provisional(artifact, *, model="openai/gpt-5.6-terra"):
     """A freshly-served provisional record, as run_engine writes it (GPT-5.5 primary post-flip)."""
     return {
         "concept": "photosynthesis",
@@ -31,7 +31,7 @@ def _provisional(artifact, *, model="openai/gpt-5.5"):
     }
 
 
-def _promote(monkeypatch, record, *, judge, regen=None, escalation_model="openai/gpt-5.5"):
+def _promote(monkeypatch, record, *, judge, regen=None, escalation_model="openai/gpt-5.6-terra"):
     monkeypatch.setattr("classess_gateway.plexus.validate._judge", judge)
     if regen is not None:
         monkeypatch.setattr("classess_gateway.plexus.engines._generate_live", regen)
@@ -41,7 +41,7 @@ def _promote(monkeypatch, record, *, judge, regen=None, escalation_model="openai
         difficulty="core",
         scope={},
         record=record,
-        judge_model="anthropic/claude-opus-4-8",
+        judge_model="anthropic/claude-opus-5",
         escalation_model=escalation_model,
     )
 
@@ -65,12 +65,14 @@ def test_mock_engine_serves_canonical_status(cache_dir) -> None:
     assert resp.output["status"] == store.CANONICAL  # mock is the stable floor, never provisional
 
 
-# --- routing: openai.frontier is registered on Track 1, separation intact ---------------
+# --- routing: the escalation target the gate uses is registered, separation intact -------
 
 
-def test_openai_frontier_registered_on_track_1() -> None:
+def test_the_gates_escalation_target_is_the_reason_tier() -> None:
+    """plexus.engines resolves the rebuild model by its legacy name; it must land on the tier
+    one rung above generate (WOBO-PLAN §9), which is the reason tier."""
     spec = resolve("openai.frontier", Track.TRACK_1)
-    assert spec.provider_model == "openai/gpt-5.5"
+    assert spec.provider_model == tier_model(Tier.REASON).provider_model == "openai/gpt-5.6-sol"
     assert spec.track is Track.TRACK_1
     assert track_separation_holds()
 
@@ -84,7 +86,7 @@ def test_pass_promotes_to_canonical_without_escalation(monkeypatch, cache_dir) -
 
     def regen(*_a):
         escalated["called"] = True
-        return {"cards": ["alt"]}, "openai/gpt-5.5", 1, False
+        return {"cards": ["alt"]}, "openai/gpt-5.6-terra", 1, False
 
     out = _promote(
         monkeypatch,
@@ -98,8 +100,8 @@ def test_pass_promotes_to_canonical_without_escalation(monkeypatch, cache_dir) -
     # provenance carries the validation record; the base (GPT-5.5 primary) model is unchanged, the
     # validation model is the Opus judge
     val = out["provenance"]["validation"]
-    assert out["provenance"]["model"] == "openai/gpt-5.5"
-    assert val["model"] == "anthropic/claude-opus-4-8"
+    assert out["provenance"]["model"] == "openai/gpt-5.6-terra"
+    assert val["model"] == "anthropic/claude-opus-5"
     assert val["score"] == 92.0
     assert val["validatedAt"]
     # it is actually persisted as canonical
@@ -109,7 +111,7 @@ def test_pass_promotes_to_canonical_without_escalation(monkeypatch, cache_dir) -
 
 
 # --- quality-fail -> Opus rebuild -> best-of promotes the escalated artifact -------------
-_OPUS = "anthropic/claude-opus-4-8"
+_OPUS = "anthropic/claude-opus-5"
 
 
 def test_fail_escalates_and_best_of_promotes_opus_rebuild(monkeypatch, cache_dir) -> None:
@@ -149,7 +151,7 @@ def test_fail_but_base_still_best_keeps_base(monkeypatch, cache_dir) -> None:
     )
     assert out["status"] == store.CANONICAL
     assert out["artifact"] == {"cards": ["base"]}
-    assert out["provenance"]["model"] == "openai/gpt-5.5"  # the GPT primary is kept
+    assert out["provenance"]["model"] == "openai/gpt-5.6-terra"  # the GPT primary is kept
     assert out["provenance"]["validation"]["score"] == 60.0
 
 
@@ -182,7 +184,7 @@ def test_unreachable_judge_promotes_unscored(monkeypatch, cache_dir) -> None:
 
     def regen(*_a):
         escalated["called"] = True
-        return {"cards": ["alt"]}, "openai/gpt-5.5", 1, False
+        return {"cards": ["alt"]}, "openai/gpt-5.6-terra", 1, False
 
     out = _promote(monkeypatch, record, judge=lambda *_a, **_k: None, regen=regen)
     assert out["status"] == store.CANONICAL
@@ -210,30 +212,29 @@ def test_seeded_escalation_is_not_chosen(monkeypatch, cache_dir) -> None:
         escalation_model=_OPUS,
     )
     assert out["artifact"] == {"cards": ["base"]}
-    assert out["provenance"]["model"] == "openai/gpt-5.5"  # the GPT primary is kept
+    assert out["provenance"]["model"] == "openai/gpt-5.6-terra"  # the GPT primary is kept
 
 
-# --- content order (owner verdict 2026-07-07): OPUS primary + judge, GPT-5.5 the quality-backup --
-# (Opus led the storyboard comparison; GPT-5.5 made subtle React/SVG errors — hence the lint gate.)
+# --- the cost rule (owner, 2026-09-02): generate by default, escalate ONE rung on failure ---
+# Terra draws every board plan and lesson; Opus 5 (the verify tier, always the other provider)
+# judges it; a judge rejection rebuilds on Sol (the reason tier) and best-of is promoted.
 
 
-def test_content_engines_route_primary_to_opus_and_escalate_to_gpt() -> None:
-    from classess_gateway.registry import policy
+def test_content_engines_route_primary_to_the_generate_tier() -> None:
+    from classess_gateway.registry import escalate_for, policy
 
     for cap in ("engine.compose", "engine.simulate", "engine.diagram", "engine.video"):
         pol = policy(cap)
-        # PRIMARY is Opus via the logical frontier.reason, on Track 1
-        assert pol.primary == "frontier.reason"
-        assert resolve(pol.primary, pol.track).provider_model == "anthropic/claude-opus-4-8"
-        # GPT-5.5 (openai.frontier) waits in the fallback chain as the quality-backup
-        assert "openai.frontier" in pol.fallback
-    assert resolve("openai.frontier", Track.TRACK_1).provider_model == "openai/gpt-5.5"
+        assert pol.tier is Tier.GENERATE
+        assert resolve(pol.primary, pol.track).provider_model == "openai/gpt-5.6-terra"
+        # a rejection buys exactly one rung, never a jump to the top of the ladder
+        assert escalate_for(cap, "quality gate rejected the draft") == "openai/gpt-5.6-sol"
 
 
-def test_spawn_validation_escalates_to_gpt_not_opus(monkeypatch) -> None:
-    """The post-serve gate's quality-backup is GPT-5.5: Opus is primary and judge, and on a
-    quality-fail GPT-5.5 rebuilds the same spec (both minds compete). Run the spawned thread
-    synchronously and capture the resolved models."""
+def test_spawn_validation_judges_on_verify_and_rebuilds_on_reason(monkeypatch) -> None:
+    """The post-serve gate: the verify tier (Opus 5) judges the Terra draft — the other provider,
+    always — and on a quality-fail the reason tier (Sol) rebuilds the same spec. Run the spawned
+    thread synchronously and capture the resolved models."""
     import classess_gateway.plexus.engines as engines
 
     captured: dict = {}
@@ -250,10 +251,10 @@ def test_spawn_validation_escalates_to_gpt_not_opus(monkeypatch) -> None:
             self._target()
 
     monkeypatch.setattr(engines.threading, "Thread", _SyncThread)
-    record = {"artifact": {}, "provenance": {"model": "anthropic/claude-opus-4-8"}}
+    record = {"artifact": {}, "provenance": {"model": "openai/gpt-5.6-terra"}}
     engines._spawn_validation(record, "c", "compose", "core", {}, ())
-    assert captured["escalation_model"] == "openai/gpt-5.5"  # GPT-5.5 rebuilds
-    assert captured["judge_model"] == "anthropic/claude-opus-4-8"  # Opus judges
+    assert captured["escalation_model"] == "openai/gpt-5.6-sol"  # one rung up: the reason tier
+    assert captured["judge_model"] == "anthropic/claude-opus-5"  # the verify tier judges
 
 
 # --- owner law: every version is kept FOREVER (audit trail + manual-edit substrate) ------
@@ -284,7 +285,7 @@ def test_superseded_loser_survives_promotion(monkeypatch, cache_dir) -> None:
     assert store.SUPERSEDED in by_status
     assert by_status[store.CANONICAL]["artifact"] == {"cards": ["alt"]}
     assert by_status[store.SUPERSEDED]["artifact"] == {"cards": ["base"]}  # loser content intact
-    assert by_status[store.SUPERSEDED]["provenance"]["model"] == "openai/gpt-5.5"
+    assert by_status[store.SUPERSEDED]["provenance"]["model"] == "openai/gpt-5.6-terra"
 
 
 def test_rejected_loser_survives_when_base_wins(monkeypatch, cache_dir) -> None:
@@ -315,7 +316,7 @@ def test_rejected_loser_survives_when_base_wins(monkeypatch, cache_dir) -> None:
 # Current content order (owner verdict 2026-07-07): Opus is primary + judge, GPT-5.5 is the
 # quality-backup that rebuilds — so a lint failure routes to GPT-5.5. The lint mechanism itself is
 # model-agnostic (it rebuilds on whatever escalation_model is passed); these pass models explicitly.
-_GPT = "openai/gpt-5.5"
+_GPT = "openai/gpt-5.6-terra"
 
 _CLEAN_SVG = (
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">'

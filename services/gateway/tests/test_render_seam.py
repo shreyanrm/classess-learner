@@ -23,7 +23,7 @@ def cache_dir(tmp_path, monkeypatch):
 _CLEAN_SVG = '<svg viewBox="0 0 10 10"><rect width="5" height="5"/></svg>'
 
 
-def _video_record(svg=_CLEAN_SVG, *, model="anthropic/claude-opus-4-8"):
+def _video_record(svg=_CLEAN_SVG, *, model="anthropic/claude-opus-5"):
     return {
         "concept": "refraction of light",
         "modality": "video",
@@ -58,8 +58,8 @@ def _promote_video(monkeypatch, record, *, score=92.0):
         difficulty="core",
         scope={},
         record=record,
-        judge_model="anthropic/claude-opus-4-8",
-        escalation_model="openai/gpt-5.5",
+        judge_model="anthropic/claude-opus-5",
+        escalation_model="openai/gpt-5.6-terra",
     )
 
 
@@ -103,7 +103,7 @@ def test_compose_promotion_does_not_enqueue_a_render(monkeypatch, cache_dir) -> 
         "verified": True,
         "seeded": False,
         "status": store.PROVISIONAL,
-        "provenance": {"engine": "engine.compose", "model": "anthropic/claude-opus-4-8"},
+        "provenance": {"engine": "engine.compose", "model": "anthropic/claude-opus-5"},
         "artifact": {"cards": ["base"]},
     }
     monkeypatch.setattr(
@@ -117,8 +117,8 @@ def test_compose_promotion_does_not_enqueue_a_render(monkeypatch, cache_dir) -> 
         difficulty="core",
         scope={},
         record=record,
-        judge_model="anthropic/claude-opus-4-8",
-        escalation_model="openai/gpt-5.5",
+        judge_model="anthropic/claude-opus-5",
+        escalation_model="openai/gpt-5.6-terra",
     )
     assert _queue_lines(cache_dir) == []
 

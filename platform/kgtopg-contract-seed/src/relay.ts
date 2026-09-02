@@ -9,6 +9,12 @@ import type { EventConsumer } from './interface';
  *
  * The source is an interface so the pure relay is testable with an in-memory outbox; the SDK provides
  * the Supabase-backed source that reads learner.outbox.
+ *
+ * ponytail — DEFERRED to the KGtoPG platform wave (docs/WOBO-PLAN.md): nothing schedules
+ * `runRelayOnce` in production. `learner.outbox` accumulates rows (the client's writes are safe and
+ * deduped) but nothing drains them UP into the KGtoPG event store, so platform-side mastery is fed
+ * only by the in-process consumer. The missing piece is a supabase-backed OutboxSource plus a runner
+ * (an edge function on a schedule, or a worker) — built with the platform, not patched in here.
  */
 export interface OutboxRow {
   eventId: string;
