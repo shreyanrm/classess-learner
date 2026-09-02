@@ -16,7 +16,7 @@ export default defineConfig({
   workers: 4,
   forbidOnly: !!process.env.CI,
   retries: 1, // animation-timing flake on cold engines; a real break fails twice
-  reporter: [['list']],
+  reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : [['list']],
   timeout: 120_000,
   expect: { timeout: 12_000 },
   use: {
@@ -31,7 +31,7 @@ export default defineConfig({
     { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
   ],
   webServer: {
-    command: `VITE_LLM_MODE=mock VITE_GATEWAY_URL= bunx vite --port ${PORT} --strictPort`,
+    command: `VITE_LLM_MODE=mock VITE_GATEWAY_URL= VITE_DEV_AUTH=true VITE_PERSIST_MODE=local bunx vite --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}/`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

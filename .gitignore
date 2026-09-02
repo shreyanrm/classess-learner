@@ -1,11 +1,16 @@
 # --- Secrets (PUBLIC REPO — never commit any real keys) ---
+# Order matters: git uses the LAST matching pattern, so every negation below must
+# stay after the broad `.env` rules. Do not append `.env*` anywhere further down.
 .env
 .env.*
-!.env.example
 *.local
 secrets/
 *.pem
 *.key
+# Non-secret, committed-on-purpose exceptions (documented in DEPLOY.md):
+!.env.example
+!**/.env.example
+!apps/web-pwa/.env.production
 
 # --- Node / Bun ---
 node_modules/
@@ -46,8 +51,9 @@ __pycache__/
 tmp/
 .scratch/
 
-# --- Supabase local (we use hosted MSR Build via MCP; keep local artifacts out) ---
+# --- Supabase local (we use the hosted project; keep local artifacts out) ---
 supabase/.branches/
 supabase/.temp/
+
+# --- Deploy CLI state ---
 .vercel
-.env*

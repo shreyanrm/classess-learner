@@ -15,7 +15,8 @@ export default defineConfig({
   workers: 1,
   forbidOnly: !!process.env.CI,
   retries: 0,
-  reporter: [['list']],
+  // CI also emits an HTML report so the workflow can upload it as an artifact on failure.
+  reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : [['list']],
   timeout: 60_000,
   expect: { timeout: 10_000 },
   use: {
@@ -29,7 +30,7 @@ export default defineConfig({
     // Hermetic: force the keyless mock provider and no gateway so the suite never depends on a
     // running service (dev's .env sets LLM_MODE=live + a gateway URL). Turns fall to the
     // deterministic classifier; TTS/voice no-op without a gateway URL.
-    command: `VITE_LLM_MODE=mock VITE_GATEWAY_URL= bunx vite --port ${PORT} --strictPort`,
+    command: `VITE_LLM_MODE=mock VITE_GATEWAY_URL= VITE_DEV_AUTH=true VITE_PERSIST_MODE=local bunx vite --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}/`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

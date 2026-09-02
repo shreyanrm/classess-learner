@@ -2,6 +2,14 @@
 # COPYs pyproject.toml, uv.lock, services/*/{pyproject,src}, content/atom/pyproject.toml — so
 # everything else is dead upload weight. Excluding it drops the upload from ~630 MB to a few MB
 # (the reason `railway up` was timing out mid-upload).
+
+# --- Secrets: the gateway takes every value from Railway service variables at
+# --- runtime. No env file may ever ride along in the build context.
+.env
+.env.*
+!.env.example
+
+# --- Weight ---
 node_modules
 **/node_modules
 .git

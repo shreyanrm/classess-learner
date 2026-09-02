@@ -35,5 +35,10 @@
       "semicolons": "always",
       "trailingCommas": "all"
     }
+  },
+  "html": {
+    "parser": {
+      "interpolation": true
+    }
   }
 }

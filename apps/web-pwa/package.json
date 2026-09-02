@@ -8,7 +8,9 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
+    "test": "bun test test/*.test.ts src",
     "test:e2e": "playwright test",
+    "test:x-browser": "playwright test --config test/x-browser.config.ts",
     "test:e2e:headed": "playwright test --headed"
   },
   "dependencies": {

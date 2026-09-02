@@ -3,4 +3,10 @@ playwright-report/
 blob-report/
 .playwright/
 .vercel
-.env*
+
+# Secrets: every env file is ignored EXCEPT the committed, non-secret production
+# flag file and the template. Negations must stay last (last match wins).
+.env
+.env.*
+!.env.example
+!.env.production

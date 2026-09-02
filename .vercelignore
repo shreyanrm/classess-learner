@@ -1,5 +1,15 @@
-# Keep deploy uploads lean: screenshots/design junk only. Workspace dirs
-# (apps/packages/platform) must upload — bun install needs every member.
+# Vercel upload filter (only used by `vercel deploy` from the CLI — the production
+# site is built REMOTELY by the git integration, which honours .gitignore instead).
+# Workspace dirs (apps/packages/platform) must upload — bun install needs every member.
+
+# --- Secrets: never upload an env file. The one exception is the committed,
+# --- non-secret production flag file the Vite build reads.
+.env
+.env.*
+!.env.example
+!apps/web-pwa/.env.production
+
+# --- Weight: screenshots and design junk ---
 *.png
 !apps/web-pwa/public/*.png
 *.pdf
