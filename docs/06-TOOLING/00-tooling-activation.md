@@ -13,7 +13,7 @@ Use everything Claude Code is powered with. Prefer the right tool over hand-roll
   Remotion, Razorpay) rather than relying on memory; pin versions.
 
 ## Skills (use whichever are installed; map to the work)
-- **Frontend / design-system / UI skills** — building `/packages/ui`, the surfaces, accessibility, responsive. Honour our tokens
+- **Frontend / design-system / UI skills** — building `/apps/web-pwa/src/ui`, the surfaces, accessibility, responsive. Honour our tokens
   (`02-DESIGN/`) over any skill's defaults.
 - **Architecture / system-design skills** — Phase 0 spine, the event contract, service boundaries, ADRs for any real decision.
 - **Testing-strategy skills** — the test plan for the contract layer, verifier, orchestrator policy, gateway routing, RLS.

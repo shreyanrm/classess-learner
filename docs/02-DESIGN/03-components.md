@@ -1,6 +1,6 @@
 # 03 · Component System
 
-Build in `/packages/ui`. Every component: typed props, all states, a11y, responsive, motion-aware, token-driven, no shadows.
+Build in `/apps/web-pwa/src/ui`. Every component: typed props, all states, a11y, responsive, motion-aware, token-driven, no shadows.
 
 ## Primitives
 Button (primary/secondary/ghost; magnetic on primary), IconButton, Input/TextArea (calm, hairline border, 2px radius),

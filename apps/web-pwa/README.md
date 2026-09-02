@@ -1,7 +1,7 @@
 # @classess/web-pwa
 
 Phase 0 app shell for Wobo: a Vite + React 19 + TypeScript PWA that boots the
-monochrome design spine (design tokens, `@classess/ui`, and Wobo) on deterministic placeholder
+monochrome design spine (design tokens, the UI kit in `src/ui/kit.tsx`, and Wobo) on deterministic placeholder
 data. No product features yet — this proves the chrome, a couple of signature components, and the
 Wobo dock wire together.
 

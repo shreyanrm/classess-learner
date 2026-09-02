@@ -19,7 +19,6 @@
     "@classess/contracts": "workspace:*",
     "@classess/motion": "workspace:*",
     "@classess/sdk": "workspace:*",
-    "@classess/ui": "workspace:*",
     "@classess/wobo": "workspace:*",
     "@codemirror/lang-python": "^6.2.1",
     "@codemirror/state": "^6.7.1",
