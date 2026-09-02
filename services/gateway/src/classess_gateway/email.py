@@ -42,9 +42,10 @@ _HTTP_TIMEOUT_S = 20.0
 def account_email(subject: str) -> str | None:
     """The address on file for a verified subject, or ``None`` when it cannot be established.
 
-    ponytail: the profile lookup lives in one place for the whole gateway. Until that module
-    exists this returns ``None``, and every caller that passes a subject FAILS CLOSED — an
-    unknown address is never mailed on a learner's behalf.
+    ponytail: the profile lookup lives in one place for the whole gateway (``consent``). The
+    profile row carries no address column yet — canonical identity lives in the platform
+    plane's vault — so this returns ``None`` today and every caller that passes a subject FAILS
+    CLOSED. An unknown address is never mailed on a learner's behalf.
     """
     if not subject:
         return None
@@ -174,7 +175,15 @@ def register_email(app: FastAPI) -> None:
         # endpoint, never an open relay.
         expected = os.getenv("INTERNAL_EMAIL_KEY")
         provided = request.headers.get("X-Classess-Internal")
-        if not expected or not provided or not secrets.compare_digest(provided, expected):
+        # Compare as BYTES. secrets.compare_digest raises TypeError on a str that is not pure
+        # ASCII, so a header with one accented character used to turn a refusal into a 500 —
+        # an unauthenticated caller choosing the error class is a probe, not a mistake. Encoding
+        # with errors="ignore" keeps the comparison constant-time and the answer a plain 403.
+        if (
+            not expected
+            or not provided
+            or not secrets.compare_digest(provided.encode("utf-8", "ignore"), expected.encode())
+        ):
             raise HTTPException(
                 status_code=403,
                 detail={"code": "not_allowed", "message": "this is not something you can do here"},

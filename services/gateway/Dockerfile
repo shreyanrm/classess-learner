@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
-# Classess model gateway. Build from the REPO ROOT (the uv workspace is the context):
+# The model gateway (the brain). Build from the REPO ROOT (the uv workspace is the context):
 #   docker build -f services/gateway/Dockerfile -t classess-gateway .
+# Railway is the only host (DEPLOY.md §2); it builds this file and injects PORT.
 # Secrets NEVER bake into this image — everything arrives via environment at runtime.
 
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS build
@@ -32,12 +33,14 @@ ENV PATH="/app/.venv/bin:$PATH" \
 USER gateway
 EXPOSE 8081
 
-# Container-level liveness (Fly/Render run their own HTTP checks against /healthz too).
+# Container-level liveness. Railway runs its own HTTP check against /healthz as well
+# (railway.json), so an unhealthy container is caught from both sides.
 HEALTHCHECK --interval=15s --timeout=3s --start-period=10s --retries=3 \
     CMD python -c "import os,urllib.request; urllib.request.urlopen('http://127.0.0.1:' + os.environ.get('PORT', '8081') + '/healthz').read()" || exit 1
 
-# Render injects PORT; Fly routes to internal_port 8081. --no-access-log: the app emits
-# its own structured JSON request lines, uvicorn's plaintext ones would just duplicate.
+# Railway injects PORT; 8081 is the local default (and what .env.example's GATEWAY_URL and
+# the web app's VITE_GATEWAY_URL point at). --no-access-log: the app emits its own structured
+# JSON request lines, uvicorn's plaintext ones would just duplicate.
 #
 # --forwarded-allow-ips "": uvicorn's own proxy-header middleware would REWRITE the client
 # address from X-Forwarded-For whenever the peer is trusted (its default trusts 127.0.0.1),

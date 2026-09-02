@@ -117,6 +117,79 @@ def test_stored_values_coerce_safely(stored: str | None, expected: ConsentTier) 
     assert consent._coerce_tier(stored) is expected
 
 
+# --- the lookup points at the table that actually exists ------------------------------
+def _capture(monkeypatch: pytest.MonkeyPatch, rows: list[dict]) -> dict:
+    """Run one fetch_profile against a fake PostgREST and hand back the request it made."""
+    import json
+
+    seen: dict = {}
+
+    class FakeResponse:
+        def read(self) -> bytes:
+            return json.dumps(rows).encode()
+
+        def __enter__(self) -> FakeResponse:
+            return self
+
+        def __exit__(self, *_: object) -> None:
+            return None
+
+    def urlopen(request, timeout=None):  # noqa: ANN001, ARG001
+        seen["url"] = request.full_url
+        seen["headers"] = {k.lower(): v for k, v in request.headers.items()}
+        return FakeResponse()
+
+    monkeypatch.setenv("SUPABASE_URL", "https://project.supabase.co")
+    monkeypatch.setenv("SUPABASE_SERVICE_ROLE_KEY", "service-role")
+    monkeypatch.setattr(consent.urllib.request, "urlopen", urlopen)
+    return seen
+
+
+def test_the_lookup_reads_learner_profiles_cache_by_subject_id(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The live project has no ``public.profiles``. The row is ``learner.profiles_cache`` keyed
+    by ``subject_id`` (migrations 0002 + 0006), and PostgREST selects the schema by header —
+    without it every read lands in ``public`` and silently downgrades every learner."""
+    for var in ("SUPABASE_CONSENT_SCHEMA", "SUPABASE_CONSENT_TABLE", "SUPABASE_CONSENT_ID_COLUMN"):
+        monkeypatch.delenv(var, raising=False)
+    seen = _capture(monkeypatch, [{"consent_tier": "elevated", "plan": "plus"}])
+    profile = consent.fetch_profile("subject-1")
+    assert "/rest/v1/profiles_cache?" in seen["url"]
+    assert "subject_id=eq.subject-1" in seen["url"]
+    assert seen["headers"]["accept-profile"] == "learner"
+    assert profile == consent.Profile(tier=ConsentTier.ELEVATED, plan="plus")
+
+
+def test_the_schema_table_and_id_column_stay_overridable(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A deploy that moves the profile behind a governed view is config, not a code change."""
+    monkeypatch.setenv("SUPABASE_CONSENT_SCHEMA", "governed")
+    monkeypatch.setenv("SUPABASE_CONSENT_TABLE", "profile_view")
+    monkeypatch.setenv("SUPABASE_CONSENT_ID_COLUMN", "sub")
+    seen = _capture(monkeypatch, [{"consent_tier": "un_elevated", "plan": "free"}])
+    consent.fetch_profile("subject-2")
+    assert "/rest/v1/profile_view?" in seen["url"] and "sub=eq.subject-2" in seen["url"]
+    assert seen["headers"]["accept-profile"] == "governed"
+
+
+@pytest.mark.parametrize(
+    "stored,tier,plan",
+    [
+        ({"consent_tier": "un_elevated", "plan": "free"}, ConsentTier.UN_ELEVATED, "free"),
+        ({"consent_tier": "un_elevated", "plan": "plus"}, ConsentTier.UN_ELEVATED, "plus"),
+        ({"consent_tier": "elevated", "plan": "free"}, ConsentTier.ELEVATED, "free"),
+        ({"consent_tier": "elevated", "plan": "plus"}, ConsentTier.ELEVATED, "plus"),
+    ],
+)
+def test_the_four_values_the_database_can_hold(
+    monkeypatch: pytest.MonkeyPatch, stored: dict, tier: ConsentTier, plan: str
+) -> None:
+    """``consent_tier`` is checked to ('un_elevated','elevated') and ``plan`` to ('free','plus'),
+    so these four rows are everything the table can produce."""
+    _capture(monkeypatch, [stored])
+    assert consent.fetch_profile("subject-3") == consent.Profile(tier=tier, plan=plan)
+
+
 def test_a_row_is_read_whatever_its_column_is_called(monkeypatch: pytest.MonkeyPatch) -> None:
     import json
 

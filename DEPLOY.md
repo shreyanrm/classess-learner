@@ -52,30 +52,81 @@ an error instead of silently shipping dev mode.
 
 ### Gateway (Railway service variables — nothing committed).
 
-| Var | Secret | Production value |
-|---|---|---|
-| `ENV` | no | `prod` |
-| `LLM_MODE` | no | `live` |
-| `RATE_LIMIT_PER_MINUTE` | no | `60` |
-| `LOG_LEVEL` | no | `INFO` |
-| `APP_NAME` | no | `Wobo` — product name in prompts, emails, subjects |
-| `APP_URL` | no | canonical web origin; the CORS allow-list entry and the base of every email link |
-| `EMAIL_FROM` | no | RFC 5322 sender, e.g. `Wobo <wobo@mail.classess.com>`; must be a verified Resend domain |
-| `EMAIL_REPLY_TO` | no | reply-to on every transactional send |
-| `RAILWAY_DOCKERFILE_PATH` | no | `services/gateway/Dockerfile` (also declared in `railway.json`) |
-| `ANTHROPIC_API_KEY` `OPENAI_API_KEY` `GOOGLE_AI_API_KEY` | **yes** | from the key vault |
-| `RESEND_API_KEY` | **yes** | from the key vault |
-| `INTERNAL_EMAIL_KEY` `CLSS_GATEWAY_KEY` | **yes** | from the key vault |
+Every value below is read from the environment; none is hardcoded in service code. Secrets
+live only in the Railway service variables and the owner's key vault.
 
-`PORT` is injected by Railway; the Dockerfile's `CMD` already honours it.
+**Identity and consent (Wave 1 — the brain's door).**
 
-> **Open item (Wave 1 owns the gateway source):** `APP_NAME`, `APP_URL`, `EMAIL_FROM`
-> and `EMAIL_REPLY_TO` are the contract above, but the code still hardcodes them —
-> `services/gateway/src/classess_gateway/email.py` (`_FROM`, `_REPLY_TO`),
-> `app.py` (`_PROD_ORIGIN`, the Vercel-preview `allow_origin_regex`),
-> `email_templates.py` (the `https://learner.classess.com/...` CTA defaults) and
-> `providers.py` (prompt text naming the company). Until those read the env, the
-> domain swap is not yet the single change §4 describes.
+| Var | Secret | Where it lives | Production value |
+|---|---|---|---|
+| `SUPABASE_JWT_SECRET` | **yes** | Railway | the project's JWT secret (HS256 projects). **One of this or the JWKS pair is mandatory when `ENV=prod`** — boot fails without it |
+| `SUPABASE_JWKS_URL` | no | Railway | RS256/ES256 projects. Unset ⇒ derived from `SUPABASE_URL` as `<url>/auth/v1/.well-known/jwks.json` |
+| `SUPABASE_URL` | no | Railway | `https://keepraxqagzgjrrweryt.supabase.co` — the JWKS base and the consent lookup host |
+| `SUPABASE_JWT_AUD` | no | Railway (optional) | `authenticated` (the default) |
+| `SUPABASE_SERVICE_ROLE_KEY` | **yes** | Railway | server-only key for the consent/plan lookup (`learner.profiles_cache` by `subject_id`). Missing ⇒ every learner reads as un-elevated + free |
+| `SUPABASE_CONSENT_SCHEMA` / `_TABLE` / `_ID_COLUMN` | no | Railway (optional) | defaults `learner` / `profiles_cache` / `subject_id` — the live schema; set only if the profile moves behind a view |
+| `DEV_AUTH` | no | **never in production** | unset. It accepts any asserted identity; `ENV=prod` refuses to boot with it set at all |
+
+**Budget meter and limiter (Wave 1 — the brain owns every number).**
+
+| Var | Secret | Where it lives | Production value |
+|---|---|---|---|
+| `FREE_DAILY_TURNS` / `FREE_DAILY_GENERATIONS` | no | Railway (optional) | `40` / `8` |
+| `ANON_DAILY_TURNS` / `ANON_DAILY_GENERATIONS` | no | Railway (optional) | `6` / `1` — anonymous learners, metered per address |
+| `PLUS_DAILY_TURNS` / `PLUS_DAILY_GENERATIONS` | no | Railway (optional) | `400` / `60` — chosen by `profiles_cache.plan` |
+| `RATE_LIMIT_PER_MINUTE` | no | Railway | `60` per verified subject |
+| `UNAUTH_RATE_LIMIT_PER_MINUTE` | no | Railway | `15` per address for callers with no verified identity |
+| `MAX_REQUEST_BYTES` | no | Railway (optional) | `262144` |
+| `TRUST_PROXY` | no | Railway | `1` — Railway is our proxy, so the LAST `X-Forwarded-For` hop is the client. Leave unset anywhere the platform does not append that header |
+
+**Brand and mail (the domain swap is these vars, nothing else).**
+
+| Var | Secret | Where it lives | Production value |
+|---|---|---|---|
+| `APP_NAME` | no | Railway | `Wobo` — product name in prompts, emails, page titles |
+| `APP_URL` | no | Railway | canonical web origin. Also the CORS allow-list entry and the base of every email link |
+| `APP_PREVIEW_ORIGIN_REGEX` | no | Railway (optional) | CORS regex for our own preview deploys; unset ⇒ the built-in Vercel preview pattern |
+| `EMAIL_FROM` | no | Railway | RFC 5322 sender, e.g. `Wobo <wobo@mail.classess.com>`; must be a verified Resend domain |
+| `EMAIL_REPLY_TO` | no | Railway | reply-to on every transactional send |
+| `EMAIL_UNSUBSCRIBE_URL` | no | Railway (optional) | unset ⇒ `APP_URL/unsubscribe` |
+| `EMAIL_POSTAL_ADDRESS` | no | Railway | **owner action.** A real postal address; unset renders a loud placeholder in the footer |
+| `EMAIL_MODE` | no | Railway | `console` until the sender domain is verified in Resend, then `live` |
+| `RESEND_API_KEY` | **yes** | Railway | from the key vault |
+| `INTERNAL_EMAIL_KEY` | **yes** | Railway | the shared key on `X-Classess-Internal`; unset makes `POST /v1/email/send` a dead endpoint (fail closed) |
+| `CLSS_GATEWAY_KEY` | **yes** | Railway | internal service key |
+
+**Runtime.**
+
+| Var | Secret | Where it lives | Production value |
+|---|---|---|---|
+| `ENV` | no | Railway | `prod` |
+| `LLM_MODE` | no | Railway | `live` |
+| `LOG_LEVEL` | no | Railway | `INFO` |
+| `RAILWAY_DOCKERFILE_PATH` | no | Railway | `services/gateway/Dockerfile` (also declared in `railway.json`) |
+| `ANTHROPIC_API_KEY` `OPENAI_API_KEY` `GOOGLE_AI_API_KEY` | **yes** | Railway | from the key vault |
+
+`PORT` is injected by Railway; the Dockerfile's `CMD` already honours it. Locally the gateway
+runs on **8081** (`uv run uvicorn classess_gateway.app:app --port 8081`), which is what
+`.env.example`'s `GATEWAY_URL`, `apps/web-pwa/.env.example` and `apps/web-pwa/.env.development`
+all point at.
+
+#### Railway must set — the Wave 1 checklist
+
+Boot fails or a door stands open if any of these is wrong. Check it before every deploy:
+
+- [ ] `ENV=prod` — turns on the prod-only refusals below.
+- [ ] `LLM_MODE=live` — with `ANTHROPIC_API_KEY` present, or boot fails.
+- [ ] **No `DEV_AUTH`** at any value. `ENV=prod` refuses to start with it set; that refusal is
+      the last line of defence, not the plan.
+- [ ] Token verification configured: `SUPABASE_JWT_SECRET`, **or** `SUPABASE_JWKS_URL`, **or**
+      `SUPABASE_URL` (from which the JWKS URL is derived). `ENV=prod` fails fast without one.
+- [ ] `SUPABASE_SERVICE_ROLE_KEY` set — otherwise the consent lookup silently answers
+      un-elevated + free for everyone, and elevated capabilities are unreachable.
+- [ ] `APP_URL` set to the real origin — it is the CORS allow-list, so a wrong value shows the
+      browser an opaque network error on every call.
+- [ ] `TRUST_PROXY=1` — Railway terminates TLS, so without it the limiter buckets by the proxy.
+- [ ] `INTERNAL_EMAIL_KEY` set (or `POST /v1/email/send` stays dead by design).
+- [ ] `EMAIL_POSTAL_ADDRESS` set before `EMAIL_MODE=live`.
 
 The full template with comments: `.env.example` (repo root, gateway + shared) and
 `apps/web-pwa/.env.example` (web).
@@ -163,10 +214,14 @@ and is a safe duplicate).
 railway login
 railway link                       # select the project + service
 
-railway variables --set ENV=prod --set LLM_MODE=live \
+railway variables --set ENV=prod --set LLM_MODE=live --set TRUST_PROXY=1 \
   --set APP_NAME=Wobo --set APP_URL=https://learner.classess.com \
   --set EMAIL_FROM='Wobo <wobo@mail.classess.com>' --set EMAIL_REPLY_TO=hello@mail.classess.com
 railway variables --set ANTHROPIC_API_KEY=... --set OPENAI_API_KEY=... --set GOOGLE_AI_API_KEY=...
+# The door: one of these must verify a learner token, and the service role key reads the tier.
+railway variables --set SUPABASE_URL=https://keepraxqagzgjrrweryt.supabase.co \
+  --set SUPABASE_JWT_SECRET=... --set SUPABASE_SERVICE_ROLE_KEY=...
+# DEV_AUTH is never set here. ENV=prod refuses to boot with it at any value.
 
 railway up                         # from the repo root
 curl -s https://classess-learner-production.up.railway.app/healthz
@@ -214,9 +269,10 @@ When the owner buys the Wobo domain, the swap is a config change, not a code cha
 2. Set `VITE_APP_URL=https://<new-domain>` (and `VITE_APP_NAME` if the name changes)
    in the Vercel project env; redeploy. Title, PWA manifest, canonical and `og:` tags
    all follow — `apps/web-pwa/vite.config.ts` reads them, nothing is hardcoded.
-3. Set `APP_URL=https://<new-domain>` (plus `APP_NAME`, `EMAIL_FROM`, `EMAIL_REPLY_TO`)
-   on the Railway service. This is also the CORS allow-list entry and the base of every
-   email link. **Blocked on the open item in §0** until the gateway reads those vars.
+3. Set `APP_URL=https://<new-domain>` (plus `APP_NAME`, `EMAIL_FROM`, `EMAIL_REPLY_TO`,
+   and `EMAIL_UNSUBSCRIBE_URL` if it is not `APP_URL/unsubscribe`) on the Railway service.
+   This is also the CORS allow-list entry and the base of every email link. The gateway reads
+   all of them from the environment as of Wave 1 — no code change is involved.
 4. If the gateway also moves, edit the one `connect-src` host pair in `vercel.json`.
 5. Verify the new sender domain in Resend before flipping `EMAIL_MODE=live`.
 

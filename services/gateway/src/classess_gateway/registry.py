@@ -1,13 +1,30 @@
 """Capability registry and per-capability routing policy.
 
-Features call a capability name, never a raw model. Each capability has exactly one
-policy: which track, the primary logical model, a fallback chain (which may escalate from
-Track 2 to a Track 1 frontier model on a hard moment), latency and cost budgets, the
-cache tier, and the consent-tier rule.
+Features call a capability name, never a raw model and never a tier. Each capability has
+exactly one policy: the **tier** it belongs to (WOBO-PLAN §9), which fixes the primary model
+and the fallback chain, plus latency and cost budgets, the output ceiling, the cache tier,
+and the consent-tier rule.
 
-Most routine teaching turns target Track 2; the frontier (Track 1) is reserved for
-verification, digests, and behavioural evaluation. ``archetype.classify`` and
-``peakcut.evaluate`` are elevated-only — they refuse under the un-elevated consent tier.
+The tier map (owner directive, 2026-09-02):
+
+- ``tiny`` — intent classification, safety pre-screen, openers, titles and summaries, recall:
+  ``generate.opener``, ``safety.moderate``, ``twin.query``, ``generate.digest``,
+  ``archetype.classify``.
+- ``turn`` — Wobo's conversational turns and the judgements taken inside one:
+  ``wobo.turn``, ``tutor.turn``, ``parent.companion.turn``, ``grade.attempt``,
+  ``peakcut.evaluate``.
+- ``generate`` — board plans, lessons, practice, diagrams, video storyboards:
+  ``engine.compose``, ``engine.simulate``, ``engine.diagram``, ``engine.video``,
+  ``generate.course``.
+- ``reason`` — the hard list and every escalation off ``generate``: ``verify.math``, boss
+  synthesis, misconception detonation, a first syllabus extraction, a grading escalation.
+- ``verify`` — the second-opinion cross-check of anything generated. No capability of its
+  own: it is the fallback rung above ``generate`` and ``reason``, and the model the plexus
+  validation gate judges with (``routing`` aliases ``frontier.reason`` onto it), so a
+  generated artifact is always judged by the other provider.
+
+``archetype.classify`` and ``peakcut.evaluate`` are elevated-only — they refuse under the
+un-elevated consent tier.
 """
 
 from __future__ import annotations
@@ -16,7 +33,16 @@ from dataclasses import dataclass
 from enum import StrEnum
 
 from classess_gateway.cache import CacheTier
-from classess_gateway.routing import Track, resolve, resolve_any, track_separation_holds
+from classess_gateway.routing import (
+    Tier,
+    Track,
+    escalate,
+    resolve,
+    resolve_any,
+    tier_fallbacks,
+    tier_primary,
+    track_separation_holds,
+)
 
 
 class ConsentTier(StrEnum):
@@ -29,6 +55,7 @@ class ConsentTier(StrEnum):
 @dataclass(frozen=True)
 class RoutingPolicy:
     capability: str
+    tier: Tier
     track: Track
     primary: str
     fallback: tuple[str, ...]
@@ -44,190 +71,130 @@ class RoutingPolicy:
         return consent_tier is ConsentTier.ELEVATED or not self.elevated_only
 
 
+# Sensible per-tier defaults: the latency TARGET (the timeout ceiling lives in providers), the
+# cost ceiling one call may reach before telemetry warns, and the output ceiling. A capability
+# overrides only what it genuinely needs — a 16k storyboard, a 200-token safety verdict.
+_TIER_BUDGETS: dict[Tier, tuple[int, float, int]] = {
+    Tier.TINY: (1500, 0.002, 400),
+    Tier.TURN: (8000, 0.02, 800),
+    Tier.GENERATE: (12000, 0.08, 4000),
+    Tier.REASON: (20000, 0.20, 4000),
+    Tier.VERIFY: (20000, 0.20, 2000),
+}
+
+
+def _policy(
+    capability: str,
+    tier: Tier,
+    cache_tier: CacheTier,
+    *,
+    max_latency_ms: int | None = None,
+    cost_ceiling: float | None = None,
+    max_tokens: int | None = None,
+    elevated_only: bool = False,
+) -> RoutingPolicy:
+    """One capability, pinned to a tier. The models come from the tier, never from here."""
+    latency, cost, tokens = _TIER_BUDGETS[tier]
+    return RoutingPolicy(
+        capability=capability,
+        tier=tier,
+        # Every tier is a Track-1 market model today; the Track-2 SLM slots are unfilled.
+        track=Track.TRACK_1,
+        primary=tier_primary(tier),
+        fallback=tier_fallbacks(tier),
+        max_latency_ms=max_latency_ms if max_latency_ms is not None else latency,
+        cost_ceiling=cost_ceiling if cost_ceiling is not None else cost,
+        cache_tier=cache_tier,
+        elevated_only=elevated_only,
+        max_tokens=max_tokens if max_tokens is not None else tokens,
+    )
+
+
 _POLICIES: dict[str, RoutingPolicy] = {
     p.capability: p
     for p in (
-        RoutingPolicy(
-            capability="tutor.turn",
-            track=Track.TRACK_2,
-            primary="slm.tutor",
-            fallback=("frontier.fast", "frontier.reason"),
-            max_latency_ms=1200,
-            cost_ceiling=0.004,
-            cache_tier=CacheTier.SEMANTIC,
-            max_tokens=800,
-        ),
-        RoutingPolicy(
-            capability="wobo.turn",
-            # A live tutor turn is NEVER cached — context differs every time, and a cached
-            # reply is a groundedness bug (she answers a different moment). Track 1 frontier
-            # until the real tutor SLM lands in the Track-2 slot.
-            track=Track.TRACK_1,
-            # Verdict law (wave 8): a tutor turn must FEEL instant — the fast tier carries the
-            # conversation; sonnet then opus wait in the chain for genuinely hard moments.
-            primary="frontier.fast",
-            fallback=("frontier.sonnet", "frontier.reason"),
-            max_latency_ms=8000,
-            cost_ceiling=0.05,
-            cache_tier=CacheTier.NONE,
-            max_tokens=500,
-        ),
-        RoutingPolicy(
-            capability="grade.attempt",
-            track=Track.TRACK_2,
-            primary="slm.grade",
-            fallback=("frontier.reason",),
-            max_latency_ms=1000,
-            cost_ceiling=0.003,
-            cache_tier=CacheTier.EXACT,
-            max_tokens=300,
-        ),
-        RoutingPolicy(
-            capability="generate.opener",
-            track=Track.TRACK_2,
-            primary="edge.opener",
-            fallback=("frontier.fast",),
-            max_latency_ms=1500,
-            cost_ceiling=0.003,
-            cache_tier=CacheTier.EXACT,
-            max_tokens=300,
-        ),
-        RoutingPolicy(
-            capability="verify.math",
-            track=Track.TRACK_1,
-            primary="frontier.reason",
-            fallback=("openai.crosscheck",),
+        # --- turn: she is talking, and the small judgements taken mid-conversation --------
+        # A live tutor turn is NEVER cached — context differs every time, and a cached reply is
+        # a groundedness bug (she answers a different moment).
+        _policy("wobo.turn", Tier.TURN, CacheTier.NONE, max_tokens=500, cost_ceiling=0.05),
+        _policy("tutor.turn", Tier.TURN, CacheTier.SEMANTIC),
+        _policy("parent.companion.turn", Tier.TURN, CacheTier.SEMANTIC, max_latency_ms=6000),
+        # Grading one attempt is a judgement inside a turn. A grading ESCALATION (the learner
+        # says "I think I'm right", or the verifier rejects) goes up a rung to `reason` through
+        # routing.escalate — never by a second policy naming a second model.
+        _policy(
+            "grade.attempt",
+            Tier.TURN,
+            CacheTier.EXACT,
             max_latency_ms=4000,
-            cost_ceiling=0.05,
-            cache_tier=CacheTier.EXACT,
-            max_tokens=1000,
+            cost_ceiling=0.01,
+            max_tokens=300,
         ),
-        RoutingPolicy(
-            capability="twin.query",
-            track=Track.TRACK_2,
-            primary="slm.tutor",
-            fallback=("frontier.fast",),
-            max_latency_ms=800,
-            cost_ceiling=0.002,
-            cache_tier=CacheTier.SEMANTIC,
+        _policy(
+            "peakcut.evaluate",
+            Tier.TURN,
+            CacheTier.NONE,
+            max_latency_ms=3000,
             max_tokens=600,
+            elevated_only=True,
         ),
-        RoutingPolicy(
-            capability="safety.moderate",
-            track=Track.TRACK_2,
-            primary="slm.safety",
-            fallback=("frontier.reason",),
-            max_latency_ms=600,
-            cost_ceiling=0.002,
-            cache_tier=CacheTier.EXACT,
-            max_tokens=200,
-        ),
-        RoutingPolicy(
-            capability="parent.companion.turn",
-            track=Track.TRACK_2,
-            primary="slm.companion",
-            fallback=("frontier.reason",),
-            max_latency_ms=1500,
-            cost_ceiling=0.005,
-            cache_tier=CacheTier.SEMANTIC,
-            max_tokens=800,
-        ),
-        RoutingPolicy(
-            capability="generate.digest",
-            track=Track.TRACK_1,
-            primary="frontier.fast",
-            fallback=("frontier.reason",),
+        # --- tiny: classification, safety, openers, titles, summaries, recall ------------
+        _policy("generate.opener", Tier.TINY, CacheTier.EXACT, max_tokens=300),
+        _policy("safety.moderate", Tier.TINY, CacheTier.EXACT, max_latency_ms=800, max_tokens=200),
+        _policy("twin.query", Tier.TINY, CacheTier.SEMANTIC, max_tokens=600),
+        _policy(
+            "generate.digest",
+            Tier.TINY,
+            CacheTier.EXACT,
             max_latency_ms=6000,
-            cost_ceiling=0.03,
-            cache_tier=CacheTier.EXACT,
+            cost_ceiling=0.01,
             max_tokens=1500,
         ),
-        RoutingPolicy(
-            capability="generate.course",
-            track=Track.TRACK_1,
-            primary="frontier.fast",
-            fallback=("frontier.reason",),
-            max_latency_ms=8000,
-            cost_ceiling=0.03,
-            cache_tier=CacheTier.EXACT,
-            max_tokens=1200,
+        _policy(
+            "archetype.classify",
+            Tier.TINY,
+            CacheTier.EXACT,
+            max_latency_ms=2000,
+            cost_ceiling=0.005,
+            elevated_only=True,
         ),
-        # Plexus engines: heavy content generation, warm-cached under content/cache/ so the first
-        # learner pays and the rest reuse.
-        # CONTENT ORDER (owner verdict 2026-07-07): OPUS is PRIMARY, GPT-5.5 the QUALITY-BACKUP.
-        # Owner's evidence: in the Opus-vs-GPT-5.5 storyboard comparison Opus was slightly better,
-        # and GPT-5.5 made subtle React/SVG errors — so the four content engines route PRIMARY to
-        # Opus (frontier.reason); openai.frontier (GPT-5.5) is the FIRST fallback and the post-serve
-        # validation gate's rebuild target (a failed Opus draft is rebuilt on GPT-5.5, best-of
-        # promoted — plexus.validate; both minds compete on every quality failure). The chain here
-        # is litellm's on-ERROR failover (an Opus outage still yields content): Opus -> GPT-5.5 ->
-        # Haiku. Wobo's turn routing is UNTOUCHED.
-        RoutingPolicy(
-            capability="engine.compose",
-            track=Track.TRACK_1,
-            primary="frontier.reason",
-            fallback=("openai.frontier", "frontier.fast"),
-            max_latency_ms=12000,
-            cost_ceiling=0.08,
-            cache_tier=CacheTier.EXACT,
-            max_tokens=16000,
-        ),
-        RoutingPolicy(
-            capability="engine.simulate",
-            track=Track.TRACK_1,
-            primary="frontier.reason",
-            fallback=("openai.frontier", "frontier.fast"),
-            max_latency_ms=12000,
-            cost_ceiling=0.08,
-            cache_tier=CacheTier.EXACT,
-            max_tokens=2000,
-        ),
-        RoutingPolicy(
-            capability="engine.diagram",
-            track=Track.TRACK_1,
-            primary="frontier.reason",
-            fallback=("openai.frontier", "frontier.fast"),
+        # --- generate: the cheapest model that passes verification -----------------------
+        # The cost rule (owner, 2026-09-02): board plans, lessons and storyboards run on the
+        # generate tier by default and escalate ONE rung only on a verifier or second-opinion
+        # rejection (routing.escalate, which logs the reason). The plexus validation gate does
+        # exactly that: the verify tier judges the draft, the reason tier rebuilds it, best-of
+        # is promoted. Warm-cached under content/cache/ so the first learner pays and the rest
+        # reuse.
+        _policy("generate.course", Tier.GENERATE, CacheTier.EXACT, max_tokens=1200),
+        _policy("engine.compose", Tier.GENERATE, CacheTier.EXACT, max_tokens=16000),
+        _policy("engine.simulate", Tier.GENERATE, CacheTier.EXACT, max_tokens=2000),
+        _policy(
+            "engine.diagram",
+            Tier.GENERATE,
+            CacheTier.EXACT,
             max_latency_ms=10000,
             cost_ceiling=0.05,
-            cache_tier=CacheTier.EXACT,
             max_tokens=6000,
         ),
-        # Video routing law (owner verdict 2026-07-07): scene plans are storyboarded on OPUS
-        # (frontier.reason) by DEFAULT and get a GPT-5.5 second opinion (openai.frontier) ONLY when
-        # necessary — a complexity flag in the scene plan or a failed structural verification. That
-        # second-opinion target is the FIRST fallback, which the engine calls explicitly (not just
-        # an error-fallback), and is taken only when it verifies. See engines._generate_video_live.
-        RoutingPolicy(
-            capability="engine.video",
-            track=Track.TRACK_1,
-            primary="frontier.reason",
-            fallback=("openai.frontier", "frontier.fast"),
+        _policy(
+            "engine.video",
+            Tier.GENERATE,
+            CacheTier.EXACT,
             max_latency_ms=30000,
             cost_ceiling=0.15,
-            cache_tier=CacheTier.EXACT,
             max_tokens=16000,
         ),
-        RoutingPolicy(
-            capability="archetype.classify",
-            track=Track.TRACK_2,
-            primary="slm.classify",
-            fallback=("frontier.reason",),
-            max_latency_ms=2000,
-            cost_ceiling=0.01,
-            cache_tier=CacheTier.EXACT,
-            max_tokens=400,
-            elevated_only=True,
-        ),
-        RoutingPolicy(
-            capability="peakcut.evaluate",
-            track=Track.TRACK_1,
-            primary="frontier.reason",
-            fallback=("openai.crosscheck",),
-            max_latency_ms=3000,
-            cost_ceiling=0.04,
-            cache_tier=CacheTier.NONE,
-            max_tokens=600,
-            elevated_only=True,
+        # --- reason: the hard list ------------------------------------------------------
+        # Mathematics goes through the CAS verifier first; this is the model that reads the
+        # result. Its fallback rung is the verify tier, so a check is never marked by the same
+        # provider twice.
+        _policy(
+            "verify.math",
+            Tier.REASON,
+            CacheTier.EXACT,
+            max_latency_ms=8000,
+            cost_ceiling=0.10,
+            max_tokens=1000,
         ),
     )
 }
@@ -270,6 +237,17 @@ def policy(name: str) -> RoutingPolicy:
     return _POLICIES[name]
 
 
+def escalate_for(capability: str, reason: str) -> str | None:
+    """The cost rule, per capability: on a verifier or second-opinion REJECTION, the provider
+    model one tier up — logged with its reason — or ``None`` at the top of the ladder.
+
+    This is the only way a capability may spend more than its tier: an engine that rejects its
+    own draft asks here rather than naming a bigger model itself.
+    """
+    spec = escalate(policy(capability).tier, capability=capability, reason=reason)
+    return spec.provider_model if spec is not None else None
+
+
 def validate_registry() -> None:
     """Fail fast on a malformed registry: track overlap, missing policy, or a model that
     does not resolve. The primary must live on the policy's declared track; fallbacks may
@@ -283,6 +261,8 @@ def validate_registry() -> None:
         resolve(pol.primary, pol.track)
         for name in pol.fallback:
             resolve_any(name)
+        if pol.primary != tier_primary(pol.tier) or pol.fallback != tier_fallbacks(pol.tier):
+            raise RuntimeError(f"{pol.capability} does not route on its declared tier")
 
 
 validate_registry()

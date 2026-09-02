@@ -14,8 +14,38 @@ never raises and the visual proof needs no live data.
 from __future__ import annotations
 
 import html
+import os
 from collections.abc import Callable
 from typing import Any
+
+# --- brand-neutral config (WOBO-PLAN §8) ----------------------------------------------
+# Every user-facing name, link base and legal footer is one environment variable, so the
+# domain swap is a deploy change and never a code change. The defaults are only what the app
+# happens to sit on today.
+APP_NAME = os.getenv("APP_NAME", "Wobo")
+APP_URL = os.getenv("APP_URL", "https://learner.classess.com").rstrip("/")
+# CAN-SPAM and India's DPDP both want a working opt-out and a real postal address on
+# commercial mail. The address has no honest default, so the placeholder says so loudly: it is
+# the owner's to set before EMAIL_MODE=live.
+UNSUBSCRIBE_URL = os.getenv("EMAIL_UNSUBSCRIBE_URL") or f"{APP_URL}/unsubscribe"
+POSTAL_ADDRESS = os.getenv(
+    "EMAIL_POSTAL_ADDRESS", "set EMAIL_POSTAL_ADDRESS before sending live mail"
+)
+
+
+def _link(data: dict[str, Any], key: str, path: str) -> str:
+    """A link the caller may override, otherwise built from ``APP_URL``."""
+    return str(data.get(key) or f"{APP_URL}{path}")
+
+
+def _unsubscribe(data: dict[str, Any]) -> str:
+    """The recipient's own opt-out link. A per-subscriber token belongs in ``data``; the
+    configured list-wide URL is the fallback."""
+    return str(data.get("unsubscribe_url") or UNSUBSCRIBE_URL)
+
+
+def _postal(data: dict[str, Any]) -> str:
+    return str(data.get("postal_address") or POSTAL_ADDRESS)
 
 # --- brand tokens (locked spec) -------------------------------------------------------
 FONT = "'Poppins', 'Helvetica Neue', Arial, sans-serif"
@@ -152,15 +182,22 @@ def _shell(
     body: str,
     cta_label: str,
     cta_url: str,
+    unsubscribe_url: str,
+    postal_address: str,
 ) -> str:
-    """Every email is this: wordmark, heading, body blocks, the one button, sign-off, footer."""
+    """Every email is this: wordmark, heading, body blocks, the one button, sign-off, footer.
+
+    ``unsubscribe_url`` and ``postal_address`` are required, not defaulted: a transactional
+    shell that renders a dead ``{{placeholder}}`` opt-out is a compliance bug that looks fine
+    in review. Every template threads them from the send path (see :func:`_unsubscribe`).
+    """
     return (
         "<!DOCTYPE html>"
         '<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml">'
         '<head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
         '<meta name="x-apple-disable-message-reformatting">'
-        "<title>Wobo</title></head>"
+        f"<title>{_esc(APP_NAME)}</title></head>"
         f'<body style="margin:0;padding:0;background-color:{PAGE};">'
         f'<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;color:{PAGE};'
         f'font-size:1px;line-height:1px;">{_esc(preheader)}</div>'
@@ -172,7 +209,7 @@ def _shell(
         # wordmark
         '<tr><td style="padding:38px 44px 0 44px;">'
         f'<span style="font-family:{FONT};font-size:20px;font-weight:700;letter-spacing:-0.6px;'
-        f'color:{INK};">Wobo</span></td></tr>'
+        f'color:{INK};">{_esc(APP_NAME)}</span></td></tr>'
         '<tr><td style="padding:22px 44px 0 44px;">' + _hairline() + "</td></tr>"
         # heading + body
         '<tr><td style="padding:30px 44px 0 44px;">'
@@ -184,17 +221,17 @@ def _shell(
         # sign-off
         '<tr><td style="padding:26px 44px 34px 44px;">'
         f'<div style="font-family:{CURSIVE};font-size:27px;color:{INK};line-height:1;">'
-        "&mdash; Wobo</div></td></tr>"
+        f"&mdash; {_esc(APP_NAME)}</div></td></tr>"
         '<tr><td style="padding:0 44px;">' + _hairline() + "</td></tr>"
         # footer
         '<tr><td style="padding:22px 44px 36px 44px;">'
         f'<p style="margin:0 0 6px 0;font-family:{FONT};font-size:12px;color:{FOOTER};">'
-        "Wobo &middot; made for curious minds</p>"
+        f"{_esc(APP_NAME)} &middot; made for curious minds</p>"
         f'<p style="margin:0 0 6px 0;font-family:{FONT};font-size:12px;color:{FOOTER};">'
-        "[street address placeholder] &middot; [city, country]</p>"
+        f"{_esc(postal_address)}</p>"
         f'<p style="margin:0;font-family:{FONT};font-size:12px;color:{FOOTER};">'
-        '<a href="{{unsubscribe_url}}" style="color:' + FOOTER + ';text-decoration:underline;">'
-        "unsubscribe</a></p>"
+        f'<a href="{_esc(unsubscribe_url, quote=True)}" style="color:{FOOTER};'
+        'text-decoration:underline;">unsubscribe</a></p>'
         "</td></tr></table></td></tr></table></body></html>"
     )
 
@@ -217,21 +254,23 @@ def account_created(data: dict[str, Any]) -> dict[str, str]:
         heading=f"welcome, {name}",
         body=body,
         cta_label="start your first course",
-        cta_url=data.get("cta_url", "https://learner.classess.com/learn"),
+        cta_url=_link(data, "cta_url", "/learn"),
+        unsubscribe_url=_unsubscribe(data),
+        postal_address=_postal(data),
     )
     text = (
         f"welcome, {data.get('name') or 'there'}\n\n"
         "i'm Wobo, your AI wobot. i'll be the one learning how you think, so every idea meets "
         "you where you are.\n\nthere's nothing to set up. pick something you're curious about and "
         "we'll start there. your first course is on me.\n\n"
-        f"start your first course: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n"
+        f"start your first course: {_link(data, 'cta_url', '/learn')}\n\n"
         "— Wobo\nWobo · made for curious minds"
     )
     return {"subject": "welcome to Wobo", "html": html_out, "text": text}
 
 
 def verify_email(data: dict[str, Any]) -> dict[str, str]:
-    link = data.get("link", "https://learner.classess.com/verify")
+    link = _link(data, "link", "/verify")
     code = _esc(str(data.get("code", "482913")))
     body = (
         _p("tap the button below to confirm your email and open your account. the link works "
@@ -250,6 +289,8 @@ def verify_email(data: dict[str, Any]) -> dict[str, str]:
         body=body,
         cta_label="verify email",
         cta_url=link,
+        unsubscribe_url=_unsubscribe(data),
+        postal_address=_postal(data),
     )
     text = (
         "let's confirm it's you\n\n"
@@ -278,14 +319,16 @@ def course_ready(data: dict[str, Any]) -> dict[str, str]:
         heading=f"your course on {topic} is ready",
         body=body,
         cta_label="open your course",
-        cta_url=data.get("cta_url", "https://learner.classess.com/learn"),
+        cta_url=_link(data, "cta_url", "/learn"),
+        unsubscribe_url=_unsubscribe(data),
+        postal_address=_postal(data),
     )
     text = (
         f"your course on {data.get('topic', 'your topic')} is ready\n\n"
         "i built it for you just now. inside:\n"
         + "".join(f"- {i}\n" for i in inside)
         + "\ncome in when you have ten quiet minutes.\n\n"
-        f"open your course: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Wobo"
+        f"open your course: {_link(data, 'cta_url', '/learn')}\n\n— Wobo"
     )
     return {"subject": f"your course on {data.get('topic', 'your topic')} is ready",
             "html": html_out, "text": text}
@@ -309,13 +352,15 @@ def boss_victory(data: dict[str, Any]) -> dict[str, str]:
         heading=f"you beat the {topic} boss",
         body=body,
         cta_label="see what's next",
-        cta_url=data.get("cta_url", "https://learner.classess.com/learn"),
+        cta_url=_link(data, "cta_url", "/learn"),
+        unsubscribe_url=_unsubscribe(data),
+        postal_address=_postal(data),
     )
     text = (
         f"you beat the {raw_topic} boss\n\n+{data.get('xp', 250)} XP\n\n"
         "that wasn't a quiz, it was the real thing, and you worked it out yourself.\n\n"
         "i've marked what you're solid on and what's worth a revisit later.\n\n"
-        f"see what's next: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Wobo"
+        f"see what's next: {_link(data, 'cta_url', '/learn')}\n\n— Wobo"
     )
     return {"subject": f"you beat the {raw_topic} boss", "html": html_out, "text": text}
 
@@ -339,13 +384,15 @@ def level_up(data: dict[str, Any]) -> dict[str, str]:
         heading=f"level {level}",
         body=body,
         cta_label="keep going",
-        cta_url=data.get("cta_url", "https://learner.classess.com/learn"),
+        cta_url=_link(data, "cta_url", "/learn"),
+        unsubscribe_url=_unsubscribe(data),
+        postal_address=_postal(data),
     )
     text = (
         f"level {data.get('level', 4)}\n\nyou've been showing up, and it shows. what just "
         "opened up:\n" + "".join(f"- {u}\n" for u in unlocked)
         + "\nno rush to use all of it today.\n\n"
-        f"keep going: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Wobo"
+        f"keep going: {_link(data, 'cta_url', '/learn')}\n\n— Wobo"
     )
     return {"subject": f"you reached level {data.get('level', 4)}", "html": html_out, "text": text}
 
@@ -365,13 +412,15 @@ def streak_milestone(data: dict[str, Any]) -> dict[str, str]:
         heading=f"{days} days of being a learner",
         body=body,
         cta_label="continue your streak",
-        cta_url=data.get("cta_url", "https://learner.classess.com/learn"),
+        cta_url=_link(data, "cta_url", "/learn"),
+        unsubscribe_url=_unsubscribe(data),
+        postal_address=_postal(data),
     )
     text = (
         f"{data.get('days', 24)} days of being a learner\n\n"
         f"that's {data.get('days', 24)} days you chose to think a little harder than you had "
         "to.\n\nif you need a rest day, take it. i'll hold your place.\n\n"
-        f"continue: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Wobo"
+        f"continue: {_link(data, 'cta_url', '/learn')}\n\n— Wobo"
     )
     return {"subject": f"{data.get('days', 24)} days of being a learner",
             "html": html_out, "text": text}
@@ -404,14 +453,16 @@ def weekly_digest(data: dict[str, Any]) -> dict[str, str]:
         heading=f"your week, {name}",
         body=body,
         cta_label="pick up where you left off",
-        cta_url=data.get("cta_url", "https://learner.classess.com/learn"),
+        cta_url=_link(data, "cta_url", "/learn"),
+        unsubscribe_url=_unsubscribe(data),
+        postal_address=_postal(data),
     )
     text = (
         f"your week, {data.get('name') or 'there'}\n\n"
         f"+{data.get('xp', 640)} xp · {len(topics)} topics · {data.get('minutes', 82)}m\n\n"
         + "".join(f"- {lbl}: {val} ({pct}%)\n" for lbl, val, pct in bars)
         + f"\n{data.get('line', '')}\n\n"
-        f"pick up: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Wobo"
+        f"pick up: {_link(data, 'cta_url', '/learn')}\n\n— Wobo"
     )
     return {"subject": f"your week, {data.get('name') or 'there'}", "html": html_out, "text": text}
 
@@ -447,14 +498,16 @@ def parent_report(data: dict[str, Any]) -> dict[str, str]:
         heading=f"{learner}'s week",
         body=body,
         cta_label="see the full picture",
-        cta_url=data.get("cta_url", "https://learner.classess.com/parent"),
+        cta_url=_link(data, "cta_url", "/parent"),
+        unsubscribe_url=_unsubscribe(data),
+        postal_address=_postal(data),
     )
     text = (
         f"{data.get('learner_name', 'your child')}'s week\n\nstrengths:\n"
         + "".join(f"- {lbl}: {val} ({pct}%)\n" for lbl, val, pct in strengths)
         + "\nworth a nudge: " + ", ".join(focus) + "\n\n"
         f"trajectory: {data.get('trajectory', '')}\n\n"
-        f"see the full picture: {data.get('cta_url', 'https://learner.classess.com/parent')}\n\n"
+        f"see the full picture: {_link(data, 'cta_url', '/parent')}\n\n"
         "— Wobo"
     )
     return {"subject": f"{data.get('learner_name', 'your child')}'s week at Wobo",
@@ -478,13 +531,15 @@ def reengage(data: dict[str, Any]) -> dict[str, str]:
         heading=f"it's been a minute, {name}",
         body=body,
         cta_label="come back to it",
-        cta_url=data.get("cta_url", "https://learner.classess.com/learn"),
+        cta_url=_link(data, "cta_url", "/learn"),
+        unsubscribe_url=_unsubscribe(data),
+        postal_address=_postal(data),
     )
     text = (
         f"it's been a minute, {data.get('name') or 'there'}\n\n"
         "no guilt here. but you left something half-finished, the good kind.\n\n"
         f"{data.get('hook', '')}\n\ngive it ten minutes. i'll pick up where we stopped.\n\n"
-        f"come back: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Wobo"
+        f"come back: {_link(data, 'cta_url', '/learn')}\n\n— Wobo"
     )
     return {"subject": f"it's been a minute, {data.get('name') or 'there'}",
             "html": html_out, "text": text}
@@ -508,14 +563,16 @@ def premium_surprise(data: dict[str, Any]) -> dict[str, str]:
         heading=f"a gift for you, {name}",
         body=body,
         cta_label="enjoy premium",
-        cta_url=data.get("cta_url", "https://learner.classess.com/learn"),
+        cta_url=_link(data, "cta_url", "/learn"),
+        unsubscribe_url=_unsubscribe(data),
+        postal_address=_postal(data),
     )
     text = (
         f"a gift for you, {data.get('name') or 'there'}\n\n{data.get('days', 14)} days of "
         f"premium\n\n{data.get('reason', '')}, so i've unlocked {data.get('days', 14)} days "
         "of premium for you, no strings.\n\ngo deeper, follow a rabbit hole, build something "
         "out of syllabus.\n\n"
-        f"enjoy premium: {data.get('cta_url', 'https://learner.classess.com/learn')}\n\n— Wobo"
+        f"enjoy premium: {_link(data, 'cta_url', '/learn')}\n\n— Wobo"
     )
     return {"subject": f"a gift: {data.get('days', 14)} days of premium",
             "html": html_out, "text": text}

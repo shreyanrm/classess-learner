@@ -6,9 +6,19 @@ tier is NEVER read from a request. It is looked up here, keyed by the verified s
 handed to the gateway as its own argument.
 
 Source of truth is Supabase, read over PostgREST with the service-role key (server-side
-only, never in a client bundle). Unknown subject, unreachable database, no configuration at
-all: the answer is the least-privilege default — un-elevated, free plan. Anonymous learners
-skip the lookup entirely; they have no stored record and no elevated capabilities.
+only, never in a client bundle). The row is ``learner.profiles_cache`` keyed by ``subject_id``
+(migration 0002, with ``plan`` added by 0006) — the live project has no ``public.profiles``
+table, and a lookup pointed at one that does not exist is a silent downgrade of every learner
+to the default. The ``learner`` schema is reached with PostgREST's ``Accept-Profile`` header;
+migration 0005 exposes it (``pgrst.db_schemas``). Unknown subject, unreachable database, no
+configuration at all: the answer is the least-privilege default — un-elevated, free plan.
+Anonymous learners skip the lookup entirely; they have no stored record and no elevated
+capabilities.
+
+``profiles_cache`` carries no address column (canonical identity lives in ``pii_vault`` on the
+platform plane), so :func:`account_email` returns ``None`` until a governed address view
+exists — and every caller that passes a subject fails CLOSED on that, which is the right way
+round for mail.
 
 ponytail: a five-minute in-process cache with a hard entry ceiling. One instance today; the
 upgrade path is the same Redis that takes the budget meter.
@@ -34,8 +44,10 @@ _CACHE_TTL_S = 300.0
 _CACHE_MAX = 4096
 _HTTP_TIMEOUT_S = 5.0
 
-# Stored values that mean "a grown-up has consented to the elevated tier". Anything else —
-# "basic", empty, missing, a typo, a value we have never seen — falls to un-elevated.
+# The database constrains consent_tier to ('un_elevated','elevated') and plan to
+# ('free','plus'), so those two are the values that actually arrive. The wider sets are read
+# tolerance, not policy: anything else — "un_elevated", "basic", empty, missing, a typo, a
+# value we have never seen — falls to the least-privilege side.
 _ELEVATED_VALUES = frozenset({"elevated", "full", "parental", "verified"})
 _PLUS_VALUES = frozenset({"plus", "pro", "paid", "premium"})
 
@@ -44,6 +56,12 @@ _PLUS_VALUES = frozenset({"plus", "pro", "paid", "premium"})
 _TIER_COLUMNS = ("consent_tier", "tier", "consent")
 _PLAN_COLUMNS = ("plan", "subscription", "tier_plan")
 _EMAIL_COLUMNS = ("email", "email_address", "contact_email")
+
+# The live schema (infra/supabase/migrations/0002 + 0006). Overridable, because a deploy that
+# moves the profile behind a governed view should not need a code change.
+_DEFAULT_SCHEMA = "learner"
+_DEFAULT_TABLE = "profiles_cache"
+_DEFAULT_ID_COLUMN = "subject_id"
 
 _cache: dict[str, tuple[float, Profile]] = {}
 
@@ -84,8 +102,8 @@ def _rest_url(subject: str) -> str | None:
     base = os.getenv("SUPABASE_URL")
     if not base:
         return None
-    table = os.getenv("SUPABASE_CONSENT_TABLE", "profiles")
-    column = os.getenv("SUPABASE_CONSENT_ID_COLUMN", "id")
+    table = os.getenv("SUPABASE_CONSENT_TABLE", _DEFAULT_TABLE)
+    column = os.getenv("SUPABASE_CONSENT_ID_COLUMN", _DEFAULT_ID_COLUMN)
     query = urllib.parse.urlencode(
         {"select": "*", column: f"eq.{subject}", "limit": "1"}, quote_via=urllib.parse.quote
     )
@@ -103,9 +121,9 @@ def fetch_profile(subject: str) -> Profile | None:
         "Authorization": f"Bearer {key}",
         "Accept": "application/json",
     }
-    schema = os.getenv("SUPABASE_CONSENT_SCHEMA")
-    if schema:  # e.g. the learner.consent table lives in the "learner" schema
-        headers["Accept-Profile"] = schema
+    # PostgREST selects the schema by header, not by a dotted table name. Without this every
+    # read lands in `public`, where the profile does not live.
+    headers["Accept-Profile"] = os.getenv("SUPABASE_CONSENT_SCHEMA", _DEFAULT_SCHEMA)
     request = urllib.request.Request(url, headers=headers)
     try:
         with urllib.request.urlopen(request, timeout=_HTTP_TIMEOUT_S) as response:  # noqa: S310

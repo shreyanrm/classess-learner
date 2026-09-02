@@ -824,8 +824,7 @@ export function You() {
     const via = profile.name.toLowerCase().replace(/\s+/g, '-');
     // Brand-neutral by construction (WOBO-PLAN §8): the invite points at wherever this app is
     // actually served, so the domain is one env change and never a name baked into a screen.
-    const origin =
-      (import.meta.env.VITE_PUBLIC_ORIGIN as string | undefined) ?? window.location.origin;
+    const origin = (import.meta.env.VITE_APP_URL as string | undefined) || window.location.origin;
     const link = `${origin}/join?via=${encodeURIComponent(via)}&as=${kind}`;
     navigator.clipboard.writeText(link).catch(() => {
       // clipboard unavailable — the invitation still stands

@@ -63,7 +63,16 @@ from classess_gateway.voice import register_voice
 
 logger = logging.getLogger("classess.gateway")
 
-_PROD_ORIGIN = "https://learner.classess.com"
+# Brand-neutral by config (WOBO-PLAN §8): the canonical origin is one environment variable, so
+# the domain swap is a deploy change and never a code change. The default is only the host the
+# app happens to sit on today.
+APP_NAME = os.getenv("APP_NAME", "Wobo")
+APP_URL = os.getenv("APP_URL", "https://learner.classess.com").rstrip("/")
+# Our own preview builds — ephemeral per-deploy origins, pattern-matched. Also config: a
+# different Vercel project or team is a different pattern.
+_PREVIEW_ORIGIN_REGEX = os.getenv(
+    "APP_PREVIEW_ORIGIN_REGEX", r"https://classess-learner-[a-z0-9]+-depl-shreyan\.vercel\.app"
+)
 _DEV_ORIGINS = ("http://localhost:5173", "http://localhost:5174", "http://localhost:4173")
 
 
@@ -126,8 +135,8 @@ def validate_env() -> None:
 def _cors_origins() -> list[str]:
     # Locked: localhost is a dev convenience and must never reach prod's allowlist.
     if os.getenv("ENV", "dev").lower() == "prod":
-        return [_PROD_ORIGIN]
-    return [_PROD_ORIGIN, *_DEV_ORIGINS]
+        return [APP_URL]
+    return [APP_URL, *_DEV_ORIGINS]
 
 
 class ConsentDenied(Exception):
@@ -407,7 +416,7 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
     # the internal email relay included. Useful in dev, an unauthenticated map in prod.
     public_docs = os.getenv("ENV", "dev").lower() != "prod"
     app = FastAPI(
-        title="Wobo model gateway",
+        title=f"{APP_NAME} model gateway",
         version="0.0.0",
         docs_url="/docs" if public_docs else None,
         redoc_url="/redoc" if public_docs else None,
@@ -535,8 +544,7 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=_cors_origins(),
-        # Our own Vercel preview builds — ephemeral per-deploy origins, pattern-matched.
-        allow_origin_regex=r"https://classess-learner-[a-z0-9]+-depl-shreyan\.vercel\.app",
+        allow_origin_regex=_PREVIEW_ORIGIN_REGEX,
         allow_methods=["*"],
         allow_headers=["*"],
     )

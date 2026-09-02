@@ -19,10 +19,21 @@ from classess_gateway.registry import (
     EXPECTED_CAPABILITIES,
     ConsentTier,
     capabilities,
+    escalate_for,
     policy,
     validate_registry,
 )
-from classess_gateway.routing import Track, models_for, resolve, track_separation_holds
+from classess_gateway.routing import (
+    Tier,
+    Track,
+    escalate,
+    models_for,
+    resolve,
+    resolve_any,
+    tier_fallbacks,
+    tier_model,
+    track_separation_holds,
+)
 from classess_gateway.telemetry import MetricsSink
 
 ELEVATED_ONLY = ("archetype.classify", "peakcut.evaluate")
@@ -57,12 +68,86 @@ def test_tracks_are_never_conflated() -> None:
     for name in capabilities():
         pol = policy(name)
         assert resolve(pol.primary, pol.track).track is pol.track
-    # routine volume targets track 2; the live tutor turn rides frontier (uncached,
-    # per the 2026-07-06 routing law) until the real tutor SLM fills its slot
-    assert policy("wobo.turn").track is Track.TRACK_1
-    assert policy("wobo.turn").cache_tier.value == "none"
-    assert policy("grade.attempt").track is Track.TRACK_2
-    assert policy("verify.math").track is Track.TRACK_1
+    # Every capability routes on a Track-1 tier today: the Track-2 SLM slots are declared but
+    # unfilled, and routing a live learner at a placeholder id bought an error on every call.
+    for name in capabilities():
+        assert policy(name).track is Track.TRACK_1
+    assert policy("wobo.turn").cache_tier.value == "none"  # a live turn is never cached
+
+
+# --- the owner's tiers (WOBO-PLAN §9) -------------------------------------------------
+TIER_TABLE = {
+    Tier.TINY: ("openai/gpt-5.6-luna", "anthropic/claude-haiku-4-5"),
+    Tier.TURN: ("anthropic/claude-sonnet-5", "openai/gpt-5.6-terra"),
+    Tier.GENERATE: ("openai/gpt-5.6-terra", "anthropic/claude-opus-5"),
+    Tier.REASON: ("openai/gpt-5.6-sol", "anthropic/claude-opus-5"),
+    Tier.VERIFY: ("anthropic/claude-opus-5", "openai/gpt-5.6-terra"),
+}
+
+
+@pytest.mark.parametrize("tier,expected", TIER_TABLE.items(), ids=lambda v: getattr(v, "value", ""))
+def test_each_tier_resolves_to_the_owners_models(tier: Tier, expected: tuple[str, str]) -> None:
+    primary, fallback = expected
+    assert tier_model(tier).provider_model == primary
+    assert [resolve_any(n).provider_model for n in tier_fallbacks(tier)] == [fallback]
+
+
+def test_every_fallback_crosses_providers() -> None:
+    """A second opinion from the same provider is not a second opinion."""
+    for tier in TIER_TABLE:
+        primary = tier_model(tier).provider_model.split("/")[0]
+        for name in tier_fallbacks(tier):
+            assert resolve_any(name).provider_model.split("/")[0] != primary
+
+
+RETIRED = ("claude-opus-4-8", "gpt-5.5", "gpt-4.1")
+
+
+def test_the_retired_models_are_gone_from_the_router() -> None:
+    """Owner, 2026-09-02: Opus 4.8, GPT-5.5 and GPT-4.1 are retired from the router."""
+    live = {m.provider_model for m in models_for(Track.TRACK_1).values()}
+    live |= {m.provider_model for m in models_for(Track.TRACK_2).values()}
+    for retired in RETIRED:
+        assert not any(retired in model for model in live), retired
+    for name in capabilities():
+        pol = policy(name)
+        resolved = [resolve(pol.primary, pol.track).provider_model]
+        resolved += [resolve_any(n).provider_model for n in pol.fallback]
+        for retired in RETIRED:
+            assert not any(retired in model for model in resolved), (name, retired)
+
+
+def test_every_capability_declares_a_tier_and_routes_on_it() -> None:
+    for name in capabilities():
+        pol = policy(name)
+        assert pol.tier in TIER_TABLE, name  # voice and image have no capability of their own
+        assert resolve(pol.primary, pol.track).provider_model == TIER_TABLE[pol.tier][0]
+        assert pol.max_tokens > 0 and pol.cost_ceiling > 0 and pol.max_latency_ms > 0
+
+
+def test_the_cost_rule_escalates_one_tier_and_logs_the_reason(caplog) -> None:
+    """Generation runs on the cheapest model that passes verification; a rejection escalates
+    ONE rung, and the reason is logged so the hard list stays honest."""
+    import logging
+
+    with caplog.at_level(logging.INFO, logger="classess.gateway.telemetry"):
+        escalated = escalate_for("engine.compose", "verifier rejected the derivation")
+    assert escalated == TIER_TABLE[Tier.REASON][0]  # generate -> reason, not straight to the top
+    line = next(r for r in caplog.records if r.getMessage() == "gateway.escalation")
+    assert line.fields["reason"] == "verifier rejected the derivation"
+    assert line.fields["from_tier"] == "generate" and line.fields["to_tier"] == "reason"
+
+
+def test_the_top_of_the_ladder_does_not_escalate() -> None:
+    assert escalate(Tier.VERIFY, capability="verify.math", reason="rejected") is None
+
+
+def test_the_plexus_engines_legacy_names_land_on_the_right_rungs() -> None:
+    """plexus.engines._spawn_validation resolves these two by name (that module is not this
+    wave's to edit). The JUDGE must be the verify tier — always the other provider from the
+    GPT-5.6 generator — and the REBUILD target one rung above generate, the reason tier."""
+    assert resolve("frontier.reason", Track.TRACK_1).provider_model == TIER_TABLE[Tier.VERIFY][0]
+    assert resolve("openai.frontier", Track.TRACK_1).provider_model == TIER_TABLE[Tier.REASON][0]
 
 
 # --- consent-tier gating --------------------------------------------------------------
@@ -91,7 +176,7 @@ def test_mock_is_deterministic_across_fresh_gateways() -> None:
     r2 = make_gateway().invoke("grade.attempt", req(ConsentTier.UN_ELEVATED, attempt="2x=4"))
     assert r1.output == r2.output
     assert r1.model == r2.model
-    assert r1.track == "track_2"
+    assert r1.track == "track_1"
     assert r1.cache_hit is False and r2.cache_hit is False
     assert r1.tokens == r2.tokens
 
@@ -123,27 +208,25 @@ def test_grade_attempt_live_returns_correct_and_feedback(monkeypatch) -> None:
                 message=types.SimpleNamespace(content='{"correct": true, "feedback": "clean work"}')
             )
         ],
-        model="anthropic/claude-opus-4-8",  # the fallback answered (the placeholder failed over)
+        model="openai/gpt-5.6-terra",  # the fallback answered, not the primary
         usage=types.SimpleNamespace(total_tokens=42),
     )
     fake.completion = lambda **kwargs: resp_obj
     monkeypatch.setitem(sys.modules, "litellm", fake)
 
     out = _grade_attempt(
-        provider_model="classess/grade-slm",
+        provider_model="anthropic/claude-sonnet-5",
         payload={"prompt": "2x = 4", "answer": "2"},
-        fallbacks=("anthropic/claude-opus-4-8",),
+        fallbacks=("openai/gpt-5.6-terra",),
     )
     assert out.output == {"correct": True, "feedback": "clean work"}
     assert out.tokens == 42
-    assert (
-        out.model == "anthropic/claude-opus-4-8"
-    )  # telemetry gets the real model, not the placeholder
+    assert out.model == "openai/gpt-5.6-terra"  # telemetry gets the model that answered
 
 
 def test_gateway_reports_the_model_that_actually_answered_on_fallback() -> None:
     """When a provider reports a fallback model, telemetry and the response carry IT — never the
-    Track-2 placeholder primary that never ran."""
+    tier primary that never ran."""
     from classess_gateway.providers import ProviderResponse
 
     class FallbackProvider:
@@ -151,19 +234,19 @@ def test_gateway_reports_the_model_that_actually_answered_on_fallback() -> None:
             return ProviderResponse(
                 output={"correct": True, "feedback": "ok"},
                 tokens=5,
-                model="anthropic/claude-opus-4-8",
+                model="openai/gpt-5.6-terra",
             )
 
     sink = MetricsSink()
     gw = Gateway(FallbackProvider(), InMemoryCache(), sink)
     resp = gw.invoke("grade.attempt", req(ConsentTier.UN_ELEVATED, attempt="2x=4"))
-    # the policy primary is the grade SLM placeholder; the fallback (Opus) actually answered
+    # the policy primary is the turn tier; the fallback rung actually answered
     assert (
         resolve(policy("grade.attempt").primary, policy("grade.attempt").track).provider_model
-        == "classess/grade-slm"
+        == "anthropic/claude-sonnet-5"
     )
-    assert resp.model == "anthropic/claude-opus-4-8"
-    assert sink.events[-1].model == "anthropic/claude-opus-4-8"
+    assert resp.model == "openai/gpt-5.6-terra"
+    assert sink.events[-1].model == "openai/gpt-5.6-terra"
 
 
 def test_peakcut_never_caches() -> None:
@@ -214,7 +297,7 @@ def test_http_surface(auth) -> None:
         headers=headers,
     )
     assert ok.status_code == 200
-    assert ok.json()["track"] == "track_2"
+    assert ok.json()["track"] == "track_1"
 
     unknown = client.post(
         "/v1/capability/nope.turn",

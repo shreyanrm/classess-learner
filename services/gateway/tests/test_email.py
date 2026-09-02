@@ -27,6 +27,46 @@ def test_every_template_renders(kind: str) -> None:
     assert "&mdash; Wobo" in html  # the sign-off
 
 
+@pytest.mark.parametrize("kind", KINDS)
+def test_the_footer_carries_a_real_opt_out_and_postal_address(
+    kind: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A transactional shell that renders a dead ``{{placeholder}}`` opt-out is a compliance bug
+    that looks fine in review. Both come from the send path, both are configurable."""
+    import importlib
+
+    monkeypatch.setenv("APP_URL", "https://example.test")
+    monkeypatch.setenv("EMAIL_POSTAL_ADDRESS", "12 Example Road, Bengaluru 560001, India")
+    monkeypatch.delenv("EMAIL_UNSUBSCRIBE_URL", raising=False)
+    templates = importlib.reload(importlib.import_module("classess_gateway.email_templates"))
+    try:
+        html = templates.render(kind)["html"]
+        assert 'href="https://example.test/unsubscribe"' in html
+        assert "12 Example Road, Bengaluru 560001, India" in html
+        assert "{{" not in html and "placeholder" not in html
+        # a per-recipient opt-out token overrides the list-wide URL
+        one = templates.render(kind, {"unsubscribe_url": "https://example.test/u/tok3n"})["html"]
+        assert 'href="https://example.test/u/tok3n"' in one
+    finally:
+        importlib.reload(templates)
+
+
+def test_every_link_follows_APP_URL(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The domain swap is one environment variable (WOBO-PLAN §8) — no CTA is hardcoded."""
+    import importlib
+
+    monkeypatch.setenv("APP_URL", "https://example.test/")
+    templates = importlib.reload(importlib.import_module("classess_gateway.email_templates"))
+    try:
+        for kind in templates.KINDS:
+            out = templates.render(kind)
+            assert "classess.com" not in out["html"], kind
+            assert "classess.com" not in out["text"], kind
+            assert "https://example.test/" in out["html"], kind
+    finally:
+        importlib.reload(templates)
+
+
 def test_there_are_ten_templates() -> None:
     assert len(KINDS) == 10
 
@@ -94,6 +134,24 @@ def test_endpoint_403s_with_wrong_internal_header(monkeypatch: pytest.MonkeyPatc
     body = {"kind": "account_created", "to": "a@b.com", "consent_tier": "elevated", "data": {}}
     r = client.post("/v1/email/send", json=body, headers={"X-Classess-Internal": "wrong"})
     assert r.status_code == 403
+
+
+def test_a_non_ascii_internal_header_is_a_403_not_a_500(monkeypatch: pytest.MonkeyPatch) -> None:
+    """secrets.compare_digest raises TypeError on a non-ASCII str, so the comparison happens on
+    BYTES. An unauthenticated caller must never be able to choose the error class: one accented
+    character used to turn a refusal into a 500, which is a probe, not a mistake."""
+    from fastapi.testclient import TestClient
+
+    monkeypatch.setenv("INTERNAL_EMAIL_KEY", "test-internal-key")
+    client = TestClient(create_app())
+    body = {"kind": "account_created", "to": "a@b.com", "data": {}}
+    # Header bytes on the wire; starlette decodes them latin-1, so the handler sees a str that
+    # str.encode("ascii") — and therefore compare_digest — would refuse.
+    for header in ("tëst-internal-key", "test-internal-key\u00ff", "ÿÿÿ"):
+        raw = {"X-Classess-Internal": header.encode("latin-1")}
+        r = client.post("/v1/email/send", json=body, headers=raw)
+        assert r.status_code == 403, header
+        assert r.json()["detail"]["code"] == "not_allowed"
 
 
 def test_endpoint_403s_when_the_internal_key_is_unset(monkeypatch: pytest.MonkeyPatch) -> None:

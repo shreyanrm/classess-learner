@@ -448,10 +448,10 @@ def test_a_served_engine_artifact_carries_no_model_id(cache_root: Path) -> None:
             "artifact": {},
             "provenance": {
                 "engine": "engine.compose",
-                "model": "anthropic/claude-opus-4-8",
+                "model": "anthropic/claude-opus-5",
                 "prompt_version": store.PROMPT_VERSION,
                 "validation": {
-                    "model": "anthropic/claude-opus-4-8",
+                    "model": "anthropic/claude-opus-5",
                     "score": 90,
                     "validatedAt": "t",
                 },
@@ -677,6 +677,50 @@ def test_a_manifest_output_outside_the_cache_is_refused(cache_root: Path) -> Non
         json.dumps({"output": "../../../escaped.mp4"})
     )
     assert engines._rendered_url("fractions", "video", "core", {}) is None
+
+
+# --- 13b. the brand lives in the environment, never in a module --------------------------
+GATEWAY_SRC = Path(__file__).resolve().parents[1] / "src" / "classess_gateway"
+
+
+def test_no_gateway_module_hardcodes_the_domain() -> None:
+    """WOBO-PLAN §8: hostnames, sender addresses and titles come from the environment, so the
+    domain swap is one config change. A literal is allowed in exactly one place — as the second
+    argument to ``os.getenv``, which is the documented default and is overridden on the host."""
+    offenders: list[str] = []
+    for path in sorted(GATEWAY_SRC.rglob("*.py")):
+        for number, line in enumerate(path.read_text().splitlines(), 1):
+            if "classess.com" not in line:
+                continue
+            if "os.getenv(" in line:
+                continue  # an env default, which is the whole point
+            offenders.append(f"{path.relative_to(GATEWAY_SRC)}:{number}: {line.strip()}")
+    assert not offenders, "hardcoded domain outside an env default:\n" + "\n".join(offenders)
+
+
+def test_the_env_defaults_are_all_overridable(monkeypatch) -> None:
+    """Every default the test above tolerates must actually yield to its variable."""
+    import importlib
+
+    monkeypatch.setenv("APP_URL", "https://swapped.example")
+    monkeypatch.setenv("APP_NAME", "Swapped")
+    monkeypatch.setenv("EMAIL_FROM", "Swapped <hi@swapped.example>")
+    monkeypatch.setenv("EMAIL_REPLY_TO", "hello@swapped.example")
+    modules = ["classess_gateway.app", "classess_gateway.email", "classess_gateway.email_templates"]
+    reloaded = [importlib.reload(importlib.import_module(name)) for name in modules]
+    try:
+        app_mod, email_mod, templates = reloaded
+        assert app_mod.APP_URL == "https://swapped.example"
+        assert app_mod.APP_NAME == "Swapped"
+        assert app_mod._cors_origins()[0] == "https://swapped.example"
+        assert email_mod._FROM == "Swapped <hi@swapped.example>"
+        assert email_mod._REPLY_TO == "hello@swapped.example"
+        html = templates.render("account_created")["html"]
+        assert "classess.com" not in html and "https://swapped.example/learn" in html
+        assert "Swapped" in html
+    finally:
+        for name in modules:
+            importlib.reload(importlib.import_module(name))
 
 
 # --- 14. the address the limiter counts is not caller-controlled -------------------------

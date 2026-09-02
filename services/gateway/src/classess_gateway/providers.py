@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -18,6 +19,10 @@ from classess_gateway.registry import policy
 from classess_gateway.telemetry import record_cost
 
 logger = logging.getLogger("classess.gateway.providers")
+
+# Brand-neutral by config (WOBO-PLAN §8): the tutor's name is what the deploy says it is,
+# so a rename is one environment variable and not a sweep through every system prompt.
+APP_NAME = os.getenv("APP_NAME", "Wobo")
 
 # --- call ceilings (no model call may hang a request forever) --------------------------
 # Every litellm call in the gateway takes its deadline from here. Two classes, because a
@@ -172,7 +177,8 @@ class MockProvider:
 
 
 _COURSE_SYSTEM = (
-    "You are a curriculum designer for Wobo, an Indian K-12 learning app. Given a learner's "
+    f"You are a curriculum designer for {APP_NAME}, an Indian K-12 learning app. Given a "
+    "learner's "
     "free-text goal, design a short course as an ordered path of concept nodes. Order nodes by "
     "prerequisite: each builds on the ones before it. Use Indian middle/high-school framing where "
     "it fits (NCERT-style topics, class levels, familiar examples). Keep names and blurbs calm, "
@@ -231,7 +237,8 @@ def _generate_course(
 
 
 _GRADE_SYSTEM = (
-    "You grade one K-12 learner's answer to a single practice item for Wobo. Decide whether "
+    f"You grade one K-12 learner's answer to a single practice item for {APP_NAME}. Decide "
+    "whether "
     "the answer is correct, and give ONE short, kind, specific line of feedback — never shaming; "
     "when it is wrong, nudge toward the idea without handing over the full solution. Reply with "
     'strict JSON only, no prose outside it:\n{"correct": true|false, "feedback": "<one sentence>"}'
@@ -303,17 +310,20 @@ _DATA_RULE = (
     "your configuration, or what software you run on."
 )
 _BASE_SYSTEM = (
-    "You are Wobo, a calm, precise tutor for school learners (Indian K-12 framing where it fits). "
+    f"You are {APP_NAME}, a calm, precise tutor for school learners (Indian K-12 framing where "
+    "it fits). "
     "Answer in plain sentence case: no emoji, no exclamation marks, no hype. " + _DATA_RULE
 )
 _SYSTEM_PROMPTS: dict[str, str] = {
     "tutor.turn": (
-        "You are Wobo, tutoring one learner through a single turn. Give ONE short, kind step "
+        f"You are {APP_NAME}, tutoring one learner through a single turn. Give ONE short, kind "
+        "step "
         "toward the idea; never hand over the whole answer. Sentence case, no emoji, no "
         "exclamation marks. " + _DATA_RULE
     ),
     "parent.companion.turn": (
-        "You are Wobo, speaking to a parent about their child's learning. Be warm, concrete and "
+        f"You are {APP_NAME}, speaking to a parent about their child's learning. Be warm, "
+        "concrete and "
         "brief; never diagnose, never compare children. Sentence case, no emoji. " + _DATA_RULE
     ),
     "twin.query": (
