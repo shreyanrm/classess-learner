@@ -118,9 +118,23 @@ Web first. Store apps for iOS and Android, phones and tablets, via Capacitor (ow
 - Supabase project `keepraxqagzgjrrweryt` is paused; restoring it is an owner dashboard action unless the CLI is authorised.
 - CI runs on `the-life`, builds the web app, runs unit and Playwright suites, and the Python suites, every push.
 
-## 9. Model routing and cost
+## 9. Model routing and cost (owner directive 2026-09-02)
 
-Development: Fable orchestrates, designs (all UI and creative direction is Fable's hand), and writes the crown jewels; Opus does the bulk; Sonnet the cheap labour. Unrelated waves run simultaneously as dynamic workflows when their files do not overlap. In product: the frontier model composes board plans and lessons; a fast model drives turns; a voice model speaks; all behind the brain's router, never named to the user. Every turn, discovery job, and generation draws on the budget meter. Free by default with metered usage, upgrade for more; only dummy prices appear in code or screens until the owner sets real ones.
+Development: Fable orchestrates, designs (all UI and creative direction is Fable's hand), and writes the crown jewels; Opus does the bulk; Sonnet the cheap labour. Unrelated waves run simultaneously as dynamic workflows when their files do not overlap.
+
+In product, the brain routes by tier, never by name to the user. Generation runs on OpenAI's GPT-5.6 family; the latest Claude models cross-check and carry the conversation; Gemini stays as is for voice and imagery. Cheaper models take everything basic. Prices are per million tokens as of September 2026 (Sol $5 in / $30 out; Terra $2 / $12; Luna $0.20 / $1.20).
+
+| Tier | Jobs | Primary | Fallback |
+|---|---|---|---|
+| tiny | intent classification, routing, safety pre-screen, titles and summaries, alias and catalog matching, packet compression | `openai/gpt-5.6-luna` | `anthropic/claude-haiku-4-5` |
+| turn | Wobo's conversational turns, on-screen explanations, hints, "why is this wrong" | `anthropic/claude-sonnet-5` | `openai/gpt-5.6-terra` |
+| generate | board plans, lessons, practice items, workbooks, syllabus extraction, discovery jobs | `openai/gpt-5.6-terra` | `anthropic/claude-opus-5` |
+| reason | synthesis boss battles, misconception detonation, first extraction of a new board's syllabus, grading escalations | `openai/gpt-5.6-sol` | `anthropic/claude-opus-5` |
+| verify | second-opinion cross-check of anything generated (always the other provider); math goes through CAS first | `anthropic/claude-opus-5` | `openai/gpt-5.6-terra` |
+| voice | live voice, streaming TTS | Gemini 2.5 Flash native audio (unchanged) | — |
+| image | imagery SVG cannot express | Gemini 2.5 Flash Image (unchanged) | — |
+
+Retired from the router: Claude Opus 4.8, GPT-5.5, GPT-4.1. `claude-fable-5-1` is available on the key but reserved; it is not in the product router until a job proves it needs it. The budget meter counts every tier; free by default with metered usage, upgrade for more; only dummy prices appear in code or screens until the owner sets real ones.
 
 ## 10. Waves
 

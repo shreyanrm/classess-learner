@@ -57,3 +57,23 @@ supabase/.temp/
 
 # --- Deploy CLI state ---
 .vercel
+
+# QA / automation artifacts (Wave 4)
+xbrowser/
+respdiag/
+shots/
+.playwright-mcp/
+test-results/
+playwright-report/
+
+# generated content cache (regenerable; PLEXUS_CACHE_DIR relocates it)
+content/cache/
+
+# ad-hoc dev screenshots and renders at the repo root
+/*.png
+/*.jpeg
+/*.jpg
+/*.mp4
+
+# local env-flipping helpers
+scripts/*-env.sh
