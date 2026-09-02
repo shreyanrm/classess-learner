@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * GeneratedImage — renders an engine.image result (Gemini imagery for what SVG cannot express,
+ * GeneratedImage — renders an engine.image result (generated imagery for what SVG cannot express,
  * DESIGN.md §9) with a graceful pending state: the frame is present and calm from the first
  * paint, the image fades in when it lands, and a refusal stays quiet — never an error state.
  */

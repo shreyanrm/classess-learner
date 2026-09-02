@@ -3,10 +3,11 @@
 /**
  * Wobo speaks what she writes. Every reply plays aloud through the gateway's TTS (the same
  * voice as the live relay), starting as her ink starts — one performance, sound and hand
- * together. Mute silences the sound only, never the words; the mic conversation (Gemini Live)
- * always speaks back and ignores this switch entirely.
+ * together. Mute silences the sound only, never the words; the mic conversation always speaks
+ * back and ignores this switch entirely.
  */
 
+import { gatewayFetch, mintVoiceToken, voiceSocketUrl } from '@classess/sdk';
 import {
   planPerformance,
   useWoboBus,
@@ -128,7 +129,9 @@ async function synth(
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TTS_TIMEOUT_MS);
   try {
-    const res = await fetch(`${GATEWAY_URL}/v1/voice/tts`, {
+    // Identity rides every gateway call (gatewayFetch); the brain decides whether this learner has
+    // a voice left today. A refusal is just silence here — the words are already on screen.
+    const res = await gatewayFetch(`${GATEWAY_URL}/v1/voice/tts`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ text: text.slice(0, 600) }),
@@ -197,7 +200,7 @@ async function playSamples(
  * `onDone` fires once the last sentence finishes (used to gate the course's advance button).
  */
 /**
- * Stream the whole line through the gateway's Gemini Live socket — playback starts at the first
+ * Stream the whole line through the gateway's voice socket — playback starts at the first
  * ~200 ms audio chunk instead of waiting on the full clip (~4 s sooner to first sound; verified
  * verbatim so she reads the exact line). Resolves `true` once audio has begun (the caller is done),
  * `false` if it can't start — the caller then falls back to the buffered path, so voice never
@@ -213,7 +216,15 @@ async function speakStream(
   if (!ctx) return false;
   if (ctx.state === 'suspended') await ctx.resume().catch(() => {});
   if (gen !== speechGen) return true; // superseded during the resume await — treat as handled
-  const url = `${GATEWAY_URL.replace(/^http/, 'ws')}/v1/voice/tts/stream`;
+  // A websocket carries no headers we control, so identity is proved over authenticated HTTP and
+  // the socket carries the short-lived, single-use token it mints. No token, no stream — the
+  // buffered path below still speaks her line.
+  // ponytail: one extra round-trip before first audio; a pre-minted token pool is the upgrade if
+  // that ever shows up next to the ~4s the stream already saves.
+  const minted = await mintVoiceToken(GATEWAY_URL);
+  if (!minted) return false;
+  if (gen !== speechGen) return true; // superseded while minting
+  const url = voiceSocketUrl(GATEWAY_URL, '/v1/voice/tts/stream', minted.token);
   return new Promise<boolean>((resolve) => {
     let ws: WebSocket;
     try {

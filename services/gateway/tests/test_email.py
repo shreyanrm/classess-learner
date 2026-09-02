@@ -96,7 +96,20 @@ def test_endpoint_403s_with_wrong_internal_header(monkeypatch: pytest.MonkeyPatc
     assert r.status_code == 403
 
 
-def test_endpoint_403s_without_elevated_consent(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_endpoint_403s_when_the_internal_key_is_unset(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Fail closed: an unconfigured key refuses every call, even one carrying a header."""
+    from fastapi.testclient import TestClient
+
+    monkeypatch.delenv("INTERNAL_EMAIL_KEY", raising=False)
+    client = TestClient(create_app())
+    body = {"kind": "account_created", "to": "a@b.com", "data": {}}
+    assert client.post("/v1/email/send", json=body, headers=INTERNAL_HEADER).status_code == 403
+    assert client.post("/v1/email/send", json=body, headers={}).status_code == 403
+
+
+def test_endpoint_ignores_a_client_declared_consent_tier(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The tier is never read from the body. A spoofed low tier neither blocks nor grants —
+    the internal key is the authority for an internal lifecycle send."""
     from fastapi.testclient import TestClient
 
     monkeypatch.setenv("INTERNAL_EMAIL_KEY", "test-internal-key")
@@ -104,7 +117,28 @@ def test_endpoint_403s_without_elevated_consent(monkeypatch: pytest.MonkeyPatch)
     client = TestClient(create_app())
     body = {"kind": "account_created", "to": "a@b.com", "consent_tier": "un_elevated", "data": {}}
     r = client.post("/v1/email/send", json=body, headers=INTERNAL_HEADER)
-    assert r.status_code == 403
+    assert r.status_code == 200
+
+
+# --- a send made on behalf of a learner may only reach that learner ---------------------
+def test_send_on_behalf_of_a_subject_refuses_a_foreign_address() -> None:
+    """No profile lookup is wired yet, so a subject-scoped send FAILS CLOSED."""
+    result = send_email("account_created", "someone-else@example.com", subject="sub-123")
+    assert result["ok"] is False and result["error"] == "not_allowed"
+
+
+def test_send_on_behalf_of_a_subject_allows_their_own_address(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("EMAIL_MODE", "console")
+    monkeypatch.setattr(email_mod, "account_email", lambda sub: "learner@example.com")
+    result = send_email("account_created", "Learner@Example.com ", subject="sub-123")
+    assert result["ok"] is True
+
+
+def test_internal_send_without_a_subject_is_allowed(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("EMAIL_MODE", "console")
+    assert send_email("account_created", "anyone@example.com")["ok"] is True
 
 
 def test_endpoint_sends_in_console_with_header_and_consent(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -129,3 +163,65 @@ def test_endpoint_404s_on_unknown_kind(monkeypatch: pytest.MonkeyPatch) -> None:
     body = {"kind": "made_up", "to": "a@b.com", "consent_tier": "elevated", "data": {}}
     r = client.post("/v1/email/send", json=body, headers=INTERNAL_HEADER)
     assert r.status_code == 404
+
+
+# --- the recipient-ownership rule is reachable code now ---------------------------------
+def test_the_endpoint_refuses_a_foreign_address_for_a_verified_learner(
+    monkeypatch: pytest.MonkeyPatch, auth
+) -> None:
+    """The route sat in the middleware's open list, so ``request.state.subject`` was always None
+    and ``may_send_to(None, …)`` returned True unconditionally: the "a learner may only mail
+    their own address" rule could never fire on the HTTP route. It fires now."""
+    from fastapi.testclient import TestClient
+
+    monkeypatch.setenv("INTERNAL_EMAIL_KEY", "test-internal-key")
+    monkeypatch.setenv("EMAIL_MODE", "console")
+    monkeypatch.setattr(email_mod, "account_email", lambda sub: "learner@example.com")
+    client = TestClient(create_app())
+    body = {"kind": "account_created", "to": "attacker@evil.example", "data": {}}
+    r = client.post(
+        "/v1/email/send", json=body, headers={**INTERNAL_HEADER, **auth("sub-123")}
+    )
+    assert r.status_code == 403
+    assert r.json()["detail"]["code"] == "not_allowed"
+
+    body["to"] = "learner@example.com"
+    ok = client.post(
+        "/v1/email/send", json=body, headers={**INTERNAL_HEADER, **auth("sub-123")}
+    )
+    assert ok.status_code == 200
+
+
+def test_a_bare_internal_key_may_only_send_lifecycle_mail(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Anyone holding the internal key could send ANY template to ANY address with attacker-chosen
+    data from our verified sending domain. A key with no learner behind it is a service: it sends
+    the unattended lifecycle set and nothing about a particular child."""
+    from fastapi.testclient import TestClient
+
+    monkeypatch.setenv("INTERNAL_EMAIL_KEY", "test-internal-key")
+    monkeypatch.setenv("EMAIL_MODE", "console")
+    client = TestClient(create_app())
+    parent = {"kind": "parent_report", "to": "attacker@evil.example", "data": {}}
+    r = client.post("/v1/email/send", json=parent, headers=INTERNAL_HEADER)
+    assert r.status_code == 403
+    lifecycle = {"kind": "account_created", "to": "new@example.com", "data": {}}
+    assert client.post("/v1/email/send", json=lifecycle, headers=INTERNAL_HEADER).status_code == 200
+
+
+def test_a_bad_token_never_turns_the_endpoint_into_a_401(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Soft auth: an unreadable Authorization header leaves the internal key as the only door,
+    exactly as before — the endpoint must not start 401ing its own callers."""
+    from fastapi.testclient import TestClient
+
+    monkeypatch.setenv("INTERNAL_EMAIL_KEY", "test-internal-key")
+    monkeypatch.setenv("EMAIL_MODE", "console")
+    client = TestClient(create_app())
+    body = {"kind": "account_created", "to": "a@b.com", "data": {}}
+    r = client.post(
+        "/v1/email/send",
+        json=body,
+        headers={**INTERNAL_HEADER, "Authorization": "Bearer not-a-real-token"},
+    )
+    assert r.status_code == 200

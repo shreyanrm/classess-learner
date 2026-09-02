@@ -1,7 +1,8 @@
 """Gemini Live streaming-TTS feasibility probe. Answers the make-or-break question BEFORE we build
-the streaming voice path: when we send Gemini Live an EXACT text and ask it to read it aloud, does it
-(a) read it VERBATIM — streaming is viable — or (b) paraphrase/reply — streaming is NOT safe for
-Wobo's scripted lines. Also measures time-to-first-audio-chunk (the whole point of streaming).
+the streaming voice path: when we send the live voice API an EXACT text and ask it to read it
+aloud, does it (a) read it VERBATIM — streaming is viable — or (b) paraphrase/reply — streaming
+is NOT safe for Wobo's scripted lines. Also measures time-to-first-audio-chunk (the whole
+point of streaming).
 
 Run from the gateway env (has aiohttp), reads the key from .env.local — never prints the key:
     cd services/gateway && uv run python ../../scripts/voice_live_probe.py
@@ -101,7 +102,12 @@ async def main() -> None:
     print(f"time-to-first-audio-chunk: {first_audio_ms:.0f} ms" if first_audio_ms else "NO AUDIO")
     print(f"audio chunks: {audio_chunks}  (~{audio_bytes} b64 chars total)")
     verbatim = transcript.strip().lower().rstrip(".") == TEXT.lower().rstrip(".")
-    print(f"VERDICT     : {'VERBATIM ✓ streaming viable' if verbatim else 'PARAPHRASED/DIFFERENT — compare above; streaming NOT safe for scripted lines'}")
+    verdict = (
+        "VERBATIM ✓ streaming viable"
+        if verbatim
+        else "PARAPHRASED/DIFFERENT — compare above; streaming NOT safe for scripted lines"
+    )
+    print(f"VERDICT     : {verdict}")
 
 
 if __name__ == "__main__":

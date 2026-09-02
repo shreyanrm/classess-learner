@@ -9,6 +9,9 @@ dependencies = [
     "fastapi>=0.115",
     "litellm>=1.50",
     "pydantic>=2.7",
+    # Identity at the door: Supabase JWTs, HS256 (legacy projects) or JWKS RS/ES (new ones).
+    # [crypto] pulls `cryptography`, which the asymmetric verify path needs.
+    "pyjwt[crypto]>=2.9",
     "uvicorn[standard]>=0.30",
 ]
 

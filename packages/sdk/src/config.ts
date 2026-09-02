@@ -8,7 +8,11 @@ import type { ConsentTier } from '@classess/contracts';
 export interface SdkConfig {
   /** DEV_AUTH: true => the dev-mock user, no login. Flips false at Phase 4. */
   devAuth: boolean;
-  /** The dev mock subject's opaque UUID. */
+  /**
+   * The dev mock subject's opaque UUID. The default below is a FIXED id, which is correct on a
+   * laptop and wrong in a bundle: if a production build still runs dev auth, every visitor is
+   * that one subject. The web app overrides it with a per-device id (`store/device.ts`).
+   */
   mockSubjectId: string;
   consentTierDefault: ConsentTier;
   surface: 'expo' | 'pwa';

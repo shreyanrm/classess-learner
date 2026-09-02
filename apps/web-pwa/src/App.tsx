@@ -6,7 +6,7 @@
  * reading the page at code level through the context bus, one tap from expanding.
  */
 
-import { createSdk, type Sdk } from '@classess/sdk';
+import { createSdk, DEV_DEFAULTS, type Sdk } from '@classess/sdk';
 import {
   hasSyncAnchor,
   parseActions,
@@ -38,6 +38,7 @@ import { resolveDestination } from './shell/destinations';
 import { useConnectivity } from './shell/resilience';
 import { type Route, RouterProvider, useRouter } from './shell/router';
 import { DownloadCenter } from './store/DownloadCenter';
+import { deviceMockSubject } from './store/device';
 import { machineRoomSnapshot } from './store/machine-room';
 import {
   clearMind,
@@ -49,6 +50,7 @@ import {
   rememberFact,
 } from './store/mind';
 import { ProgressProvider, useProgress } from './store/progress';
+import { applyScope, inheritScope, rememberedScope } from './store/scope';
 import { SdkProvider } from './store/sdk';
 import { AppHeader } from './ui/AppHeader';
 import { ClickInk } from './ui/ClickInk';
@@ -65,6 +67,7 @@ import {
   writeArchive,
 } from './wobo/chat';
 import { resolveTurnExtras, type TurnExtras } from './wobo/paths';
+import { refusalLine } from './wobo/refusals';
 import { registerPerformance, SpeechNarrator, speakLine } from './wobo/speech';
 
 const LLM_MODE = (import.meta.env.VITE_LLM_MODE as 'mock' | 'live' | undefined) ?? 'mock';
@@ -75,7 +78,15 @@ const DEV_AUTH = (import.meta.env.VITE_DEV_AUTH as string | undefined) !== 'fals
 const PERSIST_MODE = (import.meta.env.VITE_PERSIST_MODE as 'local' | 'live' | undefined) ?? 'local';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
-const SUPABASE_DEV_JWT = import.meta.env.VITE_SUPABASE_DEV_JWT as string | undefined;
+// A pre-minted access token is a DEV convenience and a production liability: shipped in a public
+// JS bundle it is one long-lived bearer token every visitor holds, and every visitor is then the
+// same learner — one budget, one consent tier, one archive. It exists only in a dev build.
+const SUPABASE_DEV_JWT = import.meta.env.DEV
+  ? (import.meta.env.VITE_SUPABASE_DEV_JWT as string | undefined)
+  : undefined;
+if (!import.meta.env.DEV && import.meta.env.VITE_SUPABASE_DEV_JWT) {
+  console.warn('VITE_SUPABASE_DEV_JWT is set in a production build and has been ignored.');
+}
 
 /** Zero-argument destinations Wobo may offer to navigate to. */
 const NAV_ROUTES: Record<string, Route> = {
@@ -485,8 +496,15 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       if (spokenTurnId && anchored.length > 0) registerPerformance(spokenTurnId, anchored);
       bus.dispatch(immediate);
       setMood(actions.length > 0 ? 'explaining' : 'idle');
-    } catch {
-      say({ role: 'wobo', text: 'Give me a moment, then ask me again.' });
+    } catch (err) {
+      // The brain's refusals reach the learner as her line, never a status code and never a
+      // provider's words: sign-in needed takes them to her sign-in beat (where the beat lives); a
+      // spent day says when she is free again. Anything else is the honest "give me a moment".
+      const refusal = refusalLine(err);
+      say({ role: 'wobo', text: refusal.text });
+      if (refusal.signIn && sdk.account) {
+        window.setTimeout(() => router.navigate({ name: 'onboarding' }), 900);
+      }
       setMood('idle');
     } finally {
       setBusy(false);
@@ -612,19 +630,43 @@ function WithWobo({ sdk }: { sdk: Sdk }) {
 }
 
 export function App() {
-  const sdk = useMemo(
-    () =>
-      createSdk({
-        devAuth: DEV_AUTH,
-        llmMode: LLM_MODE,
-        gatewayUrl: GATEWAY_URL,
-        persistMode: PERSIST_MODE,
-        supabaseUrl: SUPABASE_URL,
-        supabaseAnonKey: SUPABASE_ANON_KEY,
-        supabaseAccessToken: SUPABASE_DEV_JWT,
-      }),
-    [],
-  );
+  const sdk = useMemo(() => {
+    const devSubject = deviceMockSubject(DEV_DEFAULTS.mockSubjectId);
+    const s = createSdk({
+      devAuth: DEV_AUTH,
+      llmMode: LLM_MODE,
+      gatewayUrl: GATEWAY_URL,
+      persistMode: PERSIST_MODE,
+      supabaseUrl: SUPABASE_URL,
+      supabaseAnonKey: SUPABASE_ANON_KEY,
+      supabaseAccessToken: SUPABASE_DEV_JWT,
+      ...(devSubject ? { mockSubjectId: devSubject } : {}),
+    });
+    // Everything personal is keyed to the learner who owns it, and the scope is set HERE — before
+    // the boot initializer below reads the archive, before any store is touched. A learner who was
+    // anonymous a moment ago and has just signed in for real carries their world across.
+    const subject = s.account?.subjectId() ?? null;
+    const anonymous = s.account?.isAnonymous() ?? false;
+    const previous = rememberedScope();
+    if (subject && previous && previous.subject !== subject && previous.anonymous) {
+      inheritScope(previous.subject, subject, anonymous);
+    } else {
+      applyScope(subject, anonymous);
+    }
+    return s;
+  }, []);
+
+  // Every learner is somebody to the brain, from the first screen: with Supabase keys and no
+  // session, sign in anonymously so the very first turn carries a real identity (a small day's
+  // budget, no elevated doors) — this is what lets her teach before anyone signs up. Keyless
+  // builds skip it entirely and stay local.
+  useEffect(() => {
+    const account = sdk.account;
+    if (!account || account.isAuthenticated()) return;
+    void account.ensureSession().then((subject) => {
+      if (subject) applyScope(subject, account.isAnonymous());
+    });
+  }, [sdk]);
   // Unauthenticated in live mode => onboarding, always (the sign-in beat lives there).
   // ponytail: a dev preview hook — #engines boots straight into the engine gallery for QA/screenshots.
   const initial: Route =

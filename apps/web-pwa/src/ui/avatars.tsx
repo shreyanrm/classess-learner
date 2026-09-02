@@ -8,6 +8,7 @@
  */
 
 import type { ComponentType, CSSProperties, ReactNode } from 'react';
+import { scoped } from '../store/scope';
 import { ANIMALS, BUDDIES, CAST, hexWash } from './cast';
 
 /** Any figure the learner can wear — derived from the AVATARS roster below. */
@@ -132,7 +133,7 @@ export const ANIMAL_IDS = AVATAR_IDS.filter((id) => AVATARS[id].group === 'anima
 
 export function loadAvatarChoice(): AvatarChoice | null {
   try {
-    const raw = localStorage.getItem(AVATAR_KEY);
+    const raw = scoped.getItem(AVATAR_KEY);
     return raw ? (JSON.parse(raw) as AvatarChoice) : null;
   } catch {
     return null;
@@ -151,7 +152,7 @@ export function ensureDefaultAvatar(): void {
 
 export function saveAvatarChoice(choice: AvatarChoice): void {
   try {
-    localStorage.setItem(AVATAR_KEY, JSON.stringify(choice));
+    scoped.setItem(AVATAR_KEY, JSON.stringify(choice));
   } catch {
     // storage unavailable — the face still applies for this session
   }
@@ -167,8 +168,8 @@ export function readAvatarProfile(): {
   let name = 'A';
   let photo: string | null = null;
   try {
-    name = (JSON.parse(localStorage.getItem(PROFILE_KEY) ?? '{}') as { name?: string }).name ?? 'A';
-    photo = localStorage.getItem(PHOTO_KEY);
+    name = (JSON.parse(scoped.getItem(PROFILE_KEY) ?? '{}') as { name?: string }).name ?? 'A';
+    photo = scoped.getItem(PHOTO_KEY);
   } catch {
     // unreadable — the initial letter carries the day
   }

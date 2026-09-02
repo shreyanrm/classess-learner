@@ -10,6 +10,18 @@ cached under ``content/cache/`` keyed (concept x modality x difficulty) and carr
 provenance ``{engine, model, prompt_version}``.
 """
 
-from classess_gateway.plexus.engines import GenerationBusy, run_engine
+from classess_gateway.plexus.engines import (
+    INTERNAL_GENERATION,
+    ConceptRejected,
+    GenerationBusy,
+    GenerationUnattributed,
+    run_engine,
+)
 
-__all__ = ["GenerationBusy", "run_engine"]
+__all__ = [
+    "INTERNAL_GENERATION",
+    "ConceptRejected",
+    "GenerationBusy",
+    "GenerationUnattributed",
+    "run_engine",
+]

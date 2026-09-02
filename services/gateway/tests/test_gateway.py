@@ -1,4 +1,8 @@
-"""Gateway tests. Mock mode only — no provider is ever called and litellm is never imported."""
+"""Gateway tests. Mock mode only — no provider is ever called and litellm is never imported.
+
+Every HTTP call carries a real HS256 token minted by the ``auth`` fixture (conftest): the
+suite goes through the same door production does.
+"""
 
 from __future__ import annotations
 
@@ -65,19 +69,19 @@ def test_tracks_are_never_conflated() -> None:
 @pytest.mark.parametrize("cap", ELEVATED_ONLY)
 def test_elevated_only_denied_under_un_elevated(cap: str) -> None:
     with pytest.raises(ConsentDenied):
-        make_gateway().invoke(cap, req(ConsentTier.UN_ELEVATED))
+        make_gateway().invoke(cap, req(ConsentTier.UN_ELEVATED), ConsentTier.UN_ELEVATED)
 
 
 @pytest.mark.parametrize("cap", ELEVATED_ONLY)
 def test_elevated_only_allowed_when_elevated(cap: str) -> None:
-    resp = make_gateway().invoke(cap, req(ConsentTier.ELEVATED))
+    resp = make_gateway().invoke(cap, req(ConsentTier.ELEVATED), ConsentTier.ELEVATED)
     assert resp.capability == cap
 
 
 def test_teaching_capabilities_work_under_both_tiers() -> None:
     gw = make_gateway()
     for tier in (ConsentTier.UN_ELEVATED, ConsentTier.ELEVATED):
-        resp = gw.invoke("tutor.turn", req(tier))
+        resp = gw.invoke("tutor.turn", req(tier), tier)
         assert resp.output["handed_answer"] is False
 
 
@@ -143,7 +147,7 @@ def test_gateway_reports_the_model_that_actually_answered_on_fallback() -> None:
     from classess_gateway.providers import ProviderResponse
 
     class FallbackProvider:
-        def complete(self, *, provider_model, capability, payload, fallbacks=()):  # noqa: ANN001
+        def complete(self, *, provider_model, capability, payload, fallbacks=(), **_):  # noqa: ANN001
             return ProviderResponse(
                 output={"correct": True, "feedback": "ok"},
                 tokens=5,
@@ -164,8 +168,9 @@ def test_gateway_reports_the_model_that_actually_answered_on_fallback() -> None:
 
 def test_peakcut_never_caches() -> None:
     gw = make_gateway()
-    first = gw.invoke("peakcut.evaluate", req(ConsentTier.ELEVATED, learner="a"))
-    second = gw.invoke("peakcut.evaluate", req(ConsentTier.ELEVATED, learner="a"))
+    elevated = ConsentTier.ELEVATED
+    first = gw.invoke("peakcut.evaluate", req(elevated, learner="a"), elevated)
+    second = gw.invoke("peakcut.evaluate", req(elevated, learner="a"), elevated)
     assert first.cache_hit is False and second.cache_hit is False
 
 
@@ -182,33 +187,39 @@ def test_telemetry_records_each_invocation() -> None:
 
 
 # --- http surface ---------------------------------------------------------------------
-def test_http_surface() -> None:
+def test_http_surface(auth) -> None:
     from fastapi.testclient import TestClient
 
     client = TestClient(create_app(make_gateway()))
+    headers = auth()
 
     assert client.get("/healthz").json()["status"] == "ok"
 
-    caps = client.get("/v1/capabilities").json()
+    caps = client.get("/v1/capabilities", headers=headers).json()
     assert len(caps) == 16
 
+    # the body says un_elevated and is ignored; the derived tier (no stored record -> the
+    # least-privilege default) is what closes the elevated-only door
     denied = client.post(
         "/v1/capability/archetype.classify",
-        json={"consent_tier": "un_elevated", "payload": {}},
+        json={"consent_tier": "elevated", "payload": {}},
+        headers=headers,
     )
     assert denied.status_code == 403
-    assert denied.json()["error"] == "consent_denied"
+    assert denied.json()["code"] == "not_allowed"
 
     ok = client.post(
         "/v1/capability/tutor.turn",
-        json={"consent_tier": "un_elevated", "payload": {}},
+        json={"payload": {}},
+        headers=headers,
     )
     assert ok.status_code == 200
     assert ok.json()["track"] == "track_2"
 
     unknown = client.post(
         "/v1/capability/nope.turn",
-        json={"consent_tier": "un_elevated", "payload": {}},
+        json={"payload": {}},
+        headers=headers,
     )
     assert unknown.status_code == 404
 
@@ -299,12 +310,13 @@ def test_mock_turn_remembers_a_preferred_name() -> None:
 
 
 # --- voice ------------------------------------------------------------------------------
-def test_voice_session_is_unavailable_without_a_key(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_voice_session_is_unavailable_without_a_key(monkeypatch: pytest.MonkeyPatch, auth) -> None:
     from fastapi.testclient import TestClient
 
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.delenv("GOOGLE_AI_API_KEY", raising=False)
     client = TestClient(create_app(make_gateway()))
-    assert client.get("/v1/voice/session").json() == {"mode": "unavailable"}
+    assert client.get("/v1/voice/session", headers=auth()).json() == {"mode": "unavailable"}
 
 
 def test_cors_allows_our_vercel_preview_origins_in_prod(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -331,21 +343,23 @@ def test_cors_allows_our_vercel_preview_origins_in_prod(monkeypatch: pytest.Monk
     assert r2.status_code == 400
 
 
-def test_voice_tts_is_503_without_a_key(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_voice_tts_is_503_without_a_key(monkeypatch: pytest.MonkeyPatch, auth) -> None:
     from fastapi.testclient import TestClient
 
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     monkeypatch.delenv("GOOGLE_AI_API_KEY", raising=False)
     client = TestClient(create_app(make_gateway()))
-    assert client.post("/v1/voice/tts", json={"text": "hello"}).status_code == 503
+    r = client.post("/v1/voice/tts", json={"text": "hello"}, headers=auth())
+    assert r.status_code == 503
 
 
-def test_voice_tts_rejects_oversized_text(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_voice_tts_rejects_oversized_text(monkeypatch: pytest.MonkeyPatch, auth) -> None:
     from fastapi.testclient import TestClient
 
     monkeypatch.setenv("GEMINI_API_KEY", "test-key")
     client = TestClient(create_app(make_gateway()))
-    assert client.post("/v1/voice/tts", json={"text": "x" * 601}).status_code == 422
+    r = client.post("/v1/voice/tts", json={"text": "x" * 601}, headers=auth())
+    assert r.status_code == 422
 
 
 # --- boot posture: env validation, CORS lockdown, rate limiting ------------------------
@@ -394,7 +408,9 @@ def test_dev_cors_allows_localhost(monkeypatch: pytest.MonkeyPatch) -> None:
     assert ok.headers["access-control-allow-origin"] == "http://localhost:5173"
 
 
-def test_capability_routes_are_rate_limited_per_ip(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_capability_routes_are_rate_limited_per_subject(
+    monkeypatch: pytest.MonkeyPatch, auth
+) -> None:
     import time
     from types import SimpleNamespace
 
@@ -407,36 +423,49 @@ def test_capability_routes_are_rate_limited_per_ip(monkeypatch: pytest.MonkeyPat
         SimpleNamespace(time=lambda: 1_000_000.0, perf_counter=time.perf_counter),
     )
     client = TestClient(create_app(make_gateway()))
-    body = {"consent_tier": "un_elevated", "payload": {}}
+    body = {"payload": {}}
+    headers = auth()
 
-    statuses = [client.post("/v1/capability/tutor.turn", json=body).status_code for _ in range(4)]
+    statuses = [
+        client.post("/v1/capability/tutor.turn", json=body, headers=headers).status_code
+        for _ in range(4)
+    ]
     assert statuses[:3] == [200, 200, 200]
     assert statuses[3] == 429
 
+    # a DIFFERENT learner has their own bucket — one noisy account never throttles the school
+    other = client.post("/v1/capability/tutor.turn", json=body, headers=auth("someone-else"))
+    assert other.status_code == 200
+
     # non-capability routes are never limited
     assert client.get("/healthz").status_code == 200
-    assert client.get("/v1/capabilities").status_code == 200
+    assert client.get("/v1/capabilities", headers=headers).status_code == 200
 
 
-def test_second_concurrent_generation_gets_429_retry_after(tmp_path, monkeypatch) -> None:
-    """A content engine allows one generation per user; a second in-flight one → 429."""
+def test_second_concurrent_generation_gets_429_retry_after(tmp_path, monkeypatch, auth) -> None:
+    """A content engine allows one generation per learner; a second in-flight one → 429.
+
+    The slot is keyed on the VERIFIED SUBJECT, not on ``payload["user"]`` — so the pretend
+    in-flight generation is registered under the token's subject, and a body that names someone
+    else changes nothing."""
     from classess_gateway.plexus import engines
     from fastapi.testclient import TestClient
 
     monkeypatch.setenv("PLEXUS_CACHE_DIR", str(tmp_path))
     client = TestClient(create_app(make_gateway()))
-    body = {"consent_tier": "un_elevated", "payload": {"concept": "fractions", "user": "u1"}}
+    body = {"payload": {"concept": "fractions", "user": "u1"}}
+    headers = auth("busy-learner")
 
-    engines._gen_in_flight.add("u1")  # pretend u1's first generation is still cooking
+    engines._gen_in_flight.add("busy-learner")  # their first generation is still cooking
     try:
-        resp = client.post("/v1/capability/engine.compose", json=body)
+        resp = client.post("/v1/capability/engine.compose", json=body, headers=headers)
     finally:
-        engines._gen_in_flight.discard("u1")
+        engines._gen_in_flight.discard("busy-learner")
     assert resp.status_code == 429
     assert resp.headers["Retry-After"]
-    assert resp.json()["error"] == "generation_in_flight"
+    assert resp.json()["code"] == "generation_in_flight"
 
     # with the slot free, the same call succeeds
-    ok = client.post("/v1/capability/engine.compose", json=body)
+    ok = client.post("/v1/capability/engine.compose", json=body, headers=headers)
     assert ok.status_code == 200
     assert ok.json()["output"]["verified"] is True

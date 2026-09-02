@@ -121,6 +121,7 @@ class _FoulProvider:
         capability: str,
         payload: dict[str, Any],
         fallbacks: tuple[str, ...] = (),
+        **_: Any,
     ) -> ProviderResponse:
         return ProviderResponse(
             output={"say": "that answer is shit", "actions": [{"type": "point", "targetId": "x"}]},

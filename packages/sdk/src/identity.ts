@@ -49,6 +49,12 @@ export interface AccountLink {
 
 /** The auth seams. Live (Supabase) in `SupabaseAuthIdentity`; throwing stubs in the dev mock. */
 export interface AuthSeams {
+  /**
+   * Establish an anonymous learner so a first-time visitor carries a real JWT before they ever sign
+   * in — this is what lets her teach on the first screen while the brain still knows who is asking
+   * (a small day's budget, no elevated doors). Resolves to the existing session when there is one.
+   */
+  signInAnonymously(): Promise<Session>;
   /** Sends an SMS one-time code to the phone (E.164, e.g. +91…). */
   requestPhoneOtp(phone: string): Promise<void>;
   /** Verifies the code and establishes the session. Resolves to the new session. */
@@ -76,6 +82,9 @@ export interface IdentityProvider {
 }
 
 const notEnabled: AuthSeams = {
+  signInAnonymously: async () => {
+    throw new AuthNotEnabledError('anonymous sign-in');
+  },
   requestPhoneOtp: async () => {
     throw new AuthNotEnabledError('phone-OTP signup');
   },
@@ -244,6 +253,7 @@ export class SupabaseAuthIdentity implements IdentityProvider {
     this.scheduleRefresh();
 
     this.auth = {
+      signInAnonymously: () => this.signInAnonymously(),
       requestPhoneOtp: (phone) => this.requestPhoneOtp(phone),
       verifyPhoneOtp: (phone, code) => this.verifyPhoneOtp(phone, code),
       signInWithGoogle: (redirectTo) => this.signInWithGoogle(redirectTo),
@@ -285,6 +295,16 @@ export class SupabaseAuthIdentity implements IdentityProvider {
     return this.session?.access_token;
   }
 
+  /**
+   * True when the session is an anonymous learner (no account yet). The brain reads the same
+   * `is_anonymous` claim off the verified JWT and gives them a smaller day; this copy is for the
+   * client's own choices (what to offer, what to migrate on upgrade), never for a permission.
+   */
+  isAnonymous(): boolean {
+    if (!this.session) return false;
+    return jwtClaims(this.session.access_token)?.is_anonymous === true;
+  }
+
   /** Identity claims from the current session's JWT — Google fills these. Null when signed out. */
   accountProfile(): AccountProfile | null {
     if (!this.session) return null;
@@ -301,6 +321,24 @@ export class SupabaseAuthIdentity implements IdentityProvider {
   }
 
   // --- The flows ------------------------------------------------------------
+
+  /**
+   * Anonymous sign-in (GoTrue `POST /signup` with no credentials). One JWT per device, minted on
+   * first boot, so every learner — including the one who has not signed up yet — is a real subject
+   * to the brain: identified, budgeted, safe. Signing in for real later upgrades the same person.
+   * Idempotent: an existing session is returned untouched.
+   */
+  private async signInAnonymously(): Promise<Session> {
+    if (this.session) return this.getSession();
+    const res = await fetch(`${this.cfg.url}/auth/v1/signup`, {
+      method: 'POST',
+      headers: { apikey: this.cfg.anonKey, 'content-type': 'application/json' },
+      body: JSON.stringify({}),
+    });
+    if (!res.ok) throw new Error(`could not start a session: ${await gotrueError(res)}`);
+    this.adopt((await res.json()) as TokenResponse);
+    return this.getSession();
+  }
 
   private async requestPhoneOtp(phone: string): Promise<void> {
     const res = await fetch(`${this.cfg.url}/auth/v1/otp`, {

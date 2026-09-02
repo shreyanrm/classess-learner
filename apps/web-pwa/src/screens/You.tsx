@@ -34,6 +34,7 @@ import {
   saveProactivity,
 } from '../store/mind';
 import { FREEZE_BUDGET, levelInfo, useProgress } from '../store/progress';
+import { forgetScope } from '../store/scope';
 import { useSdk } from '../store/sdk';
 import { LevelBadge } from '../ui/AppHeader';
 import { paintAccess } from '../ui/access';
@@ -821,7 +822,11 @@ export function You() {
   const [copied, setCopied] = useState<'friend' | 'parent' | null>(null);
   const copyInvite = (kind: 'friend' | 'parent') => {
     const via = profile.name.toLowerCase().replace(/\s+/g, '-');
-    const link = `https://classess.app/join?via=${encodeURIComponent(via)}&as=${kind}`;
+    // Brand-neutral by construction (WOBO-PLAN §8): the invite points at wherever this app is
+    // actually served, so the domain is one env change and never a name baked into a screen.
+    const origin =
+      (import.meta.env.VITE_PUBLIC_ORIGIN as string | undefined) ?? window.location.origin;
+    const link = `${origin}/join?via=${encodeURIComponent(via)}&as=${kind}`;
     navigator.clipboard.writeText(link).catch(() => {
       // clipboard unavailable — the invitation still stands
     });
@@ -911,6 +916,10 @@ export function You() {
   const acct = account?.profile() ?? null;
   const signOut = () => {
     setSigningOut(true);
+    // Their transcript, dossier, face and profile leave this device with them — what would stay is
+    // only readable by whoever picks the phone up next. The account keeps their progress.
+    const subject = account?.subjectId();
+    if (subject) forgetScope(subject);
     // End the session, then boot fresh: the live-mode guard lands on onboarding's sign-in beat; in
     // local mode it simply drops the account chip. Local progress stays cached and reconciles on
     // the next sign-in.

@@ -7,10 +7,12 @@ proxies frames bidirectionally to Gemini Live, sending the setup (model + Wobo's
 as the system instruction) itself so neither the key nor the persona ever leave the
 server. Without a key: ``unavailable``.
 
-The token gate exists so the relay is never an open proxy to a paid API: only a client
-that first obtained a session may connect, tokens expire in seconds, each admits one
-connection, and concurrent relays are capped. When real learner auth lands (Phase 4),
-``/v1/voice/session`` is the single seam to authenticate — the relay inherits it.
+The token gate exists so the sockets are never an open proxy to a paid API. HTTP middleware
+does not run for a WebSocket, so the socket cannot check a bearer token itself: instead
+``/v1/voice/session`` — which IS authenticated, like every other ``/v1`` route — mints a
+short-lived, single-use token BOUND TO THE VERIFIED SUBJECT, and both sockets
+(``/v1/voice/relay`` and ``/v1/voice/tts/stream``) require and consume one. Each socket has
+its own concurrency cap, so a flood of read-aloud sockets can never starve the live mic.
 """
 
 from __future__ import annotations
@@ -20,10 +22,12 @@ import contextlib
 import json
 import os
 import secrets
+import threading
 import time
+from collections.abc import Iterator
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 
 from classess_gateway.wobo import WOBO_PERSONA
@@ -50,32 +54,129 @@ _GEMINI_LIVE_URL = (
 # Generous window: the client mints this only after the mic permission is granted, but a slow
 # getUserMedia prompt (user deliberating) must never outlive the token before the relay connects.
 _TOKEN_TTL_S = 300.0
-_MAX_CONCURRENT_RELAYS = 4
-_tokens: dict[str, float] = {}  # token -> expiry (monotonic); single-use, pruned on mint
+
+# Concurrency is capped twice: once per learner, so one socket-holder cannot deny live voice to
+# everybody, and once globally, so worst-case spend on the key stays bounded. The global caps used
+# to be 4 apiece — four sockets held open by one person shut the platform's mic.
+_MAX_RELAYS_PER_SUBJECT = int(os.getenv("VOICE_MAX_RELAYS_PER_LEARNER", "2"))
+_MAX_TTS_PER_SUBJECT = int(os.getenv("VOICE_MAX_TTS_PER_LEARNER", "2"))
+_MAX_CONCURRENT_RELAYS = int(os.getenv("VOICE_MAX_RELAYS", "24"))
+# The read-aloud socket gets its OWN budget: it is short-lived and far more frequent than the
+# live mic, and sharing one counter let typed turns lock a learner out of push-to-talk.
+_MAX_CONCURRENT_TTS = int(os.getenv("VOICE_MAX_TTS", "24"))
+
+_MAX_TOKENS = 4096
+# Outstanding mints per learner. A mint is cheap for us and cheap for them, but an unbounded pile
+# of them was the lever that emptied the whole store (see _mint_token).
+_MAX_TOKENS_PER_SUBJECT = 8
+
+_lock = threading.Lock()
+# token -> (expiry monotonic, subject); single-use. Insertion-ordered, so "oldest" is free.
+_tokens: dict[str, tuple[float, str]] = {}
 _active_relays = 0
+_active_tts = 0
+# subject -> live socket count, so one learner's share is bounded independently of everyone's.
+_relays_by_subject: dict[str, int] = {}
+_tts_by_subject: dict[str, int] = {}
 
 
-def _mint_token() -> str:
+def _mint_token(subject: str) -> str:
+    """One short-lived, single-use token bound to ``subject``.
+
+    Eviction is per learner and then oldest-first. It used to be ``_tokens.clear()`` on a full
+    store: minting 4096 tokens threw away every OTHER learner's outstanding token, and their mic
+    failed at connect. Nobody's eviction policy may be everybody's.
+    """
     now = time.monotonic()
-    for stale in [t for t, exp in _tokens.items() if exp < now]:
-        del _tokens[stale]
-    token = secrets.token_urlsafe(24)
-    _tokens[token] = now + _TOKEN_TTL_S
+    with _lock:
+        for stale in [t for t, (exp, _) in _tokens.items() if exp < now]:
+            del _tokens[stale]
+        mine = [t for t, (_, sub) in _tokens.items() if sub == subject]
+        for stale in mine[: max(0, len(mine) - _MAX_TOKENS_PER_SUBJECT + 1)]:
+            del _tokens[stale]  # this learner's own oldest, never anyone else's
+        while len(_tokens) >= _MAX_TOKENS:
+            # Global ceiling. The biggest holder pays: evict their oldest, so a learner sitting
+            # on one token keeps it. Never a wipe — a full store used to cost everybody theirs.
+            counts: dict[str, int] = {}
+            for _, sub in _tokens.values():
+                counts[sub] = counts.get(sub, 0) + 1
+            biggest = max(counts, key=lambda sub: counts[sub])
+            del _tokens[next(t for t, (_, sub) in _tokens.items() if sub == biggest)]
+        token = secrets.token_urlsafe(24)
+        _tokens[token] = (now + _TOKEN_TTL_S, subject)
     return token
 
 
-def _consume_token(token: str | None) -> bool:
+def _consume_token(token: str | None) -> str | None:
+    """Spend a token and return the subject it was minted for, or None if it is no good."""
     if not token:
-        return False
-    expiry = _tokens.pop(token, None)
-    return expiry is not None and expiry >= time.monotonic()
+        return None
+    with _lock:
+        found = _tokens.pop(token, None)
+    if found is None:
+        return None
+    expiry, subject = found
+    return subject if expiry >= time.monotonic() else None
 
 
-def voice_session() -> dict[str, str]:
-    """The voice handshake: which mode the client may use right now."""
-    if (os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY")):
-        return {"mode": "relay", "model": VOICE_MODEL, "token": _mint_token()}
+@contextlib.contextmanager
+def _socket_slot(subject: str, *, kind: str) -> Iterator[bool]:
+    """Claim one live socket for ``subject``, or refuse. Claimed under the lock and released on
+    the way out, so two sockets racing the cap cannot both read the old count and both get in."""
+    global _active_relays, _active_tts
+    per_subject = _relays_by_subject if kind == "relay" else _tts_by_subject
+    subject_cap = _MAX_RELAYS_PER_SUBJECT if kind == "relay" else _MAX_TTS_PER_SUBJECT
+    global_cap = _MAX_CONCURRENT_RELAYS if kind == "relay" else _MAX_CONCURRENT_TTS
+    with _lock:
+        active = _active_relays if kind == "relay" else _active_tts
+        claimed = active < global_cap and per_subject.get(subject, 0) < subject_cap
+        if claimed:
+            per_subject[subject] = per_subject.get(subject, 0) + 1
+            if kind == "relay":
+                _active_relays += 1
+            else:
+                _active_tts += 1
+    if not claimed:
+        # Refused OUTSIDE the lock: the caller closes a socket here, and an await must never
+        # happen while a threading lock the mint path needs is held.
+        yield False
+        return
+    try:
+        yield True
+    finally:
+        with _lock:
+            remaining = per_subject.get(subject, 1) - 1
+            if remaining > 0:
+                per_subject[subject] = remaining
+            else:
+                per_subject.pop(subject, None)
+            if kind == "relay":
+                _active_relays -= 1
+            else:
+                _active_tts -= 1
+
+
+def voice_session(subject: str) -> dict[str, str]:
+    """The voice handshake: which mode this learner may use right now, and their one token.
+
+    No model id. It named the provider's model to every caller — the white-label rule says model
+    ids never leave the brain (WOBO-PLAN 1), and the client has never read the field: the setup
+    message holds the model server-side, where it belongs.
+    """
+    if os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY"):
+        return {"mode": "relay", "token": _mint_token(subject)}
     return {"mode": "unavailable"}
+
+
+def reset_tokens() -> None:
+    """Test seam — drop every outstanding token and every socket count."""
+    global _active_relays, _active_tts
+    with _lock:
+        _tokens.clear()
+        _relays_by_subject.clear()
+        _tts_by_subject.clear()
+        _active_relays = 0
+        _active_tts = 0
 
 
 def _setup_message() -> dict[str, Any]:
@@ -109,16 +210,38 @@ class TtsBody(BaseModel):
     text: str = Field(min_length=1, max_length=600)
 
 
+def _charge_voice(request: Request, capability: str) -> None:
+    """Meter one voice call against the learner's day.
+
+    Voice is a PAID API, and until now the meter was charged in exactly one place — the capability
+    route — so a learner with a fully spent day still minted relay tokens and still reached the
+    TTS API. Both routes go through the same meter as every other turn (``budget.CAPABILITY_CLASS``
+    keeps the classification in one dict), keyed on the same meter key the door derived.
+    """
+    from classess_gateway import budget, consent
+
+    principal = request.state.principal
+    profile = consent.get_profile(principal.subject, anonymous=principal.anonymous)
+    budget.charge(
+        request.state.meter_key, capability, profile.plan, anonymous=principal.anonymous
+    )
+
+
 def register_voice(app: FastAPI) -> None:
     @app.get("/v1/voice/session")
-    def session() -> dict[str, str]:
-        return voice_session()
+    def session(request: Request) -> dict[str, str]:
+        # Authenticated by the gateway middleware; the token it mints carries that identity
+        # onto the sockets, which have no middleware of their own. Metered here, because the
+        # token IS the spend: whatever it opens, it opens on our key.
+        _charge_voice(request, "voice.session")
+        return voice_session(request.state.principal.subject)
 
     @app.post("/v1/voice/tts")
-    def tts(body: TtsBody) -> dict[str, str]:
+    def tts(body: TtsBody, request: Request) -> dict[str, str]:
         """Her spoken line for a typed turn — same voice as the live relay, key server-side."""
         if not (os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY")):
             raise HTTPException(status_code=503, detail="voice unavailable")
+        _charge_voice(request, "voice.tts")
         from classess_gateway.plexus.media import synthesize_narration
 
         audio = synthesize_narration(body.text)
@@ -128,23 +251,23 @@ def register_voice(app: FastAPI) -> None:
 
     @app.websocket("/v1/voice/relay")
     async def relay(client: WebSocket) -> None:
-        global _active_relays
-        key = (os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY"))
-        # Gate BEFORE accept: a session-minted, unexpired, single-use token is required,
-        # and the concurrent-relay cap bounds worst-case spend on the upstream key.
-        if (
-            not key
-            or not _consume_token(client.query_params.get("token"))
-            or _active_relays >= _MAX_CONCURRENT_RELAYS
-        ):
+        key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY")
+        # Gate BEFORE accept: a session-minted, unexpired, single-use token bound to a verified
+        # subject is required, and the caps bound worst-case spend on the key.
+        subject = _consume_token(client.query_params.get("token"))
+        if not key or subject is None:
             await client.close(code=1008, reason="voice unavailable")
             return
-        await client.accept()
 
         import aiohttp  # lazy: already installed via litellm; mock-mode tests never need it
 
-        _active_relays += 1
-        try:
+        # The subject the token was minted for is what the slot counts — the socket used to
+        # consume it and throw it away, which is why the caps were everybody's and nobody's.
+        with _socket_slot(subject, kind="relay") as claimed:
+            if not claimed:
+                await client.close(code=1008, reason="voice unavailable")
+                return
+            await client.accept()
             async with (
                 aiohttp.ClientSession() as http,
                 http.ws_connect(f"{_GEMINI_LIVE_URL}?key={key}") as gemini,
@@ -172,8 +295,6 @@ def register_voice(app: FastAPI) -> None:
                 finally:
                     up.cancel()
                     down.cancel()
-        finally:
-            _active_relays -= 1
         # suppress RuntimeError: already closed by the disconnect that ended the pumps
         with contextlib.suppress(RuntimeError):
             await client.close()
@@ -183,56 +304,61 @@ def register_voice(app: FastAPI) -> None:
         """Stream a typed line's audio: the client sends one text, the gateway opens Gemini Live
         with the read-verbatim persona and pipes audio chunks straight back, so playback starts at
         the first chunk (~4s sooner than the buffered clip). Key stays server-side; one line per
-        socket, capped like the relay. Any upstream failure just closes — the client falls back to
-        the buffered /v1/voice/tts, so voice can never regress."""
-        global _active_relays
+        socket, token-gated and capped like the relay. Any upstream failure just closes — the
+        client falls back to the buffered /v1/voice/tts, so voice can never regress."""
         key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY")
-        if not key or _active_relays >= _MAX_CONCURRENT_RELAYS:
+        # Same gate as the relay: a session-minted, unexpired, single-use token bound to a
+        # verified subject. Without it this socket was an open, unmetered mouth on a paid API.
+        subject = _consume_token(client.query_params.get("token"))
+        if not key or subject is None:
             await client.close(code=1008, reason="voice unavailable")
-            return
-        await client.accept()
-        try:
-            text = (await client.receive_text())[:600]
-        except (WebSocketDisconnect, RuntimeError):
-            return
-        if not text.strip():
-            with contextlib.suppress(RuntimeError):
-                await client.close()
             return
 
         import aiohttp  # lazy: already installed via litellm; mock-mode tests never touch it
 
-        _active_relays += 1
-        try:
-            async with (
-                aiohttp.ClientSession() as http,
-                http.ws_connect(f"{_GEMINI_LIVE_URL}?key={key}") as gemini,
-            ):
-                await gemini.send_str(json.dumps(_tts_setup_message()))
-                await gemini.send_str(
-                    json.dumps(
-                        {
-                            "clientContent": {
-                                "turns": [{"role": "user", "parts": [{"text": text}]}],
-                                "turnComplete": True,
-                            }
-                        }
-                    )
-                )
-                async for msg in gemini:
-                    if msg.type == aiohttp.WSMsgType.TEXT:
-                        frame = msg.data
-                    elif msg.type == aiohttp.WSMsgType.BINARY:
-                        # Gemini frames JSON as binary; the browser wants text.
-                        frame = msg.data.decode()
-                    else:
-                        break
-                    await client.send_text(frame)
-                    if '"turnComplete"' in frame or '"turn_complete"' in frame:
-                        break
-        except (aiohttp.ClientError, WebSocketDisconnect, RuntimeError, OSError):
-            pass  # upstream/socket failure — client falls back to buffered TTS on a chunkless close
-        finally:
-            _active_relays -= 1
+        with _socket_slot(subject, kind="tts") as claimed:
+            if not claimed:
+                await client.close(code=1008, reason="voice unavailable")
+                return
+            await client.accept()
+            try:
+                text = (await client.receive_text())[:600]
+            except (WebSocketDisconnect, RuntimeError):
+                return
+            if text.strip():
+                await _stream_one_line(client, aiohttp, key, text)
         with contextlib.suppress(RuntimeError):
             await client.close()
+
+
+async def _stream_one_line(client: WebSocket, aiohttp: Any, key: str, text: str) -> None:
+    """Open Gemini Live for one read-aloud turn and pipe its frames to the browser."""
+    try:
+        async with (
+            aiohttp.ClientSession() as http,
+            http.ws_connect(f"{_GEMINI_LIVE_URL}?key={key}") as gemini,
+        ):
+            await gemini.send_str(json.dumps(_tts_setup_message()))
+            await gemini.send_str(
+                json.dumps(
+                    {
+                        "clientContent": {
+                            "turns": [{"role": "user", "parts": [{"text": text}]}],
+                            "turnComplete": True,
+                        }
+                    }
+                )
+            )
+            async for msg in gemini:
+                if msg.type == aiohttp.WSMsgType.TEXT:
+                    frame = msg.data
+                elif msg.type == aiohttp.WSMsgType.BINARY:
+                    # Gemini frames JSON as binary; the browser wants text.
+                    frame = msg.data.decode()
+                else:
+                    break
+                await client.send_text(frame)
+                if '"turnComplete"' in frame or '"turn_complete"' in frame:
+                    break
+    except (aiohttp.ClientError, WebSocketDisconnect, RuntimeError, OSError):
+        pass  # upstream/socket failure — client falls back to buffered TTS on a chunkless close

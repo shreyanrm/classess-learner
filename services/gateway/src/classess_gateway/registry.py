@@ -36,6 +36,9 @@ class RoutingPolicy:
     cost_ceiling: float
     cache_tier: CacheTier
     elevated_only: bool = False
+    # Gateway-owned output ceiling for this capability. The caller never sets max_tokens (a
+    # client-supplied ceiling is an open cheque); providers read it from here on every model call.
+    max_tokens: int = 1024
 
     def allows(self, consent_tier: ConsentTier) -> bool:
         return consent_tier is ConsentTier.ELEVATED or not self.elevated_only
@@ -52,6 +55,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             max_latency_ms=1200,
             cost_ceiling=0.004,
             cache_tier=CacheTier.SEMANTIC,
+            max_tokens=800,
         ),
         RoutingPolicy(
             capability="wobo.turn",
@@ -66,6 +70,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             max_latency_ms=8000,
             cost_ceiling=0.05,
             cache_tier=CacheTier.NONE,
+            max_tokens=500,
         ),
         RoutingPolicy(
             capability="grade.attempt",
@@ -75,6 +80,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             max_latency_ms=1000,
             cost_ceiling=0.003,
             cache_tier=CacheTier.EXACT,
+            max_tokens=300,
         ),
         RoutingPolicy(
             capability="generate.opener",
@@ -84,6 +90,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             max_latency_ms=1500,
             cost_ceiling=0.003,
             cache_tier=CacheTier.EXACT,
+            max_tokens=300,
         ),
         RoutingPolicy(
             capability="verify.math",
@@ -93,6 +100,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             max_latency_ms=4000,
             cost_ceiling=0.05,
             cache_tier=CacheTier.EXACT,
+            max_tokens=1000,
         ),
         RoutingPolicy(
             capability="twin.query",
@@ -102,6 +110,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             max_latency_ms=800,
             cost_ceiling=0.002,
             cache_tier=CacheTier.SEMANTIC,
+            max_tokens=600,
         ),
         RoutingPolicy(
             capability="safety.moderate",
@@ -111,6 +120,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             max_latency_ms=600,
             cost_ceiling=0.002,
             cache_tier=CacheTier.EXACT,
+            max_tokens=200,
         ),
         RoutingPolicy(
             capability="parent.companion.turn",
@@ -120,6 +130,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             max_latency_ms=1500,
             cost_ceiling=0.005,
             cache_tier=CacheTier.SEMANTIC,
+            max_tokens=800,
         ),
         RoutingPolicy(
             capability="generate.digest",
@@ -129,6 +140,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             max_latency_ms=6000,
             cost_ceiling=0.03,
             cache_tier=CacheTier.EXACT,
+            max_tokens=1500,
         ),
         RoutingPolicy(
             capability="generate.course",
@@ -138,6 +150,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             max_latency_ms=8000,
             cost_ceiling=0.03,
             cache_tier=CacheTier.EXACT,
+            max_tokens=1200,
         ),
         # Plexus engines: heavy content generation, warm-cached under content/cache/ so the first
         # learner pays and the rest reuse.
@@ -157,6 +170,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             max_latency_ms=12000,
             cost_ceiling=0.08,
             cache_tier=CacheTier.EXACT,
+            max_tokens=16000,
         ),
         RoutingPolicy(
             capability="engine.simulate",
@@ -166,6 +180,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             max_latency_ms=12000,
             cost_ceiling=0.08,
             cache_tier=CacheTier.EXACT,
+            max_tokens=2000,
         ),
         RoutingPolicy(
             capability="engine.diagram",
@@ -175,6 +190,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             max_latency_ms=10000,
             cost_ceiling=0.05,
             cache_tier=CacheTier.EXACT,
+            max_tokens=6000,
         ),
         # Video routing law (owner verdict 2026-07-07): scene plans are storyboarded on OPUS
         # (frontier.reason) by DEFAULT and get a GPT-5.5 second opinion (openai.frontier) ONLY when
@@ -189,6 +205,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             max_latency_ms=30000,
             cost_ceiling=0.15,
             cache_tier=CacheTier.EXACT,
+            max_tokens=16000,
         ),
         RoutingPolicy(
             capability="archetype.classify",
@@ -198,6 +215,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             max_latency_ms=2000,
             cost_ceiling=0.01,
             cache_tier=CacheTier.EXACT,
+            max_tokens=400,
             elevated_only=True,
         ),
         RoutingPolicy(
@@ -208,6 +226,7 @@ _POLICIES: dict[str, RoutingPolicy] = {
             max_latency_ms=3000,
             cost_ceiling=0.04,
             cache_tier=CacheTier.NONE,
+            max_tokens=600,
             elevated_only=True,
         ),
     )

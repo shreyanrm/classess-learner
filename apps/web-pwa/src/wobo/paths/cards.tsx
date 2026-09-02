@@ -23,6 +23,7 @@ import {
   type FormulaCardSpec,
   type MakerPlanSpec,
 } from '../create';
+import { refusalLine } from '../refusals';
 import { freshOffers } from './classify';
 import type { ActionAttachment, Flashcard, QuizItem, TurnExtras } from './types';
 
@@ -557,8 +558,10 @@ function ActionCard({ turnId, action }: { turnId: string; action: ActionAttachme
     try {
       const result = await capability.run({ router, sdk }, action.params);
       patch({ status: 'taken', result });
-    } catch {
-      patch({ status: 'taken', result: 'that did not go through — ask me again in a moment.' });
+    } catch (err) {
+      // A refusal from the brain (not signed in, today spent) is said in her own words, so a
+      // capability card never dead-ends on a generic apology that hides the real reason.
+      patch({ status: 'taken', result: refusalLine(err).text });
     } finally {
       setRunning(false);
     }

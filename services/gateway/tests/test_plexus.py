@@ -27,10 +27,17 @@ def cache_dir(tmp_path, monkeypatch):
     return tmp_path
 
 
-def invoke(capability: str, **payload: object):
+# The verified subject is threaded from the door into the engines' one-at-a-time slot, so a
+# direct Gateway.invoke stands in for one — an engine call with no subject at all is refused.
+TEST_SUBJECT = "plexus-test-learner"
+
+
+def invoke(capability: str, subject: str = TEST_SUBJECT, **payload: object):
     gw = Gateway(MockProvider(), InMemoryCache(), MetricsSink())
     return gw.invoke(
-        capability, CapabilityRequest(consent_tier=ConsentTier.UN_ELEVATED, payload=dict(payload))
+        capability,
+        CapabilityRequest(consent_tier=ConsentTier.UN_ELEVATED, payload=dict(payload)),
+        subject=subject,
     )
 
 
@@ -43,10 +50,11 @@ def test_engine_output_is_verified_with_provenance(cap: str) -> None:
     out = resp.output
     assert out["verified"] is True
     assert out["seeded"] is False
+    # The SERVED provenance carries no model identifier — model ids never leave the brain.
     assert out["provenance"] == {
         "engine": cap,
-        "model": "mock",
         "prompt_version": store.PROMPT_VERSION,
+        "source": "generated",
     }
     assert out["concept"] == "ohm's law"
     assert out["modality"] == cap.removeprefix("engine.")
@@ -659,7 +667,7 @@ def test_generate_sim_live_retries_once_feeding_the_verifier_reason(monkeypatch)
     drafts = iter([_BAD_SIM, _GOOD_SIM])
     seen: list[str] = []
 
-    def fake(model, modality, user, fbs):  # noqa: ANN001
+    def fake(model, modality, user, fbs, **_):  # noqa: ANN001
         seen.append(user)
         return next(drafts), 5
 
@@ -751,7 +759,7 @@ def _patch_complete(monkeypatch, plans: dict[str, str]) -> list[str]:
 
     calls: list[str] = []
 
-    def fake(model: str, modality: str, user: str, fbs):  # noqa: ANN001
+    def fake(model: str, modality: str, user: str, fbs, **_):  # noqa: ANN001
         calls.append(model)
         return plans[model], 7
 
@@ -1033,22 +1041,62 @@ def test_board_shared_hit_reuses_and_personalization_never_baked_in(cache_dir) -
     assert "user" not in record and "user" not in record["artifact"]
 
 
-def test_one_generation_per_user_gate() -> None:
+def test_one_generation_per_learner_gate() -> None:
     from classess_gateway.plexus import engines
 
-    # simulate a generation already in flight for this user
+    # simulate a generation already in flight for this learner
     engines._gen_in_flight.add("busy-user")
     try:
         with pytest.raises(engines.GenerationBusy):
-            invoke("engine.compose", concept="fractions", user="busy-user")
-        # a different user is unaffected — one slot is per user, not global
-        assert invoke("engine.compose", concept="fractions", user="free-user").output["verified"]
+            invoke("engine.compose", subject="busy-user", concept="fractions")
+        # a different learner is unaffected — one slot per learner, not one globally
+        assert invoke("engine.compose", subject="free-user", concept="fractions").output[
+            "verified"
+        ]
     finally:
         engines._gen_in_flight.discard("busy-user")
-    # once the slot clears, the first user proceeds
-    assert invoke("engine.compose", concept="algebra", user="busy-user").output["verified"]
+    # once the slot clears, the first learner proceeds
+    assert invoke("engine.compose", subject="busy-user", concept="algebra").output["verified"]
     # the slot is always released after a generation — nothing leaks
     assert engines._gen_in_flight == set()
+
+
+def test_the_slot_ignores_a_client_supplied_user_field() -> None:
+    """``payload["user"]`` was the slot key. Naming a victim there squatted THEIR slot for the
+    length of a generation; the key is the verified subject now, so the field does nothing."""
+    from classess_gateway.plexus import engines
+
+    engines._gen_in_flight.add("victim")
+    try:
+        # the body names the victim; the door says this is someone else, and the door wins
+        assert invoke("engine.compose", subject="attacker", concept="fractions", user="victim")
+        # and the victim's own slot is still exactly where they left it
+        assert "victim" in engines._gen_in_flight
+    finally:
+        engines._gen_in_flight.discard("victim")
+
+
+def test_an_unattributed_generation_is_refused_not_waved_through() -> None:
+    """Omitting the key used to skip the gate entirely — unlimited concurrent generations for
+    the price of deleting one field. An empty subject is a refusal."""
+    from classess_gateway.plexus import engines
+
+    with pytest.raises(engines.GenerationUnattributed):
+        engines.run_engine(
+            capability="engine.compose",
+            payload={"concept": "fractions"},
+            provider_model="mock",
+            live=False,
+            subject="",
+        )
+    with pytest.raises(engines.GenerationUnattributed):
+        engines.run_engine(
+            capability="engine.compose",
+            payload={"concept": "fractions"},
+            provider_model="mock",
+            live=False,
+            subject=None,
+        )
 
 
 # --- sanitizer ---------------------------------------------------------------------------

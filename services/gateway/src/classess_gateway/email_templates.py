@@ -18,7 +18,7 @@ from collections.abc import Callable
 from typing import Any
 
 # --- brand tokens (locked spec) -------------------------------------------------------
-FONT = "'Google Sans', 'Helvetica Neue', Arial, sans-serif"
+FONT = "'Poppins', 'Helvetica Neue', Arial, sans-serif"
 CURSIVE = "'Caveat', 'Segoe Script', cursive"
 PAGE = "#F4F4F7"       # the light gray behind the card
 CANVAS = "#FFFFFF"     # the card itself

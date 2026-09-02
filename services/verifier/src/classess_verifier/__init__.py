@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from .cas import (
     CasError,
+    CasTimeout,
     expressions_equivalent,
     parse_equation,
     solution_satisfies,
@@ -41,6 +42,7 @@ __all__ = [
     "DEFAULT_THRESHOLD",
     "VERSION",
     "CasError",
+    "CasTimeout",
     "CheckResult",
     "CrossCheckResult",
     "CrossChecker",

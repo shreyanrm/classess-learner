@@ -1,6 +1,7 @@
 import { InMemoryKgtopg, type KGtoPG } from '@classess/kgtopg-contract-seed';
 import { resolveConfig, type SdkConfig } from './config';
 import { type EventProvider, InMemoryEventProvider, SupabaseOutboxEventProvider } from './events';
+import { configureGatewayAuth, fetchMe, type Me } from './gateway';
 import {
   type AccountProfile,
   DevMockIdentity,
@@ -38,6 +39,11 @@ export interface Sdk {
   /** Learner state + Wobo threads: localStorage in local mode; Supabase-reconciled in live mode. */
   state: StateProvider;
   /**
+   * Who the brain thinks this learner is, and what is left of their day. Null when no gateway is
+   * configured (a keyless build has no meter to read). The client never computes a limit; it asks.
+   */
+  me(): Promise<Me | null>;
+  /**
    * The optional account layer — Supabase Auth as an ADDITIVE identity+sync layer, present whenever
    * the Supabase env keys are configured (even in dev-mock/local mode). Signing in never becomes a
    * wall: the local subject keeps working; a Google session just adds a real identity and syncs the
@@ -58,6 +64,16 @@ export interface CachedProfile {
 /** The additive account surface the app offers from onboarding and You. */
 export interface AccountLayer {
   isAuthenticated(): boolean;
+  /** auth.uid() for the current session — null when there is none yet. */
+  subjectId(): string | null;
+  /** True when this session is an anonymous learner (a JWT, no account). */
+  isAnonymous(): boolean;
+  /**
+   * Make sure this device has a session before anything talks to the brain: an anonymous sign-in
+   * when there is none. Resolves to the subject id, or null when it could not be established
+   * (anonymous sign-ins disabled, offline) — the app then runs local-only, as it always could.
+   */
+  ensureSession(): Promise<string | null>;
   /** The signed-in identity's claims (email/name/avatar), or null when signed out. */
   profile(): AccountProfile | null;
   /** Read the cached profile row for the signed-in subject (null when none / signed out). */
@@ -138,6 +154,38 @@ export function createSdk(overrides: Partial<SdkConfig> = {}): Sdk {
     ? new SupabaseStateProvider(rest, subjectId)
     : new LocalStateProvider();
 
+  // One anonymous sign-in per device, at most one in flight: the boot effect asks for it, and any
+  // gateway call that arrives first asks for it too, so a turn taken in the first second of a
+  // learner's life still carries a real JWT instead of meeting a sign-in wall.
+  let establishing: Promise<void> | null = null;
+  const establishSession = async (): Promise<void> => {
+    if (!supabaseAuth || supabaseAuth.isAuthenticated()) return;
+    establishing ??= supabaseAuth.auth
+      .signInAnonymously()
+      .then(() => undefined)
+      .catch(() => undefined) // refused or offline — the device stays local, never broken
+      .finally(() => {
+        establishing = null;
+      });
+    await establishing;
+  };
+
+  // Identity for every gateway call, bound once. With Supabase keys the learner's own JWT rides
+  // each request (anonymous or signed in); without them this is a keyless dev/mock build and the
+  // gateway is told which local subject is calling — a header it honours only outside production.
+  configureGatewayAuth(
+    supabaseAuth
+      ? {
+          accessToken: async () => {
+            await establishSession();
+            return (await supabaseAuth.getAccessToken()) ?? null;
+          },
+        }
+      : config.supabaseAccessToken
+        ? { accessToken: () => config.supabaseAccessToken ?? null }
+        : { devSubject: config.mockSubjectId },
+  );
+
   const llm: LLMProvider =
     config.llmMode === 'live' && config.gatewayUrl
       ? new GatewayLLMProvider(config.gatewayUrl)
@@ -161,6 +209,12 @@ export function createSdk(overrides: Partial<SdkConfig> = {}): Sdk {
   const account: AccountLayer | undefined = supabaseAuth
     ? {
         isAuthenticated: () => supabaseAuth.isAuthenticated(),
+        subjectId: () => supabaseAuth.subjectId,
+        isAnonymous: () => supabaseAuth.isAnonymous(),
+        ensureSession: async () => {
+          await establishSession();
+          return supabaseAuth.subjectId;
+        },
         profile: () => supabaseAuth.accountProfile(),
         fetchProfile: async () => {
           const sub = supabaseAuth.subjectId;
@@ -189,5 +243,8 @@ export function createSdk(overrides: Partial<SdkConfig> = {}): Sdk {
       }
     : undefined;
 
-  return { config, identity, kgtopg, events, llm, content, messaging, payment, state, account };
+  const me = async (): Promise<Me | null> =>
+    config.gatewayUrl ? fetchMe(config.gatewayUrl) : null;
+
+  return { config, identity, kgtopg, events, llm, content, messaging, payment, state, me, account };
 }

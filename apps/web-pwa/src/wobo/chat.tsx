@@ -7,6 +7,7 @@
 
 import type { WoboMood } from '@classess/wobo';
 import { createContext, useContext } from 'react';
+import { scoped } from '../store/scope';
 import type { TurnExtras } from './paths/types';
 
 export interface ChatTurn {
@@ -40,13 +41,15 @@ export interface WoboChat {
 // One conversation for life, append-only, local-first. Only a tail is ever held in memory or
 // sent to the model — the archive is for the learner to scroll, not for Wobo to re-read.
 
+// Scoped to the signed-in subject (store/scope.ts): a shared device must never show one learner
+// the other's conversation, and sign-out takes the transcript with it.
 const ARCHIVE_KEY = 'clss-wobo-archive-v1';
 const ARCHIVE_CAP = 2000; // ponytail: localStorage quota guard; move to IndexedDB if anyone outgrows it
 export const CHAT_PAGE = 40;
 
 export function readArchive(): ChatTurn[] {
   try {
-    const a = JSON.parse(localStorage.getItem(ARCHIVE_KEY) ?? '[]');
+    const a = JSON.parse(scoped.getItem(ARCHIVE_KEY) ?? '[]');
     return Array.isArray(a) ? (a as ChatTurn[]) : [];
   } catch {
     return [];
@@ -55,7 +58,7 @@ export function readArchive(): ChatTurn[] {
 
 export function writeArchive(turns: ChatTurn[]): void {
   try {
-    localStorage.setItem(ARCHIVE_KEY, JSON.stringify(turns.slice(-ARCHIVE_CAP)));
+    scoped.setItem(ARCHIVE_KEY, JSON.stringify(turns.slice(-ARCHIVE_CAP)));
   } catch {
     // storage unavailable — the conversation lives for this session only
   }

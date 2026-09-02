@@ -24,7 +24,9 @@ import { unmetPrereqs } from '../data/catalog';
 import type { Chapter, Topic } from '../data/model';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
+import { scoped } from '../store/scope';
 import { hash } from '../ui/art';
+import { AVATAR_KEY } from '../ui/avatars';
 import { type BiomePalette, biomeFor, resolveBiome } from '../ui/biomes';
 import { Animal, type AnimalKind, CAST, type CastId } from '../ui/cast';
 import type { SubjectTone } from '../ui/hues';
@@ -485,8 +487,7 @@ export function AdventureRoadmap({
   };
 
   const doneCount = cps.filter((c) => c.state === 'done').length;
-  const storedAvatar = (typeof localStorage !== 'undefined' &&
-    localStorage.getItem('clss-avatar-v1')) as CastId | null;
+  const storedAvatar = scoped.getItem(AVATAR_KEY) as CastId | null;
   const avatarId: CastId =
     storedAvatar && storedAvatar in CAST
       ? storedAvatar

@@ -112,7 +112,7 @@ export function ChatScreen() {
       // 'idle' back from start() means getUserMedia was denied/blocked — don't fail silently.
       const note =
         state === 'unavailable'
-          ? 'Voice arrives with a key'
+          ? 'My voice is asleep right now — the words still arrive'
           : state === 'idle'
             ? 'Allow microphone access to talk with her'
             : null;

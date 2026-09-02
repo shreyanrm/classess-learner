@@ -99,16 +99,39 @@ def _override_key(concept: str, scope: dict[str, str] | None) -> str:
     return "|".join([*parts, concept]).lower().strip()
 
 
-def concept_id(concept: str, scope: dict[str, str] | None = None) -> str:
-    """Resolve a (topic, curriculum scope) request to its board-agnostic concept id. An explicit
-    registry override wins; otherwise the id IS the topic's normalized identity, so two boards that
-    name a topic identically collapse to one id (and one cache entry)."""
+def concept_identity(concept: str, scope: dict[str, str] | None = None) -> str:
+    """The FULL normalized identity of a concept — lowercased, whitespace-collapsed, untruncated.
+
+    This, not the slug, is what the cache digest binds to. ``_slug`` cuts at 60 characters, so two
+    different long topics that share a prefix produce the same slug; keying on the slug would let
+    one topic's artifact be served for another (cache poisoning by collision). The slug stays as
+    the human-readable half of the filename; the digest carries the real identity."""
     ov = _overrides()
     if ov:
         hit = ov.get(_override_key(concept, scope))
         if hit:
-            return _slug(hit)
-    return _slug(concept)
+            concept = hit
+    return re.sub(r"\s+", " ", concept).strip().lower()
+
+
+def concept_id(concept: str, scope: dict[str, str] | None = None) -> str:
+    """Resolve a (topic, curriculum scope) request to its board-agnostic concept id. An explicit
+    registry override wins; otherwise the id IS the topic's normalized identity, so two boards that
+    name a topic identically collapse to one id (and one cache entry)."""
+    return _slug(concept_identity(concept, scope))
+
+
+def _inside_cache(path: Path) -> Path:
+    """Assert a computed artifact path really lands inside the cache directory.
+
+    Every path component is slugged before it gets here, so this can only fire on a coding
+    mistake — but the assertion is what makes that guarantee checkable rather than assumed
+    (a traversal in ``difficulty`` or ``modality`` would otherwise write anywhere on disk)."""
+    root = cache_dir().resolve()
+    resolved = path.resolve()
+    if not resolved.is_relative_to(root):
+        raise ValueError(f"artifact path escapes the cache directory: {path}")
+    return resolved
 
 
 def artifact_path(
@@ -116,20 +139,71 @@ def artifact_path(
 ) -> Path:
     # The key is the CONCEPT (board-agnostic), never the curriculum path. ``scope`` is consulted
     # only to resolve the conceptId (registry overrides); board/grade/chapter never touch the key.
+    # modality and difficulty are slugged BEFORE they become path components: they arrive from the
+    # request body, and "../../etc" is a directory traversal, not a difficulty.
     cid = concept_id(concept, scope)
-    body = f"{cid}\x00{modality}\x00{difficulty}"
-    digest = hashlib.sha256(body.encode()).hexdigest()[:12]
-    return cache_dir() / modality / f"{cid}--{difficulty}--{digest}.json"
+    modality = _slug(modality)
+    difficulty = _slug(difficulty)
+    identity = concept_identity(concept, scope)
+    digest = hashlib.sha256(f"{identity}\x00{modality}\x00{difficulty}".encode()).hexdigest()[:16]
+    return _inside_cache(cache_dir() / modality / f"{cid}--{difficulty}--{digest}.json")
+
+
+def _legacy_artifact_path(
+    concept: str, modality: str, difficulty: str, scope: dict[str, str] | None = None
+) -> Path:
+    """Where this artifact lived before the digest bound to the full concept identity.
+
+    Read-only: :func:`load` falls back to it and re-indexes the record onto the current key, so a
+    warm cache survives the change without a bulk copy and without ever touching the old file
+    (retention law). :func:`migrate` does the same sweep for an operator who wants it done eagerly.
+    """
+    cid = concept_id(concept, scope)
+    digest = hashlib.sha256(f"{cid}\x00{modality}\x00{difficulty}".encode()).hexdigest()[:12]
+    name = f"{cid}--{_slug(difficulty)}--{digest}.json"
+    return _inside_cache(cache_dir() / _slug(modality) / name)
+
+
+def _carry_manifests(src: Path, dst: Path) -> None:
+    """Re-key a video's render manifests alongside its record.
+
+    A baked MP4 is found through ``{stem}.*.render-manifest.json``, so a record that moves to a
+    new key without its manifests silently loses the film it already has. The MP4 itself is
+    named independently and lives in the same directory, so only the manifests are re-keyed."""
+    for man in src.parent.glob(f"{src.stem}.*.render-manifest.json"):
+        target = dst.parent / man.name.replace(src.stem, dst.stem, 1)
+        if not target.exists():
+            target.write_text(man.read_text())
+
+
+def _read(path: Path) -> dict[str, Any] | None:
+    try:
+        data = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return None
+    return data if isinstance(data, dict) else None
 
 
 def load(
     concept: str, modality: str, difficulty: str, scope: dict[str, str] | None = None
 ) -> dict[str, Any] | None:
     path = artifact_path(concept, modality, difficulty, scope)
-    try:
-        return json.loads(path.read_text())
-    except (OSError, json.JSONDecodeError):
+    record = _read(path)
+    if record is not None:
+        return record
+    legacy = _legacy_artifact_path(concept, modality, difficulty, scope)
+    if legacy == path:
         return None
+    record = _read(legacy)
+    if record is None:
+        return None
+    try:  # self-heal: re-index onto the current key. The old file is never touched.
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(legacy.read_text())
+        _carry_manifests(legacy, path)
+    except OSError:
+        pass  # a read-only cache dir still serves the record; it just re-reads the legacy path
+    return record
 
 
 def save(
@@ -212,12 +286,31 @@ def _alias_log() -> Path:
     return cache_dir() / "_migrations" / "aliases.jsonl"
 
 
+def _logged_aliases() -> set[tuple[str, str]]:
+    """The (from, to) pairs already recorded, so a re-run reports nothing new."""
+    log = _alias_log()
+    seen: set[tuple[str, str]] = set()
+    if not log.is_file():
+        return seen
+    for line in log.read_text(encoding="utf-8").splitlines():
+        try:
+            rec = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        seen.add((str(rec.get("from")), str(rec.get("to"))))
+    return seen
+
+
 def migrate() -> list[dict[str, Any]]:
-    """Re-index the on-disk cache onto concept keys. Returns the alias records written."""
+    """Re-index the on-disk cache onto concept keys. Returns the alias records written.
+
+    Idempotent: a pair already in the alias log is skipped, so running this twice is a no-op
+    (the source file is never touched, so it keeps mapping to the same destination forever)."""
     aliases: list[dict[str, Any]] = []
     root = cache_dir()
     if not root.is_dir():
         return aliases
+    already = _logged_aliases()
     for mdir in sorted(p for p in root.iterdir() if p.is_dir() and not p.name.startswith("_")):
         modality = mdir.name
         for path in sorted(mdir.glob("*.json")):
@@ -234,14 +327,12 @@ def migrate() -> list[dict[str, Any]]:
             new_path = artifact_path(concept, modality, difficulty)  # concept identity — no scope
             if new_path == path:
                 continue  # already conceptId-keyed
+            if (path.name, new_path.name) in already:
+                continue  # re-indexed on an earlier run
             if not new_path.exists():
                 new_path.parent.mkdir(parents=True, exist_ok=True)
                 new_path.write_text(path.read_text())  # re-index; old file untouched (retention)
-                if modality == "video":  # keep a re-keyed video's baked MP4: copy its manifests
-                    for man in path.parent.glob(f"{path.stem}.*.render-manifest.json"):
-                        tgt = new_path.parent / man.name.replace(path.stem, new_path.stem, 1)
-                        if not tgt.exists():
-                            tgt.write_text(man.read_text())
+                _carry_manifests(path, new_path)  # keep a re-keyed video's baked MP4
             alias = {
                 "from": path.name,
                 "to": new_path.name,

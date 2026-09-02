@@ -6,6 +6,7 @@ the verifier grounding that decides where the working breaks, the prompt assembl
 
 from __future__ import annotations
 
+import pytest
 from classess_gateway.providers import MockProvider
 from classess_gateway.wobo import (
     WOBO_INTRO,
@@ -14,6 +15,13 @@ from classess_gateway.wobo import (
     _ground_working,
     is_first_meeting,
 )
+
+
+@pytest.fixture(autouse=True)
+def _isolated_content_cache(tmp_path, monkeypatch):
+    """Her mock component/viz turns run the real engines, which write artifacts. Point the file
+    cache at a tmp dir so a test run never leaves files in the repo's content/cache."""
+    monkeypatch.setenv("PLEXUS_CACHE_DIR", str(tmp_path))
 
 
 def test_ground_working_finds_the_first_bad_form() -> None:
@@ -209,16 +217,17 @@ def test_legacy_capability_name_still_reaches_the_wobo_turn() -> None:
     assert canonical_capability("grade.attempt") == "grade.attempt"
 
 
-def test_legacy_capability_endpoint_is_not_a_404() -> None:
+def test_legacy_capability_endpoint_is_not_a_404(auth) -> None:
     from classess_gateway.app import Gateway, create_app
     from classess_gateway.cache import InMemoryCache
     from classess_gateway.telemetry import MetricsSink
     from fastapi.testclient import TestClient
 
     client = TestClient(create_app(Gateway(MockProvider(), InMemoryCache(), MetricsSink())))
-    body = {"consent_tier": "un_elevated", "payload": {}}
-    legacy = client.post("/v1/capability/vidya.turn", json=body)
-    current = client.post("/v1/capability/wobo.turn", json=body)
+    body = {"payload": {}}
+    headers = auth()
+    legacy = client.post("/v1/capability/vidya.turn", json=body, headers=headers)
+    current = client.post("/v1/capability/wobo.turn", json=body, headers=headers)
     assert legacy.status_code == current.status_code == 200
     assert legacy.json()["capability"] == current.json()["capability"] == "wobo.turn"
 

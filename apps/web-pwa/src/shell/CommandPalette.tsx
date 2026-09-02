@@ -10,6 +10,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { chaptersBySubject, displaySubjects } from '../data/catalog';
+import { forgetScope } from '../store/scope';
 import { useSdk } from '../store/sdk';
 import { FROST, fluidType, Kbd, SectionLabel, surface } from '../ui/kit';
 import { getThemePref, setThemePref } from '../ui/theme';
@@ -253,7 +254,12 @@ export function CommandPalette() {
         hint: 'Account',
         section: 'actions',
         search: 'sign out log out account',
-        run: () => void account.signOut().finally(() => window.location.assign('/')),
+        run: () => {
+          // Same law as the You screen: signing out takes this learner's device keys with it.
+          const subject = account.subjectId();
+          if (subject) forgetScope(subject);
+          void account.signOut().finally(() => window.location.assign('/'));
+        },
       });
     else if (account)
       items.push({

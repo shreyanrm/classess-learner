@@ -39,13 +39,15 @@ from pathlib import Path
 from typing import Any
 
 from classess_gateway.plexus import store
+from classess_gateway.providers import timeout_for
+from classess_gateway.telemetry import record_cost
 
 logger = logging.getLogger("classess.gateway.plexus.validate")
 
 PASS_THRESHOLD = 70.0  # overall score 0..100; below this (or a critical error) → escalate
 
 _JUDGE_SYSTEM = (
-    "You are a strict quality judge for Classess, an Indian K-12 guided-discovery learning app in "
+    "You are a strict quality judge for Wobo, an Indian K-12 guided-discovery learning app in "
     "the spirit of Brilliant. Score ONE generated learning artifact against these bars:\n"
     "  • correctness — every fact, formula, and label is right for an Indian middle-school learner "
     "(NCERT framing where it fits). A wrong fact or a wrong-subject law is a CRITICAL error.\n"
@@ -104,7 +106,11 @@ def _judge(
             ],
             max_tokens=800,
             temperature=0.0,
+            # The judge runs on a background thread after the serve. Without a deadline a hung
+            # judge leaks that thread for the life of the process.
+            timeout=timeout_for("engine.compose"),
         )
+        record_cost(capability=f"engine.{modality}", model=judge_model, response=response)
         text = response.choices[0].message.content or ""
     except Exception:  # a flaky judge must never block a serve — promote as-is
         logger.warning("validate: judge call raised — promoting artifact unscored", exc_info=True)

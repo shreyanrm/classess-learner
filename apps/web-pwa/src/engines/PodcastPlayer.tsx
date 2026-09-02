@@ -12,6 +12,7 @@
  * ponytail: minimize collapses within the card; a truly floating cross-page dock is the upgrade path.
  */
 
+import { gatewayFetch } from '@classess/sdk';
 import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -124,7 +125,9 @@ export function PodcastPlayer({
       const chap = spec.chapters[i];
       if (!ac || !chap || !GATEWAY_URL) return null;
       try {
-        const res = await fetch(`${GATEWAY_URL}/v1/voice/tts`, {
+        // Identity rides the call (gatewayFetch): the brain meters the lecture like every other
+        // spoken line. A refusal drops the chapter to its transcript, which is always there.
+        const res = await gatewayFetch(`${GATEWAY_URL}/v1/voice/tts`, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ text: chap.script }),

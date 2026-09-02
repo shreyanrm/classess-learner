@@ -38,4 +38,11 @@ HEALTHCHECK --interval=15s --timeout=3s --start-period=10s --retries=3 \
 
 # Render injects PORT; Fly routes to internal_port 8081. --no-access-log: the app emits
 # its own structured JSON request lines, uvicorn's plaintext ones would just duplicate.
-CMD ["sh", "-c", "uvicorn classess_gateway.app:app --host 0.0.0.0 --port ${PORT:-8081} --no-access-log"]
+#
+# --forwarded-allow-ips "": uvicorn's own proxy-header middleware would REWRITE the client
+# address from X-Forwarded-For whenever the peer is trusted (its default trusts 127.0.0.1),
+# and that header is caller-controlled. The rate limiter would then be handing a fresh bucket
+# to anyone who rotates a header. One decision in one place instead: uvicorn always reports
+# the true peer, and the gateway believes a forwarded hop only under TRUST_PROXY=1
+# (app._client_ip), where it takes the LAST hop — the one our own platform appended.
+CMD ["sh", "-c", "uvicorn classess_gateway.app:app --host 0.0.0.0 --port ${PORT:-8081} --no-access-log --forwarded-allow-ips ''"]

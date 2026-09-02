@@ -1,22 +1,30 @@
 'use client';
 
 /**
- * Wobo's voice — Gemini Live through the gateway relay (DESIGN.md §4: voice via the Gemini path).
- * The browser streams 16 kHz PCM16 up the gateway websocket; her 24 kHz PCM replies play back with
- * minimal buffering. No key ever reaches the client — without one the hook resolves to
- * 'unavailable', silently.
+ * Wobo's voice — a live conversation through the gateway relay (DESIGN.md §4). The browser streams
+ * 16 kHz PCM16 up the gateway websocket; her 24 kHz PCM replies play back with minimal buffering.
+ * No key, no model and no limit ever reaches the client: the relay is gated by a single-use token
+ * the gateway mints for this learner, and without one the hook resolves to 'unavailable', silently.
  */
 
+import { mintVoiceToken, voiceSocketUrl } from '@classess/sdk';
 import type { WoboMood } from '@classess/wobo';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type VoiceStatus = 'unavailable' | 'idle' | 'connecting' | 'listening' | 'speaking';
 
+/**
+ * What a start attempt landed on. 'cancelled' is its own answer: the learner let go of the orb
+ * before the session was up, so nothing is wrong and nothing should be said about it — an
+ * apologetic "allow microphone access" for a half-second hold is a lie.
+ */
+export type VoiceOutcome = VoiceStatus | 'cancelled';
+
 export interface WoboVoice {
   status: VoiceStatus;
-  /** Resolves to the status the attempt landed on ('listening' when voice is live). */
-  start: () => Promise<VoiceStatus>;
-  /** Push-to-talk release: stop capturing the learner and tell Gemini the utterance ended, but
+  /** Resolves to the outcome the attempt landed on ('listening' when voice is live). */
+  start: () => Promise<VoiceOutcome>;
+  /** Push-to-talk release: stop capturing the learner and tell the brain the utterance ended, but
    *  keep the session alive so her spoken reply streams back — then close when she finishes (or a
    *  safety timeout fires). The one end-of-utterance seam; plain stop() cuts her off mid-word. */
   finishTurn: () => void;
@@ -25,7 +33,7 @@ export interface WoboVoice {
 
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
 
-/** The Gemini Live server frames we care about: her audio, transcripts, and control signals. */
+/** The relay frames we care about: her audio, transcripts, and control signals. */
 interface LiveServerMessage {
   serverContent?: {
     interrupted?: boolean;
@@ -74,6 +82,59 @@ export function base64ToFloat32(b64: string): Float32Array<ArrayBuffer> {
   return out;
 }
 
+/** Stop every track on a stream — the one thing that actually closes the mic indicator. */
+function releaseMic(stream: MediaStream): void {
+  for (const track of stream.getTracks()) track.stop();
+}
+
+export type VoiceAcquisition =
+  | { status: 'ok'; stream: MediaStream; token: string }
+  | { status: 'cancelled' }
+  | { status: 'idle' }
+  | { status: 'unavailable' };
+
+/**
+ * Open the mic, then mint the relay token — in that order, because the permission prompt can sit
+ * for many seconds and a token minted before it would expire in the gap.
+ *
+ * Both steps are awaits, and a push-to-talk hold can end during either one. `stale()` is checked
+ * after each: if the learner has already let go, the mic is released here and the caller is told
+ * 'cancelled', so a short hold can never leave the microphone streaming into a session nobody is
+ * waiting for. Extracted from the hook so exactly this race can be tested.
+ */
+export async function acquireVoiceSession(deps: {
+  stale: () => boolean;
+  mic: () => Promise<MediaStream>;
+  mintToken: () => Promise<{ mode?: string; token?: string } | null>;
+}): Promise<VoiceAcquisition> {
+  let stream: MediaStream;
+  try {
+    stream = await deps.mic();
+  } catch {
+    // Declined, or torn down mid-prompt. A cancelled hold says nothing; a real refusal says so.
+    return deps.stale() ? { status: 'cancelled' } : { status: 'idle' };
+  }
+  if (deps.stale()) {
+    releaseMic(stream);
+    return { status: 'cancelled' };
+  }
+  let session: { mode?: string; token?: string } | null = null;
+  try {
+    session = await deps.mintToken();
+  } catch {
+    session = null; // absent gateway — degrade silently
+  }
+  if (deps.stale()) {
+    releaseMic(stream);
+    return { status: 'cancelled' };
+  }
+  if (session?.mode !== 'relay' || !session.token) {
+    releaseMic(stream);
+    return { status: 'unavailable' };
+  }
+  return { status: 'ok', stream, token: session.token };
+}
+
 interface LiveSession {
   ws: WebSocket;
   stream: MediaStream;
@@ -104,6 +165,10 @@ export function useWoboVoice(options?: {
   const opts = useRef(options);
   opts.current = options;
   const live = useRef<LiveSession | null>(null);
+  // The turn epoch. Every start() takes a number; stop() and finishTurn() bump it. Anything that
+  // comes back from an await belonging to a superseded epoch tears itself down instead of landing —
+  // this is what keeps a half-second push-to-talk hold from leaving the microphone open.
+  const epoch = useRef(0);
 
   const flush = useCallback((l: LiveSession) => {
     const i = l.inTxt.trim();
@@ -115,6 +180,7 @@ export function useWoboVoice(options?: {
   }, []);
 
   const stop = useCallback(() => {
+    epoch.current++; // any start() still in flight is now stale and will tear itself down
     const l = live.current;
     live.current = null;
     if (l) {
@@ -135,53 +201,58 @@ export function useWoboVoice(options?: {
   // Never leave the mic open past unmount.
   useEffect(() => stop, [stop]);
 
-  const start = useCallback(async (): Promise<VoiceStatus> => {
+  const start = useCallback(async (): Promise<VoiceOutcome> => {
     if (live.current) return 'listening';
     if (!GATEWAY_URL) {
       setStatus('unavailable');
       return 'unavailable';
     }
+    const mine = ++epoch.current;
+    const stale = () => epoch.current !== mine;
+    const gateway = GATEWAY_URL;
     setStatus('connecting');
 
-    // Mic FIRST: the permission prompt can sit for many seconds, so we must not mint the
-    // single-use relay token until after it clears — otherwise the token can expire in the gap
-    // and the relay closes 1008 before a word is spoken (the owner's "mic doesn't work").
-    let stream: MediaStream;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        audio: { echoCancellation: true, noiseSuppression: true },
-      });
-    } catch {
-      setStatus('idle'); // mic declined — voice stays available for a later yes
-      return 'idle';
+    // Mic first, then the token (see acquireVoiceSession) — and a hold that ends during either
+    // await comes back 'cancelled' with the microphone already released.
+    const acquired = await acquireVoiceSession({
+      stale,
+      mic: () =>
+        navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: true, noiseSuppression: true },
+        }),
+      // Identity is proved over authenticated HTTP; the socket carries the single-use token it mints.
+      mintToken: () => mintVoiceToken(gateway),
+    });
+    if (acquired.status !== 'ok') {
+      if (stale() || acquired.status === 'cancelled') {
+        // The learner let go before she was up. Nothing happened, so nothing is announced.
+        setStatus('idle');
+        return 'cancelled';
+      }
+      setStatus(acquired.status); // 'idle' = mic declined; 'unavailable' = no voice right now
+      return acquired.status;
     }
+    const { stream, token } = acquired;
 
-    let session: { mode?: string; token?: string } = {};
-    try {
-      session = (await (await fetch(`${GATEWAY_URL}/v1/voice/session`)).json()) as {
-        mode?: string;
-        token?: string;
-      };
-    } catch {
-      // absent gateway — degrade silently
-    }
-    if (session.mode !== 'relay' || !session.token) {
-      for (const t of stream.getTracks()) t.stop();
-      setStatus('unavailable');
-      return 'unavailable';
-    }
-
-    // The session-minted single-use token gates the relay (never the raw key, never open).
-    const ws = new WebSocket(
-      `${GATEWAY_URL.replace(/^http/, 'ws')}/v1/voice/relay?token=${encodeURIComponent(session.token)}`,
-    );
     // Do NOT force 16 kHz: Safari/iOS silently ignore the hint and hand back 44.1/48 kHz, so we
-    // read the real capture rate below and resample every chunk to the 16 kHz Gemini expects.
+    // read the real capture rate below and resample every chunk to the rate the relay expects.
     const capture = new AudioContext();
     const playback = new AudioContext({ sampleRate: 24000 });
     // A user gesture opened this call, but Safari still starts contexts suspended.
     await capture.resume().catch(() => {});
     await playback.resume().catch(() => {});
+    // Last gate before anything becomes the live session: tear the whole apparatus down here, while
+    // it is still local, rather than assigning live.current to a session nobody is waiting for.
+    if (stale()) {
+      releaseMic(stream);
+      void capture.close();
+      void playback.close();
+      setStatus('idle');
+      return 'cancelled';
+    }
+
+    // The session-minted single-use token gates the relay (never the raw key, never open).
+    const ws = new WebSocket(voiceSocketUrl(gateway, '/v1/voice/relay', token));
     // ponytail: ScriptProcessor over an AudioWorklet — one file, ~64 ms chunks; swap in a
     // worklet module if capture jitter ever becomes audible.
     const source = capture.createMediaStreamSource(stream);
@@ -303,10 +374,13 @@ export function useWoboVoice(options?: {
   }, [setMood, stop, flush]);
 
   const finishTurn = useCallback(() => {
+    // Bump first, always: a release that lands before the session is up must cancel the start that
+    // is still in flight — otherwise the mic opens for a hold that is already over.
+    epoch.current++;
     const l = live.current;
     if (!l || l.finishing) return;
     l.finishing = true;
-    // Stop capturing the moment she lets go — nothing said after release should reach Gemini.
+    // Stop capturing the moment she lets go — nothing said after release should leave the device.
     try {
       l.source.disconnect();
       l.processor.disconnect();
@@ -314,10 +388,10 @@ export function useWoboVoice(options?: {
       // already torn down — nothing to do
     }
     for (const t of l.stream.getTracks()) t.stop();
-    // Signal end-of-utterance so the model finalizes and replies (automatic VAD flushes on this).
-    // ponytail: automatic VAD + audioStreamEnd — good enough for hold-to-talk. Switch to manual
-    // activity markers only if background noise triggers premature replies (needs a relay VAD-config
-    // change that would break the open-mic callers, so left alone).
+    // Signal end-of-utterance so the reply finalizes (automatic voice detection flushes on this).
+    // ponytail: automatic detection + audioStreamEnd — good enough for hold-to-talk. Switch to
+    // manual activity markers only if background noise triggers premature replies (needs a relay
+    // config change that would break the open-mic callers, so left alone).
     if (l.ws.readyState === WebSocket.OPEN) {
       l.ws.send(JSON.stringify({ realtimeInput: { audioStreamEnd: true } }));
     }

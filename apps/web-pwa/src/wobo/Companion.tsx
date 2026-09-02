@@ -187,7 +187,7 @@ export function WoboCompanion() {
       // 'idle' back from start() means getUserMedia was denied/blocked — don't fail silently.
       const note =
         landed === 'unavailable'
-          ? 'voice arrives with a key'
+          ? 'my voice is asleep right now — the words still arrive'
           : landed === 'idle'
             ? 'allow microphone access to talk'
             : null;
@@ -218,7 +218,8 @@ export function WoboCompanion() {
       if (landed !== 'listening') {
         setPtt(false);
         setMood('idle');
-        if (landed === 'unavailable') flashPttNote('voice arrives with a key');
+        if (landed === 'unavailable')
+          flashPttNote('my voice is asleep right now — the words still arrive');
         else if (landed === 'idle') flashPttNote('allow microphone access to talk');
       }
     });

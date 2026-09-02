@@ -60,6 +60,7 @@ def test_mock_engine_serves_canonical_status(cache_dir) -> None:
     resp = gw.invoke(
         "engine.compose",
         CapabilityRequest(consent_tier=ConsentTier.UN_ELEVATED, payload={"concept": "fractions"}),
+        subject="validate-test-learner",
     )
     assert resp.output["status"] == store.CANONICAL  # mock is the stable floor, never provisional
 

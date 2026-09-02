@@ -18,6 +18,7 @@ export * from './client';
 export * from './config';
 export * from './events';
 export * from './fsrs';
+export * from './gateway';
 export * from './identity';
 export * from './providers';
 export * from './state';

@@ -1,4 +1,5 @@
 import type { ConsentTier } from '@classess/contracts';
+import { gatewayFetch, throwForGatewayStatus } from './gateway';
 
 /**
  * The external-provider seams. Each has the same typed interface for its mock and live forms, so
@@ -121,22 +122,25 @@ export class MockLLMProvider implements LLMProvider {
   }
 }
 
-/** The live LLM provider posts to the gateway service. Wired when LLM_MODE=live (Phase 1+). */
+/**
+ * The live LLM provider posts to the gateway service.
+ *
+ * It sends no consent tier and no limit: the brain derives the learner's tier server-side from
+ * their verified subject, so a client-declared tier could never open a door. Identity rides the
+ * `Authorization` header attached by `gatewayFetch`; refusals come back typed (sign-in needed,
+ * budget spent) in Wobo's voice, never as a status code and never naming a provider.
+ */
 export class GatewayLLMProvider implements LLMProvider {
   constructor(private readonly gatewayUrl: string) {}
 
-  async invoke(
-    capability: string,
-    input: CapabilityInput,
-    ctx: { consentTier: ConsentTier },
-  ): Promise<LLMResult> {
-    const res = await fetch(`${this.gatewayUrl}/v1/capability/${capability}`, {
+  async invoke(capability: string, input: CapabilityInput): Promise<LLMResult> {
+    const res = await gatewayFetch(`${this.gatewayUrl}/v1/capability/${capability}`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ consent_tier: ctx.consentTier, payload: input }),
+      body: JSON.stringify({ payload: input }),
     });
     if (res.status === 403) throw new ConsentDeniedError(capability);
-    if (!res.ok) throw new Error(`gateway ${capability} failed: ${res.status}`);
+    await throwForGatewayStatus(res);
     const data = (await res.json()) as {
       capability: string;
       output: unknown;

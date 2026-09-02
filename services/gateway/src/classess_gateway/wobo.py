@@ -36,6 +36,9 @@ from typing import Any
 
 from classess_verifier.cas import CasError, solution_satisfies, step_preserves_solutions
 
+from classess_gateway.providers import max_tokens_for, timeout_for
+from classess_gateway.telemetry import record_cost
+
 WOBO_PRIMARY = "anthropic/claude-haiku-4-5"
 WOBO_ESCALATE = "anthropic/claude-sonnet-4-6"
 
@@ -69,8 +72,8 @@ You are ONE mind. Whatever machinery works beneath you, the learner only ever me
 voice, the same memory of them, the same personality — in text, in voice, and in your ink on the
 page. You never call yourself an AI model or assistant-model, and you never mention Claude,
 Anthropic, Gemini, Google, GPT, OpenAI, or any model, provider, or tool name. If a learner asks what
-you are or what powers you, you're Wobo, their AI wobot — Classess built you to learn how they
-think — and you move on warmly. You never break character.
+you are or what powers you, you're Wobo, their AI wobot, built to learn how they think — and you
+move on warmly. You never break character.
 
 The first time you ever meet a learner — and ONLY on a turn explicitly marked FIRST MEETING — you
 introduce yourself with exactly this line, word for word, as your whole opening:
@@ -523,7 +526,7 @@ def _hydrate_component(kind: str, concept: str, live: bool) -> dict[str, Any] | 
     if kind in ("formula", "maker", "doodle"):
         return {"kind": kind, "concept": concept}
 
-    from classess_gateway.plexus import run_engine
+    from classess_gateway.plexus import INTERNAL_GENERATION, run_engine
 
     model = "anthropic/claude-haiku-4-5"
     try:
@@ -533,6 +536,9 @@ def _hydrate_component(kind: str, concept: str, live: bool) -> dict[str, Any] | 
                 payload={"concept": concept},
                 provider_model=model,
                 live=live,
+                # Inside a turn the learner already paid for: bounded by that turn, and it must
+                # never contend for (or 429) the lesson slot they asked for directly.
+                subject=INTERNAL_GENERATION,
             )
             return {"kind": "sim", "concept": concept, "spec": res.output.get("artifact")}
         res = run_engine(
@@ -540,6 +546,7 @@ def _hydrate_component(kind: str, concept: str, live: bool) -> dict[str, Any] | 
             payload={"concept": concept},
             provider_model=model,
             live=live,
+            subject=INTERNAL_GENERATION,
         )
         artifact = res.output.get("artifact") or {}
         if kind == "quiz":
@@ -568,7 +575,7 @@ _VIZ_PROMPT = {
 
 def _hydrate_viz(kind: str, concept: str, live: bool) -> dict[str, Any] | None:
     """Every visualization is a sanitized SVG from engine.diagram — the one trusted drawing path."""
-    from classess_gateway.plexus import run_engine
+    from classess_gateway.plexus import INTERNAL_GENERATION, run_engine
 
     try:
         res = run_engine(
@@ -576,6 +583,7 @@ def _hydrate_viz(kind: str, concept: str, live: bool) -> dict[str, Any] | None:
             payload={"concept": _VIZ_PROMPT[kind].format(c=concept)},
             provider_model="anthropic/claude-haiku-4-5",
             live=live,
+            subject=INTERNAL_GENERATION,
         )
         svg = res.output.get("artifact")
         if not isinstance(svg, str) or "<svg" not in svg:
@@ -759,19 +767,48 @@ def mock_wobo_turn(payload: dict[str, Any]) -> dict[str, Any]:
 # --- prompt assembly -------------------------------------------------------------------------------
 
 
+# --- what one turn is allowed to cost ---------------------------------------------------------
+# The context packet is the client's description of the screen, and every list in it is as long as
+# the client says it is. Unclipped, one request body assembled a 3.3-million-character prompt: a
+# single metered turn buying a full frontier context window. Each field is clipped where it is
+# read, and the assembled prompt is capped as a backstop, so a turn costs a turn.
+_MAX_PROMPT_CHARS = 12_000
+_MAX_FIELD_CHARS = 2_000
+_MAX_SHORT_CHARS = 200
+_MAX_STEPS = 40
+_MAX_TARGETS = 24
+_MAX_STATE_KEYS = 24
+
+
+def _clip(value: Any, limit: int = _MAX_SHORT_CHARS) -> str:
+    """One string, at most ``limit`` characters. Everything the client sends comes through here."""
+    text = str(value)
+    return text if len(text) <= limit else text[:limit] + "…"
+
+
+def _cap_prompt(prompt: str) -> str:
+    """The backstop. Keeps the head (the screen, the dossier) and the tail (what they just said and
+    the instruction), because those are the two ends the answer depends on."""
+    if len(prompt) <= _MAX_PROMPT_CHARS:
+        return prompt
+    marker = "\n\n[…the rest of this packet was too long to read…]\n\n"
+    budget = _MAX_PROMPT_CHARS - len(marker)
+    head = int(budget * 0.6)
+    return prompt[:head] + marker + prompt[-(budget - head) :]
+
+
 def _digest_state(state: Any) -> str:
     """A compact, one-line rendering of a screen's published state — lists and maps clipped so she
     reads the actual contents (the stops, the constellation, the chapters) without a wall of JSON."""
     if not isinstance(state, dict) or not state:
         return "(nothing published)"
     parts: list[str] = []
-    for k, v in state.items():
+    for k, v in list(state.items())[:_MAX_STATE_KEYS]:
         if isinstance(v, (list, dict)):
-            s = json.dumps(v, default=str)
-            parts.append(f"{k}={s[:200] + '…' if len(s) > 200 else s}")
+            parts.append(f"{_clip(k, 80)}={_clip(json.dumps(v, default=str))}")
         else:
-            parts.append(f"{k}={v}")
-    return "; ".join(parts)
+            parts.append(f"{_clip(k, 80)}={_clip(v)}")
+    return _clip("; ".join(parts), _MAX_FIELD_CHARS)
 
 
 def _dossier(lifetime: dict[str, Any]) -> str:
@@ -793,7 +830,7 @@ def _dossier(lifetime: dict[str, Any]) -> str:
     ]
     if bio:
         lines.append("  " + " · ".join(bio))
-    twin = str(lifetime.get("twinSummary") or "").strip()
+    twin = _clip(lifetime.get("twinSummary") or "", 1000).strip()
     if twin:
         lines.append(f"  What they're like: {twin}")
     mastery = [str(m) for m in (lifetime.get("masteryHighlights") or []) if m][:4]
@@ -885,9 +922,9 @@ def _machine_room(machine: dict[str, Any]) -> str:
     if what:
         lines.append(f"  Generating now: {what} — if they ask, it is nearly ready")
 
-    tail = [str(t) for t in (machine.get("eventTail") or []) if t]
+    tail = [_clip(t) for t in (machine.get("eventTail") or [])[-8:] if t]
     if tail:
-        lines.append("  Just happened (newest last): " + " · ".join(tail[-8:]))
+        lines.append("  Just happened (newest last): " + " · ".join(tail))
 
     if not lines:
         return ""
@@ -925,37 +962,51 @@ def _build_user_prompt(
     lifetime = context.get("lifetime") or {}
     machine = context.get("machine") or {}
 
-    route = page.get("route") or "unknown"
+    route = _clip(page.get("route") or "unknown", 120)
     screen = _digest_state(page.get("state"))
-    events = [str(e) for e in (session.get("recentEvents") or [])][-6:]
+    events = [_clip(e) for e in (session.get("recentEvents") or [])[-6:]]
     activity = "\n".join(f"  - {e}" for e in events) or "  (nothing yet this session)"
 
-    node = curriculum.get("nodeName") or "linear equations in one variable"
-    equation = canvas.get("equation") or "(none yet)"
-    steps = canvas.get("steps") or []
-    last_user = turn.get("lastUserInput") or ""
-    recent = turn.get("recentTurns") or []
-    local_time = str(turn.get("localTime") or "").strip()
+    node = _clip(curriculum.get("nodeName") or "linear equations in one variable", 200)
+    equation = _clip(canvas.get("equation") or "(none yet)", 500)
+    steps = (canvas.get("steps") or [])[:_MAX_STEPS]
+    last_user = _clip(turn.get("lastUserInput") or "", _MAX_FIELD_CHARS)
+    recent = (turn.get("recentTurns") or [])[-4:]
+    local_time = _clip(turn.get("localTime") or "", 60).strip()
 
     def _target_line(t: dict[str, Any]) -> str:
-        line = f'  - id="{t.get("id")}" ({t.get("kind")}): {t.get("label")}'
+        line = (
+            f'  - id="{_clip(t.get("id"), 120)}" '
+            f'({_clip(t.get("kind"), 60)}): {_clip(t.get("label"), 200)}'
+        )
         # Surface whatever the target perceives: its live scene state (so she reasons about the
         # actual contents, not a box), its legal moves, and whether it is drivable via setState.
         scene = t.get("scene") or {}
         state = scene.get("state")
         if state:
             line += f"\n    state={json.dumps(state, default=str)[:280]}"
-        valid = ", ".join(str(a) for a in (scene.get("validActions") or [])[:8])
+        valid = ", ".join(_clip(a, 60) for a in (scene.get("validActions") or [])[:8])
         if valid:
             line += f"\n    can do: {valid}"
         if scene.get("drivable"):
             line += "\n    drivable — you may setState this target"
         return line
 
-    target_lines = "\n".join(_target_line(t) for t in targets) or "  (none registered)"
-    step_lines = "\n".join(f"  {i}: {s}" for i, s in enumerate(steps)) or "  (nothing written yet)"
+    target_lines = (
+        "\n".join(_target_line(t) for t in targets[:_MAX_TARGETS] if isinstance(t, dict))
+        or "  (none registered)"
+    )
+    step_lines = (
+        "\n".join(f"  {i}: {_clip(s, 500)}" for i, s in enumerate(steps))
+        or "  (nothing written yet)"
+    )
     recent_lines = (
-        "\n".join(f"  {r.get('role')}: {r.get('text')}" for r in recent[-4:]) or "  (none)"
+        "\n".join(
+            f"  {_clip(r.get('role'), 20)}: {_clip(r.get('text'), 800)}"
+            for r in recent
+            if isinstance(r, dict)
+        )
+        or "  (none)"
     )
 
     ground = "no working to check yet"
@@ -973,7 +1024,7 @@ def _build_user_prompt(
         else "Not a first meeting — they already know you, so never introduce yourself again.\n"
     )
 
-    return (
+    return _cap_prompt(
         f"Current screen: {route} — {screen}\n"
         f"{clock}"
         f"{meeting}"
@@ -1017,6 +1068,7 @@ def run_wobo_turn(
     provider_model: str,
     payload: dict[str, Any],
     fallbacks: tuple[str, ...] = (),
+    timeout_s: float | None = None,
 ) -> tuple[dict[str, Any], int]:
     """One grounded, path-classified, action-returning Wobo turn. Returns (output, tokens)."""
     import litellm
@@ -1046,9 +1098,13 @@ def run_wobo_turn(
             },
         ],
         fallbacks=fb or None,
-        max_tokens=500,
+        max_tokens=max_tokens_for("wobo.turn", 500),
         temperature=0.3,
+        # A turn is the short class: the learner is waiting on it, so it fails fast rather than
+        # holding the request (and her orb) open on a stalled provider.
+        timeout=timeout_for("wobo.turn", timeout_s),
     )
+    record_cost(capability="wobo.turn", model=model, response=response)
     text = response.choices[0].message.content or ""
     data = _extract_json(text)
     say = str(data.get("say", "Let us look at your working together."))

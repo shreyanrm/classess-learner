@@ -13,8 +13,10 @@ import { type LifetimeContext, useWoboBus } from '@classess/wobo';
 import { useCallback, useEffect, useRef } from 'react';
 import { boardName, getFlag, loadProfile, VOICE_KEY } from '../screens/you/profile';
 import { useRouter } from '../shell/router';
+import { scoped } from './scope';
 import { useSdk } from './sdk';
 
+// Scoped per learner (store/scope.ts) — the dossier is the most personal thing on the device.
 export const MIND_KEY = 'clss-mind-v1';
 export const PROACTIVITY_KEY = 'clss-proactivity-v1';
 
@@ -62,7 +64,7 @@ const SELF_CORRECT_MS = 1500;
 
 export function loadMind(): MindState {
   try {
-    const raw = localStorage.getItem(MIND_KEY);
+    const raw = scoped.getItem(MIND_KEY);
     if (!raw) return { ...EMPTY };
     const m = JSON.parse(raw) as Partial<MindState>;
     return {
@@ -107,7 +109,7 @@ export function rememberInterests(interests: string[]): void {
 
 export function saveMind(mind: MindState): void {
   try {
-    localStorage.setItem(MIND_KEY, JSON.stringify(mind));
+    scoped.setItem(MIND_KEY, JSON.stringify(mind));
   } catch {
     // storage unavailable — the mind lives for this session only
   }
@@ -167,7 +169,7 @@ export function removeInterest(interest: string): void {
 /** The learner clears what she knows — steerable memory, honestly erased. */
 export function clearMind(): void {
   try {
-    localStorage.removeItem(MIND_KEY);
+    scoped.removeItem(MIND_KEY);
   } catch {
     // fine
   }

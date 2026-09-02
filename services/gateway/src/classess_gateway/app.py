@@ -5,8 +5,14 @@ model resolution -> provider call -> cache write -> telemetry. The HTTP surface 
 invoke, a registry dump, and a health check.
 
 Boot posture: :func:`validate_env` fails fast on a misconfigured environment (never serve
-a request half-configured), CORS is locked to the prod origin outside dev, capability
-routes are rate limited per IP, and logs are structured JSON.
+a request half-configured), CORS is locked to the prod origin outside dev, and logs are
+structured JSON.
+
+Door posture: every ``/v1`` route except the internal email relay is authenticated in one
+middleware — a verified Supabase subject, or nothing. The consent tier is derived from that
+subject (:mod:`classess_gateway.consent`), never read from the body; the free tier is
+metered against it (:mod:`classess_gateway.budget`); the rate limiter keys on it, so one
+proxy IP is no longer one bucket for every learner on the platform.
 """
 
 from __future__ import annotations
@@ -14,6 +20,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import threading
 import time
 from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
@@ -24,6 +31,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+from classess_gateway import budget, consent
+from classess_gateway.auth import (
+    AuthError,
+    Principal,
+    authenticate,
+    dev_auth_enabled,
+    dev_auth_requested,
+    jwks_url,
+)
 from classess_gateway.cache import CacheBackend, CacheEntry, InMemoryCache, cache_key
 from classess_gateway.email import register_email
 from classess_gateway.providers import Provider, build_provider
@@ -95,6 +111,16 @@ def validate_env() -> None:
             logger.warning("OPENAI_API_KEY missing: cross-check fallbacks will fail over")
         if not (os.getenv("GOOGLE_AI_API_KEY") or os.getenv("GEMINI_API_KEY")):
             logger.warning("GOOGLE_AI_API_KEY missing: voice and imagery stay unavailable")
+    if env == "prod":
+        # Fail closed. Prod must be able to verify a real token, and the dev seam — a header
+        # that asserts an identity with no proof — must not exist there at any setting.
+        if dev_auth_requested():
+            raise RuntimeError("DEV_AUTH is refused when ENV=prod: it would accept any identity")
+        if not (os.getenv("SUPABASE_JWT_SECRET") or jwks_url()):
+            raise RuntimeError(
+                "ENV=prod requires SUPABASE_JWT_SECRET (HS256 projects) or "
+                "SUPABASE_JWKS_URL/SUPABASE_URL (JWKS projects) to verify learner tokens"
+            )
 
 
 def _cors_origins() -> list[str]:
@@ -116,28 +142,41 @@ class ConsentDenied(Exception):
 
 
 class CapabilityRequest(BaseModel):
-    consent_tier: ConsentTier
+    # Accepted and IGNORED. The tier is derived from the verified subject in consent.get_tier;
+    # a door the caller can open by typing a word in a body is not a door. The field stays for
+    # one release so the already-deployed web bundle does not 422 on its next call — delete it,
+    # and the alias in budget.CAPABILITY_CLASS, once no shipped client sends it.
+    consent_tier: ConsentTier | None = None
     payload: dict[str, Any] = Field(default_factory=dict)
 
 
 class CapabilityResponse(BaseModel):
     capability: str
     track: str
+    # The real provider model id. Honest telemetry INSIDE the brain — it is recorded, logged and
+    # asserted on in tests, but it is stripped by `served()` before the response leaves the
+    # gateway. Model ids never reach a client (WOBO-PLAN 1, white-label rule).
     model: str
     cache_hit: bool
     latency_ms: float
     tokens: int
     output: dict[str, Any]
 
+    def served(self) -> dict[str, Any]:
+        """The public shape. One place where a response crosses out of the brain."""
+        return self.model_dump(exclude={"model"})
+
 
 class PolicyView(BaseModel):
+    """What a client may know about a capability: that it exists, and whether a door guards it.
+
+    Routing is the brain's business. The provider model id, the slot names (which carry provider
+    names of their own), the latency target and the cost ceiling are all deliberately absent —
+    the client holds no key, no model name and no limit (WOBO-PLAN 1).
+    """
+
     capability: str
     track: str
-    primary: str
-    primary_model: str
-    fallback: list[str]
-    max_latency_ms: int
-    cost_ceiling: float
     cache_tier: str
     elevated_only: bool
 
@@ -146,11 +185,6 @@ def _policy_view(pol: RoutingPolicy) -> PolicyView:
     return PolicyView(
         capability=pol.capability,
         track=pol.track.value,
-        primary=pol.primary,
-        primary_model=resolve(pol.primary, pol.track).provider_model,
-        fallback=list(pol.fallback),
-        max_latency_ms=pol.max_latency_ms,
-        cost_ceiling=pol.cost_ceiling,
         cache_tier=pol.cache_tier.value,
         elevated_only=pol.elevated_only,
     )
@@ -169,10 +203,20 @@ class Gateway:
         self.sink = sink
         self.classifier = classifier
 
-    def invoke(self, capability: str, request: CapabilityRequest) -> CapabilityResponse:
+    def invoke(
+        self,
+        capability: str,
+        request: CapabilityRequest,
+        consent_tier: ConsentTier = ConsentTier.UN_ELEVATED,
+        subject: str | None = None,
+    ) -> CapabilityResponse:
+        # subject is the VERIFIED subject from the door (never payload-supplied), and
+        # consent_tier is the SERVER-DERIVED tier (consent.get_tier of the verified subject),
+        # passed in as its own argument. It defaults to least privilege so a caller that forgets
+        # it gets the un-elevated door, never the elevated one. request.consent_tier is ignored.
         pol = policy(capability)
-        if not pol.allows(request.consent_tier):
-            raise ConsentDenied(capability, request.consent_tier)
+        if not pol.allows(consent_tier):
+            raise ConsentDenied(capability, consent_tier)
 
         spec = resolve(pol.primary, pol.track)
 
@@ -242,6 +286,9 @@ class Gateway:
             capability=capability,
             payload=request.payload,
             fallbacks=fallbacks,
+            # The VERIFIED subject, as its own argument. The engine's one-generation-at-a-time
+            # slot keys on this; it used to key on payload["user"], which the caller writes.
+            subject=subject,
         )
         latency_ms = (time.perf_counter() - start) * 1000
 
@@ -282,17 +329,89 @@ def build_gateway() -> Gateway:
     return Gateway(build_provider(mode), InMemoryCache(), MetricsSink())
 
 
+# Routes that never need a learner identity: liveness only. The internal email relay carries
+# its own shared key, but it is NOT skipped here any more — the middleware authenticates it
+# when a learner token rides along (without refusing when one does not), so the endpoint's
+# "you may only mail your own address" rule has a subject to check against instead of None.
+_OPEN_PATHS = frozenset({"/healthz"})
+# Authenticated when we can, never refused here: the route itself is the door (internal key).
+_SOFT_AUTH_PATHS = frozenset({"/v1/email/send"})
+
+# A request body is a context packet, not a file. Past this it is either a mistake or an attempt
+# to buy a frontier context window out of one metered turn (the prompt builder caps its own
+# output too — this stops the bytes at the door, before anything parses them).
+_MAX_BODY_BYTES = int(os.getenv("MAX_REQUEST_BYTES", str(256 * 1024)))
+
+
+def _client_ip(request: Request) -> str:
+    """The caller's address, as well as we can know it.
+
+    ``X-Forwarded-For`` is caller-controlled: a client may send any prefix it likes, and each
+    proxy APPENDS the address it received the connection from. So the trustworthy entry is the
+    LAST hop — the one our own platform wrote — not the first, which is whatever the attacker
+    typed. Taking the first hop made the limiter a no-op behind a proxy.
+    """
+    if os.getenv("TRUST_PROXY") == "1":
+        forwarded = request.headers.get("x-forwarded-for")
+        if forwarded:
+            hops = [hop.strip() for hop in forwarded.split(",") if hop.strip()]
+            if hops:
+                return hops[-1]
+    return request.client.host if request.client else "unknown"
+
+
+def _too_large(request: Request) -> bool:
+    """Is the declared body bigger than we will ever read? Cheap, before anything parses it."""
+    declared = request.headers.get("content-length")
+    if not declared:
+        return False
+    try:
+        return int(declared) > _MAX_BODY_BYTES
+    except ValueError:
+        return False
+
+
+def meter_key(principal: Principal | None, request: Request) -> str:
+    """The identity the meter and the limiter count against.
+
+    A signed-in subject is the identity. An ANONYMOUS subject is not: Supabase anonymous
+    sign-in is a public endpoint, so a fresh subject costs an attacker one HTTP call, and
+    per-subject counters are then arithmetic rather than limits (verified: 30 turns from 30
+    subjects under a 2-turn cap). Anonymous learners are therefore counted per DEVICE ADDRESS,
+    which is the scarcest thing we can see before someone signs in. Signing in gives them their
+    own counter back, which is the trade we want.
+    """
+    if principal is None:
+        return f"ip:{_client_ip(request)}"
+    if principal.anonymous:
+        return f"anon:{_client_ip(request)}"
+    return f"sub:{principal.subject}"
+
+
+class MeResponse(BaseModel):
+    """What the client is allowed to know about itself: who, what tier, how much is left.
+
+    No model, no provider, no price, no limit — only what remains today."""
+
+    subject: str
+    anonymous: bool
+    plan: str
+    consent_tier: str
+    budget: dict[str, Any]
+
+
 def create_app(gateway: Gateway | None = None) -> FastAPI:
     configure_logging()
     validate_env()
-    app = FastAPI(title="Wobo model gateway", version="0.0.0")
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=_cors_origins(),
-        # Our own Vercel preview builds — ephemeral per-deploy origins, pattern-matched.
-        allow_origin_regex=r"https://classess-learner-[a-z0-9]+-depl-shreyan\.vercel\.app",
-        allow_methods=["*"],
-        allow_headers=["*"],
+    # The interactive docs publish the whole internal API shape — every route, every header,
+    # the internal email relay included. Useful in dev, an unauthenticated map in prod.
+    public_docs = os.getenv("ENV", "dev").lower() != "prod"
+    app = FastAPI(
+        title="Wobo model gateway",
+        version="0.0.0",
+        docs_url="/docs" if public_docs else None,
+        redoc_url="/redoc" if public_docs else None,
+        openapi_url="/openapi.json" if public_docs else None,
     )
     gw = gateway or build_gateway()
     logger.info(
@@ -301,14 +420,37 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
             "fields": {
                 "env": os.getenv("ENV", "dev").lower(),
                 "llm_mode": os.getenv("LLM_MODE", "mock").lower(),
+                "dev_auth": dev_auth_enabled(),
             }
         },
     )
 
-    # Per-IP rate limit on spend-bearing routes (capability invokes + voice-token mints).
+    # Rate limit on spend-bearing routes, keyed by the VERIFIED SUBJECT. Keying by IP put every
+    # learner behind the platform proxy in one bucket — one noisy account throttled the school.
     # ponytail: in-memory fixed window, per process — move to Redis when >1 instance runs.
     limit = int(os.getenv("RATE_LIMIT_PER_MINUTE", "60"))
+    # A caller with no verified identity is not a learner using the app; it is a stranger at the
+    # door. It gets a much smaller window, so filling the shared bucket costs more and matters
+    # less. (Anonymous learners are keyed per address by meter_key, on the full dial.)
+    unauth_limit = int(os.getenv("UNAUTH_RATE_LIMIT_PER_MINUTE", "15"))
     hits: dict[tuple[str, int], int] = {}
+    hits_lock = threading.Lock()
+
+    def _over_limit(key: str, ceiling: int) -> bool:
+        """One fixed-window bucket. The key is the verified subject when we have one, and the
+        caller's address when we do not — so an unauthenticated flood is bounded too, and the
+        401 check itself cannot be used as an amplifier.
+
+        Read and increment happen under one lock: every route here is ``def``, so FastAPI runs
+        them on a threadpool, and a read-then-write pair on a shared dict is a race waiting for
+        the first await (or the Redis hop this moves to) to widen it."""
+        window = int(time.time() // 60)
+        bucket = (key, window)
+        with hits_lock:
+            if len(hits) > 4096:
+                hits.clear()  # ponytail: cheap prune; worst case one window over-admits
+            hits[bucket] = hits.get(bucket, 0) + 1
+            return hits[bucket] > ceiling
 
     @app.middleware("http")
     async def _guard_and_log(
@@ -317,27 +459,60 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
         started = time.perf_counter()
         path = request.url.path
         ip = request.client.host if request.client else "unknown"
+        principal: Principal | None = None
+        refused: AuthError | None = None
+
+        # One door for the whole /v1 surface. OPTIONS is the CORS preflight and carries no
+        # credentials by definition, so it is answered by the CORS layer above us.
+        # A soft-auth path (the internal email relay) is verified when a token rides along and
+        # simply left unauthenticated when one does not — its own key is the door, and the
+        # subject we learn here is what its recipient-ownership rule checks against.
+        soft = path in _SOFT_AUTH_PATHS
+        if path.startswith("/v1") and path not in _OPEN_PATHS and request.method != "OPTIONS":
+            try:
+                principal = authenticate(request.headers)
+            except AuthError as exc:
+                if not soft:
+                    refused = exc
+        request.state.principal = principal
+        # Convenience mirror for routes that only need the id (the email seam reads this).
+        request.state.subject = principal.subject if principal else None
+        # The identity the meter and the limiter count against — one derivation, read by the
+        # capability route and by both voice routes so nothing meters on a different key.
+        request.state.meter_key = meter_key(principal, request)
+
         limited = (
             path.startswith("/v1/capability/")
             or path == "/v1/voice/session"
             or path == "/v1/voice/tts"
+            or path in _SOFT_AUTH_PATHS
         )
-        if limited:
-            window = int(time.time() // 60)
-            if len(hits) > 4096:
-                hits.clear()  # ponytail: cheap prune; worst case one window over-admits
-            key = (ip, window)
-            hits[key] = hits.get(key, 0) + 1
-            if hits[key] > limit:
-                response: Response = JSONResponse(
-                    status_code=429,
-                    content={"error": "rate_limited", "detail": "too many requests"},
-                    headers={"Retry-After": str(60 - int(time.time()) % 60)},
-                )
-            else:
-                response = await call_next(request)
+        oversized = _too_large(request)
+        key = request.state.meter_key
+        if oversized:
+            response: Response = JSONResponse(
+                status_code=413,
+                content={
+                    "code": "too_much_at_once",
+                    "message": "That is more than I can take in one go. Send me a smaller piece.",
+                },
+            )
+        # A soft-auth path carries its own shared key, so it gets the full ceiling even with
+        # no learner behind it — the small one is for strangers at the front door.
+        elif limited and _over_limit(key, limit if (principal or soft) else unauth_limit):
+            response = JSONResponse(
+                status_code=429,
+                content={
+                    "code": "rate_limited",
+                    "message": "That was a lot at once. Give me a moment and try again.",
+                },
+                headers={"Retry-After": str(60 - int(time.time()) % 60)},
+            )
+        elif refused is not None:
+            response = JSONResponse(status_code=refused.status, content=refused.body())
         else:
             response = await call_next(request)
+
         if path != "/healthz":  # health probes would drown the log
             logger.info(
                 "request",
@@ -347,21 +522,44 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
                         "path": path,
                         "status": response.status_code,
                         "ip": ip,
+                        "subject": principal.subject if principal else None,
                         "duration_ms": round((time.perf_counter() - started) * 1000, 1),
                     }
                 },
             )
         return response
 
+    # CORS is added LAST so it wraps the guard: a 401 still carries the allow-origin header,
+    # which is the difference between the browser showing Wobo's "sign in" line and showing
+    # an opaque network error.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_origins(),
+        # Our own Vercel preview builds — ephemeral per-deploy origins, pattern-matched.
+        allow_origin_regex=r"https://classess-learner-[a-z0-9]+-depl-shreyan\.vercel\.app",
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
     @app.exception_handler(ConsentDenied)
     async def _on_consent_denied(_: Request, exc: ConsentDenied) -> JSONResponse:
         return JSONResponse(
             status_code=403,
             content={
-                "error": "consent_denied",
+                "code": "not_allowed",
+                "message": "That one needs a grown-up to say yes first.",
                 "capability": exc.capability,
-                "consent_tier": exc.consent_tier.value,
-                "detail": "this capability requires an elevated consent tier",
+            },
+        )
+
+    @app.exception_handler(budget.BudgetExhausted)
+    async def _on_budget_exhausted(_: Request, exc: budget.BudgetExhausted) -> JSONResponse:
+        return JSONResponse(
+            status_code=429,
+            content=exc.body(),
+            headers={
+                "X-Wobo-Budget-Remaining": "0",
+                "X-Wobo-Budget-Reset": exc.reset_at.isoformat(),
             },
         )
 
@@ -369,33 +567,109 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
     def healthz() -> dict[str, str]:
         return {"status": "ok", "mode": os.getenv("LLM_MODE", "mock").lower()}
 
+    @app.get("/v1/me")
+    def me(request: Request) -> MeResponse:
+        """Who the brain thinks you are, and what is left today. The client renders this and
+        never computes it — the limit lives here and nowhere else."""
+        principal: Principal = request.state.principal
+        profile = consent.get_profile(principal.subject, anonymous=principal.anonymous)
+        # The meter key, not the subject: an anonymous learner is counted per device address, so
+        # showing them a per-subject number would show a full tank they do not have.
+        snap = budget.snapshot(
+            request.state.meter_key, profile.plan, anonymous=principal.anonymous
+        )
+        return MeResponse(
+            subject=principal.subject,
+            anonymous=principal.anonymous,
+            plan=profile.plan,
+            consent_tier=profile.tier.value,
+            budget=snap.as_dict(),
+        )
+
     @app.get("/v1/capabilities")
     def list_capabilities() -> list[PolicyView]:
         return [_policy_view(policy(name)) for name in capabilities()]
 
     @app.post("/v1/capability/{name}")
-    def invoke(name: str, request: CapabilityRequest) -> Response:
+    def invoke(name: str, request: CapabilityRequest, http: Request) -> Response:
+        principal: Principal = http.state.principal
         # Accept the pre-rebrand capability name from already-deployed clients.
         name = canonical_capability(name)
         if name not in set(capabilities()):
             raise HTTPException(status_code=404, detail=f"unknown capability: {name}")
-        # Content engines enforce one generation at a time per user (strict queue). A second
-        # concurrent generation while the first is still cooking gets a polite 429 + Retry-After.
-        if name.startswith("engine."):
-            from classess_gateway.plexus import GenerationBusy  # lazy: engine path only
 
-            try:
-                return gw.invoke(name, request)
-            except GenerationBusy as exc:
-                return JSONResponse(
-                    status_code=429,
-                    content={
-                        "error": "generation_in_flight",
-                        "detail": "one lesson at a time — yours is still cooking, hang tight",
-                    },
-                    headers={"Retry-After": str(exc.retry_after)},
+        # Derived, never declared: the tier comes from the learner's stored record.
+        profile = consent.get_profile(principal.subject, anonymous=principal.anonymous)
+        # A generation is the expensive half, and an anonymous subject is free to mint. Building
+        # a whole lesson asks for an account first; talking to her does not.
+        if name.startswith("engine.") and principal.anonymous:
+            return JSONResponse(
+                status_code=403,
+                content={
+                    "code": "sign_in_required",
+                    "message": "Sign in first and I will build this for you.",
+                },
+            )
+        meter = http.state.meter_key
+        # Counted ONCE, after the door and before the model. Anything that fails before the
+        # provider is reached (a closed consent door, a busy queue, a provider error) is
+        # refunded — a learner never pays for a call we did not serve.
+        snap = budget.charge(meter, name, profile.plan, anonymous=principal.anonymous)
+        headers = budget.headers(snap, budget.classify(name))
+
+        try:
+            if name.startswith("engine."):
+                # lazy: engine path only
+                from classess_gateway.plexus import (
+                    ConceptRejected,
+                    GenerationBusy,
+                    GenerationUnattributed,
                 )
-        return gw.invoke(name, request)
+
+                try:
+                    result = gw.invoke(name, request, profile.tier, subject=principal.subject)
+                except ConceptRejected as exc:
+                    # The caller asked for something we will not generate. That is a bad request,
+                    # not a broken brain — it must never surface as a 500.
+                    budget.refund(meter, name)
+                    return JSONResponse(
+                        status_code=400,
+                        content={"code": "topic_rejected", "message": exc.message},
+                        headers=headers,
+                    )
+                except GenerationUnattributed:
+                    # The slot key comes from the door, so this can only be a coding mistake —
+                    # but an unattributed generation is refused, never run for free.
+                    budget.refund(meter, name)
+                    return JSONResponse(
+                        status_code=401,
+                        content={
+                            "code": "sign_in_required",
+                            "message": "Sign in and we can pick up right where you left off.",
+                        },
+                        headers=headers,
+                    )
+                except GenerationBusy as exc:
+                    budget.refund(meter, name)
+                    return JSONResponse(
+                        status_code=429,
+                        content={
+                            "code": "generation_in_flight",
+                            "message": "one lesson at a time — yours is still cooking, hang tight",
+                        },
+                        headers={"Retry-After": str(exc.retry_after), **headers},
+                    )
+            else:
+                result = gw.invoke(name, request, profile.tier, subject=principal.subject)
+        except Exception:
+            budget.refund(meter, name)
+            raise
+
+        return JSONResponse(
+            status_code=200,
+            content=result.served(),
+            headers=headers,
+        )
 
     register_voice(app)
     register_email(app)

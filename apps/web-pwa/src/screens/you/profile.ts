@@ -5,6 +5,7 @@
  */
 
 import { boards, learner } from '../../data/catalog';
+import { scoped } from '../../store/scope';
 
 export const PROFILE_KEY = 'clss-learner-profile';
 export const PHOTO_KEY = 'clss-profile-photo-v1';
@@ -61,7 +62,7 @@ export function ageFromBirthdate(birthdate: string | undefined): number | undefi
 
 export function loadProfile(): StoredProfile {
   try {
-    const raw = localStorage.getItem(PROFILE_KEY);
+    const raw = scoped.getItem(PROFILE_KEY);
     if (raw) {
       const p = JSON.parse(raw) as Partial<StoredProfile>;
       return {
@@ -88,7 +89,7 @@ export function loadProfile(): StoredProfile {
 /** True only when a learner actually typed a name on this device — never the seed fallback. */
 export function hasStoredName(): boolean {
   try {
-    const raw = localStorage.getItem(PROFILE_KEY);
+    const raw = scoped.getItem(PROFILE_KEY);
     if (!raw) return false;
     const p = JSON.parse(raw) as Partial<StoredProfile>;
     return Boolean(p.name?.trim());
@@ -99,7 +100,7 @@ export function hasStoredName(): boolean {
 
 export function saveProfile(p: StoredProfile): void {
   try {
-    localStorage.setItem(PROFILE_KEY, JSON.stringify(p));
+    scoped.setItem(PROFILE_KEY, JSON.stringify(p));
   } catch {
     // storage unavailable — session-only profile is fine
   }
@@ -145,7 +146,7 @@ export function boardSeeded(boardId: string): boolean {
 
 export function loadPhoto(): string | null {
   try {
-    return localStorage.getItem(PHOTO_KEY);
+    return scoped.getItem(PHOTO_KEY);
   } catch {
     return null;
   }
@@ -153,7 +154,7 @@ export function loadPhoto(): string | null {
 
 export function savePhoto(dataUrl: string): void {
   try {
-    localStorage.setItem(PHOTO_KEY, dataUrl);
+    scoped.setItem(PHOTO_KEY, dataUrl);
   } catch {
     // a photo that does not persist is still a photo today
   }
