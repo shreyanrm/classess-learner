@@ -134,6 +134,8 @@ In product, the brain routes by tier, never by name to the user. Generation runs
 | voice | live voice, streaming TTS | Gemini 2.5 Flash native audio (unchanged) | — |
 | image | imagery SVG cannot express | Gemini 2.5 Flash Image (unchanged) | — |
 
+**The cost rule (owner, 2026-09-02): generation goes to the cheapest model that passes verification and escalates only on failure.** Terra by default for every board plan and lesson; Sol only on a verifier or second-opinion rejection or for the hard list (synthesis bosses, misconception detonation, first extraction of a new board's syllabus). Sonnet 5 for turns; Opus 5 only as the cross-check and on escalation. Luna and Haiku take everything basic. Every escalation is logged with its reason so the hard list stays honest.
+
 Retired from the router: Claude Opus 4.8, GPT-5.5, GPT-4.1. `claude-fable-5-1` is available on the key but reserved; it is not in the product router until a job proves it needs it. The budget meter counts every tier; free by default with metered usage, upgrade for more; only dummy prices appear in code or screens until the owner sets real ones.
 
 ## 10. Waves

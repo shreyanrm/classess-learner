@@ -393,6 +393,7 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 - [ ] **Golden boards** — a regression suite of prompts with expected board outcomes (structure, not pixels) for every pipeline
 
 ### 5.7 Companion modes and hands
+- [ ] **Wobo character rig v2 (design)** — the ink visor wobot: black body + white visor in light, inverted in dark, ultramarine eyes and pen tip; six states (idle, listening, thinking, drawing, celebrating, resting) with squash, lean, blink and eye-tracking; hairline rim for legibility over any content; app icon and favicon regenerated; DESIGN.md/DECISIONS.md amended to retire the molten body colour
 - [ ] **Show me** — a visible cursor glides to the real control, taps, narrates, via the registry; works on every registered screen
 - [ ] **Do it** — executes under the permission ladder (recommend, prepare, execute with permission, safe automatic); communicate, buy, submit, delete always ask
 - [ ] **Explain this** / **why is this wrong** / **check my work** / **quiz me** / **say it in my world** (analogy) / **read it aloud** / **teach it back to me** — each a mode with its own prompt shape and board behaviour
