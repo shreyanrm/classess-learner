@@ -43,6 +43,21 @@ CAPABILITY_CLASS: dict[str, str] = {
     "wobo.board": TURN,
     "vidya.turn": TURN,  # legacy alias, in case it is classified before canonicalisation
     "tutor.turn": TURN,
+    # The curriculum registry (CURRICULUM.md §8). Reads of our own database, not model calls, so
+    # they belong on the cheap counter — but they are still counted, because "free" is a number
+    # the brain owns and an uncounted route is a way around it. Longest prefix wins, so one entry
+    # covers curriculum.search, .units, .overlay.apply and everything added after them.
+    "curriculum.": TURN,
+    # …except discovery, which is the expensive half of the curriculum: a search, a document
+    # fetch, an extraction on the generate tier and a re-reading on the verify tier, for one
+    # learner who typed a board we had never heard of (CURRICULUM.md §4). Longer prefix, so it
+    # wins over "curriculum." above and the whole job is metered as one generation.
+    "curriculum.discovery": GENERATION,
+    # …and except the own-syllabus intake, for the same reason: a learner's photo or PDF is read
+    # and structured on the generate tier, which is a generation whoever asked for it. The three
+    # taps that follow it — confirm, publish, offer — only move an object they already own, so
+    # they stay on the cheap counter above.
+    "curriculum.own.read": GENERATION,
     "grade.attempt": TURN,
     "generate.opener": TURN,
     "verify.math": TURN,

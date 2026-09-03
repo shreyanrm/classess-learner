@@ -1,27 +1,26 @@
 'use client';
 
 /**
- * FrameBuilding — the moment right after setup, before the world opens. Wobo narrates, playfully
- * and honestly, what Wobo is actually doing while a skeleton constellation forms (MOTION.md §1/§3):
- * nodes settle in and faint edges draw between them, the shape of a course assembling. Wobo is honest
- * about speed — a cached frame opens almost at once; a fresh board takes a breath while its catalog
- * is fetched and wired.
+ * The moment right after setup, before the world opens.
  *
- * When the frame is ready Wobo gives the WELCOME MOMENT (Ceremony-class, welcome-flavored): Wobo jumps
- * and welcomes the learner BY NAME aloud, a 3-color confetti burst fires with the warm fanfare, and
- * the real subject doors cascade in. This replaces the old plan-reveal card.
+ * The old "frame" — a bundled catalog assembled per board and grade — is gone (WOBO-PLAN §13).
+ * What happens here now is the real thing: the learner's pinned framework is asked for the
+ * subjects of their class, and Wobo narrates it honestly while a skeleton constellation forms.
  *
- * An unknown board (no catalog yet) is flagged for the fetch pipeline through a gateway event and met
- * with a warm empty state — no fake subjects — offering to build a custom course from the learner's
- * own textbook chapter names. Every path ends with the learner stepping into a home that's truly theirs.
+ * Three ends, all true. A class we hold a syllabus for opens with the welcome moment and the
+ * board's own subject names. A class we hold nothing for shows the discovery job actually running,
+ * in its own words, with the own-syllabus door beside it. No board at all sends them back to
+ * choosing one. None of the three shows a subject the learner's board does not teach.
  */
 
 import { useWoboBus, WoboBody, type WoboMood } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ONBOARDED_KEY } from '../App';
-import { requestBoardSourcing } from '../data/board-request';
-import { ensureFrame, type Frame } from '../data/frame';
+import { chooseLevel } from '../curriculum/adopt';
+import { useWorld } from '../curriculum/hooks';
+import { ProvenanceLabel } from '../curriculum/Labels';
+import { DiscoveryCard, EmptyWorldCard } from '../curriculum/StatusCard';
 import { useRouter } from '../shell/router';
 import { lifetimeSnapshot } from '../store/mind';
 import { useProgress } from '../store/progress';
@@ -32,7 +31,7 @@ import { toneForSubject } from '../ui/hues';
 import { AmbientWash, fluidSpace, MagneticButton } from '../ui/kit';
 import { sfx } from '../ui/sound';
 import { speakLine } from '../wobo/speech';
-import { boardName, loadProfile } from './you/profile';
+import { loadProfile } from './you/profile';
 
 const ULTRA = '#1F35E0';
 const BUILDING_WASH =
@@ -139,9 +138,8 @@ function SkeletonConstellation({ reduced }: { reduced: boolean }) {
   );
 }
 
-/** The real subject doors, cascading in during the welcome — glyph tiles in the board's own naming. */
-function WelcomeDoors({ frame, reduced }: { frame: Frame; reduced: boolean }) {
-  const doors = frame.doors.slice(0, 6);
+/** The real subject doors, cascading in during the welcome — in the board's own naming and order. */
+function WelcomeDoors({ subjects, reduced }: { subjects: string[]; reduced: boolean }) {
   return (
     <div
       style={{
@@ -152,11 +150,11 @@ function WelcomeDoors({ frame, reduced }: { frame: Frame; reduced: boolean }) {
         maxWidth: 460,
       }}
     >
-      {doors.map((d, i) => {
-        const tone = toneForSubject(d.id);
+      {subjects.slice(0, 6).map((name, i) => {
+        const tone = toneForSubject(name);
         return (
           <motion.div
-            key={d.id}
+            key={name}
             initial={reduced ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={
@@ -175,7 +173,7 @@ function WelcomeDoors({ frame, reduced }: { frame: Frame; reduced: boolean }) {
               borderRadius: 3,
             }}
           >
-            <SubjectGlyph subjectId={d.id} size={46} accent />
+            <SubjectGlyph subjectId={name} size={46} accent />
             <span
               style={{
                 fontSize: '0.82rem',
@@ -185,7 +183,7 @@ function WelcomeDoors({ frame, reduced }: { frame: Frame; reduced: boolean }) {
                 lineHeight: 1.25,
               }}
             >
-              {d.name}
+              {name}
             </span>
           </motion.div>
         );
@@ -200,69 +198,81 @@ export function FrameBuilding() {
   const bus = useWoboBus();
   const { award } = useProgress();
   const reduced = useReducedMotion() ?? false;
+  const world = useWorld();
 
   const profile = useMemo(() => loadProfile(), []);
-  const label = boardName(profile.boardId);
   const firstName = profile.name.split(' ')[0] || profile.name;
+  const label = world?.frameworkName ?? '';
+  const level = world?.level ?? '';
 
-  const [phase, setPhase] = useState<Phase>('building');
-  const [frame, setFrame] = useState<Frame | null>(null);
+  const [phase, setPhase] = useState<Phase>(world ? 'building' : 'empty');
+  const [subjects, setSubjects] = useState<string[]>(world?.subjects ?? []);
   const [mood, setMood] = useState<WoboMood>('thinking');
   const [narration, setNarration] = useState(0);
+  const [trouble, setTrouble] = useState<string | null>(null);
   const ran = useRef(false);
 
-  // The playful, honest narration while Wobo works — board- and grade-specific so it never reads canned.
+  // Honest narration, in this learner's own words for their own board.
   const lines = useMemo(
     () => [
-      `Opening the ${label} shelf for ${profile.grade}…`,
-      'Laying your subjects out in a constellation…',
-      'Wiring the chapters into a map I can teach from…',
-      'Almost there — tidying the edges…',
+      label ? `Opening the ${label} shelf for ${level}` : 'Opening your shelf',
+      'Laying your subjects out in a constellation',
+      'Wiring the chapters into a map I can teach from',
+      'Almost there — tidying the edges',
     ],
-    [label, profile.grade],
+    [label, level],
   );
 
   useEffect(() => {
     bus.publishPage({
       route: 'building',
-      state: { board: profile.boardId, grade: profile.grade, phase },
+      state: { board: world?.frameworkId ?? null, grade: level, phase },
     });
-  }, [bus, profile.boardId, profile.grade, phase]);
+  }, [bus, world?.frameworkId, level, phase]);
 
-  // Cycle the narration lines while building.
   useEffect(() => {
     if (phase !== 'building') return;
     const id = window.setInterval(() => setNarration((n) => (n + 1) % lines.length), 2100);
     return () => window.clearInterval(id);
   }, [phase, lines.length]);
 
-  // The one real job: build (or fetch) the frame, honestly timed, then welcome or fall to empty.
+  // The one real job: ask the learner's own framework for the subjects of their class.
   // biome-ignore lint/correctness/useExhaustiveDependencies: run-once, guarded by the ran ref
   useEffect(() => {
     if (ran.current) return;
     ran.current = true;
+    if (!world?.level) {
+      setPhase('empty');
+      return;
+    }
     void speakLine(lines[0] as string);
     const startedAt = performance.now();
-    void ensureFrame(profile.boardId, profile.grade).then((result) => {
-      // hold the building beat a touch so it never flashes — shorter when it was instant (cached)
-      const floor = result.instant ? 900 : 1700;
-      const wait = Math.max(0, floor - (performance.now() - startedAt));
-      window.setTimeout(() => {
-        if (result.status === 'ready' && result.frame && result.frame.doors.length > 0) {
-          setFrame(result.frame);
-          setMood('celebrate');
-          setPhase('welcome');
-        } else {
-          // unknown/unsourced board — flag it for the offline fetch pipeline and be honest
-          requestBoardSourcing(profile.boardId, label, profile.grade);
-          setMood('idle');
-          setPhase('empty');
-        }
-      }, wait);
-    });
-  }, [profile.boardId, profile.grade, label, sdk]);
+    const already = world.subjects.length > 0;
+    const settle = (found: string[], error: string | null) => {
+      // Hold the building beat so it never flashes — shorter when the answer was already here.
+      const floor = already ? 900 : 1700;
+      window.setTimeout(
+        () => {
+          setTrouble(error);
+          if (found.length > 0) {
+            setSubjects(found);
+            setMood('celebrate');
+            setPhase('welcome');
+          } else {
+            setMood('idle');
+            setPhase('empty');
+          }
+        },
+        Math.max(0, floor - (performance.now() - startedAt)),
+      );
+    };
+    if (already) settle(world.subjects, null);
+    else
+      void chooseLevel(world.level).then((result) =>
+        settle(result.world?.subjects ?? [], result.error),
+      );
+  }, []);
 
-  // The welcome fanfare + spoken welcome, once, on entering the welcome beat.
   const welcomed = useRef(false);
   useEffect(() => {
     if (phase !== 'welcome' || welcomed.current) return;
@@ -271,7 +281,7 @@ export function FrameBuilding() {
     void speakLine(`Welcome, ${firstName}. This is all yours — let's begin.`);
   }, [phase, firstName]);
 
-  const finish = (to: 'home' | 'learn') => {
+  const finish = (to: 'home' | 'learn' | 'you') => {
     award('account'); // +50, blooms on home
     try {
       sdk.events.record('onboarding.step.completed.v1', {
@@ -327,7 +337,6 @@ export function FrameBuilding() {
           )}
         </AnimatePresence>
 
-        {/* Wobo at the centre — thinking as Wobo builds, jumping as Wobo welcomes */}
         <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}>
           <motion.div
             animate={
@@ -348,7 +357,6 @@ export function FrameBuilding() {
         </div>
       </div>
 
-      {/* the message under the stage — one beat at a time */}
       <div style={{ width: '100%', maxWidth: 560, minHeight: 150 }}>
         <AnimatePresence mode="wait">
           {phase === 'building' && (
@@ -368,7 +376,7 @@ export function FrameBuilding() {
                   color: 'var(--wobo-ink-900)',
                 }}
               >
-                Building your personalised course
+                Opening your world
               </div>
               <AnimatePresence mode="wait">
                 <motion.div
@@ -385,7 +393,7 @@ export function FrameBuilding() {
             </motion.div>
           )}
 
-          {phase === 'welcome' && frame && (
+          {phase === 'welcome' && world && (
             <motion.div
               key="welcome"
               initial={{ opacity: 0, y: 12 }}
@@ -405,10 +413,18 @@ export function FrameBuilding() {
                   Welcome, {firstName}
                 </div>
                 <div style={{ fontSize: '0.95rem', color: 'var(--wobo-ink-500)' }}>
-                  Your {label} · {profile.grade} world is ready
+                  Your {label} · {level} world is ready
                 </div>
+                {/* §5: how well we know this syllabus, said here before anything is taught. */}
+                <ProvenanceLabel
+                  status={world.status}
+                  label={world.label}
+                  name={world.frameworkName}
+                  version={world.versionYear}
+                  style={{ textAlign: 'center' }}
+                />
               </div>
-              <WelcomeDoors frame={frame} reduced={reduced} />
+              <WelcomeDoors subjects={subjects} reduced={reduced} />
               <MagneticButton
                 size="lg"
                 variant="primary"
@@ -426,38 +442,38 @@ export function FrameBuilding() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 18 }}
             >
-              <div
-                style={{
-                  fontSize: 'clamp(1.4rem, 1.1rem + 1.4vw, 1.9rem)',
-                  fontWeight: 640,
-                  letterSpacing: '-0.02em',
-                  color: 'var(--wobo-ink-900)',
-                }}
-              >
-                I don't have {label} yet, {firstName}
-              </div>
-              <div
-                style={{
-                  fontSize: '0.98rem',
-                  color: 'var(--wobo-ink-500)',
-                  lineHeight: 1.6,
-                  maxWidth: 440,
-                }}
-              >
-                I've asked my team to source it — I'll let you know the moment it lands. Until then,
-                we can build your first course together: tell me a chapter from your textbook and
-                I'll make it real.
-              </div>
-              <MagneticButton
-                size="lg"
-                variant="primary"
-                onClick={() => finish('home')}
-                style={{ minWidth: 190, justifyContent: 'center' }}
-              >
-                Build one with Wobo
-              </MagneticButton>
+              {world ? (
+                <>
+                  <div
+                    style={{
+                      fontSize: 'clamp(1.3rem, 1.1rem + 1.2vw, 1.7rem)',
+                      fontWeight: 640,
+                      letterSpacing: '-0.02em',
+                      color: 'var(--wobo-ink-900)',
+                      textAlign: 'center',
+                    }}
+                  >
+                    I do not have {label} {level} yet, {firstName}
+                  </div>
+                  <DiscoveryCard
+                    placeholder={null}
+                    message={trouble ?? undefined}
+                    onOwnSyllabus={() => finish('you')}
+                  />
+                  <MagneticButton
+                    size="lg"
+                    variant="quiet"
+                    onClick={() => finish('home')}
+                    style={{ justifyContent: 'center' }}
+                  >
+                    Take me in anyway
+                  </MagneticButton>
+                </>
+              ) : (
+                <EmptyWorldCard onChooseBoard={() => router.replace({ name: 'onboarding' })} />
+              )}
             </motion.div>
           )}
         </AnimatePresence>

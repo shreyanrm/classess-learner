@@ -4,7 +4,10 @@ import {
   BLINK_CLOSED_AT,
   EXPRESSION_NAMES,
   EXPRESSIONS,
+  EYE_GROWTH,
+  EYE_LID_HALF,
   EYE_RADIUS,
+  EYE_RADIUS_BASE,
   expressionFor,
   expressionNote,
   expressionSpec,
@@ -28,7 +31,7 @@ const MOODS: WoboMood[] = [
 ];
 
 describe('the expression table', () => {
-  it('has the twenty the owner approved, in order', () => {
+  it('has the twenty-two the owner approved, in order', () => {
     expect(EXPRESSION_NAMES).toEqual([
       'idle',
       'listening',
@@ -40,6 +43,7 @@ describe('the expression table', () => {
       'celebrating',
       'encouraging',
       'curious',
+      'peeking',
       'surprised',
       'wink',
       'supportive',
@@ -50,8 +54,9 @@ describe('the expression table', () => {
       'shy',
       'focused',
       'happy',
+      'greeting',
     ]);
-    expect(EXPRESSION_NAMES).toHaveLength(20);
+    expect(EXPRESSION_NAMES).toHaveLength(22);
   });
 
   it('gives every expression two eyes, a tilt and a lean', () => {
@@ -127,19 +132,35 @@ describe('eye geometry', () => {
     }
   });
 
+  /**
+   * The owner asked for bigger eyes on 2026-09-02: twelve percent. These expectations were updated
+   * on purpose — the whole face grows, not just the pupil, because a bigger dot inside unchanged
+   * lids reads as a different character rather than as the same character with bigger eyes.
+   */
+  it('grew the whole face by the twelve percent the owner asked for', () => {
+    expect(EYE_GROWTH).toBe(1.12);
+    expect(EYE_RADIUS_BASE).toBe(7.4);
+    expect(EYE_RADIUS).toBeCloseTo(EYE_RADIUS_BASE * EYE_GROWTH, 2);
+    // The lids grew with it, so the proportions of every stroked shape are unchanged.
+    expect(EYE_LID_HALF).toBeCloseTo(7 * EYE_GROWTH, 2);
+    expect(eyeGeometry(0, 0, { kind: 'dash' }).strokeWidth).toBeCloseTo(5.2 * EYE_GROWTH, 2);
+    expect(eyeGeometry(0, 0, { kind: 'closed' }).strokeWidth).toBeCloseTo(4.6 * EYE_GROWTH, 2);
+  });
+
   it('scales the dot by the spec scale, around the given centre', () => {
+    const r2 = (v: number) => Math.round(v * 100) / 100;
     const small = eyeGeometry(0, 0, { kind: 'dot', scale: 0.5 });
     const big = eyeGeometry(0, 0, { kind: 'dot', scale: 2 });
-    expect(small.d).toContain(String(-EYE_RADIUS * 0.5));
-    expect(big.d).toContain(String(-EYE_RADIUS * 2));
+    expect(small.d).toContain(String(r2(-EYE_RADIUS * 0.5)));
+    expect(big.d).toContain(String(r2(-EYE_RADIUS * 2)));
   });
 
   it('moves with the eye centre, so the gaze is geometry and not a transform', () => {
     const a = eyeGeometry(10, 20, { kind: 'dash' });
     const b = eyeGeometry(14, 20, { kind: 'dash' });
     expect(a.d).not.toBe(b.d);
-    expect(a.d).toBe('M3 20h14');
-    expect(b.d).toBe('M7 20h14');
+    expect(a.d).toBe(`M${10 - EYE_LID_HALF} 20h${EYE_LID_HALF * 2}`);
+    expect(b.d).toBe(`M${14 - EYE_LID_HALF} 20h${EYE_LID_HALF * 2}`);
   });
 
   it('borrows the closed lid past the blink threshold, whatever the expression wanted', () => {

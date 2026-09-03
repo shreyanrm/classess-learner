@@ -7,9 +7,14 @@
  */
 
 export * from './actions';
+// The answer kinds — every interactive way a learner answers (WOBO-PLAN.md §16).
+export * from './answers';
 // The board — Wobo's hand and its three presentations (docs/BOARD.md).
 export * from './board';
 export * from './body/WoboBody';
+// The boot loader (the loader IS the character, WOBO-PLAN §16) and the living wordmark.
+export * from './body/WoboLoader';
+export * from './body/WoboWordmark';
 export * from './context-bus';
 export * from './focus';
 export * from './gesture';

@@ -274,6 +274,19 @@ WHITE_LABEL: tuple[Allowed, ...] = (
             "gemini|openai|claude|anthropic|google|gpt|litellm",
         )
     ),
+    # The two copy suites that enforce §17 on the surfaces a visitor reads first. Each holds one
+    # regex naming what the copy may never say; the needle is the whole pattern, so the exception
+    # covers that assertion and nothing else on the line.
+    Allowed(
+        "apps/web-pwa/src/screens/auth/copy.test.ts",
+        "openai|gpt|gemini|claude|anthropic|supabase|vercel|railway|llm|model",
+        "the assertion that no sign-in copy names a vendor, a model or a framework.",
+    ),
+    Allowed(
+        "apps/web-pwa/src/screens/site/content.test.ts",
+        "openai|anthropic|gemini|chatgpt|claude|gpt-4|llama|supabase|vercel|railway",
+        "the assertion that no published site copy names a provider, model or vendor.",
+    ),
 )
 
 

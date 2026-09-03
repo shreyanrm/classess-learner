@@ -11,7 +11,7 @@
  * named subjects, so a course or subject by name navigates too.
  */
 
-import { subjectById, topicById } from '../data/catalog';
+import { subjectById, topicById } from '../curriculum/registry';
 import { findTopic } from '../wobo/capabilities';
 import type { Route } from './router';
 

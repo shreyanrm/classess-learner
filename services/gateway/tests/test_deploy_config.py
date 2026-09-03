@@ -117,15 +117,31 @@ def test_vercel_env_script_is_committed_and_credential_free() -> None:
     assert "scripts/set-vercel-env.sh" in (REPO / "DEPLOY.md").read_text(encoding="utf-8")
 
 
+# Where a catalog file can legitimately be read from. Kept as globs rather than a list of
+# individual files so that deleting a consumer — as Wave 6 deleted the client's `frame.ts` —
+# fails the inventory row rather than the test itself.
+CATALOG_READERS = (
+    "apps/web-pwa/src/**/*.ts",
+    "apps/web-pwa/src/**/*.tsx",
+    "packages/*/src/**/*.ts",
+    "services/*/src/**/*.py",
+    "content/**/*.py",
+)
+
+
+def _catalog_reader_text() -> str:
+    parts: list[str] = []
+    for pattern in CATALOG_READERS:
+        for path in sorted(REPO.glob(pattern)):
+            parts.append(path.read_text(encoding="utf-8", errors="ignore"))
+    return "\n".join(parts)
+
+
 def test_every_catalog_file_is_wired_or_inventoried() -> None:
     """content/catalogs holds ~2.4 MB of board data. Each file is either loaded by code or
     listed as a deliberate unwired input in content/catalogs/README.md — never neither."""
     readme = (REPO / "content/catalogs/README.md").read_text(encoding="utf-8")
-    frame = (REPO / "apps/web-pwa/src/data/frame.ts").read_text(encoding="utf-8")
-    store = (REPO / "services/gateway/src/wobo_gateway/plexus/store.py").read_text(
-        encoding="utf-8"
-    )
-    code = frame + store
+    code = _catalog_reader_text()
     orphans = [
         p.name
         for p in sorted((REPO / "content/catalogs").glob("*.json"))
@@ -135,6 +151,21 @@ def test_every_catalog_file_is_wired_or_inventoried() -> None:
         f"{orphans} are referenced by neither code nor content/catalogs/README.md — wire them, "
         "delete them, or give them an inventory row"
     )
+
+
+def test_the_catalog_inventory_names_no_deleted_reader() -> None:
+    """CURRICULUM.md §10 deletes the client's static catalog and frame system. A row that still
+    points at `frame.ts` reads as wired when the file it names is gone — the exact rot the
+    inventory exists to prevent."""
+    readme = (REPO / "content/catalogs/README.md").read_text(encoding="utf-8")
+    for target in sorted(set(re.findall(r"`(apps/[^`]+?\.tsx?)`", readme))):
+        assert (REPO / target).is_file(), (
+            f"content/catalogs/README.md names a deleted reader: {target}"
+        )
+    for stale in ("frame.ts", "catalog.ts"):
+        assert stale not in readme, (
+            f"content/catalogs/README.md still names {stale}, deleted in Wave 6"
+        )
 
 
 def test_readme_states_the_law_precedence_and_links_resolve() -> None:

@@ -1,5 +1,5 @@
 /**
- * Wobo's fifteen behaviours — the body half of the rig. A behaviour is a short set of keyframe tracks
+ * Wobo's twenty behaviours — the body half of the rig. A behaviour is a short set of keyframe tracks
  * over normalised time, sampled with a cosine ease so nothing snaps. Pure, so the tracks and the
  * sampler are testable without a browser.
  *
@@ -41,6 +41,28 @@ export const BEHAVIOURS = {
   startle: { sy: [1.14, 0.94, 1], sx: [0.92, 1.06, 1], dy: [-6, 0], dur: 500 },
   settle: { rot: [4, -3, 2, 0], sy: [0.94, 1.04, 1], dur: 600 },
   stretch: { sy: [1.12, 1], sx: [0.95, 1], rot: [-3, 0], dur: 1100 },
+  // --- Wave 7a, the owner's "more animation and behaviours" call. Five that nothing above covers.
+  /** The first meeting. Nothing else in the table greets — a wiggle is a fidget, not a hello. */
+  wave: { rot: [0, -11, 7, -8, 4, 0], dx: [0, 3, -1, 2, 0], dur: 900 },
+  /** Thinking with the pen out. `point` holds Wobo turned to the board; `wiggle` has no pen.
+   * Camel-cased to match the scene of the same name, and so a display name can be derived from it
+   * rather than shipping "Pentap" to a reader (names.ts). */
+  penTap: { rot: [0, 4, 0, 4, 0, 0], dy: [0, -2.5, 0, -2.5, 0, 0], dur: 900, pen: true },
+  /** The click reaction. `hop` is a celebration at 720 ms and -18; a tap deserves a lighter beat. */
+  bounce: { dy: [-9, 0, -3, 0], sy: [1.06, 0.95, 1], sx: [0.95, 1.05, 1], dur: 460 },
+  /** Noticing something new. `startle` is alarm (Wobo recoils); a perk is interest (Wobo rises). */
+  perk: { sy: [1.07, 1], dy: [-4, 0], rot: [0, -5, 0], dur: 440 },
+  /** Losing interest — a slow turn away that comes back to rest, so Wobo never parks off-axis. */
+  drift: { rot: [0, 4, 0], dx: [0, -4, 0], dur: 900 },
+  /**
+   * Chest out — Wobo swelling with it, then settling.
+   *
+   * This used to be a flag on the `proud` EXPRESSION, which held Wobo six percent larger for as
+   * long as that face was worn. A face is not allowed to change how big Wobo is: on a contact sheet
+   * of twenty-two faces at rest, one of them was measurably a bigger character than the rest.
+   * Scale belongs to a behaviour, where it is a thing Wobo does and then stops doing.
+   */
+  puff: { sx: [1.06, 1], sy: [1.04, 1], dy: [-3, 0], dur: 620 },
 } as const satisfies Record<string, BehaviourSpec>;
 
 export type WoboBehaviour = keyof typeof BEHAVIOURS;

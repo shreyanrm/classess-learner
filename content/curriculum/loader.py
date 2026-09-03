@@ -56,9 +56,23 @@ KINDS = frozenset(
 )
 STATUSES = frozenset({"verified", "provisional", "community", "personal"})
 
-LEVEL_MIN, LEVEL_MAX = 4, 13
+# 4 to 13 (§11), plus 14 for Northern Ireland, which numbers its school years 1 to 14 —
+# one ahead of England — so its Year 14 is the same last year of school as England's Year 13.
+# ``build.py`` draws the range the same way; the two must agree or the builder would pass a
+# file this loader then strips.
+LEVEL_MIN, LEVEL_MAX = 4, 14
 
-_LEVEL_NUMBER = re.compile(r"(\d+)")
+# A number is a grade ONLY when the level is named in grade vocabulary. This is the whole
+# subtlety of the field, and getting it wrong is silent: "Secondary 1", "S1", "MYP 1", "JC1"
+# and "DP Year 1" all carry a 1 that counts from the start of a *stage*, not from the start
+# of school. Reading it as a grade puts Singapore's Secondary 1, Scotland's S1, IB MYP 1 and
+# the whole of IB DP outside grades 4 to 13 and drops them, leaving a learner who picks IB DP
+# with no level to choose. So the rule is narrow on purpose: range-check what is unambiguously
+# a grade, and carry everything else the way the framework wrote it, exactly as "IGCSE" is
+# carried. ``build.py``'s GRADE_LEVEL_RE is the same vocabulary, deliberately.
+_GRADE_NAME = re.compile(
+    r"^(?:Class|Grade|Year|Standard|Form|Stage)\s+(\d{1,2}|[IVX]+)$", re.IGNORECASE
+)
 _ROMAN = {
     "IV": 4, "V": 5, "VI": 6, "VII": 7, "VIII": 8, "IX": 9,
     "X": 10, "XI": 11, "XII": 12, "XIII": 13,
@@ -77,27 +91,33 @@ class SeedError(Exception):
 
 
 def level_order(name: str | None) -> int | None:
-    """The grade number inside a level name, or ``None`` when the name carries none.
+    """The grade number a level name states, or ``None`` when it states none.
 
-    ``"Class 9"`` -> 9, ``"Grade 10"`` -> 10, ``"Year 11"`` -> 11, ``"Class IX"`` -> 9,
-    ``"IGCSE"`` -> ``None``.
+    ``"Class 9"`` -> 9, ``"Grade 10"`` -> 10, ``"Year 11"`` -> 11, ``"Class IX"`` -> 9.
+
+    ``None`` for everything that is not a bare grade name, digits in it or not:
+    ``"IGCSE"``, ``"S1"``, ``"Secondary 1"``, ``"MYP 1"``, ``"JC2"``, ``"DP Year 1"``.
+    Those numbers count from the start of a stage, not from the start of school, and
+    reading one as a grade is how a framework loses its levels.
     """
     if not name:
         return None
-    match = _LEVEL_NUMBER.search(name)
-    if match:
-        return int(match.group(1))
-    for token in re.split(r"[\s\-_/]+", name.upper()):
-        if token in _ROMAN:
-            return _ROMAN[token]
-    return None
+    match = _GRADE_NAME.match(name.strip())
+    if not match:
+        return None
+    token = match.group(1)
+    if token.isdigit():
+        return int(token)
+    return _ROMAN.get(token.upper())
 
 
 def in_scope(name: str | None) -> bool:
-    """Grades 4 to 13, school level only (§11).
+    """School level, grades 4 to 13 (§11).
 
-    A level with no number in its name is in scope. We would rather carry "IGCSE" than
-    drop it for failing to look like a grade.
+    A level that does not state a grade is in scope. We would rather carry "IGCSE",
+    "Secondary 1" and "DP Year 1" than drop them for failing to look like a grade —
+    the framework's own vocabulary is the one the learner picks from (§11), and a name
+    we cannot read a grade out of is not evidence the level is out of range.
     """
     order = level_order(name)
     return order is None or LEVEL_MIN <= order <= LEVEL_MAX
@@ -124,7 +144,13 @@ class Framework:
     levels: tuple[str, ...] = ()
     official_site: str | None = None
     status: str = "provisional"
+    #: The site's page title corroborated this entry's name (or an owner reviewed it). What
+    #: `verified` stands on — never reachability alone, which is `site_reachable`.
     verified_site: bool = False
+    #: The declared official site answered under 400. A fact about a host, not about a board.
+    site_reachable: bool = False
+    #: One line saying why this entry reads verified or provisional, written by `build.py`.
+    status_reason: str | None = None
     checked_at: str | None = None
     note: str | None = None
     check: dict[str, Any] = field(default_factory=dict, repr=False, compare=False)
@@ -182,6 +208,8 @@ class Framework:
             official_site=_text(row.get("official_site")) or None,
             status=status,
             verified_site=confirmed,
+            site_reachable=bool(row.get("site_reachable")) or bool(check.get("ok")),
+            status_reason=_text(row.get("status_reason")) or None,
             checked_at=_text(row.get("checked_at")) or None,
             note=_text(row.get("note")) or None,
             check=dict(check),

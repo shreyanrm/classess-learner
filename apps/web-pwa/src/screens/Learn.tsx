@@ -11,8 +11,12 @@ import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { motion } from 'framer-motion';
 import { type CSSProperties, type ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { chaptersBySubject, type DisplaySubject, displaySubjects } from '../data/catalog';
-import { canonicalSubjectId } from '../data/frame';
+import { chooseLevel } from '../curriculum/adopt';
+import { useRegistryRevision, useWorld } from '../curriculum/hooks';
+import { ProvenanceLabel } from '../curriculum/Labels';
+import { chaptersBySubject, type DisplaySubject, displaySubjects } from '../curriculum/registry';
+import { EmptyWorldCard } from '../curriculum/StatusCard';
+import { canonicalSubjectId } from '../curriculum/subjects';
 import { useRouter } from '../shell/router';
 import { SubjectGlyph } from '../ui/art';
 import { Scene } from '../ui/cast';
@@ -349,11 +353,9 @@ function SubjectStage({
 function SubjectCard({ subject, onOpen }: { subject: DisplaySubject; onOpen: () => void }) {
   const [lit, setLit] = useState(false);
   const tone = toneForSubject(subject.id);
-  // a clubbed door counts every chapter behind it
-  const chapterCount = subject.subjectIds.reduce(
-    (n, id) => n + (chaptersBySubject[id] ?? []).length,
-    0,
-  );
+  // Chapters arrive when the subject is opened, so a door that has not been opened says so rather
+  // than claiming a number it does not have.
+  const chapterCount = (chaptersBySubject[subject.id] ?? []).length;
   // Each card is its own target — Wobo can circle "Physics" specifically, not the whole grid.
   const cardRef = useRegisterTarget<HTMLDivElement>(`learn-subject-${subject.id}`, {
     kind: 'subject',
@@ -410,8 +412,38 @@ function SubjectCard({ subject, onOpen }: { subject: DisplaySubject; onOpen: () 
 /** The tactile subject grid — shared by learn and practice, differing only in intent. */
 export function SubjectGrid({ intent }: { intent: 'learn' | 'practice' }) {
   const router = useRouter();
-  // the board's doors over the canonical six — CBSE ≤10 clubs the sciences into one "Science"
+  const world = useWorld();
+  useRegistryRevision();
+  // The board's own subjects for the learner's own class, in its own naming and order. Empty until
+  // the brain has served them — never a canonical six standing in for a board we have not asked.
   const doors = displaySubjects();
+
+  // A world with a class but no subjects yet: ask once, here, when the learner arrives.
+  useEffect(() => {
+    if (world?.level && world.subjects.length === 0) void chooseLevel(world.level);
+  }, [world?.level, world?.subjects.length]);
+
+  if (!world) return <EmptyWorldCard onChooseBoard={() => router.navigate({ name: 'you' })} />;
+
+  if (doors.length === 0)
+    return (
+      <div style={{ display: 'grid', gap: 10, maxWidth: 520 }}>
+        <p
+          style={{ margin: 0, fontSize: '0.95rem', color: 'var(--wobo-ink-500)', lineHeight: 1.5 }}
+        >
+          {world.level
+            ? `I am fetching the subjects ${world.frameworkName} teaches in ${world.level}.`
+            : 'Tell me your class and I will bring your subjects.'}
+        </p>
+        <ProvenanceLabel
+          status={world.status}
+          label={world.label}
+          name={world.frameworkName}
+          version={world.versionYear}
+        />
+      </div>
+    );
+
   return (
     <motion.div
       variants={cascade}
@@ -466,7 +498,7 @@ export function Learn() {
     getSceneState: () => ({
       subjects: displaySubjects().map((s) => ({
         name: s.name,
-        chapters: s.subjectIds.reduce((n, id) => n + (chaptersBySubject[id] ?? []).length, 0),
+        chapters: (chaptersBySubject[s.id] ?? []).length,
         targetId: `learn-subject-${s.id}`,
       })),
     }),

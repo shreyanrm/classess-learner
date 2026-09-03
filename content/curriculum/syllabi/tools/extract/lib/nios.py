@@ -1,5 +1,10 @@
 """Modules and lessons of a NIOS course page (online course material)."""
-import re, sys, os
+
+import os
+import re
+import sys
+from pathlib import Path
+
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 MOD = re.compile(r"^\s*MODULE\s*[-–:]?\s*([IVXLC]+|\d{1,2})\s*[:.\-]?\s*(.*?)\s*$", re.I)
@@ -9,14 +14,14 @@ DEVA = re.compile(r"[ऀ-ॿ]")
 
 
 def modules(key):
-    t = open(os.path.join(HERE, "txt", key + ".txt"), encoding="utf-8", errors="replace").read()
+    t = Path(HERE, "txt", key + ".txt").read_text(encoding="utf-8", errors="replace")
     t = re.sub(r"[ \t]+", " ", t)
-    lines = [l.strip() for l in t.split("\n") if l.strip()]
+    lines = [line.strip() for line in t.split("\n") if line.strip()]
     out, cur, seen_mod = [], None, {}
-    for i, l in enumerate(lines):
-        if DEVA.search(l):
+    for i, line in enumerate(lines):
+        if DEVA.search(line):
             continue
-        m = MOD.match(l)
+        m = MOD.match(line)
         if m and (m.group(2).strip() or (i + 1 < len(lines) and not MOD.match(lines[i + 1]))):
             title = SIZE.sub("", m.group(2)).strip(" :.-")
             if not title:
@@ -33,15 +38,21 @@ def modules(key):
             continue
         if cur is None:
             continue
-        m = LESSON.match(l)
+        m = LESSON.match(line)
         if not m:
             continue
         n, body = int(m.group(1)), m.group(2)
         nxt = lines[i + 1] if i + 1 < len(lines) else ""
         if not body.strip() and nxt and not LESSON.match(nxt) and not DEVA.search(nxt):
             body = nxt
-        elif body.strip() and not SIZE.search(body) and nxt and re.search(r"(KB|MB)\s*\)?\s*$", nxt) \
-                and not LESSON.match(nxt) and not DEVA.search(nxt):
+        elif (
+            body.strip()
+            and not SIZE.search(body)
+            and nxt
+            and re.search(r"(KB|MB)\s*\)?\s*$", nxt)
+            and not LESSON.match(nxt)
+            and not DEVA.search(nxt)
+        ):
             body = body + " " + nxt
         title = SIZE.sub("", body).strip(" :.-")
         title = re.sub(r"\s*\(\s*[\d.]*\s*$", "", title).strip()
@@ -59,6 +70,6 @@ def modules(key):
 
 if __name__ == "__main__":
     for m in modules(sys.argv[1]):
-        print("== MODULE %s: %s" % (m["number"], m["title"]))
+        print("== MODULE {}: {}".format(m["number"], m["title"]))
         for c in m["lessons"]:
-            print("     %2d. %s" % (c["number"], c["title"]))
+            print(f"     {c['number']:>2}. {c['title']}")

@@ -3,6 +3,7 @@ import { applyPop, pathToRoute, type Route, routeFromPath, routeToPath } from '.
 
 /** One of every named route, including the ones that carry parameters. */
 const EVERY_ROUTE: Route[] = [
+  { name: 'landing' },
   { name: 'onboarding' },
   { name: 'building' },
   { name: 'home' },
@@ -17,6 +18,12 @@ const EVERY_ROUTE: Route[] = [
   { name: 'sandbox', topicId: 'm2-1' },
   { name: 'progress' },
   { name: 'you' },
+  { name: 'about' },
+  { name: 'help' },
+  { name: 'helpArticle', group: 'wobo-basics', slug: 'what-is-wobo' },
+  { name: 'sign-in' },
+  { name: 'sign-up' },
+  { name: 'contact' },
   { name: 'concept', which: 'engines' },
 ];
 
@@ -45,7 +52,7 @@ describe('routes have addresses', () => {
     expect(pathToRoute('/you#top')).toEqual({ name: 'you' });
   });
 
-  it('refuses an address that is not ours, and lands it home rather than nowhere', () => {
+  it('refuses an address that is not ours, and says so rather than pretending', () => {
     for (const path of [
       '/nonsense',
       '/course', // a course with no topic
@@ -53,14 +60,21 @@ describe('routes have addresses', () => {
       '/subject/math', // no intent
       '/subject/math/dance', // not an intent
       '/concept/z',
-      '/concept/a', // the deleted design prototypes — an old bookmark lands home, not on nothing
+      '/concept/a', // the deleted design prototypes — an old bookmark is a dead link, and says so
       '/concept/b',
       '/concept/c',
       '/you/settings',
     ]) {
       expect(pathToRoute(path)).toBeNull();
-      expect(routeFromPath(path)).toEqual({ name: 'home' });
+      expect(routeFromPath(path)).toEqual({ name: 'notfound', path });
     }
+  });
+
+  it('keeps the address a 404 was asked for, so the learner can see the slip in it', () => {
+    // The URL bar is evidence. Rewriting it to /404 would hide the typo or the truncated link.
+    expect(routeToPath(routeFromPath('/coarse/m2-1'))).toBe('/coarse/m2-1');
+    expect(routeFromPath('/gone?from=email')).toEqual({ name: 'notfound', path: '/gone' });
+    expect(routeToPath({ name: 'notfound' })).toBe('/404');
   });
 });
 
@@ -85,9 +99,14 @@ describe('popstate — the system back gesture drives the stack', () => {
     expect(applyPop([home], '/course/m2-1')).toEqual([home, course]);
   });
 
-  it('lands an unknown address home instead of on a blank screen', () => {
-    expect(applyPop([learn, course], '/gone')).toEqual([learn, course, home]);
-    // …and when home is the entry underneath, that unknown address is simply the pop it looks like
-    expect(applyPop([home, learn], '/gone')).toEqual([home]);
+  it('enters an unknown address as the 404 it is, never as a blank screen', () => {
+    const gone: Route = { name: 'notfound', path: '/gone' };
+    expect(applyPop([learn, course], '/gone')).toEqual([learn, course, gone]);
+    expect(applyPop([home, learn], '/gone')).toEqual([home, learn, gone]);
+  });
+
+  it('pops back OFF a 404 the way it pops off any other screen', () => {
+    const gone: Route = { name: 'notfound', path: '/gone' };
+    expect(applyPop([home, gone], '/')).toEqual([home]);
   });
 });

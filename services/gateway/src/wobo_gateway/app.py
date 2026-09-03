@@ -68,11 +68,12 @@ from wobo_gateway.voice import register_voice
 logger = logging.getLogger("wobo.gateway")
 
 # Brand-neutral by config (WOBO-PLAN §8): the canonical origin is one environment variable, so
-# the domain swap is a deploy change and never a code change. No hostname is compiled in: the
-# domain wave (§17) has not landed, so the default is the RFC 2606 reserved name, which can
-# never resolve and so can never be mistaken for a working setting.
+# the domain swap is a deploy change and never a code change. The default is the real origin the
+# domain wave landed on (heywobo.com, 2026-09-03) and it agrees with email_templates.py — a
+# service that lost APP_URL must still put a working link in a learner's mail and a reachable
+# origin in the CORS allow-list, not a reserved name that can never resolve.
 APP_NAME = os.getenv("APP_NAME", "Wobo")
-APP_URL = os.getenv("APP_URL", "https://wobo.invalid").rstrip("/")
+APP_URL = os.getenv("APP_URL", "https://heywobo.com").rstrip("/")
 # Our own preview builds — ephemeral per-deploy origins, pattern-matched. Also config: a
 # different Vercel project or team is a different pattern.
 _PREVIEW_ORIGIN_REGEX = os.getenv(
@@ -802,6 +803,57 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
         # refunded — a learner never pays for a call we did not serve.
         snap = budget.charge(meter, name, profile.plan, anonymous=principal.anonymous)
         headers = budget.headers(snap, budget.classify(name))
+
+        # The curriculum registry (CURRICULUM.md §8). It rides this route rather than a router of
+        # its own so it inherits the one door, the one limiter and the one meter — but it never
+        # reaches Gateway.invoke, because these are registry reads and writes: they answer from
+        # the store and, when a syllabus is missing, enqueue the discovery job that does. The one
+        # exception is `curriculum.own.read`, which puts the learner's own document through the
+        # generate tier; it owns its own call, which is why the model line below names what ran.
+        if name.startswith("curriculum."):
+            from wobo_gateway.curriculum import api as curriculum_api
+
+            try:
+                output = curriculum_api.handle(
+                    name,
+                    request.payload,
+                    subject=principal.subject,
+                    anonymous=principal.anonymous,
+                    # A registry read is a turn; the discovery job one of them can mint is a
+                    # search, an extraction on the generate tier and a re-reading on the verify
+                    # tier. Without this seam the expensive half of the curriculum was free,
+                    # and a cheap `curriculum.units` call could mint it (CURRICULUM.md §4.4).
+                    charge=lambda capability: budget.charge(
+                        meter, capability, profile.plan, anonymous=principal.anonymous
+                    ),
+                )
+            except curriculum_api.CurriculumError as exc:
+                budget.refund(meter, name)
+                return JSONResponse(
+                    status_code=exc.status, content=exc.body(), headers=headers
+                )
+            except Exception:
+                budget.refund(meter, name)
+                raise
+            return JSONResponse(
+                status_code=200,
+                content=CapabilityResponse(
+                    capability=name,
+                    track=policy(name).track.value,
+                    # Honest inside the brain, and stripped by `served()` before it leaves:
+                    # the store answered, unless the learner's own document went to a tier.
+                    model=(
+                        f"curriculum.own:{policy(name).tier.value}"
+                        if name == "curriculum.own.read"
+                        else "curriculum.store"
+                    ),
+                    cache_hit=False,
+                    latency_ms=0.0,
+                    tokens=0,
+                    output=output,
+                ).served(),
+                headers=headers,
+            )
 
         try:
             if name.startswith("engine."):

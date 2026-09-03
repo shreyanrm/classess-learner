@@ -6,7 +6,7 @@
  */
 
 import { ATOM_NODE_IDS, type MasteryBandView } from '@wobo/sdk';
-import { mathChapters } from '../../data/catalog';
+import { chaptersBySubject, subjects } from '../../curriculum/registry';
 
 export const VIEW_W = 1000;
 export const VIEW_H = 620;
@@ -147,13 +147,21 @@ const FAR_POSITIONS: [number, number][] = [
   [64, 372],
 ];
 
-/** The chapters still to come — far, faint, waiting. */
-export const FAR_STARS: FarStar[] = mathChapters
-  .filter((c) => c.topics.length === 0)
-  .map((c, i) => {
-    const [x, y] = FAR_POSITIONS[i % FAR_POSITIONS.length] as [number, number];
-    return { id: c.id, name: c.name, x, y };
-  });
+/**
+ * The chapters still to come — far, faint, waiting. Read live from the learner's own syllabus, so
+ * a learner with no world yet has an empty outer rim rather than another board's chapter names.
+ */
+export function farStars(): FarStar[] {
+  const out: FarStar[] = [];
+  for (const subject of subjects) {
+    for (const chapter of chaptersBySubject[subject.id] ?? []) {
+      if (chapter.topics.length > 0) continue;
+      const [x, y] = FAR_POSITIONS[out.length % FAR_POSITIONS.length] as [number, number];
+      out.push({ id: chapter.id, name: chapter.name, x, y });
+    }
+  }
+  return out;
+}
 
 /**
  * A star's state: real mastery bands for ontology-backed stars, course completion for catalog

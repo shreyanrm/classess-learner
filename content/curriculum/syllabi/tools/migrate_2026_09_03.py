@@ -19,6 +19,7 @@ What it does, in order, per file:
 
 Deterministic: running it twice over its own output changes nothing.
 """
+
 import hashlib
 import json
 import os
@@ -106,8 +107,8 @@ def lift_non_syllabus_tail(unit):
     for j, t in enumerate(moved):
         s = t["title"]
         if j == 0 and prefix:
-            s = s[len(prefix):].lstrip(" .,;:")
-            kept.append({k: v for k, v in t.items()})
+            s = s[len(prefix) :].lstrip(" .,;:")
+            kept.append(dict(t.items()))
             kept[-1]["title"] = prefix
         notes.append(s)
     unit["topics"] = kept
@@ -123,16 +124,52 @@ def node_id(*parts):
 
 ACRONYM = re.compile(r"^[A-Z][A-Z&/.'\-:;,()]*$")
 KEEP_UPPER = {
-    "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII",
-    "DNA", "RNA", "ATP", "AC", "DC", "ICT", "GDP", "UN", "II)", "I)", "A", "B",
-    "C", "D", "E", "F", "P", "S", "N", "O", "H", "PH", "AIDS", "HIV", "TB",
+    "I",
+    "II",
+    "III",
+    "IV",
+    "V",
+    "VI",
+    "VII",
+    "VIII",
+    "IX",
+    "X",
+    "XI",
+    "XII",
+    "DNA",
+    "RNA",
+    "ATP",
+    "AC",
+    "DC",
+    "ICT",
+    "GDP",
+    "UN",
+    "II)",
+    "I)",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "P",
+    "S",
+    "N",
+    "O",
+    "H",
+    "PH",
+    "AIDS",
+    "HIV",
+    "TB",
 }
 
 
 def sentence_case(s):
     """Lower a shouted heading without touching an already mixed-case one."""
     words = s.split()
-    shouted = [w for w in words if ACRONYM.match(w) and len(w) > 1 and w.strip(":,.()") not in KEEP_UPPER]
+    shouted = [
+        w for w in words if ACRONYM.match(w) and len(w) > 1 and w.strip(":,.()") not in KEEP_UPPER
+    ]
     all_upper = not any(c.islower() for c in s) and any(c.isalpha() for c in s)
     if not shouted or (len(shouted) < 2 and not all_upper):
         return s
@@ -170,12 +207,18 @@ def run_checks(doc):
         "every_source_ref_resolves_to_a_document",
         all((u.get("source_ref") or {}).get("document_id") in doc_ids for u in units),
     )
-    check("every_document_carries_a_hash", all(d.get("document_sha256") for d in doc.get("documents") or []))
+    check(
+        "every_document_carries_a_hash",
+        all(d.get("document_sha256") for d in doc.get("documents") or []),
+    )
     has_topics = [u for u in units if u.get("topics") is not None]
     if has_topics:
         check(
             "topic_order_is_1_to_n_within_every_unit",
-            all([t["order"] for t in u["topics"]] == list(range(1, len(u["topics"]) + 1)) for u in has_topics),
+            all(
+                [t["order"] for t in u["topics"]] == list(range(1, len(u["topics"]) + 1))
+                for u in has_topics
+            ),
         )
         check("no_unit_left_without_topics", all(u["topics"] for u in has_topics))
         check(
@@ -234,8 +277,13 @@ def main():
                 if f.endswith(".json"):
                     files.append(os.path.join(p, f))
 
-    stats = {"page_tails_bounded": 0, "chemistry_tail_lifted": 0,
-             "cisce_topics_withdrawn": 0, "blocked": 0, "shouted_names": 0}
+    stats = {
+        "page_tails_bounded": 0,
+        "chemistry_tail_lifted": 0,
+        "cisce_topics_withdrawn": 0,
+        "blocked": 0,
+        "shouted_names": 0,
+    }
 
     for path in files:
         with open(path) as fh:
@@ -307,7 +355,16 @@ def main():
                 if tname != traw:
                     t["source_title"] = traw
                     stats["shouted_names"] += 1
-                t["id"] = node_id(fid, doc["version"], doc["level"], doc["subject"], "u", u["order"], "t", t["order"])
+                t["id"] = node_id(
+                    fid,
+                    doc["version"],
+                    doc["level"],
+                    doc["subject"],
+                    "u",
+                    u["order"],
+                    "t",
+                    t["order"],
+                )
                 t.setdefault("aliases", [])
                 t.setdefault("concept_ids", [])
 
@@ -347,7 +404,8 @@ def main():
         doc["provenance"] = {
             "extractor": (
                 "deterministic text extraction from the fetched document; no model in the loop"
-                if doc.get("units") else None
+                if doc.get("units")
+                else None
             ),
             "verifier": None,
             "checks_passed": passed,
@@ -357,14 +415,35 @@ def main():
         }
 
         order = [
-            "framework_id", "framework_name", "framework_kind", "country", "region",
-            "official_site", "aliases", "languages", "levels",
-            "version", "applies_to", "exam_year", "level", "level_order", "stage",
-            "subject", "course_code", "status", "read_off_source",
-            "discovery_state", "blocker",
-            "provenance", "documents", "units", "note",
+            "framework_id",
+            "framework_name",
+            "framework_kind",
+            "country",
+            "region",
+            "official_site",
+            "aliases",
+            "languages",
+            "levels",
+            "version",
+            "applies_to",
+            "exam_year",
+            "level",
+            "level_order",
+            "stage",
+            "subject",
+            "course_code",
+            "status",
+            "read_off_source",
+            "discovery_state",
+            "blocker",
+            "provenance",
+            "documents",
+            "units",
+            "note",
         ]
-        doc["languages"] = [doc.pop("language")] if "language" in doc else doc.get("languages", ["en"])
+        doc["languages"] = (
+            [doc.pop("language")] if "language" in doc else doc.get("languages", ["en"])
+        )
         doc["levels"] = LEVELS[fid]
         doc["official_site"] = OFFICIAL_SITE[fid]
         out = {k: doc[k] for k in order if k in doc}

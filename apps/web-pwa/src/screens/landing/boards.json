@@ -1,0 +1,98 @@
+{
+  "source": "content/curriculum/frameworks.seed.json",
+  "registryBuild": "2026-09-03T08:15:26+00:00",
+  "total": 268,
+  "countries": 65,
+  "shown": [
+    {
+      "id": "cbse",
+      "short": "CBSE",
+      "name": "Central Board of Secondary Education"
+    },
+    {
+      "id": "icse",
+      "short": "ICSE",
+      "name": "Indian Certificate of Secondary Education"
+    },
+    {
+      "id": "ncert-ncf",
+      "short": "NCERT",
+      "name": "NCERT national curriculum framework"
+    },
+    {
+      "id": "bse-telangana",
+      "short": "Telangana SSC",
+      "name": "Board of Secondary Education, Telangana"
+    },
+    {
+      "id": "msbshse",
+      "short": "Maharashtra board",
+      "name": "Maharashtra State Board of Secondary and Higher Secondary Education"
+    },
+    {
+      "id": "kseab",
+      "short": "Karnataka board",
+      "name": "Karnataka School Examination and Assessment Board"
+    },
+    {
+      "id": "tn-dge",
+      "short": "Tamil Nadu board",
+      "name": "Tamil Nadu State Board"
+    },
+    {
+      "id": "upmsp",
+      "short": "UP board",
+      "name": "Board of High School and Intermediate Education Uttar Pradesh"
+    },
+    {
+      "id": "wbbse",
+      "short": "WBBSE",
+      "name": "West Bengal Board of Secondary Education"
+    },
+    {
+      "id": "nios",
+      "short": "NIOS",
+      "name": "National Institute of Open Schooling"
+    },
+    {
+      "id": "ib-dp",
+      "short": "IB",
+      "name": "IB Diploma Programme"
+    },
+    {
+      "id": "cambridge-igcse",
+      "short": "IGCSE",
+      "name": "Cambridge IGCSE"
+    },
+    {
+      "id": "pearson-edexcel-international-gcse",
+      "short": "Edexcel IGCSE",
+      "name": "Pearson Edexcel International GCSE"
+    },
+    {
+      "id": "college-board-ap",
+      "short": "AP",
+      "name": "College Board Advanced Placement"
+    },
+    {
+      "id": "england-national-curriculum",
+      "short": "UK national curriculum",
+      "name": "National curriculum in England"
+    },
+    {
+      "id": "acara-australian-curriculum",
+      "short": "Australian curriculum",
+      "name": "Australian Curriculum"
+    },
+    {
+      "id": "ontario-curriculum",
+      "short": "Ontario curriculum",
+      "name": "Ontario curriculum"
+    },
+    {
+      "id": "montessori-ami",
+      "short": "Montessori",
+      "name": "Montessori"
+    }
+  ]
+}

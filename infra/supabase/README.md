@@ -25,6 +25,9 @@ client query. There are no cross-schema foreign keys; canonical references are o
 | `0004_seed_dev.sql` | deterministic dev seed (mock subject "Aanya") |
 | `0005_learner_state_threads_relay.sql` | `learner_state` (XP/streak/topic progress/mind, device-merged) + `learner_threads` (Wobo conversation), RLS, `outbox_append_batch`, PostgREST exposure of `learner` |
 | `0006_wobo_rename_and_profile_fields.sql` | applied 2026-09-02 via MCP: `canvas_state.last_seen_by_wobo_at` (renamed), thread default `'wobo'`, `profiles_cache.birthdate` / `interests` / `plan` |
+| `0007_learner_state_streaks.sql` | streak columns on `learner_state` |
+| `0008_curriculum.sql` | the `curriculum` schema (CURRICULUM.md §10): `frameworks`, `versions`, `nodes`, `provenance`, `concept_map`, `overlays`, `pins`, `discovery_jobs`, `review_queue`; published versions immutable by trigger; RLS read-only for learners, writes service-role; PostgREST exposure of `curriculum` |
+| `0009_curriculum_review_offers.sql` | `review_queue` can hold an offered syllabus (`kind`, `framework_id`, `offered_by_hash`, `note`, `payload`); the normalised discovery key documented on `discovery_jobs.level` / `.subject` |
 
 ## RLS
 

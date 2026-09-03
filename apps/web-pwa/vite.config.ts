@@ -57,7 +57,13 @@ export default defineConfig(({ mode }) => {
         registerType: 'autoUpdate',
         // Icons are cropped from the wordmark's W-mark (public/wobo-logo.png).
         // Regenerate with the snippet in DEPLOY.md if the logo changes.
-        includeAssets: ['wobo-logo.png', 'favicon.svg', 'apple-touch-icon.png', 'robots.txt'],
+        includeAssets: [
+          'wobo-logo.png',
+          'favicon.svg',
+          'apple-touch-icon.png',
+          'robots.txt',
+          'sitemap.xml',
+        ],
         workbox: {
           // A new deploy must take over IMMEDIATELY, not after every tab closes. Without these, the
           // old service worker keeps serving its cached (stale) bundle — so a shipped feature looks
@@ -88,6 +94,9 @@ export default defineConfig(({ mode }) => {
           name: appName,
           short_name: appName,
           description: appDescription,
+          // Origin-relative on purpose: the manifest is served from the app's own origin
+          // (https://heywobo.com), so `/` IS the installed app's identity and launch URL. An
+          // absolute URL here would pin an installed app to one host and break every preview.
           id: '/',
           start_url: '/',
           scope: '/',

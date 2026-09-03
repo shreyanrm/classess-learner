@@ -14,7 +14,7 @@
 import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { chapterById, topicById } from '../data/catalog';
+import { chapterById, topicById } from '../curriculum/registry';
 import { useRouter } from '../shell/router';
 import { enqueue as enqueueDownload, getDownload } from '../store/downloads';
 import { useProgress } from '../store/progress';

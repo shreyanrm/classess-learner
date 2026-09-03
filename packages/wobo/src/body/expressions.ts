@@ -46,11 +46,17 @@ export interface ExpressionSpec {
   spark?: boolean;
   /** The mitt and the ultramarine-tipped pen come out only while Wobo is drawing. */
   pen?: boolean;
-  /** Choreography flags — free under the Wobo-cute licence, all suppressed by reduced motion. */
+  /**
+   * Choreography flags — free under the Wobo-cute licence, all suppressed by reduced motion.
+   *
+   * None of them may change Wobo's SIZE at rest. `bounce` and `sway` move Wobo, `breathe` scales by
+   * under two percent on a cycle that returns to 1; a flag that parked Wobo six percent larger for
+   * as long as a face was worn lived here once, and it made one of the twenty-two faces a visibly
+   * bigger character than the others. That is the `puff` behaviour now.
+   */
   bounce?: boolean;
   sway?: boolean;
   breathe?: boolean;
-  chest?: boolean;
   /** The visor narrows to a slit — concentration. */
   narrow?: boolean;
 }
@@ -127,6 +133,14 @@ export const EXPRESSIONS = {
     lean: 2,
     note: 'wait, what?',
   },
+  peeking: {
+    left: { kind: 'wide', scale: 1.18 },
+    right: { kind: 'dot', scale: 0.78 },
+    tilt: 12,
+    lean: 9,
+    note: '',
+    look: [16, 2],
+  },
   surprised: {
     left: { kind: 'wide', scale: 1.45 },
     right: { kind: 'wide', scale: 1.45 },
@@ -166,7 +180,6 @@ export const EXPRESSIONS = {
     tilt: -2,
     lean: -2,
     note: '',
-    chest: true,
   },
   shy: {
     left: { kind: 'dot', scale: 0.8 },
@@ -190,6 +203,14 @@ export const EXPRESSIONS = {
     tilt: 0,
     lean: 0,
     note: '',
+  },
+  greeting: {
+    left: { kind: 'wide', scale: 1.16 },
+    right: { kind: 'wide', scale: 1.16 },
+    tilt: -7,
+    lean: 5,
+    note: 'hello',
+    look: [0, -6],
   },
 } as const satisfies Record<string, ExpressionSpec>;
 
@@ -236,8 +257,26 @@ export function expressionNote(name: WoboMood | WoboExpression | undefined): str
 
 // --- Eye geometry -------------------------------------------------------------------------------
 
-/** Eye radius in rig units. Bigger eyes, per the owner. */
-export const EYE_RADIUS = 7.4;
+/**
+ * The radius the rig was drawn at, before the owner's "bigger eyes" call on 2026-09-02. Kept as a
+ * named constant so the growth below is a fact in code rather than a number nobody can check.
+ */
+export const EYE_RADIUS_BASE = 7.4;
+
+/** The owner asked for eyes twelve percent bigger. Every metric of the face grows by this, not
+ * just the pupil — a bigger dot inside the same lids would have read as a different character. */
+export const EYE_GROWTH = 1.12;
+
+const n = (v: number) => Math.round(v * 100) / 100;
+
+/** Scale one of the rig's original face metrics by the growth factor. */
+const g = (v: number) => n(v * EYE_GROWTH);
+
+/** Eye radius in rig units. */
+export const EYE_RADIUS = g(EYE_RADIUS_BASE);
+
+/** Half-width of the stroked lid shapes (dash, arc, closed, wink, sad, equals). */
+export const EYE_LID_HALF = g(7);
 
 /** Past this much of a blink the lids have met, whatever the expression was doing. */
 export const BLINK_CLOSED_AT = 0.85;
@@ -250,8 +289,6 @@ export interface EyeGeometry {
   /** Stroke width in rig units; 0 when the shape is filled. */
   strokeWidth: number;
 }
-
-const n = (v: number) => Math.round(v * 100) / 100;
 
 function circlePath(cx: number, cy: number, r: number): string {
   return `M${n(cx - r)} ${n(cy)}a${n(r)} ${n(r)} 0 1 0 ${n(r * 2)} 0a${n(r)} ${n(r)} 0 1 0 ${n(-r * 2)} 0Z`;
@@ -275,52 +312,53 @@ export function eyeGeometry(
   const s = eye.scale ?? 1;
   const kind: EyeKind = blink > BLINK_CLOSED_AT ? 'closed' : eye.kind;
   const R = EYE_RADIUS;
+  const L = EYE_LID_HALF;
   switch (kind) {
     case 'dot':
       return { d: circlePath(cx, cy, R * s), filled: true, strokeWidth: 0 };
     case 'wide':
-      return { d: ellipsePath(cx, cy, R * s, (R + 1.6) * s), filled: true, strokeWidth: 0 };
+      return { d: ellipsePath(cx, cy, R * s, (R + g(1.6)) * s), filled: true, strokeWidth: 0 };
     case 'half':
       return {
-        d: `M${n(cx - R)} ${n(cy + 1)}A${n(R)} ${n(R)} 0 0 0 ${n(cx + R)} ${n(cy + 1)}Z`,
+        d: `M${n(cx - L)} ${n(cy + g(1))}A${n(R)} ${n(R)} 0 0 0 ${n(cx + L)} ${n(cy + g(1))}Z`,
         filled: true,
         strokeWidth: 0,
       };
     case 'dash':
-      return { d: `M${n(cx - 7)} ${n(cy)}h14`, filled: false, strokeWidth: 5.2 };
+      return { d: `M${n(cx - L)} ${n(cy)}h${n(L * 2)}`, filled: false, strokeWidth: g(5.2) };
     case 'equals':
       return {
-        d: `M${n(cx - 7)} ${n(cy - 3.5)}h14M${n(cx - 7)} ${n(cy + 3.5)}h14`,
+        d: `M${n(cx - L)} ${n(cy - g(3.5))}h${n(L * 2)}M${n(cx - L)} ${n(cy + g(3.5))}h${n(L * 2)}`,
         filled: false,
-        strokeWidth: 3.6,
+        strokeWidth: g(3.6),
       };
     case 'arc':
       return {
-        d: `M${n(cx - 7)} ${n(cy + 3)}Q${n(cx)} ${n(cy - 8 * s)} ${n(cx + 7)} ${n(cy + 3)}`,
+        d: `M${n(cx - L)} ${n(cy + g(3))}Q${n(cx)} ${n(cy - g(8) * s)} ${n(cx + L)} ${n(cy + g(3))}`,
         filled: false,
-        strokeWidth: 5.2,
+        strokeWidth: g(5.2),
       };
     case 'sad':
       return {
-        d: `M${n(cx - 7)} ${n(cy - 2)}Q${n(cx)} ${n(cy + 6)} ${n(cx + 7)} ${n(cy - 2)}`,
+        d: `M${n(cx - L)} ${n(cy - g(2))}Q${n(cx)} ${n(cy + g(6))} ${n(cx + L)} ${n(cy - g(2))}`,
         filled: false,
-        strokeWidth: 5,
+        strokeWidth: g(5),
       };
     case 'closed':
       return {
-        d: `M${n(cx - 7)} ${n(cy + 1)}Q${n(cx)} ${n(cy + 5)} ${n(cx + 7)} ${n(cy + 1)}`,
+        d: `M${n(cx - L)} ${n(cy + g(1))}Q${n(cx)} ${n(cy + g(5))} ${n(cx + L)} ${n(cy + g(1))}`,
         filled: false,
-        strokeWidth: 4.6,
+        strokeWidth: g(4.6),
       };
     case 'wink':
       return {
-        d: `M${n(cx - 7)} ${n(cy + 2)}Q${n(cx)} ${n(cy - 4)} ${n(cx + 7)} ${n(cy + 2)}`,
+        d: `M${n(cx - L)} ${n(cy + g(2))}Q${n(cx)} ${n(cy - g(4))} ${n(cx + L)} ${n(cy + g(2))}`,
         filled: false,
-        strokeWidth: 5,
+        strokeWidth: g(5),
       };
     case 'scan':
       return {
-        d: circlePath(cx + Math.sin(timeMs / 180) * 6, cy, 5),
+        d: circlePath(cx + Math.sin(timeMs / 180) * g(6), cy, g(5)),
         filled: true,
         strokeWidth: 0,
       };

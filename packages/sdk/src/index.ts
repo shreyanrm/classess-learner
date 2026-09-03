@@ -16,6 +16,7 @@ export type {
 export { ATOM_NODE_IDS, ATOM_TARGET_NODE_ID, MATH_ACCENT } from '@wobo/kgtopg-contract-seed';
 export * from './client';
 export * from './config';
+export * from './curriculum';
 export * from './events';
 export * from './fsrs';
 export * from './gateway';

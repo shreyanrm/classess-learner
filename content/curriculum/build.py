@@ -9,11 +9,14 @@ network dependencies beyond the sites it checks. Run it from anywhere.
     python3 build.py --only cbse,ib-dp   check a few entries, leave the rest as they are
     python3 build.py --stale-days 30     recheck only entries older than 30 days
     python3 build.py --report            print the table, write nothing
+    python3 build.py --restatus          no network: decide verified again from the checks
 
 Exit codes: 0 all good, 1 one or more sites did not confirm, 2 the file is invalid.
 
 What a check proves: that on the date recorded, the declared official site answered,
-and what that site called itself in its page title. It never promotes a syllabus.
+and what that site called itself in its page title. Reachability sets `site_reachable`;
+`verified` needs the title to name the board, because a host that answers is a fact
+about a host and `verified` is a claim about a board. It never promotes a syllabus.
 Framework level only, per docs/CURRICULUM.md section 3. When a site answers only to a
 browser user agent, or only through a client that completes an incomplete certificate
 chain, the entry says so, so nobody later reads a firewall-shaped answer as a clean
@@ -24,6 +27,7 @@ would never catch.
 
 import argparse
 import collections
+import contextlib
 import datetime
 import html
 import json
@@ -35,6 +39,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -57,6 +62,20 @@ TITLE_RE = re.compile(r"<title[^>]*>(.*?)</title>", re.IGNORECASE | re.DOTALL)
 BLOCK_PAGE_RE = re.compile(
     r"request rejected|access denied|attention required|just a moment|radware page|"
     r"bot verification|are you a robot|captcha|forbidden|security check", re.IGNORECASE)
+#: What each status word in this file means, written by the code that sets it so the file can
+#: never describe a rule it is no longer following. docs/CURRICULUM.md section 3 and section 5.
+STATUS_VOCABULARY = collections.OrderedDict([
+    ("verified", "The declared official site answered and the page it returned names this "
+                 "board in its own title, or an owner reviewed the entry. Framework level "
+                 "only: it says nothing about any syllabus."),
+    ("provisional", "Usable for search, not yet a source of truth. Either the site did not "
+                    "answer, or what answered did not say whose site it was — no title, a "
+                    "bot-protection page, a redirect off the declared host, or a title with "
+                    "nothing of this board's name in it. `status_reason` says which."),
+    ("site_reachable", "True when the host answered under 400. A fact about a host, kept "
+                       "apart from `verified`, which is a claim about a board."),
+])
+
 BODY_BYTES = 8192
 ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
 
@@ -78,7 +97,7 @@ def save(path, doc):
 
 
 def now():
-    return datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat()
+    return datetime.datetime.now(datetime.UTC).replace(microsecond=0).isoformat()
 
 
 # --------------------------------------------------------------------- validate
@@ -278,10 +297,8 @@ def try_curl(url, timeout):
             body = f.read(BODY_BYTES).decode("utf-8", errors="replace")
         return int(parts[0]), (parts[1] if len(parts) > 1 else url), None, body
     finally:
-        try:
+        with contextlib.suppress(OSError):
             os.unlink(body_path)
-        except OSError:
-            pass
 
 
 def probe(url, timeout, retries):
@@ -359,6 +376,92 @@ def check_entry(entry, args):
     return entry, rec["ok"], rec
 
 
+# ------------------------------------------------------------------ corroborate
+#
+# Reachability is not identity. A host that answers proves a host answers: it does not
+# prove the board still owns the domain, that a firewall did not answer in its place,
+# or that we are looking at the body the board wrote. `verified` is the strongest
+# claim in docs/CURRICULUM.md section 5, and it used to be set on a sub-400 status
+# alone — including on the three entries this same run annotated "the answer was a
+# bot-protection page, not the site's own content".
+#
+# So reachability sets `site_reachable` and nothing else, and `verified` needs the
+# page to say whose page it is: a title that carries a distinctive word from the
+# entry's own name, aliases, id or host. A bot page, an off-host redirect or no title
+# at all leaves the entry provisional — which is not a failure, it is the honest
+# reading of what we got back. An owner who has looked at an entry themselves can say
+# so with `owner_reviewed: true`, and that stands whatever a firewall returns.
+
+# Words too common across school boards to corroborate anything on their own: a title
+# containing "education" corroborates every ministry on earth.
+GENERIC_WORDS = {
+    "the", "and", "for", "with", "board", "boards", "education", "educational",
+    "school", "schools", "schooling", "curriculum", "curricula", "ministry",
+    "department", "national", "state", "council", "authority", "examination",
+    "examinations", "exam", "exams", "certificate", "secondary", "primary",
+    "elementary", "higher", "learning", "studies", "study", "student", "students",
+    "official", "site", "website", "home", "page", "welcome", "gov", "government",
+    "public", "institute", "institution", "programme", "program", "system",
+    "standards", "standard", "framework", "frameworks", "general", "central",
+}
+NON_HOST_WORDS = {"www", "com", "org", "net", "edu", "gov", "int", "info", "co", "in", "ac", "nic"}
+_WORD_RE = re.compile(r"[a-z0-9]+")
+
+
+def words_of(text):
+    """Distinctive lowercase words in a piece of text. Accents folded, generics dropped."""
+    folded = unicodedata.normalize("NFKD", text or "").encode("ascii", "ignore").decode().lower()
+    return {w for w in _WORD_RE.findall(folded) if len(w) >= 3 and w not in GENERIC_WORDS}
+
+
+def identity_words(entry):
+    """Every word that would identify THIS board and not a hundred others."""
+    out = set()
+    for text in [entry.get("name") or "", *(entry.get("aliases") or [])]:
+        out |= words_of(text)
+    out |= {w for w in _WORD_RE.findall(entry.get("id") or "") if len(w) >= 3}
+    host = host_of(entry.get("official_site") or "")
+    out |= {w for w in _WORD_RE.findall(host) if len(w) >= 3 and w not in NON_HOST_WORDS}
+    return out - GENERIC_WORDS
+
+
+def corroborates(entry, rec):
+    """Does the page we got back say it belongs to this board? (reason, True/False)"""
+    if not rec.get("ok"):
+        return False, rec.get("error") or "the site did not answer"
+    title = rec.get("page_title")
+    if not title:
+        return False, "the page gave no title, so nothing says whose site answered"
+    if BLOCK_PAGE_RE.search(title):
+        return False, "a bot-protection page answered, not the site's own content"
+    if rec.get("redirected_to"):
+        return False, f"the site redirected to {rec['redirected_to']}"
+    hits = identity_words(entry) & words_of(title)
+    if not hits:
+        return False, f"the page title does not name this board: {title!r}"
+    return True, f"the page title names this board ({', '.join(sorted(hits)[:3])})"
+
+
+def restatus(entry, rec):
+    """Set `site_reachable`, `verified_site`, `status` and `status_reason` from one check.
+
+    Pure: no network, so a run with `--restatus` re-reads what earlier runs recorded and
+    nothing else. `status_reason` is written here rather than by the caller, so no path
+    can set a status without also recording why. Returns the reason for printing.
+    """
+    entry["site_reachable"] = None if rec.get("ok") is None else bool(rec.get("ok"))
+    if entry.get("owner_reviewed") is True:
+        entry["verified_site"] = True
+        entry["status"] = "verified"
+        entry["status_reason"] = "an owner reviewed this entry"
+        return entry["status_reason"]
+    confirmed, reason = corroborates(entry, rec)
+    entry["verified_site"] = bool(confirmed)
+    entry["status"] = "verified" if confirmed else "provisional"
+    entry["status_reason"] = reason
+    return reason
+
+
 # ------------------------------------------------------------------------- main
 
 def summarise(frameworks):
@@ -368,6 +471,9 @@ def summarise(frameworks):
         ("total", len(frameworks)),
         ("verified", sum(1 for e in frameworks if e.get("status") == "verified")),
         ("provisional", sum(1 for e in frameworks if e.get("status") != "verified")),
+        # Reachability, kept apart from `verified` on purpose: a host answering is a fact
+        # about a host, and `verified` is a claim about a board.
+        ("site_reachable", sum(1 for e in frameworks if e.get("site_reachable"))),
         ("without_official_site", sum(1 for e in frameworks if not e.get("official_site"))),
         ("countries", len([c for c in by_country if c != "international"])),
         ("by_kind", collections.OrderedDict(sorted(by_kind.items()))),
@@ -378,6 +484,8 @@ def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--file", default=SEED, help="seed file to read and rewrite")
     p.add_argument("--offline", action="store_true", help="validate only, no network, no write")
+    p.add_argument("--restatus", action="store_true",
+                   help="no network: decide verified again from the recorded checks")
     p.add_argument("--report", action="store_true", help="check and print, but do not write")
     p.add_argument("--only", default=None, help="comma separated ids to check")
     p.add_argument("--stale-days", type=int, default=None,
@@ -389,10 +497,8 @@ def main(argv=None):
 
     # A full run takes minutes. Line buffering means progress reaches a log file or a
     # pipe as it happens, rather than all at once when the run ends.
-    try:
+    with contextlib.suppress(AttributeError, ValueError):
         sys.stdout.reconfigure(line_buffering=True)
-    except (AttributeError, ValueError):
-        pass
 
     doc = load(args.file)
     frameworks = doc.get("frameworks")
@@ -408,6 +514,29 @@ def main(argv=None):
             print(f"error: {e}", file=sys.stderr)
         print(f"\n{len(errors)} error(s). Nothing was written.", file=sys.stderr)
         return 2
+    if args.restatus:
+        # No network: re-read what earlier runs recorded and decide `verified` again by the
+        # rule in `corroborates`. This is how a change to that rule reaches the file without
+        # re-probing 268 sites, and how a run can be reviewed before it is trusted.
+        confirmed = 0
+        for e in frameworks:
+            rec = e.get("check") if isinstance(e.get("check"), dict) else blank_check()
+            restatus(e, rec)
+            if e["status"] == "verified":
+                confirmed += 1
+            elif args.report:
+                print(f"  unconfirmed  {e['id']:<34} {e['status_reason']}")
+        doc["counts"] = summarise(frameworks)
+        doc["status_vocabulary"] = STATUS_VOCABULARY
+        print(f"restated {len(frameworks)} entries: {confirmed} verified, "
+              f"{len(frameworks) - confirmed} provisional")
+        if args.report:
+            print("(report only, nothing written)")
+            return 0
+        save(args.file, doc)
+        print(f"wrote {args.file}")
+        return 0
+
     print(f"validated {len(frameworks)} entries, {len(warnings)} warning(s)")
 
     if args.offline:
@@ -416,7 +545,9 @@ def main(argv=None):
     wanted = set(args.only.split(",")) if args.only else None
     cutoff = None
     if args.stale_days is not None:
-        cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=args.stale_days)
+        cutoff = datetime.datetime.now(datetime.UTC) - datetime.timedelta(
+            days=args.stale_days
+        )
 
     queue = []
     for e in frameworks:
@@ -434,12 +565,13 @@ def main(argv=None):
     stamp = now()
     confirmed = failed = 0
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        for entry, ok, rec in pool.map(lambda e: check_entry(e, args), queue):
-            entry["verified_site"] = None if ok is None else bool(ok)
+        for entry, _ok, rec in pool.map(lambda e: check_entry(e, args), queue):
             entry["checked_at"] = stamp
-            entry["status"] = "verified" if ok else "provisional"
             entry["check"] = rec
-            if ok:
+            # Reachability is recorded; `verified` is decided by whether the page we got
+            # back says whose page it is. See `corroborates`.
+            reason = restatus(entry, rec)
+            if entry["status"] == "verified":
                 confirmed += 1
                 if args.report:
                     # The title is the review surface. Read it against the entry's name.
@@ -448,11 +580,11 @@ def main(argv=None):
             else:
                 failed += 1
                 site = entry.get("official_site") or "(no site)"
-                why = rec.get("error") or rec.get("http_status")
-                print(f"  unconfirmed  {entry['id']:<34} {site}  {why}")
+                print(f"  unconfirmed  {entry['id']:<34} {site}  {reason}")
 
     doc["last_build"] = stamp
     doc["counts"] = summarise(frameworks)
+    doc["status_vocabulary"] = STATUS_VOCABULARY
 
     print(f"\nconfirmed {confirmed}, unconfirmed {failed}, of {len(queue)} checked")
     counts = doc["counts"]

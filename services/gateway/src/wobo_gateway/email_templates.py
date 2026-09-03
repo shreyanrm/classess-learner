@@ -21,16 +21,18 @@ from urllib.parse import urlparse
 
 # --- brand-neutral config (WOBO-PLAN §8) ----------------------------------------------
 # Every user-facing name, link base and legal footer is one environment variable, so the
-# domain swap is a deploy change and never a code change. No hostname is compiled in — the
-# default is the RFC 2606 reserved name, which can never resolve (WOBO-PLAN §17).
+# domain swap is a deploy change and never a code change. The defaults below name the real
+# domain (heywobo.com); they are still only defaults — the host sets each one.
 APP_NAME = os.getenv("APP_NAME", "Wobo")
-APP_URL = os.getenv("APP_URL", "https://wobo.invalid").rstrip("/")
+# The real origin as of 2026-09-03; the host still overrides it, and every link below is built
+# from it, so a second domain is one variable and no code change.
+APP_URL = os.getenv("APP_URL", "https://heywobo.com").rstrip("/")
 # CAN-SPAM and India's DPDP both want a working opt-out and a real postal address on
 # commercial mail. The address has no honest default, so the placeholder says so loudly: it is
 # the owner's to set before EMAIL_MODE=live.
 UNSUBSCRIBE_URL = os.getenv("EMAIL_UNSUBSCRIBE_URL") or f"{APP_URL}/unsubscribe"
 POSTAL_ADDRESS = os.getenv(
-    "EMAIL_POSTAL_ADDRESS", "set EMAIL_POSTAL_ADDRESS before sending live mail"
+    "EMAIL_POSTAL_ADDRESS", "PLACEHOLDER — set EMAIL_POSTAL_ADDRESS before sending live mail"
 )
 
 

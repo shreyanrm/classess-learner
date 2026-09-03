@@ -18,7 +18,13 @@ import {
   useRef,
   useState,
 } from 'react';
-import { topicById } from '../data/catalog';
+import { adoptFramework, adoptOwnSyllabus, askDiscovery, chooseLevel } from '../curriculum/adopt';
+import { useWorld } from '../curriculum/hooks';
+import { ProvenanceLabel } from '../curriculum/Labels';
+import { OwnSyllabus } from '../curriculum/OwnSyllabus';
+import { topicById } from '../curriculum/registry';
+import { DiscoveryCard } from '../curriculum/StatusCard';
+import { UpgradeCard } from '../curriculum/UpgradeCard';
 import type { Topic } from '../data/model';
 import { useRouter } from '../shell/router';
 import {
@@ -728,6 +734,11 @@ export function You() {
   const [profile, setProfile] = useState<StoredProfile>(() => loadProfile());
   const [nameDraft, setNameDraft] = useState(profile.name);
   const [changingSchool, setChangingSchool] = useState(false);
+  const [showOwnSyllabus, setShowOwnSyllabus] = useState(false);
+  // A board the registry did not list: the job Wobo just started, said out loud.
+  const [sourcing, setSourcing] = useState<string | null>(null);
+  // What the learner is actually pinned to. Null is a real state: no board chosen on this device.
+  const world = useWorld();
   const [photo, setPhoto] = useState<string | null>(() => loadPhoto());
   const [choice, setChoice] = useState<AvatarChoice | null>(() => loadAvatarChoice());
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -1163,11 +1174,20 @@ export function You() {
                 textAlign: 'left',
               }}
             >
-              {profile.grade} · {boardName(profile.boardId)}{' '}
+              {profile.grade || 'no class yet'} · {boardName(profile.boardId) || 'no board yet'}{' '}
               <span style={{ color: 'var(--wobo-ink-300)' }}>
                 · {changingSchool ? 'done' : 'change'}
               </span>
             </button>
+            {/* §5: the one line that says how well we know this syllabus. */}
+            {world && (
+              <ProvenanceLabel
+                status={world.status}
+                label={world.label}
+                name={world.frameworkName}
+                version={world.versionYear}
+              />
+            )}
           </div>
         </motion.header>
 
@@ -1182,11 +1202,62 @@ export function You() {
               ref={pickerRef}
             >
               <GradeBoardPicker
-                grade={profile.grade}
-                boardId={profile.boardId}
-                onGrade={(g) => commitProfile({ grade: g })}
-                onBoard={(b) => commitProfile({ boardId: b })}
+                grade={profile.grade || null}
+                board={
+                  world
+                    ? {
+                        id: world.frameworkId,
+                        name: world.frameworkName,
+                        framework: null,
+                        unlisted: false,
+                      }
+                    : null
+                }
+                onGrade={(g) => {
+                  commitProfile({ grade: g });
+                  void chooseLevel(g);
+                }}
+                onBoard={(b) => {
+                  commitProfile({ boardId: b.id });
+                  if (b.unlisted)
+                    void askDiscovery(b.name, profile.grade || null).then(() =>
+                      setSourcing(b.name),
+                    );
+                  else
+                    void adoptFramework({
+                      frameworkId: b.id,
+                      name: b.name,
+                      level: profile.grade || null,
+                    });
+                }}
+                onOwnSyllabus={() => setShowOwnSyllabus(true)}
               />
+              {sourcing && !showOwnSyllabus && (
+                <div style={{ marginTop: 16 }}>
+                  <DiscoveryCard
+                    placeholder={null}
+                    message={`I am looking for ${sourcing} now. I will bring it here the moment I have it.`}
+                    onOwnSyllabus={() => setShowOwnSyllabus(true)}
+                  />
+                </div>
+              )}
+              {showOwnSyllabus && (
+                <div style={{ marginTop: 16 }}>
+                  <OwnSyllabus
+                    suggestedName={world?.frameworkName ?? ''}
+                    onCancel={() => setShowOwnSyllabus(false)}
+                    onReady={(view) => {
+                      const next = adoptOwnSyllabus(view);
+                      commitProfile({ boardId: next.frameworkId, grade: next.level ?? '' });
+                      setShowOwnSyllabus(false);
+                    }}
+                  />
+                </div>
+              )}
+              {/* A newer academic year, offered with its diff — never applied behind their back. */}
+              <div style={{ marginTop: 16 }}>
+                <UpgradeCard />
+              </div>
               {/* the honest migration note — what carries over when they move class/board */}
               {schoolChanged && (
                 <motion.div

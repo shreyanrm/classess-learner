@@ -1,27 +1,39 @@
 """Parse a NIOS 'Bifurcation of Syllabus' table into modules with numbered lessons."""
-import re, sys, os
+
+import os
+import re
+import sys
+from pathlib import Path
+
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODLINE = re.compile(r"^\s{0,4}(?:\d{1,2}\s*\.\s*)?Module\s*[-–]?\s*([IVXLC]+|\d+)\s*:?\s*(.*)$", re.I)
-ITEM = re.compile(r"(?:^|\s\s)\s*(?:L(?:esson)?\s*[-.–]?\s*(\d{1,2})|(\d{1,2})\.)\s*[:.]?\s*\(?\s*(\S.*?)\)?\s*$")
-ITEM_ANY = re.compile(r"(?:L(?:esson)?\s*[-.–]?\s*(\d{1,2})\s*[:.]?\s*\(?|(?<![\d.])(\d{1,2})\.)\s*(?=\S)")
+MODLINE = re.compile(
+    r"^\s{0,4}(?:\d{1,2}\s*\.\s*)?Module\s*[-–]?\s*([IVXLC]+|\d+)\s*:?\s*(.*)$", re.I
+)
+ITEM = re.compile(
+    r"(?:^|\s\s)\s*(?:L(?:esson)?\s*[-.–]?\s*(\d{1,2})|(\d{1,2})\.)\s*[:.]?\s*\(?\s*(\S.*?)\)?\s*$"
+)
+ITEM_ANY = re.compile(
+    r"(?:L(?:esson)?\s*[-.–]?\s*(\d{1,2})\s*[:.]?\s*\(?|(?<![\d.])(\d{1,2})\.)\s*(?=\S)"
+)
 NUMMOD = re.compile(r"^\s{0,5}(\d{1,2})\.\s+([A-Z]\S.*)$")
 
 
 def _positions(lines):
     xs = []
-    for l in lines:
-        for m in ITEM_ANY.finditer(l):
+    for ln in lines:
+        for m in ITEM_ANY.finditer(ln):
             xs.append(m.start())
     return sorted(xs)
 
 
 def parse(key):
-    lines = open(os.path.join(HERE, "lay", key + ".txt"), encoding="utf-8",
-                 errors="replace").read().split("\n")
+    lines = (
+        Path(HERE, "lay", key + ".txt").read_text(encoding="utf-8", errors="replace").split("\n")
+    )
     page, pages = 1, []
-    for l in lines:
+    for ln in lines:
         pages.append(page)
-        page += l.count("\f")
+        page += ln.count("\f")
     xs = _positions(lines)
     if not xs:
         return []
@@ -29,15 +41,20 @@ def parse(key):
     lw = max(0, (min(cand) if cand else min(xs)) - 1)
     right = [x for x in xs if x > lw + 14]
     gut = min(right) - 1 if right else lw + 40
-    use_num = not any(MODLINE.match(l.replace("\f", "")) for l in lines)
+    use_num = not any(MODLINE.match(ln.replace("\f", "")) for ln in lines)
     mods = []
     cur = None
-    for i, l in enumerate(lines):
-        raw = l.replace("\f", "").rstrip()
+    for i, ln in enumerate(lines):
+        raw = ln.replace("\f", "").rstrip()
         m = NUMMOD.match(raw[:lw]) if use_num else MODLINE.match(raw)
         if m:
-            cur = {"number": m.group(1).upper(), "title_parts": [], "page": pages[i],
-                   "items": {}, "last": {}}
+            cur = {
+                "number": m.group(1).upper(),
+                "title_parts": [],
+                "page": pages[i],
+                "items": {},
+                "last": {},
+            }
             mods.append(cur)
             head = raw[:lw]
             hm = NUMMOD.match(head) if use_num else MODLINE.match(head)
@@ -63,7 +80,7 @@ def parse(key):
             if cut is None:
                 cut = len(raw) if len(raw) <= gut + 3 else gut
         cut = max(cut, lw + 1)
-        body = raw[lw:]
+        raw[lw:]
         for ci, part in enumerate((raw[lw:cut], raw[cut:])):
             got = list(ITEM.finditer("  " + part)) or [m2 for m2 in [ITEM.match("  " + part)] if m2]
             if got:
@@ -76,8 +93,14 @@ def parse(key):
                 last = cur["last"].get(ci)
                 toks = txt.split()
                 junk = toks and sum(1 for x in toks if len(x) <= 2) * 2 > len(toks)
-                if (txt and last is not None and 0 < len(txt) < 70 and not junk
-                        and not MODLINE.match(txt) and re.search(r"[A-Za-z]{3}", txt)):
+                if (
+                    txt
+                    and last is not None
+                    and 0 < len(txt) < 70
+                    and not junk
+                    and not MODLINE.match(txt)
+                    and re.search(r"[A-Za-z]{3}", txt)
+                ):
                     cur["items"][last].append(txt)
     out = []
     for mo in mods:
@@ -98,13 +121,14 @@ def parse(key):
             if t and not re.fullmatch(r"[\d\s.]+", t):
                 lessons.append({"number": n, "title": t})
         if lessons:
-            out.append({"number": mo["number"], "title": title, "page": mo["page"],
-                        "lessons": lessons})
+            out.append(
+                {"number": mo["number"], "title": title, "page": mo["page"], "lessons": lessons}
+            )
     return out
 
 
 if __name__ == "__main__":
     for m in parse(sys.argv[1]):
-        print("== Module %s: %s (p%s)" % (m["number"], m["title"], m["page"]))
+        print("== Module {}: {} (p{})".format(m["number"], m["title"], m["page"]))
         for c in m["lessons"]:
-            print("     %2d. %s" % (c["number"], c["title"]))
+            print(f"     {c['number']:>2}. {c['title']}")

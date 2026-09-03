@@ -7,9 +7,10 @@ and the consent-tier rule.
 
 The tier map (owner directive, 2026-09-02):
 
-- ``tiny`` — intent classification, safety pre-screen, openers, titles and summaries, recall:
-  ``generate.opener``, ``safety.moderate``, ``twin.query``, ``generate.digest``,
-  ``archetype.classify``.
+- ``tiny`` — intent classification, safety pre-screen, openers, titles and summaries, recall,
+  and the curriculum registry (which reads a database rather than a model, but is metered and
+  gated at this door like everything else): ``generate.opener``, ``safety.moderate``,
+  ``twin.query``, ``generate.digest``, ``archetype.classify``, ``curriculum.*``.
 - ``turn`` — Wobo's conversational turns and the judgements taken inside one:
   ``wobo.turn``, ``tutor.turn``, ``parent.companion.turn``, ``grade.attempt``,
   ``peakcut.evaluate``.
@@ -184,6 +185,34 @@ _POLICIES: dict[str, RoutingPolicy] = {
             cost_ceiling=0.15,
             max_tokens=16000,
         ),
+        # --- tiny: the curriculum registry (CURRICULUM.md §8) ----------------------------
+        # These nine read the registry and write a discovery job; NOT ONE of them calls a
+        # model. They carry a policy anyway, because a policy is how a capability exists at
+        # this door: it is what /v1/capabilities lists, what the consent gate reads, and what
+        # the meter classifies. They sit on `tiny` because that is the tier the plan gives
+        # "alias and catalog matching", and because the day a type-ahead does need a model to
+        # untangle "9th std maths" it is Luna's job, not Terra's.
+        #
+        # Cache tier NONE, deliberately: a syllabus that was still being discovered a minute
+        # ago must not be served from a cache that predates it, and a learner's own overlay
+        # must never be served to anyone else. The registry's own store is the cache.
+        _policy("curriculum.search", Tier.TINY, CacheTier.NONE, max_latency_ms=800),
+        _policy("curriculum.framework", Tier.TINY, CacheTier.NONE, max_latency_ms=1200),
+        _policy("curriculum.units", Tier.TINY, CacheTier.NONE, max_latency_ms=2000),
+        _policy("curriculum.topics", Tier.TINY, CacheTier.NONE, max_latency_ms=2000),
+        _policy("curriculum.pin", Tier.TINY, CacheTier.NONE, max_latency_ms=1200),
+        _policy("curriculum.upgrade", Tier.TINY, CacheTier.NONE, max_latency_ms=2000),
+        _policy("curriculum.overlay.get", Tier.TINY, CacheTier.NONE, max_latency_ms=1200),
+        _policy("curriculum.overlay.apply", Tier.TINY, CacheTier.NONE, max_latency_ms=1500),
+        _policy("curriculum.status", Tier.TINY, CacheTier.NONE, max_latency_ms=800),
+        # The own-syllabus door (§6). `read` is the one that calls a model — the generate tier
+        # structures the learner's own document, and a photo goes to the image-capable rung — so
+        # it gets the latency of a generation, not of a lookup. The other three only move an
+        # object the learner already owns, so they answer as fast as the registry does.
+        _policy("curriculum.own.read", Tier.GENERATE, CacheTier.NONE, max_latency_ms=20000),
+        _policy("curriculum.own.confirm", Tier.TINY, CacheTier.NONE, max_latency_ms=1200),
+        _policy("curriculum.own.publish", Tier.TINY, CacheTier.NONE, max_latency_ms=1500),
+        _policy("curriculum.own.offer", Tier.TINY, CacheTier.NONE, max_latency_ms=1500),
         # --- reason: the hard list ------------------------------------------------------
         # Mathematics goes through the CAS verifier first; this is the model that reads the
         # result. Its fallback rung is the verify tier, so a check is never marked by the same
@@ -216,6 +245,19 @@ EXPECTED_CAPABILITIES: tuple[str, ...] = (
     "engine.video",
     "archetype.classify",
     "peakcut.evaluate",
+    "curriculum.search",
+    "curriculum.framework",
+    "curriculum.units",
+    "curriculum.topics",
+    "curriculum.pin",
+    "curriculum.upgrade",
+    "curriculum.overlay.get",
+    "curriculum.overlay.apply",
+    "curriculum.status",
+    "curriculum.own.read",
+    "curriculum.own.confirm",
+    "curriculum.own.publish",
+    "curriculum.own.offer",
 )
 
 

@@ -10,7 +10,7 @@
 import { plane, useRegisterTarget } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { chaptersBySubject, displaySubjects } from '../data/catalog';
+import { chaptersBySubject, displaySubjects } from '../curriculum/registry';
 import { forgetScope } from '../store/scope';
 import { useSdk } from '../store/sdk';
 import { FROST, fluidType, Kbd, SectionLabel, surface } from '../ui/kit';

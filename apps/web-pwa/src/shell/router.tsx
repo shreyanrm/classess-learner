@@ -27,6 +27,8 @@ import {
 } from 'react';
 
 export type Route =
+  // The unauthenticated front door: the marketing page a visitor with no account lands on.
+  | { name: 'landing' }
   | { name: 'onboarding' }
   | { name: 'building' }
   | { name: 'home' }
@@ -38,6 +40,23 @@ export type Route =
   | { name: 'sandbox'; topicId?: string }
   | { name: 'progress' }
   | { name: 'you' }
+  // The public document pages: what Wobo is, and how to use it. Readable signed out.
+  | { name: 'about' }
+  | { name: 'help' }
+  | { name: 'helpArticle'; group: string; slug: string }
+  // The two doors, addressable so a link in an email or a share can land straight on one.
+  | { name: 'sign-in' }
+  | { name: 'sign-up' }
+  | { name: 'contact' }
+  // Money and the legal set, all public and all readable signed out. `plans/checkout` is one route
+  // rather than two because it is the same page's second beat, and `legal` carries the document's
+  // own slug so every one of the ten is linkable.
+  | { name: 'plans'; checkout?: boolean }
+  | { name: 'gift' }
+  | { name: 'legal'; slug?: string }
+  // An address that is not ours. It keeps the path it was asked for, so the URL bar still shows
+  // what the learner typed or followed and they can see the slip in it for themselves.
+  | { name: 'notfound'; path?: string }
   | { name: 'concept'; which: 'engines' };
 
 const HOME: Route = { name: 'home' };
@@ -55,6 +74,16 @@ export function routeToPath(route: Route): string {
       return `/course/${encodeURIComponent(route.topicId)}`;
     case 'sandbox':
       return route.topicId ? `/sandbox/${encodeURIComponent(route.topicId)}` : '/sandbox';
+    case 'helpArticle':
+      return `/help/${encodeURIComponent(route.group)}/${encodeURIComponent(route.slug)}`;
+    case 'plans':
+      return route.checkout ? '/plans/checkout' : '/plans';
+    case 'legal':
+      return route.slug ? `/legal/${encodeURIComponent(route.slug)}` : '/legal';
+    // A 404 keeps the address that produced it. Rewriting the bar to /404 would hide the very
+    // thing the learner needs to see — the typo, or the link that was cut short.
+    case 'notfound':
+      return route.path ?? '/404';
     case 'concept':
       return `/concept/${route.which}`;
     default:
@@ -63,6 +92,7 @@ export function routeToPath(route: Route): string {
 }
 
 const PLAIN_ROUTES = new Set([
+  'landing',
   'onboarding',
   'building',
   'chat',
@@ -70,6 +100,12 @@ const PLAIN_ROUTES = new Set([
   'practice',
   'progress',
   'you',
+  'about',
+  'help',
+  'sign-in',
+  'sign-up',
+  'contact',
+  'gift',
 ]);
 
 const INTENTS = new Set(['learn', 'practice']);
@@ -105,6 +141,20 @@ export function pathToRoute(path: string): Route | null {
     const topicId = decode(rest[0]);
     return topicId && rest.length === 1 ? { name: 'sandbox', topicId } : null;
   }
+  if (head === 'help') {
+    const group = decode(rest[0]);
+    const slug = decode(rest[1]);
+    return group && slug && rest.length === 2 ? { name: 'helpArticle', group, slug } : null;
+  }
+  if (head === 'plans') {
+    if (rest.length === 0) return { name: 'plans' };
+    return rest.length === 1 && rest[0] === 'checkout' ? { name: 'plans', checkout: true } : null;
+  }
+  if (head === 'legal') {
+    if (rest.length === 0) return { name: 'legal' };
+    const slug = decode(rest[0]);
+    return slug && rest.length === 1 ? { name: 'legal', slug } : null;
+  }
   if (head === 'concept') {
     const which = rest[0];
     if (!which || rest.length !== 1 || !CONCEPTS.has(which)) return null;
@@ -113,9 +163,16 @@ export function pathToRoute(path: string): Route | null {
   return null;
 }
 
-/** The route a path addresses — an address we don't recognise lands home, never on nothing. */
+/**
+ * The route a path addresses. An address that is not ours is a 404 — a real page that says so, in
+ * Wobo's own voice, keeping the address it was asked for.
+ *
+ * It used to land home, which was silent: a mistyped link, a truncated share and a route we
+ * renamed all arrived at the home screen looking like nothing had happened, and nobody — learner
+ * or maintainer — ever found out the link was broken.
+ */
 export function routeFromPath(path: string): Route {
-  return pathToRoute(path) ?? HOME;
+  return pathToRoute(path) ?? { name: 'notfound', path: path.split('?')[0]?.split('#')[0] || '/' };
 }
 
 /**
@@ -160,7 +217,9 @@ function bootRoute(initial: Route): Route {
   if (typeof window === 'undefined') return initial;
   const path = window.location.pathname;
   if (path === '/' || path === '') return initial;
-  return pathToRoute(path) ?? initial;
+  // A cold load on an address that is not ours is the clearest 404 there is: somebody followed a
+  // link that does not exist, and dropping them on the home screen would hide that from them.
+  return routeFromPath(path);
 }
 
 // --- the provider --------------------------------------------------------------------------------

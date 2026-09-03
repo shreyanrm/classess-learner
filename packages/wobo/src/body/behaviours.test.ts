@@ -10,7 +10,11 @@ import {
 import { isExpression } from './expressions';
 
 describe('the behaviour table', () => {
-  it('has the fifteen the owner approved', () => {
+  // Wave 7a added five on the owner's "more animation and behaviours" call, and `puff` came after
+  // it, when the proofs showed `proud` holding Wobo six percent larger for as long as that face
+  // was worn: scale is something Wobo DOES, not something a resting face is. The original fifteen
+  // keep their order and their names, so nothing that named one of them has to change.
+  it('has the twenty-one the owner approved, in order', () => {
     expect(BEHAVIOUR_NAMES).toEqual([
       'tap',
       'nod',
@@ -27,8 +31,14 @@ describe('the behaviour table', () => {
       'startle',
       'settle',
       'stretch',
+      'wave',
+      'penTap',
+      'bounce',
+      'perk',
+      'drift',
+      'puff',
     ]);
-    expect(BEHAVIOUR_NAMES).toHaveLength(15);
+    expect(BEHAVIOUR_NAMES).toHaveLength(21);
   });
 
   it('gives every behaviour a positive duration and at least one track', () => {
@@ -51,9 +61,9 @@ describe('the behaviour table', () => {
     expect(holds).toEqual(['shrink']);
   });
 
-  it('brings the pen out for pointing only', () => {
+  it('brings the pen out only where the pen is the point', () => {
     const withPen = BEHAVIOUR_NAMES.filter((n) => behaviourSpec(n).pen);
-    expect(withPen).toEqual(['point']);
+    expect(withPen).toEqual(['point', 'penTap']);
   });
 
   it('recognises its own names and nothing else', () => {
@@ -123,6 +133,46 @@ describe('sampling a behaviour', () => {
       if (s.dx !== null) expect(s.dx).toBeCloseTo(0, 6);
       if (s.dy !== null) expect(s.dy).toBeCloseTo(0, 6);
     }
+  });
+
+  it('taps the pen without leaving Wobo turned off-axis when the thought ends', () => {
+    const end = sampleBehaviour('penTap', BEHAVIOURS.penTap.dur);
+    expect(end.rot).toBeCloseTo(0, 6);
+    expect(end.dy).toBeCloseTo(0, 6);
+    // The tap is a real double beat, not a single dip.
+    const first = sampleBehaviour('penTap', BEHAVIOURS.penTap.dur * 0.1);
+    const second = sampleBehaviour('penTap', BEHAVIOURS.penTap.dur * 0.5);
+    expect(first.dy as number).toBeLessThan(0);
+    expect(second.dy as number).toBeLessThan(0);
+  });
+
+  it('bounces lighter than it hops — a tap is not a celebration', () => {
+    const bounce = Math.min(
+      ...Array.from({ length: 40 }, (_, i) => sampleBehaviour('bounce', i * 12).dy as number),
+    );
+    const hop = Math.min(
+      ...Array.from({ length: 60 }, (_, i) => sampleBehaviour('hop', i * 12).dy as number),
+    );
+    expect(bounce).toBeLessThan(0);
+    expect(bounce).toBeGreaterThan(hop);
+    expect(BEHAVIOURS.bounce.dur).toBeLessThan(BEHAVIOURS.hop.dur);
+  });
+
+  it('perks up rather than recoiling, which is what parts it from a startle', () => {
+    const perk = sampleBehaviour('perk', 120);
+    expect(perk.dy as number).toBeLessThan(0);
+    expect(perk.sy as number).toBeGreaterThan(1);
+    expect(BEHAVIOURS.perk.dur).toBeLessThan(BEHAVIOURS.startle.dur);
+  });
+
+  it('waves on both sides of centre, which is what makes it a wave', () => {
+    const track = Array.from(
+      { length: 40 },
+      (_, i) => sampleBehaviour('wave', (i * BEHAVIOURS.wave.dur) / 39).rot as number,
+    );
+    expect(Math.min(...track)).toBeLessThan(-5);
+    expect(Math.max(...track)).toBeGreaterThan(5);
+    expect(track.at(-1)).toBeCloseTo(0, 6);
   });
 
   it('leaves the point turned toward the board, pen out, until it is released', () => {

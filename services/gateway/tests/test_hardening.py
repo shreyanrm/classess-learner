@@ -29,7 +29,12 @@ from wobo_gateway.providers import (
     max_tokens_for,
     timeout_for,
 )
-from wobo_gateway.registry import ConsentTier, capabilities, policy
+from wobo_gateway.registry import (
+    EXPECTED_CAPABILITIES,
+    ConsentTier,
+    capabilities,
+    policy,
+)
 from wobo_gateway.telemetry import MetricsSink
 
 # --- a stand-in for litellm: records the exact call, never opens a socket ----------------
@@ -524,7 +529,7 @@ def test_capabilities_listing_leaks_no_model_slot_or_limit(auth) -> None:
     r = client.get("/v1/capabilities", headers=auth())
     assert r.status_code == 200
     caps = r.json()
-    assert len(caps) == 16
+    assert len(caps) == len(EXPECTED_CAPABILITIES)
     for cap in caps:
         # no model id, no routing slot names (they carry provider names), no limits
         for forbidden in ("primary_model", "primary", "fallback", "cost_ceiling", "max_latency_ms"):
@@ -721,6 +726,10 @@ def test_the_env_defaults_are_all_overridable(monkeypatch) -> None:
         assert "wobo.invalid" not in html and "https://swapped.example/learn" in html
         assert "Swapped" in html
     finally:
+        # Undo the swap BEFORE the reload, or these modules keep "Swapped" for the rest of the
+        # process: monkeypatch restores the environment after the test body, so a reload here
+        # would re-read the swapped values and leak them into every later test in this worker.
+        monkeypatch.undo()
         for name in modules:
             importlib.reload(importlib.import_module(name))
 

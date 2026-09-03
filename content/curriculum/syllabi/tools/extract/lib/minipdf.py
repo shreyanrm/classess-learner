@@ -6,6 +6,8 @@ operators, WinAnsi/Standard single-byte fonts and Identity-H CID fonts via their
 /ToUnicode CMap. Good enough for the text-bearing syllabus PDFs published by
 Indian boards; not a general-purpose PDF library.
 """
+
+import contextlib
 import re
 import zlib
 
@@ -18,13 +20,11 @@ DELIM = b"()<>[]{}/%"
 def _skip_ws(b, i):
     n = len(b)
     while i < n:
-        c = b[i:i + 1]
+        c = b[i : i + 1]
         if c == b"%":
-            while i < n and b[i:i + 1] not in (b"\r", b"\n"):
+            while i < n and b[i : i + 1] not in (b"\r", b"\n"):
                 i += 1
-        elif c in (bytes([x]) for x in WS):
-            i += 1
-        elif b[i] in WS:
+        elif c in (bytes([x]) for x in WS) or b[i] in WS:
             i += 1
         else:
             break
@@ -37,13 +37,13 @@ def parse_object(b, i=0):
     i = _skip_ws(b, i)
     if i >= len(b):
         return None, i
-    c = b[i:i + 1]
-    if c == b"<" and b[i + 1:i + 2] == b"<":
+    c = b[i : i + 1]
+    if c == b"<" and b[i + 1 : i + 2] == b"<":
         i += 2
         d = {}
         while True:
             i = _skip_ws(b, i)
-            if b[i:i + 2] == b">>":
+            if b[i : i + 2] == b">>":
                 return d, i + 2
             if i >= len(b):
                 return d, i
@@ -58,7 +58,7 @@ def parse_object(b, i=0):
         arr = []
         while True:
             i = _skip_ws(b, i)
-            if b[i:i + 1] == b"]":
+            if b[i : i + 1] == b"]":
                 return arr, i + 1
             if i >= len(b):
                 return arr, i
@@ -71,58 +71,73 @@ def parse_object(b, i=0):
         while i < len(b):
             ch = b[i]
             if ch == 0x5C:  # backslash
-                nx = b[i + 1:i + 2]
-                mapping = {b"n": 10, b"r": 13, b"t": 9, b"b": 8, b"f": 12,
-                           b"(": 40, b")": 41, b"\\": 92}
+                nx = b[i + 1 : i + 2]
+                mapping = {
+                    b"n": 10,
+                    b"r": 13,
+                    b"t": 9,
+                    b"b": 8,
+                    b"f": 12,
+                    b"(": 40,
+                    b")": 41,
+                    b"\\": 92,
+                }
                 if nx in mapping:
-                    out.append(mapping[nx]); i += 2; continue
+                    out.append(mapping[nx])
+                    i += 2
+                    continue
                 if nx.isdigit():
                     oct_digits = b""
                     j = i + 1
-                    while j < len(b) and len(oct_digits) < 3 and b[j:j + 1].isdigit():
-                        oct_digits += b[j:j + 1]; j += 1
-                    out.append(int(oct_digits, 8) & 0xFF); i = j; continue
+                    while j < len(b) and len(oct_digits) < 3 and b[j : j + 1].isdigit():
+                        oct_digits += b[j : j + 1]
+                        j += 1
+                    out.append(int(oct_digits, 8) & 0xFF)
+                    i = j
+                    continue
                 if nx in (b"\n", b"\r"):
                     i += 2
-                    if nx == b"\r" and b[i:i + 1] == b"\n":
+                    if nx == b"\r" and b[i : i + 1] == b"\n":
                         i += 1
                     continue
-                i += 1; continue
+                i += 1
+                continue
             if ch == 0x28:
                 depth += 1
             elif ch == 0x29:
                 depth -= 1
                 if depth == 0:
                     return bytes(out), i + 1
-            out.append(ch); i += 1
+            out.append(ch)
+            i += 1
         return bytes(out), i
     if c == b"<":
         j = b.index(b">", i)
-        hx = re.sub(rb"[^0-9A-Fa-f]", b"", b[i + 1:j])
+        hx = re.sub(rb"[^0-9A-Fa-f]", b"", b[i + 1 : j])
         if len(hx) % 2:
             hx += b"0"
         return bytes.fromhex(hx.decode()), j + 1
     if c == b"/":
         j = i + 1
-        while j < len(b) and b[j] not in WS and b[j:j + 1] not in [bytes([d]) for d in DELIM]:
+        while j < len(b) and b[j] not in WS and b[j : j + 1] not in [bytes([d]) for d in DELIM]:
             j += 1
-        name = b[i + 1:j]
+        name = b[i + 1 : j]
         name = re.sub(rb"#([0-9A-Fa-f]{2})", lambda m: bytes([int(m.group(1), 16)]), name)
         return ("name", name.decode("latin-1")), j
     if c == b"]" or c == b">":
         return ("op", c), i + 1
     # number, ref, keyword or operator
-    m = re.match(rb"[+-]?\d+\.?\d*|[+-]?\.\d+", b[i:i + 40])
+    m = re.match(rb"[+-]?\d+\.?\d*|[+-]?\.\d+", b[i : i + 40])
     if m:
         tok = m.group(0)
         j = i + len(tok)
-        ref = re.match(rb"\s+(\d+)\s+R(?![A-Za-z0-9])", b[j:j + 24])
+        ref = re.match(rb"\s+(\d+)\s+R(?![A-Za-z0-9])", b[j : j + 24])
         if ref and re.fullmatch(rb"\d+", tok):
             return ("ref", int(tok), int(ref.group(1))), j + ref.end()
         if b"." in tok:
             return float(tok), j
         return int(tok), j
-    m = re.match(rb"[A-Za-z'\"*][A-Za-z0-9'\"*]*", b[i:i + 40])
+    m = re.match(rb"[A-Za-z'\"*][A-Za-z0-9'\"*]*", b[i : i + 40])
     if m:
         tok = m.group(0)
         j = i + len(tok)
@@ -138,10 +153,11 @@ def parse_object(b, i=0):
 
 # ------------------------------------------------------------------ document
 
+
 class PDF:
     def __init__(self, data: bytes):
         self.data = data
-        self.objs = {}           # num -> (offset, kind) lazily resolved bodies
+        self.objs = {}  # num -> (offset, kind) lazily resolved bodies
         self._cache = {}
         self._scan_plain()
         self._scan_objstm()
@@ -207,13 +223,13 @@ class PDF:
         length = self.resolve(d.get("Length")) if isinstance(d, dict) else None
         raw = None
         if isinstance(length, int) and length >= 0:
-            cand = self.data[start:start + length]
-            tail = self.data[start + length:start + length + 20]
+            cand = self.data[start : start + length]
+            tail = self.data[start + length : start + length + 20]
             if b"endstream" in tail:
                 raw = cand
         if raw is None:
             e = self.data.find(b"endstream", start)
-            raw = self.data[start:e if e != -1 else len(self.data)]
+            raw = self.data[start : e if e != -1 else len(self.data)]
             raw = raw.rstrip(b"\r\n")
         return self._decode(raw, d)
 
@@ -246,6 +262,7 @@ class PDF:
                 out = bytes.fromhex(hx.decode())
             elif name in ("ASCII85Decode", "A85"):
                 import base64
+
                 body = out.strip()
                 if body.startswith(b"<~"):
                     body = body[2:]
@@ -260,7 +277,7 @@ class PDF:
                 if isinstance(p, dict):
                     out = self._unpredict(out, p)
             else:
-                return b""   # image or unsupported filter
+                return b""  # image or unsupported filter
         return out
 
     def _unpredict(self, data, p):
@@ -278,8 +295,10 @@ class PDF:
         prev = bytearray(rowlen)
         i = 0
         while i + 1 + rowlen <= len(data) + rowlen and i < len(data):
-            ft = data[i]; i += 1
-            row = bytearray(data[i:i + rowlen]); i += rowlen
+            ft = data[i]
+            i += 1
+            row = bytearray(data[i : i + rowlen])
+            i += rowlen
             if len(row) < rowlen:
                 row.extend(b"\x00" * (rowlen - len(row)))
             for k in range(rowlen):
@@ -355,10 +374,8 @@ class PDF:
         items = contents if isinstance(contents, list) else [contents]
         for it in items:
             if isinstance(it, tuple) and it[0] == "ref":
-                try:
+                with contextlib.suppress(Exception):
                     chunks.append(self.stream_data(it[1]))
-                except Exception:
-                    pass
         content = b"\n".join(c for c in chunks if c)
         fonts = self._page_fonts(page)
         return render_content(content, fonts)
@@ -447,10 +464,8 @@ def parse_tounicode(stream):
             dst = re.sub(rb"\s", b"", toks[i + 1])
             if not src or not dst:
                 continue
-            try:
+            with contextlib.suppress(ValueError):
                 table[int(src, 16)] = _utf16be(dst)
-            except ValueError:
-                pass
     for m in re.finditer(rb"beginbfrange(.*?)endbfrange", txt, re.S):
         body = m.group(1)
         pos = 0
@@ -463,17 +478,17 @@ def parse_tounicode(stream):
                 break
             lo = int(re.sub(rb"\s", b"", a.group(1)) or b"0", 16)
             hi = int(re.sub(rb"\s", b"", b.group(1)) or b"0", 16)
-            rest = body[b.end():]
+            rest = body[b.end() :]
             arr = re.match(rb"\s*\[", rest)
             if arr:
                 depth, k = 1, b.end() + arr.end()
                 while k < len(body) and depth:
-                    if body[k:k + 1] == b"[":
+                    if body[k : k + 1] == b"[":
                         depth += 1
-                    elif body[k:k + 1] == b"]":
+                    elif body[k : k + 1] == b"]":
                         depth -= 1
                     k += 1
-                items = HEXPAIR.findall(body[b.end():k])
+                items = HEXPAIR.findall(body[b.end() : k])
                 for off, it in enumerate(items):
                     table[lo + off] = _utf16be(re.sub(rb"\s", b"", it))
                 pos = k
@@ -546,11 +561,16 @@ def render_content(content, fonts):
                         _flush(cur, out_lines)
             elif op == b"Tm":
                 if len(stack) >= 6:
-                    y = stack[-1]; x = stack[-2]
+                    y = stack[-1]
+                    x = stack[-2]
                     if tm_y is not None and isinstance(y, (int, float)):
                         if abs(y - tm_y) > 1.2:
                             _flush(cur, out_lines)
-                        elif isinstance(x, (int, float)) and isinstance(tm_x, (int, float)) and x - tm_x > 6:
+                        elif (
+                            isinstance(x, (int, float))
+                            and isinstance(tm_x, (int, float))
+                            and x - tm_x > 6
+                        ):
                             cur.append(" ")
                     tm_y = y if isinstance(y, (int, float)) else tm_y
                     tm_x = x if isinstance(x, (int, float)) else tm_x
@@ -591,13 +611,35 @@ def _flush(cur, out_lines):
         cur.clear()
 
 
-WINANSI = {0x80: "€", 0x82: "‚", 0x83: "ƒ", 0x84: "„",
-           0x85: "…", 0x86: "†", 0x87: "‡", 0x88: "ˆ",
-           0x89: "‰", 0x8a: "Š", 0x8b: "‹", 0x8c: "Œ",
-           0x8e: "Ž", 0x91: "'", 0x92: "'", 0x93: '"', 0x94: '"',
-           0x95: "•", 0x96: "-", 0x97: "-", 0x98: "˜",
-           0x99: "™", 0x9a: "š", 0x9b: "›", 0x9c: "œ",
-           0x9e: "ž", 0x9f: "Ÿ"}
+WINANSI = {
+    0x80: "€",
+    0x82: "‚",
+    0x83: "ƒ",
+    0x84: "„",
+    0x85: "…",
+    0x86: "†",
+    0x87: "‡",
+    0x88: "ˆ",
+    0x89: "‰",
+    0x8A: "Š",
+    0x8B: "‹",
+    0x8C: "Œ",
+    0x8E: "Ž",
+    0x91: "'",
+    0x92: "'",
+    0x93: '"',
+    0x94: '"',
+    0x95: "•",
+    0x96: "-",
+    0x97: "-",
+    0x98: "˜",
+    0x99: "™",
+    0x9A: "š",
+    0x9B: "›",
+    0x9C: "œ",
+    0x9E: "ž",
+    0x9F: "Ÿ",
+}
 
 
 def decode_string(raw, font):

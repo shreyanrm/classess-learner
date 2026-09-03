@@ -1,5 +1,7 @@
 """Chapter blocks with page numbers and right-column objectives, from layout text."""
-import re, json, os
+
+import os
+import re
 
 BUL = "\u2022\uf0b7\u25aa\u2023\uf077\uf0a7"
 
@@ -14,20 +16,20 @@ def blocks(key, head_re=r"No\. of [Pp]eriods", title_split=r"\s*No\. of [Pp]erio
     text = load(key)
     lines = text.split("\n")
     page, pages = 1, []
-    for l in lines:
+    for ln in lines:
         pages.append(page)
-        page += l.count("\f")
-    heads = [i for i, l in enumerate(lines) if re.search(head_re, l)]
+        page += ln.count("\f")
+    heads = [i for i, ln in enumerate(lines) if re.search(head_re, ln)]
     heads.append(len(lines))
     res = []
-    for a, b in zip(heads, heads[1:]):
+    for a, b in zip(heads, heads[1:], strict=False):
         title = re.split(title_split, lines[a])[0].strip().lstrip("\f").strip()
-        block = lines[a + 1:b]
-        cand = [m.end() for l in block for m in re.finditer(r"\bC\s?-\s?\d\.\d\b", l)]
+        block = lines[a + 1 : b]
+        cand = [m.end() for ln in block for m in re.finditer(r"\bC\s?-\s?\d\.\d\b", ln)]
         cut = min(cand) if cand else 30
         items, cur = [], []
-        for l in block:
-            s = re.sub(r"^\s*C\s?-\s?\d\.\d\s*", "", l[cut:].rstrip()).strip()
+        for ln in block:
+            s = re.sub(r"^\s*C\s?-\s?\d\.\d\s*", "", ln[cut:].rstrip()).strip()
             if not s or re.fullmatch(r"[\d\s\f]+", s):
                 continue
             if s[:1] in BUL:
@@ -58,15 +60,15 @@ def right_column(key, cut=None, code_re=r"\b(?:CG|C)\s?-\s?\d"):
     """Whole right-hand column of a two/three column table, as bullet items with pages."""
     lines = load(key).split("\n")
     page, pages = 1, []
-    for l in lines:
+    for ln in lines:
         pages.append(page)
-        page += l.count("\f")
+        page += ln.count("\f")
     if cut is None:
-        cand = [m.end() for l in lines for m in re.finditer(code_re + r"(?:\.\d)?\b", l)]
+        cand = [m.end() for ln in lines for m in re.finditer(code_re + r"(?:\.\d)?\b", ln)]
         cut = min(cand) if cand else 48
     items, cur, curpage = [], [], 1
-    for i, l in enumerate(lines):
-        s = re.sub(r"^\s*(?:CG|C)\s?-\s?\d(?:\.\d)?\s*,?\s*", "", l[cut:].rstrip()).strip()
+    for i, ln in enumerate(lines):
+        s = re.sub(r"^\s*(?:CG|C)\s?-\s?\d(?:\.\d)?\s*,?\s*", "", ln[cut:].rstrip()).strip()
         s = re.sub(r"\f", "", s).strip()
         if not s or re.fullmatch(r"[\d\s]+", s):
             continue
@@ -92,37 +94,37 @@ def right_column_pp(key, marker=r"The student will be able to", fallback=48):
     that page (carried forward when a page has none)."""
     lines = load(key).split("\n")
     page, pages = 1, []
-    for l in lines:
+    for ln in lines:
         pages.append(page)
-        page += l.count("\f")
+        page += ln.count("\f")
     cuts = {}
-    for i, l in enumerate(lines):
-        m = re.search(marker, l)
+    for i, ln in enumerate(lines):
+        m = re.search(marker, ln)
         if m:
             cuts.setdefault(pages[i], m.start())
-    cut, items, cur, curpage = fallback, [], [], 1
+    _cut, items, cur, curpage = fallback, [], [], 1
     seen = {}
     for p in sorted(set(pages)):
-        seen[p] = cuts.get(p, None)
+        seen[p] = cuts.get(p)
     last = fallback
     for p in sorted(seen):
         if seen[p] is None:
             seen[p] = last
         else:
             last = seen[p]
-    for i, l in enumerate(lines):
+    for i, ln in enumerate(lines):
         c = seen[pages[i]]
-        mk = re.search(marker, l)
+        mk = re.search(marker, ln)
         if mk:
             if cur:
                 items.append((curpage, " ".join(cur)))
                 cur = []
             items.append((pages[i], "@@MARK@@"))
-            tail = l[mk.end():].lstrip(": ").rstrip()
-            l = (" " * c) + tail if tail.strip() else ""
-            if not l.strip():
+            tail = ln[mk.end() :].lstrip(": ").rstrip()
+            ln = (" " * c) + tail if tail.strip() else ""
+            if not ln.strip():
                 continue
-        s = l[c:].rstrip()
+        s = ln[c:].rstrip()
         s = re.sub(r"^\s*(?:CG|C)\s?-\s?\d(?:\.\d)?\s*,?\s*", "", s).strip()
         s = re.sub(r"\f", "", s).strip()
         if not s or re.fullmatch(r"[\d\s]+", s):
@@ -176,9 +178,9 @@ def theme_table(key, start, end, theme_re=r"^\s{0,4}(\d{1,2})\.\s+(\S.*)$"):
     """
     lines = load(key).split("\n")
     page, pages = 1, []
-    for l in lines:
+    for ln in lines:
         pages.append(page)
-        page += l.count("\f")
+        page += ln.count("\f")
     sub = list(range(start - 1, min(end, len(lines))))
     # left bullet x = the modal small x; right column starts after it
     xs = [m.start() for i in sub for m in re.finditer("[" + BUL + "]", lines[i])]
@@ -186,17 +188,22 @@ def theme_table(key, start, end, theme_re=r"^\s{0,4}(\d{1,2})\.\s+(\S.*)$"):
     lx = max(left) if left else 22
     rows, cur = [], None
     for i in sub:
-        l = lines[i]
-        m = re.match(theme_re, l)
-        if m and len(m.group(2).strip()) > 2 and not re.match(r"^\s*\d+\s*$", l):
-            cur = {"no": int(m.group(1)), "title_parts": [], "page": pages[i],
-                   "left": [], "right": []}
+        ln = lines[i]
+        m = re.match(theme_re, ln)
+        if m and len(m.group(2).strip()) > 2 and not re.match(r"^\s*\d+\s*$", ln):
+            cur = {
+                "no": int(m.group(1)),
+                "title_parts": [],
+                "page": pages[i],
+                "left": [],
+                "right": [],
+            }
             rows.append(cur)
         if cur is None:
             continue
-        head = l[:6].strip()
-        title_zone = l[5:lx - 1] if lx > 8 else ""
-        body_left = l[lx - 1:] if lx > 8 else l
+        ln[:6].strip()
+        title_zone = ln[5 : lx - 1] if lx > 8 else ""
+        body_left = ln[lx - 1 :] if lx > 8 else ln
         # split body into left (outline) and right (outcomes)
         cut = None
         for mm in re.finditer("[" + BUL + "]", body_left):
@@ -214,11 +221,15 @@ def theme_table(key, start, end, theme_re=r"^\s{0,4}(\d{1,2})\.\s+(\S.*)$"):
         cur["right"].append(rgt.rstrip())
     out = []
     for r in rows:
-        out.append({
-            "no": r["no"], "page": r["page"],
-            "title": re.sub(r"\s{2,}", " ", " ".join(r["title_parts"])).strip(),
-            "outline": _bul(r["left"]), "objectives": _bul(r["right"]),
-        })
+        out.append(
+            {
+                "no": r["no"],
+                "page": r["page"],
+                "title": re.sub(r"\s{2,}", " ", " ".join(r["title_parts"])).strip(),
+                "outline": _bul(r["left"]),
+                "objectives": _bul(r["right"]),
+            }
+        )
     return out
 
 
@@ -226,7 +237,9 @@ def _bul(cells):
     items, cur = [], []
     for s in cells:
         s = re.sub(r"\f", "", s).strip()
-        s = re.sub(r"^\s*(?:C|CG)\s?-?\s?\d(?:\.\d)?(?:\s*,\s*(?:C|CG)\s?-?\s?\d(?:\.\d)?)*\s*", "", s)
+        s = re.sub(
+            r"^\s*(?:C|CG)\s?-?\s?\d(?:\.\d)?(?:\s*,\s*(?:C|CG)\s?-?\s?\d(?:\.\d)?)*\s*", "", s
+        )
         if not s or re.fullmatch(r"[\d\s]+", s):
             continue
         if s[:1] in BUL:

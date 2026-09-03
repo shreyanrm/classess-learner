@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { ATOM_TARGET_NODE_ID } from '@wobo/sdk';
 import {
   assertNoErrors,
   openAtomCourse,
@@ -7,6 +8,7 @@ import {
   seedOnboarded,
   watchConsole,
 } from './helpers';
+import { installAtomBrain, seedAtomWorld } from './helpers/brain';
 
 /**
  * Wobo's governed capabilities, exercised end to end in the default keyless (mock) mode — the
@@ -58,7 +60,11 @@ test('teach-back: the learner teaches the atom, Wobo plays the student, bonus la
 }, info) => {
   const errors = watchConsole(page);
   await seedOnboarded(page);
+  // The atom sits in the learner's own syllabus (§6), which is how a topic no board publishes for
+  // them is reached now that the bundled catalog is gone.
+  await seedAtomWorld(page);
   await page.goto('/');
+  await installAtomBrain(page, ATOM_TARGET_NODE_ID);
 
   // walk to the atom course so a topic is in view — teach-back only opens where there is a topic.
   await openAtomCourse(page);

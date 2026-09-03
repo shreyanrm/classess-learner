@@ -11,13 +11,17 @@
 import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { useRegistryRevision, useTopics, useUnits, useWorld } from '../curriculum/hooks';
+import { ProvenanceLabel } from '../curriculum/Labels';
+import { OverlayEditor } from '../curriculum/OverlayEditor';
 import {
   chaptersBySubject,
   displaySubjectById,
   subjectById,
   topicById,
   unmetPrereqs,
-} from '../data/catalog';
+} from '../curriculum/registry';
+import { DiscoveryCard, EmptyWorldCard } from '../curriculum/StatusCard';
 import type { Chapter, Topic } from '../data/model';
 import { useRouter } from '../shell/router';
 import { useViewport } from '../shell/useViewport';
@@ -752,11 +756,24 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
   const group = displaySubjectById(subjectId);
   const tone = toneForSubject(subjectId);
   const { completed, topicProgress } = useProgress();
-  const sections = (group?.subjectIds ?? [subjectId]).map((id) => ({
-    subject: subjectById(id),
-    tone: toneForSubject(id),
-    chapters: chaptersBySubject[id] ?? [],
-  }));
+  const world = useWorld();
+  // Chapters on opening the subject, topics on opening a chapter (CURRICULUM.md §8). Nothing is
+  // fetched ahead of the learner, and nothing appears that the brain did not serve.
+  const units = useUnits(subjectId);
+  const [openChapter, setOpenChapter] = useState<string | null>(null);
+  useTopics(openChapter);
+  // Re-render as each answer lands in the in-memory registry.
+  useRegistryRevision();
+  const [editing, setEditing] = useState(false);
+  // The door IS the subject, in the framework's own naming — the client never clubs or splits a
+  // board's subjects on its behalf.
+  const sections = [
+    {
+      subject: subjectById(subjectId),
+      tone,
+      chapters: chaptersBySubject[subjectId] ?? [],
+    },
+  ];
   // the thread picks up here too — the furthest in-flight topic gets a continue door on top
   const inFlight = sections
     .flatMap((s) => s.chapters.flatMap((ch) => ch.topics.map((t) => ({ chapter: ch, topic: t }))))
@@ -769,7 +786,6 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
   const roadmapChapters = sections.flatMap((s) =>
     s.chapters.map((ch) => ({ chapter: ch, tone: s.tone })),
   );
-  const [openChapter, setOpenChapter] = useState<string | null>(null);
   // The glyph stage rides the context plane under the scrolling chapter list (MOTION.md §1).
   const glyphParallax = useParallax<HTMLDivElement>(PARALLAX.context, { max: 44 });
   const [view, setView] = useState<SubjectView>(loadViewPref);
@@ -1052,6 +1068,77 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
         </div>
       ) : (
         <div ref={listRef} style={{ marginTop: 20 }}>
+          {/* §5: how well we know these chapters, before a single one is opened. */}
+          {world && units.view && (
+            <motion.div variants={rise} style={{ marginBottom: 14 }}>
+              <ProvenanceLabel
+                status={world.status}
+                label={units.view.label || world.label}
+                name={world.frameworkName}
+                version={world.versionYear}
+              />
+              {units.offline && (
+                <span style={{ fontSize: '0.76rem', color: 'var(--wobo-ink-300)' }}>
+                  Showing the copy saved on this device
+                </span>
+              )}
+            </motion.div>
+          )}
+
+          {/* Three honest ends: no board, a job still running, or a refusal we can read. */}
+          {!world && (
+            <motion.div variants={rise} style={{ marginBottom: 18 }}>
+              <EmptyWorldCard onChooseBoard={() => router.replace({ name: 'you' })} />
+            </motion.div>
+          )}
+          {world && units.looking && (
+            <motion.div variants={rise} style={{ marginBottom: 18 }}>
+              <DiscoveryCard
+                placeholder={units.view?.placeholder ?? null}
+                onOwnSyllabus={() => router.replace({ name: 'you' })}
+                onFinished={() => units.reload()}
+              />
+            </motion.div>
+          )}
+          {world && units.error && !units.looking && (
+            <motion.p
+              variants={rise}
+              role="alert"
+              style={{ marginBottom: 18, fontSize: '0.88rem', color: 'var(--wobo-ink-500)' }}
+            >
+              {units.error}
+            </motion.p>
+          )}
+
+          {/* The overlay: make the board's list match this school (§6). */}
+          {world && units.units.length > 0 && (
+            <motion.div variants={rise} style={{ marginBottom: 18 }}>
+              <button
+                type="button"
+                onClick={() => setEditing((e) => !e)}
+                style={{
+                  border: 'none',
+                  background: 'transparent',
+                  font: 'inherit',
+                  fontSize: '0.82rem',
+                  color: 'var(--wobo-ink-500)',
+                  cursor: 'pointer',
+                  padding: 4,
+                }}
+              >
+                {editing ? 'Done editing' : 'Make this match my school'}
+              </button>
+              {editing && units.view?.subjectId && (
+                <OverlayEditor
+                  nodes={units.units}
+                  parentId={units.view.subjectId}
+                  kind="unit"
+                  onClose={() => setEditing(false)}
+                />
+              )}
+            </motion.div>
+          )}
+
           {sections.map((sec, i) => (
             <div key={sec.subject?.id ?? subjectId}>
               {/* a clubbed door sections its chapters under the canonical disciplines */}

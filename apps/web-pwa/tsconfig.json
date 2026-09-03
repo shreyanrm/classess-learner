@@ -7,7 +7,16 @@
     "types": ["vite/client", "bun", "@playwright/test"],
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
-    "noEmit": true
+    "noEmit": true,
+    // Those same URLs carry the `.ts` extension Vite serves them under.
+    "allowImportingTsExtensions": true,
+    // The e2e specs reach into the running app through Vite's own module URLs (`/src/…`), which is
+    // the only way to drive the real client inside the page. Map them so those imports type-check
+    // here rather than only at runtime.
+    "baseUrl": ".",
+    "paths": {
+      "/src/*": ["./src/*"]
+    }
   },
   "include": ["src", "test", "tests", "vite.config.ts", "playwright.config.ts"]
 }

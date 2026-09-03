@@ -13,7 +13,7 @@
 import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
-import { chaptersBySubject, subjects, topicById } from '../../data/catalog';
+import { chaptersBySubject, subjects, topicById } from '../../curriculum/registry';
 import type { Topic } from '../../data/model';
 import { loadMind } from '../../store/mind';
 import { useProgress } from '../../store/progress';

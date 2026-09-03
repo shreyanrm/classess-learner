@@ -12,7 +12,7 @@
 
 import { motion } from 'framer-motion';
 import { useMemo } from 'react';
-import { canonicalSubjectId } from '../data/frame';
+import { canonicalSubjectId } from '../curriculum/subjects';
 
 /** FNV-1a — stable tiny hash for deterministic art. */
 export function hash(s: string): number {

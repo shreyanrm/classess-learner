@@ -19,6 +19,10 @@ dependencies = [
     # Identity at the door: Supabase JWTs, HS256 (legacy projects) or JWKS RS/ES (new ones).
     # [crypto] pulls `cryptography`, which the asymmetric verify path needs.
     "pyjwt[crypto]>=2.9",
+    # Curriculum discovery reads official syllabus PDFs (curriculum/discovery/fetch.py). pypdf is
+    # pure Python, so the image needs no poppler binary and the fetcher runs the same everywhere.
+    # HTML is handled by the standard library's parser — no second dependency for that half.
+    "pypdf>=5.1",
     "uvicorn[standard]>=0.30",
 ]
 

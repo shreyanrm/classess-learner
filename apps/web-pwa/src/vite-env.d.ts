@@ -28,6 +28,11 @@ interface ImportMetaEnv {
   readonly VITE_PERSIST_MODE?: 'local' | 'live';
   /** Supabase project URL. */
   readonly VITE_SUPABASE_URL?: string;
+  /**
+   * `'1'` routes the database through our own origin (`/db`, a Vercel rewrite) instead of the
+   * project URL, so the browser never names the database host. Anything else ⇒ direct.
+   */
+  readonly VITE_SUPABASE_PROXY?: string;
   /** The publishable/anon key — client-safe by design, never a service key. */
   readonly VITE_SUPABASE_ANON_KEY?: string;
   /** Dev-only signed JWT for local work against a real project. Refused outside `import.meta.env.DEV`. */

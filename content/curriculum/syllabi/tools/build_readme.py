@@ -5,6 +5,7 @@ Run from anywhere:  python3 content/curriculum/syllabi/tools/build_readme.py
 Every count and every table row is read out of the JSON, so the README cannot
 drift from the data the way the first one did.
 """
+
 import json
 import os
 
@@ -70,7 +71,7 @@ def main():
     w(
         f"{len(files)} files. **Nothing here is `verified`.** Every file is `provisional`; "
         f"{read_off} of them carry `read_off_source: true`, meaning the units below were read "
-        f"off the board's own document, and {blocked} carry `discovery_state: \"blocked\"` with "
+        f'off the board\'s own document, and {blocked} carry `discovery_state: "blocked"` with '
         f"a blocker code and no units at all. {units} units and {topics} topics in total.\n"
     )
     w("## The shape of a file\n")
@@ -125,7 +126,7 @@ note               anything a reader needs to know to trust or distrust the file
         "`docs/CURRICULUM.md` section 4.4 stores discovery output as `provisional`, section 4.5\n"
         "earns `verified` only after the verify tier has re-read the source independently and\n"
         "either the owner or two learners have promoted it, and section 5 renders `verified` to\n"
-        "the learner as \"Official CBSE 2026-27, verified\". None of that has happened to any file\n"
+        'the learner as "Official CBSE 2026-27, verified". None of that has happened to any file\n'
         "here. So every file is `provisional`, and the separate boolean `read_off_source` carries\n"
         "the weaker, true claim: a build read these units off the board's own document at the page\n"
         "each `source_ref` names. `verified` is reserved for whatever writes the review-queue\n"
@@ -159,7 +160,9 @@ note               anything a reader needs to know to trust or distrust the file
     )
     w("## Files\n")
     for fid in ORDER:
-        rows = sorted([(r, d) for r, d in files if d["framework_id"] == fid], key=lambda x: level_key(x[0]))
+        rows = sorted(
+            [(r, d) for r, d in files if d["framework_id"] == fid], key=lambda x: level_key(x[0])
+        )
         if not rows:
             continue
         w(f"### {HEADING[fid]}\n")
@@ -185,7 +188,9 @@ note               anything a reader needs to know to trust or distrust the file
     w("|---|---|---|---|---|")
     for did in sorted(docs):
         doc = docs[did]
-        w(f"| `{did}` | {doc['title']} | {doc['url']} | {doc['fetched_at']} | `{doc['document_sha256']}` |")
+        w(
+            f"| `{did}` | {doc['title']} | {doc['url']} | {doc['fetched_at']} | `{doc['document_sha256']}` |"
+        )
     w("")
     w("## Known limits, named\n")
     # CISCE
@@ -193,13 +198,13 @@ note               anything a reader needs to know to trust or distrust the file
     w(
         f"- **The CISCE topic layer is withdrawn, in all {len(cisce)} ICSE and ISC files with units.**\n"
         "  An earlier pass re-flowed the booklets' two-column layout by line position. It truncated\n"
-        "  topic titles mid-phrase (\"Areas of similar triangles are\", \"Tangent and Secant Properties:\n"
-        "  5\") and, worse, filed topics under the wrong unit: the circulatory, excretory, endocrine\n"
+        '  topic titles mid-phrase ("Areas of similar triangles are", "Tangent and Secant Properties:\n'
+        '  5") and, worse, filed topics under the wrong unit: the circulatory, excretory, endocrine\n'
         "  and reproductive systems landed under Plant Physiology while Human Anatomy and Physiology\n"
         "  sat empty, and 35 items including sewage treatment and lab practicals were dumped into\n"
         "  Ecology and Environment. Ninety-nine units came out with no topics at all. None of that\n"
         "  is kept. Every unit in those files now has `topics: null` with\n"
-        "  `topic_discovery_state: \"blocked\"`, and the unit list, unit order and any unit-level\n"
+        '  `topic_discovery_state: "blocked"`, and the unit list, unit order and any unit-level\n'
         "  `contents` prose are what remain. Re-deriving the topics means keying off the booklet's\n"
         "  own bracketed sub-headings and bracket depth, not line position, and having a second\n"
         "  reader confirm the unit to topic mapping before anything is promoted.\n"
@@ -224,7 +229,7 @@ note               anything a reader needs to know to trust or distrust the file
     )
     w(
         "- **Duplicate topic names.** `cbse/class-12-chemistry.json` repeats plain headings\n"
-        "  (\"Classification, Nomenclature\", \"Chemical Reactions\", \"Physical Properties\") under\n"
+        '  ("Classification, Nomenclature", "Chemical Reactions", "Physical Properties") under\n'
         "  different units, exactly as the document does. The file records this in\n"
         "  `provenance.checks_failed`. Node ids are positional, not derived from the title, so the\n"
         "  duplicates do not collide; a renderer that shows a topic outside its unit will need the\n"
@@ -232,8 +237,8 @@ note               anything a reader needs to know to trust or distrust the file
     )
     w(
         "- **NIOS is a 2023 document.** Every NIOS bifurcation document the board currently publishes\n"
-        "  is the 2023 edition, still in force. Those files are stamped `version: \"2023\"` with\n"
-        "  `applies_to: \"2026-27\"` rather than claiming a 2026-27 document that does not exist, so\n"
+        '  is the 2023 edition, still in force. Those files are stamped `version: "2023"` with\n'
+        '  `applies_to: "2026-27"` rather than claiming a 2026-27 document that does not exist, so\n'
         "  section 9's re-fetch compares like with like.\n"
     )
     w(

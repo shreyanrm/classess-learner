@@ -1,131 +1,80 @@
 'use client';
 
 /**
- * Grade and board chips. Onboarding asks them as two separate beats — board first (BoardPicker,
- * with a free-text door for a board we don't list yet), then the grades for that board (GradePicker).
- * The You header still edits both at once (GradeBoardPicker). Selecting any board is always allowed —
- * an unlisted or unsourced board is sourced on arrival, never gated.
+ * Board and class, read from the global registry (CURRICULUM.md §3).
+ *
+ * There is no list of boards in this file any more. The learner types, the registry answers, and
+ * the two doors that must never be more than one tap away sit under the field: "my board isn't
+ * here", which sends the name they typed to a discovery job, and their own syllabus.
+ *
+ * Classes come from the framework itself — grades 4 to 13 wherever it has them (§11) — so a
+ * curriculum that runs to Year 13 offers Year 13 and one that stops at Class 10 stops at Class 10.
+ * Nothing here offers a class a board does not teach.
  */
 
+import type { CurriculumFramework } from '@wobo/sdk';
 import { AnimatePresence, motion } from 'framer-motion';
-import { type CSSProperties, useState } from 'react';
-import { boards } from '../../data/catalog';
-import { MagneticButton, SectionLabel } from '../../ui/kit';
+import { useState } from 'react';
+import { BoardSearch } from '../../curriculum/BoardSearch';
+import { LevelPicker } from '../../curriculum/Pickers';
+import { SectionLabel, surface } from '../../ui/kit';
 
-export const GRADES = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'];
-
-/** Grades to offer for a board. The seeded catalogs all cover 6–10; an unlisted board gets the same. */
-export function gradesForBoard(_boardId: string | null): string[] {
-  return GRADES;
+/**
+ * What a learner ends up having chosen. A framework when the registry knew it; otherwise the raw
+ * name they typed, which is a search we have not run yet — never a substituted board.
+ */
+export interface ChosenBoard {
+  /** The framework id, or the typed name when nothing in the registry matched. */
+  id: string;
+  name: string;
+  framework: CurriculumFramework | null;
+  /** True when this is a name we are about to go looking for. */
+  unlisted: boolean;
 }
 
-function Chip({
-  label,
-  selected,
-  onClick,
-  style,
-}: {
-  label: string;
-  selected: boolean;
-  onClick: () => void;
-  style?: CSSProperties;
-}) {
-  return (
-    <motion.button
-      type="button"
-      onClick={onClick}
-      aria-pressed={selected}
-      whileTap={{ scale: 0.96 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 26 }}
-      style={{
-        // the one chip system: tonal at rest, solid ink when chosen — 3px, never pills
-        border: 'none',
-        background: selected ? 'var(--wobo-ink-900)' : 'var(--wobo-tonal)',
-        color: selected ? 'var(--wobo-paper)' : 'var(--wobo-ink-700)',
-        borderRadius: 3,
-        padding: '9px 15px',
-        fontSize: '0.9rem',
-        fontFamily: 'inherit',
-        cursor: 'pointer',
-        lineHeight: 1.2,
-        ...style,
-      }}
-    >
-      {label}
-    </motion.button>
-  );
+export function boardOf(framework: CurriculumFramework): ChosenBoard {
+  return { id: framework.id, name: framework.name, framework, unlisted: false };
 }
 
-const row: CSSProperties = { display: 'flex', flexWrap: 'wrap', gap: 8 };
+export function unlistedBoard(name: string): ChosenBoard {
+  return { id: name, name, framework: null, unlisted: true };
+}
 
-/** The board list: seeded lead, the rest grouped by region, plus the free-text door for the unlisted. */
+/** The classes a chosen board offers. Empty until one is chosen — never a default ladder. */
+export function levelsFor(board: ChosenBoard | null): string[] {
+  return board?.framework?.levels ?? [];
+}
+
 export function BoardPicker({
-  boardId,
+  board,
   onBoard,
+  onOwnSyllabus,
 }: {
-  boardId: string | null;
-  onBoard: (boardId: string) => void;
+  board: ChosenBoard | null;
+  onBoard: (board: ChosenBoard) => void;
+  /** The own-syllabus door. */
+  onOwnSyllabus: () => void;
 }) {
-  const seeded = boards.filter((b) => b.seeded);
-  const rest = boards.filter((b) => !b.seeded);
-  const regions = [...new Set(rest.map((b) => b.region))];
-  const listed = boards.some((b) => b.id === boardId);
-  // "unlisted" = a board the learner typed that isn't one of our chips.
+  // The free-text door stays a deliberate second step: a learner who types "cbs" is searching, not
+  // declaring that their board is missing.
   const [typing, setTyping] = useState(false);
   const [custom, setCustom] = useState('');
-  const customChosen = boardId != null && !listed;
+  const unlisted = board?.unlisted === true;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}>
       <SectionLabel>Your board</SectionLabel>
-      <div
-        style={{
-          maxHeight: 260,
-          overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 14,
-          paddingRight: 4,
-          // Fade the bottom edge so it's clear the list scrolls — a board below the cut still reads.
-          WebkitMaskImage: 'linear-gradient(to bottom, #000 calc(100% - 22px), transparent 100%)',
-          maskImage: 'linear-gradient(to bottom, #000 calc(100% - 22px), transparent 100%)',
-        }}
-      >
-        <div style={row}>
-          {seeded.map((b) => (
-            <Chip
-              key={b.id}
-              label={b.name}
-              selected={boardId === b.id}
-              onClick={() => onBoard(b.id)}
-            />
-          ))}
-        </div>
-        {regions.map((region) => (
-          <div key={region} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div
-              style={{ fontSize: '0.72rem', color: 'var(--wobo-ink-300)', letterSpacing: '0.1em' }}
-            >
-              {region}
-            </div>
-            <div style={row}>
-              {rest
-                .filter((b) => b.region === region)
-                .map((b) => (
-                  <Chip
-                    key={b.id}
-                    label={b.name}
-                    selected={boardId === b.id}
-                    onClick={() => onBoard(b.id)}
-                  />
-                ))}
-            </div>
-          </div>
-        ))}
-      </div>
 
-      {/* the free-text door — for a board we don't list yet */}
-      {!typing && !customChosen ? (
+      <BoardSearch
+        onPick={(framework) => onBoard(boardOf(framework))}
+        onNotListed={(query) => {
+          setCustom(query);
+          setTyping(true);
+        }}
+        onOwnSyllabus={onOwnSyllabus}
+      />
+
+      {!typing && !unlisted ? (
         <button
           type="button"
           onClick={() => setTyping(true)}
@@ -133,7 +82,7 @@ export function BoardPicker({
             alignSelf: 'flex-start',
             border: 'none',
             background: 'transparent',
-            color: 'var(--wobo-ink-500)',
+            color: surface.inkFaint,
             fontSize: '0.85rem',
             cursor: 'pointer',
             fontFamily: 'inherit',
@@ -149,9 +98,11 @@ export function BoardPicker({
           <input
             // biome-ignore lint/a11y/noAutofocus: the field is this affordance's single intention
             autoFocus
-            value={custom || (customChosen ? (boardId as string) : '')}
+            value={custom || (unlisted ? board.name : '')}
             onChange={(e) => setCustom(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && custom.trim() && onBoard(custom.trim())}
+            onKeyDown={(e) =>
+              e.key === 'Enter' && custom.trim() && onBoard(unlistedBoard(custom.trim()))
+            }
             placeholder="Type your board's name"
             aria-label="your board's name"
             style={{
@@ -159,33 +110,42 @@ export function BoardPicker({
               minWidth: 0,
               fontSize: '1rem',
               fontFamily: 'inherit',
-              color: 'var(--wobo-ink-900)',
-              background: 'var(--wobo-tonal)',
+              color: surface.ink,
+              background: surface.tonal,
               border: 'none',
-              borderRadius: 3,
+              borderRadius: surface.radius.control,
               padding: '11px 14px',
             }}
           />
-          <MagneticButton
-            size="md"
-            variant="primary"
-            onClick={() => custom.trim() && onBoard(custom.trim())}
-            style={{ minWidth: 64, justifyContent: 'center' }}
+          <button
+            type="button"
+            onClick={() => custom.trim() && onBoard(unlistedBoard(custom.trim()))}
+            style={{
+              minWidth: 64,
+              font: 'inherit',
+              padding: '11px 14px',
+              border: 'none',
+              borderRadius: surface.radius.control,
+              background: surface.ink,
+              color: 'var(--wobo-on-ink)',
+              cursor: 'pointer',
+            }}
           >
             Set
-          </MagneticButton>
+          </button>
         </div>
       )}
+
       <AnimatePresence>
-        {customChosen && (
+        {unlisted && (
           <motion.div
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
             transition={{ duration: 0.24, ease: [0.2, 0, 0, 1] }}
-            style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)', lineHeight: 1.5 }}
+            style={{ fontSize: '0.85rem', color: surface.inkFaint, lineHeight: 1.5 }}
           >
-            I'll try to source {boardId} when you arrive
+            I'll try to source {board.name} when you arrive
           </motion.div>
         )}
       </AnimatePresence>
@@ -193,121 +153,51 @@ export function BoardPicker({
   );
 }
 
-/** The grades relevant to the chosen board — its own beat, after the board is set. */
+/** The classes the chosen board teaches — its own beat, after the board is set. */
 export function GradePicker({
-  boardId,
+  board,
   grade,
   onGrade,
 }: {
-  boardId: string | null;
+  board: ChosenBoard | null;
   grade: string | null;
   onGrade: (grade: string) => void;
 }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%' }}>
-      <SectionLabel>Your grade</SectionLabel>
-      <div style={row}>
-        {gradesForBoard(boardId).map((g) => (
-          <Chip key={g} label={g} selected={grade === g} onClick={() => onGrade(g)} />
-        ))}
-      </div>
+      <SectionLabel>Your class</SectionLabel>
+      <LevelPicker
+        levels={levelsFor(board)}
+        level={grade}
+        onLevel={onGrade}
+        emptyLine={
+          board?.unlisted
+            ? `I do not have ${board.name}'s classes yet. Pick your board first and I will bring them.`
+            : 'Pick your board and I will bring its classes.'
+        }
+      />
     </div>
   );
 }
 
+/** Both at once — the edit a learner makes from their own page. */
 export function GradeBoardPicker({
   grade,
-  boardId,
+  board,
   onGrade,
   onBoard,
+  onOwnSyllabus,
 }: {
   grade: string | null;
-  boardId: string | null;
+  board: ChosenBoard | null;
   onGrade: (grade: string) => void;
-  onBoard: (boardId: string) => void;
+  onBoard: (board: ChosenBoard) => void;
+  onOwnSyllabus: () => void;
 }) {
-  const seeded = boards.filter((b) => b.seeded);
-  const rest = boards.filter((b) => !b.seeded);
-  const regions = [...new Set(rest.map((b) => b.region))];
-  const chosen = boards.find((b) => b.id === boardId);
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 22, width: '100%' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <SectionLabel>Your grade</SectionLabel>
-        <div style={row}>
-          {GRADES.map((g) => (
-            <Chip key={g} label={g} selected={grade === g} onClick={() => onGrade(g)} />
-          ))}
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <SectionLabel>Your board</SectionLabel>
-        <div
-          style={{
-            maxHeight: 240,
-            overflowY: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 14,
-            paddingRight: 4,
-            // Fade the bottom edge so it's clear the list scrolls — otherwise a learner whose board
-            // sits below the cut (Common Core, UK, IB…) sees a hard-sliced row and assumes it's the end.
-            WebkitMaskImage: 'linear-gradient(to bottom, #000 calc(100% - 22px), transparent 100%)',
-            maskImage: 'linear-gradient(to bottom, #000 calc(100% - 22px), transparent 100%)',
-          }}
-        >
-          <div style={row}>
-            {seeded.map((b) => (
-              <Chip
-                key={b.id}
-                label={b.name}
-                selected={boardId === b.id}
-                onClick={() => onBoard(b.id)}
-              />
-            ))}
-          </div>
-          {regions.map((region) => (
-            <div key={region} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div
-                style={{
-                  fontSize: '0.72rem',
-                  color: 'var(--wobo-ink-300)',
-                  letterSpacing: '0.1em',
-                }}
-              >
-                {region}
-              </div>
-              <div style={row}>
-                {rest
-                  .filter((b) => b.region === region)
-                  .map((b) => (
-                    <Chip
-                      key={b.id}
-                      label={b.name}
-                      selected={boardId === b.id}
-                      onClick={() => onBoard(b.id)}
-                    />
-                  ))}
-              </div>
-            </div>
-          ))}
-        </div>
-        <AnimatePresence>
-          {chosen && !chosen.seeded && (
-            <motion.div
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 4 }}
-              transition={{ duration: 0.24, ease: [0.2, 0, 0, 1] }}
-              style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)', lineHeight: 1.5 }}
-            >
-              I'll fetch this board's world when you arrive
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+      <BoardPicker board={board} onBoard={onBoard} onOwnSyllabus={onOwnSyllabus} />
+      <GradePicker board={board} grade={grade} onGrade={onGrade} />
     </div>
   );
 }

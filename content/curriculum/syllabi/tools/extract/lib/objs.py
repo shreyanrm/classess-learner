@@ -1,17 +1,19 @@
 """Pull the 'student will be able to' / learning-outcome bullets out of a CBSE
 2026-27 curriculum PDF's extracted text, one block per chapter section."""
-import json, re, sys
+
+import re
+import sys
 
 BULLET = "•▪–‐-"
 
 
 def load(key):
-    return open("txt/%s.txt" % key, encoding="utf-8").read()
+    return open(f"txt/{key}.txt", encoding="utf-8").read()
 
 
 def pagemap(t):
     p = re.split(r"\f\[page (\d+)\]\n", t)[1:]
-    return list(zip([int(x) for x in p[0::2]], p[1::2]))
+    return list(zip([int(x) for x in p[0::2]], p[1::2], strict=False))
 
 
 def flat(t):
@@ -63,16 +65,17 @@ def blocks(key, header_re, outcome_re=r"(?:The student will be able to|Learning 
         end = heads[i + 1][0] if i + 1 < len(heads) else len(text)
         seg = text[pos:end]
         m = re.search(outcome_re, seg)
-        body = seg[m.end():] if m else ""
+        body = seg[m.end() :] if m else ""
         items = split_bullets(body)
-        res.append({"header": clean(raw), "page": page_at(pages, pos), "objectives": items,
-                    "raw": seg})
+        res.append(
+            {"header": clean(raw), "page": page_at(pages, pos), "objectives": items, "raw": seg}
+        )
     return res
 
 
 def split_bullets(body):
     body = re.sub(r"C\s*-?\s*\n?\s*\d+\.\d+\s*\n", "\n• ", body)
-    parts = re.split(r"\n\s*[%s]\s*\n?" % re.escape(BULLET), "\n" + body)
+    parts = re.split(rf"\n\s*[{re.escape(BULLET)}]\s*\n?", "\n" + body)
     out = []
     for p in parts[1:]:
         c = clean(p)
@@ -84,6 +87,6 @@ def split_bullets(body):
 if __name__ == "__main__":
     key, hdr = sys.argv[1], sys.argv[2]
     for b in blocks(key, hdr):
-        print("### p%s  %s" % (b["page"], b["header"]))
+        print("### p{}  {}".format(b["page"], b["header"]))
         for o in b["objectives"]:
             print("   -", o)

@@ -3,26 +3,29 @@
 Boundaries are found per line: the outcomes column is the last long run of
 spaces before a bullet that sits right of `cut_min`.
 """
-import re, sys
+
+import re
+import sys
+from pathlib import Path
 
 
 def rows(path, a, b, cut_min=36, drop=r"^\s*\d+\s*$|^\s*Page|indd"):
-    lines = open(path, encoding="utf-8").read().split("\n")[a - 1:b]
+    lines = Path(path).read_text(encoding="utf-8").split("\n")[a - 1 : b]
     out = []
-    for l in lines:
-        if re.search(drop, l):
+    for ln in lines:
+        if re.search(drop, ln):
             continue
         # find the split point: first bullet at or right of cut_min, else a wide gap
         cut = None
-        for m in re.finditer(r"•", l):
+        for m in re.finditer(r"•", ln):
             if m.start() >= cut_min:
                 cut = m.start()
                 break
         if cut is None:
-            m = re.search(r"\S\s{4,}(?=\S)", l[cut_min - 8:] if len(l) > cut_min else "")
+            m = re.search(r"\S\s{4,}(?=\S)", ln[cut_min - 8 :] if len(ln) > cut_min else "")
             cut = (cut_min - 8) + m.end() if m else None
-        left = l[:cut] if cut else l
-        right = l[cut:] if cut else ""
+        left = ln[:cut] if cut else ln
+        right = ln[cut:] if cut else ""
         out.append((left.rstrip(), right.rstrip()))
     return out
 

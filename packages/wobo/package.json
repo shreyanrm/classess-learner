@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@wobo/config": "workspace:*",
+    "@wobo/contracts": "workspace:*",
     "@wobo/motion": "workspace:*",
     "framer-motion": "^11.11.0",
     "opentype.js": "1.3.4",

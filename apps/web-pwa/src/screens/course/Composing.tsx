@@ -16,7 +16,7 @@ import type { ImageSpec, Item as WireItem } from '@wobo/contracts/plexus';
 import { useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { topicById } from '../../data/catalog';
+import { topicById } from '../../curriculum/registry';
 import type { Topic } from '../../data/model';
 import { AnatomyScene, parseAnatomyScene } from '../../engines/AnatomyScene';
 import { ArcadeShell, type ArcadeSpec, parseArcade } from '../../engines/ArcadeShell';

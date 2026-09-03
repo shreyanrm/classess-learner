@@ -5,9 +5,16 @@ import { defineConfig, devices } from '@playwright/test';
  * (vite) on a dedicated strict port so it never collides with a fleet agent's server. Tests are
  * serial per-file and the whole run is single-worker: the journey mutates localStorage and shared
  * app state, and flakiness from parallel animation timing is not worth the speed.
+ *
+ * THE PORT IS OVERRIDABLE, and it has to be. A fixed `--strictPort` plus `reuseExistingServer`
+ * means the second workflow to start an e2e run silently attaches to the FIRST one's dev server —
+ * built from a different working tree, at a different moment — and both runs then report findings
+ * about a page neither of them served. It fails as flakiness rather than as an error, which is the
+ * expensive way to find out. Set `WOBO_E2E_PORT` per workflow and the two runs cannot see each
+ * other; leave it unset and nothing changes for a single run.
  */
 
-const PORT = 5199;
+const PORT = Number(process.env.WOBO_E2E_PORT ?? 5199);
 
 export default defineConfig({
   testDir: './tests',

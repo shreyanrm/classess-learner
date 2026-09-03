@@ -347,6 +347,9 @@ function medallionFor(stop: ThreadStop): ReactNode {
       return <ShieldMedallion lit={!stop.locked} />;
     case 'bonus':
       return <ChestMedallion open={Boolean(stop.done)} />;
+    // No syllabus in front of the learner yet — the compass points at the door that fixes it.
+    case 'empty':
+      return <CompassMedallion />;
   }
 }
 
@@ -358,6 +361,7 @@ const META_COLOR: Record<StopKind, string> = {
   review: INK_60,
   boss: INK_40,
   bonus: MOLTEN,
+  empty: INK_60,
 };
 
 /* ------------------------------------------------------------------ stop card */

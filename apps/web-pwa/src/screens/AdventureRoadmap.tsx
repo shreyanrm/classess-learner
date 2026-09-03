@@ -20,7 +20,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { unmetPrereqs } from '../data/catalog';
+import { unmetPrereqs } from '../curriculum/registry';
 import type { Chapter, Topic } from '../data/model';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';

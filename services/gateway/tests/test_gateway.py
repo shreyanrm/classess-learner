@@ -52,7 +52,7 @@ def req(tier: ConsentTier, **payload: object) -> CapabilityRequest:
 def test_registry_is_complete_and_valid() -> None:
     validate_registry()  # raises on a malformed registry
     assert set(capabilities()) == set(EXPECTED_CAPABILITIES)
-    assert len(capabilities()) == 16
+    assert len(capabilities()) == len(EXPECTED_CAPABILITIES)
     for name in capabilities():
         assert policy(name).capability == name
 
@@ -280,7 +280,7 @@ def test_http_surface(auth) -> None:
     assert client.get("/healthz").json()["status"] == "ok"
 
     caps = client.get("/v1/capabilities", headers=headers).json()
-    assert len(caps) == 16
+    assert len(caps) == len(EXPECTED_CAPABILITIES)
 
     # the body says un_elevated and is ignored; the derived tier (no stored record -> the
     # least-privilege default) is what closes the elevated-only door

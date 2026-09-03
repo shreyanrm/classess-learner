@@ -61,6 +61,37 @@ TOKENS = re.compile(
     re.IGNORECASE,
 )
 
+# --------------------------------------------------------------------------------------------
+# WHAT IS DELIBERATELY *NOT* A TOKEN: the learner's own account provider
+# --------------------------------------------------------------------------------------------
+#
+# "google" and "apple" are not in the list above, and that is a ruling rather than an oversight.
+#
+# §17 forbids naming "which models or vendors are UNDERNEATH": the AI providers, the model
+# families, the hosting and database vendors — everything a learner has no relationship with and
+# would learn about us by reading. A sign-in button is the opposite of that. It names an account
+# the LEARNER already holds, with a company the learner already chose, and §6 specifies it by name
+# in the owner's own words: "Login and sign-up (Google, phone OTP)" and "sign in first (Google or
+# phone OTP)". A third-party sign-in button also cannot legally exist without that provider's name
+# and mark on it, so reading §17 to forbid it would delete a feature §6 requires.
+#
+# The boundary, written down so it is not re-litigated:
+#
+#   ALLOWED   the provider name on the sign-in and sign-up controls, in the settings account block,
+#             in the command-palette entry for the same action, and in the help article that
+#             documents it (help-centre/wobo-basics/07). Also the typeface name in a font stack,
+#             which is a font and not a vendor relationship.
+#   FORBIDDEN the same names anywhere they would describe our own infrastructure — a provider we
+#             call on the learner's behalf, a model, a host, a queue, a bucket — in any string a
+#             client can see.
+#
+# It is not enforced by a token here because it cannot be: `-apple-system` in a font stack, an
+# apple in a maths word problem, and "Google Sans Flex" would all trip it, and a gate whose
+# findings are ninety per cent noise stops being read. The enforcement that IS precise lives in
+# `apps/web-pwa/src/screens/auth/copy.test.ts`, which asserts that across the whole auth copy
+# module the only two strings containing either word are `METHODS.google` and `METHODS.apple` —
+# tighter than a grep, because it fails on a provider name in an error, a hint or a heading.
+
 # Context kept around a hit in a minified bundle, where "the line" is the whole file.
 WINDOW = 90
 

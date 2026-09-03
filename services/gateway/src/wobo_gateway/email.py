@@ -43,10 +43,11 @@ def to_hash(address: str) -> str:
     return hashlib.sha256(address.strip().lower().encode()).hexdigest()[:16]
 
 # Brand-neutral by config (WOBO-PLAN §8): the sender is one environment variable, so the domain
-# swap is a deploy change, not a code change. The defaults are the RFC 2606 reserved name — mail
-# never leaves on them, and a host that forgot to set the sender says so in the bounce.
-_FROM = os.getenv("EMAIL_FROM", "Wobo <wobo@wobo.invalid>")
-_REPLY_TO = os.getenv("EMAIL_REPLY_TO", "hello@wobo.invalid")
+# swap is a deploy change, not a code change. The defaults are the real domain now that it exists
+# (heywobo.com, bought 2026-09-03); the host still sets them, and until the sending domain is
+# verified in Resend EMAIL_MODE=console means nothing leaves on any of these.
+_FROM = os.getenv("EMAIL_FROM", "Wobo <hello@heywobo.com>")
+_REPLY_TO = os.getenv("EMAIL_REPLY_TO", "support@heywobo.com")
 _RESEND_URL = "https://api.resend.com/emails"
 _HTTP_TIMEOUT_S = 20.0
 

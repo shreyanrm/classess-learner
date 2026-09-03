@@ -23,7 +23,7 @@ import {
   type TaskState,
   type WoboAssembledContext,
 } from '@wobo/wobo';
-import { chaptersBySubject, topicById } from '../data/catalog';
+import { chaptersBySubject, topicById } from '../curriculum/registry';
 import type { Topic } from '../data/model';
 import type { Router } from '../shell/router';
 import { clearMind } from '../store/mind';

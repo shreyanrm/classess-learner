@@ -1,5 +1,10 @@
 """Emit one syllabus JSON per framework+level+subject into content/curriculum/syllabi/."""
-import hashlib, json, os, re
+
+import hashlib
+import json
+import os
+import re
+from pathlib import Path
 
 
 def tidy_text(s):
@@ -18,6 +23,7 @@ def tidy_text(s):
     s = re.sub(r"(?<=[a-z]) [b-df-hj-mo-rt-z]$", "", s)
     return s.strip(" ;,.")
 
+
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.dirname(os.path.dirname(HERE))  # content/curriculum/syllabi
 
@@ -29,15 +35,19 @@ def doc(key, title, publisher, *, layout=True):
     if key in _meta_cache:
         m = dict(_meta_cache[key])
     else:
-        m = json.load(open(os.path.join(HERE, "meta", key + ".json")))
+        m = json.loads(Path(HERE, "meta", key + ".json").read_text(encoding="utf-8"))
         _meta_cache[key] = m
     lay = os.path.join(HERE, "lay", key + ".txt")
     if layout and os.path.exists(lay):
-        text = open(lay, encoding="utf-8", errors="replace").read()
+        text = Path(lay).read_text(encoding="utf-8", errors="replace")
         extraction = "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
     else:
-        text = open(os.path.join(HERE, "txt", key + ".txt"), encoding="utf-8").read()
-        extraction = "python standard library extractor (zlib inflate over PDF content streams)" if m["kind"] == "pdf" else "python standard library tag strip"
+        text = Path(HERE, "txt", key + ".txt").read_text(encoding="utf-8")
+        extraction = (
+            "python standard library extractor (zlib inflate over PDF content streams)"
+            if m["kind"] == "pdf"
+            else "python standard library tag strip"
+        )
     return {
         "id": key.replace("_", "-"),
         "title": title,
@@ -79,13 +89,29 @@ def write(path, payload):
         f.write("\n")
     n_units = len(payload.get("units", []))
     n_topics = sum(len(u.get("topics", [])) for u in payload.get("units", []))
-    print("%-58s %-12s units=%-3d topics=%-4d" % (path, payload["status"], n_units, n_topics))
+    print(f"{path:<58} {payload['status']:<12} units={n_units:<3} topics={n_topics:<4}")
     return path
 
 
-def syllabus(*, framework_id, framework_name, framework_kind, country, region=None,
-             version, level, level_order, subject, status, documents, units,
-             note=None, aliases=None, region_scope=None, extra=None):
+def syllabus(
+    *,
+    framework_id,
+    framework_name,
+    framework_kind,
+    country,
+    region=None,
+    version,
+    level,
+    level_order,
+    subject,
+    status,
+    documents,
+    units,
+    note=None,
+    aliases=None,
+    region_scope=None,
+    extra=None,
+):
     p = {
         "framework_id": framework_id,
         "framework_name": framework_name,

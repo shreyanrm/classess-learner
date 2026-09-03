@@ -11,7 +11,7 @@ import type { PracticeItem } from '@wobo/sdk';
 import { useWoboBus } from '@wobo/wobo';
 import { motion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { chapterById } from '../../data/catalog';
+import { chapterById } from '../../curriculum/registry';
 import type { Topic } from '../../data/model';
 import { useProgress } from '../../store/progress';
 import { useSdk } from '../../store/sdk';

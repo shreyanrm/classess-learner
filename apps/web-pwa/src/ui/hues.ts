@@ -3,8 +3,8 @@
  * ignites, and blooms take the owning subject's hue. Chrome never does.
  */
 
-import { chapterById, topicById } from '../data/catalog';
-import { canonicalSubjectId } from '../data/frame';
+import { chapterById, topicById } from '../curriculum/registry';
+import { canonicalSubjectId } from '../curriculum/subjects';
 
 export interface SubjectTone {
   hue: string;

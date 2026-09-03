@@ -16,7 +16,7 @@ Every page is a pitch with its own angle, told through scenes rather than featur
 
 | Route | Angle | Hero artefact | Chapters | Interactive moment |
 |---|---|---|---|---|
-| `/` | The Tuesday night | live drawing card + Wobo | 9:40 pm chapter · she tries one · Sunday note · on anything · subjects · parents · ask · questions · devices | the half-square puzzle, Ask Wobo |
+| `/` | The Tuesday night | live drawing card + Wobo | 9:40 pm chapter · the learner tries one · Sunday note · on anything · subjects · parents · ask · questions · devices | the half-square puzzle, Ask Wobo |
 | `/meet-wobo` | Who Wobo is, the character and the voice | Wobo large, blinking, following the pointer; the first-meeting line written | how it listens (voice + typed + circle) · how it draws (pen, board, plane, full board) · how it notices (praise, gaps, the note) · what it never does (no shaming, no opinions, no ads) | say "Hey Wobo" (hold space demo, mock) |
 | `/how-it-works` | A lesson from first question to Sunday note | the three-step strip drawn | ask · drawn out · try one · practice that rings the gap · the week · the parent view | a second answer kind (drag the point on the graph) |
 | `/for-parents` | Peace of mind and a tutor at any hour | the Sunday note with the envelope | the 8 pm drive · what you see (parent view) · safe by design · what it costs (link to plans) · the questions parents ask | Ask Wobo (parent questions) |

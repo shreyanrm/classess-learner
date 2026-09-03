@@ -4,22 +4,24 @@ The runbook for the two production targets. Every step needs the OWNER's
 authenticated accounts (Vercel, Railway, Supabase); nothing here runs unattended,
 and no secret ever enters this repo.
 
-**Current hosts** (temporary — the app moves to a Wobo domain when the owner buys one, and
-both project names change when the owner renames them, §17). Neither address is written
-out here: read each off its platform once, export it, and every command below is
-copy-paste.
+**Hosts.** The domain is **heywobo.com** (bought 2026-09-03). Both addresses below are our
+own; the platform hostnames underneath them are an implementation detail and appear nowhere in
+shipped code.
 
 | Piece | Host | Address |
 |---|---|---|
-| Web PWA | Vercel | `$WEB_URL` — the production domain, plus the project's default `*.vercel.app` URL (`vercel inspect`) |
-| Gateway (the brain) | Railway | `$GATEWAY_URL` — the service's public domain (`railway domain`) |
-| Data | Supabase | project ref `keepraxqagzgjrrweryt` |
+| Web PWA | Vercel | `https://heywobo.com` (`www` redirects to it) |
+| Gateway (the brain) | Railway | `https://api.heywobo.com` (custom domain on the service) |
+| Data | Supabase | project ref `keepraxqagzgjrrweryt`, reached by the browser as `https://heywobo.com/db` — see §1.3 |
 
 ```sh
-export WEB_URL=https://…       # the Vercel production domain
-export GATEWAY_URL=https://…   # the Railway public domain
-export MAIL_DOMAIN=mail.…      # the sending domain verified in Resend
+export WEB_URL=https://heywobo.com
+export GATEWAY_URL=https://api.heywobo.com
+export MAIL_DOMAIN=heywobo.com   # the sending domain, once it verifies with the mail provider
 ```
+
+Every DNS record for the domain lives in **`infra/dns/heywobo.com.md`** — that file is the
+single source of truth; the table in §1.4 here is a copy of it.
 
 **Config that is committed:** `vercel.json` (repo root — the only one; Vercel reads
 the root file), `railway.json` (repo root), `services/gateway/Dockerfile`,
@@ -45,10 +47,11 @@ Everything user-facing is env-driven so the domain swap is one change (see §4).
 | `VITE_PERSIST_MODE` | committed `.env.production` | no | `live` |
 | `VITE_DEV_AUTH` | committed `.env.production` | no | `false` — the dev mock identity can never leak |
 | `VITE_APP_NAME` | committed `.env.production` | no | `Wobo` (title, PWA manifest name) |
-| `VITE_GATEWAY_URL` | committed `.env.production` | no | `$GATEWAY_URL` — the Railway public domain, written out in that file |
-| `VITE_SUPABASE_URL` | committed `.env.production` | no | `https://keepraxqagzgjrrweryt.supabase.co` |
+| `VITE_APP_URL` | committed `.env.production` | no | `https://heywobo.com` — canonical origin, `og:url`, and the base of the `/db` proxy |
+| `VITE_GATEWAY_URL` | committed `.env.production` | no | `https://api.heywobo.com` |
+| `VITE_SUPABASE_URL` | committed `.env.production` | no | `https://keepraxqagzgjrrweryt.supabase.co` — the rewrite's destination; the browser does not use it while the proxy is on |
+| `VITE_SUPABASE_PROXY` | committed `.env.production` | no | `1` — the browser talks to the database through `https://heywobo.com/db` (§1.3). Anything else ⇒ direct, and `*.supabase.co` must go back into the CSP |
 | `VITE_APP_DESCRIPTION` | Vercel project env (optional) | no | unset ⇒ built-in tagline |
-| `VITE_APP_URL` | Vercel project env (optional) | no | canonical origin; unset ⇒ no canonical/`og:url` tag |
 | `VITE_SUPABASE_ANON_KEY` | **Vercel project env only** | yes-ish | publishable/anon key ONLY — never the service role |
 | `VITE_SUPABASE_DEV_JWT` | **never set in production** | yes | dev-only RLS shim |
 
@@ -70,7 +73,7 @@ live only in the Railway service variables and the owner's key vault.
 |---|---|---|---|
 | `SUPABASE_JWT_SECRET` | **yes** | Railway | the project's JWT secret (HS256 projects). **One of this or the JWKS pair is mandatory when `ENV=prod`** — boot fails without it |
 | `SUPABASE_JWKS_URL` | no | Railway | RS256/ES256 projects. Unset ⇒ derived from `SUPABASE_URL` as `<url>/auth/v1/.well-known/jwks.json` |
-| `SUPABASE_URL` | no | Railway | `https://keepraxqagzgjrrweryt.supabase.co` — the JWKS base and the consent lookup host |
+| `SUPABASE_URL` | no | Railway | `https://keepraxqagzgjrrweryt.supabase.co` — the JWKS base and the consent lookup host. **Server-side, so it stays the project URL**; the `/db` proxy is a browser-only concern |
 | `SUPABASE_JWT_AUD` | no | Railway (optional) | `authenticated` (the default) |
 | `SUPABASE_SERVICE_ROLE_KEY` | **yes** | Railway | server-only key for the consent/plan lookup (`learner.profiles_cache` by `subject_id`). Missing ⇒ every learner reads as un-elevated + free |
 | `SUPABASE_CONSENT_SCHEMA` / `_TABLE` / `_ID_COLUMN` | no | Railway (optional) | defaults `learner` / `profiles_cache` / `subject_id` — the live schema; set only if the profile moves behind a view |
@@ -93,11 +96,11 @@ live only in the Railway service variables and the owner's key vault.
 | Var | Secret | Where it lives | Production value |
 |---|---|---|---|
 | `APP_NAME` | no | Railway | `Wobo` — product name in prompts, emails, page titles |
-| `APP_URL` | no | Railway | canonical web origin. Also the CORS allow-list entry and the base of every email link |
+| `APP_URL` | no | Railway | `https://heywobo.com` — canonical web origin. Also the CORS allow-list entry and the base of every email link |
 | `APP_PREVIEW_ORIGIN_REGEX` | no | Railway (optional) | CORS regex for our own preview deploys; unset ⇒ the built-in Vercel preview pattern |
-| `EMAIL_FROM` | no | Railway | RFC 5322 sender on the Resend-verified domain — `Wobo <wobo@$MAIL_DOMAIN>` |
-| `EMAIL_REPLY_TO` | no | Railway | reply-to on every transactional send |
-| `EMAIL_UNSUBSCRIBE_URL` | no | Railway (optional) | unset ⇒ `APP_URL/unsubscribe` |
+| `EMAIL_FROM` | no | Railway | `Wobo <hello@heywobo.com>` — RFC 5322 sender on the verified domain (also the code default) |
+| `EMAIL_REPLY_TO` | no | Railway | `support@heywobo.com` — reply-to on every transactional send (also the code default). It must actually receive mail |
+| `EMAIL_UNSUBSCRIBE_URL` | no | Railway (optional) | unset ⇒ `https://heywobo.com/unsubscribe` |
 | `EMAIL_POSTAL_ADDRESS` | no | Railway | **owner action.** A real postal address; unset renders a loud placeholder in the footer |
 | `EMAIL_MODE` | no | Railway | `console` until the sender domain is verified in Resend, then `live` |
 | `RESEND_API_KEY` | **yes** | Railway | from the key vault |
@@ -165,7 +168,8 @@ bash scripts/set-vercel-env.sh "<supabase-anon-key>"   # publishable key, never 
 # …or set the key by hand and skip the argument on later runs:
 vercel env add VITE_SUPABASE_ANON_KEY production
 
-vercel domains add <web-domain>          # once the owner buys the Wobo domain
+vercel domains add heywobo.com
+vercel domains add www.heywobo.com        # then set it to redirect to the apex in the dashboard
 ```
 
 `scripts/set-vercel-env.sh` is committed and holds **no** credential — the anon key comes
@@ -174,13 +178,8 @@ of `.env.production`. It finishes with a `vercel env pull` verification that pri
 values and reports the anon key only as `<set>` / `<MISSING>`. Rerun it after any change to
 `.env.production`, then redeploy.
 
-**DNS (owner action, at the domain's DNS provider):**
-
-```
-Type: CNAME   Host: learner   Value: cname.vercel-dns.com
-```
-
-Vercel provisions TLS once the CNAME resolves (`vercel domains inspect <web-domain>`).
+**DNS (owner action):** the apex and `www` rows of the table in §1.4. Vercel provisions TLS
+once they resolve (`vercel domains inspect heywobo.com`).
 
 Manual deploys are a fallback only (`vercel deploy --prod` from the repo root; the
 Hobby plan caps daily CLI deploys, which is why the git integration is the path).
@@ -207,10 +206,14 @@ Why each non-obvious source is there — remove one and something breaks silentl
   `font-src 'self'` is the whole story. Do not re-add `fonts.googleapis.com` /
   `fonts.gstatic.com`: a font `<link>` is a render-blocking third-party round-trip on
   the first paint of a cheap phone.
-- the Railway host over `https` **and** `wss` — the gateway plus the
-  `/v1/voice/relay` WebSocket.
+- `https://api.heywobo.com` **and** `wss://api.heywobo.com` — the gateway plus the
+  `/v1/voice/relay` WebSocket. `api.heywobo.com` is also in `img-src` and `media-src`, for a
+  generated image or an audio element pointed straight at the gateway.
+- **no `*.supabase.co` at all.** The database is reached through our own origin (§1.3), so
+  `connect-src 'self'` already covers it. Turning the proxy off means putting
+  `https://*.supabase.co` back.
 
-If the gateway moves, edit that one `connect-src` entry and redeploy.
+If the gateway moves, edit those `connect-src` entries and redeploy.
 
 ### 1.2 PWA icons
 
@@ -219,6 +222,41 @@ If the gateway moves, edit that one `connect-src` entry and redeploy.
 regenerate: crop `wobo-logo.png` to the W-mark box, alpha-bbox it, composite centred
 on a white square at 72% (52% for maskable), export the four sizes — e.g.
 `uv run --with pillow python` and PIL's `crop`/`alpha_composite`/`resize`.
+
+### 1.3 The database proxy — `/db`
+
+`vercel.json` rewrites `/db/:path*` to the Supabase project URL, **ahead of the SPA
+catch-all** (order is the rule: `/(.*)` would otherwise swallow it into `index.html`). The web
+app is built with `VITE_SUPABASE_PROXY=1`, so `apps/web-pwa/src/config/supabaseUrl.ts` hands the
+SDK `https://heywobo.com/db` and every call becomes `…/db/auth/v1/…` or `…/db/rest/v1/…`.
+
+Why: the database host was one of the two provider names a learner could read out of the
+network tab (§17). It is now ours. The unit test is `apps/web-pwa/test/supabase-url.test.ts`,
+which proves both planes survive the prefix; `apps/web-pwa/test/domain.test.ts` pins the rewrite,
+its order, and the CSP that depends on it.
+
+Limits, in `infra/dns/heywobo.com.md` in full: no `wss://` through a Vercel rewrite (we use none),
+and Supabase's redirect allowlist must contain `https://heywobo.com/**`.
+
+### 1.4 DNS records
+
+The single source of truth is **`infra/dns/heywobo.com.md`**; this is a copy for the runbook.
+Three values are read off a dashboard and never from memory.
+
+| Record | Type | Host | Value |
+|---|---|---|---|
+| Apex → web | `ALIAS`/`ANAME` (or `A`) | `@` | `cname.vercel-dns.com`, or the **A record Vercel prints** for this project |
+| www → web | `CNAME` | `www` | `cname.vercel-dns.com` (redirects to the apex) |
+| api → gateway | `CNAME` | `api` | the **Railway-provided target** for the custom domain |
+| DKIM ×3 | `CNAME` | `<token>._domainkey` | `<token>.dkim.amazonses.com` — the **three tokens from the mail provider** |
+| SPF | `TXT` | `@` | `v=spf1 include:amazonses.com ~all` (merge into any existing SPF; never a second one) |
+| DMARC | `TXT` | `_dmarc` | `v=DMARC1; p=none; rua=mailto:dmarc@heywobo.com; adkim=s; aspf=s` |
+| MAIL FROM (optional) | `MX` + `TXT` | `mail` | `10 feedback-smtp.<region>.amazonses.com` and the same SPF value |
+| Supabase | — | — | **no record.** The browser reaches it at `https://heywobo.com/db` (§1.3) |
+
+The DKIM rows are the SES shape; the gateway sends through **Resend** today (which sends over
+SES), so take the three `_domainkey` hosts from whichever provider is actually configured. SPF
+and DMARC are the same either way.
 
 ---
 
@@ -236,7 +274,7 @@ railway link                       # select the project + service
 
 railway variables --set ENV=prod --set LLM_MODE=live --set TRUST_PROXY=1 \
   --set APP_NAME=Wobo --set APP_URL="$WEB_URL" \
-  --set EMAIL_FROM="Wobo <wobo@$MAIL_DOMAIN>" --set EMAIL_REPLY_TO="hello@$MAIL_DOMAIN"
+  --set EMAIL_FROM="Wobo <hello@$MAIL_DOMAIN>" --set EMAIL_REPLY_TO="support@$MAIL_DOMAIN"
 railway variables --set ANTHROPIC_API_KEY=... --set OPENAI_API_KEY=... --set GOOGLE_AI_API_KEY=...
 # The door: one of these must verify a learner token, and the service role key reads the tier.
 railway variables --set SUPABASE_URL=https://keepraxqagzgjrrweryt.supabase.co \
@@ -269,6 +307,12 @@ directories; only `content/cache` — written at runtime — stays out.
 Deploying stale code is the failure mode to watch for: if a fix does not appear,
 confirm the deploy actually rebuilt (`railway logs`) before debugging the code.
 
+**Custom domain.** `api.heywobo.com` is attached in Railway → service → Settings → Domains →
+Custom Domain, which prints the `CNAME` target for the `api` row in §1.4. Railway issues the
+certificate once it resolves. The web app calls `https://api.heywobo.com` and nothing else, so
+until that certificate is live the app cannot reach the brain — check it before blaming the
+gateway.
+
 ---
 
 ## 3. Supabase → migrations
@@ -286,25 +330,32 @@ supabase --workdir infra db push     # applies infra/supabase/migrations in orde
 ```
 
 **Auth providers (dashboard, once):** enable Phone (OTP) and Google under
-Authentication → Providers, and add the web origin to the redirect allowlist
-(Authentication → URL Configuration).
+Authentication → Providers, and add `https://heywobo.com/**` to the redirect allowlist
+(Authentication → URL Configuration) — that is the origin the OAuth round-trip returns to,
+even though the request itself goes out through `/db` (§1.3).
 
 ---
 
 ## 4. Swapping the domain
 
-When the owner buys the Wobo domain, the swap is a config change, not a code change:
+Done once already, for `heywobo.com` (2026-09-03). Doing it again is a config change, not a
+code change — the list is the receipt of what the first swap touched:
 
-1. `vercel domains add <new-domain>` and point its DNS CNAME at `cname.vercel-dns.com`.
-2. Set `VITE_APP_URL=https://<new-domain>` (and `VITE_APP_NAME` if the name changes)
-   in the Vercel project env; redeploy. Title, PWA manifest, canonical and `og:` tags
-   all follow — `apps/web-pwa/vite.config.ts` reads them, nothing is hardcoded.
-3. Set `APP_URL=https://<new-domain>` (plus `APP_NAME`, `EMAIL_FROM`, `EMAIL_REPLY_TO`,
-   and `EMAIL_UNSUBSCRIBE_URL` if it is not `APP_URL/unsubscribe`) on the Railway service.
-   This is also the CORS allow-list entry and the base of every email link. The gateway reads
-   all of them from the environment as of Wave 1 — no code change is involved.
-4. If the gateway also moves, edit the one `connect-src` host pair in `vercel.json`.
-5. Verify the new sender domain in Resend before flipping `EMAIL_MODE=live`.
+1. `vercel domains add <new-domain>`, plus the `www` row; DNS per §1.4.
+2. In the committed `apps/web-pwa/.env.production`: `VITE_APP_URL`, `VITE_GATEWAY_URL`,
+   `VITE_APP_NAME`. Then `bash scripts/set-vercel-env.sh` and redeploy. Title, PWA manifest,
+   canonical and `og:` tags all follow — `apps/web-pwa/vite.config.ts` reads them.
+3. `vercel.json`: the gateway host in `connect-src` / `img-src` / `media-src`, and the `/db`
+   rewrite destination if the project moves.
+4. `apps/web-pwa/public/robots.txt` and `sitemap.xml` — the only two files where the domain is
+   a literal that no env can reach.
+5. On the Railway service: `APP_URL`, `APP_NAME`, `EMAIL_FROM`, `EMAIL_REPLY_TO`, and
+   `EMAIL_UNSUBSCRIBE_URL` if it is not `APP_URL/unsubscribe`. `APP_URL` is also the CORS
+   allow-list entry and the base of every email link. Attach the gateway's own custom domain (§2).
+6. `infra/dns/heywobo.com.md` — new file for the new zone; it is the source of truth.
+7. Verify the sending domain with the mail provider before flipping `EMAIL_MODE=live`.
+
+`apps/web-pwa/test/domain.test.ts` fails if steps 2–4 disagree with each other.
 
 ---
 
@@ -312,7 +363,9 @@ When the owner buys the Wobo domain, the swap is a config change, not a code cha
 
 ```sh
 curl -sI "$WEB_URL" | grep -iE 'content-security|strict-transport'
-curl -s "$GATEWAY_URL/healthz"
+curl -s  "$GATEWAY_URL/healthz"
+curl -sI "$WEB_URL/db/auth/v1/health"   # the database proxy reaches the project
+curl -sI https://www.heywobo.com | grep -i location   # redirects to the apex
 ```
 
 - [ ] **No CSP violations** — open the console on a page that renders a chemistry
@@ -333,3 +386,5 @@ curl -s "$GATEWAY_URL/healthz"
       airplane-mode reload still serves the shell.
 - [ ] **No dev leaks** — view-source has no localhost URL; `VITE_SUPABASE_DEV_JWT`
       absent from `vercel env ls production`.
+- [ ] **No provider hostname in the network tab** — every request goes to `heywobo.com` or
+      `api.heywobo.com`; nothing to `*.supabase.co` or `*.up.railway.app`.

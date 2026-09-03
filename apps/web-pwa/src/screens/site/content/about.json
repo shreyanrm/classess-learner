@@ -1,0 +1,553 @@
+{
+  "sections": [
+    {
+      "heading": "Hero",
+      "fields": [
+        {
+          "label": "Eyebrow",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "About Wobo"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Headline",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "A tutor who draws."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Subhead",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Wobo teaches the way a good teacher does: talking and drawing at the same time, on your syllabus, at your pace. Free by default, on every board we can find."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Mission",
+      "fields": [
+        {
+          "label": "Section heading",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Why Wobo exists"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Body",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Most children are taught to a room. The room moves at one pace, on one example, in one language, and if you fall behind on Tuesday nobody notices until the exam."
+                }
+              ]
+            },
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "A tutor who sits beside you fixes that, and almost nobody can afford one."
+                }
+              ]
+            },
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Wobo is that tutor, for the price of nothing. Not a video you watch and not a quiz you pass, but someone who listens to what you actually asked, picks up a pen, and works it out with you on a board. On your board's syllabus, in your class, at whatever hour you are awake."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Pull line",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "The best teaching in the world should not depend on what your parents earn."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "How Wobo teaches",
+      "fields": [
+        {
+          "label": "Section heading",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Drawn live, not looked up"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Body",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Everything Wobo shows you is drawn in the moment, for you."
+                }
+              ]
+            },
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Ask a question anywhere in the app and Wobo answers with ink. A pointer on the thing you circled. A graph built axis by axis while Wobo talks. A derivation written line by line in Wobo's own hand. Wobo points at a thing before saying \"this\", the way a person does."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Four points",
+          "blocks": [
+            {
+              "k": "ol",
+              "items": [
+                [
+                  {
+                    "t": "strong",
+                    "v": "Wobo reads the screen properly."
+                  },
+                  {
+                    "t": "text",
+                    "v": " Not a screenshot and a guess. Every diagram, slider and simulation on the screen tells Wobo exactly what it is showing, so when you circle a bit of it, Wobo already knows the numbers you are looking at."
+                  }
+                ],
+                [
+                  {
+                    "t": "strong",
+                    "v": "Every number is checked by code before it is drawn."
+                  },
+                  {
+                    "t": "text",
+                    "v": " Wobo does not write an answer from memory. The maths is computed and verified, the units are checked, the equation is balanced. If a check fails, Wobo redraws it or says so. Nothing unverified reaches you."
+                  }
+                ],
+                [
+                  {
+                    "t": "strong",
+                    "v": "You draw back."
+                  },
+                  {
+                    "t": "text",
+                    "v": " The board goes both ways. Circle a step, scribble your working, drag the tangent. Wobo reads your ink and answers what you actually meant."
+                  }
+                ],
+                [
+                  {
+                    "t": "strong",
+                    "v": "When you are wrong, Wobo shows you why."
+                  },
+                  {
+                    "t": "text",
+                    "v": " Not a red cross and the right answer. Wobo takes the belief behind your mistake and breaks it on the board, using your own numbers, so you never make it again."
+                  }
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Closing line",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Text is the caption. The lesson is the drawing."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "What we cover",
+      "fields": [
+        {
+          "label": "Section heading",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Every board we can get our hands on"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Body",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Pick your board and class and Wobo teaches that syllabus, chapter by chapter, in its own order and its own words."
+                }
+              ]
+            },
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "The list covers national and state boards, international programmes, open schooling, and the common homeschool programmes, from around class 4 to class 12 or 13, wherever a board has them."
+                }
+              ]
+            },
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "If your board is not in the list, type it anyway. Wobo goes looking for the official syllabus, reads it, checks it against the source, and builds it, then it is there for the next learner from your school."
+                }
+              ]
+            },
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "If nothing official exists, show Wobo yours. A photo of the syllabus page, a PDF, or just type it out, and Wobo builds a plan around it."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Honesty line",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Every syllabus in Wobo carries a label that says where it came from and how well we have checked it. A syllabus with no source is never shown as fact."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Subjects",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Mathematics, physics, chemistry, biology, science, social science and the rest of the school timetable as each board defines them. School level only. We do not pretend to teach a degree."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Our promises",
+      "fields": [
+        {
+          "label": "Section heading",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "What we will not do"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Promise 1 — Your data is yours",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "We collect what is needed to teach you and nothing for sale. You can see everything Wobo remembers about you on one page, delete any of it, and export or delete the whole account whenever you like. We do not sell data, and we do not advertise to children."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Promise 2 — Honesty over polish",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "If Wobo does not know, Wobo says so. If a syllabus is unverified, it says so on the page. If Wobo gets something wrong and you flag it, we fix it and write back to tell you it is fixed. We would rather refuse than invent."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Promise 3 — No manipulation of minors",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "No streak threats, no countdown timers, no fake scarcity, no engineered loneliness, no pressure on a child to ask a parent for money. The price is the same for everyone, always. Anything about paying is addressed to the adult who pays. Leaving is as easy as joining, and the delete button is on the way out, not hidden behind it."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Promise 4 — Safe by design",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Wobo is warm and bounded. There is no always-listening microphone for a child, no private unmonitored channel, and serious matters go to a responsible adult, not to a chatbot. Wobo is a tutor, not a substitute for a person who loves you."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Promise 5 — Free stays free",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "The free tier is a real product, not a trailer. Plus buys more of Wobo, never the only good parts."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Wobo, the character",
+      "fields": [
+        {
+          "label": "Section heading",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "About the wobot"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Body",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Wobo is a wobot: a small round body, two eyes, a warm glow, and a hand that draws. Not a boy, not a girl, and if you ask, Wobo will tell you that and get straight back to the problem."
+                }
+              ]
+            },
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Wobo has one job and no side interests. Wobo does not chase you, does not sulk when you leave, and is exactly as pleased to see you on day two hundred as on day one."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Team",
+      "fields": [
+        {
+          "label": "Section heading",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Who is behind this"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Body",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "slot",
+                  "v": "Company legal name"
+                },
+                {
+                  "t": "text",
+                  "v": " is a small team building one thing properly."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Careers line",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "We hire rarely and carefully. If you build teaching tools the way we do, write to "
+                },
+                {
+                  "t": "slot",
+                  "v": "careers email"
+                },
+                {
+                  "t": "text",
+                  "v": " and show us something you made."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Footer block for this page",
+      "fields": [
+        {
+          "label": "Contact",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "slot",
+                  "v": "Company legal name"
+                },
+                {
+                  "t": "text",
+                  "v": ", "
+                },
+                {
+                  "t": "slot",
+                  "v": "postal address"
+                },
+                {
+                  "t": "text",
+                  "v": ". Write to us at "
+                },
+                {
+                  "t": "slot",
+                  "v": "support email"
+                },
+                {
+                  "t": "text",
+                  "v": "."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Links",
+          "blocks": [
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Help centre · Privacy · Terms · Cookies · Parental consent · Delete your data · Plans"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -4,7 +4,7 @@
  * ponytail: localStorage until real profiles sync through KGtoPG identity.
  */
 
-import { boards, learner } from '../../data/catalog';
+import { loadWorld } from '../../curriculum/world';
 import { scoped } from '../../store/scope';
 
 export const PROFILE_KEY = 'wobo-learner-profile';
@@ -33,7 +33,11 @@ export interface StoredProfile {
   email?: string;
 }
 
-const FALLBACK: StoredProfile = { name: learner.name, grade: learner.grade, boardId: 'cbse' };
+/**
+ * An untouched device knows nothing. No seeded name, no default class, and above all no default
+ * board — the invented world the audit caught started exactly here (WOBO-PLAN §13).
+ */
+const FALLBACK: StoredProfile = { name: '', grade: '', boardId: '' };
 
 /**
  * Whole-year age from a birthdate — a bare 4-digit year, or any date the browser can parse.
@@ -129,15 +133,24 @@ export function mergeAccount(acct: { email?: string; name?: string; avatar?: str
   return changed;
 }
 
+/**
+ * The board's own name. The registry is the only place a framework id has a name, so this reads
+ * the learner's pinned world and otherwise hands back what it was given — never a guess from a
+ * list of boards we happen to ship.
+ */
 export function boardName(boardId: string): string {
-  return boards.find((b) => b.id === boardId)?.name ?? boardId;
+  if (!boardId) return '';
+  const world = loadWorld();
+  return world?.frameworkId === boardId ? world.frameworkName : boardId;
 }
 
-/** Reverse of boardName — accept a stored board (raw id OR display name) and resolve its id. */
+/** Reverse of boardName — a stored board (raw id OR display name) resolved against the world. */
 export function resolveBoardId(board: string | undefined): string | undefined {
-  if (!board) return undefined;
-  const s = board.trim();
-  return boards.find((b) => b.id === s)?.id ?? boards.find((b) => b.name === s)?.id;
+  const s = board?.trim();
+  if (!s) return undefined;
+  const world = loadWorld();
+  if (world && (world.frameworkId === s || world.frameworkName === s)) return world.frameworkId;
+  return s;
 }
 
 export function loadPhoto(): string | null {

@@ -16,7 +16,7 @@
  * path is engine.compose (already live for courses); this floor keeps the forge real and offline.
  */
 
-import { chapterById, subjectById, topicById } from '../../data/catalog';
+import { chapterById, subjectById, topicById } from '../../curriculum/registry';
 import type { Topic } from '../../data/model';
 import type { MiniWorkbookSpec, WorkbookItem } from '../../engines/MiniWorkbook';
 import { topicNodeUuid } from '../course/Composing';

@@ -13,7 +13,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { hueForTopic } from '../../ui/hues';
 import {
   EDGES,
-  FAR_STARS,
+  farStars,
   type PathStep,
   STARS,
   type Star,
@@ -205,7 +205,7 @@ export function Constellation({
 
       {/* far stars — the chapters still to come (decorative, no accessible text) */}
       <g style={{ pointerEvents: 'none' }}>
-        {FAR_STARS.map((f) => (
+        {farStars().map((f) => (
           <circle key={f.id} cx={f.x} cy={f.y} r={1.9} style={{ fill: 'rgba(31,53,224,0.16)' }} />
         ))}
       </g>

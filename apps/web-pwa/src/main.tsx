@@ -7,6 +7,7 @@ import { cssVariables } from '@wobo/config/css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { LoadingScene } from './screens/states/Scene';
 import { migrateLegacyKeys } from './store/legacy-keys';
 import { initAccess } from './ui/access';
 import { ensureDefaultAvatar } from './ui/avatars';
@@ -59,6 +60,40 @@ ensureDefaultAvatar();
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Missing #root');
+
+/**
+ * The boot loader IS the character (docs/WOBO-PLAN.md §16), and the whole scene is the one the
+ * owner directed: the pen crosses the page and draws the first hairline the product will show, the
+ * line loops into the orb, Wobo settles, a handwritten line arrives underneath, and the last word
+ * is always "Your place is saved". Under a second, and then it is gone — no spinner, no skeleton,
+ * no progress bar anywhere in the product.
+ *
+ * There is exactly ONE of these in the app. The long wait for a generation shows the same scene
+ * (`screens/states/Scene.tsx`), so a learner never meets two different loaders in one session.
+ *
+ * It lives in its own root above the app so it is not held up by anything the app is doing, and it
+ * carries its own dismissal so a slow or failed mount can never leave a learner staring at it.
+ */
+const boot = document.createElement('div');
+boot.id = 'wobo-boot';
+boot.style.cssText =
+  'position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:var(--wobo-page);transition:opacity 180ms ease';
+document.body.appendChild(boot);
+const bootRoot = createRoot(boot);
+let bootGone = false;
+const dismissBoot = () => {
+  if (bootGone) return;
+  bootGone = true;
+  boot.style.opacity = '0';
+  boot.style.pointerEvents = 'none';
+  setTimeout(() => {
+    bootRoot.unmount();
+    boot.remove();
+  }, 200);
+};
+bootRoot.render(<LoadingScene width={264} onDone={dismissBoot} />);
+// A backstop: whatever happens to the loader, the app is never behind a curtain for long.
+setTimeout(dismissBoot, 2500);
 
 createRoot(root).render(
   <StrictMode>

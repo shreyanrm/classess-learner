@@ -11,7 +11,7 @@
 import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type ReactNode, useEffect, useState } from 'react';
-import { chaptersBySubject, subjects, topicById } from '../data/catalog';
+import { chaptersBySubject, subjects, topicById } from '../curriculum/registry';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
 import { hueForTopic } from '../ui/hues';

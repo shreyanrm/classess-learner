@@ -18,14 +18,16 @@ import { useRegisterTarget, useWoboBus, WoboBody, type WoboMood } from '@wobo/wo
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { ONBOARDED_KEY, SIGNIN_SOURCE_KEY } from '../App';
-import { ensureFrame } from '../data/frame';
+import { adoptFramework, adoptOwnSyllabus, askDiscovery } from '../curriculum/adopt';
+import { OwnSyllabus } from '../curriculum/OwnSyllabus';
+import { DiscoveryCard } from '../curriculum/StatusCard';
 import { useRouter } from '../shell/router';
 import { rememberInterests } from '../store/mind';
 import { useSdk } from '../store/sdk';
 import { AmbientWash, cascade, fluidSpace, MagneticButton, rise } from '../ui/kit';
 import { sfx } from '../ui/sound';
 import { estimateReadMs, MuteButton, speakLine } from '../wobo/speech';
-import { BoardPicker, GradePicker } from './you/GradeBoardPicker';
+import { BoardPicker, type ChosenBoard, GradePicker } from './you/GradeBoardPicker';
 import {
   ageFromBirthdate,
   hasStoredName,
@@ -118,7 +120,7 @@ const LIKES = [
   'food',
 ];
 
-type Phase = 'greet' | 'name' | 'age' | 'board' | 'grade' | 'likes' | 'auth';
+type Phase = 'greet' | 'name' | 'age' | 'board' | 'own' | 'grade' | 'likes' | 'auth';
 
 /** "98765 43210" or "+91 98765 43210" → E.164; bare Indian numbers get +91. */
 function normalizePhone(raw: string): string {
@@ -208,7 +210,10 @@ export function Onboarding() {
   const [birthdate, setBirthdate] = useState('');
   const [age, setAge] = useState<number | null>(null);
   const [grade, setGrade] = useState<string | null>(null);
-  const [boardId, setBoardId] = useState<string | null>(null);
+  // The board the learner chose, as the registry knows it — or the name they typed, which is a
+  // search we have not run yet. Never a substituted board (CURRICULUM.md §4.6).
+  const [board, setBoard] = useState<ChosenBoard | null>(null);
+  const [sourcing, setSourcing] = useState<string | null>(null);
   const [interests, setInterests] = useState<string[]>([]);
 
   // Sign-in is the FIRST beat and it is mandatory — the additive account layer (Supabase) IS the
@@ -240,7 +245,7 @@ export function Onboarding() {
       signedIn: authed,
       name: finalName || undefined,
       grade: grade ?? undefined,
-      board: boardId ?? undefined,
+      board: board?.name ?? undefined,
       interests,
     }),
   });
@@ -353,7 +358,11 @@ export function Onboarding() {
   // Everything gathered — persist locally, seal the onboarded marker + world onto the account (so a
   // future sign-in reconstructs it and lands home), and hand to the building theatre (FrameBuilding).
   const goBuilding = () => {
+    const boardId = board?.id;
     if (grade && boardId) {
+      // Pin the framework before the building beat, so that screen opens a real world or an
+      // honest status card — never a world assembled from a file.
+      void adoptFramework({ frameworkId: boardId, name: board.name, level: grade });
       saveProfile({
         name: finalName,
         grade,
@@ -420,7 +429,8 @@ export function Onboarding() {
         grade,
         boardId,
       });
-      void ensureFrame(boardId, grade); // warm their world before they land on it
+      // Pin their world again on this device so the registry, not a cache, decides what they study.
+      void adoptFramework({ frameworkId: boardId, name: boardId, level: grade });
       localStorage.setItem(ONBOARDED_KEY, '1');
       const given = (remote?.display_name ?? p.name).trim().split(/\s+/)[0];
       say(`Welcome back${given ? `, ${given}` : ''}.`);
@@ -466,12 +476,12 @@ export function Onboarding() {
         name: name || undefined,
         age: age ?? undefined,
         grade: grade ?? undefined,
-        board: boardId ?? undefined,
+        board: board?.name ?? undefined,
         interests: interests.length ? interests : undefined,
         signedIn: authed,
       },
     });
-  }, [bus, phase, name, age, grade, boardId, interests, authed]);
+  }, [bus, phase, name, age, grade, board, interests, authed]);
 
   // --- answers ---------------------------------------------------------------------------------
   const submitName = () => {
@@ -492,8 +502,15 @@ export function Onboarding() {
     toBoard();
   };
   const submitBoard = () => {
-    if (!boardId) return;
+    if (!board) return;
+    // A board the registry did not list is a search, said out loud before we move on.
+    if (board.unlisted) void askDiscovery(board.name, null).then(() => setSourcing(board.name));
     toGrade();
+  };
+  const toOwn = () => {
+    sfx.tap();
+    setPhase('own');
+    say(`Show me your syllabus, ${finalName}, and I will lay it out for you.`);
   };
   const submitGrade = () => {
     if (!grade) return;
@@ -892,9 +909,9 @@ export function Onboarding() {
                       maxWidth: 440,
                     }}
                   >
-                    <BoardPicker boardId={boardId} onBoard={setBoardId} />
+                    <BoardPicker board={board} onBoard={setBoard} onOwnSyllabus={toOwn} />
                     <AnimatePresence>
-                      {boardId && (
+                      {board && (
                         <motion.div
                           initial={{ opacity: 0, y: 10, scale: 0.94 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -915,6 +932,33 @@ export function Onboarding() {
                   </motion.div>
                 )}
 
+                {promptReady && phase === 'own' && (
+                  <motion.div
+                    key="i-own"
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={spring}
+                    style={{ width: '100%', maxWidth: 520, textAlign: 'left' }}
+                  >
+                    <OwnSyllabus
+                      suggestedName={board?.name ?? ''}
+                      onCancel={() => setPhase('board')}
+                      onReady={(view) => {
+                        const world = adoptOwnSyllabus(view);
+                        setBoard({
+                          id: world.frameworkId,
+                          name: world.frameworkName,
+                          framework: null,
+                          unlisted: false,
+                        });
+                        setGrade(world.level);
+                        goBuilding();
+                      }}
+                    />
+                  </motion.div>
+                )}
+
                 {promptReady && phase === 'grade' && (
                   <motion.div
                     key="i-grade"
@@ -931,7 +975,14 @@ export function Onboarding() {
                       maxWidth: 440,
                     }}
                   >
-                    <GradePicker boardId={boardId} grade={grade} onGrade={setGrade} />
+                    <GradePicker board={board} grade={grade} onGrade={setGrade} />
+                    {sourcing && (
+                      <DiscoveryCard
+                        placeholder={null}
+                        message={`I am looking for ${sourcing} now. Pick your class and I will bring what I find.`}
+                        onOwnSyllabus={toOwn}
+                      />
+                    )}
                     <AnimatePresence>
                       {grade && (
                         <motion.div

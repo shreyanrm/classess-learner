@@ -55,6 +55,12 @@ select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
 # the render worker's module docstrings are operator runbook prose (queue contract, the
 # "operator-run only" warning). Same justification as content/atom/** — every other lint stays on.
 "services/render-worker/**" = ["E501"]
+# The syllabus extraction toolchain. Its long lines are, without exception, string literals:
+# chapter and objective text transcribed verbatim from a board's own document, and the blocker
+# prose recorded when a portal serves no document. Wrapping them would edit what the board wrote,
+# which is the one thing CURRICULUM.md §12 says kills this. Verified as literals, not slop — every
+# other lint stays on, and the run that produced content/curriculum/syllabi/ is reproducible.
+"content/curriculum/syllabi/tools/**" = ["E501"]
 # GENERATED from packages/wobo/src/board/schema.ts (bun run --cwd packages/wobo
 # board:codegen). The grammar travels as one JSON literal per schema so the mirror is
 # byte-stable; formatting it by hand would be edited away on the next regeneration.

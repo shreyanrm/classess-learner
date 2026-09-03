@@ -1,12 +1,14 @@
 # Your account and signing in
 
-> **Status: do not ship. Owner ruling needed.** WOBO-PLAN §6 specifies sign-in with a third-party account button and phone OTP. A third-party sign-in button legally has to carry that provider's name and mark on the screen, which §17 forbids anywhere in our copy, so the button is documented nowhere below and a learner who taps it has no help page. Two ways out: drop the button so phone and email codes are the whole story, and amend §6; or grant §17 a narrow, named exception for the sign-in screen, and add a section here for it. Email-code sign-in and the optional password below are both written against that unresolved choice and are not confirmed as built. `emails/password-reset.md` is blocked on the same ruling.
+**Sign in with an account you already have, or with your phone number. One account carries your board, your progress and your plan across every device.**
 
-**Sign in with your phone number or an email address. One account carries your board, your progress and your plan across every device.**
+**Signing in with an account you already have**
 
-**Signing in**
+There is a button for continuing with a Google account. Tap it, choose the account, and you are back here signed in. Wobo asks that account for your name and email address and nothing else: no contacts, no calendar, no files, and nothing is ever posted anywhere on your behalf. A button for continuing with an Apple account is on the same screen; where a way in is not switched on yet, the screen says so under the button rather than letting you tap something that does nothing.
 
-Choose the phone number or the email address you want to use and Wobo sends a code. Enter it and you are in. There is no password to forget; if you would rather set one, you can add it in settings.
+**Signing in with your phone number**
+
+Enter the phone number you want to use and Wobo sends a code. Enter the code and you are in. There is no password to forget.
 
 **Adding a second way in**
 

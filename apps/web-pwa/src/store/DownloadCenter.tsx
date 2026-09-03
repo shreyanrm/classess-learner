@@ -18,6 +18,11 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { claimNextForge, settleForge, useForged } from '../screens/practice/forge-store';
 import { composeWorkbook } from '../screens/practice/pools';
+// The staged labels live with the loading scene, not here: the toast and the long-wait screen are
+// two views of one wait, and a learner who taps the toast has to see the same sentence continue.
+import { composeStage, isLongWait } from '../screens/states/generation';
+import { GenerationWait } from '../screens/states/Scene';
+import { failureFromError, reportFailure } from '../screens/states/select';
 import { useRouter } from '../shell/router';
 import { sfx } from '../ui/sound';
 import { speakLine } from '../wobo/speech';
@@ -34,22 +39,6 @@ import { loadMind } from './mind';
 import { useSdk } from './sdk';
 
 const COMPOSE_TIMEOUT_MS = 75_000;
-
-// Honest staged progress while a course composes. The gateway genuinely moves through these stages
-// (write the lesson → draw the visuals → verify the answers), so the label reflects real work rather
-// than a fabricated percentage — no fake number, just where Wobo is. Time-based because the client
-// can't see per-stage gateway events; tuned to a typical live compose (~30-45s).
-const COMPOSE_STAGES: readonly { readonly until: number; readonly label: string }[] = [
-  { until: 9_000, label: 'Writing the lesson' },
-  { until: 20_000, label: 'Drawing the visuals' },
-  { until: 34_000, label: 'Checking every answer' },
-  { until: Number.POSITIVE_INFINITY, label: 'Almost ready' },
-];
-
-function composeStage(elapsedMs: number): string {
-  for (const s of COMPOSE_STAGES) if (elapsedMs < s.until) return s.label;
-  return 'Almost ready';
-}
 
 /** Playful-cute, sentence case, no emoji, no exclamation (DESIGN.md copy law). */
 function readyLine(title: string): string {
@@ -82,6 +71,8 @@ export function DownloadCenter() {
     }),
   });
 
+  // The one compose the learner has chosen to sit and watch, if any.
+  const [waitingFor, setWaitingFor] = useState<string | null>(null);
   // A gentle clock so the composing toast's staged label advances while Wobo works. Only ticks while
   // something is actually composing, then stops — no idle timers.
   const [now, setNow] = useState(() => Date.now());
@@ -117,7 +108,14 @@ export function DownloadCenter() {
       // A refusal or timeout is not an error the learner should see: the course player floors to a
       // structural seed course either way (Composing.tsx). "ready" here just means it can be opened.
       .then(() => markReady(next.topicId))
-      .catch(() => markFailed(next.topicId))
+      .catch((err: unknown) => {
+        // Two refusals ARE worth a page, because they are about the learner rather than this one
+        // course: a spent day (with the real reset instant off the 429's own header) and a request
+        // that never left the device. Everything else stays silent and floors to the seed course.
+        const failure = failureFromError(err);
+        if (failure) reportFailure(failure);
+        markFailed(next.topicId);
+      })
       .finally(() => {
         running.current = false;
       });
@@ -178,13 +176,22 @@ export function DownloadCenter() {
   // relies on — no matter which screen the learner landed back on.
   const toasts = items.filter(
     (d) =>
-      d.status === 'downloading' ||
-      d.status === 'queued' ||
-      ((d.status === 'ready' || d.status === 'failed') && !d.seen),
+      // The one the learner is watching full-screen is not also a pill in the corner.
+      d.topicId !== waitingFor &&
+      (d.status === 'downloading' ||
+        d.status === 'queued' ||
+        ((d.status === 'ready' || d.status === 'failed') && !d.seen)),
   );
 
   const open = (d: Download) => {
-    if (d.status === 'downloading' || d.status === 'queued') return; // still composing — nothing to open yet
+    if (d.status === 'downloading' || d.status === 'queued') {
+      // Still composing. Tapping it used to do nothing at all, which read as a dead control; now a
+      // learner who has been waiting a while can choose to wait WITH Wobo, and gets the loading
+      // scene with the same staged line the toast was showing. It replaces the toast rather than
+      // stacking on it, and the work carries on either way.
+      if (isLongWait(d.at, Date.now())) setWaitingFor(d.topicId);
+      return;
+    }
     acknowledge(d.topicId);
     if (d.status === 'ready') {
       router.navigate({ name: 'course', topicId: d.topicId });
@@ -194,6 +201,15 @@ export function DownloadCenter() {
       enqueue(d.topicId, d.title);
     }
   };
+
+  // The wait the learner asked to watch, dropped the moment that course stops composing — the
+  // notification takes over from there, and nobody is left looking at a loader for finished work.
+  const waiting = items.find(
+    (d) => d.topicId === waitingFor && (d.status === 'downloading' || d.status === 'queued'),
+  );
+  useEffect(() => {
+    if (waitingFor && !waiting) setWaitingFor(null);
+  }, [waitingFor, waiting]);
 
   return (
     <div
@@ -319,6 +335,13 @@ export function DownloadCenter() {
           );
         })}
       </AnimatePresence>
+      {waiting ? (
+        <GenerationWait
+          title={waiting.title}
+          stage={composeStage(Math.max(0, now - waiting.at))}
+          onLeave={() => setWaitingFor(null)}
+        />
+      ) : null}
     </div>
   );
 }

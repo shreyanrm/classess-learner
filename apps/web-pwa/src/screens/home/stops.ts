@@ -1,18 +1,34 @@
 'use client';
 
 /**
- * The day's stops — derived live from real progress state, never hardcoded.
- * Every stop is a real navigation; the thread on the home is just these, drawn.
+ * The day's stops — derived live from the learner's real syllabus and their real progress.
+ *
+ * The audit's finding was that this file invented a CBSE Class 8 maths syllabus for anyone whose
+ * board we had no catalog for. That is now impossible: the stops are built from the curriculum
+ * registry's in-memory nodes, which only ever hold what the brain served for the framework and
+ * level this learner is pinned to. An empty world produces exactly one stop — the honest door to
+ * choosing a board — and a world whose chapters have not been opened yet produces the stop that
+ * opens them. Neither produces a topic.
  */
 
-import { chaptersBySubject, mathChapters, subjects, topicById } from '../../data/catalog';
+import { loadedTopics } from '../../curriculum/registry';
+import { loadWorld } from '../../curriculum/world';
 import type { Topic } from '../../data/model';
 import type { Route } from '../../shell/router';
 import type { ProgressStore } from '../../store/progress';
 import { XP_AWARDS } from '../../store/progress';
 import { hueForTopic } from '../../ui/hues';
 
-export type StopKind = 'landing' | 'done' | 'continue' | 'next' | 'review' | 'boss' | 'bonus';
+export type StopKind =
+  | 'landing'
+  | 'done'
+  | 'continue'
+  | 'next'
+  | 'review'
+  | 'boss'
+  | 'bonus'
+  /** No board chosen yet, or no syllabus loaded yet — one honest door, never a fake topic. */
+  | 'empty';
 
 export interface ThreadStop {
   id: string;
@@ -59,24 +75,23 @@ export function claimDailyQuest(): boolean {
   }
 }
 
-/**
- * Every topic of the learner's world, subjects in canonical order (math first).
- * ponytail: the catalog is mid-restructure by another agent — if the live shape breaks,
- * fall back to the stable math spine so the home never renders empty.
- */
-function worldTopics(): Topic[] {
-  try {
-    const out: Topic[] = [];
-    for (const s of subjects) {
-      const chapters = chaptersBySubject[s.id];
-      if (!chapters) continue;
-      for (const ch of chapters) out.push(...ch.topics);
-    }
-    if (out.length > 0) return out;
-  } catch {
-    // catalog exports unavailable mid-restructure — the math spine below is stable
-  }
-  return mathChapters.flatMap((c) => c.topics);
+/** The one stop a learner with no syllabus in front of them sees. */
+function emptyStop(hasWorld: boolean): ThreadStop {
+  return hasWorld
+    ? {
+        id: 'empty-subjects',
+        kind: 'empty',
+        title: 'Open your subjects',
+        meta: 'Your chapters come from your board when you open one',
+        route: { name: 'learn' },
+      }
+    : {
+        id: 'empty-world',
+        kind: 'empty',
+        title: 'Tell me your board',
+        meta: 'Then your own syllabus lands here',
+        route: { name: 'you' },
+      };
 }
 
 export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress' | 'streakDays'>): {
@@ -84,36 +99,13 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
   currentIndex: number;
 } {
   const { completed, topicProgress, streakDays } = p;
+  const world = loadWorld();
+  // Every topic the brain has actually served for this learner's world. Never a bundled catalog.
+  const worldTopics = world ? loadedTopics() : [];
+  const known = new Map(worldTopics.map((t) => [t.id, t] as const));
 
-  // Continue — the furthest-along topic still in flight.
-  let continueTopic: Topic | undefined;
-  let continueF = 0;
-  for (const [id, f] of Object.entries(topicProgress)) {
-    if (f > 0 && f < 1 && !completed.has(id) && f >= continueF) {
-      const t = topicById(id);
-      if (t) {
-        continueTopic = t;
-        continueF = f;
-      }
-    }
-  }
-
-  // Next up — the first uncompleted topic of the learner's world.
-  const world = worldTopics();
-  const nextTopic = world.find((t) => !completed.has(t.id) && t.id !== continueTopic?.id);
-
-  // Recently lit — the last two completions render as stops already behind you.
-  const doneTopics = [...completed]
-    .slice(-2)
-    .map((id) => topicById(id))
-    .filter((t): t is Topic => Boolean(t));
-
-  // The boss gate belongs to the day's topic; it unlocks when that topic finishes.
-  const gate = continueTopic ?? nextTopic;
-  const gateDone = gate ? (topicProgress[gate.id] ?? 0) >= 1 || completed.has(gate.id) : false;
-
+  // The landing stop is always honest: showing up counts, and it needs no syllabus.
   const stops: ThreadStop[] = [
-    // Endowed progress: the landing stop is always already lit — showing up counts.
     {
       id: 'landing',
       kind: 'landing',
@@ -122,18 +114,50 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
       done: true,
       route: { name: 'progress' },
     },
-    ...doneTopics.map(
-      (t): ThreadStop => ({
-        id: `done-${t.id}`,
-        kind: 'done',
-        title: t.name,
-        meta: 'Done · revisit any time',
-        done: true,
-        hue: hueForTopic(t.id),
-        route: { name: 'course', topicId: t.id },
-      }),
-    ),
   ];
+
+  if (worldTopics.length === 0) {
+    stops.push(emptyStop(Boolean(world)));
+    return { stops, currentIndex: stops.length - 1 };
+  }
+
+  // Continue — the furthest-along topic still in flight, and only one we can actually name.
+  let continueTopic: Topic | undefined;
+  let continueF = 0;
+  for (const [id, f] of Object.entries(topicProgress)) {
+    if (f > 0 && f < 1 && !completed.has(id) && f >= continueF) {
+      const t = known.get(id);
+      if (t) {
+        continueTopic = t;
+        continueF = f;
+      }
+    }
+  }
+
+  // Next up — the first uncompleted topic of the learner's own world.
+  const nextTopic = worldTopics.find((t) => !completed.has(t.id) && t.id !== continueTopic?.id);
+
+  // Recently lit — the last two completions we can still name from the loaded syllabus.
+  const doneTopics = [...completed]
+    .slice(-2)
+    .map((id) => known.get(id))
+    .filter((t): t is Topic => Boolean(t));
+
+  // The boss gate belongs to the day's topic; it unlocks when that topic finishes.
+  const gate = continueTopic ?? nextTopic;
+  const gateDone = gate ? (topicProgress[gate.id] ?? 0) >= 1 || completed.has(gate.id) : false;
+
+  for (const t of doneTopics) {
+    stops.push({
+      id: `done-${t.id}`,
+      kind: 'done',
+      title: t.name,
+      meta: 'Done · revisit any time',
+      done: true,
+      hue: hueForTopic(t.id),
+      route: { name: 'course', topicId: t.id },
+    });
+  }
 
   if (continueTopic) {
     stops.push({
@@ -182,11 +206,11 @@ export function deriveStops(p: Pick<ProgressStore, 'completed' | 'topicProgress'
     });
   }
 
-  // The daily bonus quest — one date-seeded nudge drawn from real state, paid out from a chest.
-  // Eligibility is real (you can only clear reviews if you've completed something; a mystery only
-  // shows if the world holds an undiscovered one), and the day-of-year seed rotates the pick so it
-  // is stable within a day and different across days.
-  const mysteryTopic = world.find(
+  // The daily bonus quest — one date-seeded nudge drawn from real state. Eligibility is real (you
+  // can only clear reviews if you've completed something; a mystery only shows if the learner's own
+  // world holds an undiscovered one), and the day-of-year seed rotates the pick so it is stable
+  // within a day and different across days.
+  const mysteryTopic = worldTopics.find(
     (t) => (t.kind === 'mystery' || t.kind === 'bonus') && !completed.has(t.id),
   );
   const quests = {

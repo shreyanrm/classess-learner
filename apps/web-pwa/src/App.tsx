@@ -21,11 +21,13 @@ import {
 } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { resolveSupabaseUrl } from './config/supabaseUrl';
 // EAGER: the only two screens that can be the FIRST paint — a fresh install opens onboarding, a
 // returning learner opens home. Everything else is behind a tap, so it is fetched when that tap
 // happens (the 2G / cheap-phone law: never make a learner download a screen they did not ask for).
 import { Home } from './screens/Home';
 import { Onboarding } from './screens/Onboarding';
+import { StateLayer } from './screens/states/StateHost';
 import { boardName, loadProfile, mergeAccount } from './screens/you/profile';
 import { CommandPalette } from './shell/CommandPalette';
 import { resolveDestination } from './shell/destinations';
@@ -89,7 +91,14 @@ const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
 const DEV_AUTH = import.meta.env.VITE_DEV_AUTH !== 'false';
 // Live persistence (Supabase learner_state / learner_threads / outbox) — env only, keyless => local.
 const PERSIST_MODE = import.meta.env.VITE_PERSIST_MODE ?? 'local';
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+// The database is reached through OUR origin when VITE_SUPABASE_PROXY=1 (a Vercel rewrite
+// forwards /db/* to the project), so the browser never names the database host and the CSP does
+// not have to allow it. One builder decides, and it is unit-tested (test/supabase-url.test.ts).
+const SUPABASE_URL = resolveSupabaseUrl({
+  projectUrl: import.meta.env.VITE_SUPABASE_URL,
+  proxy: import.meta.env.VITE_SUPABASE_PROXY,
+  appUrl: import.meta.env.VITE_APP_URL,
+});
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 // A pre-minted access token is a DEV convenience and a production liability: shipped in a public
 // JS bundle it is one long-lived bearer token every visitor holds, and every visitor is then the
@@ -102,6 +111,7 @@ if (!import.meta.env.DEV && import.meta.env.VITE_SUPABASE_DEV_JWT) {
 // LAZY: one chunk per screen, fetched on the navigation that needs it. Each of these pulls its own
 // engine tree behind it (mafs, the CS ramp, the map projections, the trophy room), which is what
 // made the eager entry chunk ~2.1 MB.
+const About = lazy(() => import('./screens/site/About').then((m) => ({ default: m.About })));
 const ChatScreen = lazy(() =>
   import('./screens/ChatScreen').then((m) => ({ default: m.ChatScreen })),
 );
@@ -112,13 +122,34 @@ const EnginesGallery = lazy(() =>
 const FrameBuilding = lazy(() =>
   import('./screens/FrameBuilding').then((m) => ({ default: m.FrameBuilding })),
 );
+const Help = lazy(() => import('./screens/site/Help').then((m) => ({ default: m.Help })));
+const Gift = lazy(() => import('./screens/gift/Gift').then((m) => ({ default: m.Gift })));
+const HelpArticle = lazy(() =>
+  import('./screens/site/HelpArticle').then((m) => ({ default: m.HelpArticle })),
+);
+const Landing = lazy(() =>
+  import('./screens/landing/Landing').then((m) => ({ default: m.Landing })),
+);
+const Legal = lazy(() => import('./screens/legal/Legal').then((m) => ({ default: m.Legal })));
 const Learn = lazy(() => import('./screens/Learn').then((m) => ({ default: m.Learn })));
+const PlansPage = lazy(() => import('./screens/plans/Plans').then((m) => ({ default: m.Plans })));
+const PlansCheckout = lazy(() =>
+  import('./screens/plans/Checkout').then((m) => ({ default: m.Checkout })),
+);
 const Practice = lazy(() => import('./screens/Practice').then((m) => ({ default: m.Practice })));
 const ProgressScreen = lazy(() =>
   import('./screens/ProgressScreen').then((m) => ({ default: m.ProgressScreen })),
 );
 const SubjectScreen = lazy(() =>
   import('./screens/SubjectScreen').then((m) => ({ default: m.SubjectScreen })),
+);
+const SignIn = lazy(() => import('./screens/auth/Auth').then((m) => ({ default: m.SignIn })));
+const SignUp = lazy(() => import('./screens/auth/Auth').then((m) => ({ default: m.SignUp })));
+const Contact = lazy(() =>
+  import('./screens/contact/Contact').then((m) => ({ default: m.Contact })),
+);
+const NotFoundScreen = lazy(() =>
+  import('./screens/states/StateHost').then((m) => ({ default: m.NotFoundScreen })),
 );
 const You = lazy(() => import('./screens/You').then((m) => ({ default: m.You })));
 
@@ -129,6 +160,31 @@ const You = lazy(() => import('./screens/You').then((m) => ({ default: m.You }))
  * the page does not collapse and bounce the scroll position.
  */
 const ScreenPending = () => <div aria-busy="true" style={{ minHeight: '60vh' }} />;
+
+/**
+ * The public document pages — /about, /help and every article under it, the legal set, the plans
+ * page and the gift page, the two doors, /contact, and the 404. They are readable with no account,
+ * so the sign-in lock lets them through, and they carry their own header, footer and cursor, so the
+ * app chrome stays off them.
+ *
+ * The two doors and the 404 belong here for the same reason as the rest, and for one more: a
+ * learner who is signed out and follows a link to `/sign-in` must land on the sign-in page, not be
+ * bounced into onboarding by the very lock that link exists to open.
+ */
+export function isPublicSite(name: Route['name']): boolean {
+  return (
+    name === 'about' ||
+    name === 'help' ||
+    name === 'helpArticle' ||
+    name === 'legal' ||
+    name === 'plans' ||
+    name === 'gift' ||
+    name === 'sign-in' ||
+    name === 'sign-up' ||
+    name === 'contact' ||
+    name === 'notfound'
+  );
+}
 
 /** Zero-argument destinations Wobo may offer to navigate to. */
 const NAV_ROUTES: Record<string, Route> = {
@@ -152,7 +208,18 @@ export const SIGNIN_SOURCE_KEY = 'wobo-signin-source-v1';
 // entrances and are never doubled with route motion.
 type Dir = 'forward' | 'back' | 'sibling' | 'none';
 const SIBLING_ROUTES = new Set(['home', 'chat', 'learn', 'practice', 'progress', 'you']);
-const OWN_VIEWPORT_ROUTES = new Set(['onboarding', 'concept']);
+const OWN_VIEWPORT_ROUTES = new Set([
+  'landing',
+  'onboarding',
+  'concept',
+  'legal',
+  'plans',
+  'gift',
+  'sign-in',
+  'sign-up',
+  'contact',
+  'notfound',
+]);
 const SHARED_SPRING = { type: 'spring', stiffness: 260, damping: 30 } as const;
 
 function classifyTransition(
@@ -230,6 +297,7 @@ function Screen() {
         style={{ willChange: 'transform, opacity', width: '100%' }}
       >
         <Suspense fallback={<ScreenPending />}>
+          {route.name === 'landing' && <Landing />}
           {route.name === 'onboarding' && <Onboarding />}
           {route.name === 'building' && <FrameBuilding />}
           {route.name === 'home' && <Home />}
@@ -243,6 +311,16 @@ function Screen() {
           {route.name === 'sandbox' && <Course topicId={route.topicId ?? ''} sandbox />}
           {route.name === 'progress' && <ProgressScreen />}
           {route.name === 'you' && <You />}
+          {route.name === 'about' && <About />}
+          {route.name === 'help' && <Help />}
+          {route.name === 'helpArticle' && <HelpArticle group={route.group} slug={route.slug} />}
+          {route.name === 'legal' && <Legal {...(route.slug ? { slug: route.slug } : {})} />}
+          {route.name === 'plans' && (route.checkout ? <PlansCheckout /> : <PlansPage />)}
+          {route.name === 'gift' && <Gift />}
+          {route.name === 'sign-in' && <SignIn />}
+          {route.name === 'sign-up' && <SignUp />}
+          {route.name === 'contact' && <Contact />}
+          {route.name === 'notfound' && <NotFoundScreen />}
           {route.name === 'concept' && route.which === 'engines' && <EnginesGallery />}
         </Suspense>
       </motion.div>
@@ -826,7 +904,12 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   // Onboarding, the frame-building theatre, and design concepts render standalone — no app chrome
   // over them, they own the whole canvas.
   const inFlow =
-    locked || route.name === 'onboarding' || route.name === 'building' || route.name === 'concept';
+    locked ||
+    route.name === 'landing' ||
+    route.name === 'onboarding' ||
+    route.name === 'building' ||
+    isPublicSite(route.name) ||
+    route.name === 'concept';
   const onHome = route.name === 'home';
   // What a saved or shared board is called: the topic Wobo is on, or the lesson Wobo is inside.
   const boardTitle = isLessonRoute(route.name)
@@ -835,7 +918,19 @@ function AppInner({ sdk }: { sdk: Sdk }) {
 
   return (
     <WoboChatProvider value={chat}>
-      {locked && route.name !== 'onboarding' ? <Onboarding /> : <Screen />}
+      {/* The state family lives here, wrapping the screen slot: a render that throws takes its own
+          subtree down instead of the app, and the page that explains it (offline, a spent day,
+          planned work, an expired link) covers everything, wordmark and all. */}
+      <StateLayer>
+        {locked &&
+        route.name !== 'onboarding' &&
+        route.name !== 'landing' &&
+        !isPublicSite(route.name) ? (
+          <Onboarding />
+        ) : (
+          <Screen />
+        )}
+      </StateLayer>
       {/* Wobo's ink over the current screen — annotations anchored to real elements. */}
       <WoboOverlay />
       {/* The nervous system above the app: the gesture sense, Wobo's ink on the screen, the plane, the
@@ -934,14 +1029,18 @@ export function App() {
       if (subject) applyScope(subject, account.isAnonymous());
     });
   }, [sdk]);
-  // Unauthenticated in live mode => onboarding, always (the sign-in beat lives there).
+  // Who has never started gets the front door (the landing page); whoever has started but is not
+  // signed in gets onboarding, where the sign-in beat lives; everyone else goes home.
   // ponytail: a dev preview hook — #engines boots straight into the engine gallery for QA/screenshots.
+  const started = typeof localStorage !== 'undefined' && localStorage.getItem(ONBOARDED_KEY);
   const initial: Route =
     typeof location !== 'undefined' && location.hash === '#engines'
       ? { name: 'concept', which: 'engines' }
-      : sdk.identity.isAuthenticated() && localStorage.getItem(ONBOARDED_KEY)
-        ? { name: 'home' }
-        : { name: 'onboarding' };
+      : started
+        ? sdk.identity.isAuthenticated()
+          ? { name: 'home' }
+          : { name: 'onboarding' }
+        : { name: 'landing' };
   return (
     <SdkProvider value={sdk}>
       <ProgressProvider>

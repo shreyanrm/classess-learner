@@ -1,5 +1,16 @@
-import hashlib, json, os, re, ssl, sys, time, urllib.parse, urllib.request
+import hashlib
+import json
+import os
+import re
+import ssl
+import sys
+import time
+import urllib.parse
+import urllib.request
+
 sys.path.insert(0, os.path.dirname(__file__))
+from pathlib import Path
+
 import minipdf
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +36,11 @@ def fetch(url, key=None, timeout=90):
     # man-in-the-middle must not be able to hand us a fake one. A government portal with
     # a broken certificate chain can be allowed explicitly, per host, and the record says so.
     host = urllib.parse.urlparse(url).hostname or ""
-    insecure_hosts = {h.strip().lower() for h in os.environ.get("WOBO_FETCH_INSECURE_HOSTS", "").split(",") if h.strip()}
+    insecure_hosts = {
+        h.strip().lower()
+        for h in os.environ.get("WOBO_FETCH_INSECURE_HOSTS", "").split(",")
+        if h.strip()
+    }
     tls_verified = host.lower() not in insecure_hosts
     ctx = ssl.create_default_context()
     if not tls_verified:
@@ -39,34 +54,40 @@ def fetch(url, key=None, timeout=90):
             ctype = r.headers.get("Content-Type", "")
     except ssl.SSLCertVerificationError as e:
         raise RuntimeError(
-            "certificate verification failed for %s (%s). If this official portal really has a broken chain, "
-            "allow it explicitly with WOBO_FETCH_INSECURE_HOSTS=%s and the document record will carry tls_verified=false."
-            % (host, e.reason if hasattr(e, "reason") else e, host)
+            "certificate verification failed for {} ({}). If this official portal really has a broken chain, "
+            "allow it explicitly with WOBO_FETCH_INSECURE_HOSTS={} and the document record will carry tls_verified=false.".format(
+                host, e.reason if hasattr(e, "reason") else e, host
+            )
         ) from e
     ext = ".pdf" if (raw[:5] == b"%PDF-" or "pdf" in ctype.lower()) else ".html"
-    open(os.path.join(SRC, key + ext), "wb").write(raw)
+    Path(SRC, key + ext).write_bytes(raw)
     if ext == ".pdf":
         pages = minipdf.extract_pages(raw)
-        text = "\n".join("\f[page %d]\n%s" % (n, t) for n, t in pages)
+        text = "\n".join(f"\f[page {n}]\n{t}" for n, t in pages)
         npages = len(pages)
     else:
         s = raw.decode("utf-8", "replace")
         s = re.sub(r"(?is)<(script|style).*?</\1>", " ", s)
         s = re.sub(r"(?s)<[^>]+>", "\n", s)
         import html as _h
+
         text = re.sub(r"\n{3,}", "\n\n", _h.unescape(s))
         npages = 0
-    open(os.path.join(TXT, key + ".txt"), "w", encoding="utf-8").write(text)
+    Path(TXT, key + ".txt").write_text(text, encoding="utf-8")
     meta = {
-        "url": url, "final_url": final, "key": key, "kind": ext[1:],
-        "bytes": len(raw), "pages": npages,
+        "url": url,
+        "final_url": final,
+        "key": key,
+        "kind": ext[1:],
+        "bytes": len(raw),
+        "pages": npages,
         "document_sha256": hashlib.sha256(raw).hexdigest(),
         "text_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
         "fetched_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "content_type": ctype,
         "tls_verified": tls_verified,
     }
-    json.dump(meta, open(mpath, "w"), indent=2)
+    Path(mpath).write_text(json.dumps(meta, indent=2), encoding="utf-8")
     return meta
 
 
@@ -78,6 +99,9 @@ if __name__ == "__main__":
             k, u = None, arg
         try:
             m = fetch(u, k)
-            print("OK  %-40s pages=%-4s bytes=%-9s %s" % (m["key"][:40], m["pages"], m["bytes"], m["document_sha256"][:12]))
+            print(
+                f"OK  {m['key'][:40]:<40} pages={m['pages']:<4} "
+                f"bytes={m['bytes']:<9} {m['document_sha256'][:12]}"
+            )
         except Exception as e:
-            print("ERR %s :: %r" % (u, e))
+            print(f"ERR {u} :: {e!r}")

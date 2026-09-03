@@ -9,7 +9,7 @@
  */
 
 import type { ReactNode } from 'react';
-import { chapterById } from '../../data/catalog';
+import { chapterById } from '../../curriculum/registry';
 import type { Topic } from '../../data/model';
 import { toneForSubject } from '../../ui/hues';
 import { STREAK_TIERS, TrophyPlinth, tierForStreak, tierForXp, XP_TIERS } from '../../ui/trophies';

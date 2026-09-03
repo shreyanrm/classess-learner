@@ -1,24 +1,43 @@
 """Unit headings per class from a CISCE subject syllabus (two-column pages)."""
-import re, sys, os
+
+import os
+import re
+import sys
+from pathlib import Path
+
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 CLASS = re.compile(r"^\s*CLASS\s+(XI{0,2}|IX|X)\s*$")
 NUM = re.compile(r"(?:^|\s{2,})(\d{1,2})\.\s+([A-Z][A-Za-z0-9 ,&/'’()\-]{2,55}?)(?=\s{3,}|$)")
-STOPWORDS = ("to ", "the candidate", "determine", "measure", "obtain", "place", "using",
-             "trace", "calculate", "lever", "for a", "plot", "study of the effect")
+STOPWORDS = (
+    "to ",
+    "the candidate",
+    "determine",
+    "measure",
+    "obtain",
+    "place",
+    "using",
+    "trace",
+    "calculate",
+    "lever",
+    "for a",
+    "plot",
+    "study of the effect",
+)
 
 
 def units(key, gutter=55):
-    lines = open(os.path.join(HERE, "lay", key + ".txt"), encoding="utf-8",
-                 errors="replace").read().split("\n")
+    lines = (
+        Path(HERE, "lay", key + ".txt").read_text(encoding="utf-8", errors="replace").split("\n")
+    )
     page, pages = 1, []
-    for l in lines:
+    for line in lines:
         pages.append(page)
-        page += l.count("\f")
+        page += line.count("\f")
     sections, cur = [], None
     stop = False
-    for i, l in enumerate(lines):
-        raw = l.replace("\f", "")
+    for i, line in enumerate(lines):
+        raw = line.replace("\f", "")
         m = CLASS.match(raw)
         if m:
             cur = {"class": m.group(1), "page": pages[i], "cands": []}
@@ -27,8 +46,11 @@ def units(key, gutter=55):
             continue
         if cur is None:
             continue
-        if re.search(r"^\s*(INTERNAL ASSESSMENT|LIST OF SUGGESTED|EVALUATION|PRACTICAL WORK"
-                     r"|SI\s+UNITS|GUIDELINES FOR|Note:)", raw):
+        if re.search(
+            r"^\s*(INTERNAL ASSESSMENT|LIST OF SUGGESTED|EVALUATION|PRACTICAL WORK"
+            r"|SI\s+UNITS|GUIDELINES FOR|Note:)",
+            raw,
+        ):
             stop = True
         if stop:
             continue
@@ -37,8 +59,14 @@ def units(key, gutter=55):
             if title.lower().startswith(STOPWORDS) or len(title) < 3:
                 continue
             col = 0 if mm.start(1) < gutter else 1
-            cur["cands"].append({"n": int(mm.group(1)), "title": title,
-                                 "page": pages[i], "order": (pages[i], col, i)})
+            cur["cands"].append(
+                {
+                    "n": int(mm.group(1)),
+                    "title": title,
+                    "page": pages[i],
+                    "order": (pages[i], col, i),
+                }
+            )
     out = []
     for s in sections:
         chosen, last = [], None
@@ -59,4 +87,4 @@ if __name__ == "__main__":
     for c in units(sys.argv[1]):
         print("## CLASS", c["class"])
         for u in c["units"]:
-            print("   %2d. %-52s p%s" % (u["number"], u["title"], u["page"]))
+            print(f"   {u['number']:>2}. {u['title']:<52} p{u['page']}")

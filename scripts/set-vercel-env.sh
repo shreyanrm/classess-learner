@@ -12,7 +12,7 @@
 #
 # The non-secret flag VALUES are not duplicated here either — they are read from the
 # committed apps/web-pwa/.env.production, which DEPLOY.md §0 names as their one source of
-# truth. Vercel project env overrides that file at build time, and these five must agree
+# truth. Vercel project env overrides that file at build time, and these must agree
 # with it or a production build silently disagrees with the runbook.
 set -euo pipefail
 
@@ -38,6 +38,9 @@ setv () {
   printf '%s' "$2" | vercel env add "$1" production >/dev/null
 }
 
+setv VITE_APP_URL        "$(from_env_file VITE_APP_URL)"
+setv VITE_APP_NAME       "$(from_env_file VITE_APP_NAME)"
+setv VITE_SUPABASE_PROXY "$(from_env_file VITE_SUPABASE_PROXY)"
 setv VITE_SUPABASE_URL "$(from_env_file VITE_SUPABASE_URL)"
 setv VITE_GATEWAY_URL  "$(from_env_file VITE_GATEWAY_URL)"
 setv VITE_DEV_AUTH     "$(from_env_file VITE_DEV_AUTH)"
@@ -57,7 +60,7 @@ PULLED="$(mktemp)"
 trap 'rm -f "$PULLED"' EXIT
 vercel env pull "$PULLED" --environment production --yes >/dev/null 2>&1
 # Print names and safe values only — the anon key is reported as present/absent, never echoed.
-grep -E "^VITE_(DEV_AUTH|PERSIST_MODE|LLM_MODE|GATEWAY_URL|SUPABASE_URL)=" "$PULLED" || true
+grep -E "^VITE_(DEV_AUTH|PERSIST_MODE|LLM_MODE|GATEWAY_URL|SUPABASE_URL|SUPABASE_PROXY|APP_URL|APP_NAME)=" "$PULLED" || true
 if grep -qE "^VITE_SUPABASE_ANON_KEY=.+" "$PULLED"; then
   echo "VITE_SUPABASE_ANON_KEY=<set>"
 else

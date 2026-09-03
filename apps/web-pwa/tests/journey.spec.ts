@@ -1,4 +1,5 @@
 import { expect, type Page, test } from '@playwright/test';
+import { ATOM_TARGET_NODE_ID } from '@wobo/sdk';
 import {
   ATOM_ANSWERS,
   actionBarButton,
@@ -10,6 +11,13 @@ import {
   seedOnboarded,
   watchConsole,
 } from './helpers';
+import {
+  brainFor,
+  installAtomBrain,
+  installBrain,
+  seedAtomWorld,
+  syllabusFor,
+} from './helpers/brain';
 
 /** Read the current practice/boss equation by matching the on-screen text to the seed set. */
 async function currentEquation(page: Page): Promise<string> {
@@ -40,6 +48,13 @@ test("onboarding walks Wobo's beats and opens the home", async ({ page }, info) 
   const errors = watchConsole(page);
   await page.goto('/');
 
+  // A visitor who has never started meets the landing page first — it is the unauthenticated front
+  // door, and every one of its doors leads to onboarding. Walk the real path rather than deep-link.
+  await page
+    .getByRole('button', { name: 'Start free', exact: true })
+    .first()
+    .click({ timeout: 15_000 });
+
   // the door: Wobo's body and the explicit button both begin, so the button is addressed exactly
   await page.getByRole('button', { name: 'begin', exact: true }).click({ timeout: 15_000 });
 
@@ -60,13 +75,20 @@ test("onboarding walks Wobo's beats and opens the home", async ({ page }, info) 
   await birthdate.fill('2012-04-08');
   await page.getByRole('button', { name: 'continue' }).click();
 
-  // board, then class — each its own beat, each with its own confirm
-  const cbse = page.getByRole('button', { name: 'CBSE', exact: true });
+  // board, then class — each its own beat, each with its own confirm. The board beat is the
+  // registry: the learner types and picks what the brain served (CURRICULUM.md §3), so this run
+  // supplies the brain it would talk to. There is no bundled board list to fall back on any more.
+  const seeded = syllabusFor('cbse', 'Class 9', 'Mathematics');
+  await installBrain(page, brainFor(seeded));
+  const boardSearch = page.getByRole('textbox', { name: /board/i });
+  await boardSearch.waitFor({ state: 'visible', timeout: 20_000 });
+  await boardSearch.pressSequentially('centr', { delay: 30 });
+  const cbse = page.getByRole('button', { name: /Central Board of Secondary Education/ }).first();
   await cbse.waitFor({ state: 'visible', timeout: 20_000 });
   await cbse.click();
   await page.getByRole('button', { name: 'Next', exact: true }).click();
 
-  const grade = page.getByRole('button', { name: 'Class 8', exact: true });
+  const grade = page.getByRole('button', { name: seeded.level, exact: true });
   await grade.waitFor({ state: 'visible', timeout: 20_000 });
   await grade.click();
   await page.getByRole('button', { name: "That's me", exact: true }).click();
@@ -132,7 +154,12 @@ test('the atom journey: course, detonation, boss, greeting, twin, invite, palett
 }, info) => {
   const errors = watchConsole(page);
   await seedOnboarded(page);
+  // The atom is reached the way §6 says a topic no board publishes for you is reached: through the
+  // learner's own syllabus. The world is pinned before boot, the brain that answers for it is
+  // installed after, because a navigation throws the page's modules away.
+  await seedAtomWorld(page);
   await page.goto('/');
+  await installAtomBrain(page, ATOM_TARGET_NODE_ID);
 
   await openAtomCourse(page);
 
