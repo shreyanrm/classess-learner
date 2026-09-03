@@ -84,7 +84,7 @@ def test_every_number_on_the_wire_names_a_check_that_ran(client: TestClient, aut
     assert all(o["check"] in verified for o in numbers)
 
 
-def test_a_turn_with_nothing_to_draw_still_streams_her_line(client: TestClient, auth) -> None:
+def test_a_turn_with_nothing_to_draw_still_streams_wobos_line(client: TestClient, auth) -> None:
     res = client.post(
         "/v1/capability/wobo.turn",
         json=ask("what did I get wrong here"),

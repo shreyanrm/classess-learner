@@ -30,7 +30,7 @@ def marks(n: int) -> list[dict]:
     ]
 
 
-def test_her_line_is_split_the_way_she_speaks_it() -> None:
+def test_wobos_line_is_split_the_way_wobo_speaks_it() -> None:
     assert stream.sentences("Look at this. The curve turns here.") == [
         "Look at this.",
         "The curve turns here.",

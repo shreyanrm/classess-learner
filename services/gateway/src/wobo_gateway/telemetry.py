@@ -23,6 +23,12 @@ class TelemetryEvent:
     latency_ms: float
     tokens: int
     cache_hit: bool
+    # The two onsets a board turn is judged on (BOARD.md §10): when the learner hears Wobo's first
+    # syllable and when they see the first stroke. Optional because a model call is not a turn —
+    # only the board's own measurement (board.stream.record_onsets) fills them in, and None means
+    # "not measured here", never "zero milliseconds".
+    first_syllable_ms: float | None = None
+    first_stroke_ms: float | None = None
 
 
 # One process serves every learner for as long as it lives, so an unbounded list here is a slow

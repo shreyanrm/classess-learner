@@ -13,6 +13,24 @@ does not run for a WebSocket, so the socket cannot check a bearer token itself: 
 short-lived, single-use token BOUND TO THE VERIFIED SUBJECT, and both sockets
 (``/v1/voice/relay`` and ``/v1/voice/tts/stream``) require and consume one. Each socket has
 its own concurrency cap, so a flood of read-aloud sockets can never starve the live mic.
+
+**Accent by country (the voice contract, WOBO-PLAN §3).** A learner hears the English spoken
+around them; American English is the fallback. The accent is resolved HERE, in the brain, from
+the learner's own record — the verified token's profile claims (``country`` / ``locale``, plain
+or under ``user_metadata``), and the request's ``Accept-Language`` as the device's own hint when
+the record carries neither. It is never taken from a request body. ``GET /v1/voice/session``
+returns it as ``accent`` (a BCP-47 tag, e.g. ``en-IN``) for two reasons: the browser's own
+speech fallback can pick a matching local voice, and it is the honest statement of what the
+learner is about to hear. The socket learns it from the TOKEN, not from a query parameter —
+the token is the only thing a socket can trust, so the grant carries the accent with the subject.
+
+Both sockets carry the accent as a line in the system instruction rather than as
+``generationConfig.speechConfig.languageCode``. That is deliberate: the native-audio model
+detects the spoken language itself, and an unknown or unsupported setup field is rejected by
+the upstream, which closes the socket instantly and takes the microphone with it — exactly how
+voice died once before on a retired model id. An instruction cannot fail that way. Wobo's voice
+is one voice everywhere; only the accent moves, and it is chosen for clarity and warmth and
+never to signal a gender (WOBO-PLAN §19).
 """
 
 from __future__ import annotations
@@ -24,7 +42,8 @@ import os
 import secrets
 import threading
 import time
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
+from dataclasses import dataclass
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
@@ -71,9 +90,121 @@ _MAX_TOKENS = 4096
 # of them was the lever that emptied the whole store (see _mint_token).
 _MAX_TOKENS_PER_SUBJECT = 8
 
+# --- accent by country (WOBO-PLAN §3) ---------------------------------------------------------
+#
+# The fallback, named rather than implied: a learner we know nothing about hears American English.
+AMERICAN_ENGLISH = "en-US"
+
+# The accents Wobo can actually speak. Small on purpose: an accent we cannot produce is a promise
+# we break, so a country that is not here falls back to American English rather than being handed
+# a tag nobody voices. Keyed by ISO-3166 alpha-2, which is what a profile stores.
+ACCENT_BY_COUNTRY: dict[str, str] = {
+    "US": "en-US",
+    "IN": "en-IN",
+    "LK": "en-IN",
+    "BD": "en-IN",
+    "NP": "en-IN",
+    "PK": "en-IN",
+    "GB": "en-GB",
+    "IE": "en-GB",
+    "AU": "en-AU",
+    "NZ": "en-AU",
+}
+
+#: Every accent the table above can produce — the closed set the sockets and the client agree on.
+ACCENTS = frozenset(ACCENT_BY_COUNTRY.values())
+
+#: How each one is asked for in words, because the accent travels as an instruction and not as a
+#: setup field (see the module docstring). Wobo stays one voice; only the accent moves.
+_ACCENT_IN_WORDS = {
+    "en-US": "American English",
+    "en-IN": "Indian English",
+    "en-GB": "British English",
+    "en-AU": "Australian English",
+}
+
+# The claim names a profile may carry the learner's country and locale under, plain or nested in
+# the token's ``user_metadata``. Read, never asserted: a request body may not choose an accent.
+_COUNTRY_CLAIMS = ("country", "country_code", "region")
+_LOCALE_CLAIMS = ("locale", "language", "lang")
+
+
+def accent_for(country: str | None = None, locale: str | None = None) -> str:
+    """The accent this learner hears. Country first, then locale, then American English.
+
+    A locale is honoured only when it names an accent we can actually speak (``en-GB``,
+    ``en_IN``, ``en-IN,en;q=0.9`` all resolve); its region half is read as a country, so a
+    learner whose device says ``en-ZA`` is not handed a tag with no voice behind it.
+    """
+    code = (country or "").strip().upper()
+    if code in ACCENT_BY_COUNTRY:
+        return ACCENT_BY_COUNTRY[code]
+    tag = (locale or "").strip().replace("_", "-").split(",")[0].split(";")[0].strip()
+    if tag:
+        lowered = tag.lower()
+        for accent in ACCENTS:
+            if lowered == accent.lower():
+                return accent
+        region = tag.partition("-")[2].strip().upper()
+        if region in ACCENT_BY_COUNTRY:
+            return ACCENT_BY_COUNTRY[region]
+    return AMERICAN_ENGLISH
+
+
+def _claim(claims: Mapping[str, Any], names: tuple[str, ...]) -> str | None:
+    """One profile field off the verified token, plain or under ``user_metadata``."""
+    pools: list[Mapping[str, Any]] = [claims]
+    for nest in ("user_metadata", "app_metadata", "profile"):
+        nested = claims.get(nest)
+        if isinstance(nested, Mapping):
+            pools.append(nested)
+    for pool in pools:
+        for name in names:
+            value = pool.get(name)
+            if isinstance(value, str) and value.strip():
+                return value
+    return None
+
+
+def learner_accent(
+    claims: Mapping[str, Any] | None = None, accept_language: str | None = None
+) -> str:
+    """The accent for a verified learner: their own record first, their device second.
+
+    ``claims`` is the verified token — the learner's profile as the brain proved it. The
+    ``Accept-Language`` header is a hint from the device and is consulted only when the record
+    says nothing, because an accent is a courtesy and not a privilege: the worst a wrong hint
+    can do is give somebody the wrong English, and the fallback is American English regardless.
+    """
+    country = _claim(claims, _COUNTRY_CLAIMS) if claims else None
+    locale = _claim(claims, _LOCALE_CLAIMS) if claims else None
+    resolved = accent_for(country, locale)
+    if resolved == AMERICAN_ENGLISH and not country and not locale:
+        return accent_for(None, accept_language)
+    return resolved
+
+
+def accent_instruction(accent: str) -> str:
+    """The one line that puts the accent in Wobo's mouth, for either socket's setup."""
+    spoken = _ACCENT_IN_WORDS.get(accent, _ACCENT_IN_WORDS[AMERICAN_ENGLISH])
+    return (
+        f"Speak in {spoken}, in the accent a learner there would hear from a teacher — "
+        "the same voice and the same warmth wherever you are, only the accent moves."
+    )
+
+
+@dataclass(frozen=True)
+class Grant:
+    """What one minted token buys: whose session it is, and in which accent."""
+
+    subject: str
+    accent: str = AMERICAN_ENGLISH
+    expiry: float = 0.0
+
+
 _lock = threading.Lock()
-# token -> (expiry monotonic, subject); single-use. Insertion-ordered, so "oldest" is free.
-_tokens: dict[str, tuple[float, str]] = {}
+# token -> grant; single-use. Insertion-ordered, so "oldest" is free.
+_tokens: dict[str, Grant] = {}
 _active_relays = 0
 _active_tts = 0
 # subject -> live socket count, so one learner's share is bounded independently of everyone's.
@@ -81,8 +212,12 @@ _relays_by_subject: dict[str, int] = {}
 _tts_by_subject: dict[str, int] = {}
 
 
-def _mint_token(subject: str) -> str:
-    """One short-lived, single-use token bound to ``subject``.
+def _mint_token(subject: str, accent: str = AMERICAN_ENGLISH) -> str:
+    """One short-lived, single-use token bound to ``subject``, carrying their accent.
+
+    The accent rides the token because a WebSocket has no door of its own: the session route is
+    where the learner's profile was read, so the grant is the only place the socket can learn the
+    accent from without trusting a query parameter.
 
     Eviction is per learner and then oldest-first. It used to be ``_tokens.clear()`` on a full
     store: minting 4096 tokens threw away every OTHER learner's outstanding token, and their mic
@@ -90,34 +225,39 @@ def _mint_token(subject: str) -> str:
     """
     now = time.monotonic()
     with _lock:
-        for stale in [t for t, (exp, _) in _tokens.items() if exp < now]:
+        for stale in [t for t, grant in _tokens.items() if grant.expiry < now]:
             del _tokens[stale]
-        mine = [t for t, (_, sub) in _tokens.items() if sub == subject]
+        mine = [t for t, grant in _tokens.items() if grant.subject == subject]
         for stale in mine[: max(0, len(mine) - _MAX_TOKENS_PER_SUBJECT + 1)]:
             del _tokens[stale]  # this learner's own oldest, never anyone else's
         while len(_tokens) >= _MAX_TOKENS:
             # Global ceiling. The biggest holder pays: evict their oldest, so a learner sitting
             # on one token keeps it. Never a wipe — a full store used to cost everybody theirs.
             counts: dict[str, int] = {}
-            for _, sub in _tokens.values():
-                counts[sub] = counts.get(sub, 0) + 1
+            for grant in _tokens.values():
+                counts[grant.subject] = counts.get(grant.subject, 0) + 1
             biggest = max(counts, key=lambda sub: counts[sub])
-            del _tokens[next(t for t, (_, sub) in _tokens.items() if sub == biggest)]
+            del _tokens[next(t for t, g in _tokens.items() if g.subject == biggest)]
         token = secrets.token_urlsafe(24)
-        _tokens[token] = (now + _TOKEN_TTL_S, subject)
+        _tokens[token] = Grant(subject=subject, accent=accent, expiry=now + _TOKEN_TTL_S)
     return token
+
+
+def _consume_grant(token: str | None) -> Grant | None:
+    """Spend a token and return the grant it carries, or None if it is no good."""
+    if not token:
+        return None
+    with _lock:
+        grant = _tokens.pop(token, None)
+    if grant is None:
+        return None
+    return grant if grant.expiry >= time.monotonic() else None
 
 
 def _consume_token(token: str | None) -> str | None:
     """Spend a token and return the subject it was minted for, or None if it is no good."""
-    if not token:
-        return None
-    with _lock:
-        found = _tokens.pop(token, None)
-    if found is None:
-        return None
-    expiry, subject = found
-    return subject if expiry >= time.monotonic() else None
+    grant = _consume_grant(token)
+    return grant.subject if grant is not None else None
 
 
 @contextlib.contextmanager
@@ -157,16 +297,31 @@ def _socket_slot(subject: str, *, kind: str) -> Iterator[bool]:
                 _active_tts -= 1
 
 
-def voice_session(subject: str) -> dict[str, str]:
-    """The voice handshake: which mode this learner may use right now, and their one token.
+def voice_session(subject: str, accent: str = AMERICAN_ENGLISH) -> dict[str, str]:
+    """The voice handshake: which mode this learner may use right now, their one token, and the
+    accent they are about to hear.
 
     No model id. It named the provider's model to every caller — the white-label rule says model
     ids never leave the brain (WOBO-PLAN 1), and the client has never read the field: the setup
-    message holds the model server-side, where it belongs.
+    message holds the model server-side, where it belongs. ``accent`` is a BCP-47 tag and not a
+    voice name, so nothing about the provider's voice catalogue leaves either.
     """
     if os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY"):
-        return {"mode": "relay", "token": _mint_token(subject)}
+        return {"mode": "relay", "token": _mint_token(subject, accent), "accent": accent}
+    # No session, no accent to promise: the client's own fallback picks whatever the device has.
     return {"mode": "unavailable"}
+
+
+def forget(subject: str) -> int:
+    """Drop every outstanding token minted for one learner, and say how many.
+
+    The erase route calls this: a token is a session waiting to be opened as them, and forgetting
+    a learner must not leave one behind. Only theirs — nobody's eviction is everybody's."""
+    with _lock:
+        mine = [t for t, grant in _tokens.items() if grant.subject == subject]
+        for token in mine:
+            del _tokens[token]
+    return len(mine)
 
 
 def reset_tokens() -> None:
@@ -212,12 +367,14 @@ def relay_frame_allowed(raw: str) -> bool:
     return frame.keys() <= _RELAY_FRAME_KEYS
 
 
-def _setup_message() -> dict[str, Any]:
+def _setup_message(accent: str = AMERICAN_ENGLISH) -> dict[str, Any]:
     return {
         "setup": {
             "model": f"models/{VOICE_MODEL}",
             "generationConfig": {"responseModalities": ["AUDIO"]},
-            "systemInstruction": {"parts": [{"text": WOBO_PERSONA}]},
+            "systemInstruction": {
+                "parts": [{"text": f"{WOBO_PERSONA}\n\n{accent_instruction(accent)}"}]
+            },
             # Transcribe both sides so a spoken turn can land in the one chat archive
             # (same thread law) — the browser reads these off serverContent, never the audio.
             "inputAudioTranscription": {},
@@ -226,13 +383,19 @@ def _setup_message() -> dict[str, Any]:
     }
 
 
-def _tts_setup_message() -> dict[str, Any]:
-    """Setup for the read-aloud streaming voice — verbatim persona, audio out only."""
+def _tts_setup_message(accent: str = AMERICAN_ENGLISH) -> dict[str, Any]:
+    """Setup for the read-aloud streaming voice — verbatim persona, audio out only.
+
+    Same accent as the live mic: a learner who hears Indian English when they speak to Wobo must
+    not hear American English when Wobo reads a typed line back. One voice, one accent, both
+    sockets."""
     return {
         "setup": {
             "model": f"models/{VOICE_MODEL}",
             "generationConfig": {"responseModalities": ["AUDIO"]},
-            "systemInstruction": {"parts": [{"text": _READ_VERBATIM}]},
+            "systemInstruction": {
+                "parts": [{"text": f"{_READ_VERBATIM}\n\n{accent_instruction(accent)}"}]
+            },
         }
     }
 
@@ -263,11 +426,16 @@ def _charge_voice(request: Request, capability: str) -> None:
 def register_voice(app: FastAPI) -> None:
     @app.get("/v1/voice/session")
     def session(request: Request) -> dict[str, str]:
-        # Authenticated by the gateway middleware; the token it mints carries that identity
-        # onto the sockets, which have no middleware of their own. Metered here, because the
-        # token IS the spend: whatever it opens, it opens on our key.
+        # Authenticated by the gateway middleware; the token it mints carries that identity —
+        # and the accent read from that same verified record — onto the sockets, which have no
+        # middleware of their own. Metered here, because the token IS the spend: whatever it
+        # opens, it opens on our key.
         _charge_voice(request, "voice.session")
-        return voice_session(request.state.principal.subject)
+        principal = request.state.principal
+        accent = learner_accent(
+            principal.claims, request.headers.get("accept-language")
+        )
+        return voice_session(principal.subject, accent)
 
     @app.post("/v1/voice/tts")
     def tts(body: TtsBody, request: Request) -> dict[str, str]:
@@ -287,10 +455,11 @@ def register_voice(app: FastAPI) -> None:
         key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY")
         # Gate BEFORE accept: a session-minted, unexpired, single-use token bound to a verified
         # subject is required, and the caps bound worst-case spend on the key.
-        subject = _consume_token(client.query_params.get("token"))
-        if not key or subject is None:
+        grant = _consume_grant(client.query_params.get("token"))
+        if not key or grant is None:
             await client.close(code=1008, reason="voice unavailable")
             return
+        subject = grant.subject
 
         import aiohttp  # lazy: already installed via litellm; mock-mode tests never need it
 
@@ -305,7 +474,7 @@ def register_voice(app: FastAPI) -> None:
                 aiohttp.ClientSession() as http,
                 http.ws_connect(f"{_GEMINI_LIVE_URL}?key={key}") as gemini,
             ):
-                await gemini.send_str(json.dumps(_setup_message()))
+                await gemini.send_str(json.dumps(_setup_message(grant.accent)))
 
                 async def pump_up() -> None:
                     while True:  # ends via WebSocketDisconnect when the client hangs up
@@ -348,10 +517,11 @@ def register_voice(app: FastAPI) -> None:
         key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY")
         # Same gate as the relay: a session-minted, unexpired, single-use token bound to a
         # verified subject. Without it this socket was an open, unmetered mouth on a paid API.
-        subject = _consume_token(client.query_params.get("token"))
-        if not key or subject is None:
+        grant = _consume_grant(client.query_params.get("token"))
+        if not key or grant is None:
             await client.close(code=1008, reason="voice unavailable")
             return
+        subject = grant.subject
 
         import aiohttp  # lazy: already installed via litellm; mock-mode tests never touch it
 
@@ -365,19 +535,26 @@ def register_voice(app: FastAPI) -> None:
             except (WebSocketDisconnect, RuntimeError):
                 return
             if text.strip():
-                await _stream_one_line(client, aiohttp, key, text)
+                await _stream_one_line(client, aiohttp, key, text, accent=grant.accent)
         with contextlib.suppress(RuntimeError):
             await client.close()
 
 
-async def _stream_one_line(client: WebSocket, aiohttp: Any, key: str, text: str) -> None:
+async def _stream_one_line(
+    client: WebSocket,
+    aiohttp: Any,
+    key: str,
+    text: str,
+    *,
+    accent: str = AMERICAN_ENGLISH,
+) -> None:
     """Open Gemini Live for one read-aloud turn and pipe its frames to the browser."""
     try:
         async with (
             aiohttp.ClientSession() as http,
             http.ws_connect(f"{_GEMINI_LIVE_URL}?key={key}") as gemini,
         ):
-            await gemini.send_str(json.dumps(_tts_setup_message()))
+            await gemini.send_str(json.dumps(_tts_setup_message(accent)))
             await gemini.send_str(
                 json.dumps(
                     {

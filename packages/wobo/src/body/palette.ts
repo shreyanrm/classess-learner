@@ -1,38 +1,23 @@
 /**
- * The ink visor wobot — Wobo's locked palette (owner call, 2026-09-02).
+ * The ink visor wobot — Wobo's locked palette (owner call, 2026-09-02; palette v4, DESIGN.md §2/§4).
  *
- * Light: a near-black body carrying a white visor. Dark: the tones invert — a paper body carrying a
- * near-black visor. Wobo's eyes are ultramarine in both, and they are the ONLY pigment on the screen
- * (DESIGN.md §2, law 4). A half-pixel hairline in the opposite tone rims Wobo so Wobo stays legible
- * over any content: over dark content in light theme, over light content in dark theme.
- *
- * These are Wobo's identity, not choreography. Anything that renders Wobo reads them from here.
+ * The tones are NOT defined here. They are Wobo's identity, so they live in `src/identity.ts` with
+ * the rest of the lock, and the rig reads them: light is a deep-navy ink body carrying a cream
+ * visor, night swaps to a cream body carrying a night visor, and Wobo's eyes and pen tip are Wobo
+ * blue in both — the only pigment on Wobo (DESIGN.md §2, law 4). A half-pixel hairline in the
+ * opposite tone rims Wobo so Wobo stays legible over any content.
  */
 
-export interface RigTones {
-  /** Wobo's body — the near-black shell in light, the paper shell in dark. */
-  body: string;
-  /** The visor Wobo carries their eyes in — the opposite tone to the body. */
-  visor: string;
-  /** Wobo's eyes and Wobo's pen tip. The one hit of pigment. */
-  eye: string;
-  /** The half-pixel rim, in the opposite tone, that keeps Wobo legible over any content. */
-  hairline: string;
-}
+import { WOBO_TONES, type WoboTones } from '../identity';
 
-export const RIG_LIGHT: Readonly<RigTones> = Object.freeze({
-  body: '#1A1A1F',
-  visor: '#FFFFFF',
-  eye: '#1F35E0',
-  hairline: 'rgba(255,255,255,0.55)',
-});
+/** The four tones one theme renders Wobo in. Defined with the identity lock; re-exported here. */
+export type RigTones = WoboTones;
 
-export const RIG_DARK: Readonly<RigTones> = Object.freeze({
-  body: '#EDEDF1',
-  visor: '#0D0D10',
-  eye: '#7B8CFF',
-  hairline: 'rgba(13,13,16,0.40)',
-});
+/** Wobo on paper — read from the identity lock, never restated. */
+export const RIG_LIGHT: Readonly<RigTones> = WOBO_TONES.light;
+
+/** Wobo on night — read from the identity lock, never restated. */
+export const RIG_DARK: Readonly<RigTones> = WOBO_TONES.dark;
 
 /** Wobo's body is 92% ink, never a solid hole punched through the page. */
 export const RIG_BODY_OPACITY = 0.92;

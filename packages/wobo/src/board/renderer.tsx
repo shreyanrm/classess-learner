@@ -74,6 +74,7 @@ import {
   type InkRole,
 } from './schema';
 import { type BoardObjectState, type BoardStore, FADE_MS, RENDER_BUDGET } from './store';
+import { boardStatesAt } from './timeline';
 
 // --- Targets and focus ------------------------------------------------------------------------------
 
@@ -611,6 +612,13 @@ export interface BoardSurfaceProps {
   focusRegions?: () => readonly { id: string; rect: RectLike | (() => RectLike | null) }[];
   /** Fixed to the viewport (ink on the screen) rather than filling its parent (a board). */
   fixed?: boolean;
+  /**
+   * Show the board as it was at this board-clock instant instead of live — the scrubber's handle
+   * (docs/BOARD.md §9). Every object's own timing is read against `at`, so ink that had not been
+   * drawn yet is absent, ink mid-stroke is mid-stroke, and ink that had faded is gone. Undefined or
+   * null is the live board.
+   */
+  at?: number | null;
   /** Follow the ink when it outgrows the view. */
   autoCamera?: boolean;
   camera?: Camera;
@@ -700,10 +708,16 @@ export function BoardSurface(props: BoardSurfaceProps) {
   const [announcement, setAnnouncement] = useState('');
   const announced = useRef(new Set<string>());
 
-  const objects = useSyncExternalStore(
+  const liveObjects = useSyncExternalStore(
     store.subscribe,
     () => store.snapshot(),
     () => store.snapshot(),
+  );
+  // Scrubbing: the board is whatever the history says was on it at that instant, wiped ink and all.
+  const scrubAt = props.at ?? null;
+  const objects = useMemo(
+    () => (scrubAt === null ? liveObjects : boardStatesAt(store, scrubAt)),
+    [liveObjects, scrubAt, store],
   );
 
   /**
@@ -908,14 +922,18 @@ export function BoardSurface(props: BoardSurfaceProps) {
   // --- The clock ----------------------------------------------------------------------------------------
   // One rAF loop, alive only while something is drawing or fading, or while any mark hangs off the
   // page (whose rect can move under us). It never re-renders settled ink: that layer is memoised.
-  const now = store.time();
-  const animating = built.some((b) => {
-    if (b.state.fadingAt !== undefined && now < b.state.fadingAt + FADE_MS) return true;
-    if (b.state.ttl !== undefined && now < b.state.startAt + b.durMs + b.state.ttl + FADE_MS) {
-      return true;
-    }
-    return now < b.state.startAt + b.durMs;
-  });
+  // The scrubber's handle IS the clock while it is held: progress, fades and ttl all read from it,
+  // so the surface shows the board of that moment rather than the live one with old ink in it.
+  const now = scrubAt ?? store.time();
+  const animating =
+    scrubAt === null &&
+    built.some((b) => {
+      if (b.state.fadingAt !== undefined && now < b.state.fadingAt + FADE_MS) return true;
+      if (b.state.ttl !== undefined && now < b.state.startAt + b.durMs + b.state.ttl + FADE_MS) {
+        return true;
+      }
+      return now < b.state.startAt + b.durMs;
+    });
 
   useEffect(() => {
     if (!animating && !hasScreenAnchor && !cameraSettling) return;

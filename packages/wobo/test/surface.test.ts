@@ -26,6 +26,7 @@ describe('the package exposes exactly one presence surface', () => {
   it('still exports the live surface', () => {
     expect(typeof wobo.WoboOverlay).toBe('function');
     expect(typeof wobo.WoboBody).toBe('function');
-    expect(wobo.WOBO_IDENTITY.color).toBe('#FF5A1F');
+    expect(wobo.WOBO_IDENTITY.color).toBe('#2B45FF'); // Wobo blue — palette v4, DESIGN.md §2/§4
+    expect(wobo.WOBO_IDENTITY.form).toBe('ink_visor_wobot');
   });
 });

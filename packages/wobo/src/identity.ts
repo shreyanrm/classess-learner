@@ -1,80 +1,84 @@
-import { woboMolten } from '@wobo/config';
-
 /**
- * Wobo's identity is LOCKED (docs/02-DESIGN/02-wobo.md). This module encodes it so the lock is a
- * fact in code, not a note in a doc. Choreography is free (the Wobo-cute license) — identity is not.
+ * Wobo's identity is LOCKED (DESIGN.md §4). This module encodes it so the lock is a fact in code,
+ * not a note in a doc. Choreography is free (the Wobo-cute license) — identity is not.
  *
- * You MAY NOT change: Wobo's colour (molten only), Wobo's form (a single round squircle jelly), Wobo's matte
- * surface, Wobo's two eyes, or the existence of the flame-glow beneath Wobo (it replaces any drop shadow
- * and always exists). Everything below is frozen and asserted by tests.
+ * Wobo is the ink-visor wobot: a round body in ink carrying a cream visor, two Wobo-blue eyes and a
+ * pen tip in the same blue, rimmed by a half-pixel hairline in the opposite tone so the silhouette
+ * stays crisp over any ground. On night the tones swap — a cream body carrying a night visor.
+ *
+ * You MAY NOT change: Wobo's form (one round ink body with a visor), the visor, the two eyes, the
+ * pen tip, the hairline rim, or the tones below. There is no orb, no jelly, no flame, and no warm
+ * body colour — that vocabulary is retired (DESIGN.md §2 palette v4). Wobo has no gender
+ * (WOBO-PLAN.md §19): nothing in the rig, the palette or the voice signals a boy or a girl.
+ *
+ * Everything below is frozen and asserted by tests.
  */
+
+/** The four tones the rig renders Wobo in, for one theme. */
+export interface WoboTones {
+  /** Wobo's body — deep navy ink on cream paper, cream on night. */
+  body: string;
+  /** The visor Wobo carries their eyes in — always the opposite tone to the body. */
+  visor: string;
+  /** Wobo's eyes and Wobo's pen tip. The one hit of pigment on Wobo. */
+  eye: string;
+  /** The half-pixel rim, in the opposite tone, that keeps Wobo legible over any content. */
+  hairline: string;
+}
+
+/**
+ * Palette v4 (DESIGN.md §2/§4). Ink `#14142B` on cream, cream `#F3F0E8` on night; the visor takes
+ * the ground it is not (cream `#FAF7F0` in light, night `#0F1226` in dark); the eyes are Wobo blue
+ * `#2B45FF`, lifting to `#7C8CFF` on night for contrast.
+ */
+export const WOBO_TONES = Object.freeze({
+  light: Object.freeze({
+    body: '#14142B',
+    visor: '#FAF7F0',
+    eye: '#2B45FF',
+    hairline: 'rgba(250,247,240,0.55)',
+  }) as Readonly<WoboTones>,
+  dark: Object.freeze({
+    body: '#F3F0E8',
+    visor: '#0F1226',
+    eye: '#7C8CFF',
+    hairline: 'rgba(15,18,38,0.40)',
+  }) as Readonly<WoboTones>,
+});
+
+/** Wobo blue — Wobo's pen and eyes, and the brand's one pigment (DESIGN.md §2). */
+export const WOBO_BLUE = WOBO_TONES.light.eye;
+/** Wobo blue lifted for night, so the eyes hold contrast on the dark ground. */
+export const WOBO_BLUE_NIGHT = WOBO_TONES.dark.eye;
+
 export const WOBO_IDENTITY = Object.freeze({
-  form: 'round_squircle_jelly',
+  form: 'ink_visor_wobot',
   surface: 'matte',
-  colorFamily: 'molten',
-  color: woboMolten, // #FF5A1F — molten only, reserved for Wobo alone (DESIGN.md §2)
+  /** The visor is part of the character, never a state a page can turn off. */
+  visor: 'always',
   eyes: 2,
-  flame: 'always', // the flame-glow beneath Wobo always exists and flickers
+  /** Wobo draws; the pen tip is inked in Wobo blue, the same pigment as the eyes. */
+  pen: 'always',
+  /** The half-pixel opposite-tone rim — the one hairline that survives (DESIGN.md §4). */
+  hairline: 'always',
+  colorFamily: 'ink_visor',
+  /** Wobo's one pigment, on paper. */
+  color: WOBO_BLUE,
+  tones: WOBO_TONES,
 } as const);
 
 /**
- * The molten palette Wobo is rendered in — Wobo's warmth runs from molten orange into a rose-pink
- * bloom (the owner-approved body gradient), with one small golden spark that is Wobo's alone.
- */
-export const MOLTEN = Object.freeze({
-  core: '#FF9E62',
-  base: woboMolten,
-  deep: '#D63E07',
-  bloom: '#F0619B',
-  bloomDeep: '#D8437F',
-  spark: '#FFC93C',
-  face: '#2A1510',
-  glowInner: 'rgba(255, 133, 71, 0.92)',
-  glowMid: 'rgba(255, 90, 31, 0.55)',
-  glowOuter: 'rgba(255, 90, 31, 0)',
-} as const);
-
-/**
- * Wobo's mood — the page chooses it, and it drives Wobo's reactions and Wobo's flame. This is the license
+ * Wobo's mood — the page chooses it, and it drives Wobo's body language. This is the license
  * surface: pages pick the mood that fits the moment; Wobo's identity never changes with it.
  */
 export type WoboMood =
   | 'idle' // present, gently breathing
-  | 'thinking' // leaning toward the learner's working
-  | 'listening' // buttery gooey metaballs (voice)
+  | 'thinking' // leaning toward the learner's working, pen tapping
+  | 'listening' // leaning in, attentive
   | 'correct' // a small squish of approval
   | 'celebrate' // a celebratory bob on a mastered node
-  | 'waiting' // quietly dimmed to an ember
-  | 'hint' // flame flickers brighter as a hint escalates
+  | 'waiting' // quietly dimmed, holding still
+  | 'hint' // a nudge toward what matters as a hint escalates
   | 'explaining' // gesturing toward what Wobo annotates (DESIGN.md §4)
   | 'resting' // a slow calm breath — sanctioned rest, never guilt (DESIGN.md §4)
   | 'oops'; // a sympathetic wince on a wrong answer — with them, never at them
-
-/**
- * The flame is expressive (per the license): it may lean, trail, flare, calm to an ember, or flicker
- * brighter. It may never stop existing. A mood implies a default flame; a page can override it.
- */
-export type FlameState = 'steady' | 'lean' | 'trail' | 'flare' | 'ember' | 'brighten';
-
-export function flameForMood(mood: WoboMood): FlameState {
-  switch (mood) {
-    case 'thinking':
-      return 'lean';
-    case 'listening':
-      return 'trail';
-    case 'correct':
-    case 'celebrate':
-      return 'flare';
-    case 'waiting':
-    case 'resting':
-      return 'ember';
-    case 'hint':
-      return 'brighten';
-    case 'explaining':
-      return 'lean';
-    case 'oops':
-      return 'ember';
-    default:
-      return 'steady';
-  }
-}

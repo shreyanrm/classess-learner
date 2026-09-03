@@ -8,7 +8,7 @@
  * ponytail: localStorage until the mind syncs through KGtoPG; shapes mirror what that sync needs.
  */
 
-import type { Sdk } from '@wobo/sdk';
+import { gatewayFetch, type Sdk } from '@wobo/sdk';
 import { type LifetimeContext, useWoboBus } from '@wobo/wobo';
 import { useCallback, useEffect, useRef } from 'react';
 import { boardName, getFlag, loadProfile, VOICE_KEY } from '../screens/you/profile';
@@ -184,13 +184,78 @@ export function removeInterest(interest: string): void {
   }
 }
 
-/** The learner clears what Wobo knows — steerable memory, honestly erased. */
+/**
+ * The learner clears what Wobo knows — steerable memory, honestly erased.
+ *
+ * The device is only half of it. WOBO-TASKS §5.7 says erasure propagates to the brain, so the wipe
+ * also QUEUES the server-side erase (`eraseFromBrain`) rather than assuming it: the network can be
+ * down, the route can answer 500, and a learner who asked to be forgotten must not be told they
+ * were when only this phone forgot. The queue is durable and drained on every mind pulse, so the
+ * erase survives a reload and a flight-mode wipe finishes the moment the signal comes back.
+ */
 export function clearMind(): void {
   try {
     scoped.removeItem(MIND_KEY);
   } catch {
     // fine
   }
+  queueBrainErase();
+}
+
+// --- Erasure that reaches the brain (WOBO-TASKS §5.7) ---------------------------------------------
+
+/** Set while the brain still holds what this device has already dropped. */
+const BRAIN_ERASE_KEY = 'wobo-brain-erase-v1';
+
+/** The gateway's own erase door. No key, no model, no limit — identity rides `gatewayFetch`. */
+const ERASE_PATH = '/v1/memory/erase';
+
+/** Remember that the brain still has to be told. Idempotent — one pending erase, not a log. */
+export function queueBrainErase(): void {
+  scoped.setItem(BRAIN_ERASE_KEY, '1');
+}
+
+/** True while the brain has not yet confirmed the erase the learner asked for. */
+export function brainErasePending(): boolean {
+  return scoped.getItem(BRAIN_ERASE_KEY) === '1';
+}
+
+/** The brain confirmed: nothing is owed any more. */
+function clearBrainErase(): void {
+  scoped.removeItem(BRAIN_ERASE_KEY);
+}
+
+/**
+ * Tell the brain to forget this learner. Resolves to what actually happened, never to a hope:
+ *
+ *   'erased'   — the gateway confirmed, and the queue is clear;
+ *   'local'    — there is no brain to tell (a keyless build), so the device wipe IS the whole wipe;
+ *   'pending'  — the brain was asked and did not confirm; the queue keeps it and the next pulse retries.
+ *
+ * Exported so the seam is asserted rather than assumed.
+ */
+export async function eraseFromBrain(
+  gatewayUrl: string | undefined = import.meta.env.VITE_GATEWAY_URL,
+): Promise<'erased' | 'local' | 'pending'> {
+  if (!gatewayUrl) {
+    // Nothing upstream holds anything: the device was the only copy, so the erase is complete.
+    clearBrainErase();
+    return 'local';
+  }
+  try {
+    const res = await gatewayFetch(`${gatewayUrl}${ERASE_PATH}`, { method: 'POST' });
+    if (!res.ok) return 'pending';
+  } catch {
+    return 'pending'; // offline, or the route is not there yet — owed, and honestly so
+  }
+  clearBrainErase();
+  return 'erased';
+}
+
+/** Drain the queue if anything is owed. Safe to call on every pulse; a no-op when nothing is. */
+export async function drainBrainErase(): Promise<void> {
+  if (!brainErasePending()) return;
+  await eraseFromBrain();
 }
 
 // --- folding signals in --------------------------------------------------------------------------
@@ -350,6 +415,16 @@ export function removableItems(mind: MindState): KnownItem[] {
   ];
 }
 
+/**
+ * The world Wobo explains in when the learner asks for their own language (the `say_it_in_my_world`
+ * mode, WOBO-PLAN §5.3's "preferred analogy"). It is the first thing they told us they are into —
+ * one world, not a list, because an analogy that reaches for three at once reaches for none.
+ * Undefined when they have told us nothing: Wobo then explains plainly rather than inventing a world.
+ */
+export function preferredAnalogy(mind: MindState = loadMind()): string | undefined {
+  return mind.interests[0];
+}
+
 /** Everything Wobo is holding, as plain lines — the in-thread "show me what you remember" dossier. */
 export function mindLines(mind: MindState): string[] {
   const lines: string[] = [];
@@ -484,6 +559,10 @@ export function MindObserver() {
         if (foldEvents(mind, fresh, seen.current)) saveMind(mind);
       }
       bus.publishLifetime(lifetimeSnapshot());
+      // An erase the learner already asked for that the brain has not confirmed. Retried here so a
+      // wipe made offline (or against a gateway that was down) finishes on its own, without the
+      // learner having to ask to be forgotten twice.
+      void drainBrainErase();
     };
     const t = window.setInterval(fold, 4000);
     return () => {

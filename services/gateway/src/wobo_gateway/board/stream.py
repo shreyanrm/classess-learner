@@ -27,17 +27,24 @@ learner's day, because the plan is still in the turn store.
 from __future__ import annotations
 
 import json
+import logging
 import re
 import secrets
 import threading
 import time
 from collections.abc import Iterator
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from typing import Any
 
 from wobo_gateway.board.planner import Plan
+from wobo_gateway.telemetry import MetricsSink, TelemetryEvent, emit
 
-EVENT_TYPES = ("say", "ink", "action", "ask", "card", "done")
+logger = logging.getLogger("wobo.gateway.board")
+
+#: ``interrupted`` is the seventh: not part of the plan, but the acknowledgement BOARD.md §4 owes
+#: the learner when they stop Wobo mid-sentence. It always ends the stream.
+EVENT_TYPES = ("say", "ink", "action", "ask", "card", "done", "interrupted")
 
 #: Wobo's speaking pace, in words per minute, and the breath between sentences. Used only to place
 #: ink against speech — the voice itself is synthesised elsewhere and is the real clock.
@@ -83,6 +90,12 @@ class Turn:
     meter_key: str
     events: list[Event] = field(default_factory=list)
     created: float = field(default_factory=time.monotonic)
+    #: Set when the learner cut Wobo off (BOARD.md §4). Once set, this turn never streams another
+    #: planned event: what was drawn stays, and every reader gets the acknowledgement instead.
+    interrupted: bool = False
+    #: The object Wobo was on when they stopped — the client's own ``interrupted_at``, echoed back
+    #: so both halves of Wobo agree on where the pen lifted.
+    interrupted_at: str | None = None
 
     def after(self, seq: int) -> list[Event]:
         return [e for e in self.events if e.seq > seq]
@@ -113,6 +126,42 @@ def recall(turn_id: str, meter_key: str) -> Turn | None:
         if turn.meter_key != meter_key or time.monotonic() - turn.created > TURN_TTL_S:
             return None
         return turn
+
+
+def interrupt(turn_id: str, meter_key: str, at: str | None = None) -> Turn | None:
+    """The learner stopped Wobo. Mark the turn so the stream stops, and hand back what to say.
+
+    BOARD.md §4: on an interrupt the hand stops the pen mid-stroke and the voice mid-sentence,
+    what is already drawn stays, and the brain is told which object Wobo was on. The client half
+    of that has always worked; this is the brain's half — before it, an interrupt was a local
+    abort the brain never heard, so a reconnect happily carried on drawing over a learner who
+    had asked Wobo to stop.
+
+    Ownership is the meter key, exactly as :func:`recall` has it: an interrupt is not a way to
+    reach into somebody else's turn. An unknown or expired turn is ``None``, and interrupting an
+    already-interrupted turn is a no-op that still acknowledges (a tap and a spoken "stop" that
+    arrive together must not race into two different answers).
+    """
+    turn = recall(turn_id, meter_key)
+    if turn is None:
+        return None
+    with _lock:
+        if not turn.interrupted:
+            turn.interrupted = True
+            turn.interrupted_at = (at or "").strip() or turn.interrupted_at
+        elif at and not turn.interrupted_at:
+            turn.interrupted_at = at.strip()
+    return turn
+
+
+def forget(meter_key: str) -> int:
+    """Drop every turn remembered for one learner, and say how many. The erase route calls this:
+    a turn in the resume window is a cached generation with the learner's own words in it."""
+    with _lock:
+        mine = [k for k, v in _turns.items() if v.meter_key == meter_key]
+        for key in mine:
+            del _turns[key]
+    return len(mine)
 
 
 def reset() -> None:
@@ -278,9 +327,124 @@ def build_events(
     return events
 
 
+# --- the two onsets, measured (BOARD.md §10) --------------------------------------------------
+#
+# The budgets: the first spoken syllable inside 1.5 s, the first stroke inside 1 s. The first
+# stroke was already measured end to end in the browser; the first SYLLABLE was measured nowhere
+# at all, so half of the law was a hope. This is the brain's half of both, and it is the half the
+# brain can be held to: from the moment the turn's work begins (``mark_turn_start``, called at the
+# top of the plan) to the moment Wobo's first sentence — and first mark — are on the wire, plus the
+# choreography offset each was scheduled at. It excludes the network and the voice's own start-up,
+# which the client measures; a turn that misses the budget HERE can never make it there.
+
+FIRST_SYLLABLE_BUDGET_MS = 1500.0
+FIRST_STROKE_BUDGET_MS = 1000.0
+
+#: Where the two onsets land for inspection in dev and assertion in tests. Its own sink, not the
+#: Gateway's: the Gateway's sink records one model call each, and a turn's onsets are a property of
+#: the whole turn — the plan, the pacing and the wire — not of any one call inside it.
+LATENCY = MetricsSink()
+
+#: When this turn's work began. A context variable, so it is per request even though every route
+#: here runs on FastAPI's threadpool: each call gets its own copy of the context, so one learner's
+#: clock can never be read as another's, and an unmarked turn measures nothing rather than lying.
+_turn_started: ContextVar[float | None] = ContextVar("wobo_board_turn_started", default=None)
+
+
+#: A wait longer than this is not a turn anybody sat through — it is a clock left running by an
+#: earlier one (a worker thread that reused a context, a mark whose turn never reached the stream).
+#: Past it the measurement is None: "not measured", never a fabricated three-hour first syllable.
+STALE_CLOCK_MS = 60_000.0
+
+
+def mark_turn_start() -> None:
+    """Start this turn's clock. Called where the turn's work begins, before the model is asked."""
+    _turn_started.set(time.monotonic())
+
+
+def brain_ms() -> float | None:
+    """Milliseconds since this turn's clock started, or None when nobody started one.
+
+    One mark, one measurement: the clock is consumed here, so a turn can never be measured twice
+    and a mark that outlived its turn cannot be charged to the next one.
+    """
+    started = _turn_started.get()
+    if started is None:
+        return None
+    _turn_started.set(None)
+    elapsed = (time.monotonic() - started) * 1000.0
+    if elapsed < 0 or elapsed > STALE_CLOCK_MS:
+        return None
+    return elapsed
+
+
+@dataclass(frozen=True)
+class Onsets:
+    """When the learner hears Wobo, and when they see the first mark — the brain's half."""
+
+    first_syllable_ms: float | None
+    first_stroke_ms: float | None
+
+    def within_budget(self) -> bool:
+        return (self.first_syllable_ms is None or self.first_syllable_ms <= FIRST_SYLLABLE_BUDGET_MS) and (
+            self.first_stroke_ms is None or self.first_stroke_ms <= FIRST_STROKE_BUDGET_MS
+        )
+
+
+def onsets(events: list[Event], elapsed_ms: float | None = None) -> Onsets:
+    """The two onsets for one planned turn: the brain's elapsed time plus the beat each was put on.
+
+    A turn with nothing to say has no syllable and a turn with nothing to draw has no stroke;
+    neither is reported as zero, because a measurement nobody took is not a measurement of nought.
+    """
+    if elapsed_ms is None:
+        return Onsets(None, None)
+    first_say = next((e.t for e in events if e.type == "say"), None)
+    first_ink = next((e.t for e in events if e.type == "ink"), None)
+    return Onsets(
+        first_syllable_ms=None if first_say is None else round(elapsed_ms + first_say, 1),
+        first_stroke_ms=None if first_ink is None else round(elapsed_ms + first_ink, 1),
+    )
+
+
+def record_onsets(turn: Turn, measured: Onsets) -> Onsets:
+    """Log this turn's onsets and put them in the sink. A missed budget is a warning, by name."""
+    emit(
+        LATENCY,
+        TelemetryEvent(
+            capability="wobo.turn",
+            track="turn",
+            model="board.turn",
+            # The headline number is the one the whole law is about: when Wobo starts speaking.
+            latency_ms=measured.first_syllable_ms or 0.0,
+            tokens=0,
+            cache_hit=False,
+            first_syllable_ms=measured.first_syllable_ms,
+            first_stroke_ms=measured.first_stroke_ms,
+        ),
+    )
+    if not measured.within_budget():
+        logger.warning(
+            "board turn over its onset budget",
+            extra={
+                "fields": {
+                    "turn": turn.id,
+                    "first_syllable_ms": measured.first_syllable_ms,
+                    "first_stroke_ms": measured.first_stroke_ms,
+                    "first_syllable_budget_ms": FIRST_SYLLABLE_BUDGET_MS,
+                    "first_stroke_budget_ms": FIRST_STROKE_BUDGET_MS,
+                }
+            },
+        )
+    return measured
+
+
 def new_turn(meter_key: str, events: list[Event]) -> Turn:
     turn = Turn(id=secrets.token_urlsafe(9), meter_key=meter_key, events=events)
     remember(turn)
+    # Measured on the way out, on every turn, streamed or replayed from the same plan — a budget
+    # nobody measures is a budget nobody keeps.
+    record_onsets(turn, onsets(events, brain_ms()))
     return turn
 
 
@@ -290,15 +454,38 @@ def frame(turn_id: str, event: Event) -> str:
     return f"id: {turn_id}:{event.seq}\nevent: {event.type}\ndata: {body}\n\n"
 
 
+def acknowledgement(turn: Turn, seq: int, t: int) -> Event:
+    """The frame that closes an interrupted turn: what Wobo heard, and where the pen lifted."""
+    return Event(
+        seq=seq,
+        type="interrupted",
+        t=t,
+        data={"at": turn.interrupted_at} if turn.interrupted_at else {},
+    )
+
+
 def iter_sse(turn: Turn, *, after: int = -1) -> Iterator[str]:
     """The turn as an SSE body, from the event after ``after``.
 
     A comment frame goes first so a proxy flushes headers immediately — that is the difference
     between the pen starting in a second and the pen starting when the whole plan is done.
+
+    The interrupt is checked BETWEEN frames rather than once at the top: the learner stops Wobo
+    while the turn is on the wire, not before it starts. The first frame after the interrupt is
+    the acknowledgement, and the body ends there — no ``done``, because the turn did not finish.
     """
     yield ": open\n\n"
+    last_seq, last_t = after, 0
     for event in turn.after(after):
+        if turn.interrupted:
+            yield frame(turn.id, acknowledgement(turn, max(last_seq, 0), last_t))
+            return
+        last_seq, last_t = event.seq, event.t
         yield frame(turn.id, event)
+    if turn.interrupted:
+        # Interrupted after the last frame was written: still acknowledged, so the learner's stop
+        # is never silently swallowed by a turn that happened to be nearly over.
+        yield frame(turn.id, acknowledgement(turn, max(last_seq, 0), last_t))
 
 
 def as_json(turn: Turn) -> dict[str, Any]:

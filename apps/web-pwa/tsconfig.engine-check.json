@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["src/screens/landing/engine/**/*.ts"]
+}

@@ -278,7 +278,7 @@ def test_tts_stream_accepts_a_minted_token_exactly_once(
 
     spoken: list[str] = []
 
-    async def fake_stream(client_socket, aiohttp, key, text):  # noqa: ANN001
+    async def fake_stream(client_socket, aiohttp, key, text, **_):  # noqa: ANN001
         spoken.append(text)
 
     monkeypatch.setenv("GEMINI_API_KEY", "test-key")
@@ -425,7 +425,7 @@ def test_one_learner_cannot_hold_every_voice_socket(
     # everyone else still has a voice
     spoken: list[str] = []
 
-    async def fake_stream(client_socket, aiohttp, key, text):  # noqa: ANN001
+    async def fake_stream(client_socket, aiohttp, key, text, **_):  # noqa: ANN001
         spoken.append(text)
 
     monkeypatch.setattr(voice, "_stream_one_line", fake_stream)
@@ -440,7 +440,7 @@ def test_the_socket_counts_come_back_down(monkeypatch: pytest.MonkeyPatch, auth)
 
     monkeypatch.setenv("GEMINI_API_KEY", "test-key")
 
-    async def fake_stream(client_socket, aiohttp, key, text):  # noqa: ANN001
+    async def fake_stream(client_socket, aiohttp, key, text, **_):  # noqa: ANN001
         return None
 
     monkeypatch.setattr(voice, "_stream_one_line", fake_stream)
