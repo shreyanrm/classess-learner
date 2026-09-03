@@ -1,0 +1,407 @@
+{
+  "name": "free-body-incline",
+  "prompt": "draw the forces on a block on a 30 degree slope",
+  "title": "a block on an incline",
+  "presentation": "full",
+  "subject": "physics",
+  "expect": {
+    "ids": [
+      "slope",
+      "angle-label",
+      "block",
+      "force-weight",
+      "force-normal",
+      "force-along",
+      "weight-label",
+      "normal-label",
+      "along-label",
+      "weight-value",
+      "along-value",
+      "normal-value",
+      "accel-value",
+      "accel-underline"
+    ],
+    "kinds": [
+      "polygon",
+      "label",
+      "ellipse",
+      "arrow",
+      "arrow",
+      "arrow",
+      "label",
+      "label",
+      "label",
+      "number",
+      "number",
+      "number",
+      "number",
+      "underline"
+    ],
+    "anchors": [
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "object"
+    ],
+    "hangsOff": [["accel-underline", "accel-value"]],
+    "written": [
+      "30°",
+      "weight",
+      "normal",
+      "down the slope",
+      "W = 49.05 N",
+      "W sinθ = 24.52 N",
+      "N = 42.48 N",
+      "a = 4.905 m/s²"
+    ],
+    "numbers": [
+      {
+        "id": "weight-value",
+        "value": 49.050000000000004,
+        "precision": 2,
+        "unit": "N",
+        "check": "board.numbers_agree:weight",
+        "from": "5 * 9.81"
+      },
+      {
+        "id": "along-value",
+        "value": 24.525,
+        "precision": 2,
+        "unit": "N",
+        "check": "board.numbers_agree:component along the slope",
+        "from": "5 * 9.81 * sin30"
+      },
+      {
+        "id": "normal-value",
+        "value": 42.47854605562672,
+        "precision": 2,
+        "unit": "N",
+        "check": "board.numbers_agree:normal force",
+        "from": "5 * 9.81 * cos30"
+      },
+      {
+        "id": "accel-value",
+        "value": 4.904999999999999,
+        "precision": 3,
+        "unit": "m/s²",
+        "check": "board.numbers_agree:acceleration down the slope",
+        "from": "9.81 * sin30"
+      }
+    ]
+  },
+  "plan": [
+    {
+      "type": "say",
+      "text": "A five kilogram block resting on a thirty degree slope.",
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "slope",
+        "kind": "polygon",
+        "anchor": {
+          "board": [180, 179.77786]
+        },
+        "points": [[0, 300.22214], [520, 300.22214], [520, 0]],
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 0,
+          "dur": 1200
+        }
+      },
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "angle-label",
+        "kind": "label",
+        "anchor": {
+          "board": [226, 458]
+        },
+        "text": "30°",
+        "check": "board.numbers_agree:the slope angle",
+        "t": {
+          "start": 1200,
+          "dur": 400
+        }
+      },
+      "t": 1200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "block",
+        "kind": "ellipse",
+        "anchor": {
+          "board": [398.4, 353.906701]
+        },
+        "rx": 26,
+        "ry": 18,
+        "style": {
+          "ink": "wobo",
+          "weight": 2,
+          "fill": "wash"
+        },
+        "t": {
+          "start": 1600,
+          "dur": 600
+        }
+      },
+      "t": 1600
+    },
+    {
+      "type": "say",
+      "text": "Three forces act on it, and only three.",
+      "t": 2200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "force-weight",
+        "kind": "arrow",
+        "anchor": {
+          "board": [398.4, 473.906701]
+        },
+        "from": {
+          "object": "block"
+        },
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 2300,
+          "dur": 700
+        }
+      },
+      "t": 2300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "force-normal",
+        "kind": "arrow",
+        "anchor": {
+          "board": [338.4, 249.983653]
+        },
+        "from": {
+          "object": "block"
+        },
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 3000,
+          "dur": 700
+        }
+      },
+      "t": 3000
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "force-along",
+        "kind": "arrow",
+        "anchor": {
+          "board": [502.323048, 413.906701]
+        },
+        "from": {
+          "object": "block"
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 3700,
+          "dur": 700
+        }
+      },
+      "t": 3700
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "weight-label",
+        "kind": "label",
+        "anchor": {
+          "board": [374.4, 499.906701]
+        },
+        "text": "weight",
+        "t": {
+          "start": 4400,
+          "dur": 400
+        }
+      },
+      "t": 4400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "normal-label",
+        "kind": "label",
+        "anchor": {
+          "board": [268.4, 219.983653]
+        },
+        "text": "normal",
+        "t": {
+          "start": 4800,
+          "dur": 400
+        }
+      },
+      "t": 4800
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "along-label",
+        "kind": "label",
+        "anchor": {
+          "board": [518.323048, 423.906701]
+        },
+        "text": "down the slope",
+        "style": {
+          "ink": "accent",
+          "weight": 1
+        },
+        "t": {
+          "start": 5200,
+          "dur": 500
+        }
+      },
+      "t": 5200
+    },
+    {
+      "type": "say",
+      "text": "Split the weight along the slope and across it.",
+      "t": 5800
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "weight-value",
+        "kind": "number",
+        "anchor": {
+          "board": [700, 130]
+        },
+        "value": 49.050000000000004,
+        "precision": 2,
+        "unit": "N",
+        "label": "W =",
+        "verified": true,
+        "check": "board.numbers_agree:weight",
+        "meta": "5 * 9.81",
+        "t": {
+          "start": 5900,
+          "dur": 600
+        }
+      },
+      "t": 5900
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "along-value",
+        "kind": "number",
+        "anchor": {
+          "board": [700, 185]
+        },
+        "value": 24.525,
+        "precision": 2,
+        "unit": "N",
+        "label": "W sinθ =",
+        "verified": true,
+        "check": "board.numbers_agree:component along the slope",
+        "meta": "5 * 9.81 * sin30",
+        "t": {
+          "start": 6500,
+          "dur": 600
+        }
+      },
+      "t": 6500
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "normal-value",
+        "kind": "number",
+        "anchor": {
+          "board": [700, 240]
+        },
+        "value": 42.47854605562672,
+        "precision": 2,
+        "unit": "N",
+        "label": "N =",
+        "verified": true,
+        "check": "board.numbers_agree:normal force",
+        "meta": "5 * 9.81 * cos30",
+        "t": {
+          "start": 7100,
+          "dur": 600
+        }
+      },
+      "t": 7100
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "accel-value",
+        "kind": "number",
+        "anchor": {
+          "board": [700, 295]
+        },
+        "value": 4.904999999999999,
+        "precision": 3,
+        "unit": "m/s²",
+        "label": "a =",
+        "verified": true,
+        "check": "board.numbers_agree:acceleration down the slope",
+        "meta": "9.81 * sin30",
+        "t": {
+          "start": 7700,
+          "dur": 600
+        }
+      },
+      "t": 7700
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "accel-underline",
+        "kind": "underline",
+        "anchor": {
+          "object": "accel-value"
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 8300,
+          "dur": 400
+        }
+      },
+      "t": 8300
+    },
+    {
+      "type": "done",
+      "t": 8800
+    }
+  ]
+}

@@ -7,12 +7,14 @@
  * draggable number scrubber. Ink on paper, hairlines, 3px corners (DESIGN.md §2).
  */
 
+import { useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   type CSSProperties,
   type KeyboardEvent,
   type ReactNode,
   type PointerEvent as ReactPointerEvent,
+  useEffect,
   useMemo,
   useRef,
 } from 'react';
@@ -135,8 +137,47 @@ export function ActionBar({
   gate?: { progress: number };
 }) {
   const still = useReducedMotion();
-  if (!bar) return null;
   const gated = Boolean(gate);
+  const barRef = useRef<HTMLDivElement | null>(null);
+  // `registerTarget` alone, never the whole bus, and registered exactly ONCE: registering fans a
+  // state change through the provider, so an effect that re-registers whenever the bar's identity
+  // changes drives the whole tree into a re-render loop (each card hands down a fresh bar object).
+  // The live bar is read through a ref instead, which keeps every reading current and the
+  // registration still.
+  const { registerTarget } = useWoboBus();
+  const live = useRef<{ bar: BarState | null; gated: boolean }>({ bar, gated });
+  live.current = { bar, gated };
+  // The one control that moves a lesson forward, registered by name so "show me how to carry on"
+  // walks the learner to the real button. Its rect is read off the live element rather than a
+  // stored box, so it survives the bar re-laying out under a longer label.
+  useEffect(() => {
+    const ready = () => {
+      const { bar: b, gated: g } = live.current;
+      return Boolean(b) && !g && !b?.primary.disabled;
+    };
+    return registerTarget({
+      id: 'course-advance',
+      kind: 'control',
+      label: 'the button that moves this lesson on',
+      getRect: () => {
+        const el = barRef.current?.querySelector('button:last-of-type') as HTMLElement | null;
+        return el?.getBoundingClientRect() ?? null;
+      },
+      getSceneState: () => ({
+        label: live.current.bar?.primary.label,
+        waitingForWobo: live.current.gated,
+        ready: ready(),
+      }),
+      getValidActions: () =>
+        ready()
+          ? [live.current.bar?.primary.label ?? 'continue']
+          : ['she is still reading this card'],
+      applyTutorAction: (patch) => {
+        if (patch.advance === true && ready()) live.current.bar?.primary.onClick();
+      },
+    });
+  }, [registerTarget]);
+  if (!bar) return null;
   return (
     <motion.div
       initial={still ? false : { opacity: 0, y: 16 }}
@@ -166,6 +207,7 @@ export function ActionBar({
         }}
       />
       <div
+        ref={barRef}
         style={{
           width: 'min(680px, 100%)',
           display: 'flex',

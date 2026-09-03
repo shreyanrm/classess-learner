@@ -183,7 +183,7 @@ export function Flashcards({
     });
   }, [flipped, idx, swipe, setBar]);
 
-  useRegisterTarget<HTMLDivElement>(`flashcards-${spec.id}`, {
+  const stageRef = useRegisterTarget<HTMLDivElement>(`flashcards-${spec.id}`, {
     kind: 'flashcards',
     label: `flashcard deck: ${spec.title}`,
     getSceneState: () => ({
@@ -221,7 +221,10 @@ export function Flashcards({
 
   return (
     <CardBody maxWidth={560}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 18, alignItems: 'center' }}>
+      <div
+        ref={stageRef}
+        style={{ display: 'flex', flexDirection: 'column', gap: 18, alignItems: 'center' }}
+      >
         <div style={{ ...whisper, alignSelf: 'flex-start' }}>
           recall · {idx + 1} / {spec.cards.length}
         </div>

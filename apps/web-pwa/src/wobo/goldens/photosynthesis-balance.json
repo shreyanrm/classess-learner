@@ -1,0 +1,426 @@
+{
+  "name": "photosynthesis-balance",
+  "prompt": "balance the photosynthesis equation",
+  "title": "balancing photosynthesis",
+  "presentation": "full",
+  "subject": "chemistry",
+  "expect": {
+    "ids": [
+      "species-1",
+      "species-2",
+      "species-3",
+      "species-4",
+      "plus-left",
+      "yields",
+      "plus-right",
+      "atom-tally",
+      "tally-brace",
+      "coefficient-1",
+      "coefficient-2",
+      "coefficient-3",
+      "coefficient-4",
+      "balanced-note",
+      "balanced-circle"
+    ],
+    "kinds": [
+      "label",
+      "label",
+      "label",
+      "label",
+      "label",
+      "arrow",
+      "label",
+      "table",
+      "bracket",
+      "number",
+      "number",
+      "number",
+      "number",
+      "write",
+      "circle"
+    ],
+    "anchors": [
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "object",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "object"
+    ],
+    "hangsOff": [["tally-brace", "atom-tally"], ["balanced-circle", "balanced-note"]],
+    "written": ["CO2", "H2O", "C6H12O6", "O2", "+", "+", "6", "6", "1", "6", "balanced"],
+    "numbers": [
+      {
+        "id": "coefficient-1",
+        "value": 6,
+        "check": "board.equation_balances:photosynthesis",
+        "from": "balance(CO2 + H2O -> C6H12O6 + O2)[0]"
+      },
+      {
+        "id": "coefficient-2",
+        "value": 6,
+        "check": "board.equation_balances:photosynthesis",
+        "from": "balance(CO2 + H2O -> C6H12O6 + O2)[1]"
+      },
+      {
+        "id": "coefficient-3",
+        "value": 1,
+        "check": "board.equation_balances:photosynthesis",
+        "from": "balance(CO2 + H2O -> C6H12O6 + O2)[2]"
+      },
+      {
+        "id": "coefficient-4",
+        "value": 6,
+        "check": "board.equation_balances:photosynthesis",
+        "from": "balance(CO2 + H2O -> C6H12O6 + O2)[3]"
+      }
+    ]
+  },
+  "plan": [
+    {
+      "type": "say",
+      "text": "Carbon dioxide and water become sugar and oxygen. But not one for one.",
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "species-1",
+        "kind": "label",
+        "anchor": {
+          "board": [200, 200]
+        },
+        "text": "CO2",
+        "size": 32,
+        "check": "board.fact_supported:photosynthesis",
+        "t": {
+          "start": 0,
+          "dur": 600
+        }
+      },
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "species-2",
+        "kind": "label",
+        "anchor": {
+          "board": [390, 200]
+        },
+        "text": "H2O",
+        "size": 32,
+        "check": "board.fact_supported:photosynthesis",
+        "t": {
+          "start": 400,
+          "dur": 600
+        }
+      },
+      "t": 400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "species-3",
+        "kind": "label",
+        "anchor": {
+          "board": [650, 200]
+        },
+        "text": "C6H12O6",
+        "size": 32,
+        "check": "board.fact_supported:photosynthesis",
+        "t": {
+          "start": 800,
+          "dur": 600
+        }
+      },
+      "t": 800
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "species-4",
+        "kind": "label",
+        "anchor": {
+          "board": [920, 200]
+        },
+        "text": "O2",
+        "size": 32,
+        "check": "board.fact_supported:photosynthesis",
+        "t": {
+          "start": 1200,
+          "dur": 600
+        }
+      },
+      "t": 1200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "plus-left",
+        "kind": "label",
+        "anchor": {
+          "board": [320, 200]
+        },
+        "text": "+",
+        "size": 30,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 1700,
+          "dur": 300
+        }
+      },
+      "t": 1700
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "yields",
+        "kind": "arrow",
+        "anchor": {
+          "board": [600, 200]
+        },
+        "from": {
+          "board": [510, 200]
+        },
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 2000,
+          "dur": 700
+        }
+      },
+      "t": 2000
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "plus-right",
+        "kind": "label",
+        "anchor": {
+          "board": [790, 200]
+        },
+        "text": "+",
+        "size": 30,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 2700,
+          "dur": 300
+        }
+      },
+      "t": 2700
+    },
+    {
+      "type": "say",
+      "text": "Count the atoms on each side. They have to match.",
+      "t": 3000
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "atom-tally",
+        "kind": "table",
+        "anchor": {
+          "board": [220, 330]
+        },
+        "w": 520,
+        "rows": [
+          ["element", "left", "right"],
+          ["C", "6", "6"],
+          ["H", "12", "12"],
+          ["O", "18", "18"]
+        ],
+        "check": "board.equation_balances:photosynthesis",
+        "meta": "atom counts of balance(CO2 + H2O -> C6H12O6 + O2)",
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 3100,
+          "dur": 1600
+        }
+      },
+      "t": 3100
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "tally-brace",
+        "kind": "bracket",
+        "anchor": {
+          "object": "atom-tally"
+        },
+        "side": "right",
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 4700,
+          "dur": 500
+        }
+      },
+      "t": 4700
+    },
+    {
+      "type": "say",
+      "text": "The coefficients that make them match are six, six, one and six.",
+      "t": 5200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "coefficient-1",
+        "kind": "number",
+        "anchor": {
+          "board": [148, 200]
+        },
+        "value": 6,
+        "verified": true,
+        "check": "board.equation_balances:photosynthesis",
+        "meta": "balance(CO2 + H2O -> C6H12O6 + O2)[0]",
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 5300,
+          "dur": 500
+        }
+      },
+      "t": 5300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "coefficient-2",
+        "kind": "number",
+        "anchor": {
+          "board": [338, 200]
+        },
+        "value": 6,
+        "verified": true,
+        "check": "board.equation_balances:photosynthesis",
+        "meta": "balance(CO2 + H2O -> C6H12O6 + O2)[1]",
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 5800,
+          "dur": 500
+        }
+      },
+      "t": 5800
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "coefficient-3",
+        "kind": "number",
+        "anchor": {
+          "board": [598, 200]
+        },
+        "value": 1,
+        "verified": true,
+        "check": "board.equation_balances:photosynthesis",
+        "meta": "balance(CO2 + H2O -> C6H12O6 + O2)[2]",
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 6300,
+          "dur": 500
+        }
+      },
+      "t": 6300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "coefficient-4",
+        "kind": "number",
+        "anchor": {
+          "board": [868, 200]
+        },
+        "value": 6,
+        "verified": true,
+        "check": "board.equation_balances:photosynthesis",
+        "meta": "balance(CO2 + H2O -> C6H12O6 + O2)[3]",
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 6800,
+          "dur": 500
+        }
+      },
+      "t": 6800
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "balanced-note",
+        "kind": "write",
+        "anchor": {
+          "board": [800, 400]
+        },
+        "text": "balanced",
+        "size": 30,
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 7300,
+          "dur": 800
+        }
+      },
+      "t": 7300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "balanced-circle",
+        "kind": "circle",
+        "anchor": {
+          "object": "balanced-note"
+        },
+        "pad": 12,
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 8100,
+          "dur": 700
+        }
+      },
+      "t": 8100
+    },
+    {
+      "type": "done",
+      "t": 8900
+    }
+  ]
+}

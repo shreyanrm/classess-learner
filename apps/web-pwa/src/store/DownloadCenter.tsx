@@ -13,6 +13,7 @@
  *     sfx tick, Wobo says it aloud (mute-aware), and a frosted toast they can tap to dive in.
  */
 
+import { useRegisterTarget } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { claimNextForge, settleForge, useForged } from '../screens/practice/forge-store';
@@ -66,6 +67,20 @@ export function DownloadCenter() {
   const forgeInit = useRef(false);
   // Notifications fire exactly once per topic even though items re-renders many times.
   const notified = useRef<Set<string>>(new Set());
+
+  // What is being made for this learner right now. Registered so "is my course ready" is answered
+  // from the real queue, and so she can point at the toast rather than describe it.
+  const centreRef = useRegisterTarget<HTMLDivElement>('download-center', {
+    kind: 'queue',
+    label: 'the courses being composed for you right now',
+    getSceneState: () => ({
+      composing: items
+        .filter((d) => d.status === 'downloading' || d.status === 'queued')
+        .map((d) => d.title),
+      ready: items.filter((d) => d.status === 'ready').map((d) => d.title),
+      forged: forged.length,
+    }),
+  });
 
   // A gentle clock so the composing toast's staged label advances while she works. Only ticks while
   // something is actually composing, then stops — no idle timers.
@@ -182,6 +197,7 @@ export function DownloadCenter() {
 
   return (
     <div
+      ref={centreRef}
       aria-live="polite"
       style={{
         position: 'fixed',

@@ -8,8 +8,11 @@
 
 import { createSdk, DEV_DEFAULTS, type Sdk } from '@classess/sdk';
 import {
+  type FocusObject,
   hasSyncAnchor,
   parseActions,
+  plane,
+  surfaceRegistry,
   useWoboBus,
   type WoboHandlers,
   type WoboMood,
@@ -55,8 +58,10 @@ import { AppHeader } from './ui/AppHeader';
 import { ClickInk } from './ui/ClickInk';
 import { CeremonyHost } from './ui/ceremony';
 import { sfx } from './ui/sound';
+import { BoardBenchGate } from './wobo/board-bench';
+import { boardTurn } from './wobo/board-turn';
 import { WoboCompanion } from './wobo/Companion';
-import { forgetAllOffer } from './wobo/capabilities';
+import { boardTurnPayload, forgetAllOffer, turnFocus, woboTurnPayload } from './wobo/capabilities';
 import {
   appendToArchive,
   CHAT_PAGE,
@@ -67,8 +72,22 @@ import {
   WoboChatProvider,
   writeArchive,
 } from './wobo/chat';
+import {
+  armDoIt,
+  armedAction,
+  disarm,
+  findTargetId,
+  isConfirmation,
+  isDecline,
+  runsWithoutAsking,
+  showMe,
+} from './wobo/hands';
+import { MODE_BY_ID, modeFromText, modePrompt } from './wobo/modes';
 import { resolveTurnExtras, type TurnExtras } from './wobo/paths';
+import { useLifeSignals } from './wobo/presence';
+import { boardShapeOf, isLessonRoute } from './wobo/presentation';
 import { refusalLine } from './wobo/refusals';
+import { WoboStage } from './wobo/Stage';
 import { registerPerformance, SpeechNarrator, speakLine } from './wobo/speech';
 
 const LLM_MODE = (import.meta.env.VITE_LLM_MODE as 'mock' | 'live' | undefined) ?? 'mock';
@@ -217,6 +236,33 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   const { xp, streakDays } = useProgress();
   const [busy, setBusy] = useState(false);
   const [mood, setMood] = useState<WoboMood>('idle');
+  // What the learner last pointed at. It rides the next turn's packet (set by the stage) and it is
+  // what her eyes track, so "this" always means the same thing to both of them.
+  const [focus, setFocus] = useState<FocusObject | null>(null);
+  // Every real interaction anywhere counts as life, so her idle behaviour is honest rather than
+  // timed against a screen she cannot see input on.
+  useLifeSignals();
+  /**
+   * Barge-in (docs/BOARD.md §4): a tap, a key or a word stops the pen and the voice on the same
+   * beat. What is already drawn stays, and the object the nib was on rides the next turn so she
+   * picks up where she was cut off rather than starting again.
+   */
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const cut = () => {
+      if (boardTurn.get().active) boardTurn.interrupt();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' || e.key === ' ') cut();
+    };
+    const opts: AddEventListenerOptions = { capture: true, passive: true };
+    window.addEventListener('pointerdown', cut, opts);
+    window.addEventListener('keydown', onKey, { capture: true });
+    return () => {
+      window.removeEventListener('pointerdown', cut, opts);
+      window.removeEventListener('keydown', onKey, { capture: true });
+    };
+  }, []);
   // Offline resilience lives here in the shared chat layer, not in one screen — so every composer
   // (the home front door, the chat page, a suggestion chip) gets the same safe behavior: a message
   // typed with no connection is queued, shown as a pending bubble, and fired once on reconnect,
@@ -285,6 +331,97 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     sdk.state.saveThread('wobo', turns.slice(-60));
   }, [sdk, turns]);
 
+  // One line into the one conversation. Hoisted out of `ask` so the board turn writes into exactly
+  // the same archive — a turn she drew is a turn she had, and the transcript must not fork.
+  const say = (t: Omit<ChatTurn, 'id'>) => {
+    const turn = { ...t, id: mintTurnId() };
+    appendToArchive(turn);
+    setTurns((prev) => [...prev, turn]);
+    if (t.role === 'wobo') sfx.chime(); // a gentle chime as she arrives
+    return turn;
+  };
+
+  /** Her line grows as the plan streams: the written words keep up with the spoken ones. */
+  const growTurn = (id: string, text: string) => {
+    const grow = (t: ChatTurn): ChatTurn =>
+      t.id === id ? { ...t, text: t.text ? `${t.text} ${text}` : text } : t;
+    setTurns((prev) => prev.map(grow));
+    updateArchiveTurn(id, grow);
+  };
+
+  /** Where the plane slides from — her docked orb, bottom right. */
+  const orbOrigin = () =>
+    typeof window === 'undefined'
+      ? { x: 0, y: 0 }
+      : { x: window.innerWidth - 56, y: window.innerHeight - 60 };
+
+  /**
+   * A board turn (docs/BOARD.md §4): the same capability, the same door, the same meter — the only
+   * difference is that the answer has a shape, so the plan streams and her hand draws it while she
+   * speaks. She writes into the one conversation as she goes, so the transcript reads as one voice.
+   */
+  const askBoard = async (
+    text: string,
+    shape: ReturnType<typeof boardShapeOf>,
+    context: ReturnType<typeof bus.assembleContext>,
+  ) => {
+    const line = say({ role: 'wobo', text: '' });
+    const title = context.curriculum?.nodeName ?? (context.page.state.title as string | undefined);
+    try {
+      const outcome = await boardTurn.run({
+        gatewayUrl: GATEWAY_URL as string,
+        // The whole envelope, not its inside: the gateway reads the learner's words at
+        // `payload.context.turn.lastUserInput` — both to plan the board and, before that, to
+        // run the inbound safety screen. Unwrapping it here handed the brain an empty turn,
+        // so a board turn planned nothing and was screened against nothing.
+        payload: boardTurnPayload(context),
+        route: route.name,
+        ...(shape.override ? { override: shape.override } : {}),
+        origin: orbOrigin(),
+        ...(title ? { title } : {}),
+        onSay: (said) => growTurn(line.id, said),
+        onAsk: (prompt) => growTurn(line.id, prompt),
+        onAction: (action) => bus.dispatch(parseActions([action])),
+        onCard: (card) => {
+          const extras = resolveTurnExtras(
+            card as Record<string, unknown>,
+            text,
+            context.curriculum?.nodeName,
+          );
+          if (extras.path === 'inline') return;
+          const attach = (t: ChatTurn): ChatTurn => (t.id === line.id ? { ...t, extras } : t);
+          setTurns((prev) => prev.map(attach));
+          updateArchiveTurn(line.id, attach);
+        },
+      });
+      // Nothing came back with a shape after all — she still owes the learner an answer. Unless
+      // the learner cut her off: BOARD.md §4 says the pen lifts and the voice stops, and a line
+      // she never asked for is not silence, it is her talking over her own interruption.
+      if (outcome.completed && !outcome.said.trim() && outcome.objects === 0) {
+        growTurn(line.id, 'Let us look at this together.');
+      }
+      sdk.events.record('wobo.turn.assistant.v1', {
+        turn_id: crypto.randomUUID(),
+        assistance_level: 'coach',
+        hint_level: 0,
+        grounded: outcome.objects > 0,
+        track: 'track_2',
+        handed_answer: false,
+      });
+      setMood(outcome.objects > 0 ? 'explaining' : 'idle');
+    } catch (err) {
+      const refusal = refusalLine(err);
+      // An empty line is a barge-in: she stops where she is and says nothing about it.
+      if (refusal.text) growTurn(line.id, refusal.text);
+      if (refusal.signIn && sdk.account) {
+        window.setTimeout(() => router.navigate({ name: 'onboarding' }), 900);
+      }
+      setMood('idle');
+    } finally {
+      setBusy(false);
+    }
+  };
+
   // A real Wobo turn: she reasons over the page she is plugged into, then speaks and acts on it.
   const ask = async (text: string) => {
     // No connection — hold it rather than dropping it on the floor. It renders as a pending bubble
@@ -293,13 +430,6 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       setPending((q) => [...q, { id: crypto.randomUUID(), text }]);
       return;
     }
-    const say = (t: Omit<ChatTurn, 'id'>) => {
-      const turn = { ...t, id: mintTurnId() };
-      appendToArchive(turn);
-      setTurns((prev) => [...prev, turn]);
-      if (t.role === 'wobo') sfx.chime(); // a gentle chime as she arrives
-      return turn;
-    };
     const userTurn = say({ role: 'user', text });
     setBusy(true);
     setMood('thinking');
@@ -376,7 +506,87 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     );
     try {
       const context = bus.assembleContext();
-      const result = await sdk.llm.invoke('wobo.turn', { context }, { consentTier: 'un_elevated' });
+      // The learner's word about the surface is obeyed before anything is asked of the brain:
+      // "close the board" is not a question, and "fresh board" has to be true before she draws.
+      const mode = modeFromText(text);
+      const shape = boardShapeOf(text, {
+        hasFocus: turnFocus() !== null,
+        modeDraws: mode ? MODE_BY_ID[mode].draws : false,
+      });
+      if (shape.word?.dismiss) {
+        plane.dismiss();
+        say({
+          role: 'wobo',
+          text: 'Put away — say the word and it comes back with your ink on it.',
+        });
+        setMood('idle');
+        return;
+      }
+      if (shape.word?.wipe) {
+        boardTurn.wipe();
+        say({ role: 'wobo', text: 'Wiped. Clean board.' });
+        setMood('idle');
+        return;
+      }
+      if (shape.word?.fresh) plane.fresh(orbOrigin());
+
+      // The hands (WOBO-PLAN §3). "Show me" is not a description: a visible cursor glides to the
+      // real control on the real screen and taps it, resolved through the registry so it works on
+      // every registered surface and fails honestly where a control is not there. It needs no model
+      // at all, which is why it works with no gateway and no key.
+      const armed = armedAction();
+      if (armed && isConfirmation(text)) {
+        disarm();
+        const result = await showMe(armed.targetId);
+        say({ role: 'wobo', text: result.ok ? `done — ${armed.label}.` : result.say });
+        setMood('idle');
+        return;
+      }
+      if (armed && isDecline(text)) {
+        disarm();
+        say({ role: 'wobo', text: 'left alone — it is yours to press when you want it.' });
+        setMood('idle');
+        return;
+      }
+      if (mode === 'show_me' || mode === 'do_it') {
+        const inHand = turnFocus();
+        const named = text.replace(/\b(show me|do it|for me|please|where is|how to)\b/gi, ' ');
+        const targetId = inHand?.targetIds[0] ?? findTargetId(named);
+        const target = targetId ? surfaceRegistry.getTarget(targetId) : undefined;
+        if (target) {
+          // The permission ladder: anything that communicates, buys, submits or deletes asks
+          // first, whatever the model thought. "Show me" only ever points, it never presses.
+          if (mode === 'show_me') {
+            const result = await showMe(target.id, { tap: false });
+            say({ role: 'wobo', text: result.say });
+            setMood('idle');
+            return;
+          }
+          if (runsWithoutAsking(target.label)) {
+            const result = await showMe(target.id);
+            say({ role: 'wobo', text: result.say });
+            setMood('idle');
+            return;
+          }
+          armDoIt(target.id, target.label);
+          say({
+            role: 'wobo',
+            text: `I can do that — ${target.label}. Say go ahead and I will.`,
+          });
+          setMood('idle');
+          return;
+        }
+      }
+      // The board turn streams; the ordinary turn does not. One capability either way, one meter,
+      // and the header is the only thing that chooses (docs/BOARD.md §4). Keyless builds never
+      // stream, so the deterministic path below keeps every mode working with no gateway at all.
+      if (shape.board && GATEWAY_URL) {
+        await askBoard(text, shape, context);
+        return;
+      }
+      const result = await sdk.llm.invoke('wobo.turn', woboTurnPayload(context), {
+        consentTier: 'un_elevated',
+      });
       const output = result.output as {
         say?: string;
         actions?: unknown[];
@@ -504,7 +714,8 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       // provider's words: sign-in needed takes them to her sign-in beat (where the beat lives); a
       // spent day says when she is free again. Anything else is the honest "give me a moment".
       const refusal = refusalLine(err);
-      say({ role: 'wobo', text: refusal.text });
+      // An empty line is a barge-in, not a refusal: she stops and says nothing about it.
+      if (refusal.text) say({ role: 'wobo', text: refusal.text });
       if (refusal.signIn && sdk.account) {
         window.setTimeout(() => router.navigate({ name: 'onboarding' }), 900);
       }
@@ -538,8 +749,20 @@ function AppInner({ sdk }: { sdk: Sdk }) {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: ask is recreated with turns; tracking turns/busy/mood covers it
   const chat = useMemo(
-    () => ({ turns, ask, busy, mood, setMood, hasOlder, loadOlder, updateTurn, offline, pending }),
-    [turns, busy, mood, hasOlder, offline, pending],
+    () => ({
+      turns,
+      ask,
+      busy,
+      mood,
+      setMood,
+      hasOlder,
+      loadOlder,
+      updateTurn,
+      offline,
+      pending,
+      focus,
+    }),
+    [turns, busy, mood, hasOlder, offline, pending, focus],
   );
 
   // The first authenticated boot after the sign-in beat: record the subject's creation, fully
@@ -583,12 +806,29 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   const inFlow =
     locked || route.name === 'onboarding' || route.name === 'building' || route.name === 'concept';
   const onHome = route.name === 'home';
+  // What a saved or shared board is called: the topic she is on, or the lesson she is inside.
+  const boardTitle = isLessonRoute(route.name)
+    ? (bus.assembleContext().curriculum.nodeName ?? undefined)
+    : undefined;
 
   return (
     <WoboChatProvider value={chat}>
       {locked && route.name !== 'onboarding' ? <Onboarding /> : <Screen />}
       {/* Her ink over the current screen — annotations anchored to real elements. */}
       <WoboOverlay />
+      {/* The nervous system above the app: the gesture sense, her ink on the screen, the plane, the
+          full board a lesson becomes, the cursor she shows things with. Her own full-screen flows
+          (onboarding, the frame theatre, a design concept) keep the stage but not the gestures —
+          she is teaching there, not being pointed at. */}
+      <WoboStage
+        route={route.name}
+        {...(boardTitle ? { title: boardTitle } : {})}
+        gestures={!inFlow}
+        onFocus={setFocus}
+        onAsk={(f) => void ask(modePrompt('explain_this', f?.text))}
+        onHoldStart={() => setMood('listening')}
+        onHoldEnd={() => setMood('idle')}
+      />
       {!inFlow && <AppHeader />}
       {/* the chat page IS her — no docked twin over it */}
       {!inFlow && !onHome && route.name !== 'chat' && <WoboCompanion />}
@@ -602,6 +842,8 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       <SpeechNarrator />
       {/* the course-download queue: composes ungened courses one at a time, notifies on ready */}
       <DownloadCenter />
+      {/* dev only, at #board-bench: the hand playing one golden plan, with no brain and no network */}
+      <BoardBenchGate />
     </WoboChatProvider>
   );
 }

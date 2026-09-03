@@ -7,10 +7,16 @@
  */
 
 export * from './actions';
+// The board — her hand and its three presentations (docs/BOARD.md).
+export * from './board';
 export * from './body/WoboBody';
 export * from './context-bus';
+export * from './focus';
+export * from './gesture';
 export * from './highlight-overlay';
 export * from './identity';
+export * from './packet';
+export * from './registry';
 export * from './WoboPanel';
 export * from './WoboPresence';
 export * from './wobo-layer';

@@ -28,7 +28,7 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from classess_gateway import budget, consent
@@ -409,6 +409,132 @@ class MeResponse(BaseModel):
     budget: dict[str, Any]
 
 
+# --- the streaming board turn (BOARD.md §4) ---------------------------------------------------
+#
+# The board streams over the SAME route as a plain turn — POST /v1/capability/wobo.turn with
+# ``Accept: text/event-stream``. That is deliberate and it is the whole reason it is not a socket:
+# the door, the consent tier, the rate limiter and the meter all key on this path in one
+# middleware, and a WebSocket runs before none of it (which is why the voice relay had to mint a
+# token of its own). One route means one door and one meter for both shapes of the same turn.
+
+_SSE_HEADERS = {
+    "Cache-Control": "no-cache, no-transform",
+    "Connection": "keep-alive",
+    # Nginx and friends buffer a streamed body by default, which would hold the first stroke back
+    # until the whole plan was written — exactly the failure BOARD.md §10 budgets against.
+    "X-Accel-Buffering": "no",
+}
+
+
+def wants_event_stream(request: Request) -> bool:
+    return "text/event-stream" in (request.headers.get("accept") or "").lower()
+
+
+def _stream(turn: Any, after: int, headers: dict[str, str]) -> StreamingResponse:
+    from classess_gateway.board import stream as board_stream
+
+    return StreamingResponse(
+        board_stream.iter_sse(turn, after=after),
+        media_type="text/event-stream",
+        headers={**_SSE_HEADERS, **headers},
+    )
+
+
+def _one_shot_turn(say: str, meter: str, headers: dict[str, str]) -> StreamingResponse:
+    """A turn with nothing to draw — her line and a close, in the same envelope."""
+    from classess_gateway.board import stream as board_stream
+    from classess_gateway.board.planner import Plan
+
+    plan = Plan(say=say, presentation="screen")
+    turn = board_stream.new_turn(meter, board_stream.build_events(plan))
+    return _stream(turn, -1, headers)
+
+
+def stream_board_turn(
+    gw: Gateway,
+    name: str,
+    request: CapabilityRequest,
+    http: Request,
+    profile: Any,
+) -> Response:
+    """One streamed turn: say, ink, action, ask, card, done.
+
+    Resume first (a reconnect costs nothing — the learner already paid for this turn), then the
+    inbound safety screen, then the meter, then the plan.
+    """
+    from classess_gateway.board import stream as board_stream
+    from classess_gateway.board.planner import Plan, TooMuchAtOnce, plan_board
+
+    principal: Principal = http.state.principal
+    meter = http.state.meter_key
+
+    resume = board_stream.parse_last_event_id(http.headers.get("last-event-id"))
+    if resume is not None:
+        turn = board_stream.recall(resume[0], meter)
+        if turn is not None:
+            snap = budget.snapshot(meter, profile.plan, anonymous=principal.anonymous)
+            return _stream(turn, resume[1], budget.headers(snap, budget.classify(name)))
+
+    snap = budget.charge(meter, name, profile.plan, anonymous=principal.anonymous)
+    headers = budget.headers(snap, budget.classify(name))
+
+    # Inbound safety runs before anything reaches a model, exactly as it does inside Gateway.invoke.
+    gated = screen_wobo_inbound(request.payload, gw.classifier)
+    if gated is not None:
+        logger.warning(
+            "board turn gated by safety",
+            extra={"fields": {"category": gated["safety"]["category"]}},
+        )
+        return _one_shot_turn(str(gated.get("say") or ""), meter, headers)
+
+    live = os.getenv("LLM_MODE", "mock").lower() == "live"
+    try:
+        from classess_gateway.wobo import board_plan_for
+
+        model_plan = board_plan_for(request.payload, live=live)
+        context = request.payload.get("context") or {}
+        board_context = request.payload.get("board") or {}
+
+        if model_plan is None:
+            # Nothing to draw: fall back to the ordinary five-path turn, which carries its own
+            # safety screens, cache and telemetry, and stream her line over the same wire.
+            result = gw.invoke(name, request, profile.tier, subject=principal.subject)
+            output = result.output
+            plan = Plan(say=str(output.get("say") or ""), presentation="screen")
+            card = output.get("component") or output.get("viz")
+            actions = [a for a in (output.get("actions") or []) if isinstance(a, dict)]
+        else:
+            plan = plan_board(model_plan, context=context, board_context=board_context)
+            screened = screen_wobo_outbound(
+                {"say": plan.say, "actions": []}, gw.classifier
+            )
+            plan.say = str(screened.get("say") or plan.say)
+            card = None
+            actions = []
+    except TooMuchAtOnce as exc:
+        budget.refund(meter, name)
+        return JSONResponse(
+            status_code=413,
+            content={
+                "code": "too_much_at_once",
+                "message": (
+                    "That is more than one board. Ask me for a piece of it and I will "
+                    "draw that."
+                ),
+                "objects": exc.count,
+            },
+            headers=headers,
+        )
+    except Exception:
+        budget.refund(meter, name)
+        raise
+
+    turn = board_stream.new_turn(
+        meter, board_stream.build_events(plan, actions=actions, card=card)
+    )
+    return _stream(turn, -1, headers)
+
+
 def create_app(gateway: Gateway | None = None) -> FastAPI:
     configure_logging()
     validate_env()
@@ -608,6 +734,10 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
 
         # Derived, never declared: the tier comes from the learner's stored record.
         profile = consent.get_profile(principal.subject, anonymous=principal.anonymous)
+
+        # The board (BOARD.md §4). Same route, same door, same meter — only the body differs.
+        if name == "wobo.turn" and wants_event_stream(http):
+            return stream_board_turn(gw, name, request, http, profile)
         # A generation is the expensive half, and an anonymous subject is free to mint. Building
         # a whole lesson asks for an account first; talking to her does not.
         if name.startswith("engine.") and principal.anonymous:

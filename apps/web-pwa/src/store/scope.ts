@@ -23,6 +23,9 @@ export const SCOPED_KEYS = [
   'clss-avatar-v1',
   'clss-learner-profile',
   'clss-profile-photo-v1',
+  // The boards she and the learner drew together, kept as objects. They are the learner's work:
+  // they carry across an anonymous-to-account upgrade, and they leave the device on sign-out.
+  'clss-board-notes-v1',
 ] as const;
 
 /** Where the last scope is remembered, so an upgrade (anonymous → account) can carry data across. */

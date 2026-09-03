@@ -556,6 +556,100 @@ export async function performTurn(
   }
 }
 
+// --- THE UTTERANCE CLOCK: what the board's hand is timed against ---------------------------------
+//
+// A board turn's plan carries `t.start` on every object, measured from the beginning of the current
+// utterance (docs/BOARD.md §2). The clock that zero is measured from lives HERE, with her voice, not
+// in the renderer: the performance opens, the board is zeroed on the same instant, and the pen then
+// leads the first syllable by exactly the time that syllable takes to arrive — a hand's anticipation
+// before a stroke, which is what BOARD.md §7 asks for and what keeps the first stroke inside its
+// one-second budget while the voice keeps its own.
+//
+// Lines arrive as the plan streams, so the utterance is a queue, not a string: `say` each frame as
+// it lands, `end` when the stream closes, and the speaker drains them in order without ever
+// re-synthesising a sentence it has already spoken.
+
+/** What the board offers the voice: a clock it can zero. `BoardStore` satisfies this as it is. */
+export interface UtteranceClock {
+  beginUtterance: (at?: number) => void;
+}
+
+export interface Utterance {
+  /** Queue a line of hers. Safe to call while she is already speaking. */
+  say: (text: string) => void;
+  /** No more lines are coming; `done` resolves once the queue drains. */
+  end: () => void;
+  /** The learner cut her off: the voice stops mid-word and the queue is dropped. */
+  stop: () => void;
+  /** Resolves when she has finished speaking, been superseded, or been stopped. */
+  readonly done: Promise<void>;
+}
+
+/**
+ * Open one utterance. `clock` is read at the moment the performance opens (the board she is drawing
+ * on can be chosen on the first object, so it is a getter, not a value).
+ */
+export function startUtterance(clock?: () => UtteranceClock | null | undefined): Utterance {
+  stopSpeaking();
+  const gen = ++speechGen;
+  clock?.()?.beginUtterance();
+  const queue: string[] = [];
+  let ended = false;
+  let wake: (() => void) | null = null;
+  const nudge = () => {
+    const w = wake;
+    wake = null;
+    w?.();
+  };
+
+  const drain = (async () => {
+    while (true) {
+      if (gen !== speechGen) return;
+      const next = queue.shift();
+      if (next === undefined) {
+        if (ended) return;
+        await new Promise<void>((resolve) => {
+          wake = resolve;
+        });
+        continue;
+      }
+      const canVoice = Boolean(GATEWAY_URL) && !isMuted();
+      const segs = sentences(next);
+      // Low-fi (reduced motion, Data Saver, 2G): voice the first couple of sentences, read the rest
+      // on the clock. Grace degrades; the timing the ink is paced against does not.
+      const voiceCount = currentFidelity() === 'low' ? Math.min(2, segs.length) : segs.length;
+      let pending = canVoice && segs.length > 0 ? synth(segs[0] as string) : null;
+      for (let i = 0; i < segs.length; i++) {
+        const cur = pending ? await pending : null;
+        if (gen !== speechGen) return;
+        pending = canVoice && i + 1 < voiceCount ? synth(segs[i + 1] as string) : null;
+        if (cur && !isMuted()) await playSamples(cur.samples, cur.rate, gen);
+        else await waitMs(estimateReadMs(segs[i] as string));
+        if (gen !== speechGen) return;
+      }
+    }
+  })();
+
+  return {
+    say(text: string) {
+      if (!text.trim()) return;
+      queue.push(text);
+      nudge();
+    },
+    end() {
+      ended = true;
+      nudge();
+    },
+    stop() {
+      ended = true;
+      queue.length = 0;
+      stopSpeaking();
+      nudge();
+    },
+    done: drain,
+  };
+}
+
 // A turn's anchored actions, handed from App's ask() to the conductor and consumed once, keyed by
 // the wobo turn's id (so it never mis-fires on an identical-looking line).
 const pendingPerformances = new Map<string, WoboAction[]>();

@@ -1136,3 +1136,395 @@ def run_wobo_turn(
         )
     )
     return _apply_classification(out, classification, live=True), tokens
+
+
+# --- the board turn (BOARD.md) --------------------------------------------------------------------
+#
+# Additive over everything above: the five-path turn is unchanged, and a board turn is what happens
+# when the answer is a drawing rather than a paragraph. The model is asked for a compact PLAN in the
+# board grammar — intents like "graph y=x**2 with the tangent at x=1", never coordinates — because
+# coordinates written by a model are the exact failure BOARD.md §11 names. The pipelines compute the
+# geometry, the verifier signs every number, and `board.planner` refuses anything that does not
+# anchor. Board plans route on the GENERATE tier (WOBO-PLAN §9: "board plans, lessons, practice
+# items"), which is a cheaper mind than the turn tier and is escalated only on a verifier rejection.
+
+BOARD_TIER_CAPABILITY = "wobo.board"
+
+BOARD_SYSTEM = (
+    WOBO_PERSONA
+    + """
+
+You are planning what to DRAW, not just what to say. Reply with strict JSON only, no prose outside it:
+
+{"say":"<what you say while you draw — two to four sentences, the first one short>",
+ "presentation":"screen|plane|full",
+ "intents":[ ... ],
+ "objects":[ ... ],
+ "ask":{"prompt":"<a question that hands the next move back to them>","targets":["<object id>"]}}
+
+INTENTS are how you draw anything with a number in it. You describe what you want; code computes
+the geometry and a verifier checks every quantity before a stroke is made. You never write
+coordinates and you never write a computed number — a number you type is refused, a number the
+pipeline computes is drawn. The intents you may ask for:
+
+  math      op "graph"        expr (in python notation, e.g. "x**2"), var, domain [lo, hi], tangent_at
+            op "number_line"  domain [lo, hi], marks [values]
+            op "derivation"   equation "2*x + 3 = 7", steps ["2*x = 4", "x = 2"], var
+            op "construction" what "perpendicular_bisector", segment [[ax, ay], [bx, by]]
+  physics   op "free_body"    body, forces [{name, magnitude, angle_deg, unit}], equilibrium
+            op "projectile"   v0, angle_deg
+            op "circuit"      emf, resistances [..], arrangement "series"|"parallel"
+            op "ray"          focal_length, object_distance (negative, Cartesian convention)
+            op "wave"         amplitude, wavelength, frequency
+  chemistry op "molecule"     smiles, name
+            op "balance"      reactants ["H2","O2"], products ["H2O"]   (coefficients are SOLVED)
+  bio_social op "cell"        subject "animal cell"|"plant cell"|"neuron"|"leaf", parts [..]
+            op "food_web"     links [{from, to}]  (the arrow points where the energy goes)
+            op "punnett"      parent_a "Aa", parent_b "Aa"
+            op "timeline"     events [{year, label}]
+            op "map"          regions [ids], values [{id, value}], extreme "max"|"min"
+
+OBJECTS are your own marks over what the pipelines drew and over what is already on the learner's
+screen: point, circle, underline, arrow, bracket, strike, write, label, erase, wipe. Each is
+{"id":"m1","kind":"circle","anchor":{...},"style":{"ink":"accent","weight":2}}. An arrow POINTS AT
+its anchor and starts at its optional "from" anchor, so the head is always the thing it is about.
+An anchor is one of
+{"target":"<a target id from the registry you were given>"}, {"object":"<an id of something on the
+board>"}, {"focus":"<the region they circled>"}, or {"board":[x, y]} in a 1000-unit square — and
+board coordinates are only for something you are drawing from scratch. A mark anchored to a target
+that is not on their screen is thrown away, so only ever use ids you were actually given.
+
+Add "meta":{"beat":{"with":1}} to an object to land it as you BEGIN that sentence, or
+{"after":1} to land it as you finish it. You point before you say "this".
+
+Choose the presentation: "screen" for a pointer or one line over what is already there, "plane" for
+a derivation or a diagram from scratch, "full" inside a lesson. If they asked for the board, give
+them the plane.
+
+Draw one step at a time and hand the next move back with "ask" rather than finishing the problem
+for them. Keep "say" in sentence case, with no emoji and no exclamation marks."""
+)
+
+# The keyless twin: deterministic intent extraction so the whole board works in mock mode. Keep in
+# sync with the live grammar above — these are the same intents, chosen by keyword instead of mind.
+_BOARD_MOLECULES: dict[str, str] = {
+    "water": "O",
+    "methane": "C",
+    "ethanol": "CCO",
+    "benzene": "c1ccccc1",
+    "acetic acid": "CC(=O)O",
+    "cyclohexane": "C1CCCCC1",
+    "ethene": "C=C",
+    "carbon dioxide": "O=C=O",
+}
+
+_EXPR_RE = re.compile(r"(?:y\s*=\s*)?([0-9a-zA-Z_+\-*/^(). ]{1,60})$")
+_TANGENT_RE = re.compile(r"tangent\s+(?:at|to)?\s*x?\s*=?\s*(-?\d+(?:\.\d+)?)")
+_EQUATION_RE = re.compile(r"([0-9a-zA-Z_+\-*/^(). ]{1,60}=[0-9a-zA-Z_+\-*/^(). ]{1,60})")
+_REACTION_RE = re.compile(r"([A-Za-z0-9+ ]{1,60})(?:->|→|=)([A-Za-z0-9+ ]{1,60})")
+
+
+def _board_expression(text: str) -> str | None:
+    """The function in "graph y = x^2 from -3 to 3", in python notation, or None."""
+    body = re.sub(r"^.*?\b(?:graph|plot|draw|sketch)\b", "", text, count=1, flags=re.IGNORECASE)
+    body = re.split(r"\b(?:with|and|from|between|for)\b", body, maxsplit=1)[0]
+    body = body.strip().strip(".?,")
+    match = _EXPR_RE.match(body)
+    if not match:
+        return None
+    expr = match.group(1).replace("^", "**").strip()
+    return expr if expr and re.search(r"[a-zA-Z]", expr) else None
+
+
+def board_intents(text: str) -> list[dict[str, Any]]:
+    """Deterministic keyword extraction of board intents. The mock brain, and the live safety net
+    when the model returns a plan with no intents at all."""
+    t = (text or "").lower().strip()
+    if not t:
+        return []
+
+    if re.search(r"\b(graph|plot)\b", t):
+        expr = _board_expression(t)
+        if expr:
+            intent: dict[str, Any] = {"pipeline": "math", "op": "graph", "expr": expr}
+            tangent = _TANGENT_RE.search(t)
+            if tangent:
+                intent["tangent_at"] = float(tangent.group(1))
+            span = re.search(r"from\s+(-?\d+(?:\.\d+)?)\s+to\s+(-?\d+(?:\.\d+)?)", t)
+            if span:
+                intent["domain"] = [float(span.group(1)), float(span.group(2))]
+            return [intent]
+    if "number line" in t:
+        return [{"pipeline": "math", "op": "number_line", "domain": [-5, 5]}]
+    if re.search(r"\b(perpendicular bisector|bisector|construct)\b", t):
+        return [{"pipeline": "math", "op": "construction", "what": "perpendicular_bisector"}]
+
+    if re.search(r"\b(projectile|thrown|launched|kicked)\b", t):
+        speed = re.search(r"(\d+(?:\.\d+)?)\s*(?:m/s|metres per second|meters per second)", t)
+        angle = re.search(r"(\d+(?:\.\d+)?)\s*(?:degrees|deg|°)", t)
+        return [
+            {
+                "pipeline": "physics",
+                "op": "projectile",
+                "v0": float(speed.group(1)) if speed else 20.0,
+                "angle_deg": float(angle.group(1)) if angle else 45.0,
+            }
+        ]
+    if re.search(r"\b(free ?body|forces on)\b", t):
+        return [
+            {
+                "pipeline": "physics",
+                "op": "free_body",
+                "body": "the block",
+                "equilibrium": True,
+                "forces": [
+                    {"name": "weight", "magnitude": 10.0, "angle_deg": 270.0, "unit": "N"},
+                    {"name": "normal", "magnitude": 10.0, "angle_deg": 90.0, "unit": "N"},
+                ],
+            }
+        ]
+    if re.search(r"\b(circuit|resistor|ohm)\b", t):
+        return [
+            {
+                "pipeline": "physics",
+                "op": "circuit",
+                "emf": 12.0,
+                "resistances": [4.0, 8.0],
+                "arrangement": "parallel" if "parallel" in t else "series",
+            }
+        ]
+    if re.search(r"\b(lens|ray diagram|refract)\b", t):
+        return [
+            {
+                "pipeline": "physics",
+                "op": "ray",
+                "focal_length": 10.0,
+                "object_distance": -30.0,
+            }
+        ]
+    if re.search(r"\b(wave|wavelength|frequency)\b", t):
+        return [
+            {
+                "pipeline": "physics",
+                "op": "wave",
+                "amplitude": 1.0,
+                "wavelength": 2.0,
+                "frequency": 3.0,
+            }
+        ]
+
+    if "balance" in t or ("reaction" in t and ("->" in t or "→" in t)):
+        # "balance H2 + O2 -> H2O" — the trigger word is not part of the first formula.
+        body = re.sub(r"^.*?\b(?:balance|balanced|balancing|reaction)\b\s*[:]?\s*", "", text or "", count=1, flags=re.IGNORECASE)
+        reaction = _REACTION_RE.search(body)
+        if reaction:
+            left = [s.strip() for s in reaction.group(1).split("+") if s.strip()]
+            right = [s.strip() for s in reaction.group(2).split("+") if s.strip()]
+            if left and right:
+                return [
+                    {"pipeline": "chemistry", "op": "balance", "reactants": left, "products": right}
+                ]
+    for name, smiles in _BOARD_MOLECULES.items():
+        if name in t:
+            return [{"pipeline": "chemistry", "op": "molecule", "smiles": smiles, "name": name}]
+
+    for subject in ("plant cell", "animal cell", "neuron", "leaf"):
+        if subject in t:
+            return [{"pipeline": "bio_social", "op": "cell", "subject": subject}]
+    if "food web" in t or "food chain" in t:
+        return [
+            {
+                "pipeline": "bio_social",
+                "op": "food_web",
+                "links": [
+                    {"from": "grass", "to": "grasshopper"},
+                    {"from": "grasshopper", "to": "frog"},
+                    {"from": "frog", "to": "snake"},
+                ],
+            }
+        ]
+    if "punnett" in t or "cross" in t:
+        parents = re.findall(r"\b([A-Za-z]{2})\b", text or "")
+        pair = [p for p in parents if p[0].lower() == p[1].lower()][:2]
+        return [
+            {
+                "pipeline": "bio_social",
+                "op": "punnett",
+                "parent_a": pair[0] if pair else "Aa",
+                "parent_b": pair[1] if len(pair) > 1 else "Aa",
+            }
+        ]
+    if "timeline" in t:
+        return []
+
+    if re.search(r"\b(solve|derivation|step by step|show the steps)\b", t):
+        # "solve 2*x + 3 = 7 step by step" — the equation is what is left once the ask is gone.
+        body = re.sub(
+            r"^.*?\b(?:solve|derivation|derive|work(?:ing)? out|show me)\b\s*[:]?\s*",
+            "",
+            text or "",
+            count=1,
+            flags=re.IGNORECASE,
+        )
+        body = re.split(r"\b(?:step by step|show the steps|for me|please)\b", body, maxsplit=1)[0]
+        equation = _EQUATION_RE.search(body)
+        if equation:
+            return [
+                {
+                    "pipeline": "math",
+                    "op": "derivation",
+                    "equation": equation.group(1).strip().replace("^", "**"),
+                    "steps": [],
+                }
+            ]
+    return []
+
+
+_BOARD_SAY = {
+    "math": "Look at this. I will draw the curve first, then the line that just touches it.",
+    "physics": "Here it is. Watch what happens to each piece as it moves.",
+    "chemistry": "Let me build it. Each bond goes on in the order you would draw it yourself.",
+    "bio_social": "Here. I will label it as I go, and you tell me the one I miss.",
+}
+
+
+# What the learner circled, and asking about it. A gesture plus "why?" is the commonest board turn
+# there is — it is the whole video case in BOARD.md §5 — and it needs no subject pipeline at all:
+# the answer is a mark ON the thing they pointed at, which is why it can be drawn keylessly.
+_ABOUT_THIS = re.compile(
+    r"^\s*(why|how|what|explain|tell me|i don'?t (get|understand)|huh)\b|\bwhat (is|are|does) (this|that|it)\b",
+    re.IGNORECASE,
+)
+
+
+def _packet_focus(context: dict[str, Any]) -> dict[str, Any] | None:
+    """The region the learner circled, as the senses report it (``packet.ts``: ``PacketFocus``).
+
+    It rides at ``context.packet.focus``; older clients put it at ``context.focus``. Both are read
+    so a turn is never blind to a gesture the learner definitely made.
+    """
+    packet = context.get("packet")
+    packet = packet if isinstance(packet, dict) else {}
+    for candidate in (packet.get("focus"), context.get("focus")):
+        if isinstance(candidate, dict) and str(candidate.get("id") or "").strip():
+            return candidate
+    return None
+
+
+def _focus_plan(context: dict[str, Any], text: str) -> dict[str, Any] | None:
+    """She marks the thing in hand: a circle round it and one written word beside it.
+
+    Nothing here is invented — the anchor is the focus id the gesture layer minted, and the note is
+    the learner's own question turned back on them. It is the keyless twin of what the model does
+    with a focus, and it keeps the video case honest with no key and no network.
+    """
+    focus = _packet_focus(context)
+    if focus is None or not _ABOUT_THIS.search(text or ""):
+        return None
+    fid = str(focus["id"])
+    anchor = {"focus": fid}
+    what = str(focus.get("text") or "").strip()
+    said = (
+        f"This part — {what}." if what and len(what) <= 90 else "This part, the bit you drew around."
+    )
+    return {
+        "say": f"{said} Let us look at what it is doing.",
+        "intents": [],
+        "objects": [
+            {
+                "id": "f1ring",
+                "kind": "circle",
+                "anchor": anchor,
+                "pad": 10,
+                "style": {"ink": "accent", "weight": 2},
+            },
+            {
+                "id": "f2note",
+                "kind": "write",
+                "anchor": {"focus": fid, "at": "bottom"},
+                "text": "start here",
+                "style": {"ink": "wobo", "weight": 2},
+            },
+        ],
+        "ask": {"prompt": "What do you think happens next?", "targets": [fid]},
+    }
+
+
+def mock_board_plan(payload: dict[str, Any]) -> dict[str, Any] | None:
+    """A deterministic, network-free board plan. None when this turn is not a drawing."""
+    context = payload.get("context") or {}
+    turn = context.get("turn") or {}
+    text = str(turn.get("lastUserInput") or "")
+    intents = board_intents(text)
+    if not intents:
+        # No subject to draw, but perhaps something in hand to mark.
+        return _focus_plan(context, text)
+    family = str(intents[0].get("pipeline") or "math")
+    return {
+        "say": _BOARD_SAY.get(family, _BOARD_SAY["math"]),
+        "intents": intents,
+        "objects": [],
+        "ask": {"prompt": "What do you notice about it?", "targets": []},
+    }
+
+
+def run_board_plan(
+    *,
+    provider_model: str,
+    payload: dict[str, Any],
+    fallbacks: tuple[str, ...] = (),
+    timeout_s: float | None = None,
+) -> tuple[dict[str, Any], int]:
+    """One board plan from the model, in the grammar. Returns (plan, tokens).
+
+    The plan is NOT trusted here — it is handed straight to ``board.planner``, which validates
+    every object, resolves every anchor and refuses anything the verifier did not sign.
+    """
+    import litellm
+
+    litellm.drop_params = True
+    context = payload.get("context") or {}
+    turn = context.get("turn") or {}
+    grounding = _ground_working(
+        (context.get("canvas") or {}).get("equation"), (context.get("canvas") or {}).get("steps") or []
+    )
+    response = litellm.completion(
+        model=provider_model,
+        messages=[
+            {"role": "system", "content": BOARD_SYSTEM},
+            {"role": "user", "content": _build_user_prompt(context, grounding)},
+        ],
+        fallbacks=list(fallbacks) or None,
+        max_tokens=max_tokens_for(BOARD_TIER_CAPABILITY, 900),
+        temperature=0.2,
+        timeout=timeout_for(BOARD_TIER_CAPABILITY, timeout_s),
+    )
+    record_cost(capability=BOARD_TIER_CAPABILITY, model=provider_model, response=response)
+    data = _extract_json(response.choices[0].message.content or "")
+    usage = getattr(response, "usage", None)
+    tokens = int(getattr(usage, "total_tokens", 0) or 0)
+    if not data.get("intents") and not data.get("objects"):
+        # A plan with nothing in it is not a board. Fall back to the deterministic reading of what
+        # they asked for rather than streaming an empty turn.
+        data.setdefault("say", str(data.get("say") or "").strip())
+        data["intents"] = board_intents(str(turn.get("lastUserInput") or ""))
+    return data, tokens
+
+
+def board_plan_for(payload: dict[str, Any], *, live: bool) -> dict[str, Any] | None:
+    """The plan for this turn, live or keyless. None when the answer is not a drawing."""
+    if not live:
+        return mock_board_plan(payload)
+    from classess_gateway.registry import policy
+    from classess_gateway.routing import Track, resolve, resolve_any
+
+    pol = policy("engine.compose")  # the generate tier, per WOBO-PLAN §9
+    spec = resolve(pol.primary, Track.TRACK_1)
+    fallbacks = tuple(resolve_any(name).provider_model for name in pol.fallback)
+    try:
+        plan, _tokens = run_board_plan(
+            provider_model=spec.provider_model, payload=payload, fallbacks=fallbacks
+        )
+    except Exception:  # a provider that fell over never costs her the turn — she draws what she can
+        return mock_board_plan(payload)
+    return plan or mock_board_plan(payload)

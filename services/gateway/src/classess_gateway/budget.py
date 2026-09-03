@@ -35,6 +35,12 @@ CAPABILITY_CLASS: dict[str, str] = {
     "voice.tts": TURN,
     "voice.session": TURN,
     "wobo.turn": TURN,
+    # A board turn is a turn. It streams instead of returning one body, and it plans on the
+    # generate tier rather than the turn tier, but the learner asked her one question and gets
+    # one answer — so it draws on the same counter, never on the generation counter (BOARD.md
+    # §10). The streaming route rides "wobo.turn" itself; this entry is here so an internal
+    # caller that names the plan step by its own name is metered rather than served free.
+    "wobo.board": TURN,
     "vidya.turn": TURN,  # legacy alias, in case it is classified before canonicalisation
     "tutor.turn": TURN,
     "grade.attempt": TURN,

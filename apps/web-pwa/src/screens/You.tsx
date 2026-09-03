@@ -958,6 +958,56 @@ export function You() {
     kind: 'card',
     label: 'the card showing what Wobo has learned about this learner, with a clear-memory door',
   });
+  // The two things a learner changes about their world, and the dials that govern how she behaves.
+  // Registered so "change my class" or "make her quieter" walks to the real control.
+  // The affordance itself, always on screen: "show me how to change my board" has to reach a
+  // control the learner can actually press. The picker below is the panel this opens, and it only
+  // exists once it is open — registering only that left the door itself invisible to her.
+  const schoolRef = useRegisterTarget<HTMLButtonElement>('you-school', {
+    kind: 'control',
+    label: 'change your class and board — the syllabus everything is taught from',
+    getSceneState: () => ({
+      grade: profile.grade,
+      board: boardName(profile.boardId),
+      open: changingSchool,
+    }),
+    getValidActions: () => ['open the class and board picker'],
+    applyTutorAction: (patch) => {
+      if (typeof patch.open === 'boolean') setChangingSchool(patch.open);
+    },
+  });
+  const pickerRef = useRegisterTarget<HTMLDivElement>('you-school-picker', {
+    kind: 'picker',
+    label: 'the class and board picker — which syllabus this learner is on',
+    getSceneState: () => ({ grade: profile.grade, board: boardName(profile.boardId) }),
+    getValidActions: () => ['change the class', 'change the board'],
+    applyTutorAction: (patch) => {
+      if (typeof patch.grade === 'string') commitProfile({ grade: patch.grade });
+      if (typeof patch.boardId === 'string') commitProfile({ boardId: patch.boardId });
+    },
+  });
+  const settingsRef = useRegisterTarget<HTMLDivElement>('you-settings', {
+    kind: 'settings',
+    label: 'settings — her voice, the ignite sound, how much she speaks up, appearance, and access',
+    getSceneState: () => ({
+      voice,
+      sound,
+      adventure,
+      proactivity,
+      largeText: Boolean(profile.largeText),
+    }),
+    getValidActions: () => ['mute or unmute her', 'set how proactive she is', 'switch the theme'],
+    applyTutorAction: (patch) => {
+      if (
+        patch.proactivity === 'quiet' ||
+        patch.proactivity === 'balanced' ||
+        patch.proactivity === 'proactive'
+      ) {
+        setProactivity(patch.proactivity);
+        saveProactivity(patch.proactivity);
+      }
+    },
+  });
 
   useEffect(() => {
     bus.publishPage({
@@ -1082,6 +1132,7 @@ export function You() {
             />
             <button
               type="button"
+              ref={schoolRef}
               onClick={() => setChangingSchool((s) => !s)}
               style={{
                 border: 'none',
@@ -1110,6 +1161,7 @@ export function You() {
               exit={{ opacity: 0, y: -8 }}
               transition={{ type: 'spring', stiffness: 320, damping: 30 }}
               style={{ marginTop: -22 }}
+              ref={pickerRef}
             >
               <GradeBoardPicker
                 grade={profile.grade}
@@ -1660,7 +1712,7 @@ export function You() {
         {/* ---- settings ---- */}
         <motion.div variants={rise}>
           <Section label="Settings">
-            <div>
+            <div ref={settingsRef}>
               <DialRow
                 title="Wobo's voice"
                 line="She speaks her replies out loud"

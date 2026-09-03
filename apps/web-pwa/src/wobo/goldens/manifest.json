@@ -1,0 +1,110 @@
+[
+  {
+    "name": "pythagoras",
+    "prompt": "why does a squared plus b squared equal c squared",
+    "title": "a² + b² = c²",
+    "subject": "math",
+    "presentation": "full",
+    "objects": 14,
+    "numbers": 3
+  },
+  {
+    "name": "tangent-parabola",
+    "prompt": "draw y = x squared and the tangent at x = 1.5",
+    "title": "the tangent to y = x²",
+    "subject": "math",
+    "presentation": "full",
+    "objects": 10,
+    "numbers": 2
+  },
+  {
+    "name": "long-division",
+    "prompt": "show me 4823 divided by 7 the long way",
+    "title": "4823 ÷ 7",
+    "subject": "math",
+    "presentation": "full",
+    "objects": 14,
+    "numbers": 2
+  },
+  {
+    "name": "projectile-apex",
+    "prompt": "what is happening at the top of a projectile",
+    "title": "the apex of a projectile",
+    "subject": "physics",
+    "presentation": "full",
+    "objects": 12,
+    "numbers": 4
+  },
+  {
+    "name": "free-body-incline",
+    "prompt": "draw the forces on a block on a 30 degree slope",
+    "title": "a block on an incline",
+    "subject": "physics",
+    "presentation": "full",
+    "objects": 14,
+    "numbers": 4
+  },
+  {
+    "name": "series-circuit",
+    "prompt": "twelve volts across four, six and two ohms in series",
+    "title": "a series circuit",
+    "subject": "physics",
+    "presentation": "full",
+    "objects": 15,
+    "numbers": 9
+  },
+  {
+    "name": "benzene",
+    "prompt": "draw benzene and explain the ring",
+    "title": "benzene",
+    "subject": "chemistry",
+    "presentation": "full",
+    "objects": 15,
+    "numbers": 0
+  },
+  {
+    "name": "photosynthesis-balance",
+    "prompt": "balance the photosynthesis equation",
+    "title": "balancing photosynthesis",
+    "subject": "chemistry",
+    "presentation": "full",
+    "objects": 15,
+    "numbers": 4
+  },
+  {
+    "name": "titration-curve",
+    "prompt": "why does the pH jump so suddenly in a titration",
+    "title": "a strong acid titration",
+    "subject": "chemistry",
+    "presentation": "full",
+    "objects": 12,
+    "numbers": 4
+  },
+  {
+    "name": "plant-cell",
+    "prompt": "label a plant cell for me",
+    "title": "a plant cell",
+    "subject": "biology",
+    "presentation": "full",
+    "objects": 18,
+    "numbers": 0
+  },
+  {
+    "name": "food-web",
+    "prompt": "draw a food web for a grassland",
+    "title": "a grassland food web",
+    "subject": "biology",
+    "presentation": "full",
+    "objects": 15,
+    "numbers": 0
+  },
+  {
+    "name": "timeline",
+    "prompt": "give me a timeline of the Indian freedom struggle",
+    "title": "the freedom struggle",
+    "subject": "social",
+    "presentation": "full",
+    "objects": 21,
+    "numbers": 1
+  }
+]

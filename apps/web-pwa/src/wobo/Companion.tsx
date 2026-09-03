@@ -8,17 +8,27 @@
  */
 
 import { useReducedMotion } from '@classess/motion';
-import { useWoboBus, WoboBody } from '@classess/wobo';
+import { plane, useWoboBus, WoboBody } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
-import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { CloseIcon, SendIcon, WaveformIcon } from '../ui/icons';
 import { sfx } from '../ui/sound';
+import { boardTurn } from './board-turn';
 import { appendToArchive, type ChatTurn, useWoboChat } from './chat';
 import { FlyingWobo } from './Flight';
+import {
+  type LeanReason,
+  leanInLine,
+  loadProactivity,
+  shouldLeanIn,
+  trailingMisses,
+} from './leanin';
+import { availableModes, modePrompt } from './modes';
 import { TurnAttachments } from './paths';
+import { moodFor, useIdleSince } from './presence';
 import { isMuted, MuteButton } from './speech';
 import {
   modeWhisper,
@@ -31,6 +41,15 @@ import { useWoboVoice } from './voice';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+/** A sentence being written is never interrupted — she waits for the full stop. */
+function isTypingNow(): boolean {
+  if (typeof document === 'undefined') return false;
+  const el = document.activeElement as HTMLElement | null;
+  if (!el) return false;
+  const tag = el.tagName;
+  return tag === 'INPUT' || tag === 'TEXTAREA' || el.isContentEditable === true;
+}
+
 /** Teach-back (WOBO.md §8): she plays the student; the exchange is ephemeral, like her ink. */
 interface TeachBack {
   topic: string;
@@ -39,6 +58,17 @@ interface TeachBack {
   probed: string[];
   done: boolean;
 }
+
+const offerButton: React.CSSProperties = {
+  border: 'none',
+  background: 'transparent',
+  color: 'var(--clss-ink-900)',
+  cursor: 'pointer',
+  fontFamily: 'inherit',
+  fontSize: '0.78rem',
+  fontWeight: 550,
+  padding: 0,
+};
 
 /** Her hand: letter-by-letter reveal for the newest line she speaks. */
 function Handwritten({ text, animate }: { text: string; animate: boolean }) {
@@ -75,12 +105,12 @@ function Handwritten({ text, animate }: { text: string; animate: boolean }) {
 }
 
 export function WoboCompanion() {
-  const { turns, ask, busy, mood, setMood } = useWoboChat();
+  const { turns, ask, busy, mood, setMood, focus } = useWoboChat();
   const router = useRouter();
   const { route } = router;
   const bus = useWoboBus();
   const sdk = useSdk();
-  const { award } = useProgress();
+  const { award, xp } = useProgress();
   const { mode } = useTutor();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState('');
@@ -210,6 +240,10 @@ export function WoboCompanion() {
   // utterance and she replies aloud, docked — no drawer opens. A quick tap stays the poke.
   const holdStart = () => {
     if (open || voiceOn) return; // the drawer has its own mic; never run two sessions
+    // Barge-in by voice (docs/BOARD.md §4): the moment the learner speaks, the pen lifts where it
+    // is and her voice stops with it. What is drawn stays, and the object she was on rides the
+    // next turn so she resumes rather than starting again.
+    boardTurn.interrupt();
     if (isMuted()) {
       flashPttNote('unmute to talk with her'); // the mute law governs sound
       return;
@@ -235,6 +269,78 @@ export function WoboCompanion() {
   useEffect(() => {
     if (voice.status === 'idle' || voice.status === 'unavailable') setPtt(false);
   }, [voice.status]);
+
+  // --- her body, on real signals (WOBO-TASKS §5.7) ------------------------------------------------
+  // Listening is the microphone actually being open; drawing is the pen actually being down;
+  // thinking is a plan actually streaming; the aha is a real award crossing. Nothing here is a
+  // timer and nothing is canned.
+  const board = useSyncExternalStore(boardTurn.subscribe, boardTurn.get, boardTurn.get);
+  const idleSince = useIdleSince();
+  const [aha, setAha] = useState(false);
+  const lastXp = useRef(xp);
+  useEffect(() => {
+    if (xp <= lastXp.current) {
+      lastXp.current = xp;
+      return;
+    }
+    lastXp.current = xp;
+    setAha(true);
+    const t = window.setTimeout(() => setAha(false), 2200);
+    return () => window.clearTimeout(t);
+  }, [xp]);
+  const expression = moodFor({
+    listening: ptt || voice.status === 'listening',
+    thinking: busy || (board.active && board.objects === 0),
+    drawing: board.active && board.objects > 0,
+    aha,
+    speaking: voice.status === 'speaking',
+    engaged: open,
+  });
+
+  // --- proactive lean-in (WOBO-PLAN §3) -----------------------------------------------------------
+  // Three wrong actions or forty idle seconds, governed by the dial the learner set in You. She
+  // never talks over herself, never interrupts typing, and offers once before a long cooldown.
+  const [offer, setOffer] = useState<{ reason: LeanReason; line: string } | null>(null);
+  const offerRef = useRef<{ reason: LeanReason; line: string } | null>(null);
+  offerRef.current = offer;
+  const [leanKey, setLeanKey] = useState(0);
+  const lastOfferAt = useRef(0);
+  const idleRef = useRef(idleSince);
+  idleRef.current = idleSince;
+  const engagedRef = useRef(false);
+  engagedRef.current = open || plane.get().open || board.active || busy;
+  useEffect(() => {
+    const dial = loadProactivity();
+    if (dial === 'quiet') return;
+    const tick = () => {
+      if (offerRef.current) return; // one on the table at a time
+      const typing = isTypingNow();
+      const reason = shouldLeanIn(
+        {
+          misses: trailingMisses(sdk.events.getLog()),
+          lastInputAt: idleRef.current,
+          lastOfferAt: lastOfferAt.current,
+          speaking: !isMuted() && engagedRef.current,
+          typing,
+          engaged: engagedRef.current,
+        },
+        Date.now(),
+        dial,
+      );
+      if (!reason) return;
+      lastOfferAt.current = Date.now();
+      setOffer({ reason, line: leanInLine(reason, topicName) });
+      setLeanKey((k) => k + 1);
+    };
+    const id = window.setInterval(tick, 5000);
+    return () => window.clearInterval(id);
+  }, [sdk, topicName]);
+  // Her offer is never a wall: it retires on its own if the learner carries on without it.
+  useEffect(() => {
+    if (!offer) return;
+    const t = window.setTimeout(() => setOffer(null), 12_000);
+    return () => window.clearTimeout(t);
+  }, [offer]);
 
   // Closing the drawer only contracts her — she stays docked (FlyingWobo never unmounts). And a
   // live mic must not outlive the drawer, so any voice session is stopped on close (stop() no-ops
@@ -299,7 +405,12 @@ export function WoboCompanion() {
       <div style={{ visibility: open ? 'hidden' : 'visible' }}>
         <FlyingWobo
           routeKey={route.name}
-          mood={busy ? 'thinking' : mood}
+          mood={expression}
+          // Her eyes go to what the learner circled, and her idle life runs off real quiet.
+          focus={focus?.rect ?? null}
+          idleSince={idleSince}
+          behaviour={offer ? 'lean' : null}
+          behaviourKey={leanKey}
           // Realism: while she's inking, her body turns toward the mark on the page (the bus reports
           // where). The docked orb sits bottom-right; the angle runs from her to the ink.
           gestureAngle={
@@ -318,6 +429,46 @@ export function WoboCompanion() {
           onHoldEnd={holdEnd}
         />
       </div>
+      {/* The lean-in: she offers a pointer, she does not take over. Both answers are one tap, and
+          walking away is an answer too — it retires on its own. */}
+      {offer && !open && (
+        <div
+          style={{
+            position: 'fixed',
+            right: 18,
+            bottom: 100,
+            maxWidth: 240,
+            padding: '8px 10px',
+            borderRadius: 'var(--clss-radius-sm)',
+            background: 'var(--clss-frost-on-paper)',
+            backdropFilter: 'blur(var(--clss-frost-blur))',
+            WebkitBackdropFilter: 'blur(var(--clss-frost-blur))',
+            border: '0.5px solid var(--clss-hairline-on-paper)',
+            color: 'var(--clss-ink-700)',
+            fontSize: '0.8rem',
+            lineHeight: 1.45,
+            textAlign: 'right',
+            zIndex: 'var(--clss-z-panel)' as unknown as number,
+          }}
+        >
+          {offer.line}
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 6 }}>
+            <button
+              type="button"
+              onClick={() => {
+                setOffer(null);
+                void ask(modePrompt('show_me'));
+              }}
+              style={offerButton}
+            >
+              show me
+            </button>
+            <button type="button" onClick={() => setOffer(null)} style={offerButton}>
+              not now
+            </button>
+          </div>
+        </div>
+      )}
       {pttNote && (
         <div
           style={{
@@ -556,6 +707,39 @@ export function WoboCompanion() {
               </button>
             )}
 
+            {/* Her modes, at hand (WOBO-PLAN §3). The ones that need something in hand appear only
+                once there is something in hand — the same list the palette and voice reach. */}
+            {!tb && (
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 6,
+                  flexWrap: 'wrap',
+                  padding: '0 14px',
+                }}
+              >
+                {availableModes({ hasFocus: focus !== null, onLesson: onCourse }).map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => void ask(modePrompt(m.id, focus?.text))}
+                    title={m.hint}
+                    style={{
+                      border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+                      borderRadius: 'var(--clss-radius-sm)',
+                      background: 'transparent',
+                      color: 'var(--clss-ink-500)',
+                      cursor: 'pointer',
+                      fontFamily: 'inherit',
+                      fontSize: '0.76rem',
+                      padding: '4px 8px',
+                    }}
+                  >
+                    {m.label.toLowerCase()}
+                  </button>
+                ))}
+              </div>
+            )}
             <form
               onSubmit={submit}
               style={{

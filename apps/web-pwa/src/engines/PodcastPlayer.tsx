@@ -325,7 +325,7 @@ export function PodcastPlayer({
   const chap = spec.chapters[chapter];
   const totalProgress = (chapter + progress) / spec.chapters.length;
 
-  useRegisterTarget<HTMLDivElement>(`podcast-${spec.id}`, {
+  const stageRef = useRegisterTarget<HTMLDivElement>(`podcast-${spec.id}`, {
     kind: 'podcast',
     label: `audio lecture: ${spec.title}`,
     getSceneState: () => ({
@@ -412,7 +412,7 @@ export function PodcastPlayer({
 
   return (
     <CardBody maxWidth={620} center={false}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <div ref={stageRef} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         <div
           style={{
             display: 'flex',

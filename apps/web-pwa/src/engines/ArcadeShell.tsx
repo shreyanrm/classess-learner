@@ -324,7 +324,7 @@ export function ArcadeShell({
     });
   }, [setBar, phase, onDone, start]);
 
-  useRegisterTarget<HTMLDivElement>(`arcade-${spec.id}`, {
+  const stageRef = useRegisterTarget<HTMLDivElement>(`arcade-${spec.id}`, {
     kind: 'arcade',
     label: `catch game: ${spec.title}`,
     getSceneState: () => ({
@@ -365,7 +365,7 @@ export function ArcadeShell({
 
   return (
     <CardBody maxWidth={620} center={false}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div ref={stageRef} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div
           style={{
             display: 'flex',

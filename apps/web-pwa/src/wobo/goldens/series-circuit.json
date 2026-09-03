@@ -1,0 +1,475 @@
+{
+  "name": "series-circuit",
+  "prompt": "twelve volts across four, six and two ohms in series",
+  "title": "a series circuit",
+  "presentation": "full",
+  "subject": "physics",
+  "expect": {
+    "ids": [
+      "loop",
+      "cell",
+      "emf",
+      "resistor-1",
+      "resistor-1-value",
+      "resistor-2",
+      "resistor-2-value",
+      "resistor-3",
+      "resistor-3-value",
+      "total-resistance",
+      "current",
+      "drop-1",
+      "drop-2",
+      "drop-3",
+      "current-arrow"
+    ],
+    "kinds": [
+      "polyline",
+      "polyline",
+      "number",
+      "polyline",
+      "number",
+      "polyline",
+      "number",
+      "polyline",
+      "number",
+      "number",
+      "number",
+      "number",
+      "number",
+      "number",
+      "arrow"
+    ],
+    "anchors": [
+      "board",
+      "board",
+      "object",
+      "board",
+      "object",
+      "board",
+      "object",
+      "board",
+      "object",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board"
+    ],
+    "hangsOff": [
+      ["emf", "cell"],
+      ["resistor-1-value", "resistor-1"],
+      ["resistor-2-value", "resistor-2"],
+      ["resistor-3-value", "resistor-3"]
+    ],
+    "written": [
+      "12 V",
+      "4 ohm",
+      "6 ohm",
+      "2 ohm",
+      "R total = 12 ohm",
+      "I = 1.00 A",
+      "4.00 V",
+      "6.00 V",
+      "2.00 V"
+    ],
+    "numbers": [
+      {
+        "id": "emf",
+        "value": 12,
+        "unit": "V",
+        "check": "board.numbers_agree:the cell",
+        "from": "given: 12 V"
+      },
+      {
+        "id": "resistor-1-value",
+        "value": 4,
+        "unit": "ohm",
+        "check": "board.numbers_agree:resistor 1",
+        "from": "given: 4 ohm"
+      },
+      {
+        "id": "resistor-2-value",
+        "value": 6,
+        "unit": "ohm",
+        "check": "board.numbers_agree:resistor 2",
+        "from": "given: 6 ohm"
+      },
+      {
+        "id": "resistor-3-value",
+        "value": 2,
+        "unit": "ohm",
+        "check": "board.numbers_agree:resistor 3",
+        "from": "given: 2 ohm"
+      },
+      {
+        "id": "total-resistance",
+        "value": 12,
+        "unit": "ohm",
+        "check": "board.numbers_agree:total resistance",
+        "from": "4 + 6 + 2"
+      },
+      {
+        "id": "current",
+        "value": 1,
+        "precision": 2,
+        "unit": "A",
+        "check": "board.numbers_agree:current",
+        "from": "12 / 12"
+      },
+      {
+        "id": "drop-1",
+        "value": 4,
+        "precision": 2,
+        "unit": "V",
+        "check": "board.numbers_agree:voltage across resistor 1",
+        "from": "1 * 4"
+      },
+      {
+        "id": "drop-2",
+        "value": 6,
+        "precision": 2,
+        "unit": "V",
+        "check": "board.numbers_agree:voltage across resistor 2",
+        "from": "1 * 6"
+      },
+      {
+        "id": "drop-3",
+        "value": 2,
+        "precision": 2,
+        "unit": "V",
+        "check": "board.numbers_agree:voltage across resistor 3",
+        "from": "1 * 2"
+      }
+    ]
+  },
+  "plan": [
+    {
+      "type": "say",
+      "text": "One loop, one current, three resistors in a row.",
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "loop",
+        "kind": "polyline",
+        "anchor": {
+          "board": [200, 180]
+        },
+        "points": [[0, 280], [0, 0], [600, 0], [600, 280], [0, 280]],
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 0,
+          "dur": 1600
+        }
+      },
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "cell",
+        "kind": "polyline",
+        "anchor": {
+          "board": [182, 438]
+        },
+        "points": [[0, 0], [36, 0]],
+        "style": {
+          "ink": "accent",
+          "weight": 3
+        },
+        "t": {
+          "start": 1600,
+          "dur": 300
+        }
+      },
+      "t": 1600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "emf",
+        "kind": "number",
+        "anchor": {
+          "object": "cell"
+        },
+        "value": 12,
+        "unit": "V",
+        "verified": true,
+        "check": "board.numbers_agree:the cell",
+        "meta": "given: 12 V",
+        "t": {
+          "start": 1900,
+          "dur": 500
+        }
+      },
+      "t": 1900
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "resistor-1",
+        "kind": "polyline",
+        "anchor": {
+          "board": [310, 164]
+        },
+        "points": [[0, 16], [10, 0], [30, 32], [50, 0], [70, 32], [80, 16]],
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 2400,
+          "dur": 600
+        }
+      },
+      "t": 2400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "resistor-1-value",
+        "kind": "number",
+        "anchor": {
+          "object": "resistor-1"
+        },
+        "value": 4,
+        "unit": "ohm",
+        "verified": true,
+        "check": "board.numbers_agree:resistor 1",
+        "meta": "given: 4 ohm",
+        "t": {
+          "start": 3000,
+          "dur": 500
+        }
+      },
+      "t": 3000
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "resistor-2",
+        "kind": "polyline",
+        "anchor": {
+          "board": [460, 164]
+        },
+        "points": [[0, 16], [10, 0], [30, 32], [50, 0], [70, 32], [80, 16]],
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 3600,
+          "dur": 600
+        }
+      },
+      "t": 3600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "resistor-2-value",
+        "kind": "number",
+        "anchor": {
+          "object": "resistor-2"
+        },
+        "value": 6,
+        "unit": "ohm",
+        "verified": true,
+        "check": "board.numbers_agree:resistor 2",
+        "meta": "given: 6 ohm",
+        "t": {
+          "start": 4200,
+          "dur": 500
+        }
+      },
+      "t": 4200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "resistor-3",
+        "kind": "polyline",
+        "anchor": {
+          "board": [610, 164]
+        },
+        "points": [[0, 16], [10, 0], [30, 32], [50, 0], [70, 32], [80, 16]],
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 4800,
+          "dur": 600
+        }
+      },
+      "t": 4800
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "resistor-3-value",
+        "kind": "number",
+        "anchor": {
+          "object": "resistor-3"
+        },
+        "value": 2,
+        "unit": "ohm",
+        "verified": true,
+        "check": "board.numbers_agree:resistor 3",
+        "meta": "given: 2 ohm",
+        "t": {
+          "start": 5400,
+          "dur": 500
+        }
+      },
+      "t": 5400
+    },
+    {
+      "type": "say",
+      "text": "In a series loop the resistances simply add.",
+      "t": 6000
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "total-resistance",
+        "kind": "number",
+        "anchor": {
+          "board": [660, 530]
+        },
+        "value": 12,
+        "unit": "ohm",
+        "label": "R total =",
+        "verified": true,
+        "check": "board.numbers_agree:total resistance",
+        "meta": "4 + 6 + 2",
+        "t": {
+          "start": 6100,
+          "dur": 600
+        }
+      },
+      "t": 6100
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "current",
+        "kind": "number",
+        "anchor": {
+          "board": [660, 580]
+        },
+        "value": 1,
+        "precision": 2,
+        "unit": "A",
+        "label": "I =",
+        "verified": true,
+        "check": "board.numbers_agree:current",
+        "meta": "12 / 12",
+        "t": {
+          "start": 6700,
+          "dur": 600
+        }
+      },
+      "t": 6700
+    },
+    {
+      "type": "say",
+      "text": "The same current everywhere, so each resistor takes its share.",
+      "t": 7400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "drop-1",
+        "kind": "number",
+        "anchor": {
+          "board": [320, 240]
+        },
+        "value": 4,
+        "precision": 2,
+        "unit": "V",
+        "verified": true,
+        "check": "board.numbers_agree:voltage across resistor 1",
+        "meta": "1 * 4",
+        "t": {
+          "start": 7400,
+          "dur": 500
+        }
+      },
+      "t": 7400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "drop-2",
+        "kind": "number",
+        "anchor": {
+          "board": [470, 240]
+        },
+        "value": 6,
+        "precision": 2,
+        "unit": "V",
+        "verified": true,
+        "check": "board.numbers_agree:voltage across resistor 2",
+        "meta": "1 * 6",
+        "t": {
+          "start": 7900,
+          "dur": 500
+        }
+      },
+      "t": 7900
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "drop-3",
+        "kind": "number",
+        "anchor": {
+          "board": [620, 240]
+        },
+        "value": 2,
+        "precision": 2,
+        "unit": "V",
+        "verified": true,
+        "check": "board.numbers_agree:voltage across resistor 3",
+        "meta": "1 * 2",
+        "t": {
+          "start": 8400,
+          "dur": 500
+        }
+      },
+      "t": 8400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "current-arrow",
+        "kind": "arrow",
+        "anchor": {
+          "board": [620, 434]
+        },
+        "from": {
+          "board": [460, 434]
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 8900,
+          "dur": 700
+        }
+      },
+      "t": 8900
+    },
+    {
+      "type": "done",
+      "t": 9700
+    }
+  ]
+}

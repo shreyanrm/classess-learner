@@ -1,0 +1,347 @@
+"""The board planner — a compact plan in, a validated board out.
+
+The model is asked for an INTENT, never for coordinates: "graph y = x**2 with the tangent at
+x = 1", not a list of points. The pipelines compute the geometry, the verifier signs the numbers,
+and this module is the door between the two: it validates every object against the grammar,
+resolves every anchor against the registry snapshot that rode up in the context packet, chooses
+the presentation, and refuses a plan that is more than one board.
+
+Four laws are enforced here, and each of them is a way the board dies if it is not (BOARD.md §11):
+
+- **Nothing floats.** An anchor names a registry target, a focus region, another object, or board
+  space. A mark whose target is not on the screen the learner is looking at is refused outright —
+  a pointer at nothing is worse than silence. A shape whose target vanished is re-anchored to
+  board space, which is where a shape drawn from scratch belongs anyway.
+- **No number the model wrote.** Every object showing a numeral must name a check, and that check
+  must be one that actually ran on this turn (the ledger). A model cannot mint ``check`` any more
+  than it can mint the number.
+- **One board at a time.** Over :data:`MAX_OBJECTS` objects is refused as ``too_much_at_once``.
+- **Ink before the word.** Objects come out in drawing order with cumulative timing, which is what
+  lets :mod:`classess_gateway.board.stream` put the first stroke ahead of the first full stop.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Any
+
+from classess_verifier.gate import CheckResult
+
+from classess_gateway.board import schema
+from classess_gateway.board.pipelines import PIPELINES, Draft, run_intent
+from classess_gateway.board.verify import Ledger, Unverified
+
+#: BOARD.md §10: 40 objects typical, 200 maximum.
+MAX_OBJECTS = 200
+TYPICAL_OBJECTS = 40
+MAX_INTENTS = 8
+
+#: Optional embellishments a pipeline can drop to draw the simpler thing when a check fails —
+#: the "redraw once" half of BOARD.md §6.
+_EMBELLISHMENTS = ("tangent_at", "marks", "values", "equilibrium", "parts", "name")
+
+#: Where a re-anchored shape lands: the middle of the board, stepped down so two of them do not
+#: sit on top of each other.
+_REANCHOR_ORIGIN = (500.0, 300.0)
+_REANCHOR_STEP = 60.0
+
+
+class TooMuchAtOnce(Exception):
+    """A plan bigger than one board. Metered as a refusal, never drawn in pieces."""
+
+    def __init__(self, count: int) -> None:
+        self.count = count
+        super().__init__(f"{count} objects is more than one board (limit {MAX_OBJECTS})")
+
+
+@dataclass
+class Plan:
+    """One turn's board: what she says, what she draws, and what she refused to draw."""
+
+    say: str = ""
+    presentation: str = "plane"
+    objects: list[dict[str, Any]] = field(default_factory=list)
+    refusals: list[str] = field(default_factory=list)
+    ledger: Ledger = field(default_factory=Ledger)
+    ask: dict[str, Any] | None = None
+    resumes_from: str | None = None
+
+    @property
+    def checks(self) -> list[CheckResult]:
+        return self.ledger.checks
+
+    def as_dict(self) -> dict[str, Any]:
+        out: dict[str, Any] = {
+            "presentation": self.presentation,
+            "objects": self.objects,
+            "verified": [c.name for c in self.ledger.checks],
+        }
+        if self.refusals:
+            out["refused"] = self.refusals
+        if self.resumes_from:
+            out["resumes_from"] = self.resumes_from
+        return out
+
+
+@dataclass(frozen=True)
+class Surface:
+    """What the client says is on the screen right now — the half of the packet anchors resolve
+    against. Built from ``context.targets`` and the focus object the gesture layer produced."""
+
+    targets: frozenset[str] = frozenset()
+    focuses: frozenset[str] = frozenset()
+    drawn: frozenset[str] = frozenset()
+    lesson: bool = False
+
+    @classmethod
+    def from_context(cls, context: dict[str, Any], boardctx: dict[str, Any]) -> Surface:
+        # Two lists of the same screen reach us, and an anchor may legitimately name either.
+        #
+        #   · `context.targets` — the scene bus's list, which every engine has published for a
+        #     long time (`context-bus.tsx`);
+        #   · `context.packet.screen` — the surface registry's snapshot, which is what the gesture
+        #     layer actually resolves a circle against (`packet.ts`, `registry.ts`).
+        #
+        # The focus is the same story and it matters more: the senses put the region the learner
+        # circled at `context.packet.focus`, and reading only `context.focus` meant the brain never
+        # saw one — so every mark anchored to "the thing they circled" was refused as "no focus
+        # region in this packet", which is the whole video case in BOARD.md §5.
+        packet = context.get("packet")
+        packet = packet if isinstance(packet, dict) else {}
+
+        raw_targets = list(context.get("targets") or [])
+        screen = packet.get("screen")
+        if isinstance(screen, dict):
+            for surface in screen.get("surfaces") or []:
+                if isinstance(surface, dict):
+                    raw_targets.extend(
+                        t for t in (surface.get("targets") or []) if isinstance(t, dict)
+                    )
+        targets = {
+            str(t.get("id"))
+            for t in raw_targets
+            if isinstance(t, dict) and str(t.get("id") or "").strip()
+        }
+
+        focuses: set[str] = set()
+        for focus in (context.get("focus"), packet.get("focus")):
+            if isinstance(focus, dict) and focus.get("id"):
+                focuses.add(str(focus["id"]))
+        for item in context.get("focuses") or []:
+            if isinstance(item, dict) and item.get("id"):
+                focuses.add(str(item["id"]))
+        drawn = {str(o) for o in (boardctx.get("drawn") or []) if str(o).strip()}
+        route = str((context.get("page") or {}).get("route") or "")
+        lesson = bool(boardctx.get("lesson")) or "/course" in route or "/lesson" in route
+        return cls(frozenset(targets), frozenset(focuses), frozenset(drawn), lesson)
+
+
+def _simplify(intent: dict[str, Any]) -> dict[str, Any] | None:
+    """The same intent with its optional parts removed, or None when there is nothing to drop."""
+    stripped = {k: v for k, v in intent.items() if k not in _EMBELLISHMENTS}
+    return stripped if len(stripped) != len(intent) else None
+
+
+def _run_intents(intents: list[Any], plan: Plan) -> list[dict[str, Any]]:
+    objects: list[dict[str, Any]] = []
+    for index, intent in enumerate(intents[:MAX_INTENTS]):
+        if not isinstance(intent, dict) or intent.get("pipeline") not in PIPELINES:
+            plan.refusals.append("an intent that names no pipeline was dropped")
+            continue
+        simpler = _simplify(intent)
+
+        def build(current: dict[str, Any] = intent, i: int = index) -> Draft:
+            return run_intent(current, index=i)
+
+        def fallback(current: dict[str, Any] | None = simpler, i: int = index) -> Draft:
+            if current is None:
+                raise Unverified("there is no simpler version of this to draw")
+            return run_intent(current, index=i)
+
+        from classess_gateway.board.verify import redraw_once
+
+        try:
+            draft = redraw_once(
+                build,
+                None if simpler is None else fallback,
+                what=f"{intent.get('pipeline')}.{intent.get('op')}",
+            )
+        except Unverified as exc:
+            # It never serves: the objects are dropped and the refusal is carried out honestly.
+            plan.refusals.append(exc.reason)
+            plan.ledger.checks.extend(exc.checks)
+            continue
+        plan.ledger.checks.extend(draft.ledger.checks)
+        objects.extend(draft.objects)
+    return objects
+
+
+def _anchor_ok(anchor: dict[str, Any], surface: Surface, known: set[str]) -> str | None:
+    """None when the anchor resolves; otherwise why it does not."""
+    if "target" in anchor:
+        return (
+            None
+            if anchor["target"] in surface.targets
+            else f"no target {anchor['target']!r} on this screen"
+        )
+    if "focus" in anchor:
+        return (
+            None
+            if anchor["focus"] in surface.focuses
+            else f"no focus region {anchor['focus']!r} in this packet"
+        )
+    if "object" in anchor:
+        return (
+            None
+            if anchor["object"] in known or anchor["object"] in surface.drawn
+            else f"no object {anchor['object']!r} on this board"
+        )
+    return None  # board space always resolves
+
+
+def _resolve_anchors(
+    objects: list[dict[str, Any]], surface: Surface, plan: Plan
+) -> list[dict[str, Any]]:
+    known = {str(o.get("id")) for o in objects} | set(surface.drawn)
+    kept: list[dict[str, Any]] = []
+    reanchored = 0
+    for obj in objects:
+        kind = str(obj.get("kind"))
+        problems: list[str] = []
+        for field_name in ("anchor", "to", "from"):
+            anchor = obj.get(field_name)
+            if not isinstance(anchor, dict):
+                continue
+            why = _anchor_ok(anchor, surface, known)
+            if why is None:
+                continue
+            if kind in schema.MARK_KINDS:
+                # A mark is ABOUT something. If the something is gone, so is the mark.
+                problems.append(f"{kind} {obj.get('id')}: {why}")
+                continue
+            obj[field_name] = {
+                "board": [
+                    _REANCHOR_ORIGIN[0],
+                    min(940.0, _REANCHOR_ORIGIN[1] + reanchored * _REANCHOR_STEP),
+                ]
+            }
+            reanchored += 1
+            plan.refusals.append(f"{kind} {obj.get('id')} re-anchored to board space: {why}")
+        if problems:
+            plan.refusals.extend(problems)
+            continue
+        kept.append(obj)
+    return kept
+
+
+def _validate(objects: list[dict[str, Any]], plan: Plan, allowed_checks: set[str]) -> list[dict]:
+    kept: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for obj in objects:
+        problems = schema.validate_object(obj)
+        if problems:
+            plan.refusals.append(f"{obj.get('id', '?')}: {problems[0]}")
+            continue
+        check = str(obj.get("check") or "")
+        if check and check not in allowed_checks:
+            plan.refusals.append(
+                f"{obj['id']}: names a check ({check}) that did not run on this turn"
+            )
+            continue
+        if obj["id"] in seen:
+            plan.refusals.append(f"{obj['id']}: two objects claim this id")
+            continue
+        seen.add(obj["id"])
+        kept.append(obj)
+    return kept
+
+
+def choose_presentation(
+    objects: list[dict[str, Any]], surface: Surface, requested: str | None
+) -> str:
+    """BOARD.md §5. Her rule, and the learner's word beats it.
+
+    A pointer or one line stays on the screen; a derivation or a diagram from scratch gets the
+    plane; a lesson gets the full board.
+    """
+    if requested in schema.PRESENTATIONS:
+        return str(requested)
+    if surface.lesson:
+        return "full"
+    on_screen = all(
+        isinstance(o.get("anchor"), dict)
+        and ("target" in o["anchor"] or "focus" in o["anchor"] or "object" in o["anchor"])
+        and str(o.get("kind")) in schema.MARK_KINDS
+        for o in objects
+    )
+    return "screen" if objects and on_screen and len(objects) <= 3 else "plane"
+
+
+def _schedule(objects: list[dict[str, Any]]) -> None:
+    """Cumulative drawing time in order. The stream re-bases these against her sentences; here
+    they simply say how long the hand takes and in what order."""
+    cursor = 0
+    for obj in objects:
+        timing = obj.get("t") if isinstance(obj.get("t"), dict) else {}
+        duration = int(timing.get("dur") or 240)
+        start = timing.get("start")
+        # A pipeline that set its own start (chemistry's ticking coefficients) keeps it.
+        obj["t"] = {"start": int(start) if start else cursor, "dur": duration}
+        cursor = max(cursor, obj["t"]["start"]) + duration
+
+
+def plan_board(
+    model_plan: dict[str, Any],
+    *,
+    context: dict[str, Any] | None = None,
+    board_context: dict[str, Any] | None = None,
+) -> Plan:
+    """Turn one model plan into a board that may be drawn. Raises :class:`TooMuchAtOnce`."""
+    context = context or {}
+    board_context = board_context or {}
+    surface = Surface.from_context(context, board_context)
+    plan = Plan(say=str(model_plan.get("say") or "").strip())
+
+    intents = model_plan.get("intents") or []
+    raw_objects = model_plan.get("objects") or []
+    if not isinstance(intents, list):
+        intents = []
+    if not isinstance(raw_objects, list):
+        raw_objects = []
+    if len(intents) + len(raw_objects) > MAX_OBJECTS:
+        raise TooMuchAtOnce(len(intents) + len(raw_objects))
+
+    computed = _run_intents(intents, plan)
+    # The model's own marks come after the computed geometry: she points at the thing she drew.
+    objects = [*computed, *[o for o in raw_objects if isinstance(o, dict)]]
+    if len(objects) > MAX_OBJECTS:
+        raise TooMuchAtOnce(len(objects))
+
+    # The ledger and nothing but the ledger. `board.frame` used to be granted here on every turn
+    # whether or not anything ran, which made it a universal laundering token: a model could write
+    # `{"kind": "label", "text": "g = 42.7 m/s2", "check": "board.frame"}` and it reached the board
+    # with zero checks behind it. A check is allowed because it RAN, never because it is spelled a
+    # particular way.
+    allowed = {c.name for c in plan.ledger.checks}
+    objects = _validate(objects, plan, allowed)
+    objects = _resolve_anchors(objects, surface, plan)
+    _schedule(objects)
+
+    plan.objects = objects
+    plan.presentation = choose_presentation(
+        objects, surface, board_context.get("presentation") or model_plan.get("presentation")
+    )
+    interrupted = board_context.get("interrupted_at")
+    if isinstance(interrupted, str) and interrupted.strip():
+        plan.resumes_from = interrupted.strip()
+
+    ask = model_plan.get("ask")
+    if isinstance(ask, dict) and str(ask.get("prompt") or "").strip():
+        targets = [str(t) for t in (ask.get("targets") or []) if isinstance(t, str)]
+        plan.ask = {
+            "prompt": str(ask["prompt"]).strip()[:240],
+            "targets": [
+                t for t in targets if t in {o["id"] for o in objects} or t in surface.targets
+            ],
+        }
+    return plan

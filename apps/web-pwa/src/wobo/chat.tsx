@@ -5,7 +5,7 @@
  * share this context — she never forgets who the learner is between the two.
  */
 
-import type { WoboMood } from '@classess/wobo';
+import type { FocusObject, WoboMood } from '@classess/wobo';
 import { createContext, useContext } from 'react';
 import { scoped } from '../store/scope';
 import type { TurnExtras } from './paths/types';
@@ -35,6 +35,11 @@ export interface WoboChat {
   offline: boolean;
   /** Messages typed while offline, held here (not yet real turns) until reconnect drains them. */
   pending: { id: string; text: string }[];
+  /**
+   * What the learner last circled, selected, long-pressed or drew. Every composer reads it, so the
+   * modes that only mean something with a thing in hand appear exactly when there is one.
+   */
+  focus: FocusObject | null;
 }
 
 // ---- the never-ending archive ----------------------------------------------------------------

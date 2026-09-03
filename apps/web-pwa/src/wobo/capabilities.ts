@@ -11,6 +11,18 @@
  */
 
 import type { Sdk } from '@classess/sdk';
+import {
+  buildPacket,
+  type ContextPacket,
+  type FocusObject,
+  type MindSummary,
+  type PacketBudget,
+  type PacketTurn,
+  type SurfaceRegistry,
+  surfaceRegistry,
+  type TaskState,
+  type WoboAssembledContext,
+} from '@classess/wobo';
 import { chaptersBySubject, topicById } from '../data/catalog';
 import type { Topic } from '../data/model';
 import type { Router } from '../shell/router';
@@ -196,4 +208,118 @@ export const CAPABILITY_IDS: ReadonlySet<string> = new Set(Object.keys(CAPABILIT
 
 export function capabilityById(id: string): WoboCapability | undefined {
   return CAPABILITY_IDS.has(id) ? CAPABILITIES[id as CapabilityId] : undefined;
+}
+
+// --- The context packet on the wobo.turn seam (docs/WOBO-PLAN.md §1, §5.3) -----------------------
+
+/**
+ * The focus the learner made most recently — set by the gesture layer, read by the next turn. One
+ * value, because a learner points at one thing at a time; cleared when they clear the focus.
+ */
+let currentFocus: FocusObject | null = null;
+
+export function setTurnFocus(focus: FocusObject | null): void {
+  currentFocus = focus;
+}
+
+export function turnFocus(): FocusObject | null {
+  return currentFocus;
+}
+
+export interface TurnPacketOptions {
+  /** Overrides the live focus, when a caller has one in hand. */
+  focus?: FocusObject | null;
+  /** Where the learner is in what they are doing (beat, attempt, score, ladder rung). */
+  task?: TaskState | null;
+  /** Overrides the mind summary derived from the assembled context. */
+  mind?: MindSummary | null;
+  budget?: PacketBudget;
+  registry?: SurfaceRegistry;
+}
+
+const isRecordValue = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null;
+
+/**
+ * The learner's mind, digested from the context the bus already assembles — mastery band for the
+ * topic in front of them, the mistakes worth having in mind, and the consent tier the brain
+ * derived. Nothing new is invented here; this only chooses what is worth the tokens.
+ */
+function mindFrom(context: Partial<WoboAssembledContext>): MindSummary | undefined {
+  const summary: MindSummary = {};
+  if (context.curriculum?.band) summary.band = context.curriculum.band;
+  if (context.curriculum?.nodeName) summary.topic = context.curriculum.nodeName;
+  const mistakes = (context.session?.recentEvents ?? []).filter((e) => e.includes('correct=false'));
+  if (mistakes.length > 0) summary.mistakes = mistakes.slice(-3);
+  return Object.keys(summary).length > 0 ? summary : undefined;
+}
+
+function turnsFrom(context: Partial<WoboAssembledContext>): PacketTurn[] {
+  return (context.turn?.recentTurns ?? []).map((t) => ({
+    role: t.role === 'wobo' ? ('wobo' as const) : ('learner' as const),
+    text: t.text,
+  }));
+}
+
+/**
+ * Build the context packet for this turn: what the learner pointed at, what is on screen, where
+ * they are, what they are doing, her mind's summary, and the last few turns — all under the token
+ * budget, trimmed by priority (packages/wobo/src/packet.ts).
+ */
+export function buildTurnPacket(
+  context: Partial<WoboAssembledContext>,
+  options: TurnPacketOptions = {},
+): ContextPacket {
+  const registry = options.registry ?? surfaceRegistry;
+  return buildPacket({
+    focus: options.focus === undefined ? currentFocus : options.focus,
+    registrySnapshot: registry.snapshot({ route: context.page?.route }),
+    route: context.page?.route,
+    task: options.task ?? null,
+    mind: options.mind === undefined ? (mindFrom(context) ?? null) : options.mind,
+    turns: turnsFrom(context),
+    budget: options.budget,
+  });
+}
+
+/**
+ * The one shape every `wobo.turn` invocation sends. The packet rides at `context.packet`, beside
+ * the fields the bus already assembles — nothing existing moves, so the gateway keeps reading what
+ * it always read while the brain gains the screen, the focus and the budget.
+ *
+ *   sdk.llm.invoke('wobo.turn', woboTurnPayload(bus.assembleContext()), { consentTier })
+ */
+export function woboTurnPayload<T extends object>(
+  context: T,
+  options: TurnPacketOptions = {},
+): { context: T & { packet: ContextPacket } } {
+  const source = isRecordValue(context) ? (context as Partial<WoboAssembledContext>) : {};
+  return { context: { ...context, packet: buildTurnPacket(source, options) } };
+}
+
+/**
+ * The same envelope, typed for the streaming board turn (`board-turn.ts` → `board-stream.ts`).
+ *
+ * A board turn posts `{ payload: { ...this, board } }`, and the gateway reads the learner's words
+ * out of `payload.context.turn.lastUserInput` twice: once for the inbound safety screen and once to
+ * extract the drawing intents. Handing it the INSIDE of the envelope silently emptied both — the
+ * turn was screened against nothing and planned nothing — so the envelope is built in one named
+ * place that a test can hold to the gateway's reading.
+ */
+export function boardTurnPayload<T extends object>(
+  context: T,
+  options: TurnPacketOptions = {},
+): Record<string, unknown> {
+  return woboTurnPayload(context, options) as unknown as Record<string, unknown>;
+}
+
+/**
+ * Where the gateway reads the learner's words out of a turn payload
+ * (`services/gateway/src/classess_gateway/safety.py::inbound_text` and
+ * `wobo.py::mock_board_plan`). Exported so the seam is asserted, not assumed.
+ */
+export function inboundTextOf(payload: Record<string, unknown>): string {
+  const context = isRecordValue(payload.context) ? payload.context : {};
+  const turn = isRecordValue(context.turn) ? context.turn : {};
+  return typeof turn.lastUserInput === 'string' ? turn.lastUserInput : '';
 }

@@ -1,0 +1,397 @@
+{
+  "name": "food-web",
+  "prompt": "draw a food web for a grassland",
+  "title": "a grassland food web",
+  "presentation": "full",
+  "subject": "biology",
+  "expect": {
+    "ids": [
+      "grass",
+      "grasshopper",
+      "rabbit",
+      "frog",
+      "snake",
+      "hawk",
+      "eats-1",
+      "eats-2",
+      "eats-3",
+      "eats-4",
+      "eats-5",
+      "eats-6",
+      "producer-note",
+      "top-note",
+      "hawk-circle"
+    ],
+    "kinds": [
+      "label",
+      "label",
+      "label",
+      "label",
+      "label",
+      "label",
+      "arrow",
+      "arrow",
+      "arrow",
+      "arrow",
+      "arrow",
+      "arrow",
+      "label",
+      "label",
+      "circle"
+    ],
+    "anchors": [
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "object",
+      "object",
+      "object",
+      "object",
+      "object",
+      "object",
+      "object",
+      "object",
+      "object"
+    ],
+    "hangsOff": [
+      ["eats-1", "grasshopper"],
+      ["eats-2", "rabbit"],
+      ["eats-3", "frog"],
+      ["eats-4", "snake"],
+      ["eats-5", "hawk"],
+      ["eats-6", "hawk"],
+      ["producer-note", "grass"],
+      ["top-note", "hawk"],
+      ["hawk-circle", "hawk"]
+    ],
+    "written": [
+      "grass",
+      "grasshopper",
+      "rabbit",
+      "frog",
+      "snake",
+      "hawk",
+      "producer",
+      "top predator"
+    ],
+    "numbers": []
+  },
+  "plan": [
+    {
+      "type": "say",
+      "text": "Every arrow points the way the energy travels.",
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "grass",
+        "kind": "label",
+        "anchor": {
+          "board": [150, 520]
+        },
+        "text": "grass",
+        "size": 26,
+        "t": {
+          "start": 0,
+          "dur": 500
+        }
+      },
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "grasshopper",
+        "kind": "label",
+        "anchor": {
+          "board": [400, 470]
+        },
+        "text": "grasshopper",
+        "size": 26,
+        "t": {
+          "start": 400,
+          "dur": 500
+        }
+      },
+      "t": 400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "rabbit",
+        "kind": "label",
+        "anchor": {
+          "board": [380, 260]
+        },
+        "text": "rabbit",
+        "size": 26,
+        "t": {
+          "start": 800,
+          "dur": 500
+        }
+      },
+      "t": 800
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "frog",
+        "kind": "label",
+        "anchor": {
+          "board": [680, 540]
+        },
+        "text": "frog",
+        "size": 26,
+        "t": {
+          "start": 1200,
+          "dur": 500
+        }
+      },
+      "t": 1200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "snake",
+        "kind": "label",
+        "anchor": {
+          "board": [870, 400]
+        },
+        "text": "snake",
+        "size": 26,
+        "t": {
+          "start": 1600,
+          "dur": 500
+        }
+      },
+      "t": 1600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "hawk",
+        "kind": "label",
+        "anchor": {
+          "board": [660, 160]
+        },
+        "text": "hawk",
+        "size": 26,
+        "t": {
+          "start": 2000,
+          "dur": 500
+        }
+      },
+      "t": 2000
+    },
+    {
+      "type": "say",
+      "text": "Grass feeds the grasshopper and the rabbit.",
+      "t": 2400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "eats-1",
+        "kind": "arrow",
+        "anchor": {
+          "object": "grasshopper"
+        },
+        "from": {
+          "object": "grass"
+        },
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 2500,
+          "dur": 600
+        }
+      },
+      "t": 2500
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "eats-2",
+        "kind": "arrow",
+        "anchor": {
+          "object": "rabbit"
+        },
+        "from": {
+          "object": "grass"
+        },
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 3100,
+          "dur": 600
+        }
+      },
+      "t": 3100
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "eats-3",
+        "kind": "arrow",
+        "anchor": {
+          "object": "frog"
+        },
+        "from": {
+          "object": "grasshopper"
+        },
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 3700,
+          "dur": 600
+        }
+      },
+      "t": 3700
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "eats-4",
+        "kind": "arrow",
+        "anchor": {
+          "object": "snake"
+        },
+        "from": {
+          "object": "frog"
+        },
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 4300,
+          "dur": 600
+        }
+      },
+      "t": 4300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "eats-5",
+        "kind": "arrow",
+        "anchor": {
+          "object": "hawk"
+        },
+        "from": {
+          "object": "snake"
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 4900,
+          "dur": 600
+        }
+      },
+      "t": 4900
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "eats-6",
+        "kind": "arrow",
+        "anchor": {
+          "object": "hawk"
+        },
+        "from": {
+          "object": "rabbit"
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 5500,
+          "dur": 600
+        }
+      },
+      "t": 5500
+    },
+    {
+      "type": "say",
+      "text": "Remove one link and everything above it feels it.",
+      "t": 6100
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "producer-note",
+        "kind": "label",
+        "anchor": {
+          "object": "grass"
+        },
+        "text": "producer",
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 6200,
+          "dur": 500
+        }
+      },
+      "t": 6200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "top-note",
+        "kind": "label",
+        "anchor": {
+          "object": "hawk"
+        },
+        "text": "top predator",
+        "style": {
+          "ink": "accent",
+          "weight": 1
+        },
+        "t": {
+          "start": 6800,
+          "dur": 500
+        }
+      },
+      "t": 6800
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "hawk-circle",
+        "kind": "circle",
+        "anchor": {
+          "object": "hawk"
+        },
+        "pad": 16,
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 7400,
+          "dur": 800
+        }
+      },
+      "t": 7400
+    },
+    {
+      "type": "done",
+      "t": 8300
+    }
+  ]
+}

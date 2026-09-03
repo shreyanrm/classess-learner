@@ -8,6 +8,7 @@
  * energy flow when the boss unlocks, drifting plus-field ambience.
  */
 
+import { useRegisterTarget } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import type { Route } from '../../shell/router';
@@ -406,6 +407,26 @@ function StopCard({
   onGo: (route: Route) => void;
   onArrive?: (stop: ThreadStop) => void;
 }) {
+  // Every stop is a target of its own, so "the boss" or "that third one" resolves to this card and
+  // she can draw on it, point at it, or walk the learner to it.
+  const cardRef = useRegisterTarget<HTMLButtonElement>(`stop-${stop.id}`, {
+    kind: 'stop',
+    label: `${stop.title} — ${stop.meta}`,
+    meaning: current ? 'the stop the learner is on right now' : undefined,
+    getSceneState: () => ({
+      title: stop.title,
+      kind: stop.kind,
+      meta: stop.meta,
+      current: Boolean(current),
+      done: Boolean(stop.done),
+      locked: Boolean(stop.locked),
+      progress: stop.progress,
+    }),
+    getValidActions: () => (stop.locked ? [] : [`open ${stop.title.toLowerCase()}`]),
+    applyTutorAction: (patch) => {
+      if (patch.open === true && !stop.locked) onGo(stop.route);
+    },
+  });
   // The current stop wears the one hit of pigment on the thread — a hairline ultramarine edge that
   // says "you are here" without shouting. Every other card stays on the neutral hairline.
   const restBorder = current
@@ -413,6 +434,7 @@ function StopCard({
     : HAIR;
   return (
     <motion.button
+      ref={cardRef}
       type="button"
       onClick={() => {
         onArrive?.(stop);

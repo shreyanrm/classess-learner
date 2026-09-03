@@ -44,9 +44,11 @@ def test_ground_working_is_none_without_working() -> None:
 
 
 def test_mock_wobo_turn_returns_say_and_actions() -> None:
-    out = MockProvider().complete(
-        provider_model="classess/wobo-tutor-slm", capability="wobo.turn", payload={}
-    ).output
+    out = (
+        MockProvider()
+        .complete(provider_model="classess/wobo-tutor-slm", capability="wobo.turn", payload={})
+        .output
+    )
     assert isinstance(out["say"], str) and out["say"]
     assert isinstance(out["actions"], list)
     assert out["handed_answer"] is False
@@ -70,11 +72,15 @@ def test_prompt_carries_the_targets_and_the_grounding() -> None:
 
 
 def _mock_turn(text: str) -> dict:
-    return MockProvider().complete(
-        provider_model="classess/wobo-tutor-slm",
-        capability="wobo.turn",
-        payload={"context": {"turn": {"lastUserInput": text}}},
-    ).output
+    return (
+        MockProvider()
+        .complete(
+            provider_model="classess/wobo-tutor-slm",
+            capability="wobo.turn",
+            payload={"context": {"turn": {"lastUserInput": text}}},
+        )
+        .output
+    )
 
 
 def test_classify_covers_all_five_paths() -> None:
@@ -264,11 +270,15 @@ def test_prompt_asks_for_the_intro_only_on_a_first_meeting() -> None:
 
 
 def test_mock_first_meeting_says_the_intro_verbatim() -> None:
-    out = MockProvider().complete(
-        provider_model="classess/wobo-tutor-slm",
-        capability="wobo.turn",
-        payload={"first_meeting": True, "context": {"turn": {"lastUserInput": "quiz me"}}},
-    ).output
+    out = (
+        MockProvider()
+        .complete(
+            provider_model="classess/wobo-tutor-slm",
+            capability="wobo.turn",
+            payload={"first_meeting": True, "context": {"turn": {"lastUserInput": "quiz me"}}},
+        )
+        .output
+    )
     assert out["say"] == WOBO_INTRO
     assert out["path"] == "inline"
 
@@ -330,3 +340,52 @@ def test_a_valid_envelope_still_wins(monkeypatch) -> None:
     out = _turn_with_model_text(monkeypatch, '{"say": "Try isolating x first.", "path": "inline"}')
     assert out["say"] == "Try isolating x first."
     assert out["path"] == "inline"
+
+
+# --- the keyless twin marks what the learner circled ---------------------------------------------
+def test_a_question_with_a_region_in_hand_is_answered_with_a_mark_on_it() -> None:
+    """A lasso plus "why?" is the commonest board turn there is, and it needs no subject pipeline:
+    the answer is a ring round the thing they drew around and one written word beside it. Keyless,
+    so the video case in BOARD.md §5 works with no model and no network."""
+    from classess_gateway.wobo import mock_board_plan
+
+    plan = mock_board_plan(
+        {
+            "context": {
+                "turn": {"lastUserInput": "why?"},
+                "packet": {
+                    "v": 1,
+                    "focus": {"id": "f7", "kind": "lasso", "text": "the paused frame: cause"},
+                },
+            }
+        }
+    )
+    assert plan is not None
+    assert [o["anchor"] for o in plan["objects"]] == [
+        {"focus": "f7"},
+        {"focus": "f7", "at": "bottom"},
+    ]
+    assert {o["kind"] for o in plan["objects"]} == {"circle", "write"}
+    # Every object she plans has to survive the grammar she is held to.
+    from classess_gateway.board import schema
+
+    for obj in plan["objects"]:
+        assert not schema.validate_object(obj), (obj["id"], schema.validate_object(obj))
+
+
+def test_the_same_question_with_nothing_in_hand_is_a_conversation_not_a_drawing() -> None:
+    from classess_gateway.wobo import mock_board_plan
+
+    assert mock_board_plan({"context": {"turn": {"lastUserInput": "why?"}}}) is None
+
+
+def test_a_statement_with_a_region_in_hand_is_not_a_drawing_either() -> None:
+    from classess_gateway.wobo import mock_board_plan
+
+    payload = {
+        "context": {
+            "turn": {"lastUserInput": "thanks, that helped"},
+            "packet": {"v": 1, "focus": {"id": "f7"}},
+        }
+    }
+    assert mock_board_plan(payload) is None

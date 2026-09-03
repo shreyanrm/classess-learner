@@ -238,7 +238,7 @@ export function DerivationDepth({
   const bus = useWoboBus();
   const [open, setOpen] = useState(false);
 
-  useRegisterTarget<HTMLDivElement>(`derivation-${spec.id}`, {
+  const stageRef = useRegisterTarget<HTMLDivElement>(`derivation-${spec.id}`, {
     kind: 'derivation',
     label: `the derivation of ${spec.formula}`,
     getSceneState: () => ({ formula: spec.formula, steps: spec.steps.length, expanded: open }),
@@ -257,7 +257,13 @@ export function DerivationDepth({
   }, [bus, spec, open]);
   useEffect(() => () => bus.publishCanvas(undefined), [bus]);
 
-  return <DerivationNode spec={spec} hue={hue} depth={0} onToggle={setOpen} />;
+  // The ref carries the registration: an unattached one registers nothing, so the derivation was
+  // invisible to her. The wrapper is the region she points at when she says "this step".
+  return (
+    <div ref={stageRef}>
+      <DerivationNode spec={spec} hue={hue} depth={0} onToggle={setOpen} />
+    </div>
+  );
 }
 
 /** The course-card wrapper — a full beat that shows the formula and invites the depth. */

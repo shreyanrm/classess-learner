@@ -47,6 +47,10 @@ select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
 # the fact-base builder and its patch script: LLM system prompts, run-command docstrings, and
 # embedded Python source strings. Same justification as content/atom/** — every other lint stays on.
 "content/factbase/**" = ["E501"]
+# GENERATED from packages/wobo/src/board/schema.ts (bun run --cwd packages/wobo
+# board:codegen). The grammar travels as one JSON literal per schema so the mirror is
+# byte-stable; formatting it by hand would be edited away on the next regeneration.
+"services/gateway/src/classess_gateway/board_schema.py" = ["E501", "B905"]
 
 [tool.pytest.ini_options]
 addopts = "-q"

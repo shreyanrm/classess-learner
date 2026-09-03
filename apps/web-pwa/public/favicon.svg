@@ -1,18 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="t">
-  <title id="t">Wobo</title>
-  <defs>
-    <radialGradient id="jelly" cx="32%" cy="28%" r="80%">
-      <stop offset="0" stop-color="#FFA24A"/>
-      <stop offset="0.42" stop-color="#FF5A1F"/>
-      <stop offset="1" stop-color="#C93A7A"/>
-    </radialGradient>
-  </defs>
-  <circle cx="256" cy="256" r="236" fill="url(#jelly)"/>
-  <ellipse cx="196" cy="232" rx="48" ry="55" fill="#FFFFFF"/>
-  <ellipse cx="316" cy="232" rx="48" ry="55" fill="#FFFFFF"/>
-  <circle cx="206" cy="242" r="24" fill="#1A1215"/>
-  <circle cx="326" cy="242" r="24" fill="#1A1215"/>
-  <circle cx="214" cy="232" r="7" fill="#FFFFFF"/>
-  <circle cx="334" cy="232" r="7" fill="#FFFFFF"/>
-  <path d="M218 330 Q256 358 294 330" fill="none" stroke="#1A1215" stroke-width="14" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="20 11 110 110" role="img" aria-label="Wobo, idle"><style>
+  :root{--wr-body:#1A1A1F;--wr-visor:#FFFFFF;--wr-eye:#1F35E0;--wr-hair:rgba(255,255,255,0.55);--wr-ground:#FFFFFF}
+  @media (prefers-color-scheme: dark){:root{--wr-body:#EDEDF1;--wr-visor:#0D0D10;--wr-eye:#7B8CFF;--wr-hair:rgba(13,13,16,0.40);--wr-ground:#0D0D10}}
+</style><rect x="-500" y="-500" width="1500" height="1500" fill="var(--wr-ground)"/>
+  <circle cx="75" cy="66" r="42" fill="var(--wr-body)" fill-opacity="0.92" stroke="var(--wr-hair)" stroke-width="0.9"/>
+  <ellipse cx="55" cy="38" rx="8" ry="4" fill="var(--wr-visor)" opacity="0.16" transform="rotate(-30 55 38)"/>
+  <rect x="41" y="50" width="68" height="30" rx="15" fill="var(--wr-visor)"/>
+  <path d="M54.6 65.5a7.4 7.4 0 1 0 14.8 0a7.4 7.4 0 1 0 -14.8 0Z" fill="var(--wr-eye)"/>
+  <path d="M80.6 65.5a7.4 7.4 0 1 0 14.8 0a7.4 7.4 0 1 0 -14.8 0Z" fill="var(--wr-eye)"/>
 </svg>

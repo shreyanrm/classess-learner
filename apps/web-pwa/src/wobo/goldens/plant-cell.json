@@ -1,0 +1,463 @@
+{
+  "name": "plant-cell",
+  "prompt": "label a plant cell for me",
+  "title": "a plant cell",
+  "presentation": "full",
+  "subject": "biology",
+  "expect": {
+    "ids": [
+      "cell-wall",
+      "cell-membrane",
+      "nucleus",
+      "nucleolus",
+      "vacuole",
+      "chloroplast-1",
+      "chloroplast-2",
+      "chloroplast-3",
+      "label-wall",
+      "label-wall-arrow",
+      "label-membrane",
+      "label-membrane-arrow",
+      "label-nucleus",
+      "label-nucleus-arrow",
+      "label-vacuole",
+      "label-vacuole-arrow",
+      "label-chloroplast",
+      "label-chloroplast-arrow"
+    ],
+    "kinds": [
+      "polygon",
+      "polygon",
+      "ellipse",
+      "ellipse",
+      "ellipse",
+      "ellipse",
+      "ellipse",
+      "ellipse",
+      "label",
+      "arrow",
+      "label",
+      "arrow",
+      "label",
+      "arrow",
+      "label",
+      "arrow",
+      "label",
+      "arrow"
+    ],
+    "anchors": [
+      "board",
+      "board",
+      "board",
+      "object",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "object",
+      "board",
+      "object",
+      "board",
+      "object",
+      "board",
+      "object",
+      "board",
+      "object"
+    ],
+    "hangsOff": [
+      ["nucleolus", "nucleus"],
+      ["label-wall-arrow", "cell-wall"],
+      ["label-membrane-arrow", "cell-membrane"],
+      ["label-nucleus-arrow", "nucleus"],
+      ["label-vacuole-arrow", "vacuole"],
+      ["label-chloroplast-arrow", "chloroplast-1"]
+    ],
+    "written": ["cell wall", "cell membrane", "nucleus", "vacuole", "chloroplast"],
+    "numbers": []
+  },
+  "plan": [
+    {
+      "type": "say",
+      "text": "A plant cell. The wall first, because that is what makes it a plant.",
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "cell-wall",
+        "kind": "polygon",
+        "anchor": {
+          "board": [200, 140]
+        },
+        "points": [[0, 0], [460, 0], [460, 380], [0, 380]],
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 0,
+          "dur": 1400
+        }
+      },
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "cell-membrane",
+        "kind": "polygon",
+        "anchor": {
+          "board": [214, 154]
+        },
+        "points": [[0, 0], [432, 0], [432, 352], [0, 352]],
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 1400,
+          "dur": 1200
+        }
+      },
+      "t": 1400
+    },
+    {
+      "type": "say",
+      "text": "Inside: a nucleus, a great water vacuole, and the chloroplasts.",
+      "t": 2600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "nucleus",
+        "kind": "ellipse",
+        "anchor": {
+          "board": [330, 260]
+        },
+        "rx": 56,
+        "ry": 48,
+        "style": {
+          "ink": "wobo",
+          "weight": 2,
+          "fill": "wash"
+        },
+        "t": {
+          "start": 2700,
+          "dur": 900
+        }
+      },
+      "t": 2700
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "nucleolus",
+        "kind": "ellipse",
+        "anchor": {
+          "object": "nucleus"
+        },
+        "rx": 16,
+        "ry": 14,
+        "style": {
+          "ink": "wobo",
+          "weight": 2,
+          "fill": "solid"
+        },
+        "t": {
+          "start": 3600,
+          "dur": 400
+        }
+      },
+      "t": 3600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "vacuole",
+        "kind": "ellipse",
+        "anchor": {
+          "board": [500, 350]
+        },
+        "rx": 110,
+        "ry": 92,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 4000,
+          "dur": 1100
+        }
+      },
+      "t": 4000
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "chloroplast-1",
+        "kind": "ellipse",
+        "anchor": {
+          "board": [290, 430]
+        },
+        "rx": 30,
+        "ry": 16,
+        "style": {
+          "ink": "accent",
+          "weight": 2,
+          "fill": "wash"
+        },
+        "t": {
+          "start": 5100,
+          "dur": 500
+        }
+      },
+      "t": 5100
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "chloroplast-2",
+        "kind": "ellipse",
+        "anchor": {
+          "board": [370, 460]
+        },
+        "rx": 30,
+        "ry": 16,
+        "style": {
+          "ink": "accent",
+          "weight": 2,
+          "fill": "wash"
+        },
+        "t": {
+          "start": 5600,
+          "dur": 500
+        }
+      },
+      "t": 5600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "chloroplast-3",
+        "kind": "ellipse",
+        "anchor": {
+          "board": [580, 210]
+        },
+        "rx": 30,
+        "ry": 16,
+        "style": {
+          "ink": "accent",
+          "weight": 2,
+          "fill": "wash"
+        },
+        "t": {
+          "start": 6100,
+          "dur": 500
+        }
+      },
+      "t": 6100
+    },
+    {
+      "type": "say",
+      "text": "Now the names, each one pointing at the thing it names.",
+      "t": 6600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "label-wall",
+        "kind": "label",
+        "anchor": {
+          "board": [710, 160]
+        },
+        "text": "cell wall",
+        "t": {
+          "start": 6700,
+          "dur": 600
+        }
+      },
+      "t": 6700
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "label-wall-arrow",
+        "kind": "arrow",
+        "anchor": {
+          "object": "cell-wall",
+          "at": "topRight"
+        },
+        "from": {
+          "object": "label-wall"
+        },
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 7300,
+          "dur": 600
+        }
+      },
+      "t": 7300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "label-membrane",
+        "kind": "label",
+        "anchor": {
+          "board": [710, 240]
+        },
+        "text": "cell membrane",
+        "t": {
+          "start": 8000,
+          "dur": 600
+        }
+      },
+      "t": 8000
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "label-membrane-arrow",
+        "kind": "arrow",
+        "anchor": {
+          "object": "cell-membrane",
+          "at": "right"
+        },
+        "from": {
+          "object": "label-membrane"
+        },
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 8600,
+          "dur": 600
+        }
+      },
+      "t": 8600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "label-nucleus",
+        "kind": "label",
+        "anchor": {
+          "board": [40, 200]
+        },
+        "text": "nucleus",
+        "t": {
+          "start": 9300,
+          "dur": 600
+        }
+      },
+      "t": 9300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "label-nucleus-arrow",
+        "kind": "arrow",
+        "anchor": {
+          "object": "nucleus"
+        },
+        "from": {
+          "object": "label-nucleus"
+        },
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 9900,
+          "dur": 600
+        }
+      },
+      "t": 9900
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "label-vacuole",
+        "kind": "label",
+        "anchor": {
+          "board": [710, 400]
+        },
+        "text": "vacuole",
+        "t": {
+          "start": 10600,
+          "dur": 600
+        }
+      },
+      "t": 10600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "label-vacuole-arrow",
+        "kind": "arrow",
+        "anchor": {
+          "object": "vacuole"
+        },
+        "from": {
+          "object": "label-vacuole"
+        },
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 11200,
+          "dur": 600
+        }
+      },
+      "t": 11200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "label-chloroplast",
+        "kind": "label",
+        "anchor": {
+          "board": [40, 470]
+        },
+        "text": "chloroplast",
+        "t": {
+          "start": 11900,
+          "dur": 600
+        }
+      },
+      "t": 11900
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "label-chloroplast-arrow",
+        "kind": "arrow",
+        "anchor": {
+          "object": "chloroplast-1"
+        },
+        "from": {
+          "object": "label-chloroplast"
+        },
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 12500,
+          "dur": 600
+        }
+      },
+      "t": 12500
+    },
+    {
+      "type": "done",
+      "t": 13600
+    }
+  ]
+}

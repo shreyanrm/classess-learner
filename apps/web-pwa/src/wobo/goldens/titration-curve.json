@@ -1,0 +1,393 @@
+{
+  "name": "titration-curve",
+  "prompt": "why does the pH jump so suddenly in a titration",
+  "title": "a strong acid titration",
+  "presentation": "full",
+  "subject": "chemistry",
+  "expect": {
+    "ids": [
+      "axis-volume",
+      "axis-ph",
+      "curve",
+      "equivalence-point",
+      "equivalence-label",
+      "equivalence-arrow",
+      "neutral-line",
+      "start-ph",
+      "equivalence-volume",
+      "equivalence-ph",
+      "end-ph",
+      "jump-bracket"
+    ],
+    "kinds": [
+      "axis",
+      "axis",
+      "curve",
+      "point",
+      "label",
+      "arrow",
+      "polyline",
+      "number",
+      "number",
+      "number",
+      "number",
+      "bracket"
+    ],
+    "anchors": [
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "object",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "object"
+    ],
+    "hangsOff": [["equivalence-arrow", "equivalence-point"], ["jump-bracket", "equivalence-point"]],
+    "written": [
+      "equivalence",
+      "pH at the start = 1.00",
+      "equivalence at 25.00 mL",
+      "pH there = 7.00",
+      "pH at 50 mL = 12.52"
+    ],
+    "numbers": [
+      {
+        "id": "start-ph",
+        "value": 1,
+        "precision": 2,
+        "check": "board.numbers_agree:starting pH",
+        "from": "-log10(0.1)"
+      },
+      {
+        "id": "equivalence-volume",
+        "value": 25,
+        "precision": 2,
+        "unit": "mL",
+        "check": "board.numbers_agree:equivalence volume",
+        "from": "25 * 0.1 / 0.1"
+      },
+      {
+        "id": "equivalence-ph",
+        "value": 7,
+        "precision": 2,
+        "check": "board.in_bounds:pH",
+        "from": "strong acid with strong base: 7"
+      },
+      {
+        "id": "end-ph",
+        "value": 12.522878745280337,
+        "precision": 2,
+        "check": "board.numbers_agree:final pH",
+        "from": "14 + log10((5 - 2.5) / 75)"
+      }
+    ]
+  },
+  "plan": [
+    {
+      "type": "say",
+      "text": "Twenty-five millilitres of acid, and base going in drop by drop.",
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "axis-volume",
+        "kind": "axis",
+        "anchor": {
+          "board": [200, 540]
+        },
+        "orientation": "x",
+        "min": 0,
+        "max": 50,
+        "step": 10,
+        "length": 640,
+        "label": "base added (mL)",
+        "ticks": true,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 0,
+          "dur": 800
+        }
+      },
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "axis-ph",
+        "kind": "axis",
+        "anchor": {
+          "board": [200, 540]
+        },
+        "orientation": "y",
+        "min": 0,
+        "max": 14,
+        "step": 2,
+        "length": 400,
+        "label": "pH",
+        "ticks": true,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 300,
+          "dur": 800
+        }
+      },
+      "t": 300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "curve",
+        "kind": "curve",
+        "anchor": {
+          "board": [200, 182.203464]
+        },
+        "points": [
+          [0, 329.225107],
+          [25.6, 327.235509],
+          [64, 324.193928],
+          [102.4, 320.994678],
+          [153.6, 316.246296],
+          [204.8, 310.40964],
+          [256, 301.961035],
+          [281.6, 295.082918],
+          [294.4, 289.7905],
+          [307.2, 280.93379],
+          [313.6, 272.206959],
+          [317.44, 260.762269],
+          [318.72, 252.13652],
+          [319.36, 243.523236],
+          [320, 157.796536],
+          [320.64, 72.094652],
+          [321.28, 63.506185],
+          [322.56, 54.93007],
+          [326.4, 43.634289],
+          [332.8, 35.155683],
+          [345.6, 26.795774],
+          [371.2, 18.663215],
+          [409.6, 12.390159],
+          [460.8, 7.623311],
+          [512, 4.562881],
+          [576, 1.912765],
+          [640, 0]
+        ],
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 1100,
+          "dur": 2200
+        }
+      },
+      "t": 1100
+    },
+    {
+      "type": "say",
+      "text": "Almost nothing happens, then everything happens at once.",
+      "t": 3300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "equivalence-point",
+        "kind": "point",
+        "anchor": {
+          "board": [520, 340]
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 3
+        },
+        "t": {
+          "start": 3400,
+          "dur": 300
+        }
+      },
+      "t": 3400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "equivalence-label",
+        "kind": "label",
+        "anchor": {
+          "board": [250, 200]
+        },
+        "text": "equivalence",
+        "style": {
+          "ink": "accent",
+          "weight": 1
+        },
+        "t": {
+          "start": 3700,
+          "dur": 600
+        }
+      },
+      "t": 3700
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "equivalence-arrow",
+        "kind": "arrow",
+        "anchor": {
+          "object": "equivalence-point"
+        },
+        "from": {
+          "object": "equivalence-label"
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 4300,
+          "dur": 700
+        }
+      },
+      "t": 4300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "neutral-line",
+        "kind": "polyline",
+        "anchor": {
+          "board": [200, 340]
+        },
+        "points": [[0, 0], [640, 0]],
+        "style": {
+          "ink": "faint",
+          "weight": 1,
+          "dash": true
+        },
+        "t": {
+          "start": 5000,
+          "dur": 700
+        }
+      },
+      "t": 5000
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "start-ph",
+        "kind": "number",
+        "anchor": {
+          "board": [760, 140]
+        },
+        "value": 1,
+        "precision": 2,
+        "label": "pH at the start =",
+        "verified": true,
+        "check": "board.numbers_agree:starting pH",
+        "meta": "-log10(0.1)",
+        "t": {
+          "start": 5000,
+          "dur": 600
+        }
+      },
+      "t": 5000
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "equivalence-volume",
+        "kind": "number",
+        "anchor": {
+          "board": [760, 195]
+        },
+        "value": 25,
+        "precision": 2,
+        "unit": "mL",
+        "label": "equivalence at",
+        "verified": true,
+        "check": "board.numbers_agree:equivalence volume",
+        "meta": "25 * 0.1 / 0.1",
+        "t": {
+          "start": 5600,
+          "dur": 600
+        }
+      },
+      "t": 5600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "equivalence-ph",
+        "kind": "number",
+        "anchor": {
+          "board": [760, 250]
+        },
+        "value": 7,
+        "precision": 2,
+        "label": "pH there =",
+        "verified": true,
+        "check": "board.in_bounds:pH",
+        "meta": "strong acid with strong base: 7",
+        "t": {
+          "start": 6200,
+          "dur": 600
+        }
+      },
+      "t": 6200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "end-ph",
+        "kind": "number",
+        "anchor": {
+          "board": [760, 305]
+        },
+        "value": 12.522878745280337,
+        "precision": 2,
+        "label": "pH at 50 mL =",
+        "verified": true,
+        "check": "board.numbers_agree:final pH",
+        "meta": "14 + log10((5 - 2.5) / 75)",
+        "t": {
+          "start": 6800,
+          "dur": 600
+        }
+      },
+      "t": 6800
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "jump-bracket",
+        "kind": "bracket",
+        "anchor": {
+          "object": "equivalence-point"
+        },
+        "side": "right",
+        "style": {
+          "ink": "accent",
+          "weight": 1
+        },
+        "t": {
+          "start": 7400,
+          "dur": 700
+        }
+      },
+      "t": 7400
+    },
+    {
+      "type": "done",
+      "t": 8200
+    }
+  ]
+}

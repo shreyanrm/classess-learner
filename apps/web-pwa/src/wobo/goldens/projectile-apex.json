@@ -1,0 +1,398 @@
+{
+  "name": "projectile-apex",
+  "prompt": "what is happening at the top of a projectile",
+  "title": "the apex of a projectile",
+  "presentation": "full",
+  "subject": "physics",
+  "expect": {
+    "ids": [
+      "ground",
+      "trajectory",
+      "apex",
+      "apex-vx",
+      "apex-vx-label",
+      "height-line",
+      "apex-formula",
+      "apex-height",
+      "apex-speed",
+      "apex-vertical",
+      "apex-time",
+      "height-brace"
+    ],
+    "kinds": [
+      "polyline",
+      "curve",
+      "point",
+      "arrow",
+      "label",
+      "polyline",
+      "tex",
+      "number",
+      "number",
+      "number",
+      "number",
+      "bracket"
+    ],
+    "anchors": [
+      "board",
+      "board",
+      "board",
+      "board",
+      "object",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "object"
+    ],
+    "hangsOff": [["apex-vx-label", "apex-vx"], ["height-brace", "height-line"]],
+    "written": ["sideways only", "h = 10.19 m", "vx = 14.14 m/s", "vy = 0.00 m/s", "t = 1.44 s"],
+    "numbers": [
+      {
+        "id": "apex-height",
+        "value": 10.19367991845056,
+        "precision": 2,
+        "unit": "m",
+        "check": "board.numbers_agree:apex height",
+        "from": "(20*sin45)**2 / (2*9.81)"
+      },
+      {
+        "id": "apex-speed",
+        "value": 14.142135623730951,
+        "precision": 2,
+        "unit": "m/s",
+        "check": "board.numbers_agree:horizontal speed",
+        "from": "20*cos45"
+      },
+      {
+        "id": "apex-vertical",
+        "value": 0,
+        "precision": 2,
+        "unit": "m/s",
+        "check": "board.in_bounds:vertical speed at the apex",
+        "from": "20*sin45 - 9.81*t_apex"
+      },
+      {
+        "id": "apex-time",
+        "value": 1.4416040391163047,
+        "precision": 2,
+        "unit": "s",
+        "check": "board.numbers_agree:time to the apex",
+        "from": "20*sin45 / 9.81"
+      }
+    ]
+  },
+  "plan": [
+    {
+      "type": "say",
+      "text": "A ball thrown at twenty metres a second, forty-five degrees up.",
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "ground",
+        "kind": "polyline",
+        "anchor": {
+          "board": [110, 520]
+        },
+        "points": [[0, 0], [610, 0]],
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 0,
+          "dur": 500
+        }
+      },
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "trajectory",
+        "kind": "curve",
+        "anchor": {
+          "board": [130, 214.189602]
+        },
+        "points": [
+          [0, 305.810398],
+          [14, 275.993884],
+          [28, 247.706422],
+          [42, 220.948012],
+          [56, 195.718654],
+          [70, 172.018349],
+          [84, 149.847095],
+          [98, 129.204893],
+          [112, 110.091743],
+          [126, 92.507645],
+          [140, 76.452599],
+          [154, 61.926606],
+          [168, 48.929664],
+          [182, 37.461774],
+          [196, 27.522936],
+          [210, 19.11315],
+          [224, 12.232416],
+          [238, 6.880734],
+          [252, 3.058104],
+          [266, 0.764526],
+          [280, 0],
+          [294, 0.764526],
+          [308, 3.058104],
+          [322, 6.880734],
+          [336, 12.232416],
+          [350, 19.11315],
+          [364, 27.522936],
+          [378, 37.461774],
+          [392, 48.929664],
+          [406, 61.926606],
+          [420, 76.452599],
+          [434, 92.507645],
+          [448, 110.091743],
+          [462, 129.204893],
+          [476, 149.847095],
+          [490, 172.018349],
+          [504, 195.718654],
+          [518, 220.948012],
+          [532, 247.706422],
+          [546, 275.993884],
+          [560, 305.810398]
+        ],
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 500,
+          "dur": 1500
+        }
+      },
+      "t": 500
+    },
+    {
+      "type": "say",
+      "text": "At the top it is still moving. Only sideways.",
+      "t": 2100
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "apex",
+        "kind": "point",
+        "anchor": {
+          "board": [410, 214.189602]
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 3
+        },
+        "t": {
+          "start": 2200,
+          "dur": 300
+        }
+      },
+      "t": 2200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "apex-vx",
+        "kind": "arrow",
+        "anchor": {
+          "board": [500, 214.189602]
+        },
+        "from": {
+          "object": "apex"
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 2500,
+          "dur": 600
+        }
+      },
+      "t": 2500
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "apex-vx-label",
+        "kind": "label",
+        "anchor": {
+          "object": "apex-vx"
+        },
+        "text": "sideways only",
+        "style": {
+          "ink": "accent",
+          "weight": 1
+        },
+        "t": {
+          "start": 3100,
+          "dur": 600
+        }
+      },
+      "t": 3100
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "height-line",
+        "kind": "polyline",
+        "anchor": {
+          "board": [410, 214.189602]
+        },
+        "points": [[0, 0], [0, 305.810398]],
+        "style": {
+          "ink": "faint",
+          "weight": 1,
+          "dash": true
+        },
+        "t": {
+          "start": 3700,
+          "dur": 600
+        }
+      },
+      "t": 3700
+    },
+    {
+      "type": "say",
+      "text": "The height at the top comes out of the vertical speed alone.",
+      "t": 4300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "apex-formula",
+        "kind": "tex",
+        "anchor": {
+          "board": [760, 120]
+        },
+        "tex": "h = \\frac{(v_0 \\sin\\theta)^2}{2g}",
+        "size": 34,
+        "check": "board.readable:apex height",
+        "t": {
+          "start": 4400,
+          "dur": 1400
+        }
+      },
+      "t": 4400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "apex-height",
+        "kind": "number",
+        "anchor": {
+          "board": [760, 210]
+        },
+        "value": 10.19367991845056,
+        "precision": 2,
+        "unit": "m",
+        "label": "h =",
+        "verified": true,
+        "check": "board.numbers_agree:apex height",
+        "meta": "(20*sin45)**2 / (2*9.81)",
+        "t": {
+          "start": 5800,
+          "dur": 600
+        }
+      },
+      "t": 5800
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "apex-speed",
+        "kind": "number",
+        "anchor": {
+          "board": [760, 265]
+        },
+        "value": 14.142135623730951,
+        "precision": 2,
+        "unit": "m/s",
+        "label": "vx =",
+        "verified": true,
+        "check": "board.numbers_agree:horizontal speed",
+        "meta": "20*cos45",
+        "t": {
+          "start": 6400,
+          "dur": 600
+        }
+      },
+      "t": 6400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "apex-vertical",
+        "kind": "number",
+        "anchor": {
+          "board": [760, 320]
+        },
+        "value": 0,
+        "precision": 2,
+        "unit": "m/s",
+        "label": "vy =",
+        "verified": true,
+        "check": "board.in_bounds:vertical speed at the apex",
+        "meta": "20*sin45 - 9.81*t_apex",
+        "t": {
+          "start": 7000,
+          "dur": 600
+        }
+      },
+      "t": 7000
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "apex-time",
+        "kind": "number",
+        "anchor": {
+          "board": [760, 375]
+        },
+        "value": 1.4416040391163047,
+        "precision": 2,
+        "unit": "s",
+        "label": "t =",
+        "verified": true,
+        "check": "board.numbers_agree:time to the apex",
+        "meta": "20*sin45 / 9.81",
+        "t": {
+          "start": 7600,
+          "dur": 600
+        }
+      },
+      "t": 7600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "height-brace",
+        "kind": "bracket",
+        "anchor": {
+          "object": "height-line"
+        },
+        "side": "left",
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 8200,
+          "dur": 600
+        }
+      },
+      "t": 8200
+    },
+    {
+      "type": "done",
+      "t": 8900
+    }
+  ]
+}

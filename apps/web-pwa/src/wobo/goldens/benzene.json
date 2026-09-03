@@ -1,0 +1,411 @@
+{
+  "name": "benzene",
+  "prompt": "draw benzene and explain the ring",
+  "title": "benzene",
+  "presentation": "full",
+  "subject": "chemistry",
+  "expect": {
+    "ids": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "bond-1",
+      "bond-2",
+      "bond-3",
+      "bond-4",
+      "bond-5",
+      "bond-6",
+      "aromatic-ring",
+      "formula",
+      "formula-arrow"
+    ],
+    "kinds": [
+      "atom",
+      "atom",
+      "atom",
+      "atom",
+      "atom",
+      "atom",
+      "line",
+      "line",
+      "line",
+      "line",
+      "line",
+      "line",
+      "ellipse",
+      "label",
+      "arrow"
+    ],
+    "anchors": [
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "object",
+      "object",
+      "object",
+      "object",
+      "object",
+      "object",
+      "board",
+      "board",
+      "object"
+    ],
+    "hangsOff": [
+      ["bond-1", "c1"],
+      ["bond-2", "c2"],
+      ["bond-3", "c3"],
+      ["bond-4", "c4"],
+      ["bond-5", "c5"],
+      ["bond-6", "c6"],
+      ["formula-arrow", "aromatic-ring"]
+    ],
+    "written": ["C6H6"],
+    "numbers": []
+  },
+  "plan": [
+    {
+      "type": "say",
+      "text": "Benzene. Six carbons in a ring, and every bond the same.",
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "c1",
+        "kind": "atom",
+        "anchor": {
+          "board": [480, 190]
+        },
+        "symbol": "C",
+        "size": 24,
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 0,
+          "dur": 300
+        }
+      },
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "c2",
+        "kind": "atom",
+        "anchor": {
+          "board": [592.583302, 255]
+        },
+        "symbol": "C",
+        "size": 24,
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 260,
+          "dur": 300
+        }
+      },
+      "t": 260
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "c3",
+        "kind": "atom",
+        "anchor": {
+          "board": [592.583302, 385]
+        },
+        "symbol": "C",
+        "size": 24,
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 520,
+          "dur": 300
+        }
+      },
+      "t": 520
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "c4",
+        "kind": "atom",
+        "anchor": {
+          "board": [480, 450]
+        },
+        "symbol": "C",
+        "size": 24,
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 780,
+          "dur": 300
+        }
+      },
+      "t": 780
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "c5",
+        "kind": "atom",
+        "anchor": {
+          "board": [367.416698, 385]
+        },
+        "symbol": "C",
+        "size": 24,
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 1040,
+          "dur": 300
+        }
+      },
+      "t": 1040
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "c6",
+        "kind": "atom",
+        "anchor": {
+          "board": [367.416698, 255]
+        },
+        "symbol": "C",
+        "size": 24,
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 1300,
+          "dur": 300
+        }
+      },
+      "t": 1300
+    },
+    {
+      "type": "say",
+      "text": "Join them up, carbon to carbon.",
+      "t": 1560
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "bond-1",
+        "kind": "line",
+        "anchor": {
+          "object": "c1"
+        },
+        "to": {
+          "object": "c2"
+        },
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 1660,
+          "dur": 300
+        }
+      },
+      "t": 1660
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "bond-2",
+        "kind": "line",
+        "anchor": {
+          "object": "c2"
+        },
+        "to": {
+          "object": "c3"
+        },
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 1980,
+          "dur": 300
+        }
+      },
+      "t": 1980
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "bond-3",
+        "kind": "line",
+        "anchor": {
+          "object": "c3"
+        },
+        "to": {
+          "object": "c4"
+        },
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 2300,
+          "dur": 300
+        }
+      },
+      "t": 2300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "bond-4",
+        "kind": "line",
+        "anchor": {
+          "object": "c4"
+        },
+        "to": {
+          "object": "c5"
+        },
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 2620,
+          "dur": 300
+        }
+      },
+      "t": 2620
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "bond-5",
+        "kind": "line",
+        "anchor": {
+          "object": "c5"
+        },
+        "to": {
+          "object": "c6"
+        },
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 2940,
+          "dur": 300
+        }
+      },
+      "t": 2940
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "bond-6",
+        "kind": "line",
+        "anchor": {
+          "object": "c6"
+        },
+        "to": {
+          "object": "c1"
+        },
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 3260,
+          "dur": 300
+        }
+      },
+      "t": 3260
+    },
+    {
+      "type": "say",
+      "text": "The electrons are shared all the way round, so we draw a circle rather than three double bonds.",
+      "t": 3580
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "aromatic-ring",
+        "kind": "ellipse",
+        "anchor": {
+          "board": [480, 320]
+        },
+        "rx": 80.6,
+        "ry": 80.6,
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 3680,
+          "dur": 900
+        }
+      },
+      "t": 3680
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "formula",
+        "kind": "label",
+        "anchor": {
+          "board": [760, 200]
+        },
+        "text": "C6H6",
+        "size": 34,
+        "check": "board.fact_supported:benzene",
+        "t": {
+          "start": 4580,
+          "dur": 700
+        }
+      },
+      "t": 4580
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "formula-arrow",
+        "kind": "arrow",
+        "anchor": {
+          "object": "aromatic-ring"
+        },
+        "from": {
+          "object": "formula"
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 5280,
+          "dur": 700
+        }
+      },
+      "t": 5280
+    },
+    {
+      "type": "done",
+      "t": 6080
+    }
+  ]
+}

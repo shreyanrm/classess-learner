@@ -7,6 +7,7 @@
  * Quiet chrome; one accent — the ultramarine spark that is Wobo herself.
  */
 
+import { plane, useRegisterTarget } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { chaptersBySubject, displaySubjects } from '../data/catalog';
@@ -15,7 +16,10 @@ import { useSdk } from '../store/sdk';
 import { FROST, fluidType, Kbd, SectionLabel, surface } from '../ui/kit';
 import { getThemePref, setThemePref } from '../ui/theme';
 import { loadViewPref, saveViewPref } from '../ui/viewPref';
+import { saveBoardToNotes } from '../wobo/board-notes';
+import { boardTurn } from '../wobo/board-turn';
 import { useWoboChat } from '../wobo/chat';
+import { availableModes, modePrompt } from '../wobo/modes';
 import { isMuted, setMuted } from '../wobo/speech';
 import { type Route, useRouter } from './router';
 
@@ -111,6 +115,14 @@ export function CommandPalette() {
   const [index, setIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
+  // The palette is a surface like any other: she can point at it, tell a learner it exists, and
+  // read what is in it.
+  const panelRef = useRegisterTarget<HTMLDivElement>('command-palette', {
+    kind: 'palette',
+    label: 'the command palette — every surface, subject, chapter, topic and action by name',
+    getSceneState: () => ({ open, query }),
+    getValidActions: () => (open ? ['type to search', 'close it'] : ['open it with command k']),
+  });
 
   const close = () => setOpen(false);
 
@@ -245,6 +257,68 @@ export function CommandPalette() {
         run: () => saveViewPref(adventure ? 'list' : 'adventure'),
       },
     );
+
+    // The board, reachable by name. The palette is the keyboard path to everything the gesture
+    // layer and the word "board" already do.
+    items.push(
+      {
+        id: 'board-open',
+        label: 'Open the board',
+        hint: 'Her frosted plane, over whatever is on screen',
+        section: 'actions',
+        search: 'board whiteboard plane draw canvas',
+        run: () => {
+          plane.summon({
+            origin: { x: window.innerWidth - 56, y: window.innerHeight - 60 },
+          });
+        },
+      },
+      {
+        id: 'board-fresh',
+        label: 'Fresh board',
+        hint: 'A new board, with the last one kept',
+        section: 'actions',
+        search: 'fresh new blank board another canvas',
+        run: () => {
+          plane.fresh({ x: window.innerWidth - 56, y: window.innerHeight - 60 });
+        },
+      },
+      {
+        id: 'board-wipe',
+        label: 'Wipe the board',
+        hint: 'Clear the ink, keep the board',
+        section: 'actions',
+        search: 'wipe clear erase board ink',
+        run: () => boardTurn.wipe(),
+      },
+      {
+        id: 'board-save',
+        label: 'Save the board to notes',
+        hint: 'Kept as objects, so it opens again exactly as it is',
+        section: 'actions',
+        search: 'save board notes keep store',
+        run: () => {
+          saveBoardToNotes(boardTurn.boardStore(), { route: router.route.name });
+        },
+      },
+    );
+
+    // Her modes (WOBO-PLAN §3), each reached by name. The ones that need something in hand appear
+    // only when the learner has something in hand — an affordance that cannot work is worse than
+    // none. Every one of them goes through the same `ask`, so voice, composer and palette agree.
+    for (const mode of availableModes({
+      hasFocus: chat.focus !== null,
+      onLesson: router.route.name === 'course' || router.route.name === 'sandbox',
+    })) {
+      items.push({
+        id: `mode-${mode.id}`,
+        label: mode.label,
+        hint: mode.hint,
+        section: 'actions',
+        search: mode.search,
+        run: () => void chat.ask(modePrompt(mode.id, chat.focus?.text)),
+      });
+    }
 
     const account = sdk.account;
     if (account?.isAuthenticated())
@@ -474,6 +548,7 @@ export function CommandPalette() {
           }}
         >
           <motion.div
+            ref={panelRef}
             {...panelMotion}
             onClick={(e) => e.stopPropagation()}
             role="combobox"

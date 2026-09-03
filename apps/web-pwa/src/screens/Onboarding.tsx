@@ -14,7 +14,7 @@
  */
 
 import { fontFamily } from '@classess/config';
-import { useWoboBus, WoboBody, type WoboMood } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus, WoboBody, type WoboMood } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { ONBOARDED_KEY, SIGNIN_SOURCE_KEY } from '../App';
@@ -229,6 +229,21 @@ export function Onboarding() {
   const [showPhone, setShowPhone] = useState(false);
 
   const finalName = name.trim();
+  // Setting up is a surface too: the beat she is on and what she is waiting for. It is what makes
+  // the guided tour possible later — she can point at the very control she just asked about.
+  const stageRef = useRegisterTarget<HTMLDivElement>('onboarding-stage', {
+    kind: 'flow',
+    label: 'setting up — the beat she is on and what she is waiting for',
+    getSceneState: () => ({
+      beat: phase,
+      askedFor: line,
+      signedIn: authed,
+      name: finalName || undefined,
+      grade: grade ?? undefined,
+      board: boardId ?? undefined,
+      interests,
+    }),
+  });
   // Times the input/continue reveal after each line settles (replaces the old typing-done signal).
   const revealTimer = useRef<number | undefined>(undefined);
 
@@ -550,6 +565,7 @@ export function Onboarding() {
 
   return (
     <div
+      ref={stageRef}
       style={{
         minHeight: '100dvh',
         display: 'flex',

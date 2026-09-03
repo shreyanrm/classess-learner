@@ -11,7 +11,7 @@
  * sandbox (route `sandbox`) that opens straight into the what-if card.
  */
 
-import { useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { chapterById, topicById } from '../data/catalog';
@@ -100,6 +100,21 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
   useEffect(() => {
     bus.publishPage({ route: sandbox ? 'sandbox' : 'course', state: { topicId, title, mode } });
   }, [bus, sandbox, topicId, title, mode]);
+
+  // The card on stage — the beat the learner is actually on. Registered so her ink anchors to the
+  // card itself ("this step", "the box at the top") and so the full board knows what it is about.
+  const stageRef = useRegisterTarget<HTMLElement>('course-card', {
+    kind: 'card',
+    label: `the card on stage in ${title}`,
+    meaning: 'the beat of the lesson the learner is on right now',
+    getSceneState: () => ({
+      topic: title,
+      mode,
+      beat: Math.round(progress.f * progress.segments) + 1,
+      of: progress.segments,
+      advance: bar?.primary.label,
+    }),
+  });
 
   // the row on the subject page fills as the learner travels — the tab is the progress bar. Never
   // for a course being bounced to the download queue (it would falsely mark the topic as started).
@@ -205,6 +220,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
 
       {/* the full-bleed card area */}
       <main
+        ref={stageRef}
         className="clss-scroll-quiet"
         style={{
           flex: 1,

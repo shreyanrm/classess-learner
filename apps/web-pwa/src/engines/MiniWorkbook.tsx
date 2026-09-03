@@ -711,7 +711,7 @@ export function MiniWorkbook({
 
   // she reads the workbook at code level, and can drive it
   const doneCount = spec.items.filter((it, i) => itemComplete(it, answers[i] as ItemAnswer)).length;
-  useRegisterTarget<HTMLDivElement>(`workbook-${spec.id}`, {
+  const stageRef = useRegisterTarget<HTMLDivElement>(`workbook-${spec.id}`, {
     kind: 'workbook',
     label: `mini-workbook: ${spec.title}`,
     getSceneState: () => ({
@@ -751,7 +751,7 @@ export function MiniWorkbook({
 
   return (
     <CardBody maxWidth={640} center={false}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
+      <div ref={stageRef} style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
         <div>
           <div style={whisper}>a quick check · answered together</div>
           <div style={{ ...cardTitle, marginTop: 8 }}>{spec.title}</div>

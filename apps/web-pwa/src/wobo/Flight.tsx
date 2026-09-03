@@ -8,7 +8,13 @@
  */
 
 import { useReducedMotion } from '@classess/motion';
-import { WoboBody, type WoboMood } from '@classess/wobo';
+import {
+  type TrackRect,
+  type WoboBehaviour,
+  WoboBody,
+  type WoboExpression,
+  type WoboMood,
+} from '@classess/wobo';
 import {
   animate,
   motion,
@@ -27,16 +33,29 @@ export function FlyingWobo({
   routeKey,
   mood,
   gestureAngle,
+  focus,
+  idleSince,
+  behaviour,
+  behaviourKey,
   onTap,
+  onDoubleTap,
   onHoldStart,
   onHoldEnd,
   size = 68,
 }: {
   routeKey: string;
-  mood: WoboMood;
+  mood: WoboMood | WoboExpression;
   /** Direction (radians) she leans + gazes toward while explaining — toward the ink she's drawing. */
   gestureAngle?: number;
+  /** What the learner pointed at: her eyes go there before anything else. */
+  focus?: TrackRect | null;
+  /** When the learner last did anything, anywhere — her idle life runs off real quiet, not a timer. */
+  idleSince?: number;
+  /** One played behaviour — she leans, points, or startles when something real happens. */
+  behaviour?: WoboBehaviour | null;
+  behaviourKey?: string | number;
   onTap: () => void;
+  onDoubleTap?: () => void;
   /** Push-to-talk on her docked body — forwarded straight to WoboBody. */
   onHoldStart?: () => void;
   onHoldEnd?: () => void;
@@ -213,11 +232,17 @@ export function FlyingWobo({
           <WoboBody
             size={size}
             mood={flying ? 'hint' : mood}
-            // While inking she turns to the board (gestureAngle); otherwise her eyes drift to the
-            // cursor. Flight owns her gaze during arrival, so neither applies until she's landed.
-            gaze={flying ? undefined : gestureAngle !== undefined ? undefined : 'pointer'}
+            // Her eyes go, in order, to what the learner circled, then to the ink she is laying
+            // down, then to the cursor. Flight owns her gaze during arrival, so none of it applies
+            // until she has landed.
+            focus={flying ? null : (focus ?? null)}
+            gaze={flying || focus ? undefined : gestureAngle !== undefined ? undefined : 'pointer'}
             gestureAngle={flying ? undefined : gestureAngle}
+            {...(idleSince !== undefined ? { idleSince } : {})}
+            {...(flying ? {} : { behaviour: behaviour ?? null })}
+            {...(behaviourKey !== undefined ? { behaviourKey } : {})}
             onTap={onTap}
+            {...(onDoubleTap ? { onDoubleTap } : {})}
             // Push-to-talk only once she has landed — a hold during the arrival would fight it.
             onHoldStart={flying ? undefined : onHoldStart}
             onHoldEnd={flying ? undefined : onHoldEnd}

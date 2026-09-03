@@ -1,0 +1,920 @@
+/**
+ * Object → geometry. The pure half of the hand: a board object plus the rects its anchor resolves
+ * to becomes strokes, written glyphs and a bounding box, all in board units.
+ *
+ * Nothing here touches React or the DOM, so every kind in the grammar is testable, and the renderer
+ * can cache a result for as long as the anchor's signature is unchanged — which is what keeps two
+ * thousand strokes at sixty frames.
+ */
+
+import {
+  type AnchorContext,
+  type BoardRect,
+  padBox,
+  pointBox,
+  pointOn,
+  resolveAnchorBox,
+  unionBox,
+} from './anchors';
+import {
+  glyphAt,
+  type HandFont,
+  type HandGlyph,
+  layoutTex,
+  measureText,
+  writeText,
+} from './handwriting';
+import { LABEL_MARGIN, placeLabel } from './layout';
+import { fillStroke, penRng, penStroke, polylineLength, ruledStroke, type Stroke } from './pen';
+import type { BoardObject, BoardPoint } from './schema';
+
+/** Everything the renderer needs to paint one object. */
+export interface ObjectGeometry {
+  /** Pen strokes, in the order the hand makes them. */
+  strokes: Stroke[];
+  /** Written glyphs (a note, a number, an equation). */
+  glyphs: HandGlyph[];
+  /** Type size in board units, when anything is written — sizes the pen mask. */
+  size?: number;
+  /** The written text, for the no-font fallback and for the accessible label. */
+  text?: { lines: string[]; x: number; y: number; size: number; lineHeight: number };
+  /** An embedded image, placed in board units. */
+  image?: { href: string; alt: string; box: BoardRect };
+  /** A control's live geometry, so the renderer can attach the interaction. */
+  control?: {
+    variable: string;
+    kind: 'slider' | 'toggle' | 'input' | 'drag';
+    hit: BoardRect;
+    /** The knob or handle, for a drag. */
+    knob?: BoardRect;
+  };
+  box: BoardRect;
+  /** Total pen travel in board units — the object's own clock. */
+  length: number;
+}
+
+const empty = (box: BoardRect): ObjectGeometry => ({ strokes: [], glyphs: [], box, length: 0 });
+
+function totalLength(strokes: Stroke[], glyphs: HandGlyph[]): number {
+  let n = 0;
+  for (const s of strokes) n += s.length;
+  for (const g of glyphs) for (const t of g.trace) n += t.length;
+  return n;
+}
+
+/** Format a verified quantity for the board — the value as computed, never re-derived here. */
+export function formatQuantity(value: number, precision?: number, unit?: string): string {
+  const shown = precision === undefined ? String(value) : value.toFixed(precision);
+  return unit ? `${shown} ${unit}` : shown;
+}
+
+/** Default type size for a written note, in board units. */
+export const WRITE_SIZE = 30;
+export const LABEL_SIZE = 22;
+
+interface BuildContext extends AnchorContext {
+  font: HandFont | null;
+  /** Boxes already placed this frame, so a written label lands in free space. */
+  occupied?: BoardRect[];
+}
+
+/** The relative-points convention: a shape's `points` are offsets from its resolved anchor point. */
+function offsetPoints(origin: BoardPoint, points: BoardPoint[]): BoardPoint[] {
+  return points.map((p) => [origin[0] + p[0], origin[1] + p[1]] as BoardPoint);
+}
+
+/** A two-barb arrowhead at `tip`, opening back along `dir`. */
+function arrowHead(tip: BoardPoint, dir: BoardPoint, len: number): Stroke {
+  const nx = -dir[0];
+  const ny = -dir[1];
+  const cos = Math.cos(0.42);
+  const sin = Math.sin(0.42);
+  const a: BoardPoint = [
+    tip[0] + (nx * cos - ny * sin) * len,
+    tip[1] + (nx * sin + ny * cos) * len,
+  ];
+  const b: BoardPoint = [
+    tip[0] + (nx * cos + ny * sin) * len,
+    tip[1] + (-nx * sin + ny * cos) * len,
+  ];
+  const pts = [a, tip, b];
+  return {
+    d: `M ${a[0].toFixed(2)} ${a[1].toFixed(2)} L ${tip[0].toFixed(2)} ${tip[1].toFixed(2)} L ${b[0].toFixed(2)} ${b[1].toFixed(2)}`,
+    length: polylineLength(pts),
+    weight: 0.85,
+  };
+}
+
+function unit(from: BoardPoint, to: BoardPoint): BoardPoint {
+  const dx = to[0] - from[0];
+  const dy = to[1] - from[1];
+  const len = Math.hypot(dx, dy);
+  return len > 0 ? [dx / len, dy / len] : [1, 0];
+}
+
+/** A circle around a box, drawn as a hand does it: a loop and a bit, not a compass arc. */
+function loopAround(box: BoardRect, rng: () => number): Stroke {
+  const cx = box.x + box.w / 2;
+  const cy = box.y + box.h / 2;
+  const rx = Math.max(box.w / 2, 12);
+  const ry = Math.max(box.h / 2, 10);
+  const start = rng() * Math.PI * 2;
+  const turns = 1.12;
+  const steps = 40;
+  const pts: BoardPoint[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const a = start + t * turns * Math.PI * 2;
+    pts.push([cx + Math.cos(a) * rx * (1 + t * 0.03), cy + Math.sin(a) * ry * (1 + t * 0.03)]);
+  }
+  return penStroke(pts, rng, { wobble: 1.6, anticipation: 0.004, overshoot: 0 });
+}
+
+/** Written text, placed and measured. Returns nothing drawable when the font never arrived. */
+function written(
+  ctx: BuildContext,
+  text: string,
+  origin: BoardPoint,
+  size: number,
+  maxWidth?: number,
+): { glyphs: HandGlyph[]; box: BoardRect; lines: string[]; lineHeight: number } {
+  const lineHeight = size * 1.22;
+  if (!ctx.font) {
+    const lines = text.split('\n');
+    const approx = Math.max(...lines.map((l) => l.length)) * size * 0.42;
+    return {
+      glyphs: [],
+      box: { x: origin[0], y: origin[1], w: approx, h: lines.length * lineHeight },
+      lines,
+      lineHeight,
+    };
+  }
+  const laid = writeText(ctx.font, text, origin, { size, maxWidth, lineHeight });
+  return {
+    glyphs: laid.glyphs,
+    box: { x: origin[0], y: origin[1], w: laid.width, h: laid.height },
+    lines: [text],
+    lineHeight,
+  };
+}
+
+/** Where a written note goes when it hangs off something: beside it, in free space, with a margin. */
+function notePlacement(
+  ctx: BuildContext,
+  anchorBox: BoardRect,
+  text: string,
+  size: number,
+  maxWidth?: number,
+): BoardPoint {
+  if (anchorBox.w === 0 && anchorBox.h === 0) return [anchorBox.x, anchorBox.y];
+  const width = ctx.font
+    ? Math.min(measureText(ctx.font, text, size), maxWidth ?? Number.POSITIVE_INFINITY)
+    : text.length * size * 0.42;
+  const placed = placeLabel(
+    anchorBox,
+    { w: width, h: size * 1.22 },
+    ctx.occupied ?? [],
+    undefined,
+    LABEL_MARGIN,
+  );
+  return [placed.x, placed.y];
+}
+
+/**
+ * Build the geometry for one object. Returns null when the thing it anchors to is gone — the
+ * renderer fades such a mark out rather than letting it float.
+ */
+export function geometryOf(object: BoardObject, ctx: BuildContext): ObjectGeometry | null {
+  const rng = penRng(object.id, object.kind);
+  const anchor = 'anchor' in object ? object.anchor : undefined;
+  const box = anchor ? resolveAnchorBox(anchor, ctx) : { x: 0, y: 0, w: 1000, h: 1000 };
+  if (anchor && !box) return null;
+  const at = anchor && 'at' in anchor ? anchor.at : undefined;
+  const anchorBox = box as BoardRect;
+  const p = pointOn(anchorBox, at);
+
+  switch (object.kind) {
+    case 'point': {
+      const tip: BoardPoint = [p[0], p[1]];
+      const from: BoardPoint = [p[0] - 34, p[1] - 26];
+      const shaft = penStroke([from, tip], rng, { wobble: 1.1 });
+      const head = arrowHead(tip, unit(from, tip), 11);
+      const strokes = [shaft, head];
+      return {
+        strokes,
+        glyphs: [],
+        box: {
+          x: Math.min(from[0], tip[0]) - 6,
+          y: Math.min(from[1], tip[1]) - 6,
+          w: Math.abs(tip[0] - from[0]) + 12,
+          h: Math.abs(tip[1] - from[1]) + 12,
+        },
+        length: totalLength(strokes, []),
+      };
+    }
+    case 'circle': {
+      const target = padBox(
+        anchorBox.w + anchorBox.h > 0 ? anchorBox : padBox(pointBox(p), 34),
+        object.pad ?? 9,
+      );
+      const stroke = loopAround(target, rng);
+      return { strokes: [stroke], glyphs: [], box: padBox(target, 6), length: stroke.length };
+    }
+    case 'underline': {
+      const w = anchorBox.w > 0 ? anchorBox.w : 90;
+      const x0 = anchorBox.w > 0 ? anchorBox.x : p[0] - w / 2;
+      const y = anchorBox.h > 0 ? anchorBox.y + anchorBox.h + 5 : p[1] + 5;
+      const pts: BoardPoint[] = [
+        [x0 - 4, y],
+        [x0 + w * 0.5, y + 2.2],
+        [x0 + w + 4, y],
+      ];
+      const stroke = penStroke(pts, rng, { wobble: 1.4 });
+      return {
+        strokes: [stroke],
+        glyphs: [],
+        box: { x: x0 - 6, y: y - 4, w: w + 12, h: 10 },
+        length: stroke.length,
+      };
+    }
+    case 'strike': {
+      const w = anchorBox.w > 0 ? anchorBox.w : 90;
+      const x0 = anchorBox.w > 0 ? anchorBox.x : p[0] - w / 2;
+      const y = anchorBox.h > 0 ? anchorBox.y + anchorBox.h * 0.55 : p[1];
+      const stroke = penStroke(
+        [
+          [x0 - 5, y + 2],
+          [x0 + w * 0.5, y - 1],
+          [x0 + w + 5, y + 2],
+        ],
+        rng,
+        { wobble: 1.5 },
+      );
+      return {
+        strokes: [stroke],
+        glyphs: [],
+        box: { x: x0 - 6, y: y - 8, w: w + 12, h: 16 },
+        length: stroke.length,
+      };
+    }
+    case 'arrow': {
+      const tip: BoardPoint = p;
+      const start = object.from ? resolveAnchorBox(object.from, ctx) : null;
+      const from: BoardPoint = start
+        ? pointOn(start, object.from && 'at' in object.from ? object.from.at : undefined)
+        : [p[0] - 120, p[1] - 80];
+      const bow = object.curve ?? 0;
+      const mid: BoardPoint = [
+        (from[0] + tip[0]) / 2 - (tip[1] - from[1]) * bow * 0.2,
+        (from[1] + tip[1]) / 2 + (tip[0] - from[0]) * bow * 0.2,
+      ];
+      const shaft = penStroke([from, mid, tip], rng, { wobble: 1.3 });
+      const head = arrowHead(tip, unit(mid, tip), 15);
+      const strokes = [shaft, head];
+      const bounds = unionBox([pointBox(from), pointBox(mid), pointBox(tip)]) ?? pointBox(tip);
+      return { strokes, glyphs: [], box: padBox(bounds, 16), length: totalLength(strokes, []) };
+    }
+    case 'bracket': {
+      const side = object.side ?? 'left';
+      const b = anchorBox.w + anchorBox.h > 0 ? padBox(anchorBox, 8) : padBox(pointBox(p), 40);
+      const vertical = side === 'left' || side === 'right';
+      const nub = 9;
+      let pts: BoardPoint[];
+      if (side === 'left') {
+        const x = b.x;
+        pts = [
+          [x + nub, b.y],
+          [x, b.y + b.h * 0.25],
+          [x - nub * 0.5, b.y + b.h / 2],
+          [x, b.y + b.h * 0.75],
+          [x + nub, b.y + b.h],
+        ];
+      } else if (side === 'right') {
+        const x = b.x + b.w;
+        pts = [
+          [x - nub, b.y],
+          [x, b.y + b.h * 0.25],
+          [x + nub * 0.5, b.y + b.h / 2],
+          [x, b.y + b.h * 0.75],
+          [x - nub, b.y + b.h],
+        ];
+      } else if (side === 'top') {
+        const y = b.y;
+        pts = [
+          [b.x, y + nub],
+          [b.x + b.w * 0.25, y],
+          [b.x + b.w / 2, y - nub * 0.5],
+          [b.x + b.w * 0.75, y],
+          [b.x + b.w, y + nub],
+        ];
+      } else {
+        const y = b.y + b.h;
+        pts = [
+          [b.x, y - nub],
+          [b.x + b.w * 0.25, y],
+          [b.x + b.w / 2, y + nub * 0.5],
+          [b.x + b.w * 0.75, y],
+          [b.x + b.w, y - nub],
+        ];
+      }
+      const stroke = penStroke(pts, rng, { wobble: 1.1 });
+      const strokes = [stroke];
+      let glyphs: HandGlyph[] = [];
+      let boxes = [padBox(b, 12)];
+      let text: ObjectGeometry['text'];
+      if (object.label) {
+        const labelBox: BoardRect = vertical
+          ? { x: side === 'left' ? b.x - 16 : b.x + b.w, y: b.y, w: 1, h: b.h }
+          : { x: b.x, y: side === 'top' ? b.y - 16 : b.y + b.h, w: b.w, h: 1 };
+        const origin = notePlacement(ctx, labelBox, object.label, LABEL_SIZE);
+        const w = written(ctx, object.label, origin, LABEL_SIZE);
+        glyphs = w.glyphs;
+        boxes = [...boxes, w.box];
+        text = {
+          lines: w.lines,
+          x: origin[0],
+          y: origin[1],
+          size: LABEL_SIZE,
+          lineHeight: w.lineHeight,
+        };
+      }
+      return {
+        strokes,
+        glyphs,
+        ...(text ? { text, size: LABEL_SIZE } : {}),
+        box: unionBox(boxes) ?? b,
+        length: totalLength(strokes, glyphs),
+      };
+    }
+    case 'number': {
+      const label = formatQuantity(object.value, object.precision, object.unit);
+      const full = object.label ? `${object.label} ${label}` : label;
+      const origin = notePlacement(ctx, anchorBox, full, WRITE_SIZE);
+      const w = written(ctx, full, origin, WRITE_SIZE);
+      return {
+        strokes: [],
+        glyphs: w.glyphs,
+        size: WRITE_SIZE,
+        text: {
+          lines: w.lines,
+          x: origin[0],
+          y: origin[1],
+          size: WRITE_SIZE,
+          lineHeight: w.lineHeight,
+        },
+        box: w.box,
+        length: totalLength([], w.glyphs),
+      };
+    }
+    case 'write': {
+      const size = object.size ?? WRITE_SIZE;
+      const origin = notePlacement(ctx, anchorBox, object.text, size, object.maxWidth);
+      const w = written(ctx, object.text, origin, size, object.maxWidth);
+      return {
+        strokes: [],
+        glyphs: w.glyphs,
+        size,
+        text: { lines: w.lines, x: origin[0], y: origin[1], size, lineHeight: w.lineHeight },
+        box: w.box,
+        length: totalLength([], w.glyphs),
+      };
+    }
+    case 'label': {
+      const size = object.size ?? LABEL_SIZE;
+      const origin = notePlacement(ctx, anchorBox, object.text, size);
+      const w = written(ctx, object.text, origin, size);
+      return {
+        strokes: [],
+        glyphs: w.glyphs,
+        size,
+        text: { lines: w.lines, x: origin[0], y: origin[1], size, lineHeight: w.lineHeight },
+        box: w.box,
+        length: totalLength([], w.glyphs),
+      };
+    }
+    case 'erase': {
+      const target = ctx.objectBox(object.object);
+      const b = target ? padBox(target, 8) : padBox(pointBox(p), 40);
+      const y = b.y + b.h / 2;
+      const stroke = penStroke(
+        [
+          [b.x - 10, y],
+          [b.x + b.w + 10, y],
+        ],
+        rng,
+        { wobble: 2.6, overshoot: 0.05 },
+      );
+      return {
+        strokes: [{ ...stroke, weight: Math.max(2, b.h / 8) }],
+        glyphs: [],
+        box: b,
+        length: stroke.length,
+      };
+    }
+    case 'wipe': {
+      const area = anchorBox.w > 0 ? anchorBox : { x: 0, y: 0, w: 1000, h: 620 };
+      const strokes: Stroke[] = [];
+      const passes = 3;
+      for (let i = 0; i < passes; i++) {
+        const y = area.y + (area.h * (i + 0.5)) / passes;
+        const left = i % 2 === 0;
+        const a: BoardPoint = [left ? area.x - 20 : area.x + area.w + 20, y];
+        const b: BoardPoint = [left ? area.x + area.w + 20 : area.x - 20, y];
+        strokes.push({
+          ...penStroke([a, b], rng, { wobble: 3.5 }),
+          weight: Math.max(3, area.h / passes / 9),
+        });
+      }
+      return { strokes, glyphs: [], box: area, length: totalLength(strokes, []) };
+    }
+    case 'line': {
+      const toBox = resolveAnchorBox(object.to, ctx);
+      if (!toBox) return null;
+      const to = pointOn(toBox, 'at' in object.to ? object.to.at : undefined);
+      const stroke = penStroke([p, to], rng, { wobble: 1.1 });
+      return {
+        strokes: [stroke],
+        glyphs: [],
+        box: padBox(unionBox([pointBox(p), pointBox(to)]) ?? pointBox(p), 8),
+        length: stroke.length,
+      };
+    }
+    case 'polyline':
+    case 'polygon':
+    case 'curve': {
+      const pts = offsetPoints(p, object.points);
+      const closed = object.kind === 'polygon' || ('closed' in object && object.closed === true);
+      const stroke = penStroke(pts, rng, {
+        wobble: object.kind === 'curve' ? 0.9 : 1.2,
+        closed,
+        spacing: object.kind === 'curve' ? 10 : 18,
+      });
+      const strokes: Stroke[] = [];
+      if (object.style?.fill && object.style.fill !== 'none' && closed)
+        strokes.push(fillStroke(pts));
+      strokes.push(stroke);
+      return {
+        strokes,
+        glyphs: [],
+        box: padBox(unionBox(pts.map(pointBox)) ?? pointBox(p), 8),
+        length: stroke.length,
+      };
+    }
+    case 'ellipse': {
+      const pts: BoardPoint[] = [];
+      const steps = 34;
+      for (let i = 0; i <= steps; i++) {
+        const a = -Math.PI / 2 + (i / steps) * Math.PI * 2;
+        pts.push([p[0] + Math.cos(a) * object.rx, p[1] + Math.sin(a) * object.ry]);
+      }
+      const stroke = penStroke(pts, rng, { wobble: 1.1, anticipation: 0.004, overshoot: 0.004 });
+      const strokes: Stroke[] = [];
+      if (object.style?.fill && object.style.fill !== 'none') strokes.push(fillStroke(pts));
+      strokes.push(stroke);
+      return {
+        strokes,
+        glyphs: [],
+        box: {
+          x: p[0] - object.rx - 6,
+          y: p[1] - object.ry - 6,
+          w: object.rx * 2 + 12,
+          h: object.ry * 2 + 12,
+        },
+        length: stroke.length,
+      };
+    }
+    case 'axis': {
+      const horizontal = object.orientation === 'x';
+      const end: BoardPoint = horizontal
+        ? [p[0] + object.length, p[1]]
+        : [p[0], p[1] - object.length];
+      const strokes: Stroke[] = [ruledStroke([p, end])];
+      strokes.push(arrowHead(end, unit(p, end), 12));
+      const span = object.max - object.min;
+      const glyphs: HandGlyph[] = [];
+      if (object.ticks !== false && span > 0 && object.step > 0) {
+        const count = Math.min(40, Math.floor(span / object.step));
+        for (let i = 0; i <= count; i++) {
+          const frac = (i * object.step) / span;
+          const at: BoardPoint = horizontal
+            ? [p[0] + object.length * frac, p[1]]
+            : [p[0], p[1] - object.length * frac];
+          const tick: BoardPoint[] = horizontal
+            ? [
+                [at[0], at[1] - 6],
+                [at[0], at[1] + 6],
+              ]
+            : [
+                [at[0] - 6, at[1]],
+                [at[0] + 6, at[1]],
+              ];
+          strokes.push(ruledStroke(tick));
+        }
+      }
+      if (object.label && ctx.font) {
+        const origin: BoardPoint = horizontal
+          ? [end[0] + 10, end[1] + 4]
+          : [end[0] + 10, end[1] - 8];
+        const w = writeText(ctx.font, object.label, origin, { size: LABEL_SIZE });
+        glyphs.push(...w.glyphs);
+      }
+      const bounds =
+        unionBox([pointBox(p), pointBox(end), ...glyphs.map((g) => g.box)]) ?? pointBox(p);
+      return {
+        strokes,
+        glyphs,
+        size: LABEL_SIZE,
+        box: padBox(bounds, 12),
+        length: totalLength(strokes, glyphs),
+      };
+    }
+    case 'grid': {
+      const strokes: Stroke[] = [];
+      const cw = object.w / object.cols;
+      const ch = object.h / object.rows;
+      for (let c = 0; c <= object.cols; c++) {
+        const x = p[0] + c * cw;
+        strokes.push(
+          ruledStroke([
+            [x, p[1]],
+            [x, p[1] + object.h],
+          ]),
+        );
+      }
+      for (let r = 0; r <= object.rows; r++) {
+        const y = p[1] + r * ch;
+        strokes.push(
+          ruledStroke([
+            [p[0], y],
+            [p[0] + object.w, y],
+          ]),
+        );
+      }
+      return {
+        strokes,
+        glyphs: [],
+        box: { x: p[0], y: p[1], w: object.w, h: object.h },
+        length: totalLength(strokes, []),
+      };
+    }
+    case 'table': {
+      const rowHeight = object.rowHeight ?? 40;
+      const cols = Math.max(...object.rows.map((r) => r.length));
+      const cw = object.w / cols;
+      const h = object.rows.length * rowHeight;
+      const strokes: Stroke[] = [];
+      for (let c = 0; c <= cols; c++) {
+        const x = p[0] + c * cw;
+        strokes.push(
+          ruledStroke([
+            [x, p[1]],
+            [x, p[1] + h],
+          ]),
+        );
+      }
+      for (let r = 0; r <= object.rows.length; r++) {
+        const y = p[1] + r * rowHeight;
+        strokes.push(
+          ruledStroke([
+            [p[0], y],
+            [p[0] + object.w, y],
+          ]),
+        );
+      }
+      const glyphs: HandGlyph[] = [];
+      if (ctx.font) {
+        object.rows.forEach((row, r) => {
+          row.forEach((cell, c) => {
+            if (!cell) return;
+            const origin: BoardPoint = [p[0] + c * cw + 8, p[1] + r * rowHeight + rowHeight * 0.16];
+            glyphs.push(
+              ...writeText(ctx.font as HandFont, cell, origin, {
+                size: LABEL_SIZE,
+                maxWidth: cw - 16,
+              }).glyphs,
+            );
+          });
+        });
+      }
+      return {
+        strokes,
+        glyphs,
+        size: LABEL_SIZE,
+        box: { x: p[0], y: p[1], w: object.w, h },
+        length: totalLength(strokes, glyphs),
+      };
+    }
+    case 'tex': {
+      const size = object.size ?? WRITE_SIZE;
+      if (!ctx.font) {
+        const approx = object.tex.length * size * 0.4;
+        return {
+          strokes: [],
+          glyphs: [],
+          size,
+          text: { lines: [object.tex], x: p[0], y: p[1], size, lineHeight: size * 1.3 },
+          box: { x: p[0], y: p[1], w: approx, h: size * 1.4 },
+          length: 0,
+        };
+      }
+      const laid = layoutTex(ctx.font, object.tex, p, size);
+      return {
+        strokes: laid.rules,
+        glyphs: laid.glyphs,
+        size,
+        box: { x: p[0], y: p[1], w: laid.width, h: laid.height },
+        length: laid.length,
+      };
+    }
+    case 'bond': {
+      const to: BoardPoint = [p[0] + object.to[0], p[1] + object.to[1]];
+      const dir = unit(p, to);
+      const normal: BoardPoint = [-dir[1], dir[0]];
+      const order = object.order ?? 1;
+      const strokes: Stroke[] = [];
+      if (object.wedge && object.wedge !== 'none') {
+        const half = 7;
+        const a: BoardPoint = [to[0] + normal[0] * half, to[1] + normal[1] * half];
+        const b: BoardPoint = [to[0] - normal[0] * half, to[1] - normal[1] * half];
+        if (object.wedge === 'up') strokes.push(fillStroke([p, a, b]));
+        else {
+          const rungs = 5;
+          for (let i = 1; i <= rungs; i++) {
+            const t = i / rungs;
+            const w = half * t;
+            const mx = p[0] + (to[0] - p[0]) * t;
+            const my = p[1] + (to[1] - p[1]) * t;
+            strokes.push(
+              ruledStroke([
+                [mx + normal[0] * w, my + normal[1] * w],
+                [mx - normal[0] * w, my - normal[1] * w],
+              ]),
+            );
+          }
+        }
+      } else {
+        const gap = 5;
+        const offsets = order === 1 ? [0] : order === 2 ? [-gap / 2, gap / 2] : [-gap, 0, gap];
+        for (const o of offsets) {
+          strokes.push(
+            penStroke(
+              [
+                [p[0] + normal[0] * o, p[1] + normal[1] * o],
+                [to[0] + normal[0] * o, to[1] + normal[1] * o],
+              ],
+              rng,
+              { wobble: 0.7 },
+            ),
+          );
+        }
+      }
+      return {
+        strokes,
+        glyphs: [],
+        box: padBox(unionBox([pointBox(p), pointBox(to)]) ?? pointBox(p), 10),
+        length: totalLength(strokes, []),
+      };
+    }
+    case 'atom': {
+      const size = object.size ?? WRITE_SIZE;
+      const glyphs: HandGlyph[] = [];
+      let cursor: BoardPoint = [p[0], p[1] + size * 0.4];
+      if (ctx.font) {
+        for (const ch of object.symbol) {
+          const { glyph, advance } = glyphAt(ctx.font, ch, size, cursor);
+          if (glyph) glyphs.push(glyph);
+          cursor = [cursor[0] + advance, cursor[1]];
+        }
+        if (object.charge) {
+          const sign = object.charge > 0 ? '+' : '−';
+          const n = Math.abs(object.charge);
+          const superscript = n > 1 ? `${n}${sign}` : sign;
+          let sx = cursor[0] + size * 0.04;
+          for (const ch of superscript) {
+            const { glyph, advance } = glyphAt(ctx.font, ch, size * 0.66, [
+              sx,
+              cursor[1] - size * 0.44,
+            ]);
+            if (glyph) glyphs.push(glyph);
+            sx += advance;
+          }
+        }
+      }
+      const strokes: Stroke[] = [];
+      const pairs = object.lonePairs ?? 0;
+      for (let i = 0; i < pairs; i++) {
+        const a = -Math.PI / 2 + (i * Math.PI) / 2;
+        const cx = p[0] + size * 0.3 + Math.cos(a) * size * 0.62;
+        const cy = p[1] + size * 0.2 + Math.sin(a) * size * 0.62;
+        for (const dx of [-3, 3]) {
+          strokes.push(
+            ruledStroke([
+              [cx + dx, cy],
+              [cx + dx + 0.5, cy],
+            ]),
+          );
+        }
+      }
+      const bounds =
+        unionBox([...glyphs.map((g) => g.box), pointBox(p), pointBox(cursor)]) ?? pointBox(p);
+      return {
+        strokes,
+        glyphs,
+        size,
+        text: ctx.font
+          ? undefined
+          : { lines: [object.symbol], x: p[0], y: p[1], size, lineHeight: size * 1.2 },
+        box: padBox(bounds, 6),
+        length: totalLength(strokes, glyphs),
+      };
+    }
+    case 'region': {
+      const b: BoardRect = { x: p[0], y: p[1], w: object.w, h: object.h };
+      const corners: BoardPoint[] = [
+        [b.x, b.y],
+        [b.x + b.w, b.y],
+        [b.x + b.w, b.y + b.h],
+        [b.x, b.y + b.h],
+      ];
+      const stroke = penStroke(corners, rng, { wobble: 0.8, closed: true, spacing: 40 });
+      const glyphs: HandGlyph[] = [];
+      if (object.title && ctx.font) {
+        glyphs.push(
+          ...writeText(ctx.font, object.title, [b.x + 12, b.y + 10], {
+            size: LABEL_SIZE,
+            maxWidth: b.w - 24,
+          }).glyphs,
+        );
+      }
+      return {
+        strokes: [stroke],
+        glyphs,
+        size: LABEL_SIZE,
+        box: padBox(b, 6),
+        length: totalLength([stroke], glyphs),
+      };
+    }
+    case 'image': {
+      const b: BoardRect = { x: p[0], y: p[1], w: object.w, h: object.h };
+      return {
+        strokes: [],
+        glyphs: [],
+        image: { href: object.href, alt: object.alt, box: b },
+        box: b,
+        length: 0,
+      };
+    }
+    case 'slider': {
+      const w = object.w ?? 200;
+      const track: BoardPoint[] = [
+        [p[0], p[1]],
+        [p[0] + w, p[1]],
+      ];
+      const span = object.max - object.min;
+      const frac = span > 0 ? (object.value - object.min) / span : 0;
+      const knobX = p[0] + w * Math.max(0, Math.min(1, frac));
+      const strokes: Stroke[] = [ruledStroke(track)];
+      const knobPts: BoardPoint[] = [];
+      for (let i = 0; i <= 20; i++) {
+        const a = (i / 20) * Math.PI * 2;
+        knobPts.push([knobX + Math.cos(a) * 11, p[1] + Math.sin(a) * 11]);
+      }
+      strokes.push(penStroke(knobPts, rng, { wobble: 0.6, anticipation: 0, overshoot: 0 }));
+      const glyphs: HandGlyph[] = [];
+      if (object.label && ctx.font) {
+        glyphs.push(
+          ...writeText(ctx.font, object.label, [p[0], p[1] - LABEL_SIZE * 1.6], {
+            size: LABEL_SIZE,
+          }).glyphs,
+        );
+      }
+      const b: BoardRect = {
+        x: p[0] - 14,
+        y: p[1] - LABEL_SIZE * 1.8,
+        w: w + 28,
+        h: LABEL_SIZE * 1.8 + 28,
+      };
+      return {
+        strokes,
+        glyphs,
+        size: LABEL_SIZE,
+        control: {
+          variable: object.variable,
+          kind: 'slider',
+          hit: { x: p[0] - 12, y: p[1] - 18, w: w + 24, h: 36 },
+          knob: { x: knobX - 11, y: p[1] - 11, w: 22, h: 22 },
+        },
+        box: b,
+        length: totalLength(strokes, glyphs),
+      };
+    }
+    case 'toggle': {
+      const w = 56;
+      const h = 26;
+      const b: BoardRect = { x: p[0], y: p[1], w, h };
+      const corners: BoardPoint[] = [
+        [b.x, b.y],
+        [b.x + w, b.y],
+        [b.x + w, b.y + h],
+        [b.x, b.y + h],
+      ];
+      const strokes: Stroke[] = [
+        penStroke(corners, rng, { wobble: 0.6, closed: true, spacing: 30 }),
+      ];
+      const knobX = object.value ? b.x + w * 0.72 : b.x + w * 0.28;
+      const knobPts: BoardPoint[] = [];
+      for (let i = 0; i <= 18; i++) {
+        const a = (i / 18) * Math.PI * 2;
+        knobPts.push([knobX + Math.cos(a) * 8, b.y + h / 2 + Math.sin(a) * 8]);
+      }
+      strokes.push(penStroke(knobPts, rng, { wobble: 0.5, anticipation: 0, overshoot: 0 }));
+      const glyphs: HandGlyph[] = [];
+      if (object.label && ctx.font) {
+        glyphs.push(
+          ...writeText(ctx.font, object.label, [b.x + w + 12, b.y], { size: LABEL_SIZE }).glyphs,
+        );
+      }
+      return {
+        strokes,
+        glyphs,
+        size: LABEL_SIZE,
+        control: { variable: object.variable, kind: 'toggle', hit: padBox(b, 6) },
+        box: padBox(unionBox([b, ...glyphs.map((g) => g.box)]) ?? b, 6),
+        length: totalLength(strokes, glyphs),
+      };
+    }
+    case 'input': {
+      const w = object.w ?? 160;
+      const rule: BoardPoint[] = [
+        [p[0], p[1] + WRITE_SIZE * 1.1],
+        [p[0] + w, p[1] + WRITE_SIZE * 1.1],
+      ];
+      const strokes: Stroke[] = [ruledStroke(rule)];
+      const glyphs: HandGlyph[] = [];
+      if (ctx.font) {
+        if (object.label)
+          glyphs.push(
+            ...writeText(ctx.font, object.label, [p[0], p[1] - LABEL_SIZE * 1.4], {
+              size: LABEL_SIZE,
+            }).glyphs,
+          );
+        if (object.value)
+          glyphs.push(
+            ...writeText(ctx.font, object.value, [p[0] + 6, p[1]], {
+              size: WRITE_SIZE,
+              maxWidth: w - 12,
+            }).glyphs,
+          );
+      }
+      const b: BoardRect = {
+        x: p[0],
+        y: p[1] - LABEL_SIZE * 1.6,
+        w,
+        h: WRITE_SIZE * 1.4 + LABEL_SIZE * 1.6,
+      };
+      return {
+        strokes,
+        glyphs,
+        size: WRITE_SIZE,
+        control: {
+          variable: object.variable,
+          kind: 'input',
+          hit: { x: p[0], y: p[1] - 4, w, h: WRITE_SIZE * 1.3 },
+        },
+        box: b,
+        length: totalLength(strokes, glyphs),
+      };
+    }
+    default: {
+      const handle: BoardPoint = [p[0] + object.value[0], p[1] + object.value[1]];
+      const pts: BoardPoint[] = [];
+      for (let i = 0; i <= 20; i++) {
+        const a = (i / 20) * Math.PI * 2;
+        pts.push([handle[0] + Math.cos(a) * 13, handle[1] + Math.sin(a) * 13]);
+      }
+      const strokes: Stroke[] = [
+        penStroke(pts, rng, { wobble: 0.7, anticipation: 0, overshoot: 0 }),
+      ];
+      const glyphs: HandGlyph[] = [];
+      if (object.label && ctx.font) {
+        glyphs.push(
+          ...writeText(ctx.font, object.label, [handle[0] + 18, handle[1] - LABEL_SIZE * 0.6], {
+            size: LABEL_SIZE,
+          }).glyphs,
+        );
+      }
+      const b: BoardRect = { x: handle[0] - 16, y: handle[1] - 16, w: 32, h: 32 };
+      return {
+        strokes,
+        glyphs,
+        size: LABEL_SIZE,
+        control: { variable: object.variable, kind: 'drag', hit: padBox(b, 6), knob: b },
+        box: padBox(unionBox([b, ...glyphs.map((g) => g.box)]) ?? b, 6),
+        length: totalLength(strokes, glyphs),
+      };
+    }
+  }
+}
+
+/** The empty geometry, for an object whose anchor is gone but which must still be tracked. */
+export const missingGeometry = (box: BoardRect): ObjectGeometry => empty(box);

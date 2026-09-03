@@ -1,0 +1,377 @@
+{
+  "name": "pythagoras",
+  "prompt": "why does a squared plus b squared equal c squared",
+  "title": "a² + b² = c²",
+  "presentation": "full",
+  "subject": "math",
+  "expect": {
+    "ids": [
+      "triangle",
+      "leg-a",
+      "leg-b",
+      "leg-c",
+      "square-a",
+      "square-b",
+      "square-c",
+      "law",
+      "a-squared",
+      "b-squared",
+      "c-squared",
+      "sum-underline",
+      "answer",
+      "answer-circle"
+    ],
+    "kinds": [
+      "polygon",
+      "label",
+      "label",
+      "label",
+      "polygon",
+      "polygon",
+      "polygon",
+      "tex",
+      "number",
+      "number",
+      "number",
+      "underline",
+      "write",
+      "circle"
+    ],
+    "anchors": [
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "object",
+      "board",
+      "object"
+    ],
+    "hangsOff": [["sum-underline", "c-squared"], ["answer-circle", "answer"]],
+    "written": ["a", "b", "c", "a² = 16", "b² = 9", "c² = 25", "so c = 5"],
+    "numbers": [
+      {
+        "id": "a-squared",
+        "value": 16,
+        "check": "board.numbers_agree:a squared",
+        "from": "4 * 4"
+      },
+      {
+        "id": "b-squared",
+        "value": 9,
+        "check": "board.numbers_agree:b squared",
+        "from": "3 * 3"
+      },
+      {
+        "id": "c-squared",
+        "value": 25,
+        "check": "board.numbers_agree:a squared plus b squared",
+        "from": "4*4 + 3*3"
+      }
+    ]
+  },
+  "plan": [
+    {
+      "type": "say",
+      "text": "Here it is. A right triangle, and a square on every side.",
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "triangle",
+        "kind": "polygon",
+        "anchor": {
+          "board": [260, 300]
+        },
+        "points": [[0, 0], [0, 90], [120, 90]],
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 0,
+          "dur": 1100
+        }
+      },
+      "t": 0
+    },
+    {
+      "type": "say",
+      "text": "Call the legs a and b, and the long side c.",
+      "t": 1200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "leg-a",
+        "kind": "label",
+        "anchor": {
+          "board": [320, 416]
+        },
+        "text": "a",
+        "t": {
+          "start": 1300,
+          "dur": 400
+        }
+      },
+      "t": 1300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "leg-b",
+        "kind": "label",
+        "anchor": {
+          "board": [234, 345]
+        },
+        "text": "b",
+        "t": {
+          "start": 1600,
+          "dur": 400
+        }
+      },
+      "t": 1600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "leg-c",
+        "kind": "label",
+        "anchor": {
+          "board": [336, 321]
+        },
+        "text": "c",
+        "t": {
+          "start": 1900,
+          "dur": 400
+        }
+      },
+      "t": 1900
+    },
+    {
+      "type": "say",
+      "text": "Now a square on each one.",
+      "t": 2400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "square-a",
+        "kind": "polygon",
+        "anchor": {
+          "board": [260, 390]
+        },
+        "points": [[0, 0], [120, 0], [120, 120], [0, 120]],
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 2500,
+          "dur": 900
+        }
+      },
+      "t": 2500
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "square-b",
+        "kind": "polygon",
+        "anchor": {
+          "board": [170, 300]
+        },
+        "points": [[90, 0], [90, 90], [0, 90], [0, 0]],
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 3400,
+          "dur": 800
+        }
+      },
+      "t": 3400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "square-c",
+        "kind": "polygon",
+        "anchor": {
+          "board": [260, 180]
+        },
+        "points": [[0, 120], [120, 210], [210, 90], [90, 0]],
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 4200,
+          "dur": 1300
+        }
+      },
+      "t": 4200
+    },
+    {
+      "type": "say",
+      "text": "The two small squares fill the big one exactly.",
+      "t": 5600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "law",
+        "kind": "tex",
+        "anchor": {
+          "board": [660, 120]
+        },
+        "tex": "a^2 + b^2 = c^2",
+        "size": 40,
+        "check": "board.readable:pythagoras",
+        "t": {
+          "start": 5700,
+          "dur": 1500
+        }
+      },
+      "t": 5700
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "a-squared",
+        "kind": "number",
+        "anchor": {
+          "board": [660, 210]
+        },
+        "value": 16,
+        "label": "a² =",
+        "verified": true,
+        "check": "board.numbers_agree:a squared",
+        "meta": "4 * 4",
+        "t": {
+          "start": 7200,
+          "dur": 500
+        }
+      },
+      "t": 7200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "b-squared",
+        "kind": "number",
+        "anchor": {
+          "board": [660, 265]
+        },
+        "value": 9,
+        "label": "b² =",
+        "verified": true,
+        "check": "board.numbers_agree:b squared",
+        "meta": "3 * 3",
+        "t": {
+          "start": 7700,
+          "dur": 500
+        }
+      },
+      "t": 7700
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "c-squared",
+        "kind": "number",
+        "anchor": {
+          "board": [660, 320]
+        },
+        "value": 25,
+        "label": "c² =",
+        "verified": true,
+        "check": "board.numbers_agree:a squared plus b squared",
+        "meta": "4*4 + 3*3",
+        "t": {
+          "start": 8200,
+          "dur": 600
+        }
+      },
+      "t": 8200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "sum-underline",
+        "kind": "underline",
+        "anchor": {
+          "object": "c-squared"
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 8800,
+          "dur": 400
+        }
+      },
+      "t": 8800
+    },
+    {
+      "type": "say",
+      "text": "Sixteen and nine make twenty-five, so c is five.",
+      "t": 9000
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "answer",
+        "kind": "write",
+        "anchor": {
+          "board": [660, 390]
+        },
+        "text": "so c = 5",
+        "size": 34,
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "check": "board.numbers_agree:hypotenuse",
+        "t": {
+          "start": 9300,
+          "dur": 1200
+        }
+      },
+      "t": 9300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "answer-circle",
+        "kind": "circle",
+        "anchor": {
+          "object": "answer"
+        },
+        "pad": 12,
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 10500,
+          "dur": 800
+        }
+      },
+      "t": 10500
+    },
+    {
+      "type": "done",
+      "t": 11400
+    }
+  ]
+}

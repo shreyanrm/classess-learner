@@ -79,7 +79,7 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
     );
 
   // she perceives the builder and can drive it — her normal action path (component contract §12)
-  useRegisterTarget<HTMLDivElement>('forge-builder', {
+  const stageRef = useRegisterTarget<HTMLDivElement>('forge-builder', {
     kind: 'input',
     label: 'the forge — a custom practice workbook being built',
     getSceneState: () => ({
@@ -122,7 +122,10 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
   const hue = picks.length > 0 ? hueForTopic(picks[0] ?? '') : '#1F35E0';
 
   return (
-    <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+    <div
+      ref={stageRef}
+      style={{ display: 'flex', gap: 28, flexWrap: 'wrap', alignItems: 'flex-start' }}
+    >
       {/* the picker — only what you've touched */}
       <div style={{ flex: '1 1 340px', minWidth: 0 }}>
         {groups.length === 0 ? (

@@ -19,6 +19,7 @@ import {
 } from 'react';
 import { lead, whisper } from '../screens/course/shared';
 import { WoboLogo } from '../ui/Logo';
+import { usePausedFrame, videoHandoff } from '../wobo/video';
 import { SafeSvg, svgIsClean } from './DiagramView';
 
 // --- The motion-scene spec ------------------------------------------------------------------------
@@ -239,6 +240,21 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
   const step = steps[index] ?? steps[steps.length - 1];
   const elapsed = (starts[index] ?? 0) + Math.min(inStep, step?.durationMs ?? 0);
 
+  // Paused, this frame IS a scene spec, so every part of it with an id becomes a target and she
+  // annotates the exact thing in the exact frame — no vision call, no screenshot of our own UI
+  // (docs/BOARD.md §5). Playing, the frame unregisters: she must never mark a picture that moved on.
+  const frame =
+    !playing && step
+      ? {
+          sceneId: scene.id,
+          stepId: step.id,
+          atMs: elapsed,
+          ...(step.caption ? { caption: step.caption } : {}),
+          ...(scene.title ? { title: scene.title } : {}),
+        }
+      : null;
+  usePausedFrame(frame, stageRef);
+
   // One beat plays, then hands to the next ON ITS NARRATION BOUNDARY (MOTION.md §5): the beat's
   // OWN audio `ended` event, or — muted / no audio — a timer of its measured duration. There is no
   // total-length cap: each beat runs to its own end, so the final beat's narration is never cut.
@@ -299,6 +315,24 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
     };
   }, [playing, index, steps]);
 
+  // The handoff (WOBO-TASKS §5.5): while the film is paused she may draw on the frame or open the
+  // plane beside it; when the exchange is over, "back to the film" puts the learner back here, to
+  // the millisecond. Playing again releases the hold, so nothing stale is ever returned to.
+  const seekRef = useRef<(fraction: number) => void>(() => {});
+  useEffect(() => {
+    if (playing || !frame) {
+      videoHandoff.release(scene.id);
+      return;
+    }
+    videoHandoff.hold(
+      scene.id,
+      frame.atMs,
+      (atMs) => seekRef.current(total > 0 ? atMs / total : 0),
+      scene.title,
+    );
+    return () => videoHandoff.release(scene.id);
+  }, [playing, frame, scene.id, scene.title, total]);
+
   // ponytail: seek is exact when paused (and for audio beats while playing, via currentTime);
   // a muted beat seeked mid-play snaps back on the next tick — acceptable for a scrub.
   const seekTo = (fraction: number) => {
@@ -317,6 +351,7 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
     const audio = audioRef.current;
     if (audio && steps[i]?.audioSrc) audio.currentTime = within / 1000;
   };
+  seekRef.current = seekTo;
 
   const toggle = () => {
     if (playing) {

@@ -165,7 +165,7 @@ export function WordProblemBreakdown({
     });
   }, [revealed, done, setBar, onDone]);
 
-  useRegisterTarget<HTMLDivElement>(`wordproblem-${spec.id}`, {
+  const stageRef = useRegisterTarget<HTMLDivElement>(`wordproblem-${spec.id}`, {
     kind: 'word-problem',
     label: `word-problem breakdown: ${spec.title}`,
     getSceneState: () => ({
@@ -200,7 +200,7 @@ export function WordProblemBreakdown({
 
   return (
     <CardBody maxWidth={620} center={false}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <div ref={stageRef} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         <div>
           <div style={whisper}>reading a problem, the method</div>
           <div style={{ ...cardTitle, marginTop: 8 }}>{spec.title}</div>

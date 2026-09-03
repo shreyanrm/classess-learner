@@ -1,0 +1,321 @@
+{
+  "name": "tangent-parabola",
+  "prompt": "draw y = x squared and the tangent at x = 1.5",
+  "title": "the tangent to y = x²",
+  "presentation": "full",
+  "subject": "math",
+  "expect": {
+    "ids": [
+      "axis-x",
+      "axis-y",
+      "parabola",
+      "touch-point",
+      "derivative-rule",
+      "slope-value",
+      "point-value",
+      "tangent-line",
+      "tangent-label",
+      "point-arrow"
+    ],
+    "kinds": [
+      "axis",
+      "axis",
+      "curve",
+      "point",
+      "write",
+      "number",
+      "number",
+      "polyline",
+      "label",
+      "arrow"
+    ],
+    "anchors": [
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "object",
+      "object"
+    ],
+    "hangsOff": [["tangent-label", "tangent-line"], ["point-arrow", "touch-point"]],
+    "written": ["y' = 2x", "slope = 3", "y = 2.25", "the tangent"],
+    "numbers": [
+      {
+        "id": "slope-value",
+        "value": 3,
+        "check": "board.numbers_agree:tangent slope",
+        "from": "d/dx(x**2) at x = 1.5"
+      },
+      {
+        "id": "point-value",
+        "value": 2.25,
+        "precision": 2,
+        "check": "board.numbers_agree:point on the curve",
+        "from": "1.5**2"
+      }
+    ]
+  },
+  "plan": [
+    {
+      "type": "say",
+      "text": "This is y equals x squared.",
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "axis-x",
+        "kind": "axis",
+        "anchor": {
+          "board": [290, 520]
+        },
+        "orientation": "x",
+        "min": -3,
+        "max": 3,
+        "step": 1,
+        "length": 420,
+        "label": "x",
+        "ticks": true,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 0,
+          "dur": 700
+        }
+      },
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "axis-y",
+        "kind": "axis",
+        "anchor": {
+          "board": [500, 520]
+        },
+        "orientation": "y",
+        "min": 0,
+        "max": 9,
+        "step": 1,
+        "length": 405,
+        "label": "y",
+        "ticks": true,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 250,
+          "dur": 700
+        }
+      },
+      "t": 250
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "parabola",
+        "kind": "curve",
+        "anchor": {
+          "board": [290, 115]
+        },
+        "points": [
+          [0, 0],
+          [17.5, 64.6875],
+          [35, 123.75],
+          [52.5, 177.1875],
+          [70, 225],
+          [87.5, 267.1875],
+          [105, 303.75],
+          [122.5, 334.6875],
+          [140, 360],
+          [157.5, 379.6875],
+          [175, 393.75],
+          [192.5, 402.1875],
+          [210, 405],
+          [227.5, 402.1875],
+          [245, 393.75],
+          [262.5, 379.6875],
+          [280, 360],
+          [297.5, 334.6875],
+          [315, 303.75],
+          [332.5, 267.1875],
+          [350, 225],
+          [367.5, 177.1875],
+          [385, 123.75],
+          [402.5, 64.6875],
+          [420, 0]
+        ],
+        "style": {
+          "ink": "wobo",
+          "weight": 2
+        },
+        "t": {
+          "start": 900,
+          "dur": 1400
+        }
+      },
+      "t": 900
+    },
+    {
+      "type": "say",
+      "text": "At x equals one and a half the curve is climbing. How fast?",
+      "t": 2400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "touch-point",
+        "kind": "point",
+        "anchor": {
+          "board": [605, 418.75]
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 3
+        },
+        "t": {
+          "start": 2600,
+          "dur": 300
+        }
+      },
+      "t": 2600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "derivative-rule",
+        "kind": "write",
+        "anchor": {
+          "board": [790, 120]
+        },
+        "text": "y' = 2x",
+        "size": 30,
+        "check": "board.readable:derivative of x squared",
+        "t": {
+          "start": 2900,
+          "dur": 900
+        }
+      },
+      "t": 2900
+    },
+    {
+      "type": "say",
+      "text": "The derivative is two x, so here the slope is three.",
+      "t": 3900
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "slope-value",
+        "kind": "number",
+        "anchor": {
+          "board": [790, 180]
+        },
+        "value": 3,
+        "label": "slope =",
+        "verified": true,
+        "check": "board.numbers_agree:tangent slope",
+        "meta": "d/dx(x**2) at x = 1.5",
+        "t": {
+          "start": 4100,
+          "dur": 500
+        }
+      },
+      "t": 4100
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "point-value",
+        "kind": "number",
+        "anchor": {
+          "board": [790, 240]
+        },
+        "value": 2.25,
+        "precision": 2,
+        "label": "y =",
+        "verified": true,
+        "check": "board.numbers_agree:point on the curve",
+        "meta": "1.5**2",
+        "t": {
+          "start": 4600,
+          "dur": 500
+        }
+      },
+      "t": 4600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "tangent-line",
+        "kind": "polyline",
+        "anchor": {
+          "board": [528, 270.25]
+        },
+        "points": [[0, 297], [154, 0]],
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 5100,
+          "dur": 900
+        }
+      },
+      "t": 5100
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "tangent-label",
+        "kind": "label",
+        "anchor": {
+          "object": "tangent-line"
+        },
+        "text": "the tangent",
+        "style": {
+          "ink": "accent",
+          "weight": 1
+        },
+        "t": {
+          "start": 6000,
+          "dur": 600
+        }
+      },
+      "t": 6000
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "point-arrow",
+        "kind": "arrow",
+        "anchor": {
+          "object": "touch-point"
+        },
+        "from": {
+          "board": [790, 300]
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 6600,
+          "dur": 700
+        }
+      },
+      "t": 6600
+    },
+    {
+      "type": "done",
+      "t": 7400
+    }
+  ]
+}

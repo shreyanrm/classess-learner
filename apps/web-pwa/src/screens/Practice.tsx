@@ -8,7 +8,7 @@
  * throughout; the copy never guilts, memory fades on a real curve.
  */
 
-import { useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type ReactNode, useEffect, useState } from 'react';
 import { chaptersBySubject, subjects, topicById } from '../data/catalog';
@@ -303,12 +303,33 @@ export function Practice() {
     });
   }, [publishPage, due, forged.length]);
 
+  // The screen as she sees it: how much is due, what the learner has forged, and the one door she
+  // can open for them. Registered so "what should I practise" is answered from the real queue.
+  const stageRef = useRegisterTarget<HTMLDivElement>('practice-stage', {
+    kind: 'practice',
+    label: 'practice — what has faded, and the workbooks you forged',
+    getSceneState: () => ({
+      view,
+      due,
+      forged: forged.length,
+      chapters: sandboxChapters.length,
+    }),
+    getValidActions: () => [
+      view === 'builder' ? 'go back to practice' : 'open the forge',
+      due > 0 ? 'start the review' : 'nothing is due yet',
+    ],
+    applyTutorAction: (patch) => {
+      if (patch.view === 'builder' || patch.view === 'home') setView(patch.view);
+    },
+  });
+
   if (runId) {
     return <ForgeRun id={runId} onExit={() => setRunId(null)} />;
   }
 
   return (
     <motion.div
+      ref={stageRef}
       variants={cascade}
       initial="hidden"
       animate="show"

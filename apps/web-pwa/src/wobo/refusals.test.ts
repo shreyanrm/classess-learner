@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 import { BudgetExhaustedError, SignInRequiredError } from '@classess/sdk';
-import { friendlyTime, refusalLine } from './refusals';
+import { friendlyTime, isBargeIn, refusalLine } from './refusals';
 
 describe('what she says when the brain says no', () => {
   it('401: asks them to sign in, and the app takes them to her sign-in beat', () => {
@@ -50,5 +50,33 @@ describe('what she says when the brain says no', () => {
   it('a nonsense reset time is simply not spoken', () => {
     expect(friendlyTime('not-a-time')).toBeNull();
     expect(friendlyTime(null)).toBeNull();
+  });
+});
+
+/**
+ * BOARD.md §4: on an interrupt the pen lifts, the voice stops, and what is drawn stays. Nothing
+ * there is an error. The abort rejects the in-flight fetch, and reading that as a refusal appended
+ * "Give me a moment, then ask me again." to her own half-finished sentence — telling the learner to
+ * try again for something they deliberately did.
+ */
+describe('barging in', () => {
+  it('says nothing at all', () => {
+    expect(refusalLine(new DOMException('aborted', 'AbortError'))).toEqual({
+      text: '',
+      signIn: false,
+    });
+    // Whatever shape the runtime gives it, an AbortError is an AbortError.
+    const plain = Object.assign(new Error('The operation was aborted.'), { name: 'AbortError' });
+    expect(refusalLine(plain).text).toBe('');
+  });
+
+  it('still has her line for everything that is genuinely wrong', () => {
+    expect(refusalLine(new Error('socket hang up')).text).not.toBe('');
+  });
+
+  it('knows a barge-in from an ordinary failure', () => {
+    expect(isBargeIn(new DOMException('aborted', 'AbortError'))).toBe(true);
+    expect(isBargeIn(new Error('socket hang up'))).toBe(false);
+    expect(isBargeIn(null)).toBe(false);
   });
 });

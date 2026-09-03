@@ -556,9 +556,21 @@ function ChapterRow({
   const { completed } = useProgress();
   const total = chapter.topics.length;
   const done = chapter.topics.filter((t) => completed.has(t.id)).length;
+  // Each chapter is its own target: she opens one on request, points at the one they mean, and
+  // anchors ink to the row rather than to the list it happens to be in.
+  const rowRef = useRegisterTarget<HTMLDivElement>(`chapter-${chapter.id}`, {
+    kind: 'chapter',
+    label: `the ${chapter.name} chapter — ${done} of ${total} topics done`,
+    getSceneState: () => ({ chapter: chapter.name, topics: total, done, open }),
+    getValidActions: () => [open ? 'collapse this chapter' : 'open this chapter'],
+    applyTutorAction: (patch) => {
+      if (patch.open === true && !open) onToggle();
+      if (patch.open === false && open) onToggle();
+    },
+  });
 
   return (
-    <div style={{ borderBottom: '0.5px solid var(--clss-hairline-on-paper)' }}>
+    <div ref={rowRef} style={{ borderBottom: '0.5px solid var(--clss-hairline-on-paper)' }}>
       <button
         type="button"
         onClick={onToggle}

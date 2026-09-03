@@ -1,0 +1,542 @@
+{
+  "name": "timeline",
+  "prompt": "give me a timeline of the Indian freedom struggle",
+  "title": "the freedom struggle",
+  "presentation": "full",
+  "subject": "social",
+  "expect": {
+    "ids": [
+      "timeline-axis",
+      "mark-1857",
+      "year-1857",
+      "event-1857",
+      "mark-1885",
+      "year-1885",
+      "event-1885",
+      "mark-1919",
+      "year-1919",
+      "event-1919",
+      "mark-1930",
+      "year-1930",
+      "event-1930",
+      "mark-1942",
+      "year-1942",
+      "event-1942",
+      "mark-1947",
+      "year-1947",
+      "event-1947",
+      "span",
+      "independence-circle"
+    ],
+    "kinds": [
+      "axis",
+      "point",
+      "label",
+      "label",
+      "point",
+      "label",
+      "label",
+      "point",
+      "label",
+      "label",
+      "point",
+      "label",
+      "label",
+      "point",
+      "label",
+      "label",
+      "point",
+      "label",
+      "label",
+      "number",
+      "circle"
+    ],
+    "anchors": [
+      "board",
+      "board",
+      "board",
+      "object",
+      "board",
+      "board",
+      "object",
+      "board",
+      "board",
+      "object",
+      "board",
+      "board",
+      "object",
+      "board",
+      "board",
+      "object",
+      "board",
+      "board",
+      "object",
+      "board",
+      "object"
+    ],
+    "hangsOff": [
+      ["event-1857", "year-1857"],
+      ["event-1885", "year-1885"],
+      ["event-1919", "year-1919"],
+      ["event-1930", "year-1930"],
+      ["event-1942", "year-1942"],
+      ["event-1947", "year-1947"],
+      ["independence-circle", "mark-1947"]
+    ],
+    "written": [
+      "1857",
+      "the first revolt",
+      "1885",
+      "the Congress founded",
+      "1919",
+      "Jallianwala Bagh",
+      "1930",
+      "the salt march",
+      "1942",
+      "quit India",
+      "1947",
+      "independence",
+      "from 1857 to 1947 = 90 years"
+    ],
+    "numbers": [
+      {
+        "id": "span",
+        "value": 90,
+        "unit": "years",
+        "check": "board.numbers_agree:the span",
+        "from": "1947 - 1857"
+      }
+    ]
+  },
+  "plan": [
+    {
+      "type": "say",
+      "text": "A century, and six moments in it.",
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "timeline-axis",
+        "kind": "axis",
+        "anchor": {
+          "board": [120, 340]
+        },
+        "orientation": "x",
+        "min": 1850,
+        "max": 1950,
+        "step": 10,
+        "length": 780,
+        "label": "year",
+        "ticks": true,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 0,
+          "dur": 1200
+        }
+      },
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "mark-1857",
+        "kind": "point",
+        "anchor": {
+          "board": [174.6, 340]
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 3
+        },
+        "t": {
+          "start": 1200,
+          "dur": 300
+        }
+      },
+      "t": 1200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "year-1857",
+        "kind": "label",
+        "anchor": {
+          "board": [152.6, 288]
+        },
+        "text": "1857",
+        "size": 24,
+        "check": "board.fact_supported:freedom struggle",
+        "t": {
+          "start": 1500,
+          "dur": 400
+        }
+      },
+      "t": 1500
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "event-1857",
+        "kind": "label",
+        "anchor": {
+          "object": "year-1857"
+        },
+        "text": "the first revolt",
+        "size": 20,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 1900,
+          "dur": 600
+        }
+      },
+      "t": 1900
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "mark-1885",
+        "kind": "point",
+        "anchor": {
+          "board": [393, 340]
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 3
+        },
+        "t": {
+          "start": 2600,
+          "dur": 300
+        }
+      },
+      "t": 2600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "year-1885",
+        "kind": "label",
+        "anchor": {
+          "board": [371, 384]
+        },
+        "text": "1885",
+        "size": 24,
+        "check": "board.fact_supported:freedom struggle",
+        "t": {
+          "start": 2900,
+          "dur": 400
+        }
+      },
+      "t": 2900
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "event-1885",
+        "kind": "label",
+        "anchor": {
+          "object": "year-1885"
+        },
+        "text": "the Congress founded",
+        "size": 20,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 3300,
+          "dur": 600
+        }
+      },
+      "t": 3300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "mark-1919",
+        "kind": "point",
+        "anchor": {
+          "board": [658.2, 340]
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 3
+        },
+        "t": {
+          "start": 4000,
+          "dur": 300
+        }
+      },
+      "t": 4000
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "year-1919",
+        "kind": "label",
+        "anchor": {
+          "board": [636.2, 232]
+        },
+        "text": "1919",
+        "size": 24,
+        "check": "board.fact_supported:freedom struggle",
+        "t": {
+          "start": 4300,
+          "dur": 400
+        }
+      },
+      "t": 4300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "event-1919",
+        "kind": "label",
+        "anchor": {
+          "object": "year-1919"
+        },
+        "text": "Jallianwala Bagh",
+        "size": 20,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 4700,
+          "dur": 600
+        }
+      },
+      "t": 4700
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "mark-1930",
+        "kind": "point",
+        "anchor": {
+          "board": [744, 340]
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 3
+        },
+        "t": {
+          "start": 5400,
+          "dur": 300
+        }
+      },
+      "t": 5400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "year-1930",
+        "kind": "label",
+        "anchor": {
+          "board": [722, 440]
+        },
+        "text": "1930",
+        "size": 24,
+        "check": "board.fact_supported:freedom struggle",
+        "t": {
+          "start": 5700,
+          "dur": 400
+        }
+      },
+      "t": 5700
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "event-1930",
+        "kind": "label",
+        "anchor": {
+          "object": "year-1930"
+        },
+        "text": "the salt march",
+        "size": 20,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 6100,
+          "dur": 600
+        }
+      },
+      "t": 6100
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "mark-1942",
+        "kind": "point",
+        "anchor": {
+          "board": [837.6, 340]
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 3
+        },
+        "t": {
+          "start": 6800,
+          "dur": 300
+        }
+      },
+      "t": 6800
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "year-1942",
+        "kind": "label",
+        "anchor": {
+          "board": [815.6, 288]
+        },
+        "text": "1942",
+        "size": 24,
+        "check": "board.fact_supported:freedom struggle",
+        "t": {
+          "start": 7100,
+          "dur": 400
+        }
+      },
+      "t": 7100
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "event-1942",
+        "kind": "label",
+        "anchor": {
+          "object": "year-1942"
+        },
+        "text": "quit India",
+        "size": 20,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 7500,
+          "dur": 600
+        }
+      },
+      "t": 7500
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "mark-1947",
+        "kind": "point",
+        "anchor": {
+          "board": [876.6, 340]
+        },
+        "style": {
+          "ink": "accent",
+          "weight": 3
+        },
+        "t": {
+          "start": 8200,
+          "dur": 300
+        }
+      },
+      "t": 8200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "year-1947",
+        "kind": "label",
+        "anchor": {
+          "board": [854.6, 384]
+        },
+        "text": "1947",
+        "size": 24,
+        "check": "board.fact_supported:freedom struggle",
+        "t": {
+          "start": 8500,
+          "dur": 400
+        }
+      },
+      "t": 8500
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "event-1947",
+        "kind": "label",
+        "anchor": {
+          "object": "year-1947"
+        },
+        "text": "independence",
+        "size": 20,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 8900,
+          "dur": 600
+        }
+      },
+      "t": 8900
+    },
+    {
+      "type": "say",
+      "text": "Ninety years from the first revolt to the last midnight.",
+      "t": 9600
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "span",
+        "kind": "number",
+        "anchor": {
+          "board": [560, 560]
+        },
+        "value": 90,
+        "unit": "years",
+        "label": "from 1857 to 1947 =",
+        "verified": true,
+        "check": "board.numbers_agree:the span",
+        "meta": "1947 - 1857",
+        "t": {
+          "start": 9700,
+          "dur": 700
+        }
+      },
+      "t": 9700
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "independence-circle",
+        "kind": "circle",
+        "anchor": {
+          "object": "mark-1947"
+        },
+        "pad": 18,
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 10400,
+          "dur": 800
+        }
+      },
+      "t": 10400
+    },
+    {
+      "type": "done",
+      "t": 11300
+    }
+  ]
+}

@@ -157,6 +157,23 @@ export function Home() {
     }),
   });
 
+  // The front door's own parts, named so she can point at them, draw on them, and walk a learner
+  // to them ("show me where I type"). Registering is the whole contract: a component she cannot
+  // see is a component she cannot teach with (DESIGN.md §12).
+  const composerRef = useRegisterTarget<HTMLFormElement>('home-composer', {
+    kind: 'composer',
+    label: 'the box where you talk to Wobo',
+    getSceneState: () => ({ draft }),
+  });
+  const chipsRef = useRegisterTarget<HTMLDivElement>('home-chips', {
+    kind: 'suggestions',
+    label: 'the things she is offering to teach right now',
+  });
+  const doorsRef = useRegisterTarget<HTMLDivElement>('home-doors', {
+    kind: 'doors',
+    label: 'the two doors: learn, and practice',
+  });
+
   // The proactivity dial (You settings) gates every suggestion — quiet means she waits to be asked.
   const [dial] = useState(() => loadProactivity());
   const chips = useMemo(() => {
@@ -350,6 +367,7 @@ export function Home() {
 
         {/* the chat bar — the door; the conversation itself lives on its own page */}
         <motion.form
+          ref={composerRef}
           variants={rise}
           onSubmit={submit}
           style={{
@@ -445,6 +463,7 @@ export function Home() {
         {/* learn-something-cool chips — gated by the proactivity dial */}
         {chips.length > 0 && (
           <motion.div
+            ref={chipsRef}
             variants={rise}
             style={{
               display: 'flex',
@@ -498,6 +517,7 @@ export function Home() {
 
         {/* the doors, at hand — Learn and Practice reachable before the walk begins */}
         <motion.div
+          ref={doorsRef}
           variants={rise}
           style={{
             display: 'flex',

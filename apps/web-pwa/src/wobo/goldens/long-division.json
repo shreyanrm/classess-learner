@@ -1,0 +1,400 @@
+{
+  "name": "long-division",
+  "prompt": "show me 4823 divided by 7 the long way",
+  "title": "4823 ÷ 7",
+  "presentation": "full",
+  "subject": "math",
+  "expect": {
+    "ids": [
+      "bracket-line",
+      "vinculum",
+      "quotient",
+      "step-1-take",
+      "step-1-take-product",
+      "step-1-left",
+      "step-2-take",
+      "step-2-take-product",
+      "step-2-left",
+      "step-3-take",
+      "step-3-take-product",
+      "step-3-left",
+      "remainder",
+      "quotient-circle"
+    ],
+    "kinds": [
+      "write",
+      "polyline",
+      "number",
+      "write",
+      "write",
+      "write",
+      "write",
+      "write",
+      "write",
+      "write",
+      "write",
+      "write",
+      "number",
+      "circle"
+    ],
+    "anchors": [
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "board",
+      "object"
+    ],
+    "hangsOff": [["quotient-circle", "quotient"]],
+    "written": [
+      "7 ) 4823",
+      "689",
+      "48 ÷ 7 = 6",
+      "6 × 7 = 42",
+      "48 − 42 = 6",
+      "62 ÷ 7 = 8",
+      "8 × 7 = 56",
+      "62 − 56 = 6",
+      "63 ÷ 7 = 9",
+      "9 × 7 = 63",
+      "63 − 63 = 0",
+      "remainder 0"
+    ],
+    "numbers": [
+      {
+        "id": "quotient",
+        "value": 689,
+        "check": "board.numbers_agree:quotient",
+        "from": "floor(4823 / 7)"
+      },
+      {
+        "id": "remainder",
+        "value": 0,
+        "check": "board.numbers_agree:remainder",
+        "from": "4823 mod 7"
+      }
+    ]
+  },
+  "plan": [
+    {
+      "type": "say",
+      "text": "Four thousand eight hundred and twenty-three, shared by seven.",
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "bracket-line",
+        "kind": "write",
+        "anchor": {
+          "board": [260, 130]
+        },
+        "text": "7 ) 4823",
+        "size": 36,
+        "check": "board.numbers_agree:the division",
+        "t": {
+          "start": 0,
+          "dur": 1200
+        }
+      },
+      "t": 0
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "vinculum",
+        "kind": "polyline",
+        "anchor": {
+          "board": [304, 118]
+        },
+        "points": [[0, 0], [146, 0]],
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "t": {
+          "start": 1200,
+          "dur": 300
+        }
+      },
+      "t": 1200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "quotient",
+        "kind": "number",
+        "anchor": {
+          "board": [312, 76]
+        },
+        "value": 689,
+        "verified": true,
+        "check": "board.numbers_agree:quotient",
+        "meta": "floor(4823 / 7)",
+        "t": {
+          "start": 1500,
+          "dur": 800
+        }
+      },
+      "t": 1500
+    },
+    {
+      "type": "say",
+      "text": "48 divided by seven is 6.",
+      "t": 2400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "step-1-take",
+        "kind": "write",
+        "anchor": {
+          "board": [260, 200]
+        },
+        "text": "48 ÷ 7 = 6",
+        "size": 28,
+        "check": "board.numbers_agree:step 1 quotient digit",
+        "t": {
+          "start": 2500,
+          "dur": 700
+        }
+      },
+      "t": 2500
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "step-1-take-product",
+        "kind": "write",
+        "anchor": {
+          "board": [510, 200]
+        },
+        "text": "6 × 7 = 42",
+        "size": 28,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "check": "board.numbers_agree:step 1 product",
+        "t": {
+          "start": 3200,
+          "dur": 700
+        }
+      },
+      "t": 3200
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "step-1-left",
+        "kind": "write",
+        "anchor": {
+          "board": [740, 200]
+        },
+        "text": "48 − 42 = 6",
+        "size": 28,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "check": "board.numbers_agree:step 1 remainder",
+        "t": {
+          "start": 3900,
+          "dur": 700
+        }
+      },
+      "t": 3900
+    },
+    {
+      "type": "say",
+      "text": "62 divided by seven is 8.",
+      "t": 4700
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "step-2-take",
+        "kind": "write",
+        "anchor": {
+          "board": [260, 252]
+        },
+        "text": "62 ÷ 7 = 8",
+        "size": 28,
+        "check": "board.numbers_agree:step 2 quotient digit",
+        "t": {
+          "start": 4800,
+          "dur": 700
+        }
+      },
+      "t": 4800
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "step-2-take-product",
+        "kind": "write",
+        "anchor": {
+          "board": [510, 252]
+        },
+        "text": "8 × 7 = 56",
+        "size": 28,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "check": "board.numbers_agree:step 2 product",
+        "t": {
+          "start": 5500,
+          "dur": 700
+        }
+      },
+      "t": 5500
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "step-2-left",
+        "kind": "write",
+        "anchor": {
+          "board": [740, 252]
+        },
+        "text": "62 − 56 = 6",
+        "size": 28,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "check": "board.numbers_agree:step 2 remainder",
+        "t": {
+          "start": 6200,
+          "dur": 700
+        }
+      },
+      "t": 6200
+    },
+    {
+      "type": "say",
+      "text": "63 divided by seven is 9.",
+      "t": 7000
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "step-3-take",
+        "kind": "write",
+        "anchor": {
+          "board": [260, 304]
+        },
+        "text": "63 ÷ 7 = 9",
+        "size": 28,
+        "check": "board.numbers_agree:step 3 quotient digit",
+        "t": {
+          "start": 7100,
+          "dur": 700
+        }
+      },
+      "t": 7100
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "step-3-take-product",
+        "kind": "write",
+        "anchor": {
+          "board": [510, 304]
+        },
+        "text": "9 × 7 = 63",
+        "size": 28,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "check": "board.numbers_agree:step 3 product",
+        "t": {
+          "start": 7800,
+          "dur": 700
+        }
+      },
+      "t": 7800
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "step-3-left",
+        "kind": "write",
+        "anchor": {
+          "board": [740, 304]
+        },
+        "text": "63 − 63 = 0",
+        "size": 28,
+        "style": {
+          "ink": "faint",
+          "weight": 1
+        },
+        "check": "board.numbers_agree:step 3 remainder",
+        "t": {
+          "start": 8500,
+          "dur": 700
+        }
+      },
+      "t": 8500
+    },
+    {
+      "type": "say",
+      "text": "Nothing is left over, so seven goes in exactly.",
+      "t": 9300
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "remainder",
+        "kind": "number",
+        "anchor": {
+          "board": [260, 356]
+        },
+        "value": 0,
+        "label": "remainder",
+        "verified": true,
+        "check": "board.numbers_agree:remainder",
+        "meta": "4823 mod 7",
+        "t": {
+          "start": 9400,
+          "dur": 600
+        }
+      },
+      "t": 9400
+    },
+    {
+      "type": "ink",
+      "object": {
+        "id": "quotient-circle",
+        "kind": "circle",
+        "anchor": {
+          "object": "quotient"
+        },
+        "pad": 10,
+        "style": {
+          "ink": "accent",
+          "weight": 2
+        },
+        "t": {
+          "start": 10100,
+          "dur": 800
+        }
+      },
+      "t": 10100
+    },
+    {
+      "type": "done",
+      "t": 11000
+    }
+  ]
+}
