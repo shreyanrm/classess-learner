@@ -7,7 +7,7 @@
  * skeleton (see shared.tsx for the ten rules). Everything shares one baseline, one palette, and
  * one slow idle — so any mix drops into a single <Scene> and reads as one world.
  *
- * Wobo (packages/wobo) is untouched by this system: the cast are her world, not her rivals.
+ * Wobo (packages/wobo) is untouched by this system: the cast are Wobo's world, not Wobo's rivals.
  */
 
 import type { ComponentType, CSSProperties } from 'react';

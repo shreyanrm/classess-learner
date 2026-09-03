@@ -5,7 +5,7 @@
  * force layout (DESIGN.md §11). Edges are the expert-validated prerequisite lines.
  */
 
-import { ATOM_NODE_IDS, type MasteryBandView } from '@classess/sdk';
+import { ATOM_NODE_IDS, type MasteryBandView } from '@wobo/sdk';
 import { mathChapters } from '../../data/catalog';
 
 export const VIEW_W = 1000;
@@ -218,7 +218,7 @@ export const BAND_LANGUAGE: Record<StarState, string> = {
   unlit: 'Not started',
 };
 
-const SEEN_KEY = 'clss-twin-seen-v1';
+const SEEN_KEY = 'wobo-twin-seen-v1';
 
 /** Star ids whose ignite has already replayed this session. */
 export function readSeen(): ReadonlySet<string> {

@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'bun:test';
-import { woboMolten } from '@classess/config';
+import { woboMolten } from '@wobo/config';
 import { flameForMood, MOLTEN, WOBO_IDENTITY } from '../src/identity';
 
 describe('Wobo identity is locked', () => {
-  it('is molten only, and molten is reserved for her', () => {
+  it('is molten only, and molten is reserved for Wobo', () => {
     expect(WOBO_IDENTITY.color).toBe('#FF5A1F');
     expect(WOBO_IDENTITY.color).toBe(woboMolten);
     expect(WOBO_IDENTITY.colorFamily).toBe('molten');

@@ -14,7 +14,7 @@ that makes the next-self visible. Sell aspiration. Never a wall of forms.
 4. **Micro-diagnostic** — 2–4 adaptive items to place the learner on the prereq graph. **Diagnostic opens map partly-lit** (endowed
    progress — they start with some nodes already glowing).
 5. **First node = the aha** — drop them immediately into an opener engineered to produce a real win fast (≤60s to "oh, I get it").
-   Wobo greets briefly and steps back (she earns presence; she doesn't smother the first win).
+   Wobo greets briefly and steps back (Wobo earns presence; Wobo doesn't smother the first win).
 
 **HOW (mechanism / services / AI):**
 - Identity via the **identity abstraction** (mock now). `consent_tier` written to context on every subsequent event.

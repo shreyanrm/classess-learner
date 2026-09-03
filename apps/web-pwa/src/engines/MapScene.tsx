@@ -18,7 +18,7 @@
  * (geoMercator + geoPath). No MapLibre, no tiles, no API key: works offline, CSP-safe. topojson-client
  * decodes the bundle if it is ever shipped as a Topology (today it is a plain GeoJSON FeatureCollection).
  *
- * Registers as a Wobo scene target (kind 'region'): she reads the mode/prompt/solved state
+ * Registers as a Wobo scene target (kind 'region'): Wobo reads the mode/prompt/solved state
  * (getSceneState), knows the valid moves (getValidActions) and can DRIVE the map — highlight a named
  * state, reveal the answer (applyTutorAction). Reduced-motion + mute aware; both themes (land / water /
  * stroke bind to CSS vars + the passed hue); sentence-case copy.
@@ -27,7 +27,7 @@
  * spec returns null and is dropped silently — the card still teaches via its base kind.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import type { GeoPermissibleObjects } from 'd3-geo';
 import { geoContains, geoDistance, geoMercator, geoPath } from 'd3-geo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
@@ -356,7 +356,7 @@ function MapSceneImpl({
     return () => clearTimeout(t);
   }, [wrongId]);
 
-  // Wobo seams — she reads mode/prompt/solved and can highlight a named state or reveal the answer
+  // Wobo seams — Wobo reads mode/prompt/solved and can highlight a named state or reveal the answer
   const answerId =
     it.mode === 'label' ? it.targetId : it.mode === 'choropleth' ? (choro?.answer ?? null) : null;
   const applyTutorAction = (patch: Record<string, unknown>) => {
@@ -407,10 +407,10 @@ function MapSceneImpl({
   const fillFor = (id: string): string => {
     if (solved && id === answerId) return hue;
     if (highlightId === id) return hue;
-    if (wrongId === id) return 'var(--clss-feedback-wrongSoft, rgba(214,69,34,0.22))';
+    if (wrongId === id) return 'var(--wobo-feedback-wrongSoft, rgba(214,69,34,0.22))';
     if (choro) {
       const v = choro.byId.get(id);
-      if (v === undefined) return 'var(--clss-hairline-on-paper)';
+      if (v === undefined) return 'var(--wobo-hairline-on-paper)';
       const t = (v - choro.lo) / choro.span; // 0..1
       return withAlpha(hue, 0.12 + t * 0.5);
     }
@@ -461,7 +461,7 @@ function MapSceneImpl({
                       d={d}
                       animate={{ fill: fillFor(id) }}
                       transition={{ duration: reduced ? 0 : 0.35 }}
-                      stroke="var(--clss-ink-500)"
+                      stroke="var(--wobo-ink-500)"
                       strokeWidth={active ? 1.6 : 0.9}
                       strokeLinejoin="round"
                     />
@@ -473,7 +473,7 @@ function MapSceneImpl({
                         textAnchor="middle"
                         dominantBaseline="central"
                         pointerEvents="none"
-                        fill={active ? 'var(--clss-paper)' : 'var(--clss-ink-900)'}
+                        fill={active ? 'var(--wobo-paper)' : 'var(--wobo-ink-900)'}
                         style={{ fontWeight: active ? 620 : 500 }}
                       >
                         {f.properties.name}
@@ -484,7 +484,7 @@ function MapSceneImpl({
               })}
 
               {/* locate: the placed pin + the authored target once solved */}
-              {it.mode === 'locate' && pin && renderPin(projection, pin, 'var(--clss-ink-900)')}
+              {it.mode === 'locate' && pin && renderPin(projection, pin, 'var(--wobo-ink-900)')}
               {it.mode === 'locate' &&
                 solved &&
                 renderPin(projection, [it.lon, it.lat], hue, it.label)}
@@ -496,7 +496,7 @@ function MapSceneImpl({
         {choro && (
           <div
             style={{
-              border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+              border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
               borderRadius: 3,
               padding: '12px 16px',
               display: 'flex',
@@ -512,7 +512,7 @@ function MapSceneImpl({
               <span
                 style={{
                   fontSize: '0.8rem',
-                  color: 'var(--clss-ink-500)',
+                  color: 'var(--wobo-ink-500)',
                   fontVariantNumeric: 'tabular-nums',
                 }}
               >
@@ -529,7 +529,7 @@ function MapSceneImpl({
               <span
                 style={{
                   fontSize: '0.8rem',
-                  color: 'var(--clss-ink-500)',
+                  color: 'var(--wobo-ink-500)',
                   fontVariantNumeric: 'tabular-nums',
                 }}
               >
@@ -547,13 +547,13 @@ function MapSceneImpl({
               exit={{ opacity: 0 }}
               transition={{ type: 'spring', stiffness: 300, damping: 28 }}
               style={{
-                border: '1px solid var(--clss-feedback-correct)',
-                background: 'var(--clss-feedback-correctSoft)',
+                border: '1px solid var(--wobo-feedback-correct)',
+                background: 'var(--wobo-feedback-correctSoft)',
                 borderRadius: 3,
                 padding: '14px 16px',
                 fontSize: '1rem',
                 lineHeight: 1.6,
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               {solvedLine(spec)}
@@ -566,7 +566,7 @@ function MapSceneImpl({
               ...lead,
               borderLeft: `2px solid ${hue}`,
               paddingLeft: 14,
-              color: 'var(--clss-ink-900)',
+              color: 'var(--wobo-ink-900)',
             }}
           >
             {spec.caption ?? hintLine(spec)}
@@ -589,13 +589,13 @@ function renderPin(
   const [x, y] = p;
   return (
     <g pointerEvents="none">
-      <circle cx={x} cy={y} r={4.5} fill={color} stroke="var(--clss-paper)" strokeWidth={1.4} />
+      <circle cx={x} cy={y} r={4.5} fill={color} stroke="var(--wobo-paper)" strokeWidth={1.4} />
       {label && (
         <text
           x={x + 7}
           y={y - 6}
           fontSize="8.5"
-          fill="var(--clss-ink-900)"
+          fill="var(--wobo-ink-900)"
           style={{ fontWeight: 600 }}
         >
           {label}

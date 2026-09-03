@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * Her hands (docs/WOBO-PLAN.md §3) — "show me" and "do it".
+ * Wobo's hands (docs/WOBO-PLAN.md §3) — "show me" and "do it".
  *
  * "Show me" is not a tooltip: a visible cursor glides across the real screen to the real control and
  * taps it, so the learner watches the thing happen where it happens. The path is resolved through
@@ -13,7 +13,7 @@
  * the action would otherwise sit on. That rule lives here as code, not as a prompt.
  */
 
-import { type Rect, type SurfaceRegistry, surfaceRegistry } from '@classess/wobo';
+import { type Rect, type SurfaceRegistry, surfaceRegistry } from '@wobo/wobo';
 import type { PermissionRung } from './capabilities';
 
 // --- The permission ladder ------------------------------------------------------------------------
@@ -22,7 +22,7 @@ import type { PermissionRung } from './capabilities';
 const ALWAYS_ASK =
   /\b(send|share|post|message|email|buy|purchase|pay|subscribe|checkout|submit|delete|remove|erase|forget|clear|reset|sign\s*out|unenrol|unenroll)\b/i;
 
-/** Reads that change nothing and are trivially reversible — she just does them. */
+/** Reads that change nothing and are trivially reversible — Wobo just does them. */
 const SAFE_AUTOMATIC =
   /\b(open|show|go\s*to|navigate|scroll|highlight|point|read|explain|preview)\b/i;
 
@@ -42,7 +42,7 @@ export function runsWithoutAsking(action: string): boolean {
 }
 
 /**
- * The prepared-but-not-executed rung. She names exactly what she is about to do and waits for the
+ * The prepared-but-not-executed rung. Wobo names exactly what Wobo is about to do and waits for the
  * learner to say go ahead; nothing happens on the model's word alone, and an offer left alone
  * simply expires rather than lingering as a trap.
  */
@@ -76,7 +76,7 @@ export function disarm(): void {
 const CONFIRM = /^\s*(yes|yeah|yep|yup|go ahead|do it|please do|ok|okay|sure|carry on)\b/i;
 const DECLINE = /^\s*(no|nope|not now|don'?t|cancel|stop|leave it)\b/i;
 
-/** Did the learner say yes to what she offered? */
+/** Did the learner say yes to what Wobo offered? */
 export function isConfirmation(text: string): boolean {
   return CONFIRM.test(text);
 }
@@ -101,11 +101,11 @@ function prefersReducedMotion(): boolean {
 // --- The visible cursor ---------------------------------------------------------------------------
 
 export interface CursorState {
-  /** Null when she is not showing anything. */
+  /** Null when Wobo is not showing anything. */
   at: { x: number; y: number } | null;
   /** True for the beat of the tap, so the ring can pulse. */
   tapping: boolean;
-  /** What she is narrating while it moves — announced to screen readers. */
+  /** What Wobo is narrating while it moves — announced to screen readers. */
   saying: string;
 }
 
@@ -133,12 +133,12 @@ class Cursor {
 
 export const showCursor = new Cursor();
 
-/** Where on a rect she taps: the middle, which is where a person would. */
+/** Where on a rect Wobo taps: the middle, which is where a person would. */
 export function tapPoint(rect: Rect): { x: number; y: number } {
   return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
 }
 
-/** Ease-in-out — she sets off, travels, and settles, like a hand and not a linear tween. */
+/** Ease-in-out — Wobo sets off, travels, and settles, like a hand and not a linear tween. */
 export function glideEase(t: number): number {
   const p = t < 0 ? 0 : t > 1 ? 1 : t;
   return p < 0.5 ? 4 * p * p * p : 1 - (-2 * p + 2) ** 3 / 2;
@@ -183,15 +183,15 @@ const STOP_WORDS = new Set([
 
 export interface ShowMeResult {
   ok: boolean;
-  /** Her one-line account, in her voice — spoken and written. */
+  /** Wobo's one-line account, in Wobo's voice — spoken and written. */
   say: string;
 }
 
 export interface ShowMeOptions {
   registry?: SurfaceRegistry;
-  /** Reduced motion: she arrives instantly and still taps. */
+  /** Reduced motion: Wobo arrives instantly and still taps. */
   reduced?: boolean;
-  /** Tap when she gets there. False for "show me where it is" without pressing it. */
+  /** Tap when Wobo gets there. False for "show me where it is" without pressing it. */
   tap?: boolean;
   /** Injected for tests; defaults to the real clock. */
   now?: () => number;
@@ -199,7 +199,7 @@ export interface ShowMeOptions {
 }
 
 /**
- * Glide to a registered target and tap it. Returns what she should say — she narrates the move, so
+ * Glide to a registered target and tap it. Returns what Wobo should say — Wobo narrates the move, so
  * the learner is told what is happening even with their eyes off the cursor.
  */
 export async function showMe(targetId: string, options: ShowMeOptions = {}): Promise<ShowMeResult> {
@@ -246,9 +246,9 @@ export async function showMe(targetId: string, options: ShowMeOptions = {}): Pro
     } else {
       // No declared action: press the real control the learner would have pressed.
       //
-      // The point she set off towards is up to 1.1 s old by now, and a scroll or a layout shift in
+      // The point Wobo set off towards is up to 1.1 s old by now, and a scroll or a layout shift in
       // that second would leave it over something else entirely — the one place in the hand where
-      // a coordinate can outlive its layout. So the target is re-read, she is moved to where it
+      // a coordinate can outlive its layout. So the target is re-read, Wobo is moved to where it
       // actually is, and the element found there is pressed only if it BELONGS to that target.
       const fresh = target.rect();
       const at = fresh && (fresh.width > 0 || fresh.height > 0) ? tapPoint(fresh) : to;
@@ -290,7 +290,7 @@ export function findTargetId(
   if (exact) return exact.id;
   // Words that appear in every label carry no signal. Without this, "the microscope" matches the
   // first control on the screen through the word "the" — and pointing at the wrong thing is worse
-  // than saying she cannot find it.
+  // than saying Wobo cannot find it.
   const words = q.split(/\s+/).filter((w) => w.length > 2 && !STOP_WORDS.has(w));
   if (words.length === 0) return null;
   let best: { id: string; score: number } | null = null;

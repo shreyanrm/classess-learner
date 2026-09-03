@@ -1,4 +1,4 @@
-import { InMemoryKgtopg, type KGtoPG } from '@classess/kgtopg-contract-seed';
+import { InMemoryKgtopg, type KGtoPG } from '@wobo/kgtopg-contract-seed';
 import { resolveConfig, type SdkConfig } from './config';
 import { type EventProvider, InMemoryEventProvider, SupabaseOutboxEventProvider } from './events';
 import { configureGatewayAuth, fetchMe, type Me } from './gateway';

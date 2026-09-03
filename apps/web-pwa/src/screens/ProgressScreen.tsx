@@ -7,8 +7,8 @@
  * number cards. Tap a star for a quiet glass card: plain-language mastery, evidence, two doors.
  */
 
-import { ATOM_NODE_IDS, type OntologyNode } from '@classess/sdk';
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { ATOM_NODE_IDS, type OntologyNode } from '@wobo/sdk';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from '../shell/router';
@@ -47,10 +47,10 @@ import {
 function StateDot({ state }: { state: StarState }) {
   const base = { width: 9, height: 9, borderRadius: '50%', flexShrink: 0 } as const;
   if (state === 'independent')
-    return <span style={{ ...base, background: 'var(--clss-ultramarine)' }} />;
+    return <span style={{ ...base, background: 'var(--wobo-ultramarine)' }} />;
   if (state === 'supported')
-    return <span style={{ ...base, border: '1.25px solid var(--clss-ultramarine)' }} />;
-  return <span style={{ ...base, background: 'var(--clss-card-border)' }} />;
+    return <span style={{ ...base, border: '1.25px solid var(--wobo-ultramarine)' }} />;
+  return <span style={{ ...base, background: 'var(--wobo-card-border)' }} />;
 }
 
 export function ProgressScreen() {
@@ -65,8 +65,8 @@ export function ProgressScreen() {
   const mapRef = useRegisterTarget<HTMLDivElement>('twin-constellation', {
     kind: 'map',
     label: 'the knowledge twin — every star is a concept; a glowing star means mastered',
-    // She reads the twin at code level: which concepts are mastered, which lean on support, the
-    // weakest one to point at. Fills the perception seam so she reasons about contents, not a box.
+    // Wobo reads the twin at code level: which concepts are mastered, which lean on support, the
+    // weakest one to point at. Fills the perception seam so Wobo reasons about contents, not a box.
     getSceneState: () => {
       const constellation = STARS.map((s) => ({ name: nameOf(s), state: states[s.id] ?? 'unlit' }));
       const weakest =
@@ -146,7 +146,7 @@ export function ProgressScreen() {
   // The twin sits on the context plane (MOTION.md §1): it lags gently as the report scrolls up.
   const skyParallax = useParallax<HTMLDivElement>(PARALLAX.context, { max: 90 });
 
-  // She reads this page at code level: the whole constellation, star by star.
+  // Wobo reads this page at code level: the whole constellation, star by star.
   useEffect(() => {
     publishPage({
       route: 'progress',
@@ -242,7 +242,7 @@ export function ProgressScreen() {
                 fontSize: fluidType.heading,
                 fontWeight: 650,
                 letterSpacing: '-0.03em',
-                color: 'var(--clss-ink)',
+                color: 'var(--wobo-ink)',
                 fontVariantNumeric: 'tabular-nums',
               }}
             >
@@ -252,7 +252,7 @@ export function ProgressScreen() {
               style={{
                 marginTop: 5,
                 fontSize: fluidType.small,
-                color: 'var(--clss-ink-faint)',
+                color: 'var(--wobo-ink-faint)',
                 fontVariantNumeric: 'tabular-nums',
               }}
             >
@@ -275,7 +275,7 @@ export function ProgressScreen() {
             margin: '18px clamp(14px, 3vw, 44px) clamp(14px, 2.5vh, 26px)',
             // the sky is composed as one deliberate art panel — a hairline frames it, the wash
             // and dust stay contained, so the twin reads as a hero object, not a loose background
-            border: '0.5px solid var(--clss-hairline-on-paper)',
+            border: '0.5px solid var(--wobo-hairline-on-paper)',
             borderRadius: 3,
             overflow: 'hidden',
             isolation: 'isolate',
@@ -283,8 +283,8 @@ export function ProgressScreen() {
         >
           <AmbientWash
             gradient={
-              'radial-gradient(58% 62% at 50% 42%, var(--clss-ultramarine-soft) 0%, transparent 60%),' +
-              ' radial-gradient(120% 120% at 50% 46%, transparent 46%, var(--clss-ultramarine-soft) 140%)'
+              'radial-gradient(58% 62% at 50% 42%, var(--wobo-ultramarine-soft) 0%, transparent 60%),' +
+              ' radial-gradient(120% 120% at 50% 46%, transparent 46%, var(--wobo-ultramarine-soft) 140%)'
             }
           />
           <div ref={mapRef} style={{ position: 'absolute', inset: 0 }}>
@@ -319,7 +319,7 @@ export function ProgressScreen() {
                 marginBottom: 6,
                 textAlign: 'center',
                 fontSize: fluidType.small,
-                color: 'var(--clss-ink-soft)',
+                color: 'var(--wobo-ink-soft)',
                 minHeight: 18,
               }}
             >
@@ -341,14 +341,14 @@ export function ProgressScreen() {
                   fontFamily: 'inherit',
                   border: 'none',
                   background: 'transparent',
-                  color: 'var(--clss-ink)',
+                  color: 'var(--wobo-ink)',
                 }}
               />
             </div>
           </form>
           <style>
             {
-              '.twin-ask-input::placeholder{color:var(--clss-ink-faint)}.twin-step:hover{background:var(--clss-tonal)}.twin-ask-row{transition:border-color .28s ease}.twin-ask-row:focus-within{border-color:var(--clss-ultramarine-ring)}'
+              '.twin-ask-input::placeholder{color:var(--wobo-ink-faint)}.twin-step:hover{background:var(--wobo-tonal)}.twin-ask-row{transition:border-color .28s ease}.twin-ask-row:focus-within{border-color:var(--wobo-ultramarine-ring)}'
             }
           </style>
         </motion.div>
@@ -396,7 +396,7 @@ export function ProgressScreen() {
                 right: 10,
                 border: 'none',
                 background: 'transparent',
-                color: 'var(--clss-ink-faint)',
+                color: 'var(--wobo-ink-faint)',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 padding: 4,
@@ -409,7 +409,7 @@ export function ProgressScreen() {
               style={{
                 fontSize: fluidType.body,
                 fontWeight: 550,
-                color: 'var(--clss-ink)',
+                color: 'var(--wobo-ink)',
                 letterSpacing: '-0.01em',
                 paddingRight: 18,
               }}
@@ -423,14 +423,14 @@ export function ProgressScreen() {
                 alignItems: 'center',
                 gap: 8,
                 fontSize: fluidType.body,
-                color: 'var(--clss-ink-soft)',
+                color: 'var(--wobo-ink-soft)',
               }}
             >
               <StateDot state={selectedState} />
               {BAND_LANGUAGE[selectedState]}
             </div>
             <div
-              style={{ marginTop: 4, fontSize: fluidType.small, color: 'var(--clss-ink-faint)' }}
+              style={{ marginTop: 4, fontSize: fluidType.small, color: 'var(--wobo-ink-faint)' }}
             >
               {evidenceLine}
             </div>
@@ -451,7 +451,7 @@ export function ProgressScreen() {
                       fontSize: fluidType.eyebrow,
                       fontWeight: 550,
                       letterSpacing: '0.02em',
-                      color: 'var(--clss-ink-faint)',
+                      color: 'var(--wobo-ink-faint)',
                     }}
                   >
                     To make this yours
@@ -462,7 +462,7 @@ export function ProgressScreen() {
                     style={{
                       border: 'none',
                       background: 'transparent',
-                      color: 'var(--clss-ultramarine)',
+                      color: 'var(--wobo-ultramarine)',
                       fontSize: fluidType.eyebrow,
                       fontFamily: 'inherit',
                       cursor: 'pointer',
@@ -535,7 +535,7 @@ export function ProgressScreen() {
                               height: 18,
                               flexShrink: 0,
                               borderRadius: '50%',
-                              background: 'var(--clss-ultramarine)',
+                              background: 'var(--wobo-ultramarine)',
                               color: '#FFFFFF',
                               fontSize: '0.66rem',
                               fontWeight: 650,
@@ -551,7 +551,7 @@ export function ProgressScreen() {
                             flex: 1,
                             fontSize: fluidType.small,
                             lineHeight: 1.35,
-                            color: p.mastered ? 'var(--clss-ink-faint)' : 'var(--clss-ink)',
+                            color: p.mastered ? 'var(--wobo-ink-faint)' : 'var(--wobo-ink)',
                           }}
                         >
                           {nameOf(p.star)}
@@ -560,7 +560,7 @@ export function ProgressScreen() {
                           <span
                             style={{
                               fontSize: fluidType.eyebrow,
-                              color: 'var(--clss-ink-faint)',
+                              color: 'var(--wobo-ink-faint)',
                               flexShrink: 0,
                             }}
                           >

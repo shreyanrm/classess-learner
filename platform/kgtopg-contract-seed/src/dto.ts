@@ -1,4 +1,4 @@
-import type { GapType, MasteryBand } from '@classess/contracts';
+import type { GapType, MasteryBand } from '@wobo/contracts';
 
 /**
  * Governed-view DTOs — the typed shapes the app reads DOWN from the KGtoPG plane. These mirror the
@@ -13,7 +13,7 @@ export interface OntologyNode {
   kind: 'subject' | 'chapter' | 'topic';
   /** Confirmed prerequisite topics (only steward-validated edges are trusted for routing). */
   prerequisite_ids: string[];
-  /** The concept's earned content-colour (a @classess/config accent). */
+  /** The concept's earned content-colour (a @wobo/config accent). */
   accent?: string;
   sequence?: number;
 }

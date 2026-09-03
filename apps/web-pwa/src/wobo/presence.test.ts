@@ -26,14 +26,14 @@ describe('the expression the moment calls for', () => {
   });
 });
 
-describe('where her eyes go', () => {
+describe("where Wobo's eyes go", () => {
   const region = { x: 10, y: 20, width: 100, height: 40 };
 
   it('to what the learner circled, before anything else', () => {
     expect(gazeTarget(region, { x: 500, y: 500 })).toBe(region);
   });
 
-  it('to the ink she is laying down when nothing is circled', () => {
+  it('to the ink Wobo is laying down when nothing is circled', () => {
     expect(gazeTarget(null, { x: 500, y: 500 })).toEqual({
       x: 492,
       y: 492,

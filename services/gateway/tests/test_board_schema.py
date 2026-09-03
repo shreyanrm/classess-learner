@@ -1,7 +1,7 @@
 """The generated mirror of the board grammar.
 
 `packages/wobo/src/board/schema.ts` is the single source of truth for what Wobo may draw;
-`classess_gateway.board_schema` is generated from it so the brain validates exactly what the hand
+`wobo_gateway.board_schema` is generated from it so the brain validates exactly what the hand
 can render. These tests are about the mirror itself: that it carries the whole vocabulary, that its
 validator actually rejects, and that the verified-number law holds on this side too.
 """
@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from classess_gateway import board_schema as mirror
+from wobo_gateway import board_schema as mirror
 
 CIRCLE: dict[str, Any] = {"id": "v1", "kind": "circle", "anchor": {"target": "next-button"}}
 

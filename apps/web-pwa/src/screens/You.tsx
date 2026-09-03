@@ -6,8 +6,8 @@
  * who learns beside you, the note home, the plan, and three quiet dials at the end.
  */
 
-import { fontFamily } from '@classess/config';
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { fontFamily } from '@wobo/config';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   type ChangeEvent,
@@ -88,13 +88,13 @@ import { TrophyRoom } from './you/TrophyRoom';
 // The "you" atmosphere (§1 ambient depth) — a quiet brand dawn behind the profile, the same calm
 // wash that greets the learner on home. Token-driven; both themes.
 const YOU_WASH =
-  'radial-gradient(58% 34% at 50% -2%, var(--clss-ultramarine-soft) 0%, transparent 68%),' +
+  'radial-gradient(58% 34% at 50% -2%, var(--wobo-ultramarine-soft) 0%, transparent 68%),' +
   ' radial-gradient(46% 26% at 50% 22%, rgba(255,201,60,0.04) 0%, transparent 72%)';
 
-const whisper: CSSProperties = { fontSize: '0.8rem', color: 'var(--clss-ink-300)' };
+const whisper: CSSProperties = { fontSize: '0.8rem', color: 'var(--wobo-ink-300)' };
 const bodyLine: CSSProperties = {
   fontSize: '0.85rem',
-  color: 'var(--clss-ink-500)',
+  color: 'var(--wobo-ink-500)',
   lineHeight: 1.55,
 };
 
@@ -119,7 +119,7 @@ const PLAN_JEWEL_CSS = `
   font-size: 1.4rem;
   font-weight: 600;
   line-height: 1;
-  background: linear-gradient(100deg, var(--clss-ink-900) 20%, #1F35E0 40%, #CC1E7A 50%, #FF5A1F 60%, var(--clss-ink-900) 80%);
+  background: linear-gradient(100deg, var(--wobo-ink-900) 20%, #1F35E0 40%, #CC1E7A 50%, #FF5A1F 60%, var(--wobo-ink-900) 80%);
   background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -132,7 +132,7 @@ const PLAN_JEWEL_CSS = `
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: var(--clss-ultramarine);
+  background: var(--wobo-ultramarine);
   opacity: 0;
   pointer-events: none;
   animation: plan-mote ease-in-out infinite;
@@ -190,7 +190,7 @@ const PLAN_MOTES = (() => {
 
 // The 30-day intensity ramp — tonal at rest, warming through a considered green scale. Shared by the
 // cells and the legend so a single edit moves both. (Existing hues; a heatmap scale, not a UI accent.)
-const ACTIVITY_RAMP = ['var(--clss-tonal)', '#D5EDDD', '#A9DCBB', '#6FC28D', '#3FA764'];
+const ACTIVITY_RAMP = ['var(--wobo-tonal)', '#D5EDDD', '#A9DCBB', '#6FC28D', '#3FA764'];
 
 // The heat cells settle in on a quiet stagger — presence arriving, not decoration.
 const heatCell = {
@@ -233,9 +233,9 @@ function Dial({
         height: 22,
         borderRadius: 999,
         border: on
-          ? '0.5px solid var(--clss-ink-900)'
-          : '0.5px solid var(--clss-hairline-on-paper-strong)',
-        background: on ? 'var(--clss-ink-900)' : 'var(--clss-paper)',
+          ? '0.5px solid var(--wobo-ink-900)'
+          : '0.5px solid var(--wobo-hairline-on-paper-strong)',
+        background: on ? 'var(--wobo-ink-900)' : 'var(--wobo-paper)',
         display: 'inline-flex',
         alignItems: 'center',
         padding: 0,
@@ -250,7 +250,7 @@ function Dial({
           width: 15,
           height: 15,
           borderRadius: 999,
-          background: on ? 'var(--clss-paper)' : 'var(--clss-ink-300)',
+          background: on ? 'var(--wobo-paper)' : 'var(--wobo-ink-300)',
           display: 'block',
         }}
       />
@@ -280,7 +280,7 @@ function DialRow({
       }}
     >
       <div>
-        <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>{title}</div>
+        <div style={{ fontSize: '0.95rem', color: 'var(--wobo-ink-900)' }}>{title}</div>
         <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>{line}</div>
       </div>
       <Dial on={on} onChange={onChange} label={title} />
@@ -289,9 +289,9 @@ function DialRow({
 }
 
 const PROACTIVITY_LINES: Record<Proactivity, string> = {
-  quiet: 'she waits to be asked — no suggestions, no nudges',
+  quiet: 'Wobo waits to be asked — no suggestions, no nudges',
   balanced: 'gentle suggestion chips at the right moments',
-  proactive: 'she speaks up when she sees something worth your time',
+  proactive: 'Wobo speaks up when something looks worth your time',
 };
 
 /** Three quiet notches — how forward Wobo is allowed to be. */
@@ -306,7 +306,7 @@ function ProactivityRow({
   return (
     <div style={{ padding: '13px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
       <div>
-        <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>How forward she is</div>
+        <div style={{ fontSize: '0.95rem', color: 'var(--wobo-ink-900)' }}>How forward Wobo is</div>
         <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
           {PROACTIVITY_LINES[value]}
         </div>
@@ -325,9 +325,9 @@ function ProactivityRow({
                 flex: 1,
                 height: 34,
                 borderRadius: 3,
-                border: on ? '0.5px solid var(--clss-ink-900)' : '0.5px solid transparent',
-                background: on ? 'var(--clss-ink-900)' : 'var(--clss-tonal)',
-                color: on ? 'var(--clss-paper)' : 'var(--clss-ink-700)',
+                border: on ? '0.5px solid var(--wobo-ink-900)' : '0.5px solid transparent',
+                background: on ? 'var(--wobo-ink-900)' : 'var(--wobo-tonal)',
+                color: on ? 'var(--wobo-paper)' : 'var(--wobo-ink-700)',
                 fontFamily: 'inherit',
                 fontSize: '0.8rem',
                 fontWeight: on ? 550 : 400,
@@ -357,7 +357,7 @@ function AppearanceRow() {
   return (
     <div style={{ padding: '13px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
       <div>
-        <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>appearance</div>
+        <div style={{ fontSize: '0.95rem', color: 'var(--wobo-ink-900)' }}>appearance</div>
         <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
           {APPEARANCE_LINES[pref]}
         </div>
@@ -376,9 +376,9 @@ function AppearanceRow() {
                 flex: 1,
                 height: 34,
                 borderRadius: 3,
-                border: on ? '0.5px solid var(--clss-ink-900)' : '0.5px solid transparent',
-                background: on ? 'var(--clss-ink-900)' : 'var(--clss-tonal)',
-                color: on ? 'var(--clss-paper)' : 'var(--clss-ink-700)',
+                border: on ? '0.5px solid var(--wobo-ink-900)' : '0.5px solid transparent',
+                background: on ? 'var(--wobo-ink-900)' : 'var(--wobo-tonal)',
+                color: on ? 'var(--wobo-paper)' : 'var(--wobo-ink-700)',
                 fontFamily: 'inherit',
                 fontSize: '0.8rem',
                 fontWeight: on ? 550 : 400,
@@ -408,7 +408,7 @@ function InviteCard({
 }) {
   return (
     <Card style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <div style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--clss-ink-900)' }}>
+      <div style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--wobo-ink-900)' }}>
         {title}
       </div>
       <div style={{ ...bodyLine, flex: 1 }}>{line}</div>
@@ -422,7 +422,7 @@ function InviteCard({
               initial={{ opacity: 0, y: 3 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              style={{ fontSize: '0.8rem', color: 'var(--clss-ink-500)' }}
+              style={{ fontSize: '0.8rem', color: 'var(--wobo-ink-500)' }}
             >
               Link copied
             </motion.span>
@@ -444,7 +444,7 @@ const tilePop = {
   },
 } as const;
 
-const SELECT_RING = { boxShadow: '0 0 0 2px var(--clss-ultramarine)' } as const;
+const SELECT_RING = { boxShadow: '0 0 0 2px var(--wobo-ultramarine)' } as const;
 
 /** One face tile in the picker — spring hover, ultramarine ring when it is the current choice. */
 function AvatarTile({
@@ -482,7 +482,7 @@ function AvatarTile({
         style={{
           fontSize: '0.65rem',
           textTransform: 'lowercase',
-          color: selected ? 'var(--clss-ultramarine)' : 'var(--clss-ink-300)',
+          color: selected ? 'var(--wobo-ultramarine)' : 'var(--wobo-ink-300)',
         }}
       >
         {avatarName(id)}
@@ -535,21 +535,21 @@ function AvatarPicker({
     height: 34,
     borderRadius: 3,
     border: 'none',
-    background: 'var(--clss-tonal)',
+    background: 'var(--wobo-tonal)',
     fontFamily: 'inherit',
     fontSize: '0.8rem',
-    color: 'var(--clss-ink-700)',
+    color: 'var(--wobo-ink-700)',
     cursor: 'pointer',
     whiteSpace: 'nowrap',
     padding: '0 12px',
   };
-  const ring = { boxShadow: '0 0 0 2px var(--clss-ultramarine)' } as const;
+  const ring = { boxShadow: '0 0 0 2px var(--wobo-ultramarine)' } as const;
   const eyebrow: CSSProperties = {
     fontSize: '0.62rem',
     fontWeight: 600,
     letterSpacing: '0.14em',
     textTransform: 'uppercase',
-    color: 'var(--clss-ink-300)',
+    color: 'var(--wobo-ink-300)',
   };
 
   return (
@@ -576,7 +576,7 @@ function AvatarPicker({
             background: 'rgba(255,255,255,0.93)',
             backdropFilter: 'blur(18px) saturate(1.6)',
             WebkitBackdropFilter: 'blur(18px) saturate(1.6)',
-            border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+            border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
             transformOrigin: 'top left',
           }}
         >
@@ -662,7 +662,7 @@ function SuperstarSoon({ open, onClose }: { open: boolean; onClose: () => void }
             position: 'fixed',
             inset: 0,
             zIndex: 1200,
-            background: 'color-mix(in srgb, var(--clss-ink) 28%, transparent)',
+            background: 'color-mix(in srgb, var(--wobo-ink) 28%, transparent)',
             backdropFilter: 'blur(6px)',
             WebkitBackdropFilter: 'blur(6px)',
             display: 'flex',
@@ -690,7 +690,7 @@ function SuperstarSoon({ open, onClose }: { open: boolean; onClose: () => void }
               textAlign: 'center',
             }}
           >
-            <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)', lineHeight: 1.55 }}>
+            <div style={{ fontSize: '0.95rem', color: 'var(--wobo-ink-900)', lineHeight: 1.55 }}>
               superstar mode is still in the workshop — soon.
             </div>
             <MagneticButton
@@ -750,7 +750,7 @@ export function You() {
   };
 
   // Preference edits (accessibility, language) don't award XP; they persist, repaint the real
-  // display effects, and refresh her dossier so the next turn already honors them.
+  // display effects, and refresh Wobo's dossier so the next turn already honors them.
   const patchProfile = (patch: Partial<StoredProfile>) => {
     const next = { ...profile, ...patch };
     setProfile(next);
@@ -766,7 +766,7 @@ export function You() {
     profile.boardId !== schoolBaseline.current.boardId;
 
   // Streak-freeze repair (family P): a broken chain repairs against the monthly budget with a
-  // stated reason. She confirms what she did and what remains; the confirmation lingers this session.
+  // stated reason. Wobo confirms what Wobo did and what remains; the confirmation lingers this session.
   const [repairReason, setRepairReason] = useState('');
   const [repaired, setRepaired] = useState<{ days: number; left: number } | null>(null);
   const doRepair = () => {
@@ -881,12 +881,12 @@ export function You() {
     });
   };
 
-  // --- her memory of you (steerable, per-item — the forget verb's visual twin) ----------
+  // --- Wobo's memory of you (steerable, per-item — the forget verb's visual twin) ----------
   const [mind, setMind] = useState(() => loadMind());
   const [mindCleared, setMindCleared] = useState(false);
   const knownItems = useMemo(() => removableItems(mind), [mind]);
   const observations = useMemo(() => observationLines(mind), [mind]);
-  // Every removal re-reads storage, then refreshes her live lifetime slot so the very next turn
+  // Every removal re-reads storage, then refreshes Wobo's live lifetime slot so the very next turn
   // carries the corrected dossier (MindObserver also republishes on its pulse).
   const refreshMind = () => {
     setMind(loadMind());
@@ -901,7 +901,7 @@ export function You() {
     clearMind();
     setMind(loadMind());
     setMindCleared(true);
-    // the lifetime slot empties immediately — her next call carries nothing about you
+    // the lifetime slot empties immediately — Wobo's next call carries nothing about you
     bus.publishLifetime({});
     window.setTimeout(() => setMindCleared(false), 2600);
   };
@@ -944,7 +944,7 @@ export function You() {
       const keys: string[] = [];
       for (let i = 0; i < localStorage.length; i += 1) {
         const k = localStorage.key(i);
-        if (k?.startsWith('clss-')) keys.push(k);
+        if (k?.startsWith('wobo-')) keys.push(k);
       }
       for (const k of keys) localStorage.removeItem(k);
       // ONBOARDED_KEY is gone — the app reopens on onboarding, genuinely fresh.
@@ -975,11 +975,11 @@ export function You() {
     kind: 'card',
     label: 'the card showing what Wobo has learned about this learner, with a clear-memory door',
   });
-  // The two things a learner changes about their world, and the dials that govern how she behaves.
-  // Registered so "change my class" or "make her quieter" walks to the real control.
+  // The two things a learner changes about their world, and the dials that govern how Wobo behaves.
+  // Registered so "change my class" or "make Wobo quieter" walks to the real control.
   // The affordance itself, always on screen: "show me how to change my board" has to reach a
   // control the learner can actually press. The picker below is the panel this opens, and it only
-  // exists once it is open — registering only that left the door itself invisible to her.
+  // exists once it is open — registering only that left the door itself invisible to Wobo.
   const schoolRef = useRegisterTarget<HTMLButtonElement>('you-school', {
     kind: 'control',
     label: 'change your class and board — the syllabus everything is taught from',
@@ -1005,7 +1005,8 @@ export function You() {
   });
   const settingsRef = useRegisterTarget<HTMLDivElement>('you-settings', {
     kind: 'settings',
-    label: 'settings — her voice, the ignite sound, how much she speaks up, appearance, and access',
+    label:
+      "settings — Wobo's voice, the ignite sound, how much Wobo speaks up, appearance, and access",
     getSceneState: () => ({
       voice,
       sound,
@@ -1013,7 +1014,7 @@ export function You() {
       proactivity,
       largeText: Boolean(profile.largeText),
     }),
-    getValidActions: () => ['mute or unmute her', 'set how proactive she is', 'switch the theme'],
+    getValidActions: () => ['mute or unmute Wobo', 'set how proactive Wobo is', 'switch the theme'],
     applyTutorAction: (patch) => {
       if (
         patch.proactivity === 'quiet' ||
@@ -1088,8 +1089,8 @@ export function You() {
               width: 64,
               height: 64,
               borderRadius: '50%', // owner law: avatars are circles — the frame matches the face
-              border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-              background: 'var(--clss-paper)',
+              border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+              background: 'var(--wobo-paper)',
               overflow: 'hidden',
               cursor: 'pointer',
               padding: 0,
@@ -1138,7 +1139,7 @@ export function You() {
                 fontSize: '1.7rem',
                 fontWeight: 500,
                 letterSpacing: '-0.02em',
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
                 fontFamily: 'inherit',
                 background: 'transparent',
                 border: 'none',
@@ -1156,14 +1157,14 @@ export function You() {
                 background: 'transparent',
                 fontFamily: 'inherit',
                 fontSize: '0.9rem',
-                color: 'var(--clss-ink-500)',
+                color: 'var(--wobo-ink-500)',
                 cursor: 'pointer',
                 padding: 0,
                 textAlign: 'left',
               }}
             >
               {profile.grade} · {boardName(profile.boardId)}{' '}
-              <span style={{ color: 'var(--clss-ink-300)' }}>
+              <span style={{ color: 'var(--wobo-ink-300)' }}>
                 · {changingSchool ? 'done' : 'change'}
               </span>
             </button>
@@ -1200,7 +1201,7 @@ export function You() {
                     border: '1px solid rgba(31,53,224,0.1)',
                     ...bodyLine,
                     fontSize: '0.85rem',
-                    color: 'var(--clss-ink-700)',
+                    color: 'var(--wobo-ink-700)',
                     ...tnum,
                   }}
                 >
@@ -1245,11 +1246,11 @@ export function You() {
                       fontSize: '3rem',
                       fontWeight: 650,
                       letterSpacing: '-0.035em',
-                      color: 'var(--clss-ink-900)',
+                      color: 'var(--wobo-ink-900)',
                       lineHeight: 1,
                     }}
                   />
-                  <span style={{ fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>xp</span>
+                  <span style={{ fontSize: '0.95rem', color: 'var(--wobo-ink-500)' }}>xp</span>
                 </div>
                 {/* the level medallion — bigger here, with the xp-to-next spelled out */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -1259,20 +1260,20 @@ export function You() {
                         fontSize: '0.72rem',
                         letterSpacing: '0.06em',
                         textTransform: 'uppercase',
-                        color: 'var(--clss-ink-500)',
+                        color: 'var(--wobo-ink-500)',
                         fontWeight: 600,
                       }}
                     >
                       level {level.level}
                     </div>
-                    <div style={{ fontSize: '0.9rem', color: 'var(--clss-ink-700)', ...tnum }}>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--wobo-ink-700)', ...tnum }}>
                       {level.toNext} xp to level {level.level + 1}
                     </div>
                   </div>
                   <LevelBadge info={level} celebrate={false} size={56} />
                 </div>
               </div>
-              <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-700)', ...tnum }}>
+              <div style={{ fontSize: '0.95rem', color: 'var(--wobo-ink-700)', ...tnum }}>
                 Day {streakDays} of being a learner
               </div>
               <div
@@ -1287,7 +1288,7 @@ export function You() {
                       flex: 1,
                       height: 3,
                       borderRadius: 2,
-                      background: d.active ? 'var(--clss-ink-900)' : 'rgba(31,53,224,0.14)',
+                      background: d.active ? 'var(--wobo-ink-900)' : 'rgba(31,53,224,0.14)',
                     }}
                   />
                 ))}
@@ -1298,7 +1299,7 @@ export function You() {
                   fontSize: '0.7rem',
                   fontWeight: 600,
                   letterSpacing: '0.14em',
-                  color: 'var(--clss-ink-faint)',
+                  color: 'var(--wobo-ink-faint)',
                   marginTop: 18,
                   marginBottom: 10,
                 }}
@@ -1325,7 +1326,7 @@ export function You() {
                     n =
                       (
                         JSON.parse(
-                          localStorage.getItem('clss-activity-counts-v1') ?? '{}',
+                          localStorage.getItem('wobo-activity-counts-v1') ?? '{}',
                         ) as Record<string, number>
                       )[d] ?? 0;
                   } catch {
@@ -1390,7 +1391,7 @@ export function You() {
                 {repaired ? (
                   <>
                     <div
-                      style={{ fontSize: '1.05rem', fontWeight: 500, color: 'var(--clss-ink-900)' }}
+                      style={{ fontSize: '1.05rem', fontWeight: 500, color: 'var(--wobo-ink-900)' }}
                     >
                       done — your {repaired.days}-day streak is back
                     </div>
@@ -1402,7 +1403,7 @@ export function You() {
                 ) : streakRepair ? (
                   <>
                     <div
-                      style={{ fontSize: '1.05rem', fontWeight: 500, color: 'var(--clss-ink-900)' }}
+                      style={{ fontSize: '1.05rem', fontWeight: 500, color: 'var(--wobo-ink-900)' }}
                     >
                       your {streakRepair.brokenDays}-day streak broke
                     </div>
@@ -1426,10 +1427,10 @@ export function You() {
                             padding: '10px 14px',
                             fontSize: '0.95rem',
                             fontFamily: 'inherit',
-                            border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-                            borderRadius: 'var(--clss-radius-sm)',
-                            background: 'var(--clss-paper)',
-                            color: 'var(--clss-ink-900)',
+                            border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+                            borderRadius: 'var(--wobo-radius-sm)',
+                            background: 'var(--wobo-paper)',
+                            color: 'var(--wobo-ink-900)',
                             minWidth: 0,
                           }}
                         />
@@ -1458,7 +1459,7 @@ export function You() {
             {/* the cast gathers — the world that learns beside you */}
             <Scene
               height={150}
-              hue="var(--clss-ultramarine)"
+              hue="var(--wobo-ultramarine)"
               wash={0.05}
               items={[
                 { id: 'torto', x: 0.07, size: 64 },
@@ -1514,7 +1515,7 @@ export function You() {
                 <span
                   style={{
                     fontSize: '0.8rem',
-                    color: 'var(--clss-ink-500)',
+                    color: 'var(--wobo-ink-500)',
                     letterSpacing: '0.06em',
                   }}
                 >
@@ -1527,14 +1528,14 @@ export function You() {
                   fontSize: '1.15rem',
                   fontWeight: 500,
                   letterSpacing: '-0.01em',
-                  color: 'var(--clss-ink-900)',
+                  color: 'var(--wobo-ink-900)',
                   lineHeight: 1.4,
                   ...tnum,
                 }}
               >
                 {profile.name} showed up {activeDays} of 7 days this week
               </div>
-              <div style={{ fontSize: '0.9rem', color: 'var(--clss-ink-700)', ...tnum }}>
+              <div style={{ fontSize: '0.9rem', color: 'var(--wobo-ink-700)', ...tnum }}>
                 {mastered.length} {mastered.length === 1 ? 'topic' : 'topics'} mastered ·{' '}
                 {xp.toLocaleString('en-IN')} xp earned
               </div>
@@ -1565,10 +1566,10 @@ export function You() {
                       padding: '10px 14px',
                       fontSize: '0.95rem',
                       fontFamily: 'inherit',
-                      border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-                      borderRadius: 'var(--clss-radius-sm)',
-                      background: 'var(--clss-paper)',
-                      color: 'var(--clss-ink-900)',
+                      border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+                      borderRadius: 'var(--wobo-radius-sm)',
+                      background: 'var(--wobo-paper)',
+                      color: 'var(--wobo-ink-900)',
                       minWidth: 0,
                     }}
                   />
@@ -1642,12 +1643,12 @@ export function You() {
               {knownItems.length === 0 && observations.length === 0 ? (
                 <div style={bodyLine}>
                   {mindCleared
-                    ? 'cleared — she starts fresh from your next answer'
-                    : 'she is still getting to know you — how you answer, where you linger, when you show up. it gathers here as you learn.'}
+                    ? 'cleared — Wobo starts fresh from your next answer'
+                    : 'Wobo is still getting to know you — how you answer, where you linger, when you show up. it gathers here as you learn.'}
                 </div>
               ) : (
                 <>
-                  {/* the things she remembers — each one removable on its own */}
+                  {/* the things Wobo remembers — each one removable on its own */}
                   {knownItems.length > 0 && (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                       <AnimatePresence initial={false}>
@@ -1665,9 +1666,9 @@ export function You() {
                               gap: 7,
                               padding: '6px 8px 6px 13px',
                               borderRadius: 999,
-                              background: 'var(--clss-tonal)',
+                              background: 'var(--wobo-tonal)',
                               fontSize: '0.85rem',
-                              color: 'var(--clss-ink-900)',
+                              color: 'var(--wobo-ink-900)',
                             }}
                           >
                             {item.kind === 'interest' ? `into ${item.text}` : item.text}
@@ -1679,7 +1680,7 @@ export function You() {
                                 border: 'none',
                                 background: 'transparent',
                                 cursor: 'pointer',
-                                color: 'var(--clss-ink-300)',
+                                color: 'var(--wobo-ink-300)',
                                 fontSize: '1.05rem',
                                 lineHeight: 1,
                                 padding: 0,
@@ -1696,7 +1697,7 @@ export function You() {
                       </AnimatePresence>
                     </div>
                   )}
-                  {/* what she has inferred from watching — read-only, it regenerates as she learns */}
+                  {/* what Wobo has inferred from watching — read-only, it regenerates as Wobo learns */}
                   {observations.length > 0 && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {observations.map((line) => (
@@ -1710,13 +1711,13 @@ export function You() {
               )}
               <Hairline style={{ margin: '6px 0' }} />
               <div style={{ ...whisper }}>
-                this stays on your device and shapes how she helps you. remove any one, or clear it
-                all — she will not mind.
+                this stays on your device and shapes how Wobo helps you. remove any one, or clear it
+                all — Wobo will not mind.
               </div>
               {(knownItems.length > 0 || observations.length > 0) && (
                 <div>
                   <MagneticButton size="sm" variant="quiet" onClick={forgetMind}>
-                    clear everything she knows
+                    clear everything Wobo knows
                   </MagneticButton>
                 </div>
               )}
@@ -1732,7 +1733,7 @@ export function You() {
             <div ref={settingsRef}>
               <DialRow
                 title="Wobo's voice"
-                line="She speaks her replies out loud"
+                line="Wobo speaks replies out loud"
                 on={voice}
                 onChange={(v) => {
                   setVoice(v);
@@ -1770,8 +1771,8 @@ export function You() {
               <Hairline />
               <AppearanceRow />
               <Hairline />
-              {/* durable accessibility — larger text and high contrast apply for real and ride her
-                  dossier so she honors them every turn */}
+              {/* durable accessibility — larger text and high contrast apply for real and ride Wobo
+                  dossier so Wobo honors them every turn */}
               <DialRow
                 title="Larger text"
                 line="Bump the type size across the whole app"
@@ -1788,7 +1789,7 @@ export function You() {
               <Hairline />
               <div style={{ padding: '13px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <div>
-                  <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>
+                  <div style={{ fontSize: '0.95rem', color: 'var(--wobo-ink-900)' }}>
                     the language I learn in
                   </div>
                   <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
@@ -1810,10 +1811,10 @@ export function You() {
                     padding: '10px 14px',
                     fontSize: '0.95rem',
                     fontFamily: 'inherit',
-                    border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-                    borderRadius: 'var(--clss-radius-sm)',
-                    background: 'var(--clss-paper)',
-                    color: 'var(--clss-ink-900)',
+                    border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+                    borderRadius: 'var(--wobo-radius-sm)',
+                    background: 'var(--wobo-paper)',
+                    color: 'var(--wobo-ink-900)',
                   }}
                 />
               </div>
@@ -1832,7 +1833,7 @@ export function You() {
                     textAlign: 'left',
                   }}
                 >
-                  <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>
+                  <div style={{ fontSize: '0.95rem', color: 'var(--wobo-ink-900)' }}>
                     redo my setup
                   </div>
                   <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
@@ -1860,7 +1861,7 @@ export function You() {
                           textAlign: 'left',
                         }}
                       >
-                        <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>
+                        <div style={{ fontSize: '0.95rem', color: 'var(--wobo-ink-900)' }}>
                           {signingOut ? 'signing out…' : 'sign out'}
                         </div>
                         <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
@@ -1880,7 +1881,7 @@ export function You() {
                       }}
                     >
                       <div>
-                        <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>
+                        <div style={{ fontSize: '0.95rem', color: 'var(--wobo-ink-900)' }}>
                           keep this page safe
                         </div>
                         <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>
@@ -1941,7 +1942,7 @@ export function You() {
                       textAlign: 'left',
                     }}
                   >
-                    <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>
+                    <div style={{ fontSize: '0.95rem', color: 'var(--wobo-ink-900)' }}>
                       start over
                     </div>
                     <div style={{ ...bodyLine, fontSize: '0.8rem', marginTop: 2 }}>

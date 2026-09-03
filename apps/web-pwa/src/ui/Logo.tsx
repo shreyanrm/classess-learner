@@ -32,7 +32,7 @@ export function WoboLogo({ height = 22 }: { height?: number }) {
         Wobo
       </text>
       {/* the spark rides the ultramarine token, so it lightens for contrast on graphite */}
-      <path fill="var(--clss-ultramarine, #1F35E0)" d={SPARK} />
+      <path fill="var(--wobo-ultramarine, #1F35E0)" d={SPARK} />
     </svg>
   );
 }

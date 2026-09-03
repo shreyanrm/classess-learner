@@ -11,7 +11,7 @@
  * sandbox (route `sandbox`) that opens straight into the what-if card.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { chapterById, topicById } from '../data/catalog';
@@ -74,7 +74,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
     const t = window.setTimeout(() => setResumed(false), 3200);
     return () => window.clearTimeout(t);
   }, [resumed]);
-  // She reads each card aloud and the advance button waits for her — muted, an equal reading clock
+  // Wobo reads each card aloud and the advance button waits for Wobo — muted, an equal reading clock
   // stands in. Gating only bites teaching cards' advance (never "check", never a question read).
   const narration = useCardNarration();
   const primaryLabel = (bar?.primary.label ?? '').toLowerCase();
@@ -101,7 +101,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
     bus.publishPage({ route: sandbox ? 'sandbox' : 'course', state: { topicId, title, mode } });
   }, [bus, sandbox, topicId, title, mode]);
 
-  // The card on stage — the beat the learner is actually on. Registered so her ink anchors to the
+  // The card on stage — the beat the learner is actually on. Registered so Wobo's ink anchors to the
   // card itself ("this step", "the box at the top") and so the full board knows what it is about.
   const stageRef = useRegisterTarget<HTMLElement>('course-card', {
     kind: 'card',
@@ -135,7 +135,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
 
   // Gated: hold a plain paper screen for the single frame before router.back() lands — no cold
   // skeleton, no white flash. The learner returns to where they were, download in flight.
-  if (needsDownload) return <div style={{ height: '100dvh', background: 'var(--clss-paper)' }} />;
+  if (needsDownload) return <div style={{ height: '100dvh', background: 'var(--wobo-paper)' }} />;
 
   return (
     <div
@@ -143,7 +143,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
         height: '100dvh',
         display: 'flex',
         flexDirection: 'column',
-        background: 'var(--clss-paper)',
+        background: 'var(--wobo-paper)',
         position: 'relative',
         isolation: 'isolate',
       }}
@@ -190,7 +190,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
           style={{
             border: 'none',
             background: 'transparent',
-            color: closeLit ? 'var(--clss-ink-900)' : 'var(--clss-ink-500)',
+            color: closeLit ? 'var(--wobo-ink-900)' : 'var(--wobo-ink-500)',
             lineHeight: 1,
             cursor: 'pointer',
             fontFamily: 'inherit',
@@ -211,7 +211,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
             <SegmentedProgress fraction={progress.f} segments={progress.segments} />
           </div>
         )}
-        {/* on-stage voice controls: mute her narration, or replay the current card */}
+        {/* on-stage voice controls: mute Wobo's narration, or replay the current card */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <ReplayButton onReplay={narration.replay} />
           <MuteButton />
@@ -221,7 +221,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
       {/* the full-bleed card area */}
       <main
         ref={stageRef}
-        className="clss-scroll-quiet"
+        className="wobo-scroll-quiet"
         style={{
           flex: 1,
           minHeight: 0,
@@ -269,8 +269,8 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
               zIndex: 40,
               padding: '9px 16px',
               borderRadius: 3,
-              background: 'var(--clss-ink-900)',
-              color: 'var(--clss-paper)',
+              background: 'var(--wobo-ink-900)',
+              color: 'var(--wobo-paper)',
               fontSize: '0.82rem',
               fontWeight: 500,
               whiteSpace: 'nowrap',

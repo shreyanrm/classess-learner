@@ -9,13 +9,13 @@
  * and arcs toward its shelf as the blur lifts and a whisper points there.
  *
  * Laws: 3px corners, no shadows, one hit of pigment (the track hue; gold and paper-white are its
- * two ceremonial accents). Sound rides sfx / speakLine (clss-voice-muted-v1) — never a second
+ * two ceremonial accents). Sound rides sfx / speakLine (wobo-voice-muted-v1) — never a second
  * system. Reduced motion collapses to a crossfade, a static trophy, and a single shimmer — no
  * confetti, no descent, no dust.
  */
 
-import { fontFamily } from '@classess/config';
-import { WoboBody } from '@classess/wobo';
+import { fontFamily } from '@wobo/config';
+import { WoboBody } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { GOLD } from '../screens/course/shared';
@@ -163,13 +163,13 @@ export function Ceremony({ award, onDismiss }: { award: TrophyAward; onDismiss: 
   const [phase, setPhase] = useState<'in' | 'out'>('in');
   const dismissed = useRef(false);
 
-  // sound + voice land on the same beat as the light (DESIGN law): the fanfare, then her one line.
+  // sound + voice land on the same beat as the light (DESIGN law): the fanfare, then Wobo's one line.
   useEffect(() => {
     sfx.fanfare();
     void speakLine(award.woboLine);
   }, [award.woboLine]);
 
-  // she rests on screen a moment, then the trophy leaves for its shelf. A tap skips the wait.
+  // Wobo rests on screen a moment, then the trophy leaves for its shelf. A tap skips the wait.
   const leave = () => {
     if (dismissed.current) return;
     dismissed.current = true;
@@ -204,13 +204,13 @@ export function Ceremony({ award, onDismiss }: { award: TrophyAward; onDismiss: 
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 'var(--clss-z-toast)' as unknown as number,
+        zIndex: 'var(--wobo-z-toast)' as unknown as number,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         // the world blurs and dims behind the moment
-        background: 'color-mix(in srgb, var(--clss-ink-900) 30%, transparent)',
+        background: 'color-mix(in srgb, var(--wobo-ink-900) 30%, transparent)',
         backdropFilter: 'blur(14px)',
         WebkitBackdropFilter: 'blur(14px)',
         cursor: 'pointer',
@@ -225,7 +225,7 @@ export function Ceremony({ award, onDismiss }: { award: TrophyAward; onDismiss: 
           position: 'absolute',
           inset: 0,
           background:
-            'radial-gradient(ellipse at center, transparent 34%, color-mix(in srgb, var(--clss-ink-900) 26%, transparent) 100%)',
+            'radial-gradient(ellipse at center, transparent 34%, color-mix(in srgb, var(--wobo-ink-900) 26%, transparent) 100%)',
           pointerEvents: 'none',
         }}
       />
@@ -358,7 +358,7 @@ export function Ceremony({ award, onDismiss }: { award: TrophyAward; onDismiss: 
         )}
       </motion.div>
 
-      {/* Wobo — she jumps as the trophy lands, and her one line arrives in her hand */}
+      {/* Wobo — Wobo jumps as the trophy lands, and Wobo's one line arrives in Wobo's hand */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: going ? 0 : 1 }}

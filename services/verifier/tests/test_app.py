@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import pytest
-from classess_verifier.app import (
+from pydantic import ValidationError
+from wobo_verifier.app import (
     GenericVerifyRequest,
     MathVerifyRequest,
     NumericBounds,
@@ -11,7 +12,6 @@ from classess_verifier.app import (
     verify_generic,
     verify_math,
 )
-from pydantic import ValidationError
 
 
 def test_healthz() -> None:

@@ -1,7 +1,7 @@
 [project]
-name = "classess-contracts"
+name = "wobo-contracts"
 version = "0.0.0"
-description = "Python mirror of the Classess event contract. Validates events against the JSON Schema bundle emitted from the TS source of truth."
+description = "Python mirror of the Wobo event contract. Validates events against the JSON Schema bundle emitted from the TS source of truth."
 requires-python = ">=3.12"
 dependencies = ["jsonschema>=4.21"]
 
@@ -10,4 +10,4 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/classess_contracts"]
+packages = ["src/wobo_contracts"]

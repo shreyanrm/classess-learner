@@ -1,5 +1,5 @@
 /**
- * @classess/kgtopg-contract-seed — the platform interface this repo holds.
+ * @wobo/kgtopg-contract-seed — the platform interface this repo holds.
  *
  * KGtoPG is a separate plane (in this project, the platform/pii_vault/operational schemas). This
  * package carries the typed governed-view interface, the DTOs, the event->platform mapping, the atom

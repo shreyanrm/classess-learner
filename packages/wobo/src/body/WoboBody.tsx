@@ -3,21 +3,21 @@
 /**
  * WoboBody — the character rig, v2: the ink visor wobot (owner call, 2026-09-02).
  *
- * A near-black body carrying a white visor in light; the tones invert in dark. Her eyes are
+ * A near-black body carrying a white visor in light; the tones invert in dark. Wobo's eyes are
  * ultramarine in both and are the only pigment on the screen. A half-pixel hairline in the opposite
- * tone keeps her legible over any content. An ultramarine-tipped pen, held in a mitt, appears only
- * while she is drawing. No shadows, 3 px radius elsewhere in the product, one hit of pigment here.
+ * tone keeps Wobo legible over any content. An ultramarine-tipped pen, held in a mitt, appears only
+ * while Wobo is drawing. No shadows, 3 px radius elsewhere in the product, one hit of pigment here.
  *
  * Twenty expressions and fifteen behaviours live in `expressions.ts` and `behaviours.ts`; the idle
- * scheduler in `idle.ts`; the gaze maths in `tracking.ts`; her tones in `palette.ts`. This file is
+ * scheduler in `idle.ts`; the gaze maths in `tracking.ts`; Wobo's tones in `palette.ts`. This file is
  * only the rig: one animation frame loop over spring channels writing SVG attributes, so a full
- * cast of her costs one rAF and no React renders per frame.
+ * cast of Wobo's costs one rAF and no React renders per frame.
  *
  * Contract: the props of v1 all still work — `mood` takes the legacy mood vocabulary as well as the
  * new expression names, so no consumer had to change.
  */
 
-import { useReducedMotion } from '@classess/motion';
+import { useReducedMotion } from '@wobo/motion';
 import {
   type CSSProperties,
   type KeyboardEvent as ReactKeyboardEvent,
@@ -50,7 +50,7 @@ import { ensureRigStyles, RIG_BODY_OPACITY, RIG_CLASS } from './palette';
 import { channel, type SpringChannel, set as setChannel, step } from './spring';
 import { leanOffset, type Point, resolveLookTarget, type TrackRect } from './tracking';
 
-// The rig's public surface — consumers import these from `@classess/wobo` alongside the component.
+// The rig's public surface — consumers import these from `@wobo/wobo` alongside the component.
 export {
   BEHAVIOUR_NAMES,
   BEHAVIOURS,
@@ -93,33 +93,33 @@ export {
 } from './tracking';
 
 export interface WoboBodyProps {
-  /** Diameter in px — her head fills the box, the pen and her sparks may overflow it. */
+  /** Diameter in px — Wobo's head fills the box, the pen and Wobo's sparks may overflow it. */
   size?: number;
   /**
-   * Her state. Takes the twenty expression names and, unchanged from v1, the legacy mood
+   * Wobo's state. Takes the twenty expression names and, unchanged from v1, the legacy mood
    * vocabulary (`celebrate`, `correct`, `waiting`, `hint`, `oops`, …), which maps onto them.
    */
   mood?: WoboMood | WoboExpression;
   /**
-   * What is in focus — a rectangle in viewport coordinates or the element itself. She looks here,
+   * What is in focus — a rectangle in viewport coordinates or the element itself. Wobo looks here,
    * always, and only falls back to the pointer when nothing is in focus.
    */
   focus?: TrackRect | Element | null;
-  /** Pin her gaze: each axis -1..1, or 'pointer' to insist on the cursor. */
+  /** Pin Wobo's gaze: each axis -1..1, or 'pointer' to insist on the cursor. */
   gaze?: { x: number; y: number } | 'pointer';
-  /** For 'explaining': the direction she gestures toward, in radians (0 = right). */
+  /** For 'explaining': the direction Wobo gestures toward, in radians (0 = right). */
   gestureAngle?: number;
   /**
-   * Epoch milliseconds (`Date.now()`) of the last learner input anywhere in the app. Her idle life
+   * Epoch milliseconds (`Date.now()`) of the last learner input anywhere in the app. Wobo's idle life
    * runs off this: a glance at 4 s, bored at 12 s, a yawn or a sigh at 20 s, dozing at 35 s, and a
-   * startle when it moves again. Her own interactions count too, so this only ever needs to be
-   * passed by a surface that knows about input she cannot see.
+   * startle when it moves again. Wobo's own interactions count too, so this only ever needs to be
+   * passed by a surface that knows about input Wobo cannot see.
    */
   idleSince?: number;
   /** Play a behaviour. Change `behaviourKey` to replay the same one. */
   behaviour?: WoboBehaviour | null;
   behaviourKey?: string | number;
-  /** Let the learner pick her up and carry her; she stretches toward the throw and settles. */
+  /** Let the learner pick Wobo up and carry Wobo; Wobo stretches toward the throw and settles. */
   draggable?: boolean;
   onTap?: () => void;
   /** Fires on the second of two quick presses; the hop and the celebration play either way. */
@@ -135,13 +135,13 @@ export interface WoboBodyProps {
   style?: CSSProperties;
 }
 
-// --- Her geometry, in rig units (the prototype's space) -------------------------------------------
+// --- Wobo's geometry, in rig units (the prototype's space) -------------------------------------------
 
 /** The square the head fills; the pen, the spark and the z's overflow it deliberately. */
 const VIEW_BOX = '26 17 98 98';
 const VIEW_SIZE = 98;
 const HEAD = { cx: 75, cy: 66, r: 42 } as const;
-/** She squashes and rotates about her base, not her middle — that is where the weight is. */
+/** Wobo squashes and rotates about Wobo's base, not Wobo's middle — that is where the weight is. */
 const PIVOT = { x: 75, y: 108 } as const;
 const VISOR = { x: 41, y: 50, w: 68, h: 30, rx: 15 } as const;
 const EYE_GAP = 13;
@@ -300,7 +300,7 @@ export function WoboBody({
   const base = expressionFor(mood);
   /** Only the base expression is announced; a 650 ms grin is not news for a screen reader. */
   const [announced, setAnnounced] = useState<WoboExpression>(base);
-  /** The loop names her state without re-rendering on every frame. */
+  /** The loop names Wobo's state without re-rendering on every frame. */
   const announce = useRef(setAnnounced);
   announce.current = setAnnounced;
 
@@ -463,7 +463,7 @@ export function WoboBody({
     paint.current(0);
   }, [reduced, base, size, focus, gaze, gestureAngle]);
 
-  // --- The frame loop: one rAF for her whole body, no React render per frame ---------------------
+  // --- The frame loop: one rAF for Wobo's whole body, no React render per frame ---------------------
   useEffect(() => {
     const S = stateRef.current;
     if (!S || reduced) return;
@@ -475,7 +475,7 @@ export function WoboBody({
       if (S.drag) {
         S.drag.x = e.clientX - S.drag.ox;
         S.drag.y = e.clientY - S.drag.oy;
-        // A carry, not a poke, once she has actually travelled.
+        // A carry, not a poke, once Wobo has actually travelled.
         if (
           Math.abs(e.clientX - S.drag.startX) > CARRY_SLOP_PX ||
           Math.abs(e.clientY - S.drag.startY) > CARRY_SLOP_PX
@@ -492,12 +492,12 @@ export function WoboBody({
       const c = S.ch;
       const unitsPerPx = VIEW_SIZE / Math.max(1, props.size);
 
-      // Idle life. Her own touches count as input, as does anything the app tells us about.
+      // Idle life. Wobo's own touches count as input, as does anything the app tells us about.
       //
-      // And she is not idle while she has something to do. Idleness is measured from LEARNER input
+      // And Wobo is not idle while Wobo has something to do. Idleness is measured from LEARNER input
       // — a tap, a key, a scroll — and speaking is none of those, so a learner listening to a
-      // two-minute explanation watched her get bored at 13 s, yawn at 21 s and fall asleep at 36 s
-      // while she was still talking. Anything the app asks her to BE keeps her clock alive.
+      // two-minute explanation watched Wobo get bored at 13 s, yawn at 21 s and fall asleep at 36 s
+      // while Wobo was still talking. Anything the app asks Wobo to BE keeps Wobo's clock alive.
       const lastInput = idleClock(
         props.base,
         Math.max(S.lastTouch, idleSinceToPerf(props.idleSince, now)),
@@ -525,11 +525,11 @@ export function WoboBody({
         if (Math.random() < 0.15) S.doubleBlink = true;
         if (Math.random() < 0.08) playRef.current('stretch', now);
       }
-      // The expression the app asked for is what she IS; her idle life only colours it while she
-      // has nothing else to do. Applying it only at stage 0 meant a base she was handed mid-doze
+      // The expression the app asked for is what Wobo IS; Wobo's idle life only colours it while Wobo
+      // has nothing else to do. Applying it only at stage 0 meant a base Wobo was handed mid-doze
       // was discarded until the learner touched the screen.
       S.base = baseInForce(S.base, props.base, stage);
-      // Her idle life changes what she IS, so it changes what she is announced as.
+      // Wobo's idle life changes what Wobo IS, so it changes what Wobo is announced as.
       if (S.base !== S.announced) {
         S.announced = S.base;
         announce.current(S.base);
@@ -657,7 +657,7 @@ export function WoboBody({
   }, [reduced]);
 
   // The base expression the app asked for. A change of state is itself a sign of life, so it also
-  // wakes her: an app that starts explaining while she dozes gets her awake, not snoring.
+  // wakes Wobo: an app that starts explaining while Wobo dozes gets Wobo awake, not snoring.
   useEffect(() => {
     const S = stateRef.current;
     if (!S) return;
@@ -767,7 +767,7 @@ export function WoboBody({
     const S = stateRef.current;
     if (!S) return;
     S.hover = false;
-    if (S.held) return; // a drift off her body must not cancel a live hold
+    if (S.held) return; // a drift off Wobo's body must not cancel a live hold
     finishPress();
   };
 
@@ -828,7 +828,7 @@ export function WoboBody({
       style={{ display: 'block', overflow: 'visible' }}
     >
       <g ref={outerRef}>
-        {/* Not a shadow — a flat tonal contact patch in her own ink, the only thing grounding her. */}
+        {/* Not a shadow — a flat tonal contact patch in Wobo's own ink, the only thing grounding Wobo. */}
         <ellipse
           ref={groundRef}
           cx={PIVOT.x}
@@ -879,7 +879,7 @@ export function WoboBody({
             opacity={0.85}
             style={{ display: 'none' }}
           />
-          {/* The mitt and the ultramarine-tipped pen — out only while she draws. */}
+          {/* The mitt and the ultramarine-tipped pen — out only while Wobo draws. */}
           <g ref={penRef} style={{ display: 'none' }}>
             <circle
               cx={113}
@@ -928,8 +928,8 @@ export function WoboBody({
     </svg>
   );
 
-  // Tappable, she is a real button: the browser gives her focus, Enter, Space and the right role
-  // for free. Otherwise she is an image that names herself and the state she is in.
+  // Tappable, Wobo is a real button: the browser gives Wobo's focus, Enter, Space and the right role
+  // for free. Otherwise Wobo is an image that announces the name and the state Wobo is in.
   if (interactive) {
     return (
       <button
@@ -962,7 +962,7 @@ export function WoboBody({
 /**
  * `idleSince` arrives on the wall clock (`Date.now()`); the loop runs on the monotonic clock. This
  * converts, and treats a missing or future value as "no opinion" so a surface that does not track
- * input never accidentally keeps her awake or puts her to sleep.
+ * input never accidentally keeps Wobo awake or puts Wobo to sleep.
  */
 function idleSinceToPerf(idleSince: number | undefined, now: number): number {
   if (idleSince === undefined || !Number.isFinite(idleSince)) return Number.NEGATIVE_INFINITY;

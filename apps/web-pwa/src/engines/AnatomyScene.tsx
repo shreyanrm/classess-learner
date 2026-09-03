@@ -21,7 +21,7 @@
  * (no idle auto-spin), mute-safe sfx.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -193,7 +193,7 @@ function readTheme(): { bg: string; dark: boolean } {
   if (typeof document === 'undefined') return { bg: '#ffffff', dark: false };
   const root = document.documentElement;
   const cs = getComputedStyle(root);
-  const bg = cs.getPropertyValue('--clss-paper').trim() || '#ffffff';
+  const bg = cs.getPropertyValue('--wobo-paper').trim() || '#ffffff';
   const attr = root.getAttribute('data-theme');
   const dark =
     attr === 'dark' ||
@@ -257,10 +257,10 @@ function StaticParts({
               r={r}
               fill={p.color}
               fillOpacity={sel ? 0.95 : 0.7}
-              stroke={sel ? 'var(--clss-ink-900)' : 'var(--clss-hairline-on-paper-strong)'}
+              stroke={sel ? 'var(--wobo-ink-900)' : 'var(--wobo-hairline-on-paper-strong)'}
               strokeWidth={sel ? 2 : 0.75}
             />
-            <text x={x} y={y + r + 11} textAnchor="middle" fontSize={9} fill="var(--clss-ink-700)">
+            <text x={x} y={y + r + 11} textAnchor="middle" fontSize={9} fill="var(--wobo-ink-700)">
               {p.label}
             </text>
           </g>
@@ -454,7 +454,7 @@ export function AnatomyScene({
                 ...lead,
                 borderLeft: `2px solid ${hue}`,
                 paddingLeft: 14,
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               {quizDone
@@ -480,12 +480,12 @@ export function AnatomyScene({
                   padding: '7px 12px',
                   fontFamily: 'inherit',
                   fontSize: '0.9rem',
-                  color: sel ? 'var(--clss-paper)' : 'var(--clss-ink-900)',
-                  background: sel ? 'var(--clss-ink-900)' : 'var(--clss-paper)',
+                  color: sel ? 'var(--wobo-paper)' : 'var(--wobo-ink-900)',
+                  background: sel ? 'var(--wobo-ink-900)' : 'var(--wobo-paper)',
                   border: sel
-                    ? '0.5px solid var(--clss-ink-900)'
-                    : '0.5px solid var(--clss-hairline-on-paper-strong)',
-                  borderRadius: 'var(--clss-radius-sm)',
+                    ? '0.5px solid var(--wobo-ink-900)'
+                    : '0.5px solid var(--wobo-hairline-on-paper-strong)',
+                  borderRadius: 'var(--wobo-radius-sm)',
                   cursor: 'pointer',
                 }}
               >
@@ -517,13 +517,13 @@ export function AnatomyScene({
                 reduced ? { duration: 0 } : { type: 'spring', stiffness: 340, damping: 28 }
               }
               style={{
-                border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-                borderRadius: 'var(--clss-radius-md)',
+                border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+                borderRadius: 'var(--wobo-radius-md)',
                 padding: '14px 16px',
-                background: 'var(--clss-paper)',
+                background: 'var(--wobo-paper)',
               }}
             >
-              <div style={{ fontSize: '1.1rem', fontWeight: 560, color: 'var(--clss-ink-900)' }}>
+              <div style={{ fontSize: '1.1rem', fontWeight: 560, color: 'var(--wobo-ink-900)' }}>
                 {selected.label}
               </div>
               {selected.description && (

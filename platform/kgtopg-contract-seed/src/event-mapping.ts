@@ -1,8 +1,8 @@
-import type { ClassessEvent } from '@classess/contracts';
+import type { WoboEvent } from '@wobo/contracts';
 
 /**
- * The mapping from a Classess event to a platform.events row. The publisher (relay) uses this to write
- * UP to the KGtoPG event store. The full ClassessEvent is preserved in `payload` (lossless); the
+ * The mapping from a Wobo event to a platform.events row. The publisher (relay) uses this to write
+ * UP to the KGtoPG event store. The full WoboEvent is preserved in `payload` (lossless); the
  * indexed columns mirror the platform's schema (canonical_uuid, app, type, purpose, consent_ref).
  */
 export interface PlatformEventRow {
@@ -55,7 +55,7 @@ export function schemaVersionForType(eventType: string): number {
 }
 
 export function mapEventToPlatform(
-  event: ClassessEvent,
+  event: WoboEvent,
   consentRef: string | null = null,
 ): PlatformEventRow {
   return {

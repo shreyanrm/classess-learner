@@ -6,7 +6,7 @@ deps live only here). The seam is exactly one call, plus a worker that drains a 
 ## The one hook
 
 When a **video** artifact is promoted to canonical, enqueue a render. That promotion happens in
-`services/gateway/src/classess_gateway/plexus/validate.py`, in `validate_and_promote(...)`.
+`services/gateway/src/wobo_gateway/plexus/validate.py`, in `validate_and_promote(...)`.
 
 **Implemented** (2026-07-07): the gateway appends the JSONL line **itself** (pure stdlib,
 `_enqueue_video_render` / `_maybe_enqueue_render`) after each canonical video save, rather than

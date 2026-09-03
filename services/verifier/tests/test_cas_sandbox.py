@@ -14,8 +14,8 @@ import time
 
 import pytest
 import sympy as sp
-from classess_verifier import cas, sandbox
 from sympy.parsing.sympy_parser import parse_expr
+from wobo_verifier import cas, sandbox
 
 
 def _parse_without_shape_checks(text: str) -> object:

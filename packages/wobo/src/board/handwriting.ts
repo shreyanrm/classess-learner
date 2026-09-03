@@ -1,5 +1,5 @@
 /**
- * Her hand (docs/BOARD.md §7) — Caveat glyph outlines turned into strokes so `write` is genuinely
+ * Wobo's hand (docs/BOARD.md §7) — Caveat glyph outlines turned into strokes so `write` is genuinely
  * written rather than typed on.
  *
  * How it works. opentype.js gives us each glyph's outline. We flatten every contour to a dense
@@ -13,7 +13,7 @@
  * foreignObject, which cannot be written stroke by stroke and does not survive PNG export — so
  * `tex` is a small offline layouter over the subset a school board actually needs (fractions,
  * powers, indices, roots, Greek, relations, sums and integrals). Symbols Caveat does not carry
- * (π θ α β γ Δ Σ √ ∫ → ∞) are drawn as hand strokes here, in her own hand. Anything outside the
+ * (π θ α β γ Δ Σ √ ∫ → ∞) are drawn as hand strokes here, in Wobo's own hand. Anything outside the
  * subset degrades to written text rather than failing.
  */
 
@@ -53,7 +53,7 @@ export const HAND_FONT_URL = '/fonts/Caveat-Regular.ttf';
 let cached: HandFont | null = null;
 let loading: Promise<HandFont | null> | null = null;
 
-/** Parse a font from bytes. Returns null on anything unexpected — her hand degrades, never throws. */
+/** Parse a font from bytes. Returns null on anything unexpected — Wobo's hand degrades, never throws. */
 export async function parseHandFont(bytes: ArrayBuffer): Promise<HandFont | null> {
   try {
     const mod = (await import('opentype.js')) as unknown as {
@@ -561,7 +561,7 @@ const SYMBOL_GLYPHS: Record<string, SymbolBuilder> = {
 };
 
 /**
- * Every symbol she draws by hand rather than reading out of Caveat — the vocabulary the domain
+ * Every symbol Wobo draws by hand rather than reading out of Caveat — the vocabulary the domain
  * pipelines and the TeX subset can put on a board. A test walks this list, so a symbol added to
  * `TEX_SYMBOLS` without a hand to draw it fails there rather than on a learner's board.
  */
@@ -571,7 +571,7 @@ export const HAND_SYMBOLS: string[] = Object.keys(SYMBOL_GLYPHS);
  * The last resort: a character Caveat has no glyph for and this file has no hand for.
  *
  * BOARD.md §11 — ink that never lands is a board that lies. Rather than drop such a character
- * silently, the pen draws a small hollow box in its place at x-height: visibly a symbol she could
+ * silently, the pen draws a small hollow box in its place at x-height: visibly a symbol Wobo could
  * not write, which is honest, and which the vocabulary test above exists to keep rare.
  */
 const MISSING_GLYPH: SymbolBuilder = symbol(0.6, [
@@ -584,7 +584,7 @@ const MISSING_GLYPH: SymbolBuilder = symbol(0.6, [
   ],
 ]);
 
-/** True when this character is one she draws by hand rather than one Caveat carries. */
+/** True when this character is one Wobo draws by hand rather than one Caveat carries. */
 export function isDrawnSymbol(ch: string): boolean {
   return ch in SYMBOL_GLYPHS;
 }
@@ -982,7 +982,7 @@ export function layoutTex(
 
 /**
  * A written line may carry TeX's own shorthand for a power or an index — `a^2`, `x_1`, and whole
- * equations like `a^2 + b^2 = c^2`. She writes those as a mathematician does: the 2 raised and
+ * equations like `a^2 + b^2 = c^2`. Wobo writes those as a mathematician does: the 2 raised and
  * small, the 1 dropped and small. A board that writes the caret instead has written the SOURCE of
  * the maths rather than the maths, which is the "slideshow, not a teacher" of BOARD.md §11.
  */
@@ -1078,7 +1078,7 @@ export function texPlainText(tex: string): string {
 }
 
 /**
- * A written line laid out with its powers and indices raised and dropped, in her own hand. The TeX
+ * A written line laid out with its powers and indices raised and dropped, in Wobo's own hand. The TeX
  * subset is already the machinery for that, and `write` text is a legal member of it: plain
  * characters pass straight through, `^` and `_` become real scripts.
  */

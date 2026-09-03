@@ -11,11 +11,11 @@
  * and each solve step is an expression over the values and earlier steps — all evaluated by
  * SimRunner's safe parser, never eval.
  *
- * Registers as a Wobo scene target: she reads the current values + answer (getSceneState) and can
- * DRIVE a value to show a what-if herself (applyTutorAction). Reduced-motion + mute aware; both themes.
+ * Registers as a Wobo scene target: Wobo reads the current values + answer (getSceneState) and can
+ * DRIVE a value to show a what-if directly (applyTutorAction). Reduced-motion + mute aware; both themes.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -150,7 +150,7 @@ const VB_W = 100;
 const VB_H = 62;
 
 function toneStroke(tone: WhatIfMark['tone'], hue: string): string {
-  return tone === 'hue' ? hue : tone === 'muted' ? 'var(--clss-ink-300)' : 'var(--clss-ink-700)';
+  return tone === 'hue' ? hue : tone === 'muted' ? 'var(--wobo-ink-300)' : 'var(--wobo-ink-700)';
 }
 
 /** Compute the value map: the editable values, then each solve step folded in in order. */
@@ -203,7 +203,7 @@ export function WhatIfNumerical({
     setBar({ primary: { label: 'continue', disabled: !touched, onClick: onDone } });
   }, [touched, setBar, onDone]);
 
-  // she reads the live values + answer and can drive a what-if herself
+  // Wobo reads the live values + answer and can drive a what-if directly
   const applyTutorAction = (patch: Record<string, unknown>) => {
     const set = isRecord(patch.set) ? patch.set : patch;
     const id = typeof set.id === 'string' ? set.id : undefined;
@@ -262,7 +262,7 @@ export function WhatIfNumerical({
         <div style={cardTitle}>{spec.title.toLowerCase()}</div>
 
         {/* the word problem, with inline editable value chips */}
-        <div ref={ref} style={{ ...lead, color: 'var(--clss-ink-900)', fontSize: '1.05rem' }}>
+        <div ref={ref} style={{ ...lead, color: 'var(--wobo-ink-900)', fontSize: '1.05rem' }}>
           {segments.map((seg, i) => {
             const m = seg.match(/^\{(\w+)\}$/);
             const val = m ? spec.values.find((v) => v.id === m[1]) : undefined;
@@ -366,7 +366,7 @@ export function WhatIfNumerical({
                       fontSize={resolve(mk.r) ?? 4.5}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      fill={mk.tone === 'hue' ? hue : 'var(--clss-ink-700)'}
+                      fill={mk.tone === 'hue' ? hue : 'var(--wobo-ink-700)'}
                       style={{ fontFamily: 'inherit', fontWeight: 540 }}
                     >
                       {mk.text ? fillTemplate(mk.text, vars) : ''}
@@ -382,7 +382,7 @@ export function WhatIfNumerical({
         {/* the worked solution — re-computes step by step as the values change */}
         <div
           style={{
-            border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+            border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
             borderRadius: 3,
             padding: '14px 18px',
             display: 'flex',
@@ -403,7 +403,7 @@ export function WhatIfNumerical({
                   padding: '3px 0',
                   fontSize: isAnswer ? '1.05rem' : '0.95rem',
                   fontWeight: isAnswer ? 560 : 460,
-                  color: isAnswer ? 'var(--clss-ink-900)' : 'var(--clss-ink-700)',
+                  color: isAnswer ? 'var(--wobo-ink-900)' : 'var(--wobo-ink-700)',
                 }}
               >
                 <span>{fillTemplate(s.label, vars)}</span>
@@ -433,7 +433,7 @@ export function WhatIfNumerical({
             ...lead,
             borderLeft: `2px solid ${hue}`,
             paddingLeft: 14,
-            color: 'var(--clss-ink-900)',
+            color: 'var(--wobo-ink-900)',
           }}
         >
           drag any highlighted number in the problem — the picture and the answer follow.

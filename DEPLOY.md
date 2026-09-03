@@ -4,20 +4,29 @@ The runbook for the two production targets. Every step needs the OWNER's
 authenticated accounts (Vercel, Railway, Supabase); nothing here runs unattended,
 and no secret ever enters this repo.
 
-**Current hosts** (temporary — the app moves to a Wobo domain when the owner buys one):
+**Current hosts** (temporary — the app moves to a Wobo domain when the owner buys one, and
+both project names change when the owner renames them, §17). Neither address is written
+out here: read each off its platform once, export it, and every command below is
+copy-paste.
 
 | Piece | Host | Address |
 |---|---|---|
-| Web PWA | Vercel | `https://learner.classess.com` (plus the project's default `*.vercel.app` URL) |
-| Gateway (the brain) | Railway | `https://classess-learner-production.up.railway.app` |
+| Web PWA | Vercel | `$WEB_URL` — the production domain, plus the project's default `*.vercel.app` URL (`vercel inspect`) |
+| Gateway (the brain) | Railway | `$GATEWAY_URL` — the service's public domain (`railway domain`) |
 | Data | Supabase | project ref `keepraxqagzgjrrweryt` |
+
+```sh
+export WEB_URL=https://…       # the Vercel production domain
+export GATEWAY_URL=https://…   # the Railway public domain
+export MAIL_DOMAIN=mail.…      # the sending domain verified in Resend
+```
 
 **Config that is committed:** `vercel.json` (repo root — the only one; Vercel reads
 the root file), `railway.json` (repo root), `services/gateway/Dockerfile`,
 `infra/supabase/migrations/`, `apps/web-pwa/.env.production` (non-secret flags only).
 
-**Removed deploy targets.** Fly.io and Render were both dead — `classess-gateway.fly.dev`
-does not resolve and `classess-gateway.onrender.com` returns 404. `services/gateway/fly.toml`
+**Removed deploy targets.** Fly.io and Render were both dead — neither host resolved
+and the Render one answered 404. `services/gateway/fly.toml`
 and `render.yaml` were deleted, and both hosts were dropped from the CSP `connect-src`.
 Railway is the single gateway host. `apps/web-pwa/vercel.json` was deleted too: Vercel only
 ever read the root file, so the second one was inert config that disagreed with the real one.
@@ -36,7 +45,7 @@ Everything user-facing is env-driven so the domain swap is one change (see §4).
 | `VITE_PERSIST_MODE` | committed `.env.production` | no | `live` |
 | `VITE_DEV_AUTH` | committed `.env.production` | no | `false` — the dev mock identity can never leak |
 | `VITE_APP_NAME` | committed `.env.production` | no | `Wobo` (title, PWA manifest name) |
-| `VITE_GATEWAY_URL` | committed `.env.production` | no | `https://classess-learner-production.up.railway.app` |
+| `VITE_GATEWAY_URL` | committed `.env.production` | no | `$GATEWAY_URL` — the Railway public domain, written out in that file |
 | `VITE_SUPABASE_URL` | committed `.env.production` | no | `https://keepraxqagzgjrrweryt.supabase.co` |
 | `VITE_APP_DESCRIPTION` | Vercel project env (optional) | no | unset ⇒ built-in tagline |
 | `VITE_APP_URL` | Vercel project env (optional) | no | canonical origin; unset ⇒ no canonical/`og:url` tag |
@@ -86,14 +95,14 @@ live only in the Railway service variables and the owner's key vault.
 | `APP_NAME` | no | Railway | `Wobo` — product name in prompts, emails, page titles |
 | `APP_URL` | no | Railway | canonical web origin. Also the CORS allow-list entry and the base of every email link |
 | `APP_PREVIEW_ORIGIN_REGEX` | no | Railway (optional) | CORS regex for our own preview deploys; unset ⇒ the built-in Vercel preview pattern |
-| `EMAIL_FROM` | no | Railway | RFC 5322 sender, e.g. `Wobo <wobo@mail.classess.com>`; must be a verified Resend domain |
+| `EMAIL_FROM` | no | Railway | RFC 5322 sender on the Resend-verified domain — `Wobo <wobo@$MAIL_DOMAIN>` |
 | `EMAIL_REPLY_TO` | no | Railway | reply-to on every transactional send |
 | `EMAIL_UNSUBSCRIBE_URL` | no | Railway (optional) | unset ⇒ `APP_URL/unsubscribe` |
 | `EMAIL_POSTAL_ADDRESS` | no | Railway | **owner action.** A real postal address; unset renders a loud placeholder in the footer |
 | `EMAIL_MODE` | no | Railway | `console` until the sender domain is verified in Resend, then `live` |
 | `RESEND_API_KEY` | **yes** | Railway | from the key vault |
-| `INTERNAL_EMAIL_KEY` | **yes** | Railway | the shared key on `X-Classess-Internal`; unset makes `POST /v1/email/send` a dead endpoint (fail closed) |
-| `CLSS_GATEWAY_KEY` | **yes** | Railway | internal service key |
+| `INTERNAL_EMAIL_KEY` | **yes** | Railway | the shared key on `X-Wobo-Internal`; unset makes `POST /v1/email/send` a dead endpoint (fail closed) |
+| `WOBO_GATEWAY_KEY` | **yes** | Railway | internal service key |
 
 **Runtime.**
 
@@ -106,7 +115,7 @@ live only in the Railway service variables and the owner's key vault.
 | `ANTHROPIC_API_KEY` `OPENAI_API_KEY` `GOOGLE_AI_API_KEY` | **yes** | Railway | from the key vault |
 
 `PORT` is injected by Railway; the Dockerfile's `CMD` already honours it. Locally the gateway
-runs on **8081** (`uv run uvicorn classess_gateway.app:app --port 8081`), which is what
+runs on **8081** (`uv run uvicorn wobo_gateway.app:app --port 8081`), which is what
 `.env.example`'s `GATEWAY_URL`, `apps/web-pwa/.env.example` and `apps/web-pwa/.env.development`
 all point at.
 
@@ -156,7 +165,7 @@ bash scripts/set-vercel-env.sh "<supabase-anon-key>"   # publishable key, never 
 # …or set the key by hand and skip the argument on later runs:
 vercel env add VITE_SUPABASE_ANON_KEY production
 
-vercel domains add learner.classess.com
+vercel domains add <web-domain>          # once the owner buys the Wobo domain
 ```
 
 `scripts/set-vercel-env.sh` is committed and holds **no** credential — the anon key comes
@@ -171,7 +180,7 @@ values and reports the anon key only as `<set>` / `<MISSING>`. Rerun it after an
 Type: CNAME   Host: learner   Value: cname.vercel-dns.com
 ```
 
-Vercel provisions TLS once the CNAME resolves (`vercel domains inspect learner.classess.com`).
+Vercel provisions TLS once the CNAME resolves (`vercel domains inspect <web-domain>`).
 
 Manual deploys are a fallback only (`vercel deploy --prod` from the repo root; the
 Hobby plan caps daily CLI deploys, which is why the git integration is the path).
@@ -180,11 +189,9 @@ Hobby plan caps daily CLI deploys, which is why the git integration is the path)
 
 ### 1.1 CSP
 
-The one CSP lives in the root `vercel.json`:
-
-```
-default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://*.googleusercontent.com; media-src 'self' data: blob:; worker-src 'self'; manifest-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://classess-learner-production.up.railway.app wss://classess-learner-production.up.railway.app https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
-```
+The one CSP lives in the root `vercel.json` — read it there rather than from a copy here,
+which is a copy that drifts. The only source that moves is the gateway origin in
+`connect-src` (the `https:` and `wss:` pair, `$GATEWAY_URL`); everything else is fixed.
 
 Why each non-obvious source is there — remove one and something breaks silently:
 
@@ -228,8 +235,8 @@ railway login
 railway link                       # select the project + service
 
 railway variables --set ENV=prod --set LLM_MODE=live --set TRUST_PROXY=1 \
-  --set APP_NAME=Wobo --set APP_URL=https://learner.classess.com \
-  --set EMAIL_FROM='Wobo <wobo@mail.classess.com>' --set EMAIL_REPLY_TO=hello@mail.classess.com
+  --set APP_NAME=Wobo --set APP_URL="$WEB_URL" \
+  --set EMAIL_FROM="Wobo <wobo@$MAIL_DOMAIN>" --set EMAIL_REPLY_TO="hello@$MAIL_DOMAIN"
 railway variables --set ANTHROPIC_API_KEY=... --set OPENAI_API_KEY=... --set GOOGLE_AI_API_KEY=...
 # The door: one of these must verify a learner token, and the service role key reads the tier.
 railway variables --set SUPABASE_URL=https://keepraxqagzgjrrweryt.supabase.co \
@@ -237,7 +244,7 @@ railway variables --set SUPABASE_URL=https://keepraxqagzgjrrweryt.supabase.co \
 # DEV_AUTH is never set here. ENV=prod refuses to boot with it at any value.
 
 railway up                         # from the repo root
-curl -s https://classess-learner-production.up.railway.app/healthz
+curl -s "$GATEWAY_URL/healthz"
 ```
 
 `railway.json` sets the healthcheck to `/healthz`, restarts `ON_FAILURE` (10
@@ -304,8 +311,8 @@ When the owner buys the Wobo domain, the swap is a config change, not a code cha
 ## 5. Smoke checklist (after all three)
 
 ```sh
-curl -sI https://learner.classess.com | grep -iE 'content-security|strict-transport'
-curl -s https://classess-learner-production.up.railway.app/healthz
+curl -sI "$WEB_URL" | grep -iE 'content-security|strict-transport'
+curl -s "$GATEWAY_URL/healthz"
 ```
 
 - [ ] **No CSP violations** — open the console on a page that renders a chemistry
@@ -315,7 +322,7 @@ curl -s https://classess-learner-production.up.railway.app/healthz
       Google) → lands home; You → sign out → back to onboarding.
 - [ ] **Wobo turn live** — ask something about the current screen → a grounded
       (non-canned) reply; `railway logs` shows the capability invoke.
-- [ ] **Voice session** — mic prompt → speak → she answers (WS `/v1/voice/relay`;
+- [ ] **Voice session** — mic prompt → speak → Wobo answers (WS `/v1/voice/relay`;
       needs `GOOGLE_AI_API_KEY` on the gateway).
 - [ ] **Media** — a generated narration actually plays (proves `media-src data:`).
 - [ ] **Events landing** — Supabase SQL editor:

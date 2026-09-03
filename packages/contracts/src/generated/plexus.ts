@@ -1,10 +1,10 @@
 /**
- * @classess/contracts — the Plexus card-spec contract (SUBJECTS.md §7).
+ * @wobo/contracts — the Plexus card-spec contract (SUBJECTS.md §7).
  *
  * GENERATED — do not edit by hand. Source of truth: the Pydantic models in
- * services/gateway/src/classess_gateway/plexus/specs.py.
- * Regenerate: `uv run python -m classess_gateway.plexus.codegen` then
- * `bun run --filter @classess/contracts codegen:plexus`.
+ * services/gateway/src/wobo_gateway/plexus/specs.py.
+ * Regenerate: `uv run python -m wobo_gateway.plexus.codegen` then
+ * `bun run --filter @wobo/contracts codegen:plexus`.
  */
 /** One teaching card. Owned fields are strict; rich activities pass through verbatim. */
 export interface Card {

@@ -16,10 +16,10 @@ import time
 from typing import Any
 
 import pytest
-from classess_gateway import voice
-from classess_gateway.app import create_app
 from fastapi.testclient import TestClient
 from starlette.websockets import WebSocketDisconnect
+from wobo_gateway import voice
+from wobo_gateway.app import create_app
 
 
 @pytest.fixture

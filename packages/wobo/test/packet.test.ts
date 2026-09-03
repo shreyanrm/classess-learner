@@ -153,7 +153,7 @@ describe('the priority ladder', () => {
     expect(trimmed[0]).toBe('turns');
   });
 
-  it('drops the oldest mistake first, keeping the one she is teaching against', () => {
+  it('drops the oldest mistake first, keeping the one Wobo is teaching against', () => {
     const packet = buildPacket({ ...crowded(), budget: { maxTokens: 210 } });
     if (packet.mind?.mistakes) {
       expect(packet.mind.mistakes[packet.mind.mistakes.length - 1]).toBe('forgot the bracket');

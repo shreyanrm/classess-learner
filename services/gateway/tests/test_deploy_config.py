@@ -69,7 +69,7 @@ def test_ignore_files_keep_runtime_content_in_the_build_context(ignore_file: str
 
 def test_aiohttp_is_a_declared_gateway_dependency() -> None:
     """voice.py imports aiohttp directly; it must not depend on litellm's transitive copy."""
-    voice = (REPO / "services/gateway/src/classess_gateway/voice.py").read_text(encoding="utf-8")
+    voice = (REPO / "services/gateway/src/wobo_gateway/voice.py").read_text(encoding="utf-8")
     assert "import aiohttp" in voice
     pyproject = (REPO / "services/gateway/pyproject.toml").read_text(encoding="utf-8")
     assert re.search(r'^\s*"aiohttp>=', pyproject, re.M), (
@@ -122,7 +122,7 @@ def test_every_catalog_file_is_wired_or_inventoried() -> None:
     listed as a deliberate unwired input in content/catalogs/README.md — never neither."""
     readme = (REPO / "content/catalogs/README.md").read_text(encoding="utf-8")
     frame = (REPO / "apps/web-pwa/src/data/frame.ts").read_text(encoding="utf-8")
-    store = (REPO / "services/gateway/src/classess_gateway/plexus/store.py").read_text(
+    store = (REPO / "services/gateway/src/wobo_gateway/plexus/store.py").read_text(
         encoding="utf-8"
     )
     code = frame + store

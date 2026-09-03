@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import type { SimSpec } from '@classess/contracts/plexus';
+import type { SimSpec } from '@wobo/contracts/plexus';
 import { parseSimSpec, simSpecFromGateway } from './SimRunner';
 
 /**

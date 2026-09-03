@@ -9,12 +9,12 @@ from __future__ import annotations
 import os
 
 import pytest
-from classess_gateway.app import Gateway, create_app
-from classess_gateway.auth import AuthError, authenticate, dev_auth_enabled, verify_token
-from classess_gateway.cache import InMemoryCache
-from classess_gateway.providers import MockProvider
-from classess_gateway.telemetry import MetricsSink
 from conftest import TEST_JWT_SECRET, mint
+from wobo_gateway.app import Gateway, create_app
+from wobo_gateway.auth import AuthError, authenticate, dev_auth_enabled, verify_token
+from wobo_gateway.cache import InMemoryCache
+from wobo_gateway.providers import MockProvider
+from wobo_gateway.telemetry import MetricsSink
 
 
 def client():
@@ -45,7 +45,7 @@ def test_every_v1_route_401s_without_a_token(method: str, path: str) -> None:
     assert response.json()["code"] == "sign_in_required"
     # Wobo's voice, and no provider, library or model named in it
     message = response.json()["message"].lower()
-    for forbidden in ("claude", "gemini", "openai", "google", "classess", "jwt", "supabase"):
+    for forbidden in ("claude", "gemini", "openai", "google", "wobo_gateway", "jwt", "supabase"):
         assert forbidden not in message
 
 
@@ -193,8 +193,8 @@ def test_rs256_token_verifies_against_the_jwks(monkeypatch: pytest.MonkeyPatch) 
     import json as json_module
 
     import jwt
-    from classess_gateway import auth as auth_module
     from cryptography.hazmat.primitives.asymmetric import rsa
+    from wobo_gateway import auth as auth_module
 
     private = rsa.generate_private_key(public_exponent=65537, key_size=2048)
     public_jwk = json_module.loads(jwt.algorithms.RSAAlgorithm.to_jwk(private.public_key()))
@@ -224,7 +224,7 @@ def test_rs256_token_verifies_against_the_jwks(monkeypatch: pytest.MonkeyPatch) 
 
 
 def test_jwks_is_cached_and_not_refetched(monkeypatch: pytest.MonkeyPatch) -> None:
-    from classess_gateway import auth as auth_module
+    from wobo_gateway import auth as auth_module
 
     calls: list[str] = []
 
@@ -248,7 +248,7 @@ def test_jwks_is_cached_and_not_refetched(monkeypatch: pytest.MonkeyPatch) -> No
 def test_voice_session_mints_a_token_bound_to_the_caller(
     monkeypatch: pytest.MonkeyPatch, auth
 ) -> None:
-    from classess_gateway import voice
+    from wobo_gateway import voice
 
     monkeypatch.setenv("GEMINI_API_KEY", "test-key")
     session = client().get("/v1/voice/session", headers=auth("voice-learner")).json()
@@ -273,8 +273,8 @@ def test_sockets_refuse_without_a_token(monkeypatch: pytest.MonkeyPatch, path: s
 def test_tts_stream_accepts_a_minted_token_exactly_once(
     monkeypatch: pytest.MonkeyPatch, auth
 ) -> None:
-    from classess_gateway import voice
     from starlette.websockets import WebSocketDisconnect
+    from wobo_gateway import voice
 
     spoken: list[str] = []
 
@@ -299,8 +299,8 @@ def test_tts_stream_accepts_a_minted_token_exactly_once(
 
 def test_tts_stream_has_its_own_concurrency_budget(monkeypatch: pytest.MonkeyPatch, auth) -> None:
     """A flood of read-aloud sockets must never starve the live mic, and vice versa."""
-    from classess_gateway import voice
     from starlette.websockets import WebSocketDisconnect
+    from wobo_gateway import voice
 
     monkeypatch.setenv("GEMINI_API_KEY", "test-key")
     monkeypatch.setattr(voice, "_active_tts", voice._MAX_CONCURRENT_TTS)
@@ -319,7 +319,7 @@ def _freeze_clock(monkeypatch: pytest.MonkeyPatch) -> None:
     import time as real_time
     from types import SimpleNamespace
 
-    from classess_gateway import app as app_module
+    from wobo_gateway import app as app_module
 
     monkeypatch.setattr(
         app_module,
@@ -340,7 +340,7 @@ def test_unauthenticated_floods_are_bounded_by_address(monkeypatch: pytest.Monke
 def test_a_stranger_gets_a_smaller_bucket_than_a_learner(monkeypatch: pytest.MonkeyPatch) -> None:
     """Behind a proxy the unauthenticated bucket is SHARED — filling it 429s the first call of
     every genuinely new learner. It therefore gets its own, much smaller ceiling."""
-    from classess_gateway.app import create_app
+    from wobo_gateway.app import create_app
 
     monkeypatch.delenv("UNAUTH_RATE_LIMIT_PER_MINUTE", raising=False)
     monkeypatch.delenv("RATE_LIMIT_PER_MINUTE", raising=False)
@@ -353,7 +353,7 @@ def test_a_stranger_gets_a_smaller_bucket_than_a_learner(monkeypatch: pytest.Mon
 def test_the_proxy_hop_is_only_trusted_when_we_say_so(monkeypatch: pytest.MonkeyPatch) -> None:
     """And it is the LAST hop, the one our own platform appended. The first hop is whatever the
     caller typed, so trusting it removed the limit entirely (rotate the header, rotate the key)."""
-    from classess_gateway.app import _client_ip
+    from wobo_gateway.app import _client_ip
 
     request = SimpleRequest({"x-forwarded-for": "203.0.113.7, 10.0.0.1"}, "10.0.0.9")
     monkeypatch.delenv("TRUST_PROXY", raising=False)
@@ -363,7 +363,7 @@ def test_the_proxy_hop_is_only_trusted_when_we_say_so(monkeypatch: pytest.Monkey
 
 
 def test_a_spoofed_forwarded_prefix_cannot_move_the_bucket(monkeypatch: pytest.MonkeyPatch) -> None:
-    from classess_gateway.app import _client_ip
+    from wobo_gateway.app import _client_ip
 
     monkeypatch.setenv("TRUST_PROXY", "1")
     forged = SimpleRequest({"x-forwarded-for": "1.1.1.1, 2.2.2.2, 10.0.0.1"}, "10.0.0.9")
@@ -382,7 +382,7 @@ class SimpleRequest:
 def test_a_flood_of_mints_never_clears_another_learners_token(auth) -> None:
     """Hitting the store ceiling used to call ``_tokens.clear()`` — mint 4096 tokens and every
     other learner's outstanding token vanished, so their mic failed at connect."""
-    from classess_gateway import voice
+    from wobo_gateway import voice
 
     voice.reset_tokens()
     theirs = voice._mint_token("victim")
@@ -393,7 +393,7 @@ def test_a_flood_of_mints_never_clears_another_learners_token(auth) -> None:
 
 def test_outstanding_mints_are_capped_per_learner() -> None:
     """A mint is cheap, so an unbounded pile of them was the lever on the whole store."""
-    from classess_gateway import voice
+    from wobo_gateway import voice
 
     voice.reset_tokens()
     minted = [voice._mint_token("greedy") for _ in range(50)]
@@ -407,8 +407,8 @@ def test_one_learner_cannot_hold_every_voice_socket(
 ) -> None:
     """The caps were process-global at four apiece: one learner holding four sockets denied live
     voice to the whole platform. They are counted per learner now, under a larger global ceiling."""
-    from classess_gateway import voice
     from starlette.websockets import WebSocketDisconnect
+    from wobo_gateway import voice
 
     monkeypatch.setenv("GEMINI_API_KEY", "test-key")
     voice.reset_tokens()
@@ -436,7 +436,7 @@ def test_one_learner_cannot_hold_every_voice_socket(
 
 
 def test_the_socket_counts_come_back_down(monkeypatch: pytest.MonkeyPatch, auth) -> None:
-    from classess_gateway import voice
+    from wobo_gateway import voice
 
     monkeypatch.setenv("GEMINI_API_KEY", "test-key")
 

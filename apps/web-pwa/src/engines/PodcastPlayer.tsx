@@ -8,12 +8,12 @@
  * the learner browses the rest of the card. Keyless / offline / muted → it degrades to a transcript
  * reader that auto-advances on a reading clock; the words are always there, the voice is the grace.
  *
- * Registers as a Wobo scene target (she can play, pause, and jump chapters). No new deps.
+ * Registers as a Wobo scene target (Wobo can play, pause, and jump chapters). No new deps.
  * ponytail: minimize collapses within the card; a truly floating cross-page dock is the upgrade path.
  */
 
-import { gatewayFetch } from '@classess/sdk';
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { gatewayFetch } from '@wobo/sdk';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -378,7 +378,7 @@ export function PodcastPlayer({
             style={{
               fontSize: '0.85rem',
               fontWeight: 520,
-              color: 'var(--clss-ink-900)',
+              color: 'var(--wobo-ink-900)',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
@@ -390,7 +390,7 @@ export function PodcastPlayer({
             style={{
               height: 2,
               marginTop: 4,
-              background: 'var(--clss-ink-100)',
+              background: 'var(--wobo-ink-100)',
               borderRadius: 2,
               overflow: 'hidden',
             }}
@@ -452,7 +452,7 @@ export function PodcastPlayer({
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <PlayButton playing={playing} hue={hue} onClick={toggle} size={54} />
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '1.1rem', fontWeight: 540, color: 'var(--clss-ink-900)' }}>
+              <div style={{ fontSize: '1.1rem', fontWeight: 540, color: 'var(--wobo-ink-900)' }}>
                 {chap?.title}
               </div>
               <div style={{ ...whisper, marginTop: 4 }}>
@@ -468,7 +468,7 @@ export function PodcastPlayer({
                 borderRadius: 999,
                 border: `1px solid ${hue}`,
                 background: rgba(hue, 0.1),
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
                 fontFamily: 'inherit',
                 fontSize: '0.82rem',
                 fontWeight: 600,
@@ -486,7 +486,7 @@ export function PodcastPlayer({
             aria-valuenow={Math.round(progress * 100)}
             style={{
               height: 4,
-              background: 'var(--clss-ink-100)',
+              background: 'var(--wobo-ink-100)',
               borderRadius: 4,
               overflow: 'hidden',
             }}
@@ -504,7 +504,7 @@ export function PodcastPlayer({
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              style={{ ...lead, color: 'var(--clss-ink-700)', margin: 0 }}
+              style={{ ...lead, color: 'var(--wobo-ink-700)', margin: 0 }}
             >
               {chap?.script}
             </motion.p>
@@ -544,8 +544,8 @@ export function PodcastPlayer({
                     ? hue
                     : i === chapter
                       ? rgba(hue, 0.2)
-                      : 'var(--clss-tonal)',
-                  color: heard.has(i) ? 'var(--clss-on-ink)' : 'var(--clss-ink-500)',
+                      : 'var(--wobo-tonal)',
+                  color: heard.has(i) ? 'var(--wobo-on-ink)' : 'var(--wobo-ink-500)',
                 }}
               >
                 {i + 1}
@@ -553,7 +553,7 @@ export function PodcastPlayer({
               <span
                 style={{
                   fontSize: '0.95rem',
-                  color: i === chapter ? 'var(--clss-ink-900)' : 'var(--clss-ink-700)',
+                  color: i === chapter ? 'var(--wobo-ink-900)' : 'var(--wobo-ink-700)',
                   fontWeight: i === chapter ? 540 : 400,
                 }}
               >
@@ -570,7 +570,7 @@ export function PodcastPlayer({
 const iconBtn = {
   border: 'none',
   background: 'transparent',
-  color: 'var(--clss-ink-500)',
+  color: 'var(--wobo-ink-500)',
   cursor: 'pointer',
   fontFamily: 'inherit',
   fontSize: '0.9rem',
@@ -600,7 +600,7 @@ function PlayButton({
         borderRadius: 999,
         border: 'none',
         background: hue,
-        color: 'var(--clss-on-ink)',
+        color: 'var(--wobo-on-ink)',
         display: 'grid',
         placeItems: 'center',
         cursor: 'pointer',

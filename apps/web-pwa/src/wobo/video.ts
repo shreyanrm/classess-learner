@@ -5,10 +5,10 @@
  *
  * For the films we make ourselves there is no vision call and no screenshot: the frame at the paused
  * timestamp IS a scene spec, and every drawable part of it carries an id. Paused, those parts are
- * registered as surface targets, so she annotates the exact arrow in the exact frame — the same
+ * registered as surface targets, so Wobo annotates the exact arrow in the exact frame — the same
  * anchoring law as everywhere else, applied to a moving picture that has stopped moving.
  *
- * The handoff: the learner pauses and asks; she either draws on the frame or opens the plane beside
+ * The handoff: the learner pauses and asks; Wobo either draws on the frame or opens the plane beside
  * it; when the exchange is over the player returns to the position it was paused at, to the
  * millisecond, so the film is never lost.
  */
@@ -19,7 +19,7 @@ import {
   type SurfaceTarget,
   surfaceRegistry,
   useSurface,
-} from '@classess/wobo';
+} from '@wobo/wobo';
 import { useMemo } from 'react';
 
 /** The surface a paused film's frame registers under. */
@@ -112,7 +112,7 @@ export function frameSurface(
 }
 
 /**
- * Register the paused frame for as long as it is paused. Playing again unregisters it: she must not
+ * Register the paused frame for as long as it is paused. Playing again unregisters it: Wobo must not
  * annotate a frame that has moved on.
  */
 export function usePausedFrame(
@@ -135,7 +135,7 @@ export function usePausedFrame(
 // --- The handoff -----------------------------------------------------------------------------------
 
 export interface HandoffState {
-  /** The film she was asked about, or null when no film is waiting. */
+  /** The film Wobo was asked about, or null when no film is waiting. */
   playerId: string | null;
   atMs: number;
   title?: string;

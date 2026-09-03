@@ -3,13 +3,13 @@
 /**
  * SimRunner — interprets a verified sim-spec JSON artifact (engine.simulate) into a live,
  * draggable simulation: scrubber params, live computed outputs, and breakpoint annotations —
- * "bend it until it breaks" (DESIGN.md §9). Publishes its working state to the Wobo bus so she
+ * "bend it until it breaks" (DESIGN.md §9). Publishes its working state to the Wobo bus so Wobo
  * reasons about the sim at code level, and registers its surfaces as annotatable targets.
  * Expressions are evaluated by a tiny arithmetic parser — never eval, never Function.
  */
 
-import type { SimSpec as WireSimSpec } from '@classess/contracts/plexus';
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import type { SimSpec as WireSimSpec } from '@wobo/contracts/plexus';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { equationType, lead, Scrubber, whisper } from '../screens/course/shared';
@@ -19,7 +19,7 @@ import { equationType, lead, Scrubber, whisper } from '../screens/course/shared'
 /**
  * The RENDER model, which is not the wire model.
  *
- * `SimSpec` in `@classess/contracts/plexus` is the one definition of what engine.simulate sends:
+ * `SimSpec` in `@wobo/contracts/plexus` is the one definition of what engine.simulate sends:
  * `{params:[{name,min,max,default,unit}], formula, outputs: string[], breakpoints:[{param,at,why}],
  * layout}`. What this component runs is a different thing — solved expressions, ids and labels,
  * comparison operators — so it carries its own names. Two shapes with the same name in two files
@@ -378,7 +378,7 @@ export function SimRunner({ spec }: { spec: SimScene }) {
   const results = spec.outputs.map((o) => ({ ...o, value: evaluateExpr(o.expr, values) }));
   const tripped = (spec.breakpoints ?? []).filter((b) => holds(b, values));
 
-  // she reads the sim at code level: params, outputs, and any tripped breakpoint
+  // Wobo reads the sim at code level: params, outputs, and any tripped breakpoint
   useEffect(() => {
     bus.publishCanvas({
       nodeId: spec.nodeId ?? `sim-${spec.id}`,
@@ -422,7 +422,7 @@ export function SimRunner({ spec }: { spec: SimScene }) {
       >
         {spec.params.map((p) => (
           <div key={p.id} style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>{p.label}</span>
+            <span style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)' }}>{p.label}</span>
             <span style={{ fontSize: '1.35rem', fontWeight: 550 }}>
               <Scrubber
                 value={values[p.id] ?? p.initial}
@@ -441,10 +441,10 @@ export function SimRunner({ spec }: { spec: SimScene }) {
       <div
         ref={outputsRef}
         style={{
-          border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-          borderRadius: 'var(--clss-radius-md)',
+          border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+          borderRadius: 'var(--wobo-radius-md)',
           padding: '6px 20px',
-          background: 'var(--clss-paper)',
+          background: 'var(--wobo-paper)',
         }}
       >
         {results.map((o, i) => (
@@ -454,7 +454,7 @@ export function SimRunner({ spec }: { spec: SimScene }) {
                 style={{
                   height: 1,
                   transform: 'scaleY(0.5)',
-                  background: 'var(--clss-hairline-on-paper)',
+                  background: 'var(--wobo-hairline-on-paper)',
                 }}
               />
             )}
@@ -468,12 +468,12 @@ export function SimRunner({ spec }: { spec: SimScene }) {
                 padding: '12px 0',
               }}
             >
-              <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>{o.label}</div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)' }}>{o.label}</div>
               <div
                 style={{
                   fontSize: '1.15rem',
                   fontWeight: 550,
-                  color: 'var(--clss-ink-900)',
+                  color: 'var(--wobo-ink-900)',
                   display: 'flex',
                   alignItems: 'baseline',
                   gap: 6,
@@ -498,12 +498,12 @@ export function SimRunner({ spec }: { spec: SimScene }) {
             transition={{ type: 'spring', stiffness: 320, damping: 28 }}
             style={{
               padding: '12px 14px',
-              background: 'var(--clss-canvas)',
-              border: '0.5px solid var(--clss-hairline-on-paper)',
-              borderRadius: 'var(--clss-radius-sm)',
+              background: 'var(--wobo-canvas)',
+              border: '0.5px solid var(--wobo-hairline-on-paper)',
+              borderRadius: 'var(--wobo-radius-sm)',
               fontSize: '0.9rem',
               lineHeight: 1.6,
-              color: 'var(--clss-ink-700)',
+              color: 'var(--wobo-ink-700)',
             }}
           >
             <span style={{ ...whisper, display: 'block', marginBottom: 4 }}>Where it breaks</span>

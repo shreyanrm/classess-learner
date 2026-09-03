@@ -2,11 +2,11 @@
 
 /**
  * The spine. Identity → SDK → Wobo's bus → the router → screens. Wobo is the runtime the app
- * executes inside (DESIGN.md §4): the home is her front door; everywhere else she is docked,
+ * executes inside (DESIGN.md §4): the home is Wobo's front door; everywhere else Wobo is docked,
  * reading the page at code level through the context bus, one tap from expanding.
  */
 
-import { createSdk, DEV_DEFAULTS, type Sdk } from '@classess/sdk';
+import { createSdk, DEV_DEFAULTS, type Sdk } from '@wobo/sdk';
 import {
   type FocusObject,
   hasSyncAnchor,
@@ -18,7 +18,7 @@ import {
   type WoboMood,
   WoboOverlay,
   WoboProvider,
-} from '@classess/wobo';
+} from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 // EAGER: the only two screens that can be the FIRST paint — a fresh install opens onboarding, a
@@ -140,11 +140,11 @@ const NAV_ROUTES: Record<string, Route> = {
   you: { name: 'you' },
 };
 
-export const ONBOARDED_KEY = 'clss-onboarded-v1';
-/** Set once the learner has taken their first turn with her — their first meeting is over. */
-const MET_TURN_KEY = 'clss-wobo-first-turn-v1';
+export const ONBOARDED_KEY = 'wobo-onboarded-v1';
+/** Set once the learner has taken their first turn with Wobo — their first meeting is over. */
+const MET_TURN_KEY = 'wobo-first-turn-v1';
 /** Set by the sign-in beat; the next boot records identity.subject.created.v1 fully attributed. */
-export const SIGNIN_SOURCE_KEY = 'clss-signin-source-v1';
+export const SIGNIN_SOURCE_KEY = 'wobo-signin-source-v1';
 
 // The shared-axis law (MOTION.md §2): navigation is spatial. Nav-level routes are siblings —
 // they crossfade with a small rise, silently. Going deeper is a forward shared-axis push; back is
@@ -258,15 +258,15 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   const [busy, setBusy] = useState(false);
   const [mood, setMood] = useState<WoboMood>('idle');
   // What the learner last pointed at. It rides the next turn's packet (set by the stage) and it is
-  // what her eyes track, so "this" always means the same thing to both of them.
+  // what Wobo's eyes track, so "this" always means the same thing to both of them.
   const [focus, setFocus] = useState<FocusObject | null>(null);
-  // Every real interaction anywhere counts as life, so her idle behaviour is honest rather than
-  // timed against a screen she cannot see input on.
+  // Every real interaction anywhere counts as life, so Wobo's idle behaviour is honest rather than
+  // timed against a screen Wobo cannot see input on.
   useLifeSignals();
   /**
    * Barge-in (docs/BOARD.md §4): a tap, a key or a word stops the pen and the voice on the same
-   * beat. What is already drawn stays, and the object the nib was on rides the next turn so she
-   * picks up where she was cut off rather than starting again.
+   * beat. What is already drawn stays, and the object the nib was on rides the next turn so Wobo
+   * picks up where Wobo was cut off rather than starting again.
    */
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -353,16 +353,16 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   }, [sdk, turns]);
 
   // One line into the one conversation. Hoisted out of `ask` so the board turn writes into exactly
-  // the same archive — a turn she drew is a turn she had, and the transcript must not fork.
+  // the same archive — a turn Wobo drew is a turn Wobo had, and the transcript must not fork.
   const say = (t: Omit<ChatTurn, 'id'>) => {
     const turn = { ...t, id: mintTurnId() };
     appendToArchive(turn);
     setTurns((prev) => [...prev, turn]);
-    if (t.role === 'wobo') sfx.chime(); // a gentle chime as she arrives
+    if (t.role === 'wobo') sfx.chime(); // a gentle chime as Wobo arrives
     return turn;
   };
 
-  /** Her line grows as the plan streams: the written words keep up with the spoken ones. */
+  /** Wobo's line grows as the plan streams: the written words keep up with the spoken ones. */
   const growTurn = (id: string, text: string) => {
     const grow = (t: ChatTurn): ChatTurn =>
       t.id === id ? { ...t, text: t.text ? `${t.text} ${text}` : text } : t;
@@ -370,7 +370,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     updateArchiveTurn(id, grow);
   };
 
-  /** Where the plane slides from — her docked orb, bottom right. */
+  /** Where the plane slides from — Wobo's docked orb, bottom right. */
   const orbOrigin = () =>
     typeof window === 'undefined'
       ? { x: 0, y: 0 }
@@ -378,8 +378,8 @@ function AppInner({ sdk }: { sdk: Sdk }) {
 
   /**
    * A board turn (docs/BOARD.md §4): the same capability, the same door, the same meter — the only
-   * difference is that the answer has a shape, so the plan streams and her hand draws it while she
-   * speaks. She writes into the one conversation as she goes, so the transcript reads as one voice.
+   * difference is that the answer has a shape, so the plan streams and Wobo's hand draws it while Wobo
+   * speaks. Wobo writes into the one conversation as Wobo goes, so the transcript reads as one voice.
    */
   const askBoard = async (
     text: string,
@@ -415,9 +415,9 @@ function AppInner({ sdk }: { sdk: Sdk }) {
           updateArchiveTurn(line.id, attach);
         },
       });
-      // Nothing came back with a shape after all — she still owes the learner an answer. Unless
-      // the learner cut her off: BOARD.md §4 says the pen lifts and the voice stops, and a line
-      // she never asked for is not silence, it is her talking over her own interruption.
+      // Nothing came back with a shape after all — Wobo still owes the learner an answer. Unless
+      // the learner cut Wobo off: BOARD.md §4 says the pen lifts and the voice stops, and a line
+      // Wobo never asked for is not silence, it is Wobo talking over their own interruption.
       if (outcome.completed && !outcome.said.trim() && outcome.objects === 0) {
         growTurn(line.id, 'Let us look at this together.');
       }
@@ -432,7 +432,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       setMood(outcome.objects > 0 ? 'explaining' : 'idle');
     } catch (err) {
       const refusal = refusalLine(err);
-      // An empty line is a barge-in: she stops where she is and says nothing about it.
+      // An empty line is a barge-in: Wobo stops where Wobo is and says nothing about it.
       if (refusal.text) growTurn(line.id, refusal.text);
       if (refusal.signIn && sdk.account) {
         window.setTimeout(() => router.navigate({ name: 'onboarding' }), 900);
@@ -443,7 +443,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     }
   };
 
-  // A real Wobo turn: she reasons over the page she is plugged into, then speaks and acts on it.
+  // A real Wobo turn: Wobo reasons over the page Wobo is plugged into, then speaks and acts on it.
   const ask = async (text: string) => {
     // No connection — hold it rather than dropping it on the floor. It renders as a pending bubble
     // on the chat page and the reconnect effect below drains the queue once, in order.
@@ -454,13 +454,13 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     const userTurn = say({ role: 'user', text });
     setBusy(true);
     setMood('thinking');
-    // Optimistic ink: she reacts in <100ms — a point at what she's looking at, before the model
+    // Optimistic ink: Wobo reacts in <100ms — a point at what Wobo is looking at, before the model
     // returns. The real actions replace this the moment they land, so it never lingers wrong.
     const targets = bus.getTargets();
     const looking =
       targets.find((t) => /equation|expression|step|option/.test(t.kind)) ?? targets[0];
     if (looking) bus.dispatch([{ type: 'point', targetId: looking.id, ttl: 2200 }]);
-    // She remembers what matters, not the transcript: a short recent window, with her own long
+    // Wobo remembers what matters, not the transcript: a short recent window, with Wobo's own long
     // explanations clipped — the archive is for the learner to scroll, never re-fed to the model.
     const recent = [...turns.slice(-7), userTurn].map((t) => ({
       role: t.role,
@@ -471,7 +471,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     }));
     // The clock rides the context (WOBO-CAPABILITIES.md family O): a human-readable local
     // wall-clock so wellbeing turns — late-night on a school night, "I'm exhausted" — reason about
-    // the real time, not a guess. Weekday + time is all she needs to sanction rest.
+    // the real time, not a guess. Weekday + time is all Wobo needs to sanction rest.
     const now = new Date();
     const localTime = now.toLocaleString(undefined, {
       weekday: 'long',
@@ -480,7 +480,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     });
     bus.publishTurn({ recentTurns: recent, lastUserInput: text, localTime });
     // What the learner has actually been doing — the last few backbone events, compacted. Carries
-    // her interaction history into the assembled context so Wobo grounds in real activity, not just
+    // Wobo's interaction history into the assembled context so Wobo grounds in real activity, not just
     // the static page (context-bus SessionContext.recentEvents; rendered by the gateway).
     const recentEvents = sdk.events
       .getLog()
@@ -495,21 +495,21 @@ function AppInner({ sdk }: { sdk: Sdk }) {
               : '';
         return `${e.event_type.replace(/\.v1$/, '')}${tail}`;
       });
-    // The first turn a learner ever takes with her. She introduced herself during setup, so the
+    // The first turn a learner ever takes with Wobo. Wobo introduced themself during setup, so the
     // gateway greets by name here and never re-introduces (owner law: one introduction, ever).
     const firstMeeting = !localStorage.getItem(MET_TURN_KEY);
     if (firstMeeting) {
       try {
         localStorage.setItem(MET_TURN_KEY, '1');
       } catch {
-        // private mode — worst case she is warm twice, never a second introduction
+        // private mode — worst case Wobo is warm twice, never a second introduction
       }
     }
     bus.publishSession({ sessionId: 'dev-session', recentEvents, firstMeeting });
     // The machine room (WOBO-CAPABILITIES.md family J — the total-context law): the system's live
     // internal truth for this turn — the mastery-band snapshot, the FSRS due queue, XP/level/streak,
     // the event-stream tail, and any in-flight generation. The selector digests it; the gateway
-    // renders it compactly so she references it naturally ("3 reviews due", "how far to level 5").
+    // renders it compactly so Wobo references it naturally ("3 reviews due", "how far to level 5").
     let bands: { band: string }[] = [];
     try {
       bands = await sdk.kgtopg.mastery.getBands(sdk.config.mockSubjectId);
@@ -528,7 +528,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     try {
       const context = bus.assembleContext();
       // The learner's word about the surface is obeyed before anything is asked of the brain:
-      // "close the board" is not a question, and "fresh board" has to be true before she draws.
+      // "close the board" is not a question, and "fresh board" has to be true before Wobo draws.
       const mode = modeFromText(text);
       const shape = boardShapeOf(text, {
         hasFocus: turnFocus() !== null,
@@ -607,7 +607,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       }
       // Navigation on command (WOBO.md §10) — the one nav path, shared by the chat page and the
       // drawer. Any phrasing that resolves to a place navigates directly: no approval card, a
-      // spoken + inked confirmation (SpeechNarrator voices her line), and never silence on a clear
+      // spoken + inked confirmation (SpeechNarrator voices Wobo's line), and never silence on a clear
       // miss. It runs on the raw text and needs no model at all, so it is resolved BEFORE the
       // gateway round-trip: "take me to practice" used to cost a full turn (and a token spend, and
       // seconds on a 2G link) to reach an answer this function already had.
@@ -652,11 +652,11 @@ function AppInner({ sdk }: { sdk: Sdk }) {
         });
       }
       const actions = parseActions(output.actions ?? []);
-      // Data rights (WOBO-CAPABILITIES.md family E, the forget verb): show or purge her memory,
-      // grounded in the real on-device dossier — never the model's guess. Deleting is honest: she
+      // Data rights (WOBO-CAPABILITIES.md family E, the forget verb): show or purge Wobo's memory,
+      // grounded in the real on-device dossier — never the model's guess. Deleting is honest: Wobo
       // reports exactly what left (or that there was nothing), so no fake confirmation ever lands.
       // The forget action is destructive; the gateway prompt gates it (confirm-before-execute) so
-      // she only emits a delete after the learner says yes.
+      // Wobo only emits a delete after the learner says yes.
       const forgets = actions.filter((a) => a.type === 'forget');
       if (forgets.length > 0) {
         for (const a of forgets) {
@@ -673,7 +673,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
                   : 'I have not saved anything about you yet — tell me what matters and I will keep it.',
             });
           } else if (a.scope === 'all') {
-            // The whole memory is not something a model reply gets to take. She offers the wipe as
+            // The whole memory is not something a model reply gets to take. Wobo offers the wipe as
             // an approval card in the thread (approve / not now); clearMind runs inside the
             // capability, on the learner's tap alone — and nothing is erased if they walk away.
             say({
@@ -708,13 +708,13 @@ function AppInner({ sdk }: { sdk: Sdk }) {
           text: output.say ?? 'Let us look at this together.',
           ...(extras.path !== 'inline' ? { extras } : {}),
         }).id;
-        // the route path: she takes you there herself, docked — after her line lands
+        // the route path: Wobo walks you there, docked — after Wobo's line lands
         if (extras.route) {
           const dest = NAV_ROUTES[extras.route.to];
           if (dest) window.setTimeout(() => router.navigate(dest), 650);
         }
       }
-      // her turn on the event backbone — attributed, grounded, accountable
+      // Wobo's turn on the event backbone — attributed, grounded, accountable
       sdk.events.record('wobo.turn.assistant.v1', {
         turn_id: crypto.randomUUID(),
         assistance_level: 'coach',
@@ -723,7 +723,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
         track: result.track,
         handed_answer: false,
       });
-      // THE ACTION TIMELINE: anchored ink rides her speech beats (the conductor plays it as she
+      // THE ACTION TIMELINE: anchored ink rides Wobo's speech beats (the conductor plays it as Wobo
       // speaks the line just said); the rest dispatches at once for an instant reaction. A turn
       // with no anchors keeps the original all-at-once behavior.
       const anchored = actions.filter(hasSyncAnchor);
@@ -732,11 +732,11 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       bus.dispatch(immediate);
       setMood(actions.length > 0 ? 'explaining' : 'idle');
     } catch (err) {
-      // The brain's refusals reach the learner as her line, never a status code and never a
-      // provider's words: sign-in needed takes them to her sign-in beat (where the beat lives); a
-      // spent day says when she is free again. Anything else is the honest "give me a moment".
+      // The brain's refusals reach the learner as Wobo's line, never a status code and never a
+      // provider's words: sign-in needed takes them to Wobo's sign-in beat (where the beat lives); a
+      // spent day says when Wobo is free again. Anything else is the honest "give me a moment".
       const refusal = refusalLine(err);
-      // An empty line is a barge-in, not a refusal: she stops and says nothing about it.
+      // An empty line is a barge-in, not a refusal: Wobo stops and says nothing about it.
       if (refusal.text) say({ role: 'wobo', text: refusal.text });
       if (refusal.signIn && sdk.account) {
         window.setTimeout(() => router.navigate({ name: 'onboarding' }), 900);
@@ -820,7 +820,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   }, [sdk]);
 
   // The guard: unauthenticated in live mode always lands on onboarding — the sign-in beat lives
-  // there, in her flow. No route (palette, Wobo nav) can walk around it.
+  // there, in Wobo's flow. No route (palette, Wobo nav) can walk around it.
   const locked = !sdk.config.devAuth && !sdk.identity.isAuthenticated();
 
   // Onboarding, the frame-building theatre, and design concepts render standalone — no app chrome
@@ -828,7 +828,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   const inFlow =
     locked || route.name === 'onboarding' || route.name === 'building' || route.name === 'concept';
   const onHome = route.name === 'home';
-  // What a saved or shared board is called: the topic she is on, or the lesson she is inside.
+  // What a saved or shared board is called: the topic Wobo is on, or the lesson Wobo is inside.
   const boardTitle = isLessonRoute(route.name)
     ? (bus.assembleContext().curriculum.nodeName ?? undefined)
     : undefined;
@@ -836,12 +836,12 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   return (
     <WoboChatProvider value={chat}>
       {locked && route.name !== 'onboarding' ? <Onboarding /> : <Screen />}
-      {/* Her ink over the current screen — annotations anchored to real elements. */}
+      {/* Wobo's ink over the current screen — annotations anchored to real elements. */}
       <WoboOverlay />
-      {/* The nervous system above the app: the gesture sense, her ink on the screen, the plane, the
-          full board a lesson becomes, the cursor she shows things with. Her own full-screen flows
+      {/* The nervous system above the app: the gesture sense, Wobo's ink on the screen, the plane, the
+          full board a lesson becomes, the cursor Wobo shows things with. Wobo's own full-screen flows
           (onboarding, the frame theatre, a design concept) keep the stage but not the gestures —
-          she is teaching there, not being pointed at. */}
+          Wobo is teaching there, not being pointed at. */}
       <WoboStage
         route={route.name}
         {...(boardTitle ? { title: boardTitle } : {})}
@@ -852,15 +852,15 @@ function AppInner({ sdk }: { sdk: Sdk }) {
         onHoldEnd={() => setMood('idle')}
       />
       {!inFlow && <AppHeader />}
-      {/* the chat page IS her — no docked twin over it */}
+      {/* the chat page IS Wobo — no docked twin over it */}
       {!inFlow && !onHome && route.name !== 'chat' && <WoboCompanion />}
       <CommandPalette />
-      {/* the award ceremony for a milestone crossing — blur, descend, confetti, fanfare, her jump */}
+      {/* the award ceremony for a milestone crossing — blur, descend, confetti, fanfare, Wobo's jump */}
       <CeremonyHost />
       <ClickInk />
-      {/* the per-learner mind — folds behavioural signals into her lifetime context */}
+      {/* the per-learner mind — folds behavioural signals into Wobo's lifetime context */}
       <MindObserver />
-      {/* she speaks what she writes — sound and ink on the same beat */}
+      {/* Wobo speaks what Wobo writes — sound and ink on the same beat */}
       <SpeechNarrator />
       {/* the course-download queue: composes ungened courses one at a time, notifies on ready */}
       <DownloadCenter />
@@ -880,10 +880,10 @@ function WithWobo({ sdk }: { sdk: Sdk }) {
       },
       startPractice: () => router.navigate({ name: 'practice' }),
       switchModality: () => {},
-      // her 'speak' action plays aloud through the TTS path (mute-respecting); the drawer
+      // Wobo's 'speak' action plays aloud through the TTS path (mute-respecting); the drawer
       // still shows the written line either way
       onSpeak: (text: string) => void speakLine(text),
-      // she writes a durable fact to the learner's mind; MindObserver folds it into the next
+      // Wobo writes a durable fact to the learner's mind; MindObserver folds it into the next
       // lifetime pulse (~4s) and every reload thereafter carries it in the dossier
       onRemember: (text: string) => rememberFact(text),
     }),
@@ -925,7 +925,7 @@ export function App() {
 
   // Every learner is somebody to the brain, from the first screen: with Supabase keys and no
   // session, sign in anonymously so the very first turn carries a real identity (a small day's
-  // budget, no elevated doors) — this is what lets her teach before anyone signs up. Keyless
+  // budget, no elevated doors) — this is what lets Wobo teach before anyone signs up. Keyless
   // builds skip it entirely and stay local.
   useEffect(() => {
     const account = sdk.account;

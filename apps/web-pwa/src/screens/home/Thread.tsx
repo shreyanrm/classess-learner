@@ -8,7 +8,7 @@
  * energy flow when the boss unlocks, drifting plus-field ambience.
  */
 
-import { useRegisterTarget } from '@classess/wobo';
+import { useRegisterTarget } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import type { Route } from '../../shell/router';
@@ -17,13 +17,13 @@ import { fluidType } from '../../ui/kit';
 import { sfx } from '../../ui/sound';
 import type { StopKind, ThreadStop } from './stops';
 
-const INK = 'var(--clss-ink)';
-const INK_60 = 'color-mix(in srgb, var(--clss-ink) 58%, transparent)';
-const INK_40 = 'color-mix(in srgb, var(--clss-ink) 36%, transparent)';
-const HAIR = 'color-mix(in srgb, var(--clss-ink) 10%, transparent)';
-const HAIR_SOFT = 'color-mix(in srgb, var(--clss-ink) 5.5%, transparent)';
-const TONAL = 'color-mix(in srgb, var(--clss-ink) 2.6%, transparent)';
-const ULTRA = 'var(--clss-ultramarine)';
+const INK = 'var(--wobo-ink)';
+const INK_60 = 'color-mix(in srgb, var(--wobo-ink) 58%, transparent)';
+const INK_40 = 'color-mix(in srgb, var(--wobo-ink) 36%, transparent)';
+const HAIR = 'color-mix(in srgb, var(--wobo-ink) 10%, transparent)';
+const HAIR_SOFT = 'color-mix(in srgb, var(--wobo-ink) 5.5%, transparent)';
+const TONAL = 'color-mix(in srgb, var(--wobo-ink) 2.6%, transparent)';
+const ULTRA = 'var(--wobo-ultramarine)';
 const MAGENTA = '#CC1E7A';
 const ACID = '#66B300';
 const TEAL = '#0FA3B1';
@@ -226,7 +226,7 @@ function ShieldMedallion({ lit }: { lit: boolean }) {
       </defs>
       <path
         d="M23 5 L38 11 V 23 C 38 32.5 31.5 38.5 23 42 C 14.5 38.5 8 32.5 8 23 V 11 Z"
-        fill={lit ? 'url(#th-shield)' : 'color-mix(in srgb, var(--clss-ink) 8%, transparent)'}
+        fill={lit ? 'url(#th-shield)' : 'color-mix(in srgb, var(--wobo-ink) 8%, transparent)'}
       />
       <path
         d="M15.5 22.5 L21 28 L30.5 17.5"
@@ -277,7 +277,7 @@ function StarMedallion() {
 
 /** The daily bonus quest — a chest that opens the moment the day is sealed. */
 function ChestMedallion({ open }: { open: boolean }) {
-  const body = open ? 'url(#th-chest)' : 'color-mix(in srgb, var(--clss-ink) 8%, transparent)';
+  const body = open ? 'url(#th-chest)' : 'color-mix(in srgb, var(--wobo-ink) 8%, transparent)';
   return (
     <svg
       width="42"
@@ -408,7 +408,7 @@ function StopCard({
   onArrive?: (stop: ThreadStop) => void;
 }) {
   // Every stop is a target of its own, so "the boss" or "that third one" resolves to this card and
-  // she can draw on it, point at it, or walk the learner to it.
+  // Wobo can draw on it, point at it, or walk the learner to it.
   const cardRef = useRegisterTarget<HTMLButtonElement>(`stop-${stop.id}`, {
     kind: 'stop',
     label: `${stop.title} — ${stop.meta}`,
@@ -430,7 +430,7 @@ function StopCard({
   // The current stop wears the one hit of pigment on the thread — a hairline ultramarine edge that
   // says "you are here" without shouting. Every other card stays on the neutral hairline.
   const restBorder = current
-    ? 'color-mix(in srgb, var(--clss-ultramarine) 42%, transparent)'
+    ? 'color-mix(in srgb, var(--wobo-ultramarine) 42%, transparent)'
     : HAIR;
   return (
     <motion.button
@@ -447,7 +447,7 @@ function StopCard({
         y: -3,
         backgroundColor: TONAL,
         borderColor: current
-          ? 'color-mix(in srgb, var(--clss-ultramarine) 64%, transparent)'
+          ? 'color-mix(in srgb, var(--wobo-ultramarine) 64%, transparent)'
           : INK_40,
       }}
       whileTap={{ scale: 0.98 }}
@@ -462,7 +462,7 @@ function StopCard({
         gap: 13,
         border: `1px solid ${restBorder}`,
         borderRadius: 3,
-        background: 'var(--clss-card)',
+        background: 'var(--wobo-card)',
         padding: '13px 14px 13px 16px',
         cursor: 'pointer',
         fontFamily: 'inherit',
@@ -678,7 +678,7 @@ const DRIFT = [
 
 /* ------------------------------------------------------------------ the thread */
 
-const SEEN_KEY = 'clss-thread-seen-v1';
+const SEEN_KEY = 'wobo-thread-seen-v1';
 
 export function Thread({
   stops,
@@ -689,7 +689,7 @@ export function Thread({
 }: {
   stops: ThreadStop[];
   currentIndex: number;
-  /** Wobo's body (with her own choreography) — seated beside the current stop. */
+  /** Wobo's body (with Wobo's own choreography) — seated beside the current stop. */
   wobo?: ReactNode;
   onGo: (route: Route) => void;
   /** Fired the instant a stop is tapped — lets the home claim the bonus quest before it routes. */
@@ -798,11 +798,11 @@ export function Thread({
     cardRight(p) ? Math.min(p.x + 42, w - CW - 10) : Math.max(p.x - 42 - CW, 10);
   const cp = pts[Math.min(currentIndex, pts.length - 1)] as Pt;
   // Seating Wobo beside the current stop only works when there's breathing room next to its card.
-  // On a phone the card eats nearly the full width, so the beside-clamp lands her block on the path's
-  // own node and the caption becomes unreadable. Below ~560px she instead drops into the open
+  // On a phone the card eats nearly the full width, so the beside-clamp lands Wobo's block on the path's
+  // own node and the caption becomes unreadable. Below ~560px Wobo instead drops into the open
   // vertical gap under the current node (there's a full ~190px stride to the next stop), clear of
   // both the node and the card.
-  const VB = 128; // her block's width
+  const VB = 128; // Wobo's block's width
   const narrow = w < 560;
   const woboX = narrow
     ? Math.max(4, Math.min(cp.x - VB / 2, w - VB - 4))
@@ -830,7 +830,7 @@ export function Thread({
             top: d.fy * H,
             fontSize: d.glyph === '+' ? 15 : 22,
             fontWeight: 300,
-            color: 'color-mix(in srgb, var(--clss-ink) 14%, transparent)',
+            color: 'color-mix(in srgb, var(--wobo-ink) 14%, transparent)',
             userSelect: 'none',
           }}
         >
@@ -1024,7 +1024,7 @@ export function Thread({
         Something is hiding here
       </motion.div>
 
-      {/* Wobo walks the thread — she sits beside the current stop */}
+      {/* Wobo walks the thread — Wobo sits beside the current stop */}
       {wobo && (
         <div style={{ position: 'absolute', left: woboX, top: woboY, width: 128, zIndex: 2 }}>
           {wobo}

@@ -2,7 +2,7 @@
  * Pure easing helpers. No runtime imports so this stays trivially testable and free of the
  * React/framer-motion graph.
  *
- * @classess/config publishes easings as CSS `cubic-bezier(...)` strings; framer-motion's JS engine
+ * @wobo/config publishes easings as CSS `cubic-bezier(...)` strings; framer-motion's JS engine
  * wants `[x1, y1, x2, y2]`. We parse rather than re-declare so the tokens never drift.
  */
 

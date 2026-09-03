@@ -30,25 +30,25 @@ async function currentEquation(page: Page): Promise<string> {
 }
 
 // ---------------------------------------------------------------------------------------------
-// 1 — Onboarding: one warm tap, her introduction, then the beats she asks one at a time, and the
+// 1 — Onboarding: one warm tap, Wobo's introduction, then the beats Wobo asks one at a time, and the
 //     world-building theatre hands the learner to the home.
 //
 //     The suite runs with the Supabase vars blanked (playwright.config.ts), so there is no account
 //     layer and the mandatory sign-in beat is bypassed by config — exactly the local-dev path.
 // ---------------------------------------------------------------------------------------------
-test('onboarding walks her beats and opens the home', async ({ page }, info) => {
+test("onboarding walks Wobo's beats and opens the home", async ({ page }, info) => {
   const errors = watchConsole(page);
   await page.goto('/');
 
-  // the door: her body and the explicit button both begin, so the button is addressed exactly
+  // the door: Wobo's body and the explicit button both begin, so the button is addressed exactly
   await page.getByRole('button', { name: 'begin', exact: true }).click({ timeout: 15_000 });
 
-  // her first-meeting introduction is WRITTEN letter by letter; the whole line reaches assistive
+  // Wobo's first-meeting introduction is WRITTEN letter by letter; the whole line reaches assistive
   // tech at once through an off-screen copy, so the text lands before the pen finishes.
   await expect(page.getByText("I'm Wobo, your AI wobot").first()).toBeVisible({ timeout: 15_000 });
   expect(await page.evaluate((k) => localStorage.getItem(k), MET_KEY)).toBe('1');
 
-  // the name — her input only appears once she has finished asking, so wait for it, not a timer
+  // the name — Wobo's input only appears once Wobo has finished asking, so wait for it, not a timer
   const nameField = page.getByLabel('your name');
   await nameField.waitFor({ state: 'visible', timeout: 20_000 });
   await nameField.fill('Aanya');
@@ -71,7 +71,7 @@ test('onboarding walks her beats and opens the home', async ({ page }, info) => 
   await grade.click();
   await page.getByRole('button', { name: "That's me", exact: true }).click();
 
-  // what they're into — she grounds her analogies in it from lesson one
+  // what they're into — Wobo grounds their analogies in it from lesson one
   const cricket = page.getByRole('button', { name: 'cricket', exact: true });
   await cricket.waitFor({ state: 'visible', timeout: 20_000 });
   await cricket.click();
@@ -194,7 +194,7 @@ test('the atom journey: course, detonation, boss, greeting, twin, invite, palett
   await expect(page.getByText(/is yours now — not memorised, understood/i)).toBeVisible();
   await expect.poll(() => readXp(page), { timeout: 10_000 }).toBeGreaterThanOrEqual(150);
 
-  // greeting → whatever she has queued behind it (a level crossing, the mystery tease)
+  // greeting → whatever Wobo has queued behind it (a level crossing, the mystery tease)
   await actionBarButton(page, 'continue').click();
 
   // the command palette reaches the twin

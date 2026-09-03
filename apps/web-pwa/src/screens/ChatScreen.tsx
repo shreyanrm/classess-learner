@@ -3,11 +3,11 @@
 /**
  * The conversation — one page where only chat happens. It is the same never-ending thread the
  * docked Wobo carries everywhere: scroll up and the past pages itself in (the archive loads
- * lazily, WhatsApp-style); type below and she answers from wherever you actually are. Her ink
- * belongs on the other screens — here she speaks in regular type, person to person.
+ * lazily, WhatsApp-style); type below and Wobo answers from wherever you actually are. Wobo's ink
+ * belongs on the other screens — here Wobo speaks in regular type, person to person.
  */
 
-import { useRegisterTarget, useWoboBus, WoboBody } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus, WoboBody } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { OFFLINE_LINE } from '../shell/resilience';
@@ -21,10 +21,10 @@ import { useWoboVoice } from '../wobo/voice';
 import { Whisper } from './Learn';
 
 // The conversation's atmosphere (§1 ambient depth) — paper warmth at the crown, Wobo's warm
-// molten pool rising at the composer's foot, so the thread sits inside her light. One layer.
+// molten pool rising at the composer's foot, so the thread sits inside Wobo's light. One layer.
 const CHAT_WASH =
   'radial-gradient(72% 32% at 50% 0%, rgba(255,201,60,0.05) 0%, transparent 66%),' +
-  ' radial-gradient(64% 30% at 50% 100%, var(--clss-molten-soft) 0%, transparent 72%)';
+  ' radial-gradient(64% 30% at 50% 100%, var(--wobo-molten-soft) 0%, transparent 72%)';
 
 export function ChatScreen() {
   const router = useRouter();
@@ -34,8 +34,8 @@ export function ChatScreen() {
   const [voiceNote, setVoiceNote] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   // The chat page is the one full-screen route that used to publish nothing — so the bus kept the
-  // last content screen's page/curriculum/canvas, and she would answer about a page already left.
-  // She publishes herself here: the conversation IS the screen, and the course layers are cleared.
+  // last content screen's page/curriculum/canvas, and Wobo would answer about a page already left.
+  // Wobo publishes themself here: the conversation IS the screen, and the course layers are cleared.
   const threadRef = useRegisterTarget<HTMLDivElement>('chat-thread', {
     kind: 'conversation',
     label: 'the conversation on screen',
@@ -114,7 +114,7 @@ export function ChatScreen() {
         state === 'unavailable'
           ? 'My voice is asleep right now — the words still arrive'
           : state === 'idle'
-            ? 'Allow microphone access to talk with her'
+            ? 'Allow microphone access to talk with Wobo'
             : null;
       if (note) {
         setVoiceNote(note);
@@ -130,7 +130,7 @@ export function ChatScreen() {
         display: 'flex',
         flexDirection: 'column',
         paddingTop: 64,
-        background: 'var(--clss-card)',
+        background: 'var(--wobo-card)',
         position: 'relative',
         isolation: 'isolate',
       }}
@@ -138,7 +138,7 @@ export function ChatScreen() {
       <AmbientWash gradient={CHAT_WASH} />
       <Whisper onClick={() => router.back()}>◦ back</Whisper>
 
-      {/* her presence — small, alive, floating on frosted glass above the thread */}
+      {/* Wobo's presence — small, alive, floating on frosted glass above the thread */}
       <div
         style={{
           display: 'flex',
@@ -160,8 +160,8 @@ export function ChatScreen() {
         >
           <WoboBody size={44} mood={busy ? 'thinking' : mood} gaze="pointer" label="Wobo" />
           <div>
-            <div style={{ fontWeight: 600, color: 'var(--clss-ink)', lineHeight: 1.1 }}>Wobo</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--clss-ink-faint)' }}>
+            <div style={{ fontWeight: 600, color: 'var(--wobo-ink)', lineHeight: 1.1 }}>Wobo</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--wobo-ink-faint)' }}>
               {busy ? 'Thinking…' : 'One conversation, always'}
             </div>
           </div>
@@ -179,9 +179,9 @@ export function ChatScreen() {
             padding: '8px 14px',
             fontSize: fluidType.small,
             lineHeight: 1.5,
-            color: 'var(--clss-ink)',
-            background: 'var(--clss-tonal)',
-            borderRadius: 'var(--clss-radius-md)',
+            color: 'var(--wobo-ink)',
+            background: 'var(--wobo-tonal)',
+            borderRadius: 'var(--wobo-radius-md)',
           }}
         >
           {OFFLINE_LINE}
@@ -211,14 +211,14 @@ export function ChatScreen() {
                 textAlign: 'center',
                 fontFamily: 'Caveat, cursive',
                 fontSize: 19,
-                color: 'color-mix(in srgb, var(--clss-ink) 45%, transparent)',
+                color: 'color-mix(in srgb, var(--wobo-ink) 45%, transparent)',
                 padding: '18px 0 6px',
               }}
             >
               Where we began
             </div>
           )}
-          {/* her words sit on the page itself — the outline belongs to the learner's side only */}
+          {/* Wobo's words sit on the page itself — the outline belongs to the learner's side only */}
           {turns.map((t) =>
             t.role === 'user' ? (
               <div
@@ -227,11 +227,11 @@ export function ChatScreen() {
                   alignSelf: 'flex-end',
                   maxWidth: '78%',
                   padding: '11px 16px',
-                  borderRadius: 'var(--clss-radius-md)',
+                  borderRadius: 'var(--wobo-radius-md)',
                   fontSize: fluidType.body,
                   lineHeight: 1.6,
-                  background: 'var(--clss-ink)',
-                  color: 'var(--clss-on-ink)',
+                  background: 'var(--wobo-ink)',
+                  color: 'var(--wobo-on-ink)',
                   whiteSpace: 'pre-wrap',
                   overflowWrap: 'anywhere',
                 }}
@@ -255,7 +255,7 @@ export function ChatScreen() {
                     padding: '2px 2px',
                     fontSize: fluidType.body,
                     lineHeight: 1.7,
-                    color: 'var(--clss-ink)',
+                    color: 'var(--wobo-ink)',
                     whiteSpace: 'pre-wrap',
                     overflowWrap: 'anywhere',
                   }}
@@ -275,11 +275,11 @@ export function ChatScreen() {
                 alignSelf: 'flex-end',
                 maxWidth: '78%',
                 padding: '11px 16px',
-                borderRadius: 'var(--clss-radius-md)',
+                borderRadius: 'var(--wobo-radius-md)',
                 fontSize: fluidType.body,
                 lineHeight: 1.6,
-                background: 'var(--clss-ink)',
-                color: 'var(--clss-on-ink)',
+                background: 'var(--wobo-ink)',
+                color: 'var(--wobo-on-ink)',
                 opacity: 0.5,
                 whiteSpace: 'pre-wrap',
                 overflowWrap: 'anywhere',
@@ -296,7 +296,7 @@ export function ChatScreen() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               style={{
-                color: 'var(--clss-ink-faint)',
+                color: 'var(--wobo-ink-faint)',
                 fontSize: fluidType.small,
                 padding: '2px 4px',
               }}
@@ -315,7 +315,7 @@ export function ChatScreen() {
           gap: 10,
           alignItems: 'center',
           padding: '12px 20px calc(16px + env(safe-area-inset-bottom))',
-          borderTop: '1px solid var(--clss-tonal)',
+          borderTop: '1px solid var(--wobo-tonal)',
           maxWidth: 760,
           width: '100%',
           margin: '0 auto',
@@ -335,17 +335,17 @@ export function ChatScreen() {
               padding: '0 52px 0 18px',
               fontSize: fluidType.body,
               fontFamily: 'inherit',
-              border: '1px solid var(--clss-card-border)',
+              border: '1px solid var(--wobo-card-border)',
               borderRadius: 3,
-              background: 'var(--clss-card)',
-              color: 'var(--clss-ink)',
+              background: 'var(--wobo-card)',
+              color: 'var(--wobo-ink)',
               transition: 'border-color 0.2s ease',
             }}
             onFocusCapture={(e) => {
-              e.currentTarget.style.borderColor = 'var(--clss-faint)';
+              e.currentTarget.style.borderColor = 'var(--wobo-faint)';
             }}
             onBlurCapture={(e) => {
-              e.currentTarget.style.borderColor = 'var(--clss-card-border)';
+              e.currentTarget.style.borderColor = 'var(--wobo-card-border)';
             }}
           />
           <button
@@ -363,7 +363,7 @@ export function ChatScreen() {
               placeItems: 'center',
               border: 'none',
               background: 'transparent',
-              color: voiceOn ? '#FF5A1F' : 'var(--clss-ink-faint)',
+              color: voiceOn ? '#FF5A1F' : 'var(--wobo-ink-faint)',
               cursor: 'pointer',
               transition: 'color 0.25s ease',
             }}
@@ -393,7 +393,7 @@ export function ChatScreen() {
           style={{
             textAlign: 'center',
             paddingBottom: 10,
-            color: 'var(--clss-ink-faint)',
+            color: 'var(--wobo-ink-faint)',
             fontSize: fluidType.small,
           }}
         >

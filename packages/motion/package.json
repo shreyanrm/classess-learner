@@ -1,5 +1,5 @@
 {
-  "name": "@classess/motion",
+  "name": "@wobo/motion",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,7 @@
     "test": "bun test"
   },
   "dependencies": {
-    "@classess/config": "workspace:*",
+    "@wobo/config": "workspace:*",
     "framer-motion": "^11.11.0"
   },
   "peerDependencies": {

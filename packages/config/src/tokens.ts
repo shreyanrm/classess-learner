@@ -63,7 +63,7 @@ export const accent = {
 
 export type AccentName = keyof typeof accent;
 
-/** Molten is Wobo's warmth — her glow, her celebratory pop. Reserved for her alone. */
+/** Molten is Wobo's warmth — Wobo's glow, Wobo's celebratory pop. Reserved for Wobo alone. */
 export const woboMolten = accent.molten;
 
 /** Accents assignable to earned moments (molten excluded — it is Wobo's). */
@@ -72,16 +72,35 @@ export const subjectAccents = (Object.keys(accent) as AccentName[]).filter(
 );
 
 /**
- * Wobo's highlight + annotation palette — the colours she draws WITH when she points at the page.
- * Molten leads (her warmth), ultramarine seconds (the brand's certainty), acid is the rare third.
+ * Wobo's pointing ink — one pigment, no exceptions (DESIGN.md §2).
+ *
+ * When Wobo points at a region of the screen it is a 1.5px hand-wobbled ultramarine ring on the
+ * target's box (3px corners) with at most a 4% ultramarine frost inside — never a warm wash. The
+ * warm token that used to lead this palette is gone on purpose: there is no salmon left in the
+ * tree for a mark to reach for. On dark surfaces the same pigment lifts to the dark ink value at
+ * the identical opacities.
  */
 export const woboHighlight = {
-  primary: accent.molten,
-  secondary: ultramarine,
-  tertiary: accent.acid,
+  /** Light surfaces: the signature pigment itself. */
+  ink: ultramarine,
+  /** Dark surfaces: the same pigment lifted off graphite. */
+  inkDark: '#7B8CFF',
+  /** The frost inside the ring — a hint of the box, never a fill. */
+  frost: 'rgba(31,53,224,0.04)',
+  frostDark: 'rgba(123,140,255,0.04)',
+  /** The ceiling on that frost; the ring carries the meaning, not the fill. */
+  frostAlpha: 0.04,
+  /** A pen nib, held at a constant width whatever the target's size. */
+  ringWidth: 1.5,
+  /** Sharp corners (radius.sm), stated here so the overlay never guesses. */
+  radius: 3,
+  /** The ring draws itself on over this window. */
+  drawMs: 320,
+  /** ...and leaves this long after the turn ends. */
+  fadeMs: 600,
 } as const;
 
-/** Molten interaction shades — Wobo's warmth family; hers, not generic chrome. */
+/** Molten interaction shades — Wobo's warmth family; Wobo's, not generic chrome. */
 export const molten = {
   base: accent.molten,
   hover: '#F04A0E',
@@ -121,61 +140,64 @@ export const chrome = {
   faint: '#B9BBC6',
   /** Soft pointer spotlight on cards — a dark wash on paper, a light glow on graphite. */
   spotlight: 'rgba(18,19,22,0.05)',
-  /** Wobo's light-beam beneath her (grounding glow); dimmed on graphite so it never over-blooms. */
+  /** Wobo's light-beam beneath Wobo (grounding glow); dimmed on graphite so it never over-blooms. */
   woboBeam:
     'linear-gradient(to bottom, rgba(255,133,71,0.42), rgba(255,90,31,0.16) 55%, rgba(255,90,31,0) 88%)',
   woboBeamPool: 'radial-gradient(ellipse at center, rgba(255,90,31,0.3), rgba(255,90,31,0) 70%)',
 } as const;
 
 /**
- * Dark theme — subtle graphite, never black (Fable's spec). Keyed by the full `--clss-*` var name;
+ * Dark theme — subtle graphite, never black (Fable's spec). Keyed by the full `--wobo-*` var name;
  * `[data-theme="dark"]` on the document root swaps these in. Only theme-sensitive tokens appear:
  * neutrals flip, ultramarine lightens for contrast, feedback hues brighten, frost inverts.
  * Wobo's molten body and the decorative subject hues are deliberately absent — they glow on graphite.
  */
 export const dark: Record<string, string> = {
   // chrome neutrals
-  '--clss-page': '#17181C',
-  '--clss-card': '#1F2026',
-  '--clss-card-border': '#2A2B32',
-  '--clss-card-hover': '#24252C',
-  '--clss-tonal': '#24252C',
-  '--clss-tonal-hover': '#2E2F37',
-  '--clss-ink': '#F2F2F5',
-  '--clss-on-ink': '#17181C',
-  '--clss-ink-hover': '#E4E5EA',
-  '--clss-ink-soft': '#B4B6BF',
-  // AA on graphite — the same whisper value as --clss-ink-300 below (4.97:1 on #17181C).
-  '--clss-ink-faint': '#868790',
-  '--clss-faint': '#585A63',
+  '--wobo-page': '#17181C',
+  '--wobo-card': '#1F2026',
+  '--wobo-card-border': '#2A2B32',
+  '--wobo-card-hover': '#24252C',
+  '--wobo-tonal': '#24252C',
+  '--wobo-tonal-hover': '#2E2F37',
+  '--wobo-ink': '#F2F2F5',
+  '--wobo-on-ink': '#17181C',
+  '--wobo-ink-hover': '#E4E5EA',
+  '--wobo-ink-soft': '#B4B6BF',
+  // AA on graphite — the same whisper value as --wobo-ink-300 below (4.97:1 on #17181C).
+  '--wobo-ink-faint': '#868790',
+  '--wobo-faint': '#585A63',
   // token ink scale (inverts: darkest → lightest)
-  '--clss-ink-900': '#F2F2F5',
-  '--clss-ink-800': '#E4E5EA',
-  '--clss-ink-700': '#C7C9D1',
-  '--clss-ink-500': '#9A9DA8',
-  '--clss-ink-300': '#868790', // AA on dark paper: 4.97:1 on #17181C (whisper caption; real text)
-  '--clss-ink-100': '#26272E',
-  '--clss-paper': '#17181C',
-  '--clss-canvas': '#17181C',
+  '--wobo-ink-900': '#F2F2F5',
+  '--wobo-ink-800': '#E4E5EA',
+  '--wobo-ink-700': '#C7C9D1',
+  '--wobo-ink-500': '#9A9DA8',
+  '--wobo-ink-300': '#868790', // AA on dark paper: 4.97:1 on #17181C (whisper caption; real text)
+  '--wobo-ink-100': '#26272E',
+  '--wobo-paper': '#17181C',
+  '--wobo-canvas': '#17181C',
   // hairlines invert to light-on-dark
-  '--clss-hairline-on-paper': 'rgba(255,255,255,0.09)',
-  '--clss-hairline-on-paper-strong': 'rgba(255,255,255,0.16)',
+  '--wobo-hairline-on-paper': 'rgba(255,255,255,0.09)',
+  '--wobo-hairline-on-paper-strong': 'rgba(255,255,255,0.16)',
   // ultramarine lightens for contrast on graphite
-  '--clss-ultramarine': '#4D63F2',
-  '--clss-ultramarine-base': '#4D63F2',
-  '--clss-ultramarine-hover': '#6579F5',
-  '--clss-ultramarine-active': '#3D52E0',
-  '--clss-ultramarine-soft': 'rgba(77,99,242,0.14)',
-  '--clss-ultramarine-wash': 'rgba(77,99,242,0.20)',
-  '--clss-ultramarine-ring': 'rgba(77,99,242,0.5)',
+  '--wobo-ultramarine': '#4D63F2',
+  '--wobo-ultramarine-base': '#4D63F2',
+  '--wobo-ultramarine-hover': '#6579F5',
+  '--wobo-ultramarine-active': '#3D52E0',
+  '--wobo-ultramarine-soft': 'rgba(77,99,242,0.14)',
+  '--wobo-ultramarine-wash': 'rgba(77,99,242,0.20)',
+  '--wobo-ultramarine-ring': 'rgba(77,99,242,0.5)',
+  // Wobo's pointing ink lifts to the dark-ink ultramarine at the identical opacities
+  '--wobo-highlight-ink': woboHighlight.inkDark,
+  '--wobo-highlight-frost': woboHighlight.frostDark,
   // feedback hues brighten just enough to pass contrast
-  '--clss-feedback-correct': '#4CAF50',
-  '--clss-feedback-correctSoft': 'rgba(76,175,80,0.16)',
-  '--clss-feedback-retry': '#E0982E',
-  '--clss-feedback-retrySoft': 'rgba(224,152,46,0.16)',
+  '--wobo-feedback-correct': '#4CAF50',
+  '--wobo-feedback-correctSoft': 'rgba(76,175,80,0.16)',
+  '--wobo-feedback-retry': '#E0982E',
+  '--wobo-feedback-retrySoft': 'rgba(224,152,46,0.16)',
   // frost inverts to a dark graphite glass
-  '--clss-frost-on-paper': 'rgba(23,24,28,0.62)',
-  '--clss-spotlight': 'rgba(255,255,255,0.05)',
+  '--wobo-frost-on-paper': 'rgba(23,24,28,0.62)',
+  '--wobo-spotlight': 'rgba(255,255,255,0.05)',
 };
 
 // --- Shape: sharp corners, 3px default ------------------------------------------------------------

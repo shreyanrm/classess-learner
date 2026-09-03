@@ -31,15 +31,15 @@ import { sfx } from './sound';
 // --- The surface language (cool neutrals) ----------------------------------------------------------
 // Theme-driven: light values live in the token layer, `[data-theme="dark"]` swaps graphite in.
 export const surface = {
-  page: 'var(--clss-page)',
-  card: 'var(--clss-card)',
-  cardBorder: 'var(--clss-card-border)',
-  cardHover: 'var(--clss-card-hover)',
-  tonal: 'var(--clss-tonal)',
-  tonalHover: 'var(--clss-tonal-hover)',
-  ink: 'var(--clss-ink)',
-  inkSoft: 'var(--clss-ink-soft)',
-  inkFaint: 'var(--clss-ink-faint)',
+  page: 'var(--wobo-page)',
+  card: 'var(--wobo-card)',
+  cardBorder: 'var(--wobo-card-border)',
+  cardHover: 'var(--wobo-card-hover)',
+  tonal: 'var(--wobo-tonal)',
+  tonalHover: 'var(--wobo-tonal-hover)',
+  ink: 'var(--wobo-ink)',
+  inkSoft: 'var(--wobo-ink-soft)',
+  inkFaint: 'var(--wobo-ink-faint)',
   radius: { card: 3, control: 3, pill: 3 },
 } as const;
 
@@ -111,10 +111,10 @@ export function Hairline({ style }: { style?: CSSProperties }) {
  * re-mix a one-off blur: `style={{ ...FROST, padding: … }}`.
  */
 export const FROST: CSSProperties = {
-  background: 'var(--clss-frost-on-paper)',
-  backdropFilter: 'blur(var(--clss-frost-blur)) saturate(1.2)',
-  WebkitBackdropFilter: 'blur(var(--clss-frost-blur)) saturate(1.2)',
-  border: '0.5px solid color-mix(in srgb, var(--clss-ink) 14%, transparent)',
+  background: 'var(--wobo-frost-on-paper)',
+  backdropFilter: 'blur(var(--wobo-frost-blur)) saturate(1.2)',
+  WebkitBackdropFilter: 'blur(var(--wobo-frost-blur)) saturate(1.2)',
+  border: '0.5px solid color-mix(in srgb, var(--wobo-ink) 14%, transparent)',
   borderRadius: surface.radius.card,
 };
 
@@ -295,11 +295,11 @@ export type ButtonVariant = 'primary' | 'quiet' | 'pigment' | 'ghost';
 const BUTTON_LOOK: Record<ButtonVariant, { bg: string; bgHover: string; color: string }> = {
   // Primary inverts with the theme (dark button on light / light button on dark), so its text
   // must ride the ink surface via on-ink rather than a fixed white.
-  primary: { bg: surface.ink, bgHover: 'var(--clss-ink-hover)', color: 'var(--clss-on-ink)' },
+  primary: { bg: surface.ink, bgHover: 'var(--wobo-ink-hover)', color: 'var(--wobo-on-ink)' },
   quiet: { bg: surface.tonal, bgHover: surface.tonalHover, color: surface.ink },
   pigment: {
-    bg: 'var(--clss-ultramarine)',
-    bgHover: 'var(--clss-ultramarine-hover)',
+    bg: 'var(--wobo-ultramarine)',
+    bgHover: 'var(--wobo-ultramarine-hover)',
     color: '#FFFFFF',
   },
   ghost: { bg: 'transparent', bgHover: surface.tonal, color: surface.inkSoft },
@@ -423,7 +423,7 @@ export function TiltCard({
   children,
   onClick,
   style,
-  spotlight = 'var(--clss-spotlight)',
+  spotlight = 'var(--wobo-spotlight)',
   ariaLabel,
   onLitChange,
 }: {

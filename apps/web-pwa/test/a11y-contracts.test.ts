@@ -96,7 +96,7 @@ describe('the command palette names its parts correctly', () => {
 describe('the command palette has a touch entry point', () => {
   it('exports an opener that does not depend on a keyboard', () => {
     expect(palette).toContain('export function openCommandPalette');
-    expect(palette).toContain("export const OPEN_PALETTE_EVENT = 'clss-open-palette'");
+    expect(palette).toContain("export const OPEN_PALETTE_EVENT = 'wobo-open-palette'");
     expect(palette).toContain('window.addEventListener(OPEN_PALETTE_EVENT, onOpen)');
     expect(palette).toContain('window.removeEventListener(OPEN_PALETTE_EVENT, onOpen)');
   });

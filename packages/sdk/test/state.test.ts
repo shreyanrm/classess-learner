@@ -145,13 +145,13 @@ describe('LocalStateProvider', () => {
     expect(thread?.turns[0]?.text).toBe('hey');
     // Same keys the app has always used.
     expect(storage.map.has(STATE_CACHE_KEY)).toBe(true);
-    expect(storage.map.has('clss-wobo-conversation-v1')).toBe(true);
+    expect(storage.map.has('wobo-conversation-v1')).toBe(true);
   });
 
   it('reads a legacy bare-array conversation cache', () => {
     const storage = new FakeStorage();
     storage.setItem(
-      'clss-wobo-conversation-v1',
+      'wobo-conversation-v1',
       JSON.stringify([{ id: 'seed', role: 'wobo', text: 'ask me anything' }]),
     );
     const thread = new LocalStateProvider(storage).loadThreadCache('wobo');
@@ -161,7 +161,7 @@ describe('LocalStateProvider', () => {
   it("carries a pre-rebrand conversation over: the old key and the old 'vidya' role both read", () => {
     const storage = new FakeStorage();
     storage.setItem(
-      'clss-vidya-conversation-v1',
+      'wobo-vidya-conversation-v1',
       JSON.stringify({
         turns: [{ id: 'a', role: 'vidya', text: 'from before the rename' }],
         updatedAt: '2026-07-06T08:00:00Z',
@@ -172,7 +172,7 @@ describe('LocalStateProvider', () => {
     expect(thread?.turns).toEqual([{ id: 'a', role: 'wobo', text: 'from before the rename' }]);
     // The next save migrates it onto the new key; the legacy one is left untouched.
     provider.saveThread('wobo', thread?.turns ?? []);
-    expect(storage.map.has('clss-wobo-conversation-v1')).toBe(true);
+    expect(storage.map.has('wobo-conversation-v1')).toBe(true);
   });
 });
 
@@ -181,7 +181,7 @@ describe('SupabaseStateProvider hydration', () => {
   // Live mode scopes the local cache to the account so two users on one browser never share a
   // bucket — the provider reads/writes under these per-subject keys, not the bare legacy keys.
   const SCOPED_STATE = `${STATE_CACHE_KEY}:${SUBJECT}`;
-  const SCOPED_WOBO = `clss-wobo-conversation-v1:${SUBJECT}`;
+  const SCOPED_WOBO = `wobo-conversation-v1:${SUBJECT}`;
 
   function fakeRest(remoteRow: Record<string, unknown> | null) {
     const upserts: { table: string; row: Record<string, unknown> }[] = [];
@@ -356,7 +356,7 @@ describe('LocalStateProvider account scoping', () => {
     // A device that was already in use before it had a session: unscoped keys, no marker.
     storage.setItem(STATE_CACHE_KEY, JSON.stringify(state({ xp: 900 })));
     storage.setItem(
-      'clss-wobo-conversation-v1',
+      'wobo-conversation-v1',
       JSON.stringify([{ id: 'a', role: 'wobo', text: 'from before the sign-in' }]),
     );
 

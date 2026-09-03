@@ -4,10 +4,10 @@
  * `emit-schemas.ts` says "CI re-runs this and fails if the committed bundles drift" — this is the
  * thing that makes that sentence true. Both committed copies must be byte-identical to a fresh
  * build from the Zod source of truth: the language-neutral artifact AND the Python mirror, which
- * `classess_contracts` validates every event against at import time. A schema edited without a
+ * `wobo_contracts` validates every event against at import time. A schema edited without a
  * regeneration leaves TypeScript enforcing one contract and Python enforcing another.
  *
- * Regenerate: `bun run --filter @classess/contracts codegen`.
+ * Regenerate: `bun run --filter @wobo/contracts codegen`.
  */
 
 import { describe, expect, test } from 'bun:test';

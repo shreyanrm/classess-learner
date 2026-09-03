@@ -1,6 +1,6 @@
 # SUBJECTS.md — Plexus per-subject rendering and validation
 
-How Plexus renders and verifies content in each subject: the interaction primitives, the technologies that draw them, and the validators that prove them correct before a learner ever sees them. Companion to `CONTEXT.md` (Plexus and the cost economy), `DESIGN.md` (how surfaces look), and `WOBO.md` (how she reads and annotates them). This file is law for the content substrate.
+How Plexus renders and verifies content in each subject: the interaction primitives, the technologies that draw them, and the validators that prove them correct before a learner ever sees them. Companion to `CONTEXT.md` (Plexus and the cost economy), `DESIGN.md` (how surfaces look), and `WOBO.md` (how Wobo reads and annotates them). This file is law for the content substrate.
 
 Initial content focus per the locked instructions: mathematics, the three sciences, and social science (not languages). The vertical-slice atom is linear equations (math). Computer science is part of the designed palette and sequenced per the build order below. All six subjects share one substrate.
 
@@ -82,7 +82,7 @@ Short explanatory videos per sub-topic or activity, high-craft animation, narrat
 
 | Layer | Technology |
 |---|---|
-| Spec contract | DONE — Pydantic (`gateway/plexus/specs.py`) → JSON Schema (`packages/contracts/schemas/plexus.schema.json`) → generated TS (`packages/contracts/src/generated/plexus.ts`); regen `uv run python -m classess_gateway.plexus.codegen` + `bun run --filter @classess/contracts codegen:plexus`; drift-gated on both stacks |
+| Spec contract | DONE — Pydantic (`gateway/plexus/specs.py`) → JSON Schema (`packages/contracts/schemas/plexus.schema.json`) → generated TS (`packages/contracts/src/generated/plexus.ts`); regen `uv run python -m wobo_gateway.plexus.codegen` + `bun run --filter @wobo/contracts codegen:plexus`; drift-gated on both stacks |
 | 2D math / geometry | Mafs (+ JSXGraph for heavy draggable Euclidean geometry) |
 | Plots / functions | Mafs / D3 |
 | 3D | Three.js + react-three-fiber (R3F) |

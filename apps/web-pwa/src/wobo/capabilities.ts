@@ -1,5 +1,5 @@
 /**
- * Wobo's capability registry — her governed hands in the product (WOBO.md §4). She never
+ * Wobo's capability registry — Wobo's governed hands in the product (WOBO.md §4). Wobo never
  * navigates or acts directly from a model reply: the orchestrator's action path names a
  * capability here, and the permission ladder decides how it runs:
  *
@@ -10,7 +10,7 @@
  * outcome — taken or ignored — lands on the event backbone as wobo.offer.outcome.v1.
  */
 
-import type { Sdk } from '@classess/sdk';
+import type { Sdk } from '@wobo/sdk';
 import {
   buildPacket,
   type ContextPacket,
@@ -22,7 +22,7 @@ import {
   surfaceRegistry,
   type TaskState,
   type WoboAssembledContext,
-} from '@classess/wobo';
+} from '@wobo/wobo';
 import { chaptersBySubject, topicById } from '../data/catalog';
 import type { Topic } from '../data/model';
 import type { Router } from '../shell/router';
@@ -49,7 +49,7 @@ export interface WoboCapability {
   rung: PermissionRung;
   /** What the approval button offers, e.g. "open Linear equations". */
   label: (params: Record<string, unknown>) => string;
-  /** Executes; returns her one-line account of what happened. */
+  /** Executes; returns Wobo's one-line account of what happened. */
   run: (ctx: CapabilityContext, params: Record<string, unknown>) => Promise<string>;
 }
 
@@ -126,7 +126,7 @@ const CAPABILITIES: Record<CapabilityId, WoboCapability> = {
         return 'no boss to face just yet — open a course, and one will be waiting at the finish.';
       // land the journey at the boss door (the course player resumes from this position)
       try {
-        const key = 'clss-course-pos-v1';
+        const key = 'wobo-course-pos-v1';
         const pos = JSON.parse(localStorage.getItem(key) ?? '{}') as Record<string, string>;
         pos[topic.id] = 'bossdoor';
         localStorage.setItem(key, JSON.stringify(pos));
@@ -140,7 +140,7 @@ const CAPABILITIES: Record<CapabilityId, WoboCapability> = {
 
   go_to_twin: {
     id: 'go_to_twin',
-    // showing the learner their own map is reversible and harmless — she just does it
+    // showing the learner their own map is reversible and harmless — Wobo just does it
     rung: 'safe_automatic',
     label: () => 'open your knowledge twin',
     run: async ({ router }) => {
@@ -151,14 +151,14 @@ const CAPABILITIES: Record<CapabilityId, WoboCapability> = {
 
   forget_all: {
     id: 'forget_all',
-    // The whole memory, gone, with nothing to undo it — the most destructive thing she can do to
+    // The whole memory, gone, with nothing to undo it — the most destructive thing Wobo can do to
     // the learner's world. A model reply saying "forget everything" is never enough on its own: the
     // card asks in the thread, and the wipe happens on approval alone (WOBO.md §4, family E).
     rung: 'execute_with_permission',
-    label: () => 'forget everything she knows about you',
+    label: () => 'forget everything Wobo knows about you',
     run: async () => {
       clearMind();
-      // MindObserver republishes the (now empty) dossier on its next pulse, so her very next turn
+      // MindObserver republishes the (now empty) dossier on its next pulse, so Wobo's very next turn
       // reasons from a blank slate — no stale context surviving the erase.
       return 'Done — I cleared everything I was keeping about you. We start fresh from here.';
     },
@@ -186,7 +186,7 @@ const CAPABILITIES: Record<CapabilityId, WoboCapability> = {
 };
 
 /**
- * The confirm card for a whole-memory wipe. She says her line; this rides under it as the approval
+ * The confirm card for a whole-memory wipe. Wobo says their line; this rides under it as the approval
  * card, so nothing is erased until the learner taps approve (or walks away and it stays offered).
  */
 export function forgetAllOffer(offerId: string): ActionAttachment {
@@ -263,7 +263,7 @@ function turnsFrom(context: Partial<WoboAssembledContext>): PacketTurn[] {
 
 /**
  * Build the context packet for this turn: what the learner pointed at, what is on screen, where
- * they are, what they are doing, her mind's summary, and the last few turns — all under the token
+ * they are, what they are doing, Wobo's mind's summary, and the last few turns — all under the token
  * budget, trimmed by priority (packages/wobo/src/packet.ts).
  */
 export function buildTurnPacket(
@@ -315,7 +315,7 @@ export function boardTurnPayload<T extends object>(
 
 /**
  * Where the gateway reads the learner's words out of a turn payload
- * (`services/gateway/src/classess_gateway/safety.py::inbound_text` and
+ * (`services/gateway/src/wobo_gateway/safety.py::inbound_text` and
  * `wobo.py::mock_board_plan`). Exported so the seam is asserted, not assumed.
  */
 export function inboundTextOf(payload: Record<string, unknown>): string {

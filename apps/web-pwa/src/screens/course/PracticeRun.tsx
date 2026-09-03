@@ -7,8 +7,8 @@
  * answer), and the item returns later in the run with an FSRS retry framing.
  */
 
-import { type PracticeItem, reviewCard } from '@classess/sdk';
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { type PracticeItem, reviewCard } from '@wobo/sdk';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useProgress, XP_AWARDS } from '../../store/progress';
@@ -29,7 +29,7 @@ const PAD_KEYS = [
   ['−', '0', '⌫'],
 ] as const;
 
-const HUE = 'var(--clss-ultramarine)';
+const HUE = 'var(--wobo-ultramarine)';
 const RETRY = '#B26A00';
 
 function Detonation({ item, theirs }: { item: PracticeItem; theirs: number }) {
@@ -48,7 +48,7 @@ function Detonation({ item, theirs }: { item: PracticeItem; theirs: number }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14, textAlign: 'center' }}>
-      <motion.div {...at(0)} style={{ fontSize: '1.15rem', color: 'var(--clss-ink-900)' }}>
+      <motion.div {...at(0)} style={{ fontSize: '1.15rem', color: 'var(--wobo-ink-900)' }}>
         you said x = {fmt(theirs)} — watch.
       </motion.div>
 
@@ -57,7 +57,7 @@ function Detonation({ item, theirs }: { item: PracticeItem; theirs: number }) {
         style={{
           fontSize: '1.35rem',
           fontWeight: 550,
-          color: 'var(--clss-ink-900)',
+          color: 'var(--wobo-ink-900)',
           fontVariantNumeric: 'tabular-nums',
         }}
       >
@@ -88,7 +88,7 @@ function Detonation({ item, theirs }: { item: PracticeItem; theirs: number }) {
             gap: 4,
             fontSize: '2rem',
             fontWeight: 600,
-            color: 'var(--clss-feedback-retry)',
+            color: 'var(--wobo-feedback-retry)',
             fontVariantNumeric: 'tabular-nums',
           }}
         >
@@ -157,18 +157,18 @@ function Detonation({ item, theirs }: { item: PracticeItem; theirs: number }) {
         style={{
           margin: '4px auto 0',
           padding: '14px 18px',
-          border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-          borderRadius: 'var(--clss-radius-md)',
+          border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+          borderRadius: 'var(--wobo-radius-md)',
           maxWidth: 420,
-          background: 'var(--clss-paper)',
+          background: 'var(--wobo-paper)',
         }}
       >
         <div style={{ ...whisper, marginBottom: 6 }}>The honest move</div>
-        <div style={{ fontSize: '1rem', color: 'var(--clss-ink-900)' }}>
+        <div style={{ fontSize: '1rem', color: 'var(--wobo-ink-900)' }}>
           {move.text}
           {move.result ? ` → ${move.result}` : ''}
         </div>
-        <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)', marginTop: 6 }}>
+        <div style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)', marginTop: 6 }}>
           this one comes back before the end — the finish is yours.
         </div>
       </motion.div>
@@ -246,7 +246,7 @@ export function PracticeRun({
     );
   }, [item, pos, sdk, nodeId]);
 
-  // she reads each question aloud as the learner arrives at it — never gates the check button
+  // Wobo reads each question aloud as the learner arrives at it — never gates the check button
   useEffect(() => {
     if (!item || phase !== 'answer') return;
     const spoken = item.equation
@@ -267,7 +267,7 @@ export function PracticeRun({
     setSub(queue.length === 0 ? 0 : Math.min(1, pos / queue.length));
   }, [setSub, pos, queue.length]);
 
-  // she reads the pad at code level — including how much support she is currently giving
+  // Wobo reads the pad at code level — including how much support Wobo is currently giving
   useEffect(() => {
     if (!item) return;
     bus.publishCanvas({
@@ -300,7 +300,7 @@ export function PracticeRun({
     setPos((p) => p + 1);
   }, []);
 
-  // one clue at a time — depth escalates on request, capped by the ladder, delivered in her ink
+  // one clue at a time — depth escalates on request, capped by the ladder, delivered in Wobo's ink
   const giveHint = useCallback(() => {
     if (!item) return;
     const cap = maxHintDepth(mode);
@@ -509,17 +509,17 @@ export function PracticeRun({
   const tint =
     phase === 'correct'
       ? {
-          border: '1px solid var(--clss-feedback-correct)',
-          background: 'var(--clss-feedback-correctSoft)',
+          border: '1px solid var(--wobo-feedback-correct)',
+          background: 'var(--wobo-feedback-correctSoft)',
         }
       : phase === 'detonate'
         ? {
-            border: '1px solid var(--clss-feedback-retry)',
-            background: 'var(--clss-feedback-retrySoft)',
+            border: '1px solid var(--wobo-feedback-retry)',
+            background: 'var(--wobo-feedback-retrySoft)',
           }
         : {
-            border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-            background: 'var(--clss-paper)',
+            border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+            background: 'var(--wobo-paper)',
           };
 
   return (
@@ -541,7 +541,7 @@ export function PracticeRun({
           fontSize: 'clamp(1.7rem, 6vw, 2.2rem)',
           fontWeight: 550,
           letterSpacing: '-0.01em',
-          color: 'var(--clss-ink-900)',
+          color: 'var(--wobo-ink-900)',
           fontVariantNumeric: 'tabular-nums',
           padding: '18px 0 6px',
         }}
@@ -549,7 +549,7 @@ export function PracticeRun({
         {item.equation}
       </div>
 
-      {/* one hint, one surface: her handwritten ink beside the equation (WoboOverlay 'write'). */}
+      {/* one hint, one surface: Wobo's handwritten ink beside the equation (WoboOverlay 'write'). */}
 
       <AnimatePresence mode="wait" initial={false}>
         {phase === 'detonate' ? (
@@ -577,7 +577,7 @@ export function PracticeRun({
                     textAlign: 'center',
                     fontSize: '0.92rem',
                     lineHeight: 1.55,
-                    color: 'var(--clss-ink-700)',
+                    color: 'var(--wobo-ink-700)',
                   }}
                 >
                   {contest === 'checking' ? 'Asking the verifier to look again…' : contestNote}
@@ -611,7 +611,7 @@ export function PracticeRun({
                   ...tint,
                   position: 'relative',
                   width: '100%',
-                  borderRadius: 'var(--clss-radius-sm)',
+                  borderRadius: 'var(--wobo-radius-sm)',
                   minHeight: 64,
                   display: 'flex',
                   alignItems: 'center',
@@ -619,11 +619,11 @@ export function PracticeRun({
                   fontSize: '1.7rem',
                   fontWeight: 550,
                   fontVariantNumeric: 'tabular-nums',
-                  color: 'var(--clss-ink-900)',
+                  color: 'var(--wobo-ink-900)',
                   gap: 10,
                 }}
               >
-                <span style={{ color: 'var(--clss-ink-500)', fontWeight: 500 }}>x =</span>
+                <span style={{ color: 'var(--wobo-ink-500)', fontWeight: 500 }}>x =</span>
                 <span>{entry === '' ? ' ' : entry.replace('-', '−')}</span>
                 {/* the earned burst — small, hue-true, once — with the real +xp riding up beside it.
                     the +xp chip is suppressed on a replay: the combo still runs, but nothing is earned. */}
@@ -633,11 +633,11 @@ export function PracticeRun({
 
               {phase === 'correct' && (
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ color: 'var(--clss-feedback-correct)', fontWeight: 550 }}>
+                  <div style={{ color: 'var(--wobo-feedback-correct)', fontWeight: 550 }}>
                     that holds.
                   </div>
                   {contest === 'upheld' && (
-                    <div style={{ marginTop: 6, fontSize: '0.9rem', color: 'var(--clss-ink-700)' }}>
+                    <div style={{ marginTop: 6, fontSize: '0.9rem', color: 'var(--wobo-ink-700)' }}>
                       you contested — and the proof took your side.
                     </div>
                   )}
@@ -683,9 +683,9 @@ export function PracticeRun({
                             fontSize: '1.2rem',
                             fontFamily: 'inherit',
                             fontWeight: 550,
-                            color: 'var(--clss-ink-900)',
+                            color: 'var(--wobo-ink-900)',
                             background:
-                              'linear-gradient(180deg, var(--clss-card) 0%, #F2F3FB 100%)',
+                              'linear-gradient(180deg, var(--wobo-card) 0%, #F2F3FB 100%)',
                             border: '1px solid #DDE0F0',
                             borderBottom: '3px solid #C9CEE8',
                             borderRadius: 4,

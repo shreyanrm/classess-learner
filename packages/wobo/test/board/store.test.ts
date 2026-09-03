@@ -10,7 +10,7 @@ function clocked(presentation: 'screen' | 'plane' | 'full' = 'plane') {
 
 const circle = (id: string): BoardObject => ({ id, kind: 'circle', anchor: { target: 'btn' } });
 
-describe('the board remembers what she drew', () => {
+describe('the board remembers what Wobo drew', () => {
   it('keeps objects in the order they were drawn', () => {
     const { store } = clocked();
     store.ink(circle('a'));
@@ -91,7 +91,7 @@ describe('the law: a number the verifier never passed is not drawn', () => {
   });
 });
 
-describe('object memory — she can come back to anything she drew', () => {
+describe('object memory — Wobo can come back to anything Wobo drew', () => {
   it('fades one by id', () => {
     const { store, at } = clocked();
     store.ink(circle('a'));

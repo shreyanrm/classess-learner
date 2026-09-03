@@ -9,8 +9,8 @@ import base64
 import json
 
 import pytest
-from classess_gateway.plexus import store, validate
-from classess_gateway.plexus.validate import validate_and_promote
+from wobo_gateway.plexus import store, validate
+from wobo_gateway.plexus.validate import validate_and_promote
 
 
 @pytest.fixture(autouse=True)
@@ -149,14 +149,14 @@ def test_render_enqueue_never_blocks_promotion(monkeypatch, cache_dir) -> None:
 
 
 def test_rendered_url_is_none_without_a_manifest(cache_dir) -> None:
-    from classess_gateway.plexus import engines
+    from wobo_gateway.plexus import engines
 
     assert engines._rendered_url("refraction of light", "video", "core", {}) is None
     assert engines._rendered_url("fractions", "compose", "core", {}) is None  # never for non-video
 
 
 def test_rendered_url_inlines_the_mp4_when_a_manifest_exists(cache_dir) -> None:
-    from classess_gateway.plexus import engines
+    from wobo_gateway.plexus import engines
 
     base = store.artifact_path("refraction of light", "video", "core", {})
     base.parent.mkdir(parents=True, exist_ok=True)
@@ -172,7 +172,7 @@ def test_rendered_url_inlines_the_mp4_when_a_manifest_exists(cache_dir) -> None:
 
 
 def test_public_attaches_rendered_url_to_the_served_video_artifact() -> None:
-    from classess_gateway.plexus import engines
+    from wobo_gateway.plexus import engines
 
     record = {
         "concept": "c",
@@ -202,7 +202,7 @@ def test_public_attaches_rendered_url_to_the_served_video_artifact() -> None:
     ],
 )
 def test_needs_manim_flags_complex_plans(plan) -> None:
-    from classess_gateway.plexus.manim_rung import needs_manim
+    from wobo_gateway.plexus.manim_rung import needs_manim
 
     assert needs_manim(plan) is True
 
@@ -218,14 +218,14 @@ def test_needs_manim_flags_complex_plans(plan) -> None:
     ],
 )
 def test_needs_manim_leaves_simple_plans_on_svg(plan) -> None:
-    from classess_gateway.plexus.manim_rung import needs_manim
+    from wobo_gateway.plexus.manim_rung import needs_manim
 
     assert needs_manim(plan) is False
 
 
 def test_enqueue_manim_appends_to_the_manim_queue(cache_dir, monkeypatch) -> None:
     monkeypatch.delenv("MANIM_QUEUE_PATH", raising=False)
-    from classess_gateway.plexus.manim_rung import enqueue_manim
+    from wobo_gateway.plexus.manim_rung import enqueue_manim
 
     path = enqueue_manim({"artifact": "/x.json", "reason": "proof choreography"})
     assert path == cache_dir / "_manim-queue.jsonl"
@@ -281,7 +281,7 @@ def test_a_double_lint_failure_records_a_refusal_on_the_canonical(monkeypatch, c
     """Sweep regression: when BOTH the Opus draft and the GPT-5.5 rebuild fail the technical
     lint, the canonical is a seed — and an unrecorded seed is retried on every single live
     serve, buying two frontier generations per request to land on the same seed each time."""
-    from classess_gateway.plexus import engines
+    from wobo_gateway.plexus import engines
 
     broken = _video_record(svg="<svg>no viewBox, will not lint</svg>")
     # the rebuild is also broken, so the loud refuse/seed path is taken
@@ -315,7 +315,7 @@ def test_a_double_lint_failure_records_a_refusal_on_the_canonical(monkeypatch, c
 def test_a_recorded_refusal_is_not_regenerated_but_a_plain_seed_is() -> None:
     """The short-circuit is a pause, not a grave: only a RECORDED refusal is spared, and the
     prompt-version rule still reopens it when the doctrine that produced the failure changes."""
-    from classess_gateway.plexus.engines import is_stale
+    from wobo_gateway.plexus.engines import is_stale
 
     current = {"prompt_version": store.PROMPT_VERSION}
 

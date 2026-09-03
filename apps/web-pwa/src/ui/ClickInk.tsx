@@ -36,7 +36,7 @@ export function ClickInk() {
         position: 'fixed',
         inset: 0,
         pointerEvents: 'none',
-        zIndex: 'var(--clss-z-toast)' as unknown as number,
+        zIndex: 'var(--wobo-z-toast)' as unknown as number,
       }}
     >
       <AnimatePresence>
@@ -54,7 +54,7 @@ export function ClickInk() {
               width: 28,
               height: 28,
               borderRadius: '50%',
-              border: '1px solid var(--clss-ink-500)',
+              border: '1px solid var(--wobo-ink-500)',
             }}
           />
         ))}

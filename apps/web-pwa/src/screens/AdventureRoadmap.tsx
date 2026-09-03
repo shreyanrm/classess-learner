@@ -493,7 +493,7 @@ export function AdventureRoadmap({
       ? storedAvatar
       : (CAST_IDS[hash('expedition-avatar') % CAST_IDS.length] ?? ('pip' as CastId));
   const Avatar = CAST[avatarId].Component;
-  const skyTop = regions[0]?.pal.washTop ?? 'var(--clss-canvas)';
+  const skyTop = regions[0]?.pal.washTop ?? 'var(--wobo-canvas)';
   const horizon = dark ? 'rgba(255,196,120,0.10)' : 'rgba(255,196,120,0.35)';
 
   const world = (
@@ -909,12 +909,12 @@ export function AdventureRoadmap({
                         c.state === 'done'
                           ? `linear-gradient(160deg, ${hue}, color-mix(in srgb, ${hue} 62%, #000 12%))`
                           : c.state === 'current'
-                            ? 'var(--clss-paper)'
-                            : 'color-mix(in srgb, var(--clss-ink) 12%, var(--clss-paper))',
+                            ? 'var(--wobo-paper)'
+                            : 'color-mix(in srgb, var(--wobo-ink) 12%, var(--wobo-paper))',
                       border:
                         c.state === 'current'
                           ? `3px solid ${hue}`
-                          : '2px solid color-mix(in srgb, var(--clss-ink) 22%, transparent)',
+                          : '2px solid color-mix(in srgb, var(--wobo-ink) 22%, transparent)',
                       boxShadow:
                         c.state === 'current'
                           ? `0 10px 28px -8px ${hue}`
@@ -925,8 +925,8 @@ export function AdventureRoadmap({
                         c.state === 'done'
                           ? '#fff'
                           : c.state === 'current'
-                            ? 'var(--clss-ink-700)'
-                            : 'var(--clss-ink-500)',
+                            ? 'var(--wobo-ink-700)'
+                            : 'var(--wobo-ink-500)',
                       fontWeight: 700,
                       fontSize: c.state === 'current' ? '1.05rem' : '0.92rem',
                       fontVariantNumeric: 'tabular-nums',
@@ -974,7 +974,7 @@ export function AdventureRoadmap({
                         padding: '4px 10px',
                         fontSize: '0.78rem',
                         fontWeight: 600,
-                        color: 'var(--clss-ink-900)',
+                        color: 'var(--wobo-ink-900)',
                         // Wrap to two centered lines instead of a single truncated line — a checkpoint
                         // name has to be readable at 390px (DESIGN.md §7: glanceable or redrawn).
                         textAlign: 'center',
@@ -1026,7 +1026,7 @@ export function AdventureRoadmap({
               display: 'grid',
               placeItems: 'center',
               cursor: 'pointer',
-              color: 'var(--clss-ink-900)',
+              color: 'var(--wobo-ink-900)',
               pointerEvents: 'auto',
             }}
           >
@@ -1047,7 +1047,7 @@ export function AdventureRoadmap({
             style={{
               fontSize: '1rem',
               fontWeight: 650,
-              color: 'var(--clss-ink-900)',
+              color: 'var(--wobo-ink-900)',
               lineHeight: 1.2,
             }}
           >
@@ -1056,7 +1056,7 @@ export function AdventureRoadmap({
           <div
             style={{
               fontSize: '0.75rem',
-              color: 'var(--clss-ink-500)',
+              color: 'var(--wobo-ink-500)',
               fontWeight: 550,
               fontVariantNumeric: 'tabular-nums',
             }}
@@ -1072,7 +1072,7 @@ export function AdventureRoadmap({
               width: '100%',
               minWidth: 140,
               borderRadius: 2,
-              background: 'var(--clss-tonal)',
+              background: 'var(--wobo-tonal)',
               overflow: 'hidden',
             }}
           >
@@ -1089,7 +1089,7 @@ export function AdventureRoadmap({
                 width: '100%',
                 borderRadius: 2,
                 transformOrigin: 'left',
-                background: 'var(--clss-ultramarine)',
+                background: 'var(--wobo-ultramarine)',
               }}
             />
           </div>
@@ -1160,14 +1160,14 @@ export function AdventureRoadmap({
                 ...FROST,
                 maxWidth: 340,
                 width: '100%',
-                borderRadius: 'var(--clss-radius-lg)',
+                borderRadius: 'var(--wobo-radius-lg)',
                 padding: '22px 22px 18px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 14,
               }}
             >
-              <div style={{ fontSize: '0.95rem', lineHeight: 1.5, color: 'var(--clss-ink-900)' }}>
+              <div style={{ fontSize: '0.95rem', lineHeight: 1.5, color: 'var(--wobo-ink-900)' }}>
                 This builds on {gate.unmet.map((u) => u.name).join(' and ')} — take those first, or
                 proceed anyway.
               </div>
@@ -1207,7 +1207,7 @@ export function AdventureRoadmap({
             style={{
               position: 'absolute',
               inset: 0,
-              background: 'var(--clss-paper)',
+              background: 'var(--wobo-paper)',
               pointerEvents: 'none',
             }}
             aria-hidden

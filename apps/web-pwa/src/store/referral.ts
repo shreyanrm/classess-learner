@@ -8,11 +8,11 @@
  * identifies the invitation, never the person.
  *
  * The code is stable per device (the same learner's links stay the same, so a re-copy is not a new
- * identity) and lives under the `clss-` prefix, so "erase and start over" takes it with everything
+ * identity) and lives under the `wobo-` prefix, so "erase and start over" takes it with everything
  * else.
  */
 
-const REFERRAL_KEY = 'clss-referral-code-v1';
+const REFERRAL_KEY = 'wobo-referral-code-v1';
 /** 8 chars of base32 — ~40 bits: collision-free at any plausible scale, still short enough to read. */
 const CODE_LENGTH = 8;
 const ALPHABET = '23456789abcdefghjkmnpqrstuvwxyz'; // no 0/1/i/l/o — a code gets read aloud

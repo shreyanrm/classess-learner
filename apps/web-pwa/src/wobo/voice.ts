@@ -2,13 +2,13 @@
 
 /**
  * Wobo's voice — a live conversation through the gateway relay (DESIGN.md §4). The browser streams
- * 16 kHz PCM16 up the gateway websocket; her 24 kHz PCM replies play back with minimal buffering.
+ * 16 kHz PCM16 up the gateway websocket; Wobo's 24 kHz PCM replies play back with minimal buffering.
  * No key, no model and no limit ever reaches the client: the relay is gated by a single-use token
  * the gateway mints for this learner, and without one the hook resolves to 'unavailable', silently.
  */
 
-import { mintVoiceToken, voiceSocketUrl } from '@classess/sdk';
-import type { WoboMood } from '@classess/wobo';
+import { mintVoiceToken, voiceSocketUrl } from '@wobo/sdk';
+import type { WoboMood } from '@wobo/wobo';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type VoiceStatus = 'unavailable' | 'idle' | 'connecting' | 'listening' | 'speaking';
@@ -25,15 +25,15 @@ export interface WoboVoice {
   /** Resolves to the outcome the attempt landed on ('listening' when voice is live). */
   start: () => Promise<VoiceOutcome>;
   /** Push-to-talk release: stop capturing the learner and tell the brain the utterance ended, but
-   *  keep the session alive so her spoken reply streams back — then close when she finishes (or a
-   *  safety timeout fires). The one end-of-utterance seam; plain stop() cuts her off mid-word. */
+   *  keep the session alive so Wobo's spoken reply streams back — then close when Wobo finishes (or a
+   *  safety timeout fires). The one end-of-utterance seam; plain stop() cuts Wobo off mid-word. */
   finishTurn: () => void;
   stop: () => void;
 }
 
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
 
-/** The relay frames we care about: her audio, transcripts, and control signals. */
+/** The relay frames we care about: Wobo's audio, transcripts, and control signals. */
 interface LiveServerMessage {
   serverContent?: {
     interrupted?: boolean;
@@ -144,7 +144,7 @@ interface LiveSession {
   playhead: number;
   source: MediaStreamAudioSourceNode;
   processor: ScriptProcessorNode;
-  /** After a push-to-talk release: capture is closed, we are only awaiting her reply. */
+  /** After a push-to-talk release: capture is closed, we are only awaiting Wobo's reply. */
   finishing: boolean;
   /** Any audio played back this session — so an empty push-to-talk hold doesn't hang on the timeout. */
   spoke: boolean;
@@ -225,7 +225,7 @@ export function useWoboVoice(options?: {
     });
     if (acquired.status !== 'ok') {
       if (stale() || acquired.status === 'cancelled') {
-        // The learner let go before she was up. Nothing happened, so nothing is announced.
+        // The learner let go before Wobo was up. Nothing happened, so nothing is announced.
         setStatus('idle');
         return 'cancelled';
       }
@@ -311,7 +311,7 @@ export function useWoboVoice(options?: {
       node.onended = () => {
         state.sources.delete(node);
         if (state.sources.size === 0 && live.current === state) {
-          // Push-to-talk: her reply has finished playing, so close the session cleanly.
+          // Push-to-talk: Wobo's reply has finished playing, so close the session cleanly.
           if (state.finishing) {
             stop();
             return;
@@ -351,8 +351,8 @@ export function useWoboVoice(options?: {
       if (content?.turnComplete) {
         const heardNothing = state.inTxt.trim() === '';
         flush(state);
-        // Empty push-to-talk hold — a mic mis-tap that captured only silence, and she has no reply
-        // to stream. Close gracefully now instead of leaving her hanging until the 12s safety timeout.
+        // Empty push-to-talk hold — a mic mis-tap that captured only silence, and Wobo has no reply
+        // to stream. Close gracefully now instead of leaving Wobo hanging until the 12s safety timeout.
         if (state.finishing && heardNothing && !state.spoke) stop();
       }
     };
@@ -380,7 +380,7 @@ export function useWoboVoice(options?: {
     const l = live.current;
     if (!l || l.finishing) return;
     l.finishing = true;
-    // Stop capturing the moment she lets go — nothing said after release should leave the device.
+    // Stop capturing the moment Wobo lets go — nothing said after release should leave the device.
     try {
       l.source.disconnect();
       l.processor.disconnect();
@@ -395,7 +395,7 @@ export function useWoboVoice(options?: {
     if (l.ws.readyState === WebSocket.OPEN) {
       l.ws.send(JSON.stringify({ realtimeInput: { audioStreamEnd: true } }));
     }
-    // If she never replies (keyless/quota 502), the session must still close on its own.
+    // If Wobo never replies (keyless/quota 502), the session must still close on its own.
     l.safety = setTimeout(() => {
       if (live.current === l) stop();
     }, 12000);

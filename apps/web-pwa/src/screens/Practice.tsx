@@ -8,7 +8,7 @@
  * throughout; the copy never guilts, memory fades on a real curve.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type ReactNode, useEffect, useState } from 'react';
 import { chaptersBySubject, subjects, topicById } from '../data/catalog';
@@ -25,7 +25,7 @@ import { bestScore, type ForgedWorkbook, removeForge, useForged } from './practi
 import { MIX_LABEL, SIZE_LABEL } from './practice/pools';
 
 const PRACTICE_WASH =
-  'radial-gradient(64% 40% at 50% -6%, var(--clss-ultramarine-soft) 0%, transparent 68%),' +
+  'radial-gradient(64% 40% at 50% -6%, var(--wobo-ultramarine-soft) 0%, transparent 68%),' +
   ' radial-gradient(48% 26% at 50% 30%, rgba(255,201,60,0.045) 0%, transparent 72%)';
 
 function SectionHead({ title, line }: { title: string; line?: string }) {
@@ -36,13 +36,13 @@ function SectionHead({ title, line }: { title: string; line?: string }) {
           fontSize: '1.15rem',
           fontWeight: 600,
           letterSpacing: '-0.02em',
-          color: 'var(--clss-ink-900)',
+          color: 'var(--wobo-ink-900)',
         }}
       >
         {title}
       </div>
       {line && (
-        <div style={{ marginTop: 3, fontSize: '0.88rem', color: 'var(--clss-ink-500)' }}>
+        <div style={{ marginTop: 3, fontSize: '0.88rem', color: 'var(--wobo-ink-500)' }}>
           {line}
         </div>
       )}
@@ -93,8 +93,8 @@ function RailCard({
         borderRadius: 3,
         cursor: 'pointer',
         fontFamily: 'inherit',
-        background: 'var(--clss-card)',
-        border: '0.5px solid var(--clss-card-border)',
+        background: 'var(--wobo-card)',
+        border: '0.5px solid var(--wobo-card-border)',
         borderTop: `3px solid ${hue}`,
         display: 'flex',
         flexDirection: 'column',
@@ -118,7 +118,7 @@ function RailCard({
         style={{
           fontSize: '0.98rem',
           fontWeight: 560,
-          color: 'var(--clss-ink-900)',
+          color: 'var(--wobo-ink-900)',
           lineHeight: 1.3,
         }}
       >
@@ -141,10 +141,10 @@ function ShelfCard({ w, onRun }: { w: ForgedWorkbook; onRun: () => void }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 26 }}
       style={{
-        border: '0.5px solid var(--clss-card-border)',
+        border: '0.5px solid var(--wobo-card-border)',
         borderLeft: `3px solid ${hue}`,
         borderRadius: 3,
-        background: 'var(--clss-card)',
+        background: 'var(--wobo-card)',
         padding: '16px 18px',
         display: 'flex',
         flexDirection: 'column',
@@ -160,10 +160,10 @@ function ShelfCard({ w, onRun }: { w: ForgedWorkbook; onRun: () => void }) {
         }}
       >
         <div style={{ minWidth: 0 }}>
-          <div style={{ fontSize: '1.02rem', fontWeight: 600, color: 'var(--clss-ink-900)' }}>
+          <div style={{ fontSize: '1.02rem', fontWeight: 600, color: 'var(--wobo-ink-900)' }}>
             {w.title.toLowerCase()}
           </div>
-          <div style={{ marginTop: 3, fontSize: '0.82rem', color: 'var(--clss-ink-500)' }}>
+          <div style={{ marginTop: 3, fontSize: '0.82rem', color: 'var(--wobo-ink-500)' }}>
             {w.total || w.size} items · {SIZE_LABEL[w.size]} · {MIX_LABEL[w.mix]}
           </div>
         </div>
@@ -173,13 +173,13 @@ function ShelfCard({ w, onRun }: { w: ForgedWorkbook; onRun: () => void }) {
               style={{
                 fontSize: '1.1rem',
                 fontWeight: 650,
-                color: best.correct / best.total >= 0.8 ? 'var(--clss-feedback-correct)' : hue,
+                color: best.correct / best.total >= 0.8 ? 'var(--wobo-feedback-correct)' : hue,
                 fontVariantNumeric: 'tabular-nums',
               }}
             >
               {best.correct}/{best.total}
             </div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--clss-ink-300)' }}>best</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--wobo-ink-300)' }}>best</div>
           </div>
         )}
       </div>
@@ -217,8 +217,8 @@ function ShelfCard({ w, onRun }: { w: ForgedWorkbook; onRun: () => void }) {
             fontFamily: 'inherit',
             fontSize: '0.9rem',
             fontWeight: 600,
-            color: building ? 'var(--clss-ink-500)' : 'var(--clss-on-ink)',
-            background: building ? 'var(--clss-tonal)' : 'var(--clss-ultramarine)',
+            color: building ? 'var(--wobo-ink-500)' : 'var(--wobo-on-ink)',
+            background: building ? 'var(--wobo-tonal)' : 'var(--wobo-ultramarine)',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -235,7 +235,7 @@ function ShelfCard({ w, onRun }: { w: ForgedWorkbook; onRun: () => void }) {
                   width: 12,
                   height: 12,
                   borderRadius: 999,
-                  border: '2px solid var(--clss-ink-300)',
+                  border: '2px solid var(--wobo-ink-300)',
                   borderTopColor: 'transparent',
                 }}
               />
@@ -256,12 +256,12 @@ function ShelfCard({ w, onRun }: { w: ForgedWorkbook; onRun: () => void }) {
             style={{
               padding: '9px 12px',
               borderRadius: 3,
-              border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+              border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
               background: 'transparent',
               cursor: 'pointer',
               fontFamily: 'inherit',
               fontSize: '0.82rem',
-              color: 'var(--clss-ink-500)',
+              color: 'var(--wobo-ink-500)',
             }}
           >
             remove
@@ -303,7 +303,7 @@ export function Practice() {
     });
   }, [publishPage, due, forged.length]);
 
-  // The screen as she sees it: how much is due, what the learner has forged, and the one door she
+  // The screen as Wobo sees it: how much is due, what the learner has forged, and the one door Wobo
   // can open for them. Registered so "what should I practise" is answered from the real queue.
   const stageRef = useRegisterTarget<HTMLDivElement>('practice-stage', {
     kind: 'practice',
@@ -354,12 +354,12 @@ export function Practice() {
             fontSize: '1.9rem',
             fontWeight: 650,
             letterSpacing: '-0.035em',
-            color: 'var(--clss-ink-900)',
+            color: 'var(--wobo-ink-900)',
           }}
         >
           {view === 'builder' ? 'The forge' : 'Practice'}
         </h1>
-        <div style={{ marginTop: 6, fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>
+        <div style={{ marginTop: 6, fontSize: '0.95rem', color: 'var(--wobo-ink-500)' }}>
           {view === 'builder'
             ? "bind your own workbook from what you've already touched"
             : 'sharpen what you hold — memory fades on a real curve'}
@@ -416,18 +416,18 @@ export function Practice() {
                   borderRadius: 3,
                   cursor: 'pointer',
                   fontFamily: 'inherit',
-                  background: 'var(--clss-card)',
-                  border: '0.5px solid var(--clss-card-border)',
+                  background: 'var(--wobo-card)',
+                  border: '0.5px solid var(--wobo-card-border)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   gap: 14,
                 }}
               >
-                <span style={{ fontSize: '1rem', color: 'var(--clss-ink-900)', fontWeight: 520 }}>
+                <span style={{ fontSize: '1rem', color: 'var(--wobo-ink-900)', fontWeight: 520 }}>
                   {due > 0 ? 'refresh them before they slip' : 'go learn something to review later'}
                 </span>
-                <span style={{ color: 'var(--clss-ink-300)', display: 'inline-flex' }}>
+                <span style={{ color: 'var(--wobo-ink-300)', display: 'inline-flex' }}>
                   <ChevronIcon size={15} />
                 </span>
               </motion.button>
@@ -495,8 +495,8 @@ export function Practice() {
                   borderRadius: 3,
                   cursor: 'pointer',
                   fontFamily: 'inherit',
-                  color: 'var(--clss-on-ink)',
-                  background: 'linear-gradient(120deg, var(--clss-ultramarine) 0%, #3A4EF0 100%)',
+                  color: 'var(--wobo-on-ink)',
+                  background: 'linear-gradient(120deg, var(--wobo-ultramarine) 0%, #3A4EF0 100%)',
                   border: 'none',
                   display: 'flex',
                   alignItems: 'center',
@@ -529,7 +529,7 @@ export function Practice() {
               {/* the shelf — forged workbooks persist here, re-attemptable */}
               {forged.length > 0 && (
                 <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <div style={{ ...{ fontSize: '0.82rem', color: 'var(--clss-ink-500)' } }}>
+                  <div style={{ ...{ fontSize: '0.82rem', color: 'var(--wobo-ink-500)' } }}>
                     your shelf
                   </div>
                   <AnimatePresence initial={false}>

@@ -4,7 +4,7 @@
  * Discovery — THE guided-discovery shell (DESIGN.md §9, the keystone). The one format every other
  * engine targets: one idea per screen, act-to-reveal, zero lecturing. A stage (a large reactive
  * SVG visual), exactly one interaction (tap targets / drag a handle / slide a slider), and a reveal
- * beat that lands — motion + sound + her one-line caption — ONLY the moment the learner acts, never
+ * beat that lands — motion + sound + Wobo's one-line caption — ONLY the moment the learner acts, never
  * before. Advance gates on the interaction completing.
  *
  * ── The spec the composer emits ───────────────────────────────────────────────────────────────
@@ -16,7 +16,7 @@
  *     visual:  { marks: Mark[] }                 // the SVG subject on a 0..100 × 0..62 canvas
  *     interaction: Interaction                   // exactly one of the three verbs below
  *     reveal:  string                            // the idea, revealed on completion (never before)
- *     caption: string                            // her one line, spoken (setMood) as it lands
+ *     caption: string                            // Wobo's one line, spoken (setMood) as it lands
  *   }
  *
  *   Mark = { id, shape:'circle'|'rect'|'line'|'ring'|'text', x, y, x2?, y2?, r?, w?, h?,
@@ -30,12 +30,12 @@
  *     { kind:'slide', prompt, min, max, from, at, unit?, valueLabel?,   // slide until value crosses `at`
  *                     bind?:{ mark, prop:'x'|'y'|'r', at:[number,number] } }  // live-drives one mark
  *
- * The stage registers as a Wobo scene target: she reads current stage + the learner's live action
+ * The stage registers as a Wobo scene target: Wobo reads current stage + the learner's live action
  * (getSceneState / getValidActions) and can DRIVE it to demonstrate (applyTutorAction). Reduced-motion
  * and mute aware; both themes; no new deps.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   type PointerEvent as ReactPointerEvent,
@@ -220,7 +220,7 @@ const VB_W = 100;
 const VB_H = 62;
 
 function toneStroke(tone: Tone, hue: string): string {
-  return tone === 'hue' ? hue : tone === 'muted' ? 'var(--clss-ink-300)' : 'var(--clss-ink-700)';
+  return tone === 'hue' ? hue : tone === 'muted' ? 'var(--wobo-ink-300)' : 'var(--wobo-ink-700)';
 }
 
 /** One SVG mark. `lit` recolours it to the hue (the earned reveal); `hot` is a tap-target hover ring. */
@@ -312,7 +312,7 @@ function MarkShape({
             fontSize={mark.r ?? 7}
             textAnchor="middle"
             dominantBaseline="middle"
-            fill={lit ? hue : 'var(--clss-ink-700)'}
+            fill={lit ? hue : 'var(--wobo-ink-700)'}
             style={{ fontFamily: 'inherit', fontWeight: 560, transition: 'fill 0.3s ease' }}
           >
             {mark.text}
@@ -455,7 +455,7 @@ function DiscoveryStageView({
     );
   }, [stage.visual.marks, it, state.value]);
 
-  // --- publish scene state to Wobo's bus + register the stage as a target she can read/drive ---
+  // --- publish scene state to Wobo's bus + register the stage as a target Wobo can read/drive ---
   const didText =
     it.kind === 'tap'
       ? `tapped ${state.tapped.length}/${it.need ?? it.targets.length}`
@@ -480,7 +480,7 @@ function DiscoveryStageView({
         : it.kind === 'slide'
           ? [it.prompt, `slide toward ${it.at}${it.unit ? ` ${it.unit}` : ''}`]
           : [it.prompt, 'drag the handle onto the target zone'];
-  // she demonstrates by doing: a { complete:true } patch, a slider value, or a tap id
+  // Wobo demonstrates by doing: a { complete:true } patch, a slider value, or a tap id
   const applyTutorAction = (patch: Record<string, unknown>) => {
     if (patch.complete === true) return fire();
     if (it.kind === 'slide' && num(patch.value)) return setSlide(patch.value);
@@ -533,7 +533,7 @@ function DiscoveryStageView({
                 height: 3,
                 width: i === index ? 22 : 10,
                 borderRadius: 3,
-                background: i <= index ? hue : 'var(--clss-hairline-on-paper-strong)',
+                background: i <= index ? hue : 'var(--wobo-hairline-on-paper-strong)',
                 transition: 'width 0.3s ease, background 0.3s ease',
               }}
             />
@@ -637,7 +637,7 @@ function DiscoveryStageView({
                 fontVariantNumeric: 'tabular-nums',
                 fontSize: '1.05rem',
                 fontWeight: 560,
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               {(it.valueLabel ?? '{v}').replace('{v}', String(state.value))}
@@ -652,13 +652,13 @@ function DiscoveryStageView({
             ...lead,
             borderLeft: `2px solid ${hue}`,
             paddingLeft: 14,
-            color: 'var(--clss-ink-900)',
+            color: 'var(--wobo-ink-900)',
           }}
         >
           {it.prompt}
         </div>
 
-        {/* the reveal beat — the idea + her caption, land together, only after the act */}
+        {/* the reveal beat — the idea + Wobo's caption, land together, only after the act */}
         <AnimatePresence>
           {state.done && (
             <motion.div
@@ -674,13 +674,13 @@ function DiscoveryStageView({
             >
               <div
                 style={{
-                  border: '1px solid var(--clss-feedback-correct)',
-                  background: 'var(--clss-feedback-correctSoft)',
+                  border: '1px solid var(--wobo-feedback-correct)',
+                  background: 'var(--wobo-feedback-correctSoft)',
                   borderRadius: 3,
                   padding: '14px 16px',
                   fontSize: '1.02rem',
                   lineHeight: 1.6,
-                  color: 'var(--clss-ink-900)',
+                  color: 'var(--wobo-ink-900)',
                 }}
               >
                 {stage.reveal}
@@ -689,7 +689,7 @@ function DiscoveryStageView({
                 <span aria-hidden style={{ color: hue, fontSize: '1.1rem', lineHeight: 1.4 }}>
                   ◍
                 </span>
-                <div style={{ ...lead, fontStyle: 'italic', color: 'var(--clss-ink-700)' }}>
+                <div style={{ ...lead, fontStyle: 'italic', color: 'var(--wobo-ink-700)' }}>
                   {stage.caption}
                 </div>
               </div>

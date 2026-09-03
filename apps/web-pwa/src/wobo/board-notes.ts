@@ -11,10 +11,10 @@
  * child another child's board, and signing out takes them with it.
  */
 
-import { type BoardObject, type BoardStore, saveBoard } from '@classess/wobo';
+import { type BoardObject, type BoardStore, saveBoard } from '@wobo/wobo';
 import { scoped } from '../store/scope';
 
-export const BOARD_NOTES_KEY = 'clss-board-notes-v1';
+export const BOARD_NOTES_KEY = 'wobo-board-notes-v1';
 /** localStorage is not a filing cabinet; the newest boards are the ones worth keeping. */
 export const NOTES_CAP = 24;
 
@@ -22,7 +22,7 @@ export interface SavedBoard {
   id: string;
   title: string;
   savedAt: string;
-  /** The route she drew it on, so "the board from my atoms lesson" resolves. */
+  /** The route Wobo drew it on, so "the board from my atoms lesson" resolves. */
   route?: string;
   objects: BoardObject[];
 }
@@ -64,7 +64,7 @@ function mintId(): string {
   }
 }
 
-/** Save the board she is on. Returns the note, or null when there was nothing on it. */
+/** Save the board Wobo is on. Returns the note, or null when there was nothing on it. */
 export function saveBoardToNotes(
   store: BoardStore,
   opts: { title?: string; route?: string } = {},

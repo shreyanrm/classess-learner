@@ -1,16 +1,16 @@
 'use client';
 
 /**
- * Her body, driven by what is actually happening (docs/WOBO-PLAN.md §3, WOBO-TASKS §5.7).
+ * Wobo's body, driven by what is actually happening (docs/WOBO-PLAN.md §3, WOBO-TASKS §5.7).
  *
  * The rig can wear twenty expressions; the point is that it wears the true one. Listening comes from
  * the microphone actually being open, drawing from the pen actually being down, thinking from a plan
  * actually streaming, aha from a verified correct answer — never from a timer and never from a
- * canned loop. Idleness is measured from real learner input anywhere in the app, including input she
+ * canned loop. Idleness is measured from real learner input anywhere in the app, including input Wobo
  * cannot see (typing in a composer, scrolling a lesson), which each surface reports here.
  */
 
-import type { WoboExpression } from '@classess/wobo';
+import type { WoboExpression } from '@wobo/wobo';
 import { useEffect, useSyncExternalStore } from 'react';
 
 // --- Real idleness ----------------------------------------------------------------------------------
@@ -75,9 +75,9 @@ export interface PresenceSignals {
   drawing: boolean;
   /** A verified correct answer just landed — the scarce one. */
   aha: boolean;
-  /** She is speaking her line. */
+  /** Wobo is speaking Wobo's line. */
   speaking: boolean;
-  /** The learner is in her drawer or on the board with her. */
+  /** The learner is in Wobo's drawer or on the board with Wobo. */
   engaged: boolean;
   /** A verifier is running: numbers being checked before they are drawn. */
   computing?: boolean;
@@ -99,7 +99,7 @@ export function moodFor(signals: PresenceSignals): WoboExpression {
 }
 
 /**
- * Where her eyes go: the thing in focus, if there is one. A rect, so the rig tracks the real region
+ * Where Wobo's eyes go: the thing in focus, if there is one. A rect, so the rig tracks the real region
  * the learner circled rather than a guess at where it might be.
  */
 export interface TrackRectLike {

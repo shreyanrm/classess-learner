@@ -2,12 +2,12 @@
 
 /**
  * FrameBuilding — the moment right after setup, before the world opens. Wobo narrates, playfully
- * and honestly, what she's actually doing while a skeleton constellation forms (MOTION.md §1/§3):
- * nodes settle in and faint edges draw between them, the shape of a course assembling. She's honest
+ * and honestly, what Wobo is actually doing while a skeleton constellation forms (MOTION.md §1/§3):
+ * nodes settle in and faint edges draw between them, the shape of a course assembling. Wobo is honest
  * about speed — a cached frame opens almost at once; a fresh board takes a breath while its catalog
  * is fetched and wired.
  *
- * When the frame is ready she gives the WELCOME MOMENT (Ceremony-class, welcome-flavored): she jumps
+ * When the frame is ready Wobo gives the WELCOME MOMENT (Ceremony-class, welcome-flavored): Wobo jumps
  * and welcomes the learner BY NAME aloud, a 3-color confetti burst fires with the warm fanfare, and
  * the real subject doors cascade in. This replaces the old plan-reveal card.
  *
@@ -16,7 +16,7 @@
  * own textbook chapter names. Every path ends with the learner stepping into a home that's truly theirs.
  */
 
-import { useWoboBus, WoboBody, type WoboMood } from '@classess/wobo';
+import { useWoboBus, WoboBody, type WoboMood } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ONBOARDED_KEY } from '../App';
@@ -36,7 +36,7 @@ import { boardName, loadProfile } from './you/profile';
 
 const ULTRA = '#1F35E0';
 const BUILDING_WASH =
-  'radial-gradient(46% 40% at 50% 40%, var(--clss-ultramarine-soft) 0%, transparent 66%),' +
+  'radial-gradient(46% 40% at 50% 40%, var(--wobo-ultramarine-soft) 0%, transparent 66%),' +
   ' radial-gradient(60% 44% at 50% 42%, rgba(255,201,60,0.04) 0%, transparent 74%)';
 
 type Phase = 'building' | 'welcome' | 'empty';
@@ -180,7 +180,7 @@ function WelcomeDoors({ frame, reduced }: { frame: Frame; reduced: boolean }) {
               style={{
                 fontSize: '0.82rem',
                 fontWeight: 600,
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
                 textAlign: 'center',
                 lineHeight: 1.25,
               }}
@@ -211,7 +211,7 @@ export function FrameBuilding() {
   const [narration, setNarration] = useState(0);
   const ran = useRef(false);
 
-  // The playful, honest narration while she works — board- and grade-specific so it never reads canned.
+  // The playful, honest narration while Wobo works — board- and grade-specific so it never reads canned.
   const lines = useMemo(
     () => [
       `Opening the ${label} shelf for ${profile.grade}…`,
@@ -327,7 +327,7 @@ export function FrameBuilding() {
           )}
         </AnimatePresence>
 
-        {/* Wobo at the centre — thinking as she builds, jumping as she welcomes */}
+        {/* Wobo at the centre — thinking as Wobo builds, jumping as Wobo welcomes */}
         <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}>
           <motion.div
             animate={
@@ -365,7 +365,7 @@ export function FrameBuilding() {
                   fontSize: 'clamp(1.2rem, 1rem + 1vw, 1.55rem)',
                   fontWeight: 600,
                   letterSpacing: '-0.02em',
-                  color: 'var(--clss-ink-900)',
+                  color: 'var(--wobo-ink-900)',
                 }}
               >
                 Building your personalised course
@@ -377,7 +377,7 @@ export function FrameBuilding() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.4 }}
-                  style={{ fontSize: '0.95rem', color: 'var(--clss-ink-500)', lineHeight: 1.5 }}
+                  style={{ fontSize: '0.95rem', color: 'var(--wobo-ink-500)', lineHeight: 1.5 }}
                 >
                   {lines[narration]}
                 </motion.div>
@@ -399,12 +399,12 @@ export function FrameBuilding() {
                     fontSize: 'clamp(1.6rem, 1.2rem + 1.8vw, 2.2rem)',
                     fontWeight: 650,
                     letterSpacing: '-0.03em',
-                    color: 'var(--clss-ink-900)',
+                    color: 'var(--wobo-ink-900)',
                   }}
                 >
                   Welcome, {firstName}
                 </div>
-                <div style={{ fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>
+                <div style={{ fontSize: '0.95rem', color: 'var(--wobo-ink-500)' }}>
                   Your {label} · {profile.grade} world is ready
                 </div>
               </div>
@@ -433,7 +433,7 @@ export function FrameBuilding() {
                   fontSize: 'clamp(1.4rem, 1.1rem + 1.4vw, 1.9rem)',
                   fontWeight: 640,
                   letterSpacing: '-0.02em',
-                  color: 'var(--clss-ink-900)',
+                  color: 'var(--wobo-ink-900)',
                 }}
               >
                 I don't have {label} yet, {firstName}
@@ -441,7 +441,7 @@ export function FrameBuilding() {
               <div
                 style={{
                   fontSize: '0.98rem',
-                  color: 'var(--clss-ink-500)',
+                  color: 'var(--wobo-ink-500)',
                   lineHeight: 1.6,
                   maxWidth: 440,
                 }}

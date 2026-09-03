@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import pytest
-from classess_gateway import email as email_mod
-from classess_gateway.app import create_app
-from classess_gateway.email import send_email
-from classess_gateway.email_templates import KINDS, render
+from wobo_gateway import email as email_mod
+from wobo_gateway.app import create_app
+from wobo_gateway.email import send_email
+from wobo_gateway.email_templates import KINDS, render
 
-INTERNAL_HEADER = {"X-Classess-Internal": "test-internal-key"}
+INTERNAL_HEADER = {"X-Wobo-Internal": "test-internal-key"}
 
 
 # --- every template renders to a brand-correct email ----------------------------------
@@ -38,7 +38,7 @@ def test_the_footer_carries_a_real_opt_out_and_postal_address(
     monkeypatch.setenv("APP_URL", "https://example.test")
     monkeypatch.setenv("EMAIL_POSTAL_ADDRESS", "12 Example Road, Bengaluru 560001, India")
     monkeypatch.delenv("EMAIL_UNSUBSCRIBE_URL", raising=False)
-    templates = importlib.reload(importlib.import_module("classess_gateway.email_templates"))
+    templates = importlib.reload(importlib.import_module("wobo_gateway.email_templates"))
     try:
         html = templates.render(kind)["html"]
         assert 'href="https://example.test/unsubscribe"' in html
@@ -56,12 +56,12 @@ def test_every_link_follows_APP_URL(monkeypatch: pytest.MonkeyPatch) -> None:
     import importlib
 
     monkeypatch.setenv("APP_URL", "https://example.test/")
-    templates = importlib.reload(importlib.import_module("classess_gateway.email_templates"))
+    templates = importlib.reload(importlib.import_module("wobo_gateway.email_templates"))
     try:
         for kind in templates.KINDS:
             out = templates.render(kind)
-            assert "classess.com" not in out["html"], kind
-            assert "classess.com" not in out["text"], kind
+            assert "wobo.invalid" not in out["html"], kind
+            assert "wobo.invalid" not in out["text"], kind
             assert "https://example.test/" in out["html"], kind
     finally:
         importlib.reload(templates)
@@ -132,7 +132,7 @@ def test_endpoint_403s_with_wrong_internal_header(monkeypatch: pytest.MonkeyPatc
     monkeypatch.setenv("INTERNAL_EMAIL_KEY", "test-internal-key")
     client = TestClient(create_app())
     body = {"kind": "account_created", "to": "a@b.com", "consent_tier": "elevated", "data": {}}
-    r = client.post("/v1/email/send", json=body, headers={"X-Classess-Internal": "wrong"})
+    r = client.post("/v1/email/send", json=body, headers={"X-Wobo-Internal": "wrong"})
     assert r.status_code == 403
 
 
@@ -148,7 +148,7 @@ def test_a_non_ascii_internal_header_is_a_403_not_a_500(monkeypatch: pytest.Monk
     # Header bytes on the wire; starlette decodes them latin-1, so the handler sees a str that
     # str.encode("ascii") — and therefore compare_digest — would refuse.
     for header in ("tëst-internal-key", "test-internal-key\u00ff", "ÿÿÿ"):
-        raw = {"X-Classess-Internal": header.encode("latin-1")}
+        raw = {"X-Wobo-Internal": header.encode("latin-1")}
         r = client.post("/v1/email/send", json=body, headers=raw)
         assert r.status_code == 403, header
         assert r.json()["detail"]["code"] == "not_allowed"
@@ -292,7 +292,7 @@ def test_a_caller_supplied_cta_cannot_point_off_our_domain() -> None:
     """``/v1/email/send`` carries our domain, our brand and our sending reputation. A caller who
     can set ``cta_url`` would otherwise get a button to anywhere they like, in HTML and in the
     plain-text body alike."""
-    from classess_gateway import email_templates as t
+    from wobo_gateway import email_templates as t
 
     for hostile in (
         "https://evil.example/collect",
@@ -311,7 +311,7 @@ def test_a_caller_supplied_cta_cannot_point_off_our_domain() -> None:
 
 
 def test_a_hostile_unsubscribe_url_falls_back_to_the_configured_one() -> None:
-    from classess_gateway import email_templates as t
+    from wobo_gateway import email_templates as t
 
     out = t.render("course_ready", {"unsubscribe_url": "https://evil.example/u"})
     assert "evil.example" not in out["html"]
@@ -321,7 +321,7 @@ def test_a_hostile_unsubscribe_url_falls_back_to_the_configured_one() -> None:
 def test_the_button_re_checks_its_url_even_when_a_template_bypasses_link() -> None:
     """Last line of defence: a future template that builds a CTA by hand still cannot emit a
     javascript: href."""
-    from classess_gateway import email_templates as t
+    from wobo_gateway import email_templates as t
 
     assert "javascript:" not in t._button("go", "javascript:alert(1)").lower()
     assert t.APP_URL in t._button("go", "javascript:alert(1)")
@@ -331,7 +331,7 @@ def test_an_on_domain_cta_is_still_honoured() -> None:
     """The allowlist is a filter, not a ban: our own links must survive it."""
     import html
 
-    from classess_gateway import email_templates as t
+    from wobo_gateway import email_templates as t
 
     mine = f"{t.APP_URL}/learn/photosynthesis?utm=abc"
     out = t.render("course_ready", {"cta_url": mine})
@@ -343,9 +343,9 @@ def test_recipient_addresses_are_hashed_in_the_log(caplog) -> None:
     """Our recipients are children and their guardians: the address never lands in a log line."""
     import logging
 
-    from classess_gateway.email import send_email, to_hash
+    from wobo_gateway.email import send_email, to_hash
 
-    with caplog.at_level(logging.INFO, logger="classess.gateway.email"):
+    with caplog.at_level(logging.INFO, logger="wobo.gateway.email"):
         result = send_email("course_ready", "kid@example.test", {})
     assert result["ok"] is True
 

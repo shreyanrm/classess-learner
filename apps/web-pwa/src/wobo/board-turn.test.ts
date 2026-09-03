@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'bun:test';
-import { BoardStore, createFocus, focusRectNow, parseBoardEvent } from '@classess/wobo';
+import { BoardStore, createFocus, focusRectNow, parseBoardEvent } from '@wobo/wobo';
 import { boardTargets, focusRegionsFor, lessonStore, screenStore } from './board-turn';
 
 const RECT = { x: 4, y: 8, width: 100, height: 30 };
 
-describe('the focus regions her ink can anchor to', () => {
+describe("the focus regions Wobo's ink can anchor to", () => {
   it('is empty when the learner has pointed at nothing', () => {
     expect(focusRegionsFor(null)).toEqual([]);
   });
@@ -20,7 +20,7 @@ describe('the focus regions her ink can anchor to', () => {
 });
 
 describe('a region the learner circled, after the page has moved', () => {
-  it('follows the target it was drawn round, keeping the shape she drew', () => {
+  it('follows the target it was drawn round, keeping the shape Wobo drew', () => {
     const film = { x: 0, y: 0, width: 540, height: 320 };
     const focus = createFocus({
       kind: 'lasso',
@@ -75,7 +75,7 @@ describe('the utterance clock the plan is timed against', () => {
       },
     });
 
-  it('measures every object from the moment she begins to speak', () => {
+  it('measures every object from the moment Wobo begins to speak', () => {
     let clock = 1000;
     const store = new BoardStore({ presentation: 'plane', clock: () => clock });
     store.beginUtterance();

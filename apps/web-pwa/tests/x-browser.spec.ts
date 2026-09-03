@@ -26,9 +26,9 @@ const THEMES = ['light', 'dark'] as const;
 
 type Theme = (typeof THEMES)[number];
 
-/** Force a stored theme before the app boots (theme.ts reads clss-theme-v1 at init). */
+/** Force a stored theme before the app boots (theme.ts reads wobo-theme-v1 at init). */
 async function seedTheme(page: Page, theme: Theme): Promise<void> {
-  await page.addInitScript((t) => localStorage.setItem('clss-theme-v1', t), theme);
+  await page.addInitScript((t) => localStorage.setItem('wobo-theme-v1', t), theme);
 }
 
 function shotPath(engine: string, width: number, theme: Theme, name: string): string {
@@ -138,7 +138,7 @@ for (const { width, height } of SIZES) {
       await expect(page.getByText(/of \d+ concepts are yours/)).toBeVisible({ timeout: 15_000 });
       await checkCell(page, { ...cell, name: '07-progress', header: true, orb: true });
 
-      // 8 — chat (the page IS her — no docked twin)
+      // 8 — chat (the page IS Wobo — no docked twin)
       await paletteGo(page, 'chat');
       await expect(page.getByRole('button', { name: 'Back — ◦ back' })).toBeVisible();
       await checkCell(page, { ...cell, name: '08-chat', header: true });
@@ -158,7 +158,7 @@ for (const { width, height } of SIZES) {
       await seedTheme(page, theme);
       await page.setViewportSize({ width, height });
       await page.goto('/');
-      // The flow opens on her door: one warm tap unlocks her voice, then she introduces herself
+      // The flow opens on Wobo's door: one warm tap unlocks Wobo's voice, then Wobo introduces themself
       // (written letter by letter) and only afterwards asks for a name. The screenshot is taken on
       // that first beat — the one every learner actually meets first.
       await expect(page.getByRole('button', { name: 'begin', exact: true })).toBeVisible({

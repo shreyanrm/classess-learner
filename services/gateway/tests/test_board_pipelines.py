@@ -2,17 +2,17 @@
 
 BOARD.md §6 asks for "a regression suite of prompts with expected board outcomes (structure, not
 pixels) for every pipeline". These tests assert the things that would make the board a slideshow
-if they broke: the object kinds she draws, what they anchor to, the order they are drawn in, and
+if they broke: the object kinds Wobo draws, what they anchor to, the order they are drawn in, and
 that every number on the board names a verifier check that actually ran.
 """
 
 from __future__ import annotations
 
 import pytest
-from classess_gateway.board import schema
-from classess_gateway.board.pipelines import run_intent
-from classess_gateway.board.verify import Unverified
-from classess_gateway.wobo import board_intents
+from wobo_gateway.board import schema
+from wobo_gateway.board.pipelines import run_intent
+from wobo_gateway.board.verify import Unverified
+from wobo_gateway.wobo import board_intents
 
 # prompt -> the intent the keyless brain reads out of it, and what the board must contain.
 GOLDEN: list[tuple[str, dict, dict]] = [

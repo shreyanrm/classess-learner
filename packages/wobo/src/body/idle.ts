@@ -1,9 +1,9 @@
 /**
- * Her idle life — what she does when nobody is talking to her. A pure scheduler: given how long it
- * has been since the last learner input, it says which stage she is in and what fires on entering
+ * Wobo's idle life — what Wobo does when nobody is talking to Wobo. A pure scheduler: given how long it
+ * has been since the last learner input, it says which stage Wobo is in and what fires on entering
  * it. The component owns the clock; this owns the rules, so they can be tested exactly.
  *
- * She is never frozen and never nags: idle life is expression and body only, never a prompt.
+ * Wobo is never frozen and never nags: idle life is expression and body only, never a prompt.
  */
 
 import type { WoboBehaviour } from './behaviours';
@@ -41,12 +41,12 @@ export function idleStageName(stage: IdleStage): IdleStageName {
   return IDLE_STAGE_NAMES[stage];
 }
 
-/** Only stages 1 and 2 wander their eyes about; asleep she does not, awake she has a job. */
+/** Only stages 1 and 2 wander their eyes about; asleep Wobo does not, awake Wobo has a job. */
 export function glancesAt(stage: IdleStage): boolean {
   return stage === 1 || stage === 2;
 }
 
-/** Z's float above her only once she is properly dozing. */
+/** Z's float above Wobo only once Wobo is properly dozing. */
 export function dozing(stage: IdleStage): boolean {
   return stage === 4;
 }
@@ -59,10 +59,10 @@ export interface IdleEvent {
 }
 
 /**
- * What happens when she crosses from one stage to another. `random` is injected so the yawn-or-sigh
+ * What happens when Wobo crosses from one stage to another. `random` is injected so the yawn-or-sigh
  * coin flip is deterministic in tests.
  *
- * Waking is the interesting one: coming back from bored or deeper she startles, which is why the
+ * Waking is the interesting one: coming back from bored or deeper Wobo startles, which is why the
  * rule lives here rather than in a click handler.
  */
 export function idleTransition(
@@ -72,7 +72,7 @@ export function idleTransition(
 ): IdleEvent | null {
   if (from === to) return null;
   if (to < from) {
-    // She was woken. From bored or deeper that is a start; from a glance it is nothing.
+    // Wobo was woken. From bored or deeper that is a start; from a glance it is nothing.
     return from >= 2 ? { expression: 'surprised', behaviour: 'startle' } : { expression: 'idle' };
   }
   if (to === 2) return { expression: 'bored' };
@@ -81,22 +81,22 @@ export function idleTransition(
   return null;
 }
 
-/** How long she holds one glance before choosing another spot to look at. */
+/** How long Wobo holds one glance before choosing another spot to look at. */
 /**
- * When her idle clock was last reset.
+ * When Wobo's idle clock was last reset.
  *
- * Idleness is measured from LEARNER input — a tap, a key, a scroll — and she is not idle while she
+ * Idleness is measured from LEARNER input — a tap, a key, a scroll — and Wobo is not idle while Wobo
  * has something to do. Speaking, drawing, listening and thinking are none of the four input events,
- * so without this a learner sat through a two-minute explanation watching her get bored, yawn and
- * fall asleep while she was still talking.
+ * so without this a learner sat through a two-minute explanation watching Wobo get bored, yawn and
+ * fall asleep while Wobo was still talking.
  */
 export function idleClock(base: string, lastInput: number, now: number): number {
   return base === 'idle' ? lastInput : now;
 }
 
 /**
- * The base expression in force this frame. The app's answer is what she IS; her idle life only
- * colours it while she has nothing else to do — so a base handed to her mid-doze takes effect at
+ * The base expression in force this frame. The app's answer is what Wobo IS; Wobo's idle life only
+ * colours it while Wobo has nothing else to do — so a base handed to Wobo mid-doze takes effect at
  * once rather than waiting for the learner to touch the screen.
  */
 export function baseInForce<T extends string>(held: T, asked: T, stage: IdleStage): T {
@@ -108,7 +108,7 @@ export function nextGlanceDelay(random: () => number = Math.random): number {
   return 900 + random() * 1800;
 }
 
-/** Where she glances, in rig units. A wander, not a stare. */
+/** Where Wobo glances, in rig units. A wander, not a stare. */
 export function nextGlanceTarget(random: () => number = Math.random): [number, number] {
   return [(random() - 0.5) * 44, (random() - 0.5) * 26];
 }

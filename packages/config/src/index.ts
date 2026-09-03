@@ -1,5 +1,5 @@
 /**
- * @classess/config — the locked design tokens (docs/02-DESIGN/00-design-system.md).
+ * @wobo/config — the locked design tokens (docs/02-DESIGN/00-design-system.md).
  * Consume these everywhere; never hardcode a hex, radius, or duration in a component.
  */
 

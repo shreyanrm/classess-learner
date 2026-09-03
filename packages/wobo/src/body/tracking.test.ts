@@ -24,14 +24,14 @@ describe('the gaze maths', () => {
     expect(lookOffset({ x: 0, y: 0 })).toEqual([0, 0]);
   });
 
-  it('scales the falloff with her own size and never collapses to zero', () => {
+  it("scales the falloff with Wobo's own size and never collapses to zero", () => {
     expect(lookFalloff(0)).toBe(180);
     expect(lookFalloff(40)).toBe(180);
     expect(lookFalloff(200)).toBe(600);
     expect(lookFalloff(Number.NaN)).toBe(180);
   });
 
-  it('clamps to full deflection rather than letting her eyes leave her visor', () => {
+  it("clamps to full deflection rather than letting Wobo's eyes leave Wobo's visor", () => {
     const far = trackPoint(self, { x: 100_000, y: -100_000 });
     expect(far).toEqual({ x: 1, y: -1 });
     expect(lookOffset(far)).toEqual([LOOK_REACH.x, -LOOK_REACH.y]);
@@ -54,7 +54,7 @@ describe('the gaze maths', () => {
     expect(viaRect.y).toBeGreaterThan(0);
   });
 
-  it('leans her head toward what she is looking at, within reach', () => {
+  it("leans Wobo's head toward what Wobo is looking at, within reach", () => {
     expect(leanOffset({ x: 1, y: 0 })).toBe(LEAN_REACH);
     expect(leanOffset({ x: -1, y: 0 })).toBe(-LEAN_REACH);
     expect(leanOffset({ x: 5, y: 0 })).toBe(LEAN_REACH);
@@ -62,7 +62,7 @@ describe('the gaze maths', () => {
   });
 });
 
-describe('what claims her gaze', () => {
+describe("what claims Wobo's gaze", () => {
   const focus: TrackRect = { x: 340, y: 140, width: 100, height: 100 };
   const pointer = { x: 20, y: 20 };
 

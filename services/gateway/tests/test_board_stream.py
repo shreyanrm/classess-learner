@@ -5,8 +5,8 @@ from __future__ import annotations
 import json
 
 import pytest
-from classess_gateway.board import stream
-from classess_gateway.board.planner import Plan, plan_board
+from wobo_gateway.board import stream
+from wobo_gateway.board.planner import Plan, plan_board
 
 
 @pytest.fixture(autouse=True)
@@ -65,8 +65,8 @@ def test_the_law_holds_even_when_the_plan_starts_late() -> None:
 def test_an_object_may_claim_the_beat_it_lands_on() -> None:
     """The two words the prompt gives the model, meaning exactly what it says they mean.
 
-    `{"with": n}` lands as she BEGINS sentence n; `{"after": n}` starts there too and is FINISHED
-    as she finishes it. `after` used to start where the sentence ended, which is ink landing a
+    `{"with": n}` lands as Wobo BEGINS sentence n; `{"after": n}` starts there too and is FINISHED
+    as Wobo finishes it. `after` used to start where the sentence ended, which is ink landing a
     whole sentence after the word it belongs to.
     """
     objects = marks(3)
@@ -99,8 +99,8 @@ def test_only_the_earliest_stroke_is_pulled_forward_to_keep_the_law() -> None:
 
 def test_ink_with_no_beat_is_spread_across_her_whole_line() -> None:
     """The planner's default is 240 ms an object. Streamed as-is, a whole board drew itself in
-    under three seconds and then sat still while she talked over it — so the hand draws THROUGH
-    the utterance instead: evenly from the lead-in to her last full stop, in the planner's order.
+    under three seconds and then sat still while Wobo talked over it — so the hand draws THROUGH
+    the utterance instead: evenly from the lead-in to Wobo's last full stop, in the planner's order.
     """
     objects = marks(6)
     for obj in objects:  # exactly what `planner._schedule` produces
@@ -116,14 +116,14 @@ def test_ink_with_no_beat_is_spread_across_her_whole_line() -> None:
     starts = [e.t for e in ink]
     assert starts == sorted(starts)
     assert starts[0] <= stream.INK_LEAD_MS  # the first stroke still beats the first full stop
-    # The last mark begins in the last third of her line, not in its first second.
+    # The last mark begins in the last third of Wobo's line, not in its first second.
     assert starts[-1] > spoken * 0.6
     # Nothing is packed at the grammar's 240 ms default any more.
     assert min(e.data["object"]["t"]["dur"] for e in ink) > stream.DEFAULT_INK_MS
     # Evenly: no gap between consecutive marks is more than a shade off the average.
     gaps = [b - a for a, b in zip(starts, starts[1:], strict=False)]
     assert max(gaps) - min(gaps) <= 2
-    # And the hand is still drawing when she stops speaking, rather than long finished.
+    # And the hand is still drawing when Wobo stops speaking, rather than long finished.
     last = ink[-1].data["object"]["t"]
     assert last["start"] + last["dur"] >= spoken
 

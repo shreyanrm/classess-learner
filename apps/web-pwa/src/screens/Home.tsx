@@ -8,8 +8,8 @@
  * the aurora doors wait at the thread's end.
  */
 
-import { fontFamily } from '@classess/config';
-import { useRegisterTarget, useWoboBus, WoboBody } from '@classess/wobo';
+import { fontFamily } from '@wobo/config';
+import { useRegisterTarget, useWoboBus, WoboBody } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -44,7 +44,7 @@ function greeting(name: string): string {
   return `${part}, ${name}`;
 }
 
-// Her line under the greeting — one per day (days-since-epoch rotation), never a poster slogan.
+// Wobo's line under the greeting — one per day (days-since-epoch rotation), never a poster slogan.
 const DAILY_LINES = [
   'The day is a walk, not a list',
   'Curiosity first — the rest follows',
@@ -81,7 +81,7 @@ const CAPS = {
   fontWeight: 600,
   letterSpacing: '0.15em',
   textTransform: 'uppercase',
-  color: 'color-mix(in srgb, var(--clss-ink) 36%, transparent)',
+  color: 'color-mix(in srgb, var(--wobo-ink) 36%, transparent)',
 } as const;
 
 const CHIPS: { label: string; prompt: string }[] = [
@@ -126,7 +126,7 @@ function HomeSky() {
         pointerEvents: 'none',
         willChange: 'transform, opacity',
         background:
-          'radial-gradient(58% 40% at 50% 4%, var(--clss-ultramarine-soft) 0%, transparent 72%),' +
+          'radial-gradient(58% 40% at 50% 4%, var(--wobo-ultramarine-soft) 0%, transparent 72%),' +
           ' radial-gradient(46% 30% at 50% 30%, rgba(255,201,60,0.06) 0%, transparent 70%)',
       }}
     />
@@ -149,7 +149,7 @@ export function Home() {
   // The day, derived from real state — every stop routes somewhere real.
   const { stops, currentIndex } = useMemo(() => deriveStops(progress), [progress]);
 
-  // She reads the day at code level and can point at it: every stop on the thread, and where she
+  // Wobo reads the day at code level and can point at it: every stop on the thread, and where Wobo
   // has walked the learner to. So "what's on my screen" on home names the real stops, not a box.
   const threadRef = useRegisterTarget<HTMLDivElement>('today-thread', {
     kind: 'journey',
@@ -160,9 +160,9 @@ export function Home() {
     }),
   });
 
-  // The front door's own parts, named so she can point at them, draw on them, and walk a learner
-  // to them ("show me where I type"). Registering is the whole contract: a component she cannot
-  // see is a component she cannot teach with (DESIGN.md §12).
+  // The front door's own parts, named so Wobo can point at them, draw on them, and walk a learner
+  // to them ("show me where I type"). Registering is the whole contract: a component Wobo cannot
+  // see is a component Wobo cannot teach with (DESIGN.md §12).
   const composerRef = useRegisterTarget<HTMLFormElement>('home-composer', {
     kind: 'composer',
     label: 'the box where you talk to Wobo',
@@ -170,14 +170,14 @@ export function Home() {
   });
   const chipsRef = useRegisterTarget<HTMLDivElement>('home-chips', {
     kind: 'suggestions',
-    label: 'the things she is offering to teach right now',
+    label: 'the things Wobo is offering to teach right now',
   });
   const doorsRef = useRegisterTarget<HTMLDivElement>('home-doors', {
     kind: 'doors',
     label: 'the two doors: learn, and practice',
   });
 
-  // The proactivity dial (You settings) gates every suggestion — quiet means she waits to be asked.
+  // The proactivity dial (You settings) gates every suggestion — quiet means Wobo waits to be asked.
   const [dial] = useState(() => loadProactivity());
   const chips = useMemo(() => {
     if (dial === 'quiet') return [];
@@ -187,7 +187,7 @@ export function Home() {
   }, [dial]);
 
   // The opening — once per session, Wobo arrives before anything else exists.
-  const [firstVisit] = useState(() => sessionStorage.getItem('clss-home-opened') !== '1');
+  const [firstVisit] = useState(() => sessionStorage.getItem('wobo-home-opened') !== '1');
   // Family N, actually applied: a learner on a 2G-class link, with Data Saver on, or who asked the
   // OS for less motion skips the 1.5s arrival and the letter-by-letter greeting and lands on the
   // finished page. Grace degrades; help never does.
@@ -198,7 +198,7 @@ export function Home() {
   // Whether or not the arrival played, this session has now opened home — so a second visit does
   // not replay it, and a low-fidelity first visit is still recorded.
   useEffect(() => {
-    if (landed) sessionStorage.setItem('clss-home-opened', '1');
+    if (landed) sessionStorage.setItem('wobo-home-opened', '1');
   }, [landed]);
   // Identity comes from the onboarded profile — the catalog's seed learner is only a fallback.
   const greetingText = greeting(loadProfile().name);
@@ -213,7 +213,7 @@ export function Home() {
     if (landed) return;
     const t = window.setTimeout(() => {
       setLanded(true);
-      sessionStorage.setItem('clss-home-opened', '1');
+      sessionStorage.setItem('wobo-home-opened', '1');
     }, 2200);
     return () => window.clearTimeout(t);
   }, [landed]);
@@ -235,7 +235,7 @@ export function Home() {
         state === 'unavailable'
           ? 'My voice is asleep right now — the words still arrive'
           : state === 'idle'
-            ? 'Allow microphone access to talk with her'
+            ? 'Allow microphone access to talk with Wobo'
             : null;
       if (note) {
         setVoiceNote(note);
@@ -244,7 +244,7 @@ export function Home() {
     });
   };
 
-  // Starting to talk opens the conversation page — the same never-ending thread she carries.
+  // Starting to talk opens the conversation page — the same never-ending thread Wobo carries.
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const text = draft.trim();
@@ -261,7 +261,7 @@ export function Home() {
     .replace(/,/g, '');
 
   const currentKind = stops[currentIndex]?.kind;
-  // Under the quiet dial she never volunteers a line — presence without a nudge.
+  // Under the quiet dial Wobo never volunteers a line — presence without a nudge.
   const woboLine = busy
     ? 'Thinking…'
     : dial === 'quiet'
@@ -270,7 +270,7 @@ export function Home() {
         ? 'Right where we left it'
         : 'I marked today’s walk for you';
 
-  // Wobo, on the journey — the Thread seats her beside the current stop.
+  // Wobo, on the journey — the Thread seats Wobo beside the current stop.
   const woboNode = (
     <motion.div
       initial={swoop ? { x: '30vw', y: '-70vh', rotate: 16, opacity: 0 } : false}
@@ -288,7 +288,7 @@ export function Home() {
       onAnimationComplete={() => {
         if (!landed) {
           setLanded(true);
-          sessionStorage.setItem('clss-home-opened', '1');
+          sessionStorage.setItem('wobo-home-opened', '1');
           setMood('celebrate');
           window.setTimeout(() => setMood('idle'), 1100);
         }
@@ -303,7 +303,7 @@ export function Home() {
           fontFamily: fontFamily.handwritten,
           fontSize: 20,
           fontWeight: 600,
-          color: 'color-mix(in srgb, var(--clss-ink) 58%, transparent)',
+          color: 'color-mix(in srgb, var(--wobo-ink) 58%, transparent)',
           textAlign: 'center',
           lineHeight: 1.15,
           maxWidth: 126,
@@ -329,7 +329,7 @@ export function Home() {
           padding: `calc(64px + ${fluidSpace.lg}) ${fluidSpace.gutter} 0`,
         }}
       >
-        {/* the trailhead — date, greeting, and her hand */}
+        {/* the trailhead — date, greeting, and Wobo's hand */}
         <motion.div variants={rise} style={CAPS}>
           {dateLine}
         </motion.div>
@@ -340,7 +340,7 @@ export function Home() {
             fontSize: fluidType.display,
             fontWeight: 300,
             letterSpacing: '-0.03em',
-            color: 'var(--clss-ink)',
+            color: 'var(--wobo-ink)',
             textAlign: 'center',
             lineHeight: 1.1,
           }}
@@ -359,7 +359,7 @@ export function Home() {
                 display: 'inline-block',
                 marginLeft: '0.04em',
                 fontWeight: 200,
-                color: 'var(--clss-ink-faint)',
+                color: 'var(--wobo-ink-faint)',
               }}
             >
               |
@@ -372,7 +372,7 @@ export function Home() {
             marginTop: 8,
             fontFamily: fontFamily.handwritten,
             fontSize: 'clamp(19px, 1.6vw, 24px)',
-            color: 'color-mix(in srgb, var(--clss-ink) 58%, transparent)',
+            color: 'color-mix(in srgb, var(--wobo-ink) 58%, transparent)',
           }}
         >
           {DAILY_LINES[Math.floor(now.getTime() / 86_400_000) % DAILY_LINES.length]}
@@ -405,18 +405,18 @@ export function Home() {
                 padding: '0 52px 0 18px',
                 fontSize: fluidType.body,
                 fontFamily: 'inherit',
-                border: '1px solid var(--clss-card-border)',
+                border: '1px solid var(--wobo-card-border)',
                 borderRadius: 3,
-                background: 'var(--clss-card)',
-                color: 'var(--clss-ink)',
+                background: 'var(--wobo-card)',
+                color: 'var(--wobo-ink)',
                 transition: 'border-color 0.2s ease',
               }}
               onFocusCapture={(e) => {
                 e.currentTarget.style.borderColor =
-                  'color-mix(in srgb, var(--clss-ultramarine) 55%, var(--clss-card-border))';
+                  'color-mix(in srgb, var(--wobo-ultramarine) 55%, var(--wobo-card-border))';
               }}
               onBlurCapture={(e) => {
-                e.currentTarget.style.borderColor = 'var(--clss-card-border)';
+                e.currentTarget.style.borderColor = 'var(--wobo-card-border)';
               }}
             />
             <button
@@ -434,15 +434,15 @@ export function Home() {
                 placeItems: 'center',
                 border: 'none',
                 background: 'transparent',
-                color: voiceOn ? '#FF5A1F' : 'var(--clss-ink-faint)',
+                color: voiceOn ? '#FF5A1F' : 'var(--wobo-ink-faint)',
                 cursor: 'pointer',
                 transition: 'color 0.25s ease',
               }}
               onMouseEnter={(e) => {
-                if (!voiceOn) e.currentTarget.style.color = 'var(--clss-ink)';
+                if (!voiceOn) e.currentTarget.style.color = 'var(--wobo-ink)';
               }}
               onMouseLeave={(e) => {
-                if (!voiceOn) e.currentTarget.style.color = 'var(--clss-ink-faint)';
+                if (!voiceOn) e.currentTarget.style.color = 'var(--wobo-ink-faint)';
               }}
             >
               <WaveformIcon active={voiceOn} size={19} />
@@ -467,7 +467,7 @@ export function Home() {
           </AnimatePresence>
         </motion.form>
         {voiceNote && (
-          <div style={{ marginTop: 8, color: 'var(--clss-ink-500)', fontSize: fluidType.small }}>
+          <div style={{ marginTop: 8, color: 'var(--wobo-ink-500)', fontSize: fluidType.small }}>
             {voiceNote}
           </div>
         )}
@@ -500,8 +500,8 @@ export function Home() {
                   gap: 7,
                   minHeight: 44,
                   border: 'none',
-                  background: 'var(--clss-tonal)',
-                  color: 'var(--clss-ink)',
+                  background: 'var(--wobo-tonal)',
+                  color: 'var(--wobo-ink)',
                   borderRadius: 3,
                   padding: '10px 18px',
                   fontSize: fluidType.small,
@@ -511,13 +511,13 @@ export function Home() {
                   transition: 'border-color 0.25s ease, transform 0.2s ease, color 0.25s ease',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--clss-tonal-hover)';
-                  e.currentTarget.style.color = 'var(--clss-ultramarine)';
+                  e.currentTarget.style.background = 'var(--wobo-tonal-hover)';
+                  e.currentTarget.style.color = 'var(--wobo-ultramarine)';
                   e.currentTarget.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'var(--clss-tonal)';
-                  e.currentTarget.style.color = 'var(--clss-ink)';
+                  e.currentTarget.style.background = 'var(--wobo-tonal)';
+                  e.currentTarget.style.color = 'var(--wobo-ink)';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
@@ -597,11 +597,11 @@ export function Home() {
             padding: '0 14px',
             border: 'none',
             background: 'transparent',
-            color: 'var(--clss-ink-300)',
+            color: 'var(--wobo-ink-300)',
             fontSize: '0.75rem',
             fontFamily: 'inherit',
             cursor: 'pointer',
-            borderRadius: 'var(--clss-radius-sm)',
+            borderRadius: 'var(--wobo-radius-sm)',
           }}
         >
           <Kbd>⌘K</Kbd> Anything, anywhere

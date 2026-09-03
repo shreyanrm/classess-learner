@@ -8,11 +8,11 @@
  * evidence (learn.attempt.submitted.v1); a wrong catch (or letting the answer fall past) costs a
  * life. Three lives, then restart.
  *
- * Registers as a Wobo scene target (she can nudge the catcher / restart). Keyboard + pointer
+ * Registers as a Wobo scene target (Wobo can nudge the catcher / restart). Keyboard + pointer
  * driven, reduced-motion aware (calmer fall), mute-aware via sfx, both themes, no new deps.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   type PointerEvent as ReactPointerEvent,
@@ -385,7 +385,7 @@ export function ArcadeShell({
                 style={{
                   fontSize: '1.3rem',
                   fontWeight: 600,
-                  color: 'var(--clss-ink-900)',
+                  color: 'var(--wobo-ink-900)',
                   fontVariantNumeric: 'tabular-nums',
                 }}
               >
@@ -401,7 +401,7 @@ export function ArcadeShell({
                     width: 10,
                     height: 10,
                     borderRadius: 999,
-                    background: i < lives ? hue : 'var(--clss-ink-100)',
+                    background: i < lives ? hue : 'var(--wobo-ink-100)',
                     transition: 'background 0.3s ease',
                   }}
                 />
@@ -418,7 +418,7 @@ export function ArcadeShell({
               textTransform: 'none',
               letterSpacing: 0,
               fontSize: '1rem',
-              color: 'var(--clss-ink-900)',
+              color: 'var(--wobo-ink-900)',
               fontWeight: 520,
             }}
           >
@@ -445,14 +445,14 @@ export function ArcadeShell({
                       whiteSpace: 'nowrap',
                       fontSize: '0.9rem',
                       fontWeight: 520,
-                      border: `1px solid ${it.caught === 'right' ? 'var(--clss-feedback-correct)' : it.caught === 'wrong' ? 'var(--clss-feedback-retry)' : 'var(--clss-hairline-on-paper-strong)'}`,
+                      border: `1px solid ${it.caught === 'right' ? 'var(--wobo-feedback-correct)' : it.caught === 'wrong' ? 'var(--wobo-feedback-retry)' : 'var(--wobo-hairline-on-paper-strong)'}`,
                       background:
                         it.caught === 'right'
-                          ? 'var(--clss-feedback-correctSoft)'
+                          ? 'var(--wobo-feedback-correctSoft)'
                           : it.caught === 'wrong'
-                            ? 'var(--clss-feedback-retrySoft)'
-                            : 'var(--clss-paper)',
-                      color: 'var(--clss-ink-900)',
+                            ? 'var(--wobo-feedback-retrySoft)'
+                            : 'var(--wobo-paper)',
+                      color: 'var(--wobo-ink-900)',
                       opacity: it.caught ? 0.85 : 1,
                       pointerEvents: 'none',
                     }}
@@ -503,7 +503,7 @@ export function ArcadeShell({
                     }}
                   >
                     <div
-                      style={{ fontSize: '1.3rem', fontWeight: 560, color: 'var(--clss-ink-900)' }}
+                      style={{ fontSize: '1.3rem', fontWeight: 560, color: 'var(--wobo-ink-900)' }}
                     >
                       {phase === 'ready'
                         ? 'slide to catch the right answer'
@@ -528,7 +528,7 @@ export function ArcadeShell({
                         borderRadius: 999,
                         border: 'none',
                         background: hue,
-                        color: 'var(--clss-on-ink)',
+                        color: 'var(--wobo-on-ink)',
                         fontFamily: 'inherit',
                         fontSize: '0.95rem',
                         fontWeight: 540,

@@ -2,7 +2,7 @@
 
 /**
  * Path results rendered inside the conversation thread (home front door and the docked drawer):
- * a sim or quiz she summoned, a drawing she made, or an action she offers through the capability
+ * a sim or quiz Wobo summoned, a drawing Wobo made, or an action Wobo offers through the capability
  * registry. Every action card is explainable — one why line, its evidence, and the confidence
  * band — and its outcome (taken / ignored) is recorded on the event backbone.
  */
@@ -30,7 +30,7 @@ import type { ActionAttachment, Flashcard, QuizItem, TurnExtras } from './types'
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
 
-const whisper: CSSProperties = { fontSize: '0.78rem', color: 'var(--clss-ink-500)' };
+const whisper: CSSProperties = { fontSize: '0.78rem', color: 'var(--wobo-ink-500)' };
 
 const rise = {
   initial: { opacity: 0, y: 10, scale: 0.99 },
@@ -44,9 +44,9 @@ function Shell({ eyebrow, children }: { eyebrow: string; children: React.ReactNo
       {...rise}
       style={{
         width: '100%',
-        background: 'var(--clss-card)',
-        border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-        borderRadius: 'var(--clss-radius-sm)',
+        background: 'var(--wobo-card)',
+        border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+        borderRadius: 'var(--wobo-radius-sm)',
         padding: '14px 16px 16px',
         display: 'flex',
         flexDirection: 'column',
@@ -132,19 +132,19 @@ function QuizCard({ items }: { items: QuizItem[] }) {
             const chosen = picked === option;
             const isAnswer = option === item.answer;
             const border = !answered
-              ? 'var(--clss-hairline-on-paper-strong)'
+              ? 'var(--wobo-hairline-on-paper-strong)'
               : isAnswer
-                ? 'var(--clss-feedback-correct)'
+                ? 'var(--wobo-feedback-correct)'
                 : chosen
-                  ? 'var(--clss-feedback-retry)'
-                  : 'var(--clss-hairline-on-paper)';
+                  ? 'var(--wobo-feedback-retry)'
+                  : 'var(--wobo-hairline-on-paper)';
             const background = !answered
-              ? 'var(--clss-card)'
+              ? 'var(--wobo-card)'
               : isAnswer
-                ? 'var(--clss-feedback-correctSoft)'
+                ? 'var(--wobo-feedback-correctSoft)'
                 : chosen
-                  ? 'var(--clss-feedback-retrySoft)'
-                  : 'var(--clss-card)';
+                  ? 'var(--wobo-feedback-retrySoft)'
+                  : 'var(--wobo-card)';
             return (
               <button
                 key={option}
@@ -156,9 +156,9 @@ function QuizCard({ items }: { items: QuizItem[] }) {
                   fontSize: '0.92rem',
                   lineHeight: 1.45,
                   fontFamily: 'inherit',
-                  color: 'var(--clss-ink-900)',
+                  color: 'var(--wobo-ink-900)',
                   border: `1px solid ${border}`,
-                  borderRadius: 'var(--clss-radius-sm)',
+                  borderRadius: 'var(--wobo-radius-sm)',
                   background,
                   cursor: answered ? 'default' : 'pointer',
                   transition: 'border-color 0.2s ease, background 0.2s ease',
@@ -187,15 +187,15 @@ function QuizCard({ items }: { items: QuizItem[] }) {
               padding: '10px 12px',
               fontSize: '0.92rem',
               fontFamily: 'inherit',
-              color: 'var(--clss-ink-900)',
-              background: 'var(--clss-card)',
-              borderRadius: 'var(--clss-radius-sm)',
+              color: 'var(--wobo-ink-900)',
+              background: 'var(--wobo-card)',
+              borderRadius: 'var(--wobo-radius-sm)',
               border: `1px solid ${
                 !answered
-                  ? 'var(--clss-hairline-on-paper-strong)'
+                  ? 'var(--wobo-hairline-on-paper-strong)'
                   : correct
-                    ? 'var(--clss-feedback-correct)'
-                    : 'var(--clss-feedback-retry)'
+                    ? 'var(--wobo-feedback-correct)'
+                    : 'var(--wobo-feedback-retry)'
               }`,
             }}
           />
@@ -226,7 +226,7 @@ function QuizCard({ items }: { items: QuizItem[] }) {
             <span
               style={{
                 fontSize: '0.85rem',
-                color: correct ? 'var(--clss-feedback-correct)' : 'var(--clss-ink-700)',
+                color: correct ? 'var(--wobo-feedback-correct)' : 'var(--wobo-ink-700)',
               }}
             >
               {correct
@@ -282,9 +282,9 @@ function FlashcardsCard({ cards }: { cards: Flashcard[] }) {
           gap: 8,
           textAlign: 'center',
           fontFamily: 'inherit',
-          background: flipped ? 'var(--clss-canvas)' : 'var(--clss-card)',
-          border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-          borderRadius: 'var(--clss-radius-sm)',
+          background: flipped ? 'var(--wobo-canvas)' : 'var(--wobo-card)',
+          border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+          borderRadius: 'var(--wobo-radius-sm)',
           cursor: 'pointer',
           transition: 'background 0.25s ease',
         }}
@@ -300,7 +300,7 @@ function FlashcardsCard({ cards }: { cards: Flashcard[] }) {
               fontSize: flipped ? '0.95rem' : '1.05rem',
               fontWeight: flipped ? 450 : 600,
               lineHeight: 1.55,
-              color: 'var(--clss-ink-900)',
+              color: 'var(--wobo-ink-900)',
             }}
           >
             {flipped ? card.back : card.front}
@@ -363,18 +363,18 @@ function FormulaCardView({ card }: { card: FormulaCardSpec }) {
               flexDirection: 'column',
               gap: 2,
               paddingBottom: 8,
-              borderBottom: '0.5px solid var(--clss-hairline-on-paper)',
+              borderBottom: '0.5px solid var(--wobo-hairline-on-paper)',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-              <span style={{ fontSize: '0.82rem', color: 'var(--clss-ink-500)' }}>{f.name}</span>
+              <span style={{ fontSize: '0.82rem', color: 'var(--wobo-ink-500)' }}>{f.name}</span>
               {f.when && <span style={{ ...whisper, fontSize: '0.72rem' }}>{f.when}</span>}
             </div>
             <span
               style={{
                 fontSize: '1rem',
                 fontWeight: 550,
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
                 letterSpacing: '0.01em',
               }}
             >
@@ -434,10 +434,10 @@ function MakerSection({
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {items.map((item, i) => (
           <div key={item} style={{ display: 'flex', gap: 8, fontSize: '0.9rem', lineHeight: 1.5 }}>
-            <span style={{ color: 'var(--clss-ink-500)', minWidth: ordered ? 16 : 8 }}>
+            <span style={{ color: 'var(--wobo-ink-500)', minWidth: ordered ? 16 : 8 }}>
               {ordered ? `${i + 1}.` : '·'}
             </span>
-            <span style={{ color: 'var(--clss-ink-900)' }}>{item}</span>
+            <span style={{ color: 'var(--wobo-ink-900)' }}>{item}</span>
           </div>
         ))}
       </div>
@@ -457,7 +457,7 @@ function MakerPlanView({ plan }: { plan: MakerPlanSpec }) {
   );
 }
 
-// --- a small drawn delight (a seeded critter in her hand, one true fact hooked on) -------------------
+// --- a small drawn delight (a seeded critter in Wobo's hand, one true fact hooked on) -------------------
 
 function parseDoodle(spec: unknown): DoodleSpec | null {
   if (!isRecord(spec) || typeof spec.concept !== 'string' || !spec.concept) return null;
@@ -481,23 +481,23 @@ function DoodleView({ doodle }: { doodle: DoodleSpec }) {
       >
         <path
           d={art.body}
-          fill="var(--clss-card)"
-          stroke="var(--clss-ink-900)"
+          fill="var(--wobo-card)"
+          stroke="var(--wobo-ink-900)"
           strokeWidth={2.2}
           strokeLinejoin="round"
         />
-        <path d={art.belly} fill="none" stroke="var(--clss-ink-300)" strokeWidth={1.4} />
+        <path d={art.belly} fill="none" stroke="var(--wobo-ink-300)" strokeWidth={1.4} />
         <path
           d={art.spikes}
           fill="none"
-          stroke="var(--clss-ink-900)"
+          stroke="var(--wobo-ink-900)"
           strokeWidth={2}
           strokeLinejoin="round"
         />
         <path
           d={art.tail}
           fill="none"
-          stroke="var(--clss-ink-900)"
+          stroke="var(--wobo-ink-900)"
           strokeWidth={2.2}
           strokeLinecap="round"
         />
@@ -505,15 +505,15 @@ function DoodleView({ doodle }: { doodle: DoodleSpec }) {
           <path
             key={d}
             d={d}
-            fill="var(--clss-card)"
-            stroke="var(--clss-ink-900)"
+            fill="var(--wobo-card)"
+            stroke="var(--wobo-ink-900)"
             strokeWidth={2}
             strokeLinejoin="round"
           />
         ))}
-        <circle cx={art.eye.cx} cy={art.eye.cy} r={3} fill="var(--clss-ink-900)" />
+        <circle cx={art.eye.cx} cy={art.eye.cy} r={3} fill="var(--wobo-ink-900)" />
       </svg>
-      <span style={{ fontSize: '0.9rem', color: 'var(--clss-ink-700)', textAlign: 'center' }}>
+      <span style={{ fontSize: '0.9rem', color: 'var(--wobo-ink-700)', textAlign: 'center' }}>
         a little {doodle.concept}, just for you.
       </span>
       {doodle.fact && (
@@ -561,7 +561,7 @@ function ActionCard({ turnId, action }: { turnId: string; action: ActionAttachme
       const result = await capability.run({ router, sdk }, action.params);
       patch({ status: 'taken', result });
     } catch (err) {
-      // A refusal from the brain (not signed in, today spent) is said in her own words, so a
+      // A refusal from the brain (not signed in, today spent) is said in Wobo's own words, so a
       // capability card never dead-ends on a generic apology that hides the real reason.
       patch({ status: 'taken', result: refusalLine(err).text });
     } finally {
@@ -574,7 +574,7 @@ function ActionCard({ turnId, action }: { turnId: string; action: ActionAttachme
     patch({ status: 'ignored' });
   };
 
-  // safe-automatic: she just does it — once, and only for offers minted this session, so a card
+  // safe-automatic: Wobo just does it — once, and only for offers minted this session, so a card
   // replayed from the archive never re-executes on its own.
   // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount, by design
   useEffect(() => {
@@ -586,13 +586,13 @@ function ActionCard({ turnId, action }: { turnId: string; action: ActionAttachme
   if (!capability) return null;
 
   return (
-    <Shell eyebrow="She can do this">
+    <Shell eyebrow="Wobo can do this">
       <div style={{ fontSize: '0.98rem', fontWeight: 600, lineHeight: 1.4 }}>
         {capability.label(action.params)}
       </div>
 
       {/* explainable, always: the why, the evidence, the confidence band */}
-      <div style={{ fontSize: '0.9rem', lineHeight: 1.55, color: 'var(--clss-ink-700)' }}>
+      <div style={{ fontSize: '0.9rem', lineHeight: 1.55, color: 'var(--wobo-ink-700)' }}>
         {action.why}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -607,8 +607,8 @@ function ActionCard({ turnId, action }: { turnId: string; action: ActionAttachme
           ...whisper,
           alignSelf: 'flex-start',
           padding: '3px 8px',
-          background: 'var(--clss-canvas)',
-          borderRadius: 'var(--clss-radius-sm)',
+          background: 'var(--wobo-canvas)',
+          borderRadius: 'var(--wobo-radius-sm)',
         }}
       >
         {CONFIDENCE_COPY[action.confidence]}
@@ -630,7 +630,7 @@ function ActionCard({ turnId, action }: { turnId: string; action: ActionAttachme
         </div>
       )}
       {action.status === 'taken' && action.result && (
-        <div style={{ fontSize: '0.85rem', lineHeight: 1.5, color: 'var(--clss-ink-700)' }}>
+        <div style={{ fontSize: '0.85rem', lineHeight: 1.5, color: 'var(--wobo-ink-700)' }}>
           {action.result}
         </div>
       )}
@@ -699,9 +699,9 @@ export function TurnAttachments({ turn }: { turn: ChatTurn }) {
   if (extras.path === 'visualization' && extras.viz) {
     return (
       <Shell eyebrow="Drawn for you">
-        {/* her ink inherits the page's ink colour — a drawing built on currentColor reads in both
+        {/* Wobo's ink inherits the page's ink colour — a drawing built on currentColor reads in both
             themes instead of vanishing as black-on-black at night */}
-        <div style={{ color: 'var(--clss-ink-900)' }}>
+        <div style={{ color: 'var(--wobo-ink-900)' }}>
           <DiagramView
             id={turn.id}
             svg={extras.viz.spec.svg}

@@ -3,17 +3,17 @@
 /**
  * Flashcards — recall wired into spaced repetition (DESIGN.md §9). A card flips with real spring
  * 3D physics (front → back), and the learner grades their own recall on a swipe: left = "again",
- * right = "got it". Each grade runs the FSRS-lite scheduler (@classess/sdk reviewCard) and records
+ * right = "got it". Each grade runs the FSRS-lite scheduler (@wobo/sdk reviewCard) and records
  * the retrieval events — practice.item.answered.v1 + practice.retrieval.scheduled.v1 — so the due
  * queue and mastery actually move. Per-card schedule persists locally, so a card the learner keeps
  * getting right grows its interval across sessions, exactly as spaced retrieval should.
  *
- * Registers as a Wobo scene target (she can flip and grade to demonstrate). Reduced-motion aware
+ * Registers as a Wobo scene target (Wobo can flip and grade to demonstrate). Reduced-motion aware
  * (the flip becomes a crossfade); mute-aware via sfx; both themes; no new deps.
  */
 
-import { type RetrievalCard, reviewCard } from '@classess/sdk';
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { type RetrievalCard, reviewCard } from '@wobo/sdk';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -60,7 +60,7 @@ export function parseFlashcards(raw: unknown): FlashcardsSpec | null {
 
 // --- Per-card FSRS state (localStorage; the interval must survive across sessions) -----------------
 
-const FSRS_KEY = 'clss-fsrs-v1';
+const FSRS_KEY = 'wobo-fsrs-v1';
 function loadSchedule(cardKey: string): RetrievalCard | null {
   try {
     return (
@@ -260,8 +260,8 @@ export function Flashcards({
                 inset: 0,
                 backfaceVisibility: 'hidden',
                 borderRadius: 12,
-                border: `0.5px solid var(--clss-hairline-on-paper-strong)`,
-                background: `linear-gradient(160deg, ${rgba(hue, 0.08)}, var(--clss-paper))`,
+                border: `0.5px solid var(--wobo-hairline-on-paper-strong)`,
+                background: `linear-gradient(160deg, ${rgba(hue, 0.08)}, var(--wobo-paper))`,
                 display: 'grid',
                 placeItems: 'center',
                 padding: '28px 30px',
@@ -274,7 +274,7 @@ export function Flashcards({
                   style={{
                     fontSize: '1.3rem',
                     fontWeight: 540,
-                    color: 'var(--clss-ink-900)',
+                    color: 'var(--wobo-ink-900)',
                     lineHeight: 1.4,
                   }}
                 >
@@ -305,7 +305,7 @@ export function Flashcards({
                   style={{
                     fontSize: '1.2rem',
                     fontWeight: 520,
-                    color: 'var(--clss-ink-900)',
+                    color: 'var(--wobo-ink-900)',
                     lineHeight: 1.5,
                   }}
                 >
@@ -331,9 +331,9 @@ export function Flashcards({
                 style={{
                   padding: '10px 20px',
                   borderRadius: 999,
-                  border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-                  background: 'var(--clss-paper)',
-                  color: 'var(--clss-ink-700)',
+                  border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+                  background: 'var(--wobo-paper)',
+                  color: 'var(--wobo-ink-700)',
                   fontFamily: 'inherit',
                   fontSize: '0.95rem',
                   cursor: 'pointer',
@@ -349,7 +349,7 @@ export function Flashcards({
                   borderRadius: 999,
                   border: `1px solid ${hue}`,
                   background: rgba(hue, 0.12),
-                  color: 'var(--clss-ink-900)',
+                  color: 'var(--wobo-ink-900)',
                   fontFamily: 'inherit',
                   fontSize: '0.95rem',
                   fontWeight: 520,

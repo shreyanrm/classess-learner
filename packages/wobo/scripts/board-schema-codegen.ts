@@ -4,7 +4,7 @@
  * `packages/wobo/src/board/schema.ts` is the single source of truth for what may be drawn. The
  * gateway has to validate the same grammar before it streams a plan, so this emits a JSON Schema
  * mirror plus a small dependency-free validator into
- * `services/gateway/src/classess_gateway/board_schema.py`.
+ * `services/gateway/src/wobo_gateway/board_schema.py`.
  *
  *   bun run --cwd packages/wobo board:codegen        # write the mirror
  *   bun run --cwd packages/wobo board:codegen --check # fail if it is stale (CI, and a bun test)
@@ -237,7 +237,7 @@ export function renderPythonMirror(): string {
     '    bun run --cwd packages/wobo board:codegen',
     '',
     'The brain validates every plan it composes against this mirror, so the grammar can never',
-    'drift between the two halves of her (docs/BOARD.md §2-§4).',
+    'drift between the two halves of Wobo (docs/BOARD.md §2-§4).',
     '"""',
     '',
     'from __future__ import annotations',
@@ -273,7 +273,7 @@ export function renderPythonMirror(): string {
   return `${header}${VALIDATOR}`;
 }
 
-export const MIRROR_PATH = 'services/gateway/src/classess_gateway/board_schema.py';
+export const MIRROR_PATH = 'services/gateway/src/wobo_gateway/board_schema.py';
 
 if (import.meta.main) {
   const root = new URL('../../../', import.meta.url).pathname;

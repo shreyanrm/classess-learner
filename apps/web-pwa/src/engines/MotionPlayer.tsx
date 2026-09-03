@@ -7,7 +7,7 @@
  * never video files (DESIGN.md §9) — the narration track is the TTS pipeline's output.
  */
 
-import { useRegisterTarget } from '@classess/wobo';
+import { useRegisterTarget } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   type KeyboardEvent,
@@ -195,12 +195,12 @@ function ScrubBar({ fraction, onSeek }: { fraction: number; onSeek: (f: number) 
         outlineOffset: 3,
       }}
     >
-      <div ref={track} style={{ flex: 1, height: 3, background: 'var(--clss-ink-100)' }}>
+      <div ref={track} style={{ flex: 1, height: 3, background: 'var(--wobo-ink-100)' }}>
         <div
           style={{
             width: `${Math.max(0, Math.min(1, fraction)) * 100}%`,
             height: '100%',
-            background: 'var(--clss-ink-900)',
+            background: 'var(--wobo-ink-900)',
           }}
         />
       </div>
@@ -240,9 +240,9 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
   const step = steps[index] ?? steps[steps.length - 1];
   const elapsed = (starts[index] ?? 0) + Math.min(inStep, step?.durationMs ?? 0);
 
-  // Paused, this frame IS a scene spec, so every part of it with an id becomes a target and she
+  // Paused, this frame IS a scene spec, so every part of it with an id becomes a target and Wobo
   // annotates the exact thing in the exact frame — no vision call, no screenshot of our own UI
-  // (docs/BOARD.md §5). Playing, the frame unregisters: she must never mark a picture that moved on.
+  // (docs/BOARD.md §5). Playing, the frame unregisters: Wobo must never mark a picture that moved on.
   const frame =
     !playing && step
       ? {
@@ -315,7 +315,7 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
     };
   }, [playing, index, steps]);
 
-  // The handoff (WOBO-TASKS §5.5): while the film is paused she may draw on the frame or open the
+  // The handoff (WOBO-TASKS §5.5): while the film is paused Wobo may draw on the frame or open the
   // plane beside it; when the exchange is over, "back to the film" puts the learner back here, to
   // the millisecond. Playing again releases the hold, so nothing stale is ever returned to.
   const seekRef = useRef<(fraction: number) => void>(() => {});
@@ -376,9 +376,9 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
         style={{
           position: 'relative',
           width: '100%',
-          border: '0.5px solid var(--clss-hairline-on-paper)',
-          borderRadius: 'var(--clss-radius-md)',
-          background: 'var(--clss-paper)',
+          border: '0.5px solid var(--wobo-hairline-on-paper)',
+          borderRadius: 'var(--wobo-radius-md)',
+          background: 'var(--wobo-paper)',
           overflow: 'hidden',
         }}
       >
@@ -407,9 +407,9 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
           position: 'relative',
           width: '100%',
           minHeight: 220,
-          border: '0.5px solid var(--clss-hairline-on-paper)',
-          borderRadius: 'var(--clss-radius-md)',
-          background: 'var(--clss-paper)',
+          border: '0.5px solid var(--wobo-hairline-on-paper)',
+          borderRadius: 'var(--wobo-radius-md)',
+          background: 'var(--wobo-paper)',
           overflow: 'hidden',
           display: 'grid',
           placeItems: 'center',
@@ -483,10 +483,10 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
             height: 34,
             display: 'grid',
             placeItems: 'center',
-            border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+            border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
             borderRadius: 999,
-            background: 'var(--clss-paper)',
-            color: 'var(--clss-ink-900)',
+            background: 'var(--wobo-paper)',
+            color: 'var(--wobo-ink-900)',
             cursor: 'pointer',
           }}
         >

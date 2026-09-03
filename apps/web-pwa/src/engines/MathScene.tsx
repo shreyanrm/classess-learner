@@ -15,12 +15,12 @@
  * SimRunner's safe recursive-descent parser, never eval / never Function.
  *
  * Wobo-drivable: registers as a scene target with getSceneState / getValidActions / applyTutorAction
- * and publishes its working state to the bus, so she reasons about it at code level and can drag a
- * handle herself to demonstrate. Both themes (Mafs vars bound to the app's ink tokens), reduced-motion
+ * and publishes its working state to the bus, so Wobo reasons about it at code level and can drag a
+ * handle directly to demonstrate. Both themes (Mafs vars bound to the app's ink tokens), reduced-motion
  * aware, mute-aware sfx.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Coordinates, Line, Mafs, MovablePoint, Plot, Point, Polygon, Text } from 'mafs';
 import 'mafs/core.css';
@@ -325,17 +325,17 @@ const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n
 
 function toneColor(t: MathTone | undefined, hue: string): string {
   if (t === 'hue') return hue;
-  if (t === 'muted') return 'var(--clss-ink-300)';
-  return 'var(--clss-ink-700)';
+  if (t === 'muted') return 'var(--wobo-ink-300)';
+  return 'var(--wobo-ink-700)';
 }
 
 /** Bind Mafs' theme variables to the app's ink tokens so the canvas is correct in light and dark. */
 const mafsTheme = {
   '--mafs-bg': 'transparent',
-  '--mafs-fg': 'var(--clss-ink-900)',
-  '--mafs-line-color': 'var(--clss-ink-300)',
-  '--mafs-origin-color': 'var(--clss-ink-500)',
-  color: 'var(--clss-ink-900)',
+  '--mafs-fg': 'var(--wobo-ink-900)',
+  '--mafs-line-color': 'var(--wobo-ink-300)',
+  '--mafs-origin-color': 'var(--wobo-ink-500)',
+  color: 'var(--wobo-ink-900)',
 } as CSSProperties;
 
 function fillTemplate(text: string, vars: State): string {
@@ -422,7 +422,7 @@ export function MathScene({
     setBar({ primary: { label: 'continue', disabled: !touched, onClick: onDone } });
   }, [touched, setBar, onDone]);
 
-  // Wobo reads the live scene and can drive a handle herself to demonstrate.
+  // Wobo reads the live scene and can drive a handle directly to demonstrate.
   const applyTutorAction = (raw: Record<string, unknown>) => {
     const set = isRecord(raw.set) ? raw.set : raw;
     const id = typeof set.id === 'string' ? set.id : undefined;
@@ -457,7 +457,7 @@ export function MathScene({
     applyTutorAction,
   });
 
-  // she reads the working at code level; cleared when the scene unmounts
+  // Wobo reads the working at code level; cleared when the scene unmounts
   // biome-ignore lint/correctness/useExhaustiveDependencies: readouts is derived from state each render
   useEffect(() => {
     bus.publishCanvas({
@@ -499,10 +499,10 @@ export function MathScene({
           ref={ref}
           style={{
             ...mafsTheme,
-            borderRadius: 'var(--clss-radius-md)',
+            borderRadius: 'var(--wobo-radius-md)',
             overflow: 'hidden',
-            border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-            background: 'var(--clss-paper)',
+            border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+            background: 'var(--wobo-paper)',
           }}
         >
           <Mafs
@@ -571,7 +571,7 @@ export function MathScene({
             {(spec.labels ?? []).map((l) => {
               const [x, y] = pt(l.at);
               return (
-                <Text key={l.id} x={x} y={y} size={16} color="var(--clss-ink-700)">
+                <Text key={l.id} x={x} y={y} size={16} color="var(--wobo-ink-700)">
                   {fillTemplate(l.text, vars)}
                 </Text>
               );
@@ -584,7 +584,7 @@ export function MathScene({
                       x={res(p.labelAt[0])}
                       y={res(p.labelAt[1])}
                       size={16}
-                      color="var(--clss-ink-700)"
+                      color="var(--wobo-ink-700)"
                     >
                       {fillTemplate(p.label, vars)}
                     </Text>,
@@ -632,10 +632,10 @@ export function MathScene({
         {readouts.length > 0 && (
           <div
             style={{
-              border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-              borderRadius: 'var(--clss-radius-md)',
+              border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+              borderRadius: 'var(--wobo-radius-md)',
               padding: '4px 18px',
-              background: 'var(--clss-paper)',
+              background: 'var(--wobo-paper)',
             }}
           >
             {readouts.map((r, i) => {
@@ -647,7 +647,7 @@ export function MathScene({
                       style={{
                         height: 1,
                         transform: 'scaleY(0.5)',
-                        background: 'var(--clss-hairline-on-paper)',
+                        background: 'var(--wobo-hairline-on-paper)',
                       }}
                     />
                   )}
@@ -661,14 +661,14 @@ export function MathScene({
                       padding: '11px 0',
                     }}
                   >
-                    <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)' }}>
                       {r.label}
                     </div>
                     <div
                       style={{
                         fontSize: '1.15rem',
                         fontWeight: 560,
-                        color: solved ? hue : 'var(--clss-ink-900)',
+                        color: solved ? hue : 'var(--wobo-ink-900)',
                         display: 'flex',
                         alignItems: 'baseline',
                         gap: 6,

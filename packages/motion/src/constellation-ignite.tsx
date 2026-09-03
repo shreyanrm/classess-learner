@@ -1,6 +1,6 @@
 'use client';
 
-import { hairline, ink } from '@classess/config';
+import { hairline, ink } from '@wobo/config';
 import { motion } from 'framer-motion';
 import {
   type ConstellationEdge,

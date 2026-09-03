@@ -35,30 +35,30 @@ The whole category is red-urgency noise. We are the opposite: calm, spacious, ce
 5. Animate meaning, never chrome.
 6. Progressive disclosure — the simple thing first; depth on request.
 7. Every generated visual is glanceable — understood at a glance or it is redrawn.
-8. Wobo is present but never in the way — she expands when summoned, contracts when not.
+8. Wobo is present but never in the way — expanding when summoned, contracting when not.
 9. The aha is precious — the ignite event is scarce, earned only by genuine comprehension.
 10. Built to be screenshotted — the twin and mastery artifacts are hero art by default.
 
 ## 4. Wobo (the tutor) — the life, not a layer
 
-Wobo is one name for both the app and the tutor inside it; this section is about the tutor. She is the runtime the app executes inside. Every surface is one of three things: she is it, she composed it, or it reports to her. See `CONTEXT.md` for the architecture; this is how she looks and behaves.
+Wobo is one name for both the app and the tutor inside it; this section is about the tutor. Wobo is the runtime the app executes inside. Every surface is one of three things: Wobo is it, Wobo composed it, or it reports to Wobo. See `CONTEXT.md` for the architecture; this is how Wobo looks and behaves.
 
-**The body.** A soft, round, molten matte-jelly orb with two expressive eyes and a flickering warm glow. She has real physical personality — weight and squash, anticipation before motion, overshoot and settle. Constant idle micro-motion so she is never frozen. Rebuilt from zero to a higher bar than any mascot in the category: the Koji quality bar, exceeded. Joyful, cute, alive — never saccharine, never noisy.
+**The body.** A soft, round, molten matte-jelly orb with two expressive eyes and a flickering warm glow. Wobo has real physical personality — weight and squash, anticipation before motion, overshoot and settle. Constant idle micro-motion so Wobo is never frozen. Rebuilt from zero to a higher bar than any mascot in the category: the Koji quality bar, exceeded. Joyful, cute, alive — never saccharine, never noisy.
 
 **States, each with distinct body language:**
 - **Listening** — gooey, leaning in, softened edges.
 - **Thinking** — a gentle inward pulse.
-- **Explaining** — gestures toward what she annotates.
+- **Explaining** — gestures toward what Wobo annotates.
 - **Celebrating** — a bright squash-and-pop on genuine mastery, tied to the ignite event.
 - **Resting** — a slow calm breath, used to sanction planned rest (anti-streak), never to guilt.
 
 **The two modes — one entity, two presentations:**
 - **Front door (home only):** Wobo expanded into a full conversation. Ask or do anything.
-- **Docked (everywhere else):** the orb, present and watching, one tap from expanding, laying ink over the current screen, executing actions. She never forgets who the learner is between the two. There is no second assistant.
+- **Docked (everywhere else):** the orb, present and watching, one tap from expanding, laying ink over the current screen, executing actions. Wobo never forgets who the learner is between the two. There is no second assistant.
 
-**Code-level screen awareness.** Wobo does not screenshot the screen. Every interactive component publishes its live state to a shared bus she reads directly — she knows the exact circuit on the board, the current slider values, the last drag. This is why annotation is exact and responsive. See §12, the component contract.
+**Code-level screen awareness.** Wobo does not screenshot the screen. Every interactive component publishes its live state to a shared bus Wobo reads directly — Wobo knows the exact circuit on the board, the current slider values, the last drag. This is why annotation is exact and responsive. See §12, the component contract.
 
-**Tech.** Rive for the interactive rig driven by real product state; Lottie for set-piece flourishes; Framer Motion for interface transitions. Her reactions are driven by state, never canned loops. Voice via the Gemini path — a signature voice bloom on activation.
+**Tech.** Rive for the interactive rig driven by real product state; Lottie for set-piece flourishes; Framer Motion for interface transitions. Wobo's reactions are driven by state, never canned loops. Voice via the Gemini path — a signature voice bloom on activation.
 
 ## 5. The motion system — animate meaning
 
@@ -139,7 +139,7 @@ We are visual-first: animation, simulation, and graphics are the highest priorit
 **Explanatory & visual.**
 - **SVG diagrams** — every diagram is SVG, glanceable, and annotatable by Wobo. For complex biological or structural imagery (plant cell, human body), image generation (Gemini / Nano Banana) fills what SVG cannot.
 - **Animated visuals** — animated SVG and motion sequences; meaning animated, chrome never.
-- **Charts & graphs** — drawn in SVG, beautiful, and tutored: Wobo highlights, annotates, and walks the curve like a teacher, because she reads the plot's data at code level.
+- **Charts & graphs** — drawn in SVG, beautiful, and tutored: Wobo highlights, annotates, and walks the curve like a teacher, because Wobo reads the plot's data at code level.
 - **Concept maps** — where a web of relationships needs showing, drawn from the real graph, structural not decorative.
 - **Explainer videos** — short motion pieces, as long as the topic needs (ten seconds to two minutes), high-craft animation with Google TTS narration in sync. An offline pipeline feeding the cache, not runtime rendering.
 - **Podcasts** — audio lectures for learning and revision, generated from the same verified content, voiced through the TTS pipeline.
@@ -175,7 +175,7 @@ The twin is the product's signature icon and the emotional centre of retention. 
 ## 12. The component contract — non-negotiable
 
 Every interactive component (sim, sandbox, chart, workbook, diagram) must:
-- **Publish its live state** to the shared bus Wobo reads — current values, the learner's last action, the correct model — so Wobo annotates and reasons at code level, never by vision. This is what makes her fast, exact, and responsive. Build it into every component from the first one.
+- **Publish its live state** to the shared bus Wobo reads — current values, the learner's last action, the correct model — so Wobo annotates and reasons at code level, never by vision. This is what makes Wobo fast, exact, and responsive. Build it into every component from the first one.
 - **Expose an annotation layer** Wobo can draw over — highlight, circle, point — anchored to real elements, not screen coordinates.
 - **Emit an attributed event** on every meaningful learner action, feeding mastery, gaps, and the twin (see `CONTEXT.md` §5).
 - **Degrade gracefully offline** — pre-synced learning packs keep the core interactive experience alive on a dead network.

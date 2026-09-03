@@ -4,7 +4,7 @@
 **Black and white is the world before you understand something. Color is what understanding looks like.**
 - **Black/white = architecture:** chrome, type, canvas, structure are monochrome.
 - **Color = content/meaning:** color belongs to concepts and is **earned** (the *ignite* moment), never used as decoration.
-- **No signature brand hue.** The brand is the *behaviour of color*, not a color. (The one exception: the tutor **owns molten** as her identity — see `02-wobo.md`.)
+- **No signature brand hue.** The brand is the *behaviour of color*, not a color. (The one exception: the tutor **owns molten** as Wobo's identity — see `02-wobo.md`.)
 
 ## Tokens (define once in `/packages/config`, consume everywhere)
 
@@ -31,7 +31,7 @@ Each subject/concept is assigned one accent; that hue is what its nodes *ignite*
 - Scale (fluid): display / h1 / h2 / h3 / body-lg / body / caption. Sentence case everywhere. Generous line-height.
 
 ### Shape & depth
-- **Corners: radius-sm = 2px default** (subtle, not boxy); larger radii only for Wobo's jelly and her panel.
+- **Corners: radius-sm = 2px default** (subtle, not boxy); larger radii only for Wobo's jelly and Wobo's panel.
 - **No drop shadows anywhere.** Depth via: 0.5px hairlines (`--ink-100` on paper, low-alpha white on dark), tonal surface steps,
   and **frost** (backdrop blur) — frost is used **only on overlays** (Wobo's panel, modals, the meter sheet).
 

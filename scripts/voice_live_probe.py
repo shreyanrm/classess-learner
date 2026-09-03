@@ -98,7 +98,7 @@ async def main() -> None:
 
     print("=== Gemini Live streaming-TTS probe ===")
     print(f"input text  : {TEXT}")
-    print(f"she SAID    : {transcript.strip() or '(no transcription returned)'}")
+    print(f"wobo SAID   : {transcript.strip() or '(no transcription returned)'}")
     print(f"time-to-first-audio-chunk: {first_audio_ms:.0f} ms" if first_audio_ms else "NO AUDIO")
     print(f"audio chunks: {audio_chunks}  (~{audio_bytes} b64 chars total)")
     verbatim = transcript.strip().lower().rstrip(".") == TEXT.lower().rstrip(".")

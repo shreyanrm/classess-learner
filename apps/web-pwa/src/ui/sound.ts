@@ -6,12 +6,12 @@
  * never noisy — a soft tick as you advance, a small bloom when you are right, a warm chord when
  * XP lands, a whoosh between pages, a gentle chime when Wobo arrives.
  *
- * ONE global switch: the same mute preference that silences her voice (clss-voice-muted-v1)
+ * ONE global switch: the same mute preference that silences Wobo's voice (wobo-voice-muted-v1)
  * silences everything here too. We read the key fresh on every play, so a toggle takes effect
  * immediately with no listener wiring — and we import nothing, so the kit stays dependency-free.
  */
 
-const MUTE_KEY = 'clss-voice-muted-v1';
+const MUTE_KEY = 'wobo-voice-muted-v1';
 
 function muted(): boolean {
   try {
@@ -275,7 +275,7 @@ export const sfx = {
 // --- scoped ambience — a soft nature + play bed, alive ONLY while the adventure world is open ----
 // A looping wind bed, sparse bird chirps, and rare pentatonic plucks, all synthesized. It routes
 // through one gain so it fades in on start, ducks under Wobo, and fully stops on unmount. Muted
-// (clss-voice-muted-v1) → start() is a no-op, so it never plays and never leaks to other pages.
+// (wobo-voice-muted-v1) → start() is a no-op, so it never plays and never leaks to other pages.
 
 interface Amb {
   gain: GainNode;

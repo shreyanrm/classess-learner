@@ -2,10 +2,10 @@
  * Emit `src/generated/plexus.ts` from the card-spec JSON Schema.
  *
  * The schema itself is produced by the Pydantic source of truth in the gateway
- * (`uv run python -m classess_gateway.plexus.codegen`, → `schemas/plexus.schema.json`).
+ * (`uv run python -m wobo_gateway.plexus.codegen`, → `schemas/plexus.schema.json`).
  * This script is the second half of the wiring: JSON Schema → TypeScript types.
  *
- * Run: `bun run --filter @classess/contracts codegen:plexus`
+ * Run: `bun run --filter @wobo/contracts codegen:plexus`
  *
  * The output is checked in. `plexus.codegen.test.ts` regenerates from the committed schema and
  * fails on any drift, so the TypeScript can never silently diverge from the Pydantic models.
@@ -79,12 +79,12 @@ function emitInterface(name: string, def: JsonSchema): string {
 export function emitPlexusTypes(schema: { $defs: Record<string, JsonSchema> }): string {
   const header = [
     '/**',
-    ' * @classess/contracts — the Plexus card-spec contract (SUBJECTS.md §7).',
+    ' * @wobo/contracts — the Plexus card-spec contract (SUBJECTS.md §7).',
     ' *',
     ' * GENERATED — do not edit by hand. Source of truth: the Pydantic models in',
-    ' * services/gateway/src/classess_gateway/plexus/specs.py.',
-    ' * Regenerate: `uv run python -m classess_gateway.plexus.codegen` then',
-    ' * `bun run --filter @classess/contracts codegen:plexus`.',
+    ' * services/gateway/src/wobo_gateway/plexus/specs.py.',
+    ' * Regenerate: `uv run python -m wobo_gateway.plexus.codegen` then',
+    ' * `bun run --filter @wobo/contracts codegen:plexus`.',
     ' */',
     '',
   ].join('\n');

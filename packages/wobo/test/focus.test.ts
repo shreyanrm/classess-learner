@@ -208,7 +208,7 @@ describe('a focus object', () => {
     expect(focus.path?.length).toBeLessThanOrEqual(48);
   });
 
-  it('announces itself in her voice: sentence case, no emoji, no exclamation', () => {
+  it("announces itself in Wobo's voice: sentence case, no emoji, no exclamation", () => {
     const focus = createFocus({
       kind: 'lasso',
       rect: { x: 0, y: 0, width: 10, height: 10 },
@@ -278,7 +278,7 @@ describe('a rect read from the DOM', () => {
       width: 320,
       height: 200,
     });
-    // The card scrolled 300 up; the ring goes with it, keeping the size and shape she drew.
+    // The card scrolled 300 up; the ring goes with it, keeping the size and shape Wobo drew.
     expect(focusRectNow(focus, { target: () => domRect(100, -100, 300, 180) })).toEqual({
       x: 90,
       y: -110,

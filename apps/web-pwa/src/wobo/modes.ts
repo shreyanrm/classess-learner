@@ -1,11 +1,11 @@
 'use client';
 
 /**
- * Her modes (docs/WOBO-PLAN.md §3, WOBO-TASKS §5.7) — the nine things a learner asks of a tutor,
+ * Wobo's modes (docs/WOBO-PLAN.md §3, WOBO-TASKS §5.7) — the nine things a learner asks of a tutor,
  * each with its own prompt shape and its own board behaviour.
  *
  * A mode is not a menu item that lives in one place: it is offered in the composer, in the command
- * palette, and by voice, and all three end up here, in one table, so the phrasing she is asked with
+ * palette, and by voice, and all three end up here, in one table, so the phrasing Wobo is asked with
  * is identical however it was reached. Nothing here names a model, a provider or a limit — a mode is
  * a sentence, and the brain decides everything else.
  */
@@ -31,7 +31,7 @@ export interface WoboMode {
   search: string;
   /** True when the mode only means something with a focus in hand. */
   needsFocus: boolean;
-  /** True when she will draw for it — the board is the answer, not a paragraph. */
+  /** True when Wobo will draw for it — the board is the answer, not a paragraph. */
   draws: boolean;
 }
 
@@ -39,7 +39,7 @@ export const MODES: readonly WoboMode[] = [
   {
     id: 'explain_this',
     label: 'Explain this',
-    hint: 'She takes what you pointed at and works it through',
+    hint: 'Wobo takes what you pointed at and works it through',
     search: 'explain what is this understand meaning break down',
     needsFocus: true,
     draws: true,
@@ -47,7 +47,7 @@ export const MODES: readonly WoboMode[] = [
   {
     id: 'show_me',
     label: 'Show me',
-    hint: 'She moves to the control and uses it while you watch',
+    hint: 'Wobo moves to the control and uses it while you watch',
     search: 'show me where demonstrate point find the button',
     needsFocus: false,
     draws: false,
@@ -55,7 +55,7 @@ export const MODES: readonly WoboMode[] = [
   {
     id: 'do_it',
     label: 'Do it for me',
-    hint: 'She acts, and asks first for anything that cannot be undone',
+    hint: 'Wobo acts, and asks first for anything that cannot be undone',
     search: 'do it for me act run execute',
     needsFocus: false,
     draws: false,
@@ -63,7 +63,7 @@ export const MODES: readonly WoboMode[] = [
   {
     id: 'quiz_me',
     label: 'Quiz me',
-    hint: 'She asks on the board and grades the working',
+    hint: 'Wobo asks on the board and grades the working',
     search: 'quiz test me question ask me practice',
     needsFocus: false,
     draws: true,
@@ -71,7 +71,7 @@ export const MODES: readonly WoboMode[] = [
   {
     id: 'check_my_work',
     label: 'Check my work',
-    hint: 'She reads what you wrote and marks the first thing that slipped',
+    hint: 'Wobo reads what you wrote and marks the first thing that slipped',
     search: 'check my work mark grade is this right verify',
     needsFocus: true,
     draws: true,
@@ -79,7 +79,7 @@ export const MODES: readonly WoboMode[] = [
   {
     id: 'why_wrong',
     label: 'Why is this wrong',
-    hint: 'She finds the misconception, not just the mistake',
+    hint: 'Wobo finds the misconception, not just the mistake',
     search: 'why wrong mistake error what did i do',
     needsFocus: true,
     draws: true,
@@ -95,7 +95,7 @@ export const MODES: readonly WoboMode[] = [
   {
     id: 'read_aloud',
     label: 'Read it aloud',
-    hint: 'She reads what is on screen, at your pace',
+    hint: 'Wobo reads what is on screen, at your pace',
     search: 'read aloud speak out loud say it voice',
     needsFocus: false,
     draws: false,
@@ -103,8 +103,8 @@ export const MODES: readonly WoboMode[] = [
   {
     id: 'teach_back',
     label: 'Teach it back to me',
-    hint: 'You teach, she plays the student and finds the gap',
-    search: 'teach back protege explain to her i will teach',
+    hint: 'You teach, Wobo plays the student and finds the gap',
+    search: 'teach back protege explain to Wobo i will teach',
     needsFocus: false,
     draws: false,
   },
@@ -115,7 +115,7 @@ export const MODE_BY_ID: Record<WoboModeId, WoboMode> = Object.fromEntries(
 ) as Record<WoboModeId, WoboMode>;
 
 /**
- * The phrase each mode sends. She is asked in the learner's voice, not in a command language, so a
+ * The phrase each mode sends. Wobo is asked in the learner's voice, not in a command language, so a
  * keyless build's deterministic classifier and a live model read the same sentence.
  */
 const PHRASES: Record<WoboModeId, string> = {

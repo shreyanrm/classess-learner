@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { type Actor, type Context, makeEvent } from '@classess/contracts';
+import { type Actor, type Context, makeEvent } from '@wobo/contracts';
 import {
   mapEventToPlatform,
   purposeForEventType,

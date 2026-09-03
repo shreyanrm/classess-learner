@@ -191,9 +191,9 @@ describe('resolving a circle against the registry', () => {
   });
 });
 
-// --- Wave 5 polish: the region she circled is a ring, never a fill --------------------------------
+// --- Wave 5 polish: the region Wobo circled is a ring, never a fill --------------------------------
 
-describe('the focus region is drawn as her own line round it', () => {
+describe("the focus region is drawn as Wobo's own line round it", () => {
   const lasso = [
     { x: 100, y: 100 },
     { x: 220, y: 96 },

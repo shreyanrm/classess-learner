@@ -1,4 +1,4 @@
-import type { ConsentTier } from '@classess/contracts';
+import type { ConsentTier } from '@wobo/contracts';
 import { gatewayFetch, throwForGatewayStatus } from './gateway';
 
 /**
@@ -36,7 +36,7 @@ export interface LLMProvider {
 /** Capabilities that profile the learner — refused under un_elevated (DPDP). Mirrors the gateway. */
 const ELEVATED_ONLY = new Set(['archetype.classify', 'peakcut.evaluate']);
 
-/** Her voice, canned: warm, playful, page-aware. Rotated deterministically by the input. */
+/** Wobo's voice, canned: warm, playful, page-aware. Rotated deterministically by the input. */
 const MOCK_WOBO_TURNS = [
   {
     say: 'Oh, I like this page — I can see the whole thing from where I sit. Want to take the first step together?',

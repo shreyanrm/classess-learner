@@ -11,19 +11,19 @@
 
 import '@fontsource-variable/caveat';
 import '@fontsource-variable/plus-jakarta-sans';
-import { fontFamily } from '@classess/config';
-import { cssVariables } from '@classess/config/css';
+import { fontFamily } from '@wobo/config';
+import { cssVariables } from '@wobo/config/css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BoardBench } from './board-bench';
 
-const STYLE_ID = 'clss-tokens';
+const STYLE_ID = 'wobo-tokens';
 if (!document.getElementById(STYLE_ID)) {
   const style = document.createElement('style');
   style.id = STYLE_ID;
   style.textContent = `${cssVariables()}
 * { box-sizing: border-box; }
-html, body { margin: 0; background: var(--clss-page); color: var(--clss-ink-900); }
+html, body { margin: 0; background: var(--wobo-page); color: var(--wobo-ink-900); }
 body { font-family: ${fontFamily.system}; }
 `;
   document.head.appendChild(style);

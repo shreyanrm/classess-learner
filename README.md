@@ -1,8 +1,8 @@
 # Wobo
 
-The flagship consumer product of the Classess ecosystem: the B2C, AI-native learning app of the
-Dot eVentures education group, and the reference implementation that proves the KGtoPG plug-in
-pattern. One name covers two things — Wobo the app, and Wobo the tutor who lives inside it.
+The flagship consumer product of the Dot eVentures education group: a B2C, AI-native learning
+app, and the reference implementation that proves the KGtoPG plug-in pattern. One name covers
+two things — Wobo the app, and Wobo the tutor who lives inside it.
 
 North star: Brilliant.org, but AI-native, India-first, premium, with mechanics nobody in edtech
 has shipped. Governing reframe: cognitive fitness, a gym for the mind.
@@ -94,8 +94,9 @@ verifier). Nothing reaches a learner unverified.
 - **Bun** workspaces for TypeScript packages and apps. **uv** for the Python services.
 - **Biome** for TS lint/format, **Ruff** for Python.
 - Hosted Supabase (project ref `keepraxqagzgjrrweryt`); no local Postgres required.
-- CI (`.github/workflows/ci.yml`) runs four jobs on every push: JS typecheck/lint/unit/build,
-  the Playwright journey suite, Python ruff + pytest, and the render-worker suite.
+- CI (`.github/workflows/ci.yml`) runs five jobs on every push: JS typecheck/lint/unit/build,
+  the three brand gates, the Playwright journey suite, Python ruff + pytest, and the
+  render-worker suite.
 
 ## Getting started
 
@@ -105,9 +106,31 @@ cp .env.example .env.local  # then fill secrets (never commit .env.local)
 bun run typecheck           # typecheck all TS packages
 bun run lint                # Biome
 bun run test                # workspace tests
+bun run gate                # the three brand gates (build the web app first)
 uv sync --all-packages      # Python services
 uv run pytest -q            # Python tests (gateway, verifier, contracts, content)
 bun run --cwd apps/web-pwa dev
 ```
+
+## The brand gates
+
+Three greps stand between the working tree and a brand regression. `bun run gate` runs all three,
+and CI fails the build on any of them.
+
+| Gate | Fails on | Law |
+|---|---|---|
+| `no-classess` | the old brand, or the `clss-` identifier prefix, anywhere in the tree | WOBO-PLAN §17 |
+| `white-label` | a provider, model, or vendor name in the built bundle, in a gateway string a client receives, or in shipped source | WOBO-PLAN §17 |
+| `pronouns` | a gendered pronoun within 60 characters of "Wobo" | WOBO-PLAN §19 |
+
+Two data trees are written by their own generators (`content/curriculum/build.py` writes
+`json.dump(indent=2)`, which Biome's JSON formatter disagrees with on short arrays), so
+`content/curriculum/**/*.json` and `content/hospitality/**/*.json` are excluded from Biome in
+`biome.json` — formatting them would put the formatter and the generator in a loop. The brand
+gates still read them: a generated file is not exempt from the brand.
+
+`white-label` reads `apps/web-pwa/dist`, so build the web app first — a missing bundle fails the
+gate rather than skipping it. Exceptions are not grep tweaks: each one is a line in
+[`scripts/gate_allowlist.py`](./scripts/gate_allowlist.py) with the reason written next to it.
 
 Deploying — Vercel (web) and Railway (gateway) — is [`DEPLOY.md`](./DEPLOY.md).

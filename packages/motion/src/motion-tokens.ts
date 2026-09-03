@@ -1,8 +1,8 @@
-import { duration, easing } from '@classess/config';
+import { duration, easing } from '@wobo/config';
 import { parseCubicBezier } from './internal/ease';
 
 /**
- * Motion tokens, translated from @classess/config into framer-motion's units. Never hardcode a
+ * Motion tokens, translated from @wobo/config into framer-motion's units. Never hardcode a
  * duration or easing in a primitive — derive it here so the design system stays the source of truth.
  */
 

@@ -78,7 +78,7 @@ export type PayloadOf<T extends EventType> = z.infer<(typeof EventPayloads)[T]>;
 type EnvelopeCommon = Omit<z.infer<typeof EnvelopeBase>, 'event_type'>;
 
 /** A fully typed event: envelope + the right payload for its event_type (discriminated). */
-export type ClassessEvent<T extends EventType = EventType> = {
+export type WoboEvent<T extends EventType = EventType> = {
   [K in T]: EnvelopeCommon & { event_type: K; payload: PayloadOf<K> };
 }[T];
 

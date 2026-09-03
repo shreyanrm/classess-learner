@@ -4,12 +4,12 @@
  * The per-learner mind (WOBO.md §7) — behavioural signals accumulated locally and folded into
  * every Wobo call through the bus's lifetime slot: median item latency, the wrong-answer slip
  * log (each one detonated on screen), which surfaces the learner lingers on, and session cadence.
- * Visible and clearable in You — her memory of you is steerable, never hidden.
+ * Visible and clearable in You — Wobo's memory of you is steerable, never hidden.
  * ponytail: localStorage until the mind syncs through KGtoPG; shapes mirror what that sync needs.
  */
 
-import type { Sdk } from '@classess/sdk';
-import { type LifetimeContext, useWoboBus } from '@classess/wobo';
+import type { Sdk } from '@wobo/sdk';
+import { type LifetimeContext, useWoboBus } from '@wobo/wobo';
 import { useCallback, useEffect, useRef } from 'react';
 import { boardName, getFlag, loadProfile, VOICE_KEY } from '../screens/you/profile';
 import { useRouter } from '../shell/router';
@@ -17,8 +17,8 @@ import { scoped } from './scope';
 import { useSdk } from './sdk';
 
 // Scoped per learner (store/scope.ts) — the dossier is the most personal thing on the device.
-const MIND_KEY = 'clss-mind-v1';
-const PROACTIVITY_KEY = 'clss-proactivity-v1';
+const MIND_KEY = 'wobo-mind-v1';
+const PROACTIVITY_KEY = 'wobo-proactivity-v1';
 
 // --- the mind state ------------------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ export interface MindState {
   sessionDays: string[];
   /** what the learner is into (from onboarding) — grounds analogies and examples */
   interests: string[];
-  /** durable free-form facts she has learned in conversation — the concierge's notepad */
+  /** durable free-form facts Wobo has learned in conversation — the concierge's notepad */
   facts: string[];
 }
 
@@ -86,7 +86,7 @@ export function loadMind(): MindState {
 }
 
 /**
- * She learned a durable fact in conversation (the remember action) — a preferred name, a goal, an
+ * Wobo learned a durable fact in conversation (the remember action) — a preferred name, a goal, an
  * exam date. Dedupe-append and cap; it rides every future dossier. Steerable/clearable in You.
  */
 /**
@@ -136,7 +136,7 @@ function saveMind(mind: MindState): void {
 /**
  * Pure fact purge (the forget verb, WOBO-CAPABILITIES.md family E): drop every fact matching `target`
  * (case-insensitive, substring in either direction, so "exam" forgets "exam on Friday" and vice versa).
- * Returns the kept facts and exactly what was removed — so she can confirm the removal honestly.
+ * Returns the kept facts and exactly what was removed — so Wobo can confirm the removal honestly.
  */
 export function forgetFacts(
   facts: string[],
@@ -154,7 +154,7 @@ export function forgetFacts(
   return { facts: kept, removed };
 }
 
-/** She forgets a fact on the learner's word (the forget action). Storage-truth; returns what left. */
+/** Wobo forgets a fact on the learner's word (the forget action). Storage-truth; returns what left. */
 export function forgetMatching(target: string): string[] {
   const mind = loadMind();
   const { facts, removed } = forgetFacts(mind.facts, target);
@@ -184,7 +184,7 @@ export function removeInterest(interest: string): void {
   }
 }
 
-/** The learner clears what she knows — steerable memory, honestly erased. */
+/** The learner clears what Wobo knows — steerable memory, honestly erased. */
 export function clearMind(): void {
   try {
     scoped.removeItem(MIND_KEY);
@@ -226,7 +226,7 @@ function foldEvents(mind: MindState, events: LoggedEvent[], seen: Set<string>): 
     }
     // Mis-tap discrimination: a correct answer landing within ~1.5s of a wrong one on the SAME item
     // is an instant self-correct — the learner fixed a slip of the thumb, not a hole in their model.
-    // Retroactively un-log that slip so she never detonates or FSRS-flags a mistake that never was.
+    // Retroactively un-log that slip so Wobo never detonates or FSRS-flags a mistake that never was.
     // (Robust across fold pulses because slips persist; the "I think I'm right" contest can't misfire
     // here — its re-grade only appears after the ~2.6s detonation, well outside the window.)
     if (correct && typeof p.item_id === 'string') {
@@ -312,8 +312,8 @@ function activeDaysOfLastSeven(mind: MindState): number {
 
 /**
  * Derived behavioural observations — how they answer, where they linger, when they show up. These are
- * inferred from the event stream (not things they told her), so the You screen shows them read-only;
- * they regenerate as she watches. The removable things she remembers are interests + facts (below).
+ * inferred from the event stream (not things they told Wobo), so the You screen shows them read-only;
+ * they regenerate as Wobo watches. The removable things Wobo remembers are interests + facts (below).
  */
 export function observationLines(mind: MindState): string[] {
   const lines: string[] = [];
@@ -326,7 +326,7 @@ export function observationLines(mind: MindState): string[] {
     const last = mind.slips[mind.slips.length - 1];
     const lastBit = last?.value !== undefined ? ` — the last one was x = ${last.value}` : '';
     lines.push(
-      `${mind.slips.length} recent wrong ${mind.slips.length === 1 ? 'answer' : 'answers'} she is keeping an eye on${lastBit}`,
+      `${mind.slips.length} recent wrong ${mind.slips.length === 1 ? 'answer' : 'answers'} Wobo is keeping an eye on${lastBit}`,
     );
   }
   const format = preferredFormat(mind);
@@ -336,7 +336,7 @@ export function observationLines(mind: MindState): string[] {
   return lines;
 }
 
-/** One thing she remembers that the learner can remove on its own — a stated interest or a durable fact. */
+/** One thing Wobo remembers that the learner can remove on its own — a stated interest or a durable fact. */
 export interface KnownItem {
   kind: 'interest' | 'fact';
   text: string;
@@ -350,25 +350,25 @@ export function removableItems(mind: MindState): KnownItem[] {
   ];
 }
 
-/** Everything she is holding, as plain lines — the in-thread "show me what you remember" dossier. */
+/** Everything Wobo is holding, as plain lines — the in-thread "show me what you remember" dossier. */
 export function mindLines(mind: MindState): string[] {
   const lines: string[] = [];
   if (mind.interests.length > 0) lines.push(`you're into ${mind.interests.join(', ')}`);
   lines.push(...observationLines(mind));
-  for (const fact of mind.facts) lines.push(`she remembers: ${fact}`);
+  for (const fact of mind.facts) lines.push(`Wobo remembers: ${fact}`);
   return lines;
 }
 
 /**
  * The dossier the concierge reasons over — identity from the onboarding profile plus the behavioural
- * twin and the facts she has learned. Every wobo.turn payload carries this (WOBO.md §7); rendered
+ * twin and the facts Wobo has learned. Every wobo.turn payload carries this (WOBO.md §7); rendered
  * by the gateway into a "who you are teaching" block.
  */
 export function lifetimeSnapshot(): LifetimeContext {
   const p = loadProfile();
   const mind = loadMind();
-  // The durable accessibility profile rides every turn so she honors it (larger text/high contrast
-  // shape how much she puts on screen; read-aloud reuses the existing voice flag — one source).
+  // The durable accessibility profile rides every turn so Wobo honors it (larger text/high contrast
+  // shape how much Wobo puts on screen; read-aloud reuses the existing voice flag — one source).
   const accessibility =
     p.largeText || p.highContrast || getFlag(VOICE_KEY)
       ? { readAloud: getFlag(VOICE_KEY), largeText: p.largeText, highContrast: p.highContrast }
@@ -456,7 +456,7 @@ export function MindObserver() {
   if (mindRef.current === null) mindRef.current = loadMind();
 
   // Storage is the source of truth: other writers (rememberInterests at onboarding finish,
-  // rememberFact from her turns, profile edits) write the mind out-of-band, so every mutation
+  // rememberFact from Wobo's turns, profile edits) write the mind out-of-band, so every mutation
   // here re-reads before it mutates — a stale in-memory snapshot must never clobber them.
   const freshMind = useCallback(() => {
     const mind = loadMind();
@@ -471,7 +471,7 @@ export function MindObserver() {
     bus.publishLifetime(lifetimeSnapshot());
   }, [bus, freshMind]);
 
-  // fold the event log on a slow pulse, and refresh the dossier every pulse — so a fact she just
+  // fold the event log on a slow pulse, and refresh the dossier every pulse — so a fact Wobo just
   // learned (rememberFact writes localStorage out-of-band) and any profile edit ride within ~4s.
   // ponytail: ≤4s lag on same-session facts; a reload picks them up immediately via the boot publish.
   useEffect(() => {

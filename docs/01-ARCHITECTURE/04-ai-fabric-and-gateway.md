@@ -49,7 +49,7 @@ Wobo is built as five composable capabilities behind the gateway:
 5. **Remember** — persistent per-learner memory (the switching-cost moat); writes salient facts to the twin via events.
 
 **Latency-vs-quality:** route most turns to fast Track-2 SLMs; escalate to frontier only at hard moments. This *is* the two-track
-gateway in action. **Wobo is the one exception to "fully functional day one"** — she must be *transcendent on the atom first*,
+gateway in action. **Wobo is the one exception to "fully functional day one"** — Wobo must be *transcendent on the atom first*,
 then widen. Perception is proven narrow before it is widened.
 
 ## Consent-tier gating (DPDP, enforced in the fabric)

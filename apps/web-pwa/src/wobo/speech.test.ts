@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import type { WoboAction, WoboBus, WoboMood } from '@classess/wobo';
+import type { WoboAction, WoboBus, WoboMood } from '@wobo/wobo';
 import { onceCallback, performTurn, sentences, speakLine } from './speech';
 
 describe('the sentence splitter — where a period really ends a breath', () => {
@@ -57,7 +57,7 @@ describe('onDone is guaranteed, and guaranteed once', () => {
 
   it('a line that cannot be spoken still releases the gate exactly once', async () => {
     let n = 0;
-    await speakLine('she is on screen either way', { onDone: () => n++ });
+    await speakLine('Wobo is on screen either way', { onDone: () => n++ });
     expect(n).toBe(1); // keyless/muted: the advance button must never stay locked
   });
 

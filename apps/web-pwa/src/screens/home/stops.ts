@@ -33,7 +33,7 @@ export interface ThreadStop {
 }
 
 const MOLTEN = '#FF5A1F';
-const DAILY_KEY = 'clss-daily-quest-v1';
+const DAILY_KEY = 'wobo-daily-quest-v1';
 const todayStr = (): string => new Date().toISOString().slice(0, 10);
 
 /** Whether today's bonus quest chest has already been claimed. */

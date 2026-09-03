@@ -55,7 +55,7 @@ describe('low fidelity is actually wired into the surfaces that cost frames', ()
   });
 
   it('records the session as opened even when the arrival is skipped', () => {
-    expect(home).toMatch(/if \(landed\) sessionStorage\.setItem\('clss-home-opened', '1'\)/);
+    expect(home).toMatch(/if \(landed\) sessionStorage\.setItem\('wobo-home-opened', '1'\)/);
   });
 
   it('turns the continuous pointer-tilt spring off under low fidelity', () => {

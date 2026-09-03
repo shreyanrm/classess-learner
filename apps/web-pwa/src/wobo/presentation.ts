@@ -1,9 +1,9 @@
 'use client';
 
 /**
- * Which surface she draws on (docs/BOARD.md §5).
+ * Which surface Wobo draws on (docs/BOARD.md §5).
  *
- * Her rule: a pointer or one line stays on the screen; a derivation or a diagram from scratch gets
+ * Wobo's rule: a pointer or one line stays on the screen; a derivation or a diagram from scratch gets
  * the plane; a lesson gets the full board. The learner overrides it with a word — "board" pushes the
  * ink onto the plane, "here" brings it back onto the screen — and the override wins over everything.
  *
@@ -22,7 +22,7 @@
  * and left the ring anchored to nothing — the two failures BOARD.md §11 names in one move.
  */
 
-import type { BoardObject } from '@classess/wobo';
+import type { BoardObject } from '@wobo/wobo';
 
 export type Presentation = 'screen' | 'plane' | 'full';
 
@@ -30,7 +30,7 @@ export type Presentation = 'screen' | 'plane' | 'full';
 export const SCREEN_OBJECT_LIMIT = 3;
 
 /**
- * Kinds she only ever draws from scratch. One of these is a diagram, not an annotation, so it
+ * Kinds Wobo only ever draws from scratch. One of these is a diagram, not an annotation, so it
  * belongs on a board however few objects arrive with it.
  */
 const FROM_SCRATCH = new Set([
@@ -177,9 +177,9 @@ export class PresentationChoice {
 // --- The learner's word --------------------------------------------------------------------------
 
 export interface PresentationWord {
-  /** Where she should draw from now on. */
+  /** Where Wobo should draw from now on. */
   presentation?: Presentation;
-  /** "fresh board" — a new board, not the one she was on. */
+  /** "fresh board" — a new board, not the one Wobo was on. */
   fresh?: boolean;
   /** "wipe the board". */
   wipe?: boolean;
@@ -218,14 +218,14 @@ export function isLessonRoute(route: string): boolean {
 
 /**
  * Words that are a request to draw. Not every question is a board turn: "what time is my review" is
- * a sentence, and drawing it would be theatre. She draws when the answer has a shape.
+ * a sentence, and drawing it would be theatre. Wobo draws when the answer has a shape.
  */
 const DRAWS =
   /\b(draw|sketch|graph|plot|diagram|derive|derivation|work\s+it\s+out|step\s+by\s+step|prove|construct|balance|free[-\s]?body|number\s+line|label\s+(it|the)|write\s+it\s+out|on\s+the\s+board|show\s+me\s+(how|the\s+working))\b/i;
 
 /**
  * A question asked with a region in hand. Circling something and saying "why?" is not an ordinary
- * question — the learner has already told her what "this" is, and the answer to it is a mark ON
+ * question — the learner has already told Wobo what "this" is, and the answer to it is a mark ON
  * the thing they drew around (docs/BOARD.md §5, the video case). It is also the commonest board
  * turn there is, and it needs no subject pipeline: a ring and a written word, anchored to the
  * focus. Without this a lasso followed by "why?" fell through to a paragraph, which is exactly
@@ -244,7 +244,7 @@ export interface BoardShape {
 }
 
 /**
- * Is this a turn she should answer by drawing? A word about the surface, a request with a shape, or
+ * Is this a turn Wobo should answer by drawing? A word about the surface, a request with a shape, or
  * a mode that draws with something in hand — anything else stays a conversation.
  */
 export function boardShapeOf(

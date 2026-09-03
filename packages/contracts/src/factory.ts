@@ -1,11 +1,5 @@
 import type { Actor, Context, Trace } from './envelope';
-import {
-  type ClassessEvent,
-  type EventType,
-  eventSchema,
-  isEventType,
-  type PayloadOf,
-} from './events';
+import { type EventType, eventSchema, isEventType, type PayloadOf, type WoboEvent } from './events';
 import { newEventId, newId } from './ids';
 
 export interface MakeEventInput<T extends EventType> {
@@ -26,7 +20,7 @@ export interface MakeEventInput<T extends EventType> {
  * it fills the time-ordered id, the timestamp, and a request_id, then parses the result
  * through the per-type schema so a malformed payload fails loudly at the source.
  */
-export function makeEvent<T extends EventType>(input: MakeEventInput<T>): ClassessEvent<T> {
+export function makeEvent<T extends EventType>(input: MakeEventInput<T>): WoboEvent<T> {
   const candidate = {
     event_id: input.event_id ?? newEventId(),
     event_type: input.event_type,
@@ -40,14 +34,14 @@ export function makeEvent<T extends EventType>(input: MakeEventInput<T>): Classe
     },
     payload: input.payload,
   };
-  return eventSchema(input.event_type).parse(candidate) as ClassessEvent<T>;
+  return eventSchema(input.event_type).parse(candidate) as WoboEvent<T>;
 }
 
 /**
  * Parse an untrusted value into a typed event, discriminating on event_type.
  * Throws (Zod error) if the envelope or payload is invalid.
  */
-export function validateEvent(value: unknown): ClassessEvent {
+export function validateEvent(value: unknown): WoboEvent {
   // We validate against the concrete per-type schema for precise errors, after a cheap
   // discriminator check, rather than a 36-arm union (clearer messages, same guarantees).
   if (typeof value !== 'object' || value === null || !('event_type' in value)) {
@@ -56,13 +50,13 @@ export function validateEvent(value: unknown): ClassessEvent {
   const type = (value as { event_type: unknown }).event_type;
   if (typeof type !== 'string') throw new TypeError('event_type must be a string');
   if (!isEventType(type)) throw new TypeError(`unknown event_type: ${type}`);
-  return eventSchema(type).parse(value) as ClassessEvent;
+  return eventSchema(type).parse(value) as WoboEvent;
 }
 
 /** Non-throwing variant. */
 export function safeValidateEvent(
   value: unknown,
-): { ok: true; event: ClassessEvent } | { ok: false; error: unknown } {
+): { ok: true; event: WoboEvent } | { ok: false; error: unknown } {
   try {
     return { ok: true, event: validateEvent(value) };
   } catch (error) {

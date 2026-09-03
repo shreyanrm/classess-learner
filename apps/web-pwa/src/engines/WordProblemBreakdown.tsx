@@ -7,11 +7,11 @@
  * answer). Nothing is dumped at once — the learner taps to uncover the next pane, so the *method*
  * of reading a problem is what's taught, not just the answer.
  *
- * Registers as a Wobo scene target she can advance (applyTutorAction: { next } / { revealAll }).
+ * Registers as a Wobo scene target Wobo can advance (applyTutorAction: { next } / { revealAll }).
  * Reduced-motion + mute aware; both themes; no new deps.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -92,16 +92,16 @@ function Pane({
   return (
     <div
       style={{
-        border: `0.5px solid ${open ? rgba(hue, 0.5) : 'var(--clss-hairline-on-paper)'}`,
+        border: `0.5px solid ${open ? rgba(hue, 0.5) : 'var(--wobo-hairline-on-paper)'}`,
         borderRadius: 3,
         padding: '14px 16px',
-        background: open ? rgba(hue, 0.04) : 'var(--clss-paper)',
+        background: open ? rgba(hue, 0.04) : 'var(--wobo-paper)',
         transition: 'border-color 0.3s ease, background 0.3s ease',
         opacity: open ? 1 : 0.55,
       }}
     >
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-        <span style={{ ...whisper, color: open ? hue : 'var(--clss-ink-500)' }}>{label}</span>
+        <span style={{ ...whisper, color: open ? hue : 'var(--wobo-ink-500)' }}>{label}</span>
         {!open && (
           <span style={{ ...whisper, opacity: 0.7, textTransform: 'none', letterSpacing: 0 }}>
             {hint}
@@ -210,10 +210,10 @@ export function WordProblemBreakdown({
         <div
           style={{
             ...lead,
-            color: 'var(--clss-ink-900)',
+            color: 'var(--wobo-ink-900)',
             padding: '14px 16px',
             borderLeft: `2px solid ${hue}`,
-            background: 'var(--clss-tonal)',
+            background: 'var(--wobo-tonal)',
             borderRadius: 3,
           }}
         >
@@ -227,7 +227,7 @@ export function WordProblemBreakdown({
             {spec.given.map((g) => (
               <li
                 key={g}
-                style={{ fontSize: '0.98rem', color: 'var(--clss-ink-900)', lineHeight: 1.5 }}
+                style={{ fontSize: '0.98rem', color: 'var(--wobo-ink-900)', lineHeight: 1.5 }}
               >
                 {g}
               </li>
@@ -240,7 +240,7 @@ export function WordProblemBreakdown({
             style={{
               fontSize: '1.02rem',
               fontWeight: 520,
-              color: 'var(--clss-ink-900)',
+              color: 'var(--wobo-ink-900)',
               lineHeight: 1.5,
             }}
           >
@@ -255,7 +255,7 @@ export function WordProblemBreakdown({
             {spec.plan.map((p) => (
               <li
                 key={p}
-                style={{ fontSize: '0.98rem', color: 'var(--clss-ink-900)', lineHeight: 1.5 }}
+                style={{ fontSize: '0.98rem', color: 'var(--wobo-ink-900)', lineHeight: 1.5 }}
               >
                 {p}
               </li>
@@ -278,14 +278,14 @@ export function WordProblemBreakdown({
                   style={{
                     fontSize: '1.08rem',
                     fontWeight: 540,
-                    color: 'var(--clss-ink-900)',
+                    color: 'var(--wobo-ink-900)',
                     fontVariantNumeric: 'tabular-nums',
                   }}
                 >
                   {s.expr}
                 </div>
                 {s.note && (
-                  <div style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)' }}>{s.note}</div>
+                  <div style={{ fontSize: '0.88rem', color: 'var(--wobo-ink-700)' }}>{s.note}</div>
                 )}
               </motion.div>
             ))}
@@ -302,12 +302,12 @@ export function WordProblemBreakdown({
                 style={{
                   marginTop: 4,
                   padding: '12px 16px',
-                  border: '1px solid var(--clss-feedback-correct)',
-                  background: 'var(--clss-feedback-correctSoft)',
+                  border: '1px solid var(--wobo-feedback-correct)',
+                  background: 'var(--wobo-feedback-correctSoft)',
                   borderRadius: 3,
                   fontSize: '1.05rem',
                   fontWeight: 560,
-                  color: 'var(--clss-ink-900)',
+                  color: 'var(--wobo-ink-900)',
                 }}
               >
                 <span style={{ ...whisper, color: hue, marginRight: 10 }}>answer</span>

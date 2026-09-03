@@ -24,7 +24,7 @@ import {
 } from './twin-data';
 
 /** Ultramarine as mastery light — daylight register, ink-legible against white. */
-const GLOW = 'var(--clss-ultramarine)';
+const GLOW = 'var(--wobo-ultramarine)';
 
 /** An earned star burns in its own subject's hue; ungrounded atom nodes keep ultramarine. */
 function hueForStar(star: Star): string {
@@ -222,7 +222,7 @@ export function Constellation({
               style={{
                 stroke: alive
                   ? hueForStar(e.to)
-                  : 'color-mix(in srgb, var(--clss-ink) 22%, transparent)',
+                  : 'color-mix(in srgb, var(--wobo-ink) 22%, transparent)',
                 strokeOpacity: alive ? 0.55 : 1,
               }}
               strokeWidth={alive ? 1.6 : 1.2}
@@ -294,7 +294,7 @@ export function Constellation({
                     r={10}
                     style={{
                       fill: 'none',
-                      stroke: 'color-mix(in srgb, var(--clss-ink) 40%, transparent)',
+                      stroke: 'color-mix(in srgb, var(--wobo-ink) 40%, transparent)',
                       strokeWidth: 0.75,
                     }}
                     vectorEffect="non-scaling-stroke"
@@ -332,7 +332,7 @@ export function Constellation({
                 y={star.y + 24}
                 textAnchor="middle"
                 style={{
-                  fill: isLit ? 'var(--clss-ink-soft)' : 'var(--clss-ink-300)',
+                  fill: isLit ? 'var(--wobo-ink-soft)' : 'var(--wobo-ink-300)',
                   fontSize: 11.5,
                   fontFamily: 'inherit',
                 }}

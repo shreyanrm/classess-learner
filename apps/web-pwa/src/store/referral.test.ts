@@ -63,12 +63,12 @@ describe('an invite link carries a code, never the child', () => {
   it('is stable per device, so a second copy is the same invitation', () => {
     const first = referralCode();
     expect(referralCode()).toBe(first);
-    expect(storage.getItem('clss-referral-code-v1')).toBe(first);
+    expect(storage.getItem('wobo-referral-code-v1')).toBe(first);
   });
 
-  it('lives under the clss- prefix, so erase-and-start-over takes it too', () => {
+  it('lives under the wobo- prefix, so erase-and-start-over takes it too', () => {
     referralCode();
-    expect([...storage.map.keys()].every((k) => k.startsWith('clss-'))).toBe(true);
+    expect([...storage.map.keys()].every((k) => k.startsWith('wobo-'))).toBe(true);
   });
 
   it('mints a fresh code once the device has been erased', () => {

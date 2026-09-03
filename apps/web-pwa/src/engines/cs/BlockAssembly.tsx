@@ -7,11 +7,11 @@
  * ever type one. The validator is the world — did the robot reach the goal? — so "correct" is a
  * deterministic simulation, never a guess.
  *
- * Wobo-drivable: she reads the program and the robot's position at code level, and can add blocks
+ * Wobo-drivable: Wobo reads the program and the robot's position at code level, and can add blocks
  * or run the program to demonstrate (getSceneState / getValidActions / applyTutorAction).
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, Reorder, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../../screens/course/shared';
@@ -119,10 +119,10 @@ function chipStyle(hue: string): React.CSSProperties {
     alignItems: 'center',
     gap: 8,
     padding: '9px 12px',
-    borderRadius: 'var(--clss-radius-sm)',
-    border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-    background: 'var(--clss-card)',
-    color: 'var(--clss-ink-900)',
+    borderRadius: 'var(--wobo-radius-sm)',
+    border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+    background: 'var(--wobo-card)',
+    color: 'var(--wobo-ink-900)',
     fontSize: '0.92rem',
     fontWeight: 500,
     boxShadow: `inset 3px 0 0 ${hue}`,
@@ -153,10 +153,10 @@ function PaletteButton({
         alignItems: 'center',
         gap: 7,
         padding: '8px 12px',
-        borderRadius: 'var(--clss-radius-sm)',
-        border: '0.5px dashed var(--clss-hairline-on-paper-strong)',
+        borderRadius: 'var(--wobo-radius-sm)',
+        border: '0.5px dashed var(--wobo-hairline-on-paper-strong)',
         background: 'transparent',
-        color: 'var(--clss-ink-700)',
+        color: 'var(--wobo-ink-700)',
         fontSize: '0.88rem',
         cursor: 'pointer',
       }}
@@ -211,8 +211,8 @@ function GridWorld({
                 y={y * cell}
                 width={cell}
                 height={cell}
-                fill={isWall ? 'var(--clss-ink-900)' : 'var(--clss-paper)'}
-                stroke="var(--clss-hairline-on-paper)"
+                fill={isWall ? 'var(--wobo-ink-900)' : 'var(--wobo-paper)'}
+                stroke="var(--wobo-hairline-on-paper)"
                 strokeWidth={0.5}
                 opacity={isWall ? 0.85 : 1}
               />
@@ -240,10 +240,10 @@ function GridWorld({
               animate={reached ? { scale: [1, 1.25, 1] } : { scale: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <circle r={cell * 0.32} fill={reached ? hue : 'var(--clss-ink-900)'} />
+              <circle r={cell * 0.32} fill={reached ? hue : 'var(--wobo-ink-900)'} />
               <path
                 d={`M0 ${-cell * 0.22} L ${cell * 0.16} ${cell * 0.1} L ${-cell * 0.16} ${cell * 0.1} Z`}
-                fill="var(--clss-paper)"
+                fill="var(--wobo-paper)"
               />
             </motion.g>
           </motion.g>
@@ -414,7 +414,7 @@ export function BlockAssembly({
     applyTutorAction,
   });
 
-  // publish to the bus so she reasons over the program at code level
+  // publish to the bus so Wobo reasons over the program at code level
   // biome-ignore lint/correctness/useExhaustiveDependencies: humanProgram derives from program+state
   useEffect(() => {
     bus.publishCanvas({
@@ -440,10 +440,10 @@ export function BlockAssembly({
         {/* the program — draggable to reorder */}
         <div
           style={{
-            border: '0.5px solid var(--clss-hairline-on-paper)',
-            borderRadius: 'var(--clss-radius-md)',
+            border: '0.5px solid var(--wobo-hairline-on-paper)',
+            borderRadius: 'var(--wobo-radius-md)',
             padding: 12,
-            background: 'var(--clss-canvas)',
+            background: 'var(--wobo-canvas)',
             minHeight: 64,
           }}
         >
@@ -600,10 +600,10 @@ export function BlockAssembly({
               transition={{ type: 'spring', stiffness: 320, damping: 28 }}
               style={{
                 padding: '12px 14px',
-                borderRadius: 'var(--clss-radius-sm)',
-                background: 'var(--clss-canvas)',
-                border: `0.5px solid ${reached ? hue : 'var(--clss-hairline-on-paper-strong)'}`,
-                color: 'var(--clss-ink-700)',
+                borderRadius: 'var(--wobo-radius-sm)',
+                background: 'var(--wobo-canvas)',
+                border: `0.5px solid ${reached ? hue : 'var(--wobo-hairline-on-paper-strong)'}`,
+                color: 'var(--wobo-ink-700)',
                 fontSize: '0.92rem',
               }}
             >
@@ -625,9 +625,9 @@ const stepBtn: React.CSSProperties = {
   alignItems: 'center',
   justifyContent: 'center',
   borderRadius: 6,
-  border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-  background: 'var(--clss-paper)',
-  color: 'var(--clss-ink-700)',
+  border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+  background: 'var(--wobo-paper)',
+  color: 'var(--wobo-ink-700)',
   cursor: 'pointer',
   fontSize: '0.9rem',
   lineHeight: 1,
@@ -636,9 +636,9 @@ const stepBtn: React.CSSProperties = {
 const miniAdd: React.CSSProperties = {
   padding: '4px 8px',
   borderRadius: 6,
-  border: '0.5px dashed var(--clss-hairline-on-paper-strong)',
+  border: '0.5px dashed var(--wobo-hairline-on-paper-strong)',
   background: 'transparent',
-  color: 'var(--clss-ink-500)',
+  color: 'var(--wobo-ink-500)',
   cursor: 'pointer',
   fontSize: '0.82rem',
 };

@@ -1,7 +1,7 @@
 /**
  * Fuzzy destination resolution — the one place free text becomes a Route.
  *
- * She navigates on command (WOBO.md §10): "take me to practice", "show my progress", "open
+ * Wobo navigates on command (WOBO.md §10): "take me to practice", "show my progress", "open
  * chemistry" all resolve to a real surface here, and App.ask navigates directly — no approval card,
  * a spoken + inked confirmation, and never silence on a clear miss. This runs on the raw text, so
  * it works identically from the chat page and the docked drawer (both call the one App-level ask),
@@ -15,7 +15,7 @@ import { subjectById, topicById } from '../data/catalog';
 import { findTopic } from '../wobo/capabilities';
 import type { Route } from './router';
 
-/** She resolved a place and will go there; or the intent was clearly navigational but unknown. */
+/** Wobo resolved a place and will go there; or the intent was clearly navigational but unknown. */
 export type NavResolve = { route: Route; say: string } | { unknown: string } | null;
 
 /** The atom — the one fully proven course; owner shorthand for it (see capabilities.ts). */
@@ -122,7 +122,7 @@ function subjectName(id: string): string {
   return subjectById(id)?.name ?? (id === 'science' ? 'Science' : id);
 }
 
-/** Her one-line confirmation as she goes — sentence case, no exclamation (WOBO.md §1). */
+/** Wobo's one-line confirmation as Wobo goes — sentence case, no exclamation (WOBO.md §1). */
 function destSay(route: Route): string {
   switch (route.name) {
     case 'home':
@@ -147,8 +147,8 @@ function destSay(route: Route): string {
 }
 
 /**
- * Resolve free text to a navigation. Returns a route (with her confirmation), an unknown-place
- * miss (she says so), or null when the text is not navigational at all (let the classifier decide).
+ * Resolve free text to a navigation. Returns a route (with Wobo's confirmation), an unknown-place
+ * miss (Wobo says so), or null when the text is not navigational at all (let the classifier decide).
  */
 export function resolveDestination(text: string): NavResolve {
   const raw = text

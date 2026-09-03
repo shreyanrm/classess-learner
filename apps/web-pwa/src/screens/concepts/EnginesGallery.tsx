@@ -47,7 +47,7 @@ function Bench({ id, name, children }: { id: string; name: string; children: Rea
     <section
       id={id}
       style={{
-        borderTop: '0.5px solid var(--clss-hairline-on-paper)',
+        borderTop: '0.5px solid var(--wobo-hairline-on-paper)',
         padding: '18px 0 42px',
       }}
     >
@@ -65,8 +65,8 @@ export function EnginesGallery() {
         width: '100%',
         height: '100dvh',
         overflowY: 'auto',
-        background: 'var(--clss-paper)',
-        color: 'var(--clss-ink-900)',
+        background: 'var(--wobo-paper)',
+        color: 'var(--wobo-ink-900)',
       }}
     >
       <div style={{ padding: '28px 24px 8px', maxWidth: 640, margin: '0 auto' }}>

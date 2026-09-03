@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import pytest
-from classess_gateway import budget
-from classess_gateway.app import Gateway, create_app
-from classess_gateway.cache import InMemoryCache
-from classess_gateway.providers import MockProvider
-from classess_gateway.telemetry import MetricsSink
+from wobo_gateway import budget
+from wobo_gateway.app import Gateway, create_app
+from wobo_gateway.cache import InMemoryCache
+from wobo_gateway.providers import MockProvider
+from wobo_gateway.telemetry import MetricsSink
 
 
 def client():
@@ -104,7 +104,7 @@ def test_429_with_headers_after_the_daily_turns(monkeypatch: pytest.MonkeyPatch,
     assert spent.json()["code"] == "budget_exhausted"
     assert spent.headers["X-Wobo-Budget-Remaining"] == "0"
     assert spent.headers["X-Wobo-Budget-Reset"]
-    # her voice, and no price
+    # Wobo's voice, and no price
     message = spent.json()["message"]
     assert "₹" not in message and "$" not in message
 
@@ -143,7 +143,7 @@ def test_a_closed_consent_door_is_refunded(monkeypatch: pytest.MonkeyPatch, auth
     headers = auth()
     denied = c.post("/v1/capability/archetype.classify", json=BODY, headers=headers)
     assert denied.status_code == 403
-    # the turn is still there — she refused, so it was never spent
+    # the turn is still there — the gate refused, so it was never spent
     assert c.post("/v1/capability/tutor.turn", json=BODY, headers=headers).status_code == 200
 
 

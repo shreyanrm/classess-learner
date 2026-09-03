@@ -13,7 +13,7 @@
  *     sfx tick, Wobo says it aloud (mute-aware), and a frosted toast they can tap to dive in.
  */
 
-import { useRegisterTarget } from '@classess/wobo';
+import { useRegisterTarget } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { claimNextForge, settleForge, useForged } from '../screens/practice/forge-store';
@@ -37,7 +37,7 @@ const COMPOSE_TIMEOUT_MS = 75_000;
 
 // Honest staged progress while a course composes. The gateway genuinely moves through these stages
 // (write the lesson → draw the visuals → verify the answers), so the label reflects real work rather
-// than a fabricated percentage — no fake number, just where she is. Time-based because the client
+// than a fabricated percentage — no fake number, just where Wobo is. Time-based because the client
 // can't see per-stage gateway events; tuned to a typical live compose (~30-45s).
 const COMPOSE_STAGES: readonly { readonly until: number; readonly label: string }[] = [
   { until: 9_000, label: 'Writing the lesson' },
@@ -69,7 +69,7 @@ export function DownloadCenter() {
   const notified = useRef<Set<string>>(new Set());
 
   // What is being made for this learner right now. Registered so "is my course ready" is answered
-  // from the real queue, and so she can point at the toast rather than describe it.
+  // from the real queue, and so Wobo can point at the toast rather than describe it.
   const centreRef = useRegisterTarget<HTMLDivElement>('download-center', {
     kind: 'queue',
     label: 'the courses being composed for you right now',
@@ -82,7 +82,7 @@ export function DownloadCenter() {
     }),
   });
 
-  // A gentle clock so the composing toast's staged label advances while she works. Only ticks while
+  // A gentle clock so the composing toast's staged label advances while Wobo works. Only ticks while
   // something is actually composing, then stops — no idle timers.
   const [now, setNow] = useState(() => Date.now());
   const composingCount = items.filter(
@@ -130,7 +130,7 @@ export function DownloadCenter() {
       if (d.status !== 'ready' || d.seen || notified.current.has(d.topicId)) continue;
       notified.current.add(d.topicId);
       sfx.ding(); // a soft notification ding — mute-aware inside sound.ts
-      void speakLine(readyLine(d.title)); // she says it aloud — mute-aware inside speech.ts
+      void speakLine(readyLine(d.title)); // Wobo says it aloud — mute-aware inside speech.ts
     }
   }, [items]);
 
@@ -240,14 +240,14 @@ export function DownloadCenter() {
                 borderRadius: 3,
                 cursor: composing ? 'default' : 'pointer',
                 fontFamily: 'inherit',
-                color: 'var(--clss-paper)',
-                background: 'var(--clss-frost-on-paper)',
-                backdropFilter: 'blur(var(--clss-frost-blur)) saturate(1.2)',
-                WebkitBackdropFilter: 'blur(var(--clss-frost-blur)) saturate(1.2)',
-                border: '0.5px solid color-mix(in srgb, var(--clss-ink) 14%, transparent)',
+                color: 'var(--wobo-paper)',
+                background: 'var(--wobo-frost-on-paper)',
+                backdropFilter: 'blur(var(--wobo-frost-blur)) saturate(1.2)',
+                WebkitBackdropFilter: 'blur(var(--wobo-frost-blur)) saturate(1.2)',
+                border: '0.5px solid color-mix(in srgb, var(--wobo-ink) 14%, transparent)',
               }}
             >
-              {/* honest indeterminate track along the bottom — she is actively working, no fake % */}
+              {/* honest indeterminate track along the bottom — Wobo is actively working, no fake % */}
               {composing && (
                 <motion.span
                   aria-hidden
@@ -265,7 +265,7 @@ export function DownloadCenter() {
                     height: 2,
                     width: '40%',
                     borderRadius: 999,
-                    background: 'var(--clss-ultramarine)',
+                    background: 'var(--wobo-ultramarine)',
                     opacity: 0.85,
                   }}
                 />
@@ -286,8 +286,8 @@ export function DownloadCenter() {
                   borderRadius: 999,
                   background:
                     d.status === 'ready' || composing
-                      ? 'var(--clss-ultramarine)'
-                      : 'var(--clss-ink-300)',
+                      ? 'var(--wobo-ultramarine)'
+                      : 'var(--wobo-ink-300)',
                 }}
               />
               <span
@@ -298,7 +298,7 @@ export function DownloadCenter() {
                 </span>
                 <span style={{ fontSize: '0.8rem', opacity: 0.82, lineHeight: 1.35 }}>
                   {composing
-                    ? `${stage}… she'll let you know the moment it's ready`
+                    ? `${stage}… Wobo will let you know the moment it's ready`
                     : d.status === 'ready'
                       ? 'Your course is ready — tap to dive in'
                       : 'That one slipped away — tap to try again'}

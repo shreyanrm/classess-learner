@@ -7,12 +7,12 @@ type ``"elevated"`` and walk through an elevated-only door. These tests hold tha
 from __future__ import annotations
 
 import pytest
-from classess_gateway import consent
-from classess_gateway.app import Gateway, create_app
-from classess_gateway.cache import InMemoryCache
-from classess_gateway.providers import MockProvider
-from classess_gateway.registry import ConsentTier
-from classess_gateway.telemetry import MetricsSink
+from wobo_gateway import consent
+from wobo_gateway.app import Gateway, create_app
+from wobo_gateway.cache import InMemoryCache
+from wobo_gateway.providers import MockProvider
+from wobo_gateway.registry import ConsentTier
+from wobo_gateway.telemetry import MetricsSink
 
 
 def client():

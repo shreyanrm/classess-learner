@@ -5,7 +5,7 @@
  *
  * Three wrong actions or forty idle seconds and the orb leans in and offers a pointer. It is
  * governed by the dial the learner already owns in You — quiet, balanced, proactive — which is why
- * nothing here stores a second one. It never interrupts her own speech or the learner's typing, and
+ * nothing here stores a second one. It never interrupts Wobo's own speech or the learner's typing, and
  * it never nags: one offer, then a cooldown.
  *
  * The policy is a pure function so it can be argued with in a test rather than waited out.
@@ -17,11 +17,11 @@ export type { Proactivity };
 export { loadProactivity };
 
 export interface DialThresholds {
-  /** Wrong actions in a row before she offers. Infinity means never. */
+  /** Wrong actions in a row before Wobo offers. Infinity means never. */
   misses: number;
-  /** Quiet milliseconds before she offers. Infinity means never. */
+  /** Quiet milliseconds before Wobo offers. Infinity means never. */
   idleMs: number;
-  /** How long she waits after an offer before considering another. */
+  /** How long Wobo waits after an offer before considering another. */
   cooldownMs: number;
 }
 
@@ -40,20 +40,20 @@ export interface LeanSignals {
   misses: number;
   /** Clock of the learner's last input, anywhere in the app. */
   lastInputAt: number;
-  /** When she last offered, so she does not nag. 0 means never. */
+  /** When Wobo last offered, so Wobo does not nag. 0 means never. */
   lastOfferAt: number;
-  /** She is speaking — never talk over herself. */
+  /** Wobo is speaking — never talk over themself. */
   speaking: boolean;
   /** The learner is typing — never interrupt a sentence being written. */
   typing: boolean;
-  /** Her drawer or her board is already open; the offer would be noise. */
+  /** Wobo's drawer or Wobo's board is already open; the offer would be noise. */
   engaged: boolean;
 }
 
 export type LeanReason = 'misses' | 'idle';
 
 /**
- * Should she lean in now, and why. Returns null for "stay where you are" — which is the answer most
+ * Should Wobo lean in now, and why. Returns null for "stay where you are" — which is the answer most
  * of the time, and the whole point of the dial.
  */
 export function shouldLeanIn(
@@ -63,8 +63,8 @@ export function shouldLeanIn(
 ): LeanReason | null {
   const limits = THRESHOLDS[dial];
   if (signals.speaking || signals.typing || signals.engaged) return null;
-  // `lastOfferAt === 0` is "she has never offered", not "she offered at the epoch" — without this
-  // the cooldown would silence her for the first minute and a half of every session.
+  // `lastOfferAt === 0` is "Wobo has never offered", not "Wobo offered at the epoch" — without this
+  // the cooldown would silence Wobo for the first minute and a half of every session.
   if (signals.lastOfferAt > 0 && now - signals.lastOfferAt < limits.cooldownMs) return null;
   if (signals.misses >= limits.misses) return 'misses';
   if (now - signals.lastInputAt >= limits.idleMs) return 'idle';
@@ -85,7 +85,7 @@ export function trailingMisses(log: readonly { payload?: unknown }[]): number {
   return misses;
 }
 
-/** Her offer, in her voice. Sentence case, no exclamation marks, never a nag. */
+/** Wobo's offer, in Wobo's voice. Sentence case, no exclamation marks, never a nag. */
 export function leanInLine(reason: LeanReason, topic?: string): string {
   const where = topic ? ` with ${topic.toLowerCase()}` : '';
   return reason === 'misses'

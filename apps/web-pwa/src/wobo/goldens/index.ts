@@ -6,7 +6,7 @@
  * passes on one side cannot quietly differ on the other.
  */
 
-import { parseBoardPlan } from '@classess/wobo';
+import { parseBoardPlan } from '@wobo/wobo';
 import benzene from './benzene.json';
 import foodWeb from './food-web.json';
 import incline from './free-body-incline.json';

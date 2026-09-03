@@ -7,7 +7,7 @@ Every meaningful action emits one event with this envelope. Define it once in `/
 python services. Persisted to the outbox in the same transaction as the state change.
 
 ```ts
-type ClassessEvent<TPayload = unknown> = {
+type WoboEvent<TPayload = unknown> = {
   event_id: string;            // uuid v7 (time-ordered)
   event_type: string;          // dot.namespaced, versioned: "learn.attempt.submitted.v1"
   occurred_at: string;         // ISO-8601 UTC, client-truthful, server-stamped on ingest

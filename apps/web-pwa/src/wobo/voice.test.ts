@@ -13,7 +13,7 @@ function fakeStream(): MediaStream & { stopped: boolean } {
 const later = <T>(value: T): Promise<T> => Promise.resolve().then(() => value);
 const relay = { mode: 'relay', token: 'tok-1' };
 
-describe('the push-to-talk race — a hold that ends before she is up', () => {
+describe('the push-to-talk race — a hold that ends before Wobo is up', () => {
   it('releases the microphone and reports cancelled when the hold ends during the prompt', async () => {
     const stream = fakeStream();
     let released = false; // the learner let go while getUserMedia was still pending

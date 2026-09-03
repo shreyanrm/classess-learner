@@ -7,8 +7,8 @@
  * action (CONTEXT.md §5).
  */
 
-import type { PracticeItem } from '@classess/sdk';
-import { useWoboBus } from '@classess/wobo';
+import type { PracticeItem } from '@wobo/sdk';
+import { useWoboBus } from '@wobo/wobo';
 import { motion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { chapterById } from '../../data/catalog';
@@ -114,7 +114,7 @@ export function AtomJourney({
 
   const chapter = chapterById(topic.chapterId);
 
-  // She reads each card's core line on arrival. Teaching cards gate the advance button (true);
+  // Wobo reads each card's core line on arrival. Teaching cards gate the advance button (true);
   // celebration + the boss workbook narrate without locking (false). Practice is omitted — the run
   // reads each question itself as the learner moves.
   useEffect(() => {
@@ -286,7 +286,7 @@ export function AtomJourney({
                 fontWeight: 600,
                 letterSpacing: '-0.03em',
                 lineHeight: 1.12,
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               {topic.name.toLowerCase()}
@@ -371,7 +371,7 @@ export function AtomJourney({
                 fontWeight: 600,
                 letterSpacing: '-0.025em',
                 lineHeight: 1.15,
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               the boss

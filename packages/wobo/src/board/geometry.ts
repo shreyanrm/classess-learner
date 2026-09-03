@@ -167,8 +167,8 @@ function loopAround(box: BoardRect, rng: () => number): Stroke {
  * Written text, placed and measured. Returns nothing drawable when the font never arrived.
  *
  * A line carrying `^` or `_` — `a^2`, `x_1`, `a^2 + b^2 = c^2` — is written as MATHS, not as its
- * source: the script layout raises the power and drops the index in her own hand, and the no-font
- * fallback shows the real characters (a², x₁) rather than the carets she never says out loud.
+ * source: the script layout raises the power and drops the index in Wobo's own hand, and the no-font
+ * fallback shows the real characters (a², x₁) rather than the carets Wobo never says out loud.
  */
 function written(
   ctx: BuildContext,
@@ -676,8 +676,8 @@ export function geometryOf(object: BoardObject, ctx: BuildContext): ObjectGeomet
     case 'tex': {
       const size = object.size ?? WRITE_SIZE;
       if (!ctx.font) {
-        // No Caveat: she still shows the EQUATION, with its powers and indices as real characters
-        // (a² + b² = c²), never the TeX source she would never say out loud.
+        // No Caveat: Wobo still shows the EQUATION, with its powers and indices as real characters
+        // (a² + b² = c²), never the TeX source Wobo would never say out loud.
         const plain = texPlainText(object.tex);
         const approx = plain.length * size * 0.4;
         return {

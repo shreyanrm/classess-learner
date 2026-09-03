@@ -66,7 +66,7 @@ export function isOffline(): boolean {
   return typeof navigator !== 'undefined' && navigator.onLine === false;
 }
 
-// --- her plain lines (dead-end rule: she says what still works, never just "error") --------------
+// --- Wobo's plain lines (dead-end rule: Wobo says what still works, never just "error") --------------
 
 /** Mid-turn network stall/failure — one plain line, then we fall back to the lightest thing. */
 export const WOBBLY_LINE =

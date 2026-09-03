@@ -7,8 +7,8 @@ the verifier grounding that decides where the working breaks, the prompt assembl
 from __future__ import annotations
 
 import pytest
-from classess_gateway.providers import MockProvider
-from classess_gateway.wobo import (
+from wobo_gateway.providers import MockProvider
+from wobo_gateway.wobo import (
     WOBO_INTRO,
     WOBO_PERSONA,
     _build_user_prompt,
@@ -19,7 +19,7 @@ from classess_gateway.wobo import (
 
 @pytest.fixture(autouse=True)
 def _isolated_content_cache(tmp_path, monkeypatch):
-    """Her mock component/viz turns run the real engines, which write artifacts. Point the file
+    """Wobo's mock component/viz turns run the real engines, which write artifacts. Point the file
     cache at a tmp dir so a test run never leaves files in the repo's content/cache."""
     monkeypatch.setenv("PLEXUS_CACHE_DIR", str(tmp_path))
 
@@ -46,12 +46,49 @@ def test_ground_working_is_none_without_working() -> None:
 def test_mock_wobo_turn_returns_say_and_actions() -> None:
     out = (
         MockProvider()
-        .complete(provider_model="classess/wobo-tutor-slm", capability="wobo.turn", payload={})
+        .complete(provider_model="wobo/tutor-slm", capability="wobo.turn", payload={})
         .output
     )
     assert isinstance(out["say"], str) and out["say"]
     assert isinstance(out["actions"], list)
     assert out["handed_answer"] is False
+
+
+# --- §19: Wobo has no gender ---------------------------------------------------------------------
+
+
+def test_persona_instructs_the_no_gender_rule_and_the_self_description() -> None:
+    """WOBO-PLAN.md §19: the model is told it has no gender, and told the exact line to give when
+    a learner asks whether it is a boy or a girl."""
+    from wobo_gateway.wobo import WOBO_NO_GENDER, WOBO_SYSTEM
+
+    p = WOBO_PERSONA
+    assert "You have no gender" in p
+    assert "not a boy or a girl" in p
+    assert "no she/her" in p and "he/him" in p
+    assert WOBO_NO_GENDER in p  # the one-line self-description, verbatim
+    assert WOBO_NO_GENDER in WOBO_SYSTEM  # and it survives into the assembled system prompt
+
+
+def test_mock_turn_answers_the_boy_or_girl_question_with_the_wobot_line() -> None:
+    from wobo_gateway.wobo import WOBO_NO_GENDER, mock_wobo_turn
+
+    for asked in (
+        "are you a boy or a girl?",
+        "wait — are you a girl",
+        "what gender are you",
+    ):
+        out = mock_wobo_turn({"context": {"turn": {"lastUserInput": asked}}})
+        assert out["say"] == WOBO_NO_GENDER, asked
+        assert out["path"] == "inline"
+        assert out["grounded"] is True
+
+
+def test_no_gender_line_obeys_the_house_style() -> None:
+    from wobo_gateway.wobo import WOBO_NO_GENDER
+
+    assert "!" not in WOBO_NO_GENDER
+    assert WOBO_NO_GENDER.startswith("I'm a wobot")
 
 
 def test_prompt_carries_the_targets_and_the_grounding() -> None:
@@ -75,7 +112,7 @@ def _mock_turn(text: str) -> dict:
     return (
         MockProvider()
         .complete(
-            provider_model="classess/wobo-tutor-slm",
+            provider_model="wobo/tutor-slm",
             capability="wobo.turn",
             payload={"context": {"turn": {"lastUserInput": text}}},
         )
@@ -84,7 +121,7 @@ def _mock_turn(text: str) -> dict:
 
 
 def test_classify_covers_all_five_paths() -> None:
-    from classess_gateway.wobo import classify_intent
+    from wobo_gateway.wobo import classify_intent
 
     assert classify_intent("why is the sky blue")["path"] == "inline"
     assert classify_intent("make me a sim for ohm's law")["path"] == "component"
@@ -132,11 +169,11 @@ def test_mock_inline_turn_stays_prose() -> None:
 
 
 # --- the voice-and-lines tiers (prompt-level doctrine: K guardianship, O wellbeing, G affect,
-# F/L/Q/H truth & warmth) — assert her system prompt carries each tier's load-bearing line ---------
+# F/L/Q/H truth & warmth) — assert the system prompt carries each tier's load-bearing line ---------
 
 
 def test_system_prompt_carries_guardianship_tier() -> None:
-    from classess_gateway.wobo import WOBO_SYSTEM
+    from wobo_gateway.wobo import WOBO_SYSTEM
 
     p = WOBO_SYSTEM
     assert "live exam" in p  # exam-hall hard line
@@ -148,7 +185,7 @@ def test_system_prompt_carries_guardianship_tier() -> None:
 
 
 def test_system_prompt_carries_wellbeing_tier() -> None:
-    from classess_gateway.wobo import WOBO_SYSTEM
+    from wobo_gateway.wobo import WOBO_SYSTEM
 
     p = WOBO_SYSTEM
     assert "The local time rides every turn" in p  # the clock rides the context
@@ -157,7 +194,7 @@ def test_system_prompt_carries_wellbeing_tier() -> None:
 
 
 def test_system_prompt_carries_affect_tiers() -> None:
-    from classess_gateway.wobo import WOBO_SYSTEM
+    from wobo_gateway.wobo import WOBO_SYSTEM
 
     p = WOBO_SYSTEM
     assert "ONE true reassurance" in p  # acute panic → one data-grounded reassurance
@@ -167,7 +204,7 @@ def test_system_prompt_carries_affect_tiers() -> None:
 
 
 def test_system_prompt_carries_truth_and_warmth_tier() -> None:
-    from classess_gateway.wobo import WOBO_SYSTEM
+    from wobo_gateway.wobo import WOBO_SYSTEM
 
     p = WOBO_SYSTEM
     assert "Grade the CONCEPT, never the language" in p  # grade concept, not spelling
@@ -181,20 +218,20 @@ def test_system_prompt_carries_truth_and_warmth_tier() -> None:
 
 
 def test_system_prompt_carries_the_choreography() -> None:
-    from classess_gateway.wobo import WOBO_SYSTEM
+    from wobo_gateway.wobo import WOBO_SYSTEM
 
     p = WOBO_SYSTEM
-    # THE SYNCED HAND + THE ACTION TIMELINE — ink rides the beats of her spoken line
+    # THE SYNCED HAND + THE ACTION TIMELINE — ink rides the beats of Wobo's spoken line
     assert "withSentence" in p
     assert "afterSentence" in p
     assert "Your voice and your hand are ONE performance" in p
-    # a write note is her hand ON THE PAGE, never in the chat bubble (owner addendum)
+    # a write note is Wobo's hand ON THE PAGE, never in the chat bubble (owner addendum)
     assert "your hand ON THE PAGE" in p
     # THE GUIDANCE LOOP — one step, check, wait, react, then advance
     assert "one step at a time" in p
     assert "never dump the whole solution" in p
     assert "your turn" in p.lower()
-    # a concrete worked choreography she can pattern-match against
+    # a concrete worked choreography the model can pattern-match against
     assert "2x + 3 = 7" in p
 
 
@@ -216,7 +253,7 @@ def test_prompt_omits_clock_line_when_no_time() -> None:
 
 def test_legacy_capability_name_still_reaches_the_wobo_turn() -> None:
     """The deployed web bundle POSTs the pre-rebrand name until it redeploys."""
-    from classess_gateway.registry import canonical_capability
+    from wobo_gateway.registry import canonical_capability
 
     assert canonical_capability("vidya.turn") == "wobo.turn"
     assert canonical_capability("wobo.turn") == "wobo.turn"
@@ -224,10 +261,10 @@ def test_legacy_capability_name_still_reaches_the_wobo_turn() -> None:
 
 
 def test_legacy_capability_endpoint_is_not_a_404(auth) -> None:
-    from classess_gateway.app import Gateway, create_app
-    from classess_gateway.cache import InMemoryCache
-    from classess_gateway.telemetry import MetricsSink
     from fastapi.testclient import TestClient
+    from wobo_gateway.app import Gateway, create_app
+    from wobo_gateway.cache import InMemoryCache
+    from wobo_gateway.telemetry import MetricsSink
 
     client = TestClient(create_app(Gateway(MockProvider(), InMemoryCache(), MetricsSink())))
     body = {"payload": {}}
@@ -273,7 +310,7 @@ def test_mock_first_meeting_says_the_intro_verbatim() -> None:
     out = (
         MockProvider()
         .complete(
-            provider_model="classess/wobo-tutor-slm",
+            provider_model="wobo/tutor-slm",
             capability="wobo.turn",
             payload={"first_meeting": True, "context": {"turn": {"lastUserInput": "quiz me"}}},
         )
@@ -304,7 +341,7 @@ class _FakeResponse:
 
 def _turn_with_model_text(monkeypatch, text: str) -> dict:
     import litellm
-    from classess_gateway.wobo import run_wobo_turn
+    from wobo_gateway.wobo import run_wobo_turn
 
     monkeypatch.setattr(litellm, "completion", lambda **_kw: _FakeResponse(text))
     out, _tokens = run_wobo_turn(
@@ -326,7 +363,7 @@ def test_prose_reply_without_a_json_envelope_becomes_the_say_line(monkeypatch) -
 
 
 def test_unparseable_json_still_speaks_the_model_text(monkeypatch) -> None:
-    # a truncated envelope: _extract_json gives {}, but the words are still hers
+    # a truncated envelope: _extract_json gives {}, but the words are still Wobo's
     out = _turn_with_model_text(monkeypatch, '{"say": "check the second step", "acti')
     assert out["say"] != CANNED
     assert "check the second step" in out["say"]
@@ -347,7 +384,7 @@ def test_a_question_with_a_region_in_hand_is_answered_with_a_mark_on_it() -> Non
     """A lasso plus "why?" is the commonest board turn there is, and it needs no subject pipeline:
     the answer is a ring round the thing they drew around and one written word beside it. Keyless,
     so the video case in BOARD.md §5 works with no model and no network."""
-    from classess_gateway.wobo import mock_board_plan
+    from wobo_gateway.wobo import mock_board_plan
 
     plan = mock_board_plan(
         {
@@ -366,21 +403,21 @@ def test_a_question_with_a_region_in_hand_is_answered_with_a_mark_on_it() -> Non
         {"focus": "f7", "at": "bottom"},
     ]
     assert {o["kind"] for o in plan["objects"]} == {"circle", "write"}
-    # Every object she plans has to survive the grammar she is held to.
-    from classess_gateway.board import schema
+    # Every object Wobo plans has to survive the grammar Wobo is held to.
+    from wobo_gateway.board import schema
 
     for obj in plan["objects"]:
         assert not schema.validate_object(obj), (obj["id"], schema.validate_object(obj))
 
 
 def test_the_same_question_with_nothing_in_hand_is_a_conversation_not_a_drawing() -> None:
-    from classess_gateway.wobo import mock_board_plan
+    from wobo_gateway.wobo import mock_board_plan
 
     assert mock_board_plan({"context": {"turn": {"lastUserInput": "why?"}}}) is None
 
 
 def test_a_statement_with_a_region_in_hand_is_not_a_drawing_either() -> None:
-    from classess_gateway.wobo import mock_board_plan
+    from wobo_gateway.wobo import mock_board_plan
 
     payload = {
         "context": {
@@ -396,7 +433,7 @@ def test_the_turn_never_names_a_model_of_its_own() -> None:
     whenever the resolved id looked like a Track-2 slot — a second, drifted routing table (it
     still pointed at a Claude 4 generation the registry had long moved off) that could silently
     override the tier's decision. The registry is the only place a model is named."""
-    from classess_gateway import wobo
+    from wobo_gateway import wobo
 
     assert not hasattr(wobo, "WOBO_PRIMARY")
     assert not hasattr(wobo, "WOBO_ESCALATE")
@@ -427,12 +464,12 @@ def test_the_turn_never_names_a_model_of_its_own() -> None:
     sys.modules["litellm"] = _FakeLiteLLM  # type: ignore[assignment]
     try:
         wobo.run_wobo_turn(
-            provider_model="classess/wobo-tutor-slm",  # the shape that used to trigger the swap
+            provider_model="wobo/tutor-slm",  # the shape that used to trigger the swap
             payload={"context": {}},
             fallbacks=("anthropic/claude-opus-5",),
         )
     finally:
         del sys.modules["litellm"]
 
-    assert captured["model"] == "classess/wobo-tutor-slm"
+    assert captured["model"] == "wobo/tutor-slm"
     assert captured["fallbacks"] == ["anthropic/claude-opus-5"]

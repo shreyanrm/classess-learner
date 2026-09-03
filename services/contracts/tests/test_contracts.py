@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import pytest
-from classess_contracts import (
+from wobo_contracts import (
     EVENT_TYPES,
     ContractViolation,
     is_event_type,

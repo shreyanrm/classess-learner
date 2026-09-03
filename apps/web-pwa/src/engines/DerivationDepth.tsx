@@ -7,11 +7,11 @@
  * level: a step may carry its own sub-derivation with its own ⓘ (the curious go deeper; everyone
  * else moves on). Most learners never open it — that is the point.
  *
- * Registers as a Wobo scene target so she can expand it to walk the derivation herself
+ * Registers as a Wobo scene target so Wobo can expand it to walk the derivation directly
  * (applyTutorAction: { expand } / { collapse }). Reduced-motion + mute aware; both themes; no deps.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -84,9 +84,9 @@ function InfoButton({ open, hue, onClick }: { open: boolean; hue: string; onClic
         width: 22,
         height: 22,
         borderRadius: 999,
-        border: `1px solid ${open ? hue : 'var(--clss-hairline-on-paper-strong)'}`,
+        border: `1px solid ${open ? hue : 'var(--wobo-hairline-on-paper-strong)'}`,
         background: open ? rgba(hue, 0.12) : 'transparent',
-        color: open ? hue : 'var(--clss-ink-500)',
+        color: open ? hue : 'var(--wobo-ink-500)',
         cursor: 'pointer',
         fontFamily: 'inherit',
         fontSize: '0.78rem',
@@ -131,7 +131,7 @@ function DerivationNode({
         {spec.label && depth === 0 && <span style={whisper}>{spec.label}</span>}
         <span
           style={
-            depth === 0 ? equationType : { ...lead, fontWeight: 560, color: 'var(--clss-ink-900)' }
+            depth === 0 ? equationType : { ...lead, fontWeight: 560, color: 'var(--wobo-ink-900)' }
           }
         >
           {spec.formula}
@@ -192,7 +192,7 @@ function DerivationNode({
                       style={{
                         fontSize: '1.05rem',
                         fontWeight: 520,
-                        color: 'var(--clss-ink-900)',
+                        color: 'var(--wobo-ink-900)',
                         fontVariantNumeric: 'tabular-nums',
                       }}
                     >
@@ -204,7 +204,7 @@ function DerivationNode({
                       style={{
                         marginLeft: 28,
                         fontSize: '0.9rem',
-                        color: 'var(--clss-ink-700)',
+                        color: 'var(--wobo-ink-700)',
                         lineHeight: 1.55,
                       }}
                     >
@@ -258,7 +258,7 @@ export function DerivationDepth({
   useEffect(() => () => bus.publishCanvas(undefined), [bus]);
 
   // The ref carries the registration: an unattached one registers nothing, so the derivation was
-  // invisible to her. The wrapper is the region she points at when she says "this step".
+  // invisible to Wobo. The wrapper is the region Wobo points at when Wobo says "this step".
   return (
     <div ref={stageRef}>
       <DerivationNode spec={spec} hue={hue} depth={0} onToggle={setOpen} />
@@ -295,7 +295,7 @@ export function DerivationCard({
         </div>
         <div
           style={{
-            border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+            border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
             borderRadius: 3,
             padding: '22px 20px',
             background: rgba(hue, 0.04),

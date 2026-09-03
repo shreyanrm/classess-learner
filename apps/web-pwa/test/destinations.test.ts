@@ -14,7 +14,7 @@ function outcome(text: string): string {
   return route.name;
 }
 
-describe('resolveDestination — she navigates on command', () => {
+describe('resolveDestination — Wobo navigates on command', () => {
   // Every one of these MUST navigate (a real Route), none is an approval-gated action card.
   const navigates: [string, string][] = [
     ['take me to practice', 'practice'],
@@ -60,7 +60,7 @@ describe('resolveDestination — she navigates on command', () => {
     });
   }
 
-  // A clear "take me to <somewhere>" that resolves to nothing — she says so, never silence.
+  // A clear "take me to <somewhere>" that resolves to nothing — Wobo says so, never silence.
   it('unknown destination is spoken, never silent', () => {
     const r = resolveDestination('take me to narnia');
     expect(r && 'unknown' in r).toBe(true);

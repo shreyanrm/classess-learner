@@ -15,11 +15,11 @@
  *
  * All pure SVG / hand-rolled — no heavy deps. Lines are authored slope/intercept (numbers), so
  * nothing is evaluated; the gateway gate (plexus/social.py) mirrors parseSocialScene exactly.
- * Every kind registers a Wobo scene target: she reads the live state (getSceneState) and can
+ * Every kind registers a Wobo scene target: Wobo reads the live state (getSceneState) and can
  * drive it (applyTutorAction). Mute-aware sfx, both themes, reduced-motion aware.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { Reorder, useReducedMotion } from 'framer-motion';
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -188,10 +188,10 @@ export function parseSocialScene(raw: unknown): SocialSceneSpec | null {
 // --- Shared bits ---------------------------------------------------------------------------------
 
 const readoutBox: CSSProperties = {
-  border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-  borderRadius: 'var(--clss-radius-md)',
+  border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+  borderRadius: 'var(--wobo-radius-md)',
   padding: '2px 20px',
-  background: 'var(--clss-paper)',
+  background: 'var(--wobo-paper)',
 };
 
 function Readouts({ items }: { items: { id: string; label: string; value: string }[] }) {
@@ -204,7 +204,7 @@ function Readouts({ items }: { items: { id: string; label: string; value: string
               style={{
                 height: 1,
                 transform: 'scaleY(0.5)',
-                background: 'var(--clss-hairline-on-paper)',
+                background: 'var(--wobo-hairline-on-paper)',
               }}
             />
           )}
@@ -218,13 +218,13 @@ function Readouts({ items }: { items: { id: string; label: string; value: string
               padding: '10px 0',
             }}
           >
-            <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>{o.label}</div>
+            <div style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)' }}>{o.label}</div>
             <div
               style={{
                 fontSize: '1.15rem',
                 fontWeight: 550,
                 fontVariantNumeric: 'tabular-nums',
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               {o.value}
@@ -386,7 +386,7 @@ function TimelineScene({
               y1={TL_AXIS}
               x2={TL_W - TL_PAD}
               y2={TL_AXIS}
-              stroke="var(--clss-ink-500)"
+              stroke="var(--wobo-ink-500)"
               strokeWidth={1}
             />
             {events.map((e, i) => {
@@ -407,21 +407,21 @@ function TimelineScene({
                     y1={labelY + 4}
                     x2={x}
                     y2={TL_AXIS}
-                    stroke="var(--clss-ink-300)"
+                    stroke="var(--wobo-ink-300)"
                     strokeWidth={0.5}
                   />
                   <circle
                     cx={x}
                     cy={TL_AXIS}
                     r={focused ? 4.5 : 3.2}
-                    fill={focused ? hue : 'var(--clss-ink-700)'}
+                    fill={focused ? hue : 'var(--wobo-ink-700)'}
                   />
                   <text
                     x={x}
                     y={TL_AXIS + 14}
                     textAnchor="middle"
                     fontSize={8}
-                    fill="var(--clss-ink-500)"
+                    fill="var(--wobo-ink-500)"
                     style={{ fontVariantNumeric: 'tabular-nums' }}
                   >
                     {Math.round(e.year)}
@@ -431,7 +431,7 @@ function TimelineScene({
                     y={labelY}
                     textAnchor="middle"
                     fontSize={7.5}
-                    fill={focused ? 'var(--clss-ink-900)' : 'var(--clss-ink-700)'}
+                    fill={focused ? 'var(--wobo-ink-900)' : 'var(--wobo-ink-700)'}
                   >
                     {e.label.length > 26 ? `${e.label.slice(0, 25)}…` : e.label}
                   </text>
@@ -453,7 +453,7 @@ function TimelineScene({
                   cx={px(dragYear)}
                   cy={TL_AXIS + 30}
                   r={7}
-                  fill={solved ? hue : 'var(--clss-paper)'}
+                  fill={solved ? hue : 'var(--wobo-paper)'}
                   stroke={hue}
                   strokeWidth={1.6}
                   style={{ cursor: solved ? 'default' : 'grab' }}
@@ -470,7 +470,7 @@ function TimelineScene({
                   textAnchor="middle"
                   fontSize={8.5}
                   fontWeight={600}
-                  fill={solved ? hue : 'var(--clss-ink-900)'}
+                  fill={solved ? hue : 'var(--wobo-ink-900)'}
                   style={{ fontVariantNumeric: 'tabular-nums' }}
                 >
                   {dragYear}
@@ -684,11 +684,11 @@ function EventOrderScene({
                   alignItems: 'center',
                   gap: 12,
                   padding: '12px 14px',
-                  borderRadius: 'var(--clss-radius-md)',
+                  borderRadius: 'var(--wobo-radius-md)',
                   border: solved
                     ? `1px solid ${hue}`
-                    : `0.5px ${wrong ? 'dashed' : 'solid'} var(--clss-hairline-on-paper-strong)`,
-                  background: 'var(--clss-paper)',
+                    : `0.5px ${wrong ? 'dashed' : 'solid'} var(--wobo-hairline-on-paper-strong)`,
+                  background: 'var(--wobo-paper)',
                   cursor: solved ? 'default' : 'grab',
                   touchAction: 'none',
                 }}
@@ -698,13 +698,13 @@ function EventOrderScene({
                     minWidth: 20,
                     fontVariantNumeric: 'tabular-nums',
                     fontWeight: 600,
-                    color: solved ? hue : 'var(--clss-ink-500)',
+                    color: solved ? hue : 'var(--wobo-ink-500)',
                     fontSize: '0.9rem',
                   }}
                 >
                   {i + 1}
                 </span>
-                <span style={{ flex: 1, fontSize: '0.95rem', color: 'var(--clss-ink-900)' }}>
+                <span style={{ flex: 1, fontSize: '0.95rem', color: 'var(--wobo-ink-900)' }}>
                   {ev.label}
                 </span>
                 {solved ? (
@@ -746,7 +746,7 @@ function EventOrderScene({
         </Reorder.Group>
 
         {wrongAt && (
-          <div style={{ ...lead, borderLeft: '2px solid var(--clss-ink-500)', paddingLeft: 14 }}>
+          <div style={{ ...lead, borderLeft: '2px solid var(--wobo-ink-500)', paddingLeft: 14 }}>
             not in order yet — the dashed ones sit in the wrong spot.
           </div>
         )}
@@ -764,9 +764,9 @@ const arrowBtn: CSSProperties = {
   width: 26,
   height: 26,
   borderRadius: 8,
-  border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-  background: 'var(--clss-paper)',
-  color: 'var(--clss-ink-700)',
+  border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+  background: 'var(--wobo-paper)',
+  color: 'var(--wobo-ink-700)',
   cursor: 'pointer',
   fontSize: '0.8rem',
   lineHeight: 1,
@@ -975,7 +975,7 @@ function SupplyDemandScene({
               y1={SD_T}
               x2={SD_L}
               y2={SD_H - SD_B}
-              stroke="var(--clss-ink-500)"
+              stroke="var(--wobo-ink-500)"
               strokeWidth={0.8}
             />
             <line
@@ -983,7 +983,7 @@ function SupplyDemandScene({
               y1={SD_H - SD_B}
               x2={SD_W - SD_R}
               y2={SD_H - SD_B}
-              stroke="var(--clss-ink-500)"
+              stroke="var(--wobo-ink-500)"
               strokeWidth={0.8}
             />
             <text
@@ -991,7 +991,7 @@ function SupplyDemandScene({
               y={SD_T + 4}
               textAnchor="end"
               fontSize={7.5}
-              fill="var(--clss-ink-500)"
+              fill="var(--wobo-ink-500)"
             >
               {spec.pUnit ? `p (${spec.pUnit})` : 'price'}
             </text>
@@ -1000,23 +1000,23 @@ function SupplyDemandScene({
               y={SD_H - SD_B + 14}
               textAnchor="end"
               fontSize={7.5}
-              fill="var(--clss-ink-500)"
+              fill="var(--wobo-ink-500)"
             >
               {spec.qUnit ? `q (${spec.qUnit})` : 'quantity'}
             </text>
 
             {/* the untouched original as a ghost, so the shift is visible as a move */}
-            {ghost && seg(ghost, 'var(--clss-ink-300)', 0.8, '3 3')}
+            {ghost && seg(ghost, 'var(--wobo-ink-300)', 0.8, '3 3')}
             {sSeg &&
               seg(
                 sSeg,
-                shift?.target === 'supply' ? hue : 'var(--clss-ink-700)',
+                shift?.target === 'supply' ? hue : 'var(--wobo-ink-700)',
                 shift?.target === 'supply' ? 2 : 1.6,
               )}
             {dSeg &&
               seg(
                 dSeg,
-                shift?.target === 'demand' ? hue : 'var(--clss-ink-700)',
+                shift?.target === 'demand' ? hue : 'var(--wobo-ink-700)',
                 shift?.target === 'demand' ? 2 : 1.6,
               )}
             {sSeg && (
@@ -1025,7 +1025,7 @@ function SupplyDemandScene({
                 y={py(sSeg[3]) - 5}
                 textAnchor="end"
                 fontSize={7.5}
-                fill="var(--clss-ink-700)"
+                fill="var(--wobo-ink-700)"
               >
                 {supply.label}
               </text>
@@ -1036,7 +1036,7 @@ function SupplyDemandScene({
                 y={py(dSeg[3]) + 10}
                 textAnchor="end"
                 fontSize={7.5}
-                fill="var(--clss-ink-700)"
+                fill="var(--wobo-ink-700)"
               >
                 {demand.label}
               </text>
@@ -1050,7 +1050,7 @@ function SupplyDemandScene({
                   y1={py(eq.p)}
                   x2={px(eq.q)}
                   y2={py(eq.p)}
-                  stroke="var(--clss-ink-400)"
+                  stroke="var(--wobo-ink-400)"
                   strokeWidth={0.6}
                   strokeDasharray="2 2"
                 />
@@ -1059,7 +1059,7 @@ function SupplyDemandScene({
                   y1={py(eq.p)}
                   x2={px(eq.q)}
                   y2={SD_H - SD_B}
-                  stroke="var(--clss-ink-400)"
+                  stroke="var(--wobo-ink-400)"
                   strokeWidth={0.6}
                   strokeDasharray="2 2"
                 />
@@ -1070,7 +1070,7 @@ function SupplyDemandScene({
                   textAnchor="end"
                   fontSize={8}
                   fontWeight={600}
-                  fill="var(--clss-ink-900)"
+                  fill="var(--wobo-ink-900)"
                   style={{ fontVariantNumeric: 'tabular-nums' }}
                 >
                   {formatSimNumber(eq.p)}
@@ -1081,7 +1081,7 @@ function SupplyDemandScene({
                   textAnchor="middle"
                   fontSize={8}
                   fontWeight={600}
-                  fill="var(--clss-ink-900)"
+                  fill="var(--wobo-ink-900)"
                   style={{ fontVariantNumeric: 'tabular-nums' }}
                 >
                   {formatSimNumber(eq.q)}
@@ -1095,7 +1095,7 @@ function SupplyDemandScene({
                 cx={px(handle.q)}
                 cy={py(handle.p)}
                 r={7}
-                fill="var(--clss-paper)"
+                fill="var(--wobo-paper)"
                 stroke={hue}
                 strokeWidth={1.6}
                 style={{ cursor: 'grab' }}
@@ -1113,7 +1113,7 @@ function SupplyDemandScene({
         {shift && (
           // keyboard path for the shift drag
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{ minWidth: 92, fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>
+            <div style={{ minWidth: 92, fontSize: '0.85rem', color: 'var(--wobo-ink-500)' }}>
               {`shift ${shift.target}`}
             </div>
             <input
@@ -1132,7 +1132,7 @@ function SupplyDemandScene({
                 textAlign: 'right',
                 fontVariantNumeric: 'tabular-nums',
                 fontWeight: 550,
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               {offset > 0 ? `+${formatSimNumber(offset)}` : formatSimNumber(offset)}

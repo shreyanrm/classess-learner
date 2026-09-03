@@ -7,7 +7,7 @@
  * the act: pose, struggle, reveal.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { BarState } from './shared';
@@ -21,8 +21,8 @@ const PAN_W = 148;
 const STRING = 64;
 const X_WEIGHT = 5; // what x truly weighs — the scale never lies
 
-const HUE = 'var(--clss-ultramarine)';
-const INK = 'var(--clss-ink)';
+const HUE = 'var(--wobo-ultramarine)';
+const INK = 'var(--wobo-ink)';
 
 const spring = { type: 'spring', stiffness: 150, damping: 14 } as const;
 const rad = (deg: number) => (deg * Math.PI) / 180;
@@ -59,7 +59,7 @@ function UnitWeight({
         height: 28,
         border: `1.5px solid ${INK}`,
         borderBottomWidth: 3.5,
-        background: 'linear-gradient(180deg, var(--clss-card) 0%, #E3E7FB 100%)',
+        background: 'linear-gradient(180deg, var(--wobo-card) 0%, #E3E7FB 100%)',
         borderRadius: 4,
         display: 'grid',
         placeItems: 'center',
@@ -126,7 +126,7 @@ function Pan({
           top: STRING - 2,
           height: 9,
           background:
-            'linear-gradient(180deg, #4257F0 0%, var(--clss-ultramarine) 70%, #16279E 100%)',
+            'linear-gradient(180deg, #4257F0 0%, var(--wobo-ultramarine) 70%, #16279E 100%)',
           border: `1.5px solid ${INK}`,
           borderRadius: '3px 3px 6px 6px',
         }}
@@ -219,7 +219,7 @@ export function BalanceScale({
     set((ids) => [...ids, id]);
   };
 
-  // she watches the pans at code level
+  // Wobo watches the pans at code level
   useEffect(() => {
     const tilt =
       angle === 0
@@ -277,7 +277,7 @@ export function BalanceScale({
                 fontSize: '1.8rem',
                 fontWeight: 600,
                 letterSpacing: '-0.01em',
-                color: revealed ? HUE : 'var(--clss-ink-900)',
+                color: revealed ? HUE : 'var(--wobo-ink-900)',
                 fontVariantNumeric: 'tabular-nums',
               }}
             >
@@ -318,7 +318,7 @@ export function BalanceScale({
                   height: 16,
                   borderRadius: '50%',
                   background:
-                    'radial-gradient(ellipse, color-mix(in srgb, var(--clss-ink) 14%, transparent) 0%, transparent 68%)',
+                    'radial-gradient(ellipse, color-mix(in srgb, var(--wobo-ink) 14%, transparent) 0%, transparent 68%)',
                 }}
               />
               {/* the fulcrum — a chunky gradient pillar with an ink outline */}
@@ -338,7 +338,7 @@ export function BalanceScale({
                 <defs>
                   <linearGradient id="scale-pillar" x1="0" y1="0" x2="1" y2="0">
                     <stop offset="0%" stopColor="#3A3B42" />
-                    <stop offset="50%" stopColor="var(--clss-ink)" />
+                    <stop offset="50%" stopColor="var(--wobo-ink)" />
                     <stop offset="100%" stopColor="#2A2B31" />
                   </linearGradient>
                 </defs>
@@ -361,7 +361,7 @@ export function BalanceScale({
                   top: BEAM_Y - 3,
                   width: HALF * 2,
                   height: 6,
-                  background: 'linear-gradient(180deg, #3A3B42 0%, var(--clss-ink) 55%)',
+                  background: 'linear-gradient(180deg, #3A3B42 0%, var(--wobo-ink) 55%)',
                   borderRadius: 3,
                   transformOrigin: 'center',
                 }}
@@ -389,7 +389,7 @@ export function BalanceScale({
                     position: 'relative',
                     width: 42,
                     height: 34,
-                    background: 'linear-gradient(180deg, #2E3038 0%, var(--clss-ink) 100%)',
+                    background: 'linear-gradient(180deg, #2E3038 0%, var(--wobo-ink) 100%)',
                     color: '#FFFFFF',
                     border: `1.5px solid ${INK}`,
                     borderRadius: 4,
@@ -472,7 +472,7 @@ export function BalanceScale({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.45, duration: 0.5, ease: [0.2, 0, 0, 1] }}
-              style={{ fontSize: '1.08rem', color: 'var(--clss-ink-900)', lineHeight: 1.6 }}
+              style={{ fontSize: '1.08rem', color: 'var(--wobo-ink-900)', lineHeight: 1.6 }}
             >
               whatever you do to one side, do to the other.
               <div style={{ ...lead, marginTop: 4 }}>
@@ -486,7 +486,7 @@ export function BalanceScale({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              style={{ color: 'var(--clss-ink-500)', fontSize: '0.9rem' }}
+              style={{ color: 'var(--wobo-ink-500)', fontSize: '0.9rem' }}
             >
               it tips when the sides stop matching.
             </motion.div>

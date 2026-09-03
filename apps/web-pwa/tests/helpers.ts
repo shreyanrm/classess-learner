@@ -1,8 +1,8 @@
 import { expect, type Locator, type Page, type TestInfo } from '@playwright/test';
 
-export const ONBOARDED_KEY = 'clss-onboarded-v1';
-/** Set once Wobo has introduced herself on this device — she never introduces herself twice. */
-export const MET_KEY = 'clss-wobo-met-v1';
+export const ONBOARDED_KEY = 'wobo-onboarded-v1';
+/** Set once Wobo has introduced themself on this device — Wobo never introduces themself twice. */
+export const MET_KEY = 'wobo-met-v1';
 
 /**
  * Collect real console errors and uncaught page errors. Vite HMR chatter and benign resource
@@ -45,10 +45,10 @@ export async function seedOnboarded(page: Page): Promise<void> {
   await page.addInitScript(
     (keys: { onboarded: string; met: string }) => {
       localStorage.setItem(keys.onboarded, '1');
-      localStorage.setItem(keys.met, '1'); // an old friend — she never re-introduces herself
-      localStorage.setItem('clss-home-opened', '1'); // sessionStorage is per-context; set below too
+      localStorage.setItem(keys.met, '1'); // an old friend — Wobo never re-introduces themself
+      localStorage.setItem('wobo-home-opened', '1'); // sessionStorage is per-context; set below too
       localStorage.setItem(
-        'clss-learner-profile',
+        'wobo-learner-profile',
         JSON.stringify({ name: 'Aanya', grade: 'Class 8', boardId: 'cbse' }),
       );
     },
@@ -57,7 +57,7 @@ export async function seedOnboarded(page: Page): Promise<void> {
   // The home landing animation gates on sessionStorage; short-circuit it so the doors are live fast.
   await page.addInitScript(() => {
     try {
-      sessionStorage.setItem('clss-home-opened', '1');
+      sessionStorage.setItem('wobo-home-opened', '1');
     } catch {
       /* ignore */
     }

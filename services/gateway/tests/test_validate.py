@@ -6,9 +6,9 @@ is model-agnostic (it takes the escalation_model), so the older tests pass a sta
 from __future__ import annotations
 
 import pytest
-from classess_gateway.plexus import store
-from classess_gateway.plexus.validate import PASS_THRESHOLD, validate_and_promote
-from classess_gateway.routing import Tier, Track, resolve, tier_model, track_separation_holds
+from wobo_gateway.plexus import store
+from wobo_gateway.plexus.validate import PASS_THRESHOLD, validate_and_promote
+from wobo_gateway.routing import Tier, Track, resolve, tier_model, track_separation_holds
 
 
 @pytest.fixture(autouse=True)
@@ -32,9 +32,9 @@ def _provisional(artifact, *, model="openai/gpt-5.6-terra"):
 
 
 def _promote(monkeypatch, record, *, judge, regen=None, escalation_model="openai/gpt-5.6-terra"):
-    monkeypatch.setattr("classess_gateway.plexus.validate._judge", judge)
+    monkeypatch.setattr("wobo_gateway.plexus.validate._judge", judge)
     if regen is not None:
-        monkeypatch.setattr("classess_gateway.plexus.engines._generate_live", regen)
+        monkeypatch.setattr("wobo_gateway.plexus.engines._generate_live", regen)
     return validate_and_promote(
         concept="photosynthesis",
         modality="compose",
@@ -50,11 +50,11 @@ def _promote(monkeypatch, record, *, judge, regen=None, escalation_model="openai
 
 
 def test_mock_engine_serves_canonical_status(cache_dir) -> None:
-    from classess_gateway.app import CapabilityRequest, Gateway
-    from classess_gateway.cache import InMemoryCache
-    from classess_gateway.providers import MockProvider
-    from classess_gateway.registry import ConsentTier
-    from classess_gateway.telemetry import MetricsSink
+    from wobo_gateway.app import CapabilityRequest, Gateway
+    from wobo_gateway.cache import InMemoryCache
+    from wobo_gateway.providers import MockProvider
+    from wobo_gateway.registry import ConsentTier
+    from wobo_gateway.telemetry import MetricsSink
 
     gw = Gateway(MockProvider(), InMemoryCache(), MetricsSink())
     resp = gw.invoke(
@@ -221,7 +221,7 @@ def test_seeded_escalation_is_not_chosen(monkeypatch, cache_dir) -> None:
 
 
 def test_content_engines_route_primary_to_the_generate_tier() -> None:
-    from classess_gateway.registry import escalate_for, policy
+    from wobo_gateway.registry import escalate_for, policy
 
     for cap in ("engine.compose", "engine.simulate", "engine.diagram", "engine.video"):
         pol = policy(cap)
@@ -235,11 +235,11 @@ def test_spawn_validation_judges_on_verify_and_rebuilds_on_reason(monkeypatch) -
     """The post-serve gate: the verify tier (Opus 5) judges the Terra draft — the other provider,
     always — and on a quality-fail the reason tier (Sol) rebuilds the same spec. Run the spawned
     thread synchronously and capture the resolved models."""
-    import classess_gateway.plexus.engines as engines
+    import wobo_gateway.plexus.engines as engines
 
     captured: dict = {}
     monkeypatch.setattr(
-        "classess_gateway.plexus.validate.validate_and_promote",
+        "wobo_gateway.plexus.validate.validate_and_promote",
         lambda **kw: captured.update(kw),
     )
 
@@ -353,8 +353,8 @@ def _run_lint_gate(monkeypatch, *, modality, artifact, rebuild_artifact, rebuild
         rebuild_calls.append(provider_model)  # capture the model the rebuild routed to
         return rebuild_artifact, provider_model, 5, rebuild_seeded
 
-    monkeypatch.setattr("classess_gateway.plexus.validate._judge", judge)
-    monkeypatch.setattr("classess_gateway.plexus.engines._generate_live", regen)
+    monkeypatch.setattr("wobo_gateway.plexus.validate._judge", judge)
+    monkeypatch.setattr("wobo_gateway.plexus.engines._generate_live", regen)
     out = validate_and_promote(
         concept="photosynthesis",
         modality=modality,
@@ -455,7 +455,7 @@ def test_lint_rebuild_also_broken_falls_to_seed_loudly(monkeypatch, cache_dir) -
     assert out["status"] == store.CANONICAL
     assert out["seeded"] is True  # the honest floor, served as canonical
     assert out["provenance"]["model"] == "seed"
-    from classess_gateway.plexus.lint import lint_artifact
+    from wobo_gateway.plexus.lint import lint_artifact
 
     assert lint_artifact("diagram", out["artifact"]).ok  # the seed itself is lint-clean
     rejected = _rejected("diagram")

@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 
 import pytest
-from classess_gateway.plexus import factcheck
+from wobo_gateway.plexus import factcheck
 
 REPO = Path(__file__).resolve().parents[3]
 
@@ -55,7 +55,7 @@ def test_seed_integrity():
 
 def test_seed_slug_matches_runtime_keying():
     # build.slug must equal the runtime resolver so a topic's facts are findable at serve time
-    from classess_gateway.plexus import store
+    from wobo_gateway.plexus import store
 
     assert build.slug("Nationalism in India") == store.concept_id("Nationalism in India")
 

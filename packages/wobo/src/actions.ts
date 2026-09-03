@@ -2,10 +2,10 @@ import { z } from 'zod';
 import type { WoboMood } from './identity';
 
 /**
- * Wobo's action vocabulary — the things she can DO on the page, not just say. Her reasoning returns
+ * Wobo's action vocabulary — the things Wobo can DO on the page, not just say. Wobo's reasoning returns
  * a list of these; the executor runs the in-context ones immediately and OFFERS the consequential
- * ones (the calm principle: power is available, never imposed). This is what makes her feel directly
- * connected to the app — she can point at, highlight, and mark up the very page the learner is on.
+ * ones (the calm principle: power is available, never imposed). This is what makes Wobo feel directly
+ * connected to the app — Wobo can point at, highlight, and mark up the very page the learner is on.
  */
 
 export const HIGHLIGHT_LEVELS = ['primary', 'secondary', 'tertiary'] as const;
@@ -27,8 +27,8 @@ const MOODS = ['idle', 'thinking', 'listening', 'correct', 'celebrate', 'waiting
 const level = z.enum(HIGHLIGHT_LEVELS).optional();
 /** How long a mark lives before it fades, in ms. Wobo decides per mark; omitted = a sensible default. */
 const ttl = z.number().int().positive().optional();
-// Sync anchors (THE ACTION TIMELINE): an action may ride a beat of her spoken line so ink lands on
-// the word she says. `withSentence:n` fires as sentence n begins; `afterSentence:n` fires when it
+// Sync anchors (THE ACTION TIMELINE): an action may ride a beat of Wobo's spoken line so ink lands on
+// the word Wobo says. `withSentence:n` fires as sentence n begins; `afterSentence:n` fires when it
 // ends. Both optional — an action with neither dispatches immediately (backward compatible). The
 // conductor (speech.tsx) reads these off the parsed action; the reducer ignores them.
 const withSentence = z.number().int().nonnegative().optional();
@@ -48,7 +48,7 @@ export const WoboActionSchema = z.discriminatedUnion('type', [
     ...sync,
   }),
   // Wobo writes a handwritten note (Caveat) beside a target — typed on letter by letter, paced to
-  // her voice when it rides a sentence beat.
+  // Wobo's voice when it rides a sentence beat.
   z.object({
     type: z.literal('write'),
     targetId: z.string(),
@@ -67,15 +67,15 @@ export const WoboActionSchema = z.discriminatedUnion('type', [
     ...sync,
   }),
   // Voice-locked speech (WOBO.md §4 speak): plays through the voice path when live, otherwise
-  // rendered as her handwritten line.
+  // rendered as Wobo's handwritten line.
   z.object({ type: z.literal('speak'), text: z.string(), ...sync }),
   // Learn a durable fact the learner just shared — a preferred name, a goal, an exam date. Persisted
   // to the mind and rendered into every future dossier (WOBO.md §7). Never for transient chatter.
   z.object({ type: z.literal('remember'), text: z.string() }),
   // The data-rights twin of remember (WOBO-CAPABILITIES.md family E, the forget verb): show, correct,
-  // or delete what she remembers. scope 'show' reads the real dossier back; 'fact' drops what they name
+  // or delete what Wobo remembers. scope 'show' reads the real dossier back; 'fact' drops what they name
   // (target); 'all' wipes the mind. Deleting is confirm-before-execute (capability ladder) — the app
-  // purges from the real on-device mind and she reports exactly what was removed. Never a guess.
+  // purges from the real on-device mind and Wobo reports exactly what was removed. Never a guess.
   z.object({
     type: z.literal('forget'),
     scope: z.enum(['show', 'fact', 'all']),
@@ -83,9 +83,9 @@ export const WoboActionSchema = z.discriminatedUnion('type', [
   }),
   z.object({ type: z.literal('revealHint'), level: z.number().int().nonnegative() }),
   z.object({ type: z.literal('escalateHint') }),
-  // Re-ink the marks she last drew (WOBO-CAPABILITIES.md family M): her ink is transient and fades by
-  // ttl, so "that diagram you drew earlier" is gone from the screen. This redraws her last mark set
-  // fresh — the bus keeps it — instead of asking the learner to re-describe what she already drew.
+  // Re-ink the marks Wobo last drew (WOBO-CAPABILITIES.md family M): Wobo's ink is transient and fades by
+  // ttl, so "that diagram you drew earlier" is gone from the screen. This redraws Wobo's last mark set
+  // fresh — the bus keeps it — instead of asking the learner to re-describe what Wobo already drew.
   z.object({ type: z.literal('redrawMarks') }),
   // Consequential — offered, never forced.
   z.object({ type: z.literal('navigate'), route: z.string(), reason: z.string().optional() }),
@@ -110,7 +110,7 @@ const ANNOTATION_SET = new Set<string>(ANNOTATION_KINDS);
 /**
  * Normalize a raw action before validation. The model sometimes shorthands a mark as its own
  * type — {"type":"circle","targetId":...} instead of {"type":"annotate","mark":"circle"} — because
- * the mark legend reads like a type list. Fold that shorthand back into a real annotate so her ink
+ * the mark legend reads like a type list. Fold that shorthand back into a real annotate so Wobo's ink
  * still renders instead of being silently dropped.
  */
 function normalizeAction(item: unknown): unknown {
@@ -161,7 +161,7 @@ export interface ActiveNote {
   ttl?: number;
   bornAt?: number;
   /** How long the full note should take to write on, in ms — set to the spoken sentence's audio
-   * length so the hand keeps pace with her voice. Undefined = a natural handwriting pace. */
+   * length so the hand keeps pace with Wobo's voice. Undefined = a natural handwriting pace. */
   durationMs?: number;
 }
 
@@ -184,9 +184,9 @@ export interface ActionEffects {
   mood: WoboMood | null;
   offer: ConsequentialAction | null;
   says: string[];
-  /** Voice-locked lines: spoken when voice is live, otherwise her handwritten line. */
+  /** Voice-locked lines: spoken when voice is live, otherwise Wobo's handwritten line. */
   speaks: string[];
-  /** Durable facts she learned this turn — persisted to the mind, fed into future dossiers. */
+  /** Durable facts Wobo learned this turn — persisted to the mind, fed into future dossiers. */
   remembers: string[];
   /** Data-rights requests this turn — the app renders the dossier or purges the mind, grounded. */
   forgets: ForgetEffect[];
@@ -194,7 +194,7 @@ export interface ActionEffects {
   setStates: TutorStatePatch[];
   revealHints: number[];
   escalateHints: number;
-  /** She asked to re-ink her last mark set (family M) — the bus redraws what has since faded. */
+  /** Wobo asked to re-ink Wobo's last mark set (family M) — the bus redraws what has since faded. */
   redrawMarks: boolean;
 }
 
@@ -287,7 +287,7 @@ export function reduceActions(actions: WoboAction[]): ActionEffects {
 }
 
 /**
- * A compact description of the action vocabulary, for Wobo's reasoning prompt. She is told the
+ * A compact description of the action vocabulary, for Wobo's reasoning prompt. Wobo is told the
  * registered target ids and picks among these actions to point at the learner's actual working.
  */
 export function describeActionVocabulary(): string {
@@ -340,9 +340,9 @@ export interface PerformancePlan {
 }
 
 /**
- * Bucket a turn's actions onto the beats of her spoken line. Pure — no DOM, no audio — so the
+ * Bucket a turn's actions onto the beats of Wobo's spoken line. Pure — no DOM, no audio — so the
  * conductor stays testable. An out-of-range anchor clamps to the last sentence (it still lands,
- * never silently vanishes); when she speaks nothing (sentenceCount 0) everything is immediate.
+ * never silently vanishes); when Wobo speaks nothing (sentenceCount 0) everything is immediate.
  */
 export function planPerformance(actions: WoboAction[], sentenceCount: number): PerformancePlan {
   const plan: PerformancePlan = { immediate: [], atStart: new Map(), atEnd: new Map() };

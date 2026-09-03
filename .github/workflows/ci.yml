@@ -54,6 +54,45 @@ jobs:
           VITE_GATEWAY_URL: ""
         run: bun run build
 
+  # The three brand gates (WOBO-PLAN §17 rebrand + white-label, §19 no gender). They are their own
+  # job so a brand regression is legible on its own line and never hides inside a test summary.
+  # Stdlib python3 only — no dependency install, so the job is a checkout plus one web build.
+  gates:
+    name: Brand gates (no-classess · white-label · pronouns)
+    runs-on: ubuntu-latest
+    steps:
+      # fetch-depth 0 is not needed: the gates read the working tree, never history.
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Cache bun install cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      - run: bun install --frozen-lockfile
+
+      # The white-label gate reads the REAL bundle, built from the committed public flags — no
+      # mock override here, unlike the `js` job's compile gate. A bundle built with the endpoints
+      # blanked would hide exactly the vendor hostnames this gate exists to watch.
+      - name: Build web app (the bundle the white-label gate reads)
+        working-directory: apps/web-pwa
+        run: bun run build
+
+      - name: Gate — no-classess
+        run: python3 scripts/gate_no_classess.py
+
+      - name: Gate — white-label
+        run: python3 scripts/gate_white_label.py
+
+      - name: Gate — pronouns
+        run: python3 scripts/gate_pronouns.py
+
   e2e:
     name: E2E (Playwright journey suite)
     runs-on: ubuntu-latest

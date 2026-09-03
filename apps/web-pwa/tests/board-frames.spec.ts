@@ -3,7 +3,7 @@
  *
  * The budget existed and nothing exercised it: no board in the repo has ever held more than 21
  * objects and no spec had ever measured a frame rate. Under that cover, a single screen-anchored
- * mark — her commonest turn — took the board from 60 fps to 29 on a throttled machine, because the
+ * mark — Wobo's commonest turn — took the board from 60 fps to 29 on a throttled machine, because the
  * rAF loop it starts advanced a dependency of the geometry memo and so re-anchored, re-signed and
  * re-elemented all 2,000 objects sixty times a second.
  *

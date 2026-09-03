@@ -14,7 +14,9 @@
       "!docs",
       "!**/schemas",
       "!**/_bundle.json",
-      "!**/*.workflow.js"
+      "!**/*.workflow.js",
+      "!content/curriculum/**/*.json",
+      "!content/hospitality/**/*.json"
     ]
   },
   "formatter": {

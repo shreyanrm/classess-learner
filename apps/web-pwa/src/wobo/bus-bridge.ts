@@ -22,7 +22,7 @@ import {
   type TargetAction,
   useSurface,
   useWoboBus,
-} from '@classess/wobo';
+} from '@wobo/wobo';
 import { useEffect, useMemo, useSyncExternalStore } from 'react';
 
 /** The registry surface a route's live targets live under. One surface per screen. */
@@ -68,8 +68,8 @@ function sceneValueOf(target: AnnotatableTarget): (() => unknown) | undefined {
 
 /**
  * The actions a bus target offers the brain. `set_state` exists only where the component accepts a
- * tutor action — the demonstrate-by-doing seam. Nothing else is invented here: an action she cannot
- * actually run must never appear in the snapshot she reasons over.
+ * tutor action — the demonstrate-by-doing seam. Nothing else is invented here: an action Wobo cannot
+ * actually run must never appear in the snapshot Wobo reasons over.
  */
 export function actionsOf(target: AnnotatableTarget): TargetAction[] | undefined {
   if (!target.applyTutorAction) return undefined;

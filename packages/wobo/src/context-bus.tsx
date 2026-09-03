@@ -23,10 +23,10 @@ import type { WoboMood } from './identity';
 
 /**
  * The Wobo Context Bus. Every page publishes its full state into it, and registers the elements
- * Wobo may draw on — which turns each page into a canvas she is directly plugged into. She perceives
+ * Wobo may draw on — which turns each page into a canvas Wobo is directly plugged into. Wobo perceives
  * the app through this bus (the four-layer context assembler: turn, session, lifetime, curriculum),
- * never through a screen-share, and she expresses back through it (highlights, annotations, mood,
- * and offered actions). One store is both her eyes and her hands.
+ * never through a screen-share, and Wobo expresses back through it (highlights, annotations, mood,
+ * and offered actions). One store is both Wobo's eyes and Wobo's hands.
  */
 
 // --- Perception: what a page publishes -----------------------------------------------------------
@@ -39,7 +39,7 @@ import type { WoboMood } from './identity';
 export interface SceneSeams {
   /** Semantic scene state, e.g. { grid: '4×4', '(0,2)': 3 } — code-level, never pixels. */
   getSceneState?: () => Record<string, unknown>;
-  /** What can be done on this scene right now, as plain phrases for her reasoning. */
+  /** What can be done on this scene right now, as plain phrases for Wobo's reasoning. */
   getValidActions?: () => string[];
   /** Apply a tutor-driven state patch (the setState action) — demonstrate by doing. */
   applyTutorAction?: (patch: Record<string, unknown>) => void;
@@ -85,9 +85,9 @@ export interface SessionContext {
   sessionId: string;
   recentEvents: string[];
   /**
-   * True only on the learner's very first turn with her. She already introduced herself during
+   * True only on the learner's very first turn with Wobo. Wobo already introduced themself during
    * setup ("I'm Wobo, your AI wobot"), so the gateway uses this to greet warmly by name — and to
-   * never introduce herself a second time.
+   * never introduce themself a second time.
    */
   firstMeeting?: boolean;
 }
@@ -100,13 +100,13 @@ export interface TurnContext {
 export interface LifetimeContext {
   twinSummary?: string;
   masteryHighlights?: string[];
-  /** Who she is teaching — the dossier's identity, from the onboarding profile (WOBO.md §7). */
+  /** Who Wobo is teaching — the dossier's identity, from the onboarding profile (WOBO.md §7). */
   learner?: { name: string; age?: number; grade?: string; board?: string };
-  /** Durable facts she has learned in conversation — the concierge's notepad. */
+  /** Durable facts Wobo has learned in conversation — the concierge's notepad. */
   facts?: string[];
-  /** Durable accessibility profile — she honors these every turn (family P). */
+  /** Durable accessibility profile — Wobo honors these every turn (family P). */
   accessibility?: { readAloud?: boolean; largeText?: boolean; highContrast?: boolean };
-  /** Persistent instruction language — she teaches in this until it's changed. */
+  /** Persistent instruction language — Wobo teaches in this until it's changed. */
   language?: string;
 }
 
@@ -114,7 +114,7 @@ export interface LifetimeContext {
  * The machine room (WOBO-CAPABILITIES.md family J) — the system's internal truth for the turn:
  * a mastery-band snapshot, the spaced-review due queue, XP/level/streak, the recent event-stream
  * tail, and any in-flight content generation. Digests, never dumps — the app assembles it each turn
- * and the gateway renders it compactly so she references it naturally ("3 reviews due, two minutes
+ * and the gateway renders it compactly so Wobo references it naturally ("3 reviews due, two minutes
  * each", "how far to level 5" answered exactly).
  */
 export interface MachineRoomContext {
@@ -130,7 +130,7 @@ export interface MachineRoomContext {
   generating?: { what: string };
 }
 
-/** The full, serializable context Wobo reasons over — her perception of the app. */
+/** The full, serializable context Wobo reasons over — Wobo's perception of the app. */
 export interface WoboAssembledContext {
   page: PageContext;
   curriculum: CurriculumContext;
@@ -152,12 +152,12 @@ export interface WoboHandlers {
   onSay?: (text: string) => void;
   /**
    * Voice-locked speech (the speak action): play through the voice path when live, otherwise render
-   * as her handwritten line. When absent, speak degrades to onSay.
+   * as Wobo's handwritten line. When absent, speak degrades to onSay.
    */
   onSpeak?: (text: string) => void;
   onRevealHint?: (level: number) => void;
   onEscalateHint?: () => void;
-  /** Persist a durable fact she just learned (the remember action) into the learner's mind. */
+  /** Persist a durable fact Wobo just learned (the remember action) into the learner's mind. */
   onRemember?: (text: string) => void;
 }
 
@@ -202,10 +202,10 @@ export interface WoboBus {
   notes: ActiveNote[];
   /** performance.now() when the current marks were drawn; the overlay fades each by its own ttl. */
   marksBornAt: number;
-  /** Bumped each time she re-inks a faded mark set, so the overlay reseeds the strokes fresh. */
+  /** Bumped each time Wobo re-inks a faded mark set, so the overlay reseeds the strokes fresh. */
   reinkNonce: number;
   pendingOffer: ConsequentialAction | null;
-  /** Where she is inking now (viewport coords), for her body to lean/gaze toward. Null when idle. */
+  /** Where Wobo is inking now (viewport coords), for Wobo's body to lean/gaze toward. Null when idle. */
   focusPoint: { x: number; y: number } | null;
   dispatch(actions: WoboAction[]): void;
   /**
@@ -216,14 +216,14 @@ export interface WoboBus {
   addBeat(actions: WoboAction[], opts?: { noteDurationMs?: number }): void;
   /**
    * Open a choreographed turn: the beats that follow accumulate onto a clean board. Without it the
-   * redrawable set ("draw it again") grows for the whole session and re-inks every mark she has
+   * redrawable set ("draw it again") grows for the whole session and re-inks every mark Wobo has
    * ever drawn. Called once per performance, before the first beat.
    */
   beginTurn(): void;
   /**
-   * Re-ink the marks she last drew (family M): her ink is transient and fades, so this brings the
+   * Re-ink the marks Wobo last drew (family M): Wobo's ink is transient and fades, so this brings the
    * last set back — freshly drawn — when the learner refers to a drawing no longer on screen.
-   * Returns false when she has drawn nothing to bring back.
+   * Returns false when Wobo has drawn nothing to bring back.
    */
   redrawLastMarks(): boolean;
   acceptOffer(): void;
@@ -241,7 +241,7 @@ function deadlineOf(born: number, marks: { ttl?: number }[]): number {
   return born + Math.max(...marks.map((m) => m.ttl ?? DEFAULT_MARK_TTL)) + MARK_FADE_MS;
 }
 
-/** The ink she can bring back ("draw it again") — one turn's worth, grown beat by beat. */
+/** The ink Wobo can bring back ("draw it again") — one turn's worth, grown beat by beat. */
 export interface MarkSet {
   highlights: ActiveHighlight[];
   annotations: ActiveAnnotation[];
@@ -345,7 +345,7 @@ export interface WoboProviderProps {
 export function WoboProvider({ children, handlers }: WoboProviderProps) {
   // Perception fields are refs, not state: publishing them must NOT recreate the bus object, or every
   // consumer effect that publishes page/canvas would re-run and loop. They are read on demand when
-  // Wobo assembles her context. Only expression state (mood/marks/offer) drives re-renders.
+  // Wobo assembles their context. Only expression state (mood/marks/offer) drives re-renders.
   const pageRef = useRef<PageContext>({ route: 'today', state: {} });
   const curriculumRef = useRef<CurriculumContext>({});
   const sessionRef = useRef<SessionContext>({ sessionId: 'dev-session', recentEvents: [] });
@@ -382,15 +382,15 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
   const [notes, setNotes] = useState<ActiveNote[]>([]);
   const [marksBornAt, setMarksBornAt] = useState(0);
   const [reinkNonce, setReinkNonce] = useState(0);
-  // Where she is inking right now (viewport coords of the active mark's centre) — her body leans and
+  // Where Wobo is inking right now (viewport coords of the active mark's centre) — Wobo's body leans and
   // gazes toward it, like a tutor turning to the board. Null when nothing is inked.
   const [focusPoint, setFocusPoint] = useState<{ x: number; y: number } | null>(null);
   const clearTimer = useRef<number | undefined>(undefined);
   // Absolute (performance.now) time at which the last live mark dies — so an accumulating performance
   // keeps the residue-clear timer alive across beats instead of each beat cutting the last short.
   const clearAtRef = useRef(0);
-  // The last non-empty mark set she drew — kept so she can re-ink it after it has faded (family M).
-  // Scoped to one turn: beginTurn() wipes it, so "draw it again" brings back the drawing she just
+  // The last non-empty mark set Wobo drew — kept so Wobo can re-ink it after it has faded (family M).
+  // Scoped to one turn: beginTurn() wipes it, so "draw it again" brings back the drawing Wobo just
   // made, not every mark of the session.
   const lastMarksRef = useRef<MarkSet>(emptyMarks());
   const [pendingOffer, setPendingOffer] = useState<ConsequentialAction | null>(null);
@@ -460,7 +460,7 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
     clearAtRef.current = 0;
   }, []);
 
-  // Point her body at the target she's inking so she leans/gazes toward the board (realism detail).
+  // Point Wobo's body at the target Wobo is inking so Wobo leans/gazes toward the board (realism detail).
   const focusOnTarget = useCallback(
     (targetId: string | undefined) => {
       if (!targetId) return;
@@ -511,17 +511,17 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
       if (effects.mood) setMood(effects.mood);
       for (const text of effects.says) h?.onSay?.(text);
       // speak is voice-locked: through the voice path when the app wires onSpeak (live), otherwise it
-      // degrades to her written line.
+      // degrades to Wobo's written line.
       for (const text of effects.speaks) {
         if (h?.onSpeak) h.onSpeak(text);
         else h?.onSay?.(text);
       }
       // setState demonstrations route to each scene's applyTutorAction seam; unknown or non-drivable
-      // targets are ignored (she can only drive what publishes itself).
+      // targets are ignored (Wobo can only drive what publishes itself).
       for (const s of effects.setStates) applyTutorAction(s.targetId, s.patch);
       for (const level of effects.revealHints) h?.onRevealHint?.(level);
       for (let i = 0; i < effects.escalateHints; i += 1) h?.onEscalateHint?.();
-      // she writes to her own dossier — a fact learned here rides every future turn
+      // Wobo writes to Wobo's own dossier — a fact learned here rides every future turn
       for (const text of effects.remembers) h?.onRemember?.(text);
     },
     [applyTutorAction],
@@ -529,7 +529,7 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
 
   const dispatch = useCallback(
     (actions: WoboAction[]) => {
-      // Each dispatch is Wobo's fresh focus: replace the marks, keep the mood unless she changes it.
+      // Each dispatch is Wobo's fresh focus: replace the marks, keep the mood unless Wobo changes it.
       const effects = reduceActions(actions);
       const born = performance.now();
       const stamp = <T extends { bornAt?: number }>(m: T[]): T[] =>
@@ -549,7 +549,7 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
       // in the overlay). Wobo decides the ttl per mark; nothing lingers permanently.
       const marks = [...hs, ...as, ...ns];
       if (effects.redrawMarks && marks.length === 0) {
-        // she asked to bring her last drawing back and drew nothing new this turn — re-ink it fresh
+        // Wobo asked to bring Wobo's last drawing back and drew nothing new this turn — re-ink it fresh
         redrawLastMarks();
       } else {
         if (marks.length === 0) setFocusPoint(null);
@@ -597,7 +597,7 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
   );
 
   // Open a performance: the beats that follow accumulate onto a clean redrawable board, so the set
-  // she can re-ink is this turn's drawing and not every mark of the session.
+  // Wobo can re-ink is this turn's drawing and not every mark of the session.
   const beginTurn = useCallback(() => {
     lastMarksRef.current = emptyMarks();
     clearAtRef.current = 0;
@@ -689,7 +689,7 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
  *   return <div ref={ref}>2x = 10</div>;
  *
  * Interactives may also pass the scene seams (getSceneState / getValidActions / applyTutorAction)
- * to become a scene she reads and drives — inline closures are fine, they are held in a ref so
+ * to become a scene Wobo reads and drives — inline closures are fine, they are held in a ref so
  * re-renders never re-register the target.
  */
 export function useRegisterTarget<T extends HTMLElement = HTMLElement>(

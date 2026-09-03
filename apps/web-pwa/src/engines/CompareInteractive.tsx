@@ -7,12 +7,12 @@
  * differences shown, never tabulated.
  *
  * Spec-driven: the composer emits { left(label,marks), right(label,marks), links[] } where each link
- * ties a left mark to a right mark with a note. Registers as a Wobo scene target so she can read
+ * ties a left mark to a right mark with a note. Registers as a Wobo scene target so Wobo can read
  * what's selected (getSceneState) and DRIVE the comparison — light a pairing to demonstrate
  * (applyTutorAction). Reduced-motion + mute aware; both themes; no new deps.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -130,7 +130,7 @@ const VB_W = 62;
 const VB_H = 64;
 
 function toneStroke(tone: CompareMark['tone'], hue: string): string {
-  return tone === 'hue' ? hue : tone === 'muted' ? 'var(--clss-ink-300)' : 'var(--clss-ink-700)';
+  return tone === 'hue' ? hue : tone === 'muted' ? 'var(--wobo-ink-300)' : 'var(--wobo-ink-700)';
 }
 
 function MarkShape({
@@ -196,7 +196,7 @@ function MarkShape({
           fontSize={mark.r ?? 4.5}
           textAnchor="middle"
           dominantBaseline="middle"
-          fill={lit ? hue : 'var(--clss-ink-700)'}
+          fill={lit ? hue : 'var(--wobo-ink-700)'}
           style={{
             fontFamily: 'inherit',
             fontWeight: 540,
@@ -237,7 +237,7 @@ function Panel({
           background: rgba(hue, 0.05),
           borderRadius: 3,
           padding: 8,
-          border: '0.5px solid var(--clss-hairline-on-paper)',
+          border: '0.5px solid var(--wobo-hairline-on-paper)',
         }}
       >
         <svg viewBox={`0 0 ${VB_W} ${VB_H}`} width="100%" role="img" aria-label={label}>
@@ -296,7 +296,7 @@ export function CompareInteractive({
     setBar({ primary: { label: 'continue', disabled: revealed.size === 0, onClick: onDone } });
   }, [revealed.size, setBar, onDone]);
 
-  // she reads the current pairing and can drive the comparison to demonstrate
+  // Wobo reads the current pairing and can drive the comparison to demonstrate
   const applyTutorAction = (patch: Record<string, unknown>) => {
     if (typeof patch.select === 'string') selectLink(patch.select);
     else if (typeof patch.tap === 'string') {
@@ -380,14 +380,14 @@ export function CompareInteractive({
               exit={{ opacity: 0, y: -6 }}
               transition={{ type: 'spring', stiffness: 320, damping: 26 }}
               style={{
-                border: `1px solid ${activeLink.kind === 'diff' ? hue : 'var(--clss-feedback-correct)'}`,
+                border: `1px solid ${activeLink.kind === 'diff' ? hue : 'var(--wobo-feedback-correct)'}`,
                 background:
-                  activeLink.kind === 'diff' ? rgba(hue, 0.08) : 'var(--clss-feedback-correctSoft)',
+                  activeLink.kind === 'diff' ? rgba(hue, 0.08) : 'var(--wobo-feedback-correctSoft)',
                 borderRadius: 3,
                 padding: '14px 16px',
                 fontSize: '1.02rem',
                 lineHeight: 1.6,
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               <span style={{ ...whisper, display: 'block', marginBottom: 6 }}>
@@ -404,7 +404,7 @@ export function CompareInteractive({
                 ...lead,
                 borderLeft: `2px solid ${hue}`,
                 paddingLeft: 14,
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               tap any part in either panel — its match lights up in both, and I'll tell you what
@@ -422,7 +422,7 @@ export function CompareInteractive({
                 height: 4,
                 width: revealed.has(l.id) ? 20 : 8,
                 borderRadius: 3,
-                background: revealed.has(l.id) ? hue : 'var(--clss-hairline-on-paper-strong)',
+                background: revealed.has(l.id) ? hue : 'var(--wobo-hairline-on-paper-strong)',
                 transition: 'width 0.3s, background 0.3s',
               }}
             />

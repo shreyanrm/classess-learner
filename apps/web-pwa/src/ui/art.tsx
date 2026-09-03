@@ -84,10 +84,10 @@ export function blobPath(
   return `${d} Z`;
 }
 
-const INK_FAINT = 'var(--clss-ink-100)';
-const INK_SOFT = 'var(--clss-ink-300)';
-const INK = 'var(--clss-ink-700)';
-const ULTRA = 'var(--clss-ultramarine)';
+const INK_FAINT = 'var(--wobo-ink-100)';
+const INK_SOFT = 'var(--wobo-ink-300)';
+const INK = 'var(--wobo-ink-700)';
+const ULTRA = 'var(--wobo-ultramarine)';
 
 function polygonPoints(cx: number, cy: number, r: number, sides: number, rot: number): string {
   return Array.from({ length: sides }, (_, i) => {
@@ -556,7 +556,7 @@ export function EmptyConstellation({
           />
         ))}
       </svg>
-      {label && <div style={{ color: 'var(--clss-ink-500)', fontSize: '0.88rem' }}>{label}</div>}
+      {label && <div style={{ color: 'var(--wobo-ink-500)', fontSize: '0.88rem' }}>{label}</div>}
     </div>
   );
 }

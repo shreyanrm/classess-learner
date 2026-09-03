@@ -4,10 +4,10 @@
  * The command palette (DESIGN.md §6) — ⌘K reaches any surface, subject, chapter, topic, or action
  * in the product, and any miss falls through to Wobo. Frosted glass (FROST, ui/kit), sharp 3px
  * corners, hairline borders, a spring entrance and a staggered result cascade (MOTION.md §3).
- * Quiet chrome; one accent — the ultramarine spark that is Wobo herself.
+ * Quiet chrome; one accent — the ultramarine spark that is Wobo.
  */
 
-import { plane, useRegisterTarget } from '@classess/wobo';
+import { plane, useRegisterTarget } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { chaptersBySubject, displaySubjects } from '../data/catalog';
@@ -47,7 +47,7 @@ const SECTION_LABEL: Record<Section | 'recent', string> = {
 const PRIMARY_DOORS = ['home', 'learn', 'practice', 'progress', 'you', 'chat'];
 
 // ---- recents (localStorage, cap 6) ------------------------------------------------------------
-const RECENT_KEY = 'clss-cmdk-recent-v1';
+const RECENT_KEY = 'wobo-cmdk-recent-v1';
 const RECENT_CAP = 6;
 
 function loadRecents(): string[] {
@@ -110,7 +110,7 @@ function rank(item: Item, q: string): number {
  * no keyboard, so any affordance can open it by calling this — one event, no prop threading, and
  * the palette stays the single owner of its own open state.
  */
-export const OPEN_PALETTE_EVENT = 'clss-open-palette';
+export const OPEN_PALETTE_EVENT = 'wobo-open-palette';
 
 export function openCommandPalette(): void {
   if (typeof window === 'undefined') return;
@@ -127,7 +127,7 @@ export function CommandPalette() {
   const [index, setIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
-  // The palette is a surface like any other: she can point at it, tell a learner it exists, and
+  // The palette is a surface like any other: Wobo can point at it, tell a learner it exists, and
   // read what is in it.
   const panelRef = useRegisterTarget<HTMLDivElement>('command-palette', {
     kind: 'palette',
@@ -255,7 +255,7 @@ export function CommandPalette() {
       {
         id: 'board-open',
         label: 'Open the board',
-        hint: 'Her frosted plane, over whatever is on screen',
+        hint: "Wobo's frosted plane, over whatever is on screen",
         section: 'actions',
         search: 'board whiteboard plane draw canvas',
         run: () => {
@@ -294,7 +294,7 @@ export function CommandPalette() {
       },
     );
 
-    // Her modes (WOBO-PLAN §3), each reached by name. The ones that need something in hand appear
+    // Wobo's modes (WOBO-PLAN §3), each reached by name. The ones that need something in hand appear
     // only when the learner has something in hand — an affordance that cannot work is worse than
     // none. Every one of them goes through the same `ask`, so voice, composer and palette agree.
     for (const mode of availableModes({
@@ -537,7 +537,7 @@ export function CommandPalette() {
           style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 'var(--clss-z-modal)' as unknown as number,
+            zIndex: 'var(--wobo-z-modal)' as unknown as number,
             // A neutral near-black scrim dims in BOTH themes (theme ink would lighten dark mode).
             background: 'rgba(10,11,14,0.34)',
             backdropFilter: 'blur(6px)',
@@ -604,7 +604,7 @@ export function CommandPalette() {
                 fontSize: fluidType.body,
                 fontFamily: 'inherit',
                 border: 'none',
-                borderBottom: '0.5px solid var(--clss-hairline-on-paper)',
+                borderBottom: '0.5px solid var(--wobo-hairline-on-paper)',
                 background: 'transparent',
                 color: surface.ink,
               }}
@@ -672,7 +672,7 @@ export function CommandPalette() {
                         padding: '11px 12px',
                         border: 'none',
                         borderTop: groups.length
-                          ? '0.5px solid var(--clss-hairline-on-paper)'
+                          ? '0.5px solid var(--wobo-hairline-on-paper)'
                           : 'none',
                         borderRadius: 3,
                         background: active ? surface.tonal : 'transparent',
@@ -690,8 +690,8 @@ export function CommandPalette() {
                           height: 7,
                           flex: 'none',
                           borderRadius: 9999,
-                          background: 'var(--clss-ultramarine)',
-                          boxShadow: '0 0 8px var(--clss-ultramarine)',
+                          background: 'var(--wobo-ultramarine)',
+                          boxShadow: '0 0 8px var(--wobo-ultramarine)',
                         }}
                       />
                       <span
@@ -722,7 +722,7 @@ export function CommandPalette() {
                 alignItems: 'center',
                 gap: 14,
                 padding: '8px 14px',
-                borderTop: '0.5px solid var(--clss-hairline-on-paper)',
+                borderTop: '0.5px solid var(--wobo-hairline-on-paper)',
                 fontSize: fluidType.eyebrow,
                 color: surface.inkFaint,
               }}

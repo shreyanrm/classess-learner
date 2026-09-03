@@ -16,17 +16,8 @@
  * never blocked, and Escape always clears.
  */
 
-import {
-  frost,
-  hairline,
-  ink,
-  radius,
-  space,
-  typeScale,
-  ultramarine,
-  zIndex,
-} from '@classess/config';
-import { useReducedMotion } from '@classess/motion';
+import { frost, hairline, ink, radius, space, typeScale, ultramarine, zIndex } from '@wobo/config';
+import { useReducedMotion } from '@wobo/motion';
 import {
   type ReactElement,
   useCallback,
@@ -150,7 +141,7 @@ export interface ResolveOptions {
 
 /**
  * Assemble a focus from a region: the targets inside it, their text and numbers, and the live state
- * of the surface that owns them. Returns a focus even when nothing is registered — she can still
+ * of the surface that owns them. Returns a focus even when nothing is registered — Wobo can still
  * be asked about a region — but with honest, empty target ids.
  */
 export function resolveFocus(options: ResolveOptions): FocusObject {
@@ -217,7 +208,7 @@ const CHIP_WIDTH = 168;
 const CHIP_HEIGHT = 30;
 
 /**
- * The region the learner circled, drawn the way BOARD.md §8 describes it: her own line round it,
+ * The region the learner circled, drawn the way BOARD.md §8 describes it: Wobo's own line round it,
  * not a colour poured over it.
  *
  * A 1.5 px ultramarine ring on the path the finger actually took, hand-wobbled so it reads as ink
@@ -309,7 +300,7 @@ export function GestureLayer(props: GestureLayerProps): ReactElement | null {
 
   const [focus, setFocus] = useState<FocusObject | null>(null);
   const [trace, setTrace] = useState<Point[] | null>(null);
-  // The ring outlives the focus by one fade: the mark she drew round the thing does not vanish the
+  // The ring outlives the focus by one fade: the mark Wobo drew round the thing does not vanish the
   // instant the turn that used it closes, it goes the way ink goes.
   const [ring, setRing] = useState<{ focus: FocusObject; endedAt: number | null } | null>(null);
   const reduced = useReducedMotion();
@@ -454,7 +445,7 @@ export function GestureLayer(props: GestureLayerProps): ReactElement | null {
         const resting = hoverAt;
         if (!resting) return;
         const ids = registry.targetIdsAt(resting.x, resting.y);
-        if (ids.length === 0) return; // she does not comment on empty space
+        if (ids.length === 0) return; // Wobo does not comment on empty space
         const rect = registry.getTarget(ids[0] as string)?.rect() ?? pointRect(resting);
         publish(resolveFocus({ kind: 'hover', rect, targetIds: ids, registry }));
       }, holdMs);
@@ -553,7 +544,7 @@ export function GestureLayer(props: GestureLayerProps): ReactElement | null {
 
     const onKeyUp = (event: KeyboardEvent) => {
       if (!held) return;
-      // Releasing either the key or its modifier ends the hold — a stuck modifier never traps her.
+      // Releasing either the key or its modifier ends the hold — a stuck modifier never traps Wobo.
       const releasedChord = hotkey.code ? event.code === hotkey.code : event.key === hotkey.key;
       if (
         !releasedChord &&

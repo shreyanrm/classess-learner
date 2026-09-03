@@ -31,7 +31,7 @@ const { applyScope, forgetScope, inheritScope, rememberedScope, scoped, scopedKe
 );
 const { readArchive, writeArchive } = await import('../wobo/chat');
 
-const ARCHIVE = 'clss-wobo-archive-v1';
+const ARCHIVE = 'wobo-archive-v1';
 const turn = (text: string) => [{ id: 't1', role: 'wobo' as const, text }];
 
 beforeEach(() => {
@@ -85,14 +85,14 @@ describe('per-learner storage scope', () => {
   it('signing out takes that learner’s keys off the device', () => {
     applyScope('subject-a');
     writeArchive(turn('mine'));
-    scoped.setItem('clss-mind-v1', '{"facts":[]}');
-    scoped.setItem('clss-learner-profile', '{"name":"Aanya"}');
+    scoped.setItem('wobo-mind-v1', '{"facts":[]}');
+    scoped.setItem('wobo-learner-profile', '{"name":"Aanya"}');
 
     forgetScope('subject-a');
 
     expect(storage.getItem(`${ARCHIVE}::subject-a`)).toBeNull();
-    expect(storage.getItem('clss-mind-v1::subject-a')).toBeNull();
-    expect(storage.getItem('clss-learner-profile::subject-a')).toBeNull();
+    expect(storage.getItem('wobo-mind-v1::subject-a')).toBeNull();
+    expect(storage.getItem('wobo-learner-profile::subject-a')).toBeNull();
     expect(rememberedScope()).toBeNull();
     expect(readArchive()).toEqual([]);
   });

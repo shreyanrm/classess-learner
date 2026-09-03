@@ -8,7 +8,7 @@
  *
  * Laws honoured: 3px corners, no shadows, one hit of pigment (the subject hue, gold as its single
  * accent). Reduced motion collapses every animation to a calm resolved state. Dark theme rides the
- * --clss-* tokens. Sound is mute-aware through sfx (clss-voice-muted-v1) — never a second system.
+ * --wobo-* tokens. Sound is mute-aware through sfx (wobo-voice-muted-v1) — never a second system.
  */
 
 import { animate, motion } from 'framer-motion';
@@ -42,7 +42,7 @@ function StarMark({
       <path
         d={STAR}
         fill={outline ? 'none' : color}
-        stroke={outline ? 'var(--clss-ink-300)' : 'none'}
+        stroke={outline ? 'var(--wobo-ink-300)' : 'none'}
         strokeWidth={outline ? 1.1 : 0}
         strokeLinejoin="round"
       />
@@ -284,11 +284,11 @@ export function TrophyNote({ hue }: { hue: string }) {
     padding: '6px 12px',
     borderRadius: 3,
     border: `0.5px solid ${hue}`,
-    background: 'color-mix(in srgb, var(--clss-paper) 88%, transparent)',
+    background: 'color-mix(in srgb, var(--wobo-paper) 88%, transparent)',
     fontSize: '0.78rem',
     fontWeight: 600,
     letterSpacing: '0.02em',
-    color: 'var(--clss-ink-900)',
+    color: 'var(--wobo-ink-900)',
   };
   return (
     <motion.span
@@ -324,7 +324,7 @@ function levelMeaning(level: number): string {
  * brand-and-mastery, not a subject moment. The parent owns the action bar; this is the scene.
  */
 export function LevelUpMoment({ level, reduced }: { level: number; reduced: boolean }) {
-  const hue = 'var(--clss-ultramarine)';
+  const hue = 'var(--wobo-ultramarine)';
   useEffect(() => {
     sfx.fanfare();
   }, []);
@@ -373,7 +373,7 @@ export function LevelUpMoment({ level, reduced }: { level: number; reduced: bool
           aria-hidden
           style={{ position: 'absolute', inset: 0 }}
         >
-          <circle cx={74} cy={74} r={R} fill="none" stroke="var(--clss-ink-100)" strokeWidth={4} />
+          <circle cx={74} cy={74} r={R} fill="none" stroke="var(--wobo-ink-100)" strokeWidth={4} />
           <motion.circle
             cx={74}
             cy={74}
@@ -394,7 +394,7 @@ export function LevelUpMoment({ level, reduced }: { level: number; reduced: bool
             cy={74}
             r={R - 9}
             fill="none"
-            stroke="var(--clss-ink-100)"
+            stroke="var(--wobo-ink-100)"
             strokeWidth={1}
             initial={reduced ? false : { opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -465,7 +465,7 @@ export function LevelUpMoment({ level, reduced }: { level: number; reduced: bool
             fontSize: 'clamp(1.5rem, 5vw, 2rem)',
             fontWeight: 600,
             letterSpacing: '-0.02em',
-            color: 'var(--clss-ink-900)',
+            color: 'var(--wobo-ink-900)',
           }}
         >
           level {level}
@@ -480,7 +480,7 @@ export function LevelUpMoment({ level, reduced }: { level: number; reduced: bool
             marginInline: 'auto',
             fontSize: '1rem',
             lineHeight: 1.55,
-            color: 'var(--clss-ink-700)',
+            color: 'var(--wobo-ink-700)',
           }}
         >
           {levelMeaning(level)}

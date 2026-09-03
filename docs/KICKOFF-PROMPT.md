@@ -10,7 +10,7 @@ architecture decision.
 
 STEP 1 — Load context. Read the docs in order before doing anything: `/docs/START-HERE.md`, then `00-CONTEXT/`,
 `01-ARCHITECTURE/`, `02-DESIGN/`, `03-FLOWS/`, `04-PAGES/`, `05-BUILD-PLAN/`, `06-TOOLING/`, and the full
-`/docs/Classess-Learner-Master-Document.pdf` for narrative context. Then read back to me, in
+`/docs/Wobo-Master-Document.pdf` for narrative context. Then read back to me, in
 under one page: the thesis, the five override rules, the data-plane architecture, the auth-deferred-but-wired rule,
 and the phase plan. Confirm you understand the Wobo identity lock and the Wobo-cute license.
 
@@ -33,7 +33,7 @@ and the design/motion/Wobo packages scaffolded with the locked tokens and Wobo i
 NON-NEGOTIABLES (full text in `00-CONTEXT/03-rules-and-guardrails.md`):
 1. No MVP — production-grade for each phase's scope. 2. Event contract from the first commit. 3. Nothing reaches a
 learner unverified. 4. **Do NOT build real authentication until I explicitly approve it (Phase 4)** — build the
-structure and wiring now. 5. Wobo-cute license: free choreography per page, never alter her identity (molten round
+structure and wiring now. 5. Wobo-cute license: free choreography per page, never alter Wobo's identity (molten round
 matte jelly, two eyes, the flickering flame). Honour the design system, the motion system, and the consent-tier
 gating (un-elevated paths wire zero profiling capabilities). No emoji, no exclamation marks in product copy. Mock
 data uses "Northfield International", "Aanya", "Mr. Rao"; never surface the platform-intelligence-layer codename.

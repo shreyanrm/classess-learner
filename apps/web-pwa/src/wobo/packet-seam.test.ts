@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'bun:test';
-import { createFocus, resetFocusIds, SurfaceRegistry } from '@classess/wobo';
+import { createFocus, resetFocusIds, SurfaceRegistry } from '@wobo/wobo';
 import { buildTurnPacket, setTurnFocus, turnFocus, woboTurnPayload } from './capabilities';
 
 const registry = () => {

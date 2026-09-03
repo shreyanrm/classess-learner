@@ -23,8 +23,8 @@ bun run --filter @classess/web-pwa build   # Vite build: 435 modules, PWA + serv
 Total: **96 tests green.** The learner walkable shell builds to a real PWA bundle.
 
 To walk the app: `bun run --filter @classess/web-pwa dev` → a monochrome shell that greets Aanya,
-shows the next-best node + its mastery band from the KGtoPG reference, and docks Wobo (tap her to
-open the frosted panel; her replies come through the LLM seam in mock mode).
+shows the next-best node + its mastery band from the KGtoPG reference, and docks Wobo (tap Wobo to
+open the frosted panel; Wobo's replies come through the LLM seam in mock mode).
 
 ---
 

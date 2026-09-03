@@ -11,7 +11,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
-import { boardBook, plane } from '@classess/wobo';
+import { boardBook, plane } from '@wobo/wobo';
 import { boardTurn, isAbort, screenStore } from './board-turn';
 
 type Frame = { id?: string; data: Record<string, unknown> };

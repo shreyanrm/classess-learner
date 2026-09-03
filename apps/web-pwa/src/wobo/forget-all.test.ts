@@ -29,7 +29,7 @@ const storage = new FakeStorage();
 const { capabilityById, forgetAllOffer } = await import('./capabilities');
 const { loadMind, rememberFact } = await import('../store/mind');
 
-describe("forget everything — she asks before she wipes the learner's memory", () => {
+describe("forget everything — Wobo asks before Wobo wipes the learner's memory", () => {
   it('is a capability on the permission ladder, not something a model reply can just do', () => {
     const capability = capabilityById('forget_all');
     expect(capability).toBeDefined();

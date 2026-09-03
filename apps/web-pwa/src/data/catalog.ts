@@ -5,7 +5,7 @@
  * (real ontology node) so the whole machine is provable end to end today.
  */
 
-import { ATOM_TARGET_NODE_ID } from '@classess/sdk';
+import { ATOM_TARGET_NODE_ID } from '@wobo/sdk';
 import { frameChapter, frameSync, frameTopic } from './frame';
 import type { Board, Chapter, LearnerProfile, Subject, Topic } from './model';
 
@@ -2270,10 +2270,10 @@ const GRADE_CHAPTERS: Record<string, Record<string, Chapter[]>> = {
   },
 };
 
-/** ponytail: same key profile.ts writes (clss-learner-profile) — kept local to dodge a circular import. */
+/** ponytail: same key profile.ts writes (wobo-learner-profile) — kept local to dodge a circular import. */
 function currentProfile(): { grade: string; boardId: string } {
   try {
-    const raw = localStorage.getItem('clss-learner-profile');
+    const raw = localStorage.getItem('wobo-learner-profile');
     if (raw) {
       const p = JSON.parse(raw) as { grade?: string; boardId?: string };
       return { grade: p.grade || 'Class 8', boardId: p.boardId || 'cbse' };

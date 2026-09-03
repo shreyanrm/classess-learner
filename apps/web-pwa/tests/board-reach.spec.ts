@@ -7,7 +7,7 @@
  *    an `aria-label` for every object it draws and NONE of them reached the accessibility tree; the
  *    whole board announced itself as one image, and nothing said a word when new ink landed.
  *  · the learner's own ink — the half that makes the board bidirectional — was pointer-only. A
- *    keyboard learner could never draw on her board or circle anything on it, and the plane's own
+ *    keyboard learner could never draw on Wobo's board or circle anything on it, and the plane's own
  *    resize handle was a focusable, labelled button with no key handler at all.
  */
 
@@ -26,7 +26,7 @@ async function playInstantly(page: Page, name: string): Promise<void> {
 }
 
 test.describe('what a screen reader is told', () => {
-  test('the board is not one image, so everything she writes on it is exposed', async ({
+  test('the board is not one image, so everything Wobo writes on it is exposed', async ({
     page,
   }) => {
     await playInstantly(page, 'timeline');
@@ -44,7 +44,7 @@ test.describe('what a screen reader is told', () => {
       .map((n) => String(n.name?.value ?? ''))
       .filter(Boolean);
     const spoken = names.join(' | ');
-    // The dates and the events she wrote on the freedom-struggle board, in the tree rather than
+    // The dates and the events Wobo wrote on the freedom-struggle board, in the tree rather than
     // sealed inside one image node.
     for (const said of ['1857', 'the first revolt', '1947', 'independence']) {
       expect(spoken, `"${said}" is not in the accessibility tree`).toContain(said);

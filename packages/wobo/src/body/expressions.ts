@@ -1,5 +1,5 @@
 /**
- * Her twenty expressions — the face half of the character rig (owner-approved prototype,
+ * Wobo's twenty expressions — the face half of the character rig (owner-approved prototype,
  * 2026-09-02). Pure data and pure geometry so the table and every eye shape are testable without a
  * browser; `WoboBody.tsx` is the only thing that draws them.
  *
@@ -33,18 +33,18 @@ export interface ExpressionSpec {
   right: EyeSpec;
   /** Head tilt in degrees. */
   tilt: number;
-  /** How far she leans toward what she is talking about, in rig units. */
+  /** How far Wobo leans toward what Wobo is talking about, in rig units. */
   lean: number;
   /**
-   * What she would say in this state, if the surface wants a whisper. Her voice: sentence case, no
+   * What Wobo would say in this state, if the surface wants a whisper. Wobo's voice: sentence case, no
    * emoji, no exclamation marks (WOBO.md). The rig never draws it — a surface may.
    */
   note: string;
-  /** Where she looks when nothing else claims her gaze, in rig units [x, y]. */
+  /** Where Wobo looks when nothing else claims Wobo's gaze, in rig units [x, y]. */
   look?: readonly [number, number];
   /** A single spark, only for the aha. */
   spark?: boolean;
-  /** The mitt and the ultramarine-tipped pen come out only while she is drawing. */
+  /** The mitt and the ultramarine-tipped pen come out only while Wobo is drawing. */
   pen?: boolean;
   /** Choreography flags — free under the Wobo-cute licence, all suppressed by reduced motion. */
   bounce?: boolean;
@@ -55,7 +55,7 @@ export interface ExpressionSpec {
   narrow?: boolean;
 }
 
-/** The twenty. Order is the order she was designed in, and the order the icon sheet uses. */
+/** The twenty. Order is the order Wobo was designed in, and the order the icon sheet uses. */
 export const EXPRESSIONS = {
   idle: { left: { kind: 'dot' }, right: { kind: 'dot' }, tilt: 0, lean: 0, note: '' },
   listening: {
@@ -229,7 +229,7 @@ export function expressionSpec(name: WoboMood | WoboExpression | undefined): Exp
   return EXPRESSIONS[expressionFor(name)];
 }
 
-/** Her whisper for a state, if the surface wants one. Empty means she says nothing. */
+/** Wobo's whisper for a state, if the surface wants one. Empty means Wobo says nothing. */
 export function expressionNote(name: WoboMood | WoboExpression | undefined): string {
   return expressionSpec(name).note;
 }

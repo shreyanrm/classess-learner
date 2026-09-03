@@ -2,7 +2,7 @@
 
 /** The SDK, available to every surface — events, content, mastery views, the model router. */
 
-import type { Sdk } from '@classess/sdk';
+import type { Sdk } from '@wobo/sdk';
 import { createContext, useContext } from 'react';
 
 const Ctx = createContext<Sdk | null>(null);

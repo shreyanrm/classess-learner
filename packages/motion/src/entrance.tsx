@@ -1,6 +1,6 @@
 'use client';
 
-import { frost } from '@classess/config';
+import { frost } from '@wobo/config';
 import { motion, useInView, type Variants } from 'framer-motion';
 import { useRef } from 'react';
 import { EASE, SEC } from './motion-tokens';

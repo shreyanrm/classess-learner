@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import pytest
-from classess_verifier import cas
+from wobo_verifier import cas
 
 
 def test_correct_solution_verifies() -> None:

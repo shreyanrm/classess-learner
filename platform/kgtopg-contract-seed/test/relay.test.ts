@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { type Actor, type ClassessEvent, type Context, makeEvent } from '@classess/contracts';
+import { type Actor, type Context, makeEvent, type WoboEvent } from '@wobo/contracts';
 import type { EventConsumer } from '../src/interface';
 import { InMemoryKgtopg } from '../src/reference/in-memory';
 import { InMemoryOutboxSource, type OutboxRow, runRelayOnce } from '../src/relay';
@@ -12,7 +12,7 @@ const actor: Actor = {
 const context: Context = { app: 'learner', env: 'dev', consent_tier: 'un_elevated' };
 
 function row(id: string, occurredAt: string): OutboxRow {
-  const event: ClassessEvent = makeEvent({
+  const event: WoboEvent = makeEvent({
     event_id: id,
     event_type: 'session.started.v1',
     occurred_at: occurredAt,

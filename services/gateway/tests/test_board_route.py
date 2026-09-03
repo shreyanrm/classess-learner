@@ -11,12 +11,12 @@ import json
 from typing import Any
 
 import pytest
-from classess_gateway.app import Gateway, create_app
-from classess_gateway.board import stream
-from classess_gateway.cache import InMemoryCache
-from classess_gateway.providers import MockProvider
-from classess_gateway.telemetry import MetricsSink
 from fastapi.testclient import TestClient
+from wobo_gateway.app import Gateway, create_app
+from wobo_gateway.board import stream
+from wobo_gateway.cache import InMemoryCache
+from wobo_gateway.providers import MockProvider
+from wobo_gateway.telemetry import MetricsSink
 
 SSE = {"Accept": "text/event-stream"}
 
@@ -64,7 +64,7 @@ def test_the_board_streams_say_ink_and_done(client: TestClient, auth) -> None:
     assert kinds[-1] == "done"
     ink = [e[2]["object"] for e in events if e[1] == "ink"]
     assert {o["kind"] for o in ink} >= {"axis", "curve", "line", "number"}
-    # The first stroke lands before her first sentence ends.
+    # The first stroke lands before Wobo's first sentence ends.
     first_say = next(e[2] for e in events if e[1] == "say")
     assert ink[0]["t"]["start"] < first_say["t"] + first_say["dur"]
     done = events[-1][2]
@@ -156,7 +156,7 @@ def test_a_resume_is_not_a_way_into_another_learners_board(client: TestClient, a
 
 
 def test_more_than_one_board_is_refused_and_refunded(client: TestClient, auth) -> None:
-    from classess_gateway.board.planner import MAX_OBJECTS
+    from wobo_gateway.board.planner import MAX_OBJECTS
 
     payload = ask("draw benzene")
     payload["payload"]["board"] = {}
@@ -171,7 +171,7 @@ def test_more_than_one_board_is_refused_and_refunded(client: TestClient, auth) -
             ],
         }
 
-    import classess_gateway.wobo as wobo_module
+    import wobo_gateway.wobo as wobo_module
 
     original = wobo_module.board_plan_for
     wobo_module.board_plan_for = huge  # type: ignore[assignment]
@@ -206,5 +206,5 @@ def test_the_board_never_names_a_provider(client: TestClient, auth) -> None:
         headers={**auth(), **SSE},
     )
     lowered = res.text.lower()
-    for name in ("claude", "anthropic", "openai", "gpt", "gemini", "google", "classess"):
+    for name in ("claude", "anthropic", "openai", "gpt", "gemini", "google", "wobo_gateway"):
         assert name not in lowered

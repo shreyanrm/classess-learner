@@ -6,7 +6,7 @@
  * ("how we got here") — most move on; the curious go deep. Doubles as the free-play sandbox.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type ReactNode, useEffect, useState } from 'react';
 import { fmt, fractionText } from './equations';
@@ -23,7 +23,7 @@ import {
   whisper,
 } from './shared';
 
-const HUE = 'var(--clss-ultramarine)';
+const HUE = 'var(--wobo-ultramarine)';
 const MAGENTA = '#CC1E7A';
 
 /**
@@ -100,7 +100,7 @@ function GraphBackdrop({ a, b, c }: { a: number; b: number; c: number }) {
           transition={spring}
           r={5.5}
           fill={GOLD}
-          stroke="var(--clss-ink)"
+          stroke="var(--wobo-ink)"
           strokeWidth={1.6}
         />
       )}
@@ -138,12 +138,12 @@ function StepRow({ move, math }: { move: string; math: ReactNode }) {
         padding: '12px 0',
       }}
     >
-      <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>{move}</div>
+      <div style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)' }}>{move}</div>
       <div
         style={{
           fontSize: '1.15rem',
           fontWeight: 550,
-          color: 'var(--clss-ink-900)',
+          color: 'var(--wobo-ink-900)',
           fontVariantNumeric: 'tabular-nums',
           display: 'flex',
           alignItems: 'baseline',
@@ -255,10 +255,10 @@ export function WhatIf({
       <div
         ref={solutionRef}
         style={{
-          border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-          borderRadius: 'var(--clss-radius-md)',
+          border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+          borderRadius: 'var(--wobo-radius-md)',
           padding: '6px 20px',
-          background: 'var(--clss-paper)',
+          background: 'var(--wobo-paper)',
         }}
       >
         {undoMove && (
@@ -277,7 +277,7 @@ export function WhatIf({
               style={{
                 height: 1,
                 transform: 'scaleY(0.5)',
-                background: 'var(--clss-hairline-on-paper)',
+                background: 'var(--wobo-hairline-on-paper)',
               }}
             />
           </>
@@ -297,9 +297,9 @@ export function WhatIf({
                     aria-expanded={depthOpen}
                     onClick={() => setDepthOpen((o) => !o)}
                     style={{
-                      border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-                      background: depthOpen ? 'var(--clss-ink-900)' : 'var(--clss-paper)',
-                      color: depthOpen ? 'var(--clss-paper)' : 'var(--clss-ink-500)',
+                      border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+                      background: depthOpen ? 'var(--wobo-ink-900)' : 'var(--wobo-paper)',
+                      color: depthOpen ? 'var(--wobo-paper)' : 'var(--wobo-ink-500)',
                       borderRadius: 999,
                       width: 20,
                       height: 20,
@@ -328,11 +328,11 @@ export function WhatIf({
                     style={{
                       margin: '2px 0 12px',
                       padding: '12px 14px',
-                      background: 'var(--clss-canvas)',
-                      borderRadius: 'var(--clss-radius-sm)',
+                      background: 'var(--wobo-canvas)',
+                      borderRadius: 'var(--wobo-radius-sm)',
                       fontSize: '0.9rem',
                       lineHeight: 1.65,
-                      color: 'var(--clss-ink-700)',
+                      color: 'var(--wobo-ink-700)',
                     }}
                   >
                     <span style={{ ...whisper, display: 'block', marginBottom: 6 }}>
@@ -353,7 +353,7 @@ export function WhatIf({
               style={{
                 height: 1,
                 transform: 'scaleY(0.5)',
-                background: 'var(--clss-hairline-on-paper)',
+                background: 'var(--wobo-hairline-on-paper)',
               }}
             />
           </>

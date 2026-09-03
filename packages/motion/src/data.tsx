@@ -1,6 +1,6 @@
 'use client';
 
-import { ink, radius } from '@classess/config';
+import { ink, radius } from '@wobo/config';
 import { animate, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { countUpValue, formatNumber } from './internal/count-up';

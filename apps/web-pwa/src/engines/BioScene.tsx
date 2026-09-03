@@ -19,11 +19,11 @@
  *
  * The genotype math (validGenotype / canonical / punnettCross / phenotypeRatio) mirrors the gateway
  * gate plexus/bio.py exactly, so a scene the server would refuse is refused here too (client parity).
- * Registers a Wobo scene target every kind (she reads live state + drives it); reduced-motion + mute
+ * Registers a Wobo scene target every kind (Wobo reads live state + drives it); reduced-motion + mute
  * aware; both themes via CSS vars + the passed hue; sentence-case copy.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -338,22 +338,22 @@ const chip: CSSProperties = {
   padding: '8px 12px',
   fontSize: '0.9rem',
   fontFamily: 'inherit',
-  borderRadius: 'var(--clss-radius-sm)',
-  border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-  background: 'var(--clss-paper)',
-  color: 'var(--clss-ink-900)',
+  borderRadius: 'var(--wobo-radius-sm)',
+  border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+  background: 'var(--wobo-paper)',
+  color: 'var(--wobo-ink-900)',
   cursor: 'pointer',
   userSelect: 'none',
 };
 
 const revealBox: CSSProperties = {
-  border: '1px solid var(--clss-feedback-correct)',
-  background: 'var(--clss-feedback-correctSoft)',
+  border: '1px solid var(--wobo-feedback-correct)',
+  background: 'var(--wobo-feedback-correctSoft)',
   borderRadius: 3,
   padding: '14px 16px',
   fontSize: '1rem',
   lineHeight: 1.6,
-  color: 'var(--clss-ink-900)',
+  color: 'var(--wobo-ink-900)',
 };
 
 // ================================================================================================
@@ -364,7 +364,7 @@ const BIO_VB_W = 100;
 const BIO_VB_H = 62;
 
 function FigureShape({ mark, hue }: { mark: BioFigureMark; hue: string }) {
-  const stroke = 'var(--clss-ink-700)';
+  const stroke = 'var(--wobo-ink-700)';
   const fill = mark.filled ? hue : 'none';
   const common = { stroke, strokeWidth: 0.6, fill, fillOpacity: mark.filled ? 0.12 : 1 };
   switch (mark.shape) {
@@ -498,7 +498,7 @@ function DragLabel({
     }),
     getValidActions: () => remaining.map((l) => `place the label "${l.text}"`),
     applyTutorAction: (patch: Record<string, unknown>) => {
-      // she can place a label by id or text
+      // Wobo can place a label by id or text
       const target = str(patch.place) ? patch.place.trim() : undefined;
       const lb = spec.labels.find((l) => l.id === target || l.text === target);
       if (lb && !placed[lb.id]) {
@@ -550,11 +550,11 @@ function DragLabel({
                     r={lb.r}
                     fill={isPlaced ? hue : 'none'}
                     fillOpacity={isPlaced ? 0.16 : 0}
-                    stroke={isPlaced ? hue : 'var(--clss-ink-300)'}
+                    stroke={isPlaced ? hue : 'var(--wobo-ink-300)'}
                     strokeWidth={0.5}
                     strokeDasharray={isPlaced ? undefined : '1.5 1.5'}
                   />
-                  <circle cx={lb.x} cy={lb.y} r={0.9} fill="var(--clss-ink-500)" />
+                  <circle cx={lb.x} cy={lb.y} r={0.9} fill="var(--wobo-ink-500)" />
                   {isPlaced && (
                     <text
                       x={lb.x}
@@ -562,7 +562,7 @@ function DragLabel({
                       textAnchor="middle"
                       fontSize={3.4}
                       fontWeight={600}
-                      fill="var(--clss-ink-900)"
+                      fill="var(--wobo-ink-900)"
                     >
                       {lb.text}
                     </text>
@@ -590,7 +590,7 @@ function DragLabel({
                   onPointerCancel={onChipUp(lb.id)}
                   style={{
                     ...chip,
-                    borderColor: active ? hue : 'var(--clss-hairline-on-paper-strong)',
+                    borderColor: active ? hue : 'var(--wobo-hairline-on-paper-strong)',
                     touchAction: 'none',
                     cursor: 'grab',
                     transform: active ? `translate(${drag.dx}px, ${drag.dy}px)` : undefined,
@@ -707,7 +707,7 @@ function Punnett({
         ? ['fill a cell with its genotype (BB, Bb or bb)']
         : ['the square is complete'],
     applyTutorAction: (patch: Record<string, unknown>) => {
-      // she can solve a cell: { cell: 0..3 } fills it correctly, or { fillAll: true }
+      // Wobo can solve a cell: { cell: 0..3 } fills it correctly, or { fillAll: true }
       if (patch.fillAll === true) {
         setSolved(Object.fromEntries(flatCorrect.map((g, i) => [i, g])));
         return;
@@ -754,16 +754,16 @@ function Punnett({
           alignItems: 'center',
           justifyContent: 'center',
           background: value
-            ? 'var(--clss-feedback-correctSoft)'
+            ? 'var(--wobo-feedback-correctSoft)'
             : isSelected
-              ? 'var(--clss-ink-100)'
-              : 'var(--clss-paper)',
-          color: value ? 'var(--clss-ink-900)' : 'var(--clss-ink-500)',
+              ? 'var(--wobo-ink-100)'
+              : 'var(--wobo-paper)',
+          color: value ? 'var(--wobo-ink-900)' : 'var(--wobo-ink-500)',
           border: value
-            ? '1px solid var(--clss-feedback-correct)'
+            ? '1px solid var(--wobo-feedback-correct)'
             : isSelected
               ? `1.5px solid ${hue}`
-              : '0.5px solid var(--clss-hairline-on-paper-strong)',
+              : '0.5px solid var(--wobo-hairline-on-paper-strong)',
           borderRadius: 3,
           cursor: value ? 'default' : 'pointer',
         }}
@@ -833,7 +833,7 @@ function Punnett({
                   fontWeight: 600,
                   opacity: selected === null ? 0.5 : 1,
                   cursor: selected === null ? 'default' : 'pointer',
-                  borderColor: selected === null ? 'var(--clss-hairline-on-paper)' : hue,
+                  borderColor: selected === null ? 'var(--wobo-hairline-on-paper)' : hue,
                 }}
               >
                 {o}
@@ -1035,7 +1035,7 @@ function FoodWeb({
                   y1={y1}
                   x2={x2}
                   y2={y2}
-                  stroke={dead ? 'var(--clss-ink-300)' : hue}
+                  stroke={dead ? 'var(--wobo-ink-300)' : hue}
                   strokeWidth={0.8}
                   opacity={dead ? 0.35 : 0.85}
                   markerEnd={`url(#bio-arrow-${spec.id})`}
@@ -1062,13 +1062,13 @@ function FoodWeb({
                     r={6.5}
                     fill={
                       isRemoved
-                        ? 'var(--clss-paper)'
+                        ? 'var(--wobo-paper)'
                         : dead
-                          ? 'var(--clss-ink-100)'
-                          : 'var(--clss-paper)'
+                          ? 'var(--wobo-ink-100)'
+                          : 'var(--wobo-paper)'
                     }
                     stroke={
-                      isRemoved ? 'var(--clss-feedback-retry)' : dead ? 'var(--clss-ink-300)' : hue
+                      isRemoved ? 'var(--wobo-feedback-retry)' : dead ? 'var(--wobo-ink-300)' : hue
                     }
                     strokeWidth={isRemoved ? 1.2 : 0.8}
                     strokeDasharray={dead && !isRemoved ? '1.5 1.5' : undefined}
@@ -1080,7 +1080,7 @@ function FoodWeb({
                     textAnchor="middle"
                     fontSize={3.4}
                     fontWeight={600}
-                    fill={dead ? 'var(--clss-ink-500)' : 'var(--clss-ink-900)'}
+                    fill={dead ? 'var(--wobo-ink-500)' : 'var(--wobo-ink-900)'}
                     style={{ textDecoration: isRemoved ? 'line-through' : undefined }}
                   >
                     {n.label}
@@ -1167,7 +1167,7 @@ function Taxonomy({
     getValidActions: () =>
       current ? current.options.map((o) => `choose ${o} for ${current.rank}`) : [],
     applyTutorAction: (patch: Record<string, unknown>) => {
-      // she advances by choosing the correct option for the current rank
+      // Wobo advances by choosing the correct option for the current rank
       if (patch.choose !== undefined && current && str(patch.choose)) pick(patch.choose.trim());
       else if (patch.advance === true && current) pick(current.answer);
     },
@@ -1226,7 +1226,7 @@ function Taxonomy({
                       width: 6,
                       height: 6,
                       borderRadius: 999,
-                      background: settled ? hue : 'var(--clss-ink-300)',
+                      background: settled ? hue : 'var(--wobo-ink-300)',
                       flex: '0 0 auto',
                     }}
                   />
@@ -1234,13 +1234,13 @@ function Taxonomy({
                     style={{
                       fontSize: '0.7rem',
                       letterSpacing: '0.1em',
-                      color: 'var(--clss-ink-500)',
+                      color: 'var(--wobo-ink-500)',
                       minWidth: 62,
                     }}
                   >
                     {r.rank}
                   </div>
-                  <div style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--clss-ink-900)' }}>
+                  <div style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--wobo-ink-900)' }}>
                     {settled ? r.answer : active ? '…' : ''}
                   </div>
                 </div>

@@ -1,5 +1,5 @@
 /**
- * The layout engine (docs/BOARD.md §7, WOBO-TASKS 5.4) — she gives layout *hints*; this places the
+ * The layout engine (docs/BOARD.md §7, WOBO-TASKS 5.4) — Wobo gives layout *hints*; this places the
  * objects so nothing collides.
  *
  * Two jobs. Labels: a written note beside a shape goes to the first side that is free, with a real
@@ -233,7 +233,7 @@ export function fitCamera(
   const fill = clamp(opts?.fill ?? CAMERA_FILL, CAMERA_FILL_MIN, CAMERA_FILL_MAX);
   const minZoom = opts?.minZoom ?? CAMERA_MIN_ZOOM;
   const maxZoom = opts?.maxZoom ?? CAMERA_MAX_ZOOM;
-  // One zoom for both axes: the aspect ratio of what she drew is never squashed to fit.
+  // One zoom for both axes: the aspect ratio of what Wobo drew is never squashed to fit.
   const needed = Math.min(
     (BOARD_UNITS * fill) / Math.max(bounds.w, 1),
     (viewH * fill) / Math.max(bounds.h, 1),

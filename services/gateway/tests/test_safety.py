@@ -10,11 +10,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from classess_gateway.app import CapabilityRequest, Gateway
-from classess_gateway.cache import InMemoryCache
-from classess_gateway.providers import MockProvider, ProviderResponse
-from classess_gateway.registry import ConsentTier
-from classess_gateway.safety import (
+from wobo_gateway.app import CapabilityRequest, Gateway
+from wobo_gateway.cache import InMemoryCache
+from wobo_gateway.providers import MockProvider, ProviderResponse
+from wobo_gateway.registry import ConsentTier
+from wobo_gateway.safety import (
     CRISIS_SAY,
     MODERATION_SAY,
     OUTBOUND_REPLACEMENT_SAY,
@@ -24,7 +24,7 @@ from classess_gateway.safety import (
     screen_wobo_inbound,
     screen_wobo_outbound,
 )
-from classess_gateway.telemetry import MetricsSink
+from wobo_gateway.telemetry import MetricsSink
 
 
 def make_gateway(provider: Any | None = None, classifier: Any | None = None) -> Gateway:
@@ -194,7 +194,7 @@ def test_the_crisis_screen_covers_every_learner_facing_capability() -> None:
     """Sweep regression: the screen used to be a ``capability == "wobo.turn"`` special case, so
     the very same sentence typed into a tutor turn, a course request or an engine concept
     reached a frontier model unscreened. Every learner-facing capability now gates."""
-    from classess_gateway.safety import LEARNER_FACING_CAPABILITIES
+    from wobo_gateway.safety import LEARNER_FACING_CAPABILITIES
 
     gw = make_gateway()
     resp = gw.invoke("tutor.turn", wobo_req("I want to kill myself"))
@@ -238,7 +238,7 @@ def test_inbound_screen_reads_every_field_the_prompt_builder_reads() -> None:
     """Sweep regression: ``inbound_text`` enumerated two keys by hand while
     ``_build_user_prompt`` interpolated a dozen, so a crisis line typed into a canvas step, a
     target label or a remembered fact walked straight past the screen."""
-    from classess_gateway.safety import screen_inbound
+    from wobo_gateway.safety import screen_inbound
 
     for context in (
         {"canvas": {"equation": "I want to die", "steps": []}},
@@ -255,7 +255,7 @@ def test_inbound_screen_reads_every_field_the_prompt_builder_reads() -> None:
 def test_outbound_screen_covers_action_text_and_the_viz_caption() -> None:
     """Sweep regression: only ``say`` was screened, so the model could put anything it liked on
     the page itself — a written note, a spoken line, a diagram caption."""
-    from classess_gateway.safety import screen_outbound
+    from wobo_gateway.safety import screen_outbound
 
     clean_say = "look at the step where you moved the 3"
     for output in (

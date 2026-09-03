@@ -29,7 +29,7 @@ import {
   plane,
   WoboFullBoard,
   WoboPlane,
-} from '@classess/wobo';
+} from '@wobo/wobo';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GOLDEN_BOARDS, type GoldenBoard, goldenBoard } from './goldens';
 
@@ -62,7 +62,7 @@ const hypNormal: [number, number] = [B / C, -A / C];
 const ink = (object: unknown, t: number): BoardEvent => ({ type: 'ink', object, t }) as BoardEvent;
 
 /**
- * The plan, in the order she would draw it, timed against her voice. Exported so the golden-board
+ * The plan, in the order Wobo would draw it, timed against Wobo's voice. Exported so the golden-board
  * test can assert its structure and so QA can replay exactly what shipped.
  */
 export const PYTHAGORAS_PLAN: BoardEvent[] = [
@@ -388,7 +388,7 @@ export interface BenchApi {
   /**
    * Fill the board to BOARD.md §10's budget — 2,000 strokes — and hold it there, so the frame rate
    * can be measured against the number the law actually names. `screenAnchor` adds one mark hung
-   * off a registered target, which is her commonest turn and the case that used to collapse: the
+   * off a registered target, which is Wobo's commonest turn and the case that used to collapse: the
    * rAF loop it starts re-anchored and re-elemented all 2,000 objects every frame.
    */
   stress(count: number, options?: { screenAnchor?: boolean }): void;
@@ -617,7 +617,7 @@ export function BoardBench(props: { board?: string }) {
     };
   }, [start]);
 
-  /** The same plan on the other surface: the frosted plane, summoned from her orb. */
+  /** The same plan on the other surface: the frosted plane, summoned from Wobo's orb. */
   const onPlane = useCallback(() => {
     if (!board) return;
     const id = plane.fresh({ x: window.innerWidth - 72, y: window.innerHeight - 96 });
@@ -632,7 +632,7 @@ export function BoardBench(props: { board?: string }) {
       data-testid="board-bench"
       data-board={board.name}
       style={{
-        background: 'var(--clss-page, #FFFFFF)',
+        background: 'var(--wobo-page, #FFFFFF)',
         inset: 0,
         position: 'fixed',
         zIndex: 2000,
@@ -662,7 +662,7 @@ export function BoardBench(props: { board?: string }) {
         }}
       >
         <label style={{ display: 'flex', fontSize: 12, gap: 6 }}>
-          <span style={{ color: 'var(--clss-ink-300, #72727C)', lineHeight: '24px' }}>board</span>
+          <span style={{ color: 'var(--wobo-ink-300, #72727C)', lineHeight: '24px' }}>board</span>
           <select
             data-testid="bench-picker"
             aria-label="which golden board to play"
@@ -693,7 +693,7 @@ export function BoardBench(props: { board?: string }) {
         </button>
         <span
           data-testid="bench-status"
-          style={{ color: 'var(--clss-ink-300, #72727C)', fontSize: 12, lineHeight: '24px' }}
+          style={{ color: 'var(--wobo-ink-300, #72727C)', fontSize: 12, lineHeight: '24px' }}
         >
           {board.plan.length} events, {store.refused.length} refused
           {instant ? ', landed' : ''}
@@ -703,7 +703,7 @@ export function BoardBench(props: { board?: string }) {
         data-testid="bench-prompt"
         style={{
           bottom: 14,
-          color: 'var(--clss-ink-300, #72727C)',
+          color: 'var(--wobo-ink-300, #72727C)',
           fontSize: 12,
           left: 16,
           margin: 0,

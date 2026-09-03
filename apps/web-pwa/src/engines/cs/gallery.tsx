@@ -35,7 +35,7 @@ function CsBench({
   return (
     <section
       id={id}
-      style={{ borderTop: '0.5px solid var(--clss-hairline-on-paper)', padding: '18px 0 20px' }}
+      style={{ borderTop: '0.5px solid var(--wobo-hairline-on-paper)', padding: '18px 0 20px' }}
     >
       <div style={{ ...whisper, padding: '0 24px', marginBottom: 4 }}>{name}</div>
       {render(setBar)}

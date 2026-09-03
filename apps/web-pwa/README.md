@@ -1,17 +1,17 @@
-# @classess/web-pwa
+# @wobo/web-pwa
 
 The learner app: a Vite + React 19 + TypeScript PWA. Wobo is the runtime the app executes inside
-(`CONTEXT.md`, `DESIGN.md` §4) — every screen publishes its own state to her context bus, and she
+(`CONTEXT.md`, `DESIGN.md` §4) — every screen publishes its own state to Wobo's context bus, and Wobo
 reads, draws on and acts in it. Real screens on real data: home, chat, learn, subject, course,
 practice, progress, you, plus onboarding and the frame builder.
 
-The design tokens are the law (`@classess/config`, `DESIGN.md` §2); the UI kit is `src/ui/kit.tsx`;
-Wobo's identity, hand and board live in `@classess/wobo`.
+The design tokens are the law (`@wobo/config`, `DESIGN.md` §2); the UI kit is `src/ui/kit.tsx`;
+Wobo's identity, hand and board live in `@wobo/wobo`.
 
 ## Run
 
 ```bash
-bun run --filter @classess/web-pwa dev
+bun run --filter @wobo/web-pwa dev
 ```
 
 Keyless by default: no env means the mock brain and local persistence, and every screen still works.

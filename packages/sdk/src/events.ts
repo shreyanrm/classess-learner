@@ -1,16 +1,10 @@
-import {
-  type ClassessEvent,
-  type EventType,
-  makeEvent,
-  newId,
-  type PayloadOf,
-} from '@classess/contracts';
-import type { EventConsumer } from '@classess/kgtopg-contract-seed';
+import { type EventType, makeEvent, newId, type PayloadOf, type WoboEvent } from '@wobo/contracts';
+import type { EventConsumer } from '@wobo/kgtopg-contract-seed';
 import type { SdkConfig } from './config';
 import type { SupabaseRest } from './supabase';
 
 /**
- * The event backbone. Every meaningful action records one ClassessEvent through the real contract.
+ * The event backbone. Every meaningful action records one WoboEvent through the real contract.
  * Mock-first on the TRANSPORT: in local mode events go to an in-memory log and are handed to the
  * KGtoPG consumer (so evidence-bearing events update mastery). In live mode the Supabase outbox
  * writer (below) additionally batches every event into `learner.outbox`, where the relay publishes
@@ -22,8 +16,8 @@ export interface EventProvider {
     eventType: T,
     payload: PayloadOf<T>,
     context?: { ontologyNodeId?: string; courseId?: string },
-  ): ClassessEvent<T>;
-  getLog(): ClassessEvent[];
+  ): WoboEvent<T>;
+  getLog(): WoboEvent[];
   countByType(): Record<string, number>;
 }
 
@@ -37,7 +31,7 @@ export interface ConsumeFailure {
 const CONSUME_FAILURE_CAP = 20;
 
 export class InMemoryEventProvider implements EventProvider {
-  private readonly log: ClassessEvent[] = [];
+  private readonly log: WoboEvent[] = [];
   private readonly sessionId = newId();
   private readonly failures: ConsumeFailure[] = [];
 
@@ -50,7 +44,7 @@ export class InMemoryEventProvider implements EventProvider {
     eventType: T,
     payload: PayloadOf<T>,
     context?: { ontologyNodeId?: string; courseId?: string },
-  ): ClassessEvent<T> {
+  ): WoboEvent<T> {
     const event = makeEvent({
       event_type: eventType,
       payload,
@@ -67,8 +61,8 @@ export class InMemoryEventProvider implements EventProvider {
         ...(context?.courseId ? { course_id: context.courseId } : {}),
       },
     });
-    // A concrete ClassessEvent<T> is a member of the ClassessEvent union; TS needs the widening cast.
-    const stored = event as ClassessEvent;
+    // A concrete WoboEvent<T> is a member of the WoboEvent union; TS needs the widening cast.
+    const stored = event as WoboEvent;
     this.log.push(stored);
     // The consumer is idempotent; evidence-bearing events update the learner's mastery bands.
     // Deliberately not awaited — recording an event must never block a tap — but a floating promise
@@ -79,7 +73,7 @@ export class InMemoryEventProvider implements EventProvider {
   }
 
   /** Record a consumer rejection: mastery just did not move for this event; nothing else breaks. */
-  private noteFailure(event: ClassessEvent, err: unknown): void {
+  private noteFailure(event: WoboEvent, err: unknown): void {
     this.failures.push({
       eventId: event.event_id,
       error: err instanceof Error ? err.message : String(err),
@@ -92,7 +86,7 @@ export class InMemoryEventProvider implements EventProvider {
     return this.failures;
   }
 
-  getLog(): ClassessEvent[] {
+  getLog(): WoboEvent[] {
     return this.log;
   }
 
@@ -116,7 +110,7 @@ export class InMemoryEventProvider implements EventProvider {
  * flush are lost with the tab; move the queue to localStorage if offline sessions must survive.
  */
 export class SupabaseOutboxEventProvider extends InMemoryEventProvider {
-  private pending: ClassessEvent[] = [];
+  private pending: WoboEvent[] = [];
   private timer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
@@ -133,9 +127,9 @@ export class SupabaseOutboxEventProvider extends InMemoryEventProvider {
     eventType: T,
     payload: PayloadOf<T>,
     context?: { ontologyNodeId?: string; courseId?: string },
-  ): ClassessEvent<T> {
+  ): WoboEvent<T> {
     const event = super.record(eventType, payload, context);
-    this.pending.push(event as ClassessEvent);
+    this.pending.push(event as WoboEvent);
     if (this.pending.length >= this.maxBatch) {
       void this.flush();
     } else {

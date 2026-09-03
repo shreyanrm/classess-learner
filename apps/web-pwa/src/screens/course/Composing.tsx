@@ -7,13 +7,13 @@
  * CAS-verified, engine.diagram sanitized) and renders on the guided-discovery shell —
  * act-to-reveal, Check/Continue, per-card XP, the boss, the greeting, the ignite.
  *
- * Generation states are honest: a skeleton shimmer while she composes (notification-style,
+ * Generation states are honest: a skeleton shimmer while Wobo composes (notification-style,
  * never a fake spinner promise), and any refusal anywhere falls back to the structural seed
  * course — invisible to the learner, never an error (CONTEXT.md §6).
  */
 
-import type { ImageSpec, Item as WireItem } from '@classess/contracts/plexus';
-import { useWoboBus } from '@classess/wobo';
+import type { ImageSpec, Item as WireItem } from '@wobo/contracts/plexus';
+import { useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { topicById } from '../../data/catalog';
@@ -474,13 +474,13 @@ function useArtifact(card: GenCard, topic: string, courseId: string): Artifact {
 
 // --- Small chrome ----------------------------------------------------------------------------------
 
-/** Honest skeleton shimmer — she is composing this piece; it lands on its own. */
+/** Honest skeleton shimmer — Wobo is composing this piece; it lands on its own. */
 function Shimmer({ lines = 3, note }: { lines?: number; note?: string }) {
   const widths = ['82%', '64%', '74%', '58%'];
   return (
     <div
       style={{
-        border: '0.5px solid var(--clss-hairline-on-paper)',
+        border: '0.5px solid var(--wobo-hairline-on-paper)',
         borderRadius: 3,
         padding: '26px 22px',
         display: 'flex',
@@ -502,7 +502,7 @@ function Shimmer({ lines = 3, note }: { lines?: number; note?: string }) {
           style={{
             height: 12,
             width: widths[i % widths.length],
-            background: 'var(--clss-tonal)',
+            background: 'var(--wobo-tonal)',
             borderRadius: 3,
           }}
         />
@@ -516,26 +516,26 @@ const inputStyle: CSSProperties = {
   padding: '10px 12px',
   fontSize: '1rem',
   fontFamily: 'inherit',
-  border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+  border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
   borderRadius: 3,
   // no inline `outline: none` — the global :focus-visible ultramarine ring (main.tsx) must show
-  background: 'var(--clss-paper)',
-  color: 'var(--clss-ink-900)',
+  background: 'var(--wobo-paper)',
+  color: 'var(--wobo-ink-900)',
 };
 
 const itemBlockStyle = (state: 'idle' | 'correct' | 'retry'): CSSProperties => ({
   border:
     state === 'correct'
-      ? '1px solid var(--clss-feedback-correct)'
+      ? '1px solid var(--wobo-feedback-correct)'
       : state === 'retry'
-        ? '1px solid var(--clss-feedback-retry)'
-        : '0.5px solid var(--clss-hairline-on-paper-strong)',
+        ? '1px solid var(--wobo-feedback-retry)'
+        : '0.5px solid var(--wobo-hairline-on-paper-strong)',
   background:
     state === 'correct'
-      ? 'var(--clss-feedback-correctSoft)'
+      ? 'var(--wobo-feedback-correctSoft)'
       : state === 'retry'
-        ? 'var(--clss-feedback-retrySoft)'
-        : 'var(--clss-paper)',
+        ? 'var(--wobo-feedback-retrySoft)'
+        : 'var(--wobo-paper)',
   borderRadius: 3,
   padding: '16px 18px',
   display: 'flex',
@@ -583,7 +583,7 @@ function ItemBlock({
         style={{
           fontSize: '1.02rem',
           lineHeight: 1.5,
-          color: 'var(--clss-ink-900)',
+          color: 'var(--wobo-ink-900)',
           fontWeight: 520,
         }}
       >
@@ -616,7 +616,7 @@ function ItemBlock({
         />
       )}
       {state === 'retry' && (
-        <div style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', lineHeight: 1.55 }}>
+        <div style={{ fontSize: '0.88rem', color: 'var(--wobo-ink-700)', lineHeight: 1.55 }}>
           not this one — the answer worth keeping is “{item.answer}”.
         </div>
       )}
@@ -784,7 +784,7 @@ function ItemSet({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.35, ease: [0.2, 0, 0, 1] }}
-              style={{ textAlign: 'center', color: 'var(--clss-ink-700)', fontSize: '0.95rem' }}
+              style={{ textAlign: 'center', color: 'var(--wobo-ink-700)', fontSize: '0.95rem' }}
             >
               {correct === items.length
                 ? 'All of them. Clean.'
@@ -835,7 +835,7 @@ function GenCardView({
       surface = (
         <Shimmer
           lines={3}
-          note="She is composing this piece just for you — it will land here on its own"
+          note="Wobo is composing this piece just for you — it will land here on its own"
         />
       );
     }
@@ -870,7 +870,7 @@ function GenCardView({
             ...lead,
             borderLeft: `2px solid ${hue}`,
             paddingLeft: 14,
-            color: 'var(--clss-ink-900)',
+            color: 'var(--wobo-ink-900)',
           }}
         >
           {card.interaction.prompt}
@@ -883,13 +883,13 @@ function GenCardView({
               exit={{ opacity: 0 }}
               transition={{ type: 'spring', stiffness: 300, damping: 28 }}
               style={{
-                border: '1px solid var(--clss-feedback-correct)',
-                background: 'var(--clss-feedback-correctSoft)',
+                border: '1px solid var(--wobo-feedback-correct)',
+                background: 'var(--wobo-feedback-correctSoft)',
                 borderRadius: 3,
                 padding: '14px 16px',
                 fontSize: '1rem',
                 lineHeight: 1.6,
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               {card.reveal}
@@ -930,7 +930,7 @@ function InkScreen({
           ? course.seeded
             ? 'a working course, honestly floored'
             : 'Written and verified'
-          : 'She is composing your course'}
+          : 'Wobo is composing your course'}
       </div>
       <div style={cardTitle}>{title.toLowerCase()}</div>
       {!outline && (
@@ -953,7 +953,7 @@ function InkScreen({
             <motion.div
               key={line}
               variants={rise}
-              style={{ fontSize: '1.02rem', color: 'var(--clss-ink-900)', lineHeight: 1.45 }}
+              style={{ fontSize: '1.02rem', color: 'var(--wobo-ink-900)', lineHeight: 1.45 }}
             >
               <span style={{ ...whisper, marginRight: 10 }}>{i + 1}</span>
               {line}
@@ -1063,7 +1063,7 @@ function useVideoScene(title: string, courseId: string): VideoState {
   return state;
 }
 
-/** One motion video per course — an honest placeholder while she animates, the player when ready. */
+/** One motion video per course — an honest placeholder while Wobo animates, the player when ready. */
 function VideoBeat({
   title,
   courseId,
@@ -1103,7 +1103,7 @@ function VideoBeat({
         {video.status === 'pending' && (
           <Shimmer
             lines={4}
-            note="She is animating this one by hand — it will land here on its own"
+            note="Wobo is animating this one by hand — it will land here on its own"
           />
         )}
         {video.status === 'failed' && (

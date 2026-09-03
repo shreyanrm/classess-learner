@@ -27,7 +27,7 @@ export interface GatewayAuthConfig {
 export const GATEWAY_COPY = {
   signIn: 'I need to know it is you before we carry on. Sign in and we pick up exactly here.',
   budget: 'That is everything I can carry today. Come back in a bit and we keep going.',
-  /** Same line, with the real moment she is free again. */
+  /** Same line, with the real moment Wobo is free again. */
   budgetAt: (when: string) =>
     `That is everything I can carry today. I am free again at ${when} — come back then and we keep going.`,
   trouble: 'Give me a moment, then ask me again.',
@@ -49,7 +49,7 @@ export async function gatewayAuthHeaders(): Promise<Record<string, string>> {
   return {};
 }
 
-/** Sign-in is required (or the session expired). The app routes to her sign-in beat. */
+/** Sign-in is required (or the session expired). The app routes to Wobo's sign-in beat. */
 export class SignInRequiredError extends Error {
   readonly code = 'sign_in_required';
   constructor(message: string = GATEWAY_COPY.signIn) {
@@ -58,7 +58,7 @@ export class SignInRequiredError extends Error {
   }
 }
 
-/** The free daily meter is spent. Carries when it refills so she can say it out loud. */
+/** The free daily meter is spent. Carries when it refills so Wobo can say it out loud. */
 export class BudgetExhaustedError extends Error {
   readonly code = 'budget_exhausted';
   /** ISO instant the window resets, when the brain told us. */
@@ -72,7 +72,7 @@ export class BudgetExhaustedError extends Error {
   }
 }
 
-/** Anything else the brain refused. The message is already in her voice — never a provider's. */
+/** Anything else the brain refused. The message is already in Wobo's voice — never a provider's. */
 export class GatewayError extends Error {
   readonly status: number;
   constructor(status: number, message: string = GATEWAY_COPY.trouble) {
@@ -101,7 +101,7 @@ async function refusal(res: Response): Promise<{ code?: string; message?: string
 
 /**
  * Turn a refusal into a typed error. Safe to call on any response; it returns for 2xx.
- * The learner never sees a status code, only her line.
+ * The learner never sees a status code, only Wobo's line.
  */
 export async function throwForGatewayStatus(res: Response): Promise<void> {
   if (res.ok) return;

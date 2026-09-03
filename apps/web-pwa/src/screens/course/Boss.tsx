@@ -7,8 +7,8 @@
  * seed items — nothing invented.
  */
 
-import type { PracticeItem } from '@classess/sdk';
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import type { PracticeItem } from '@wobo/sdk';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { motion } from 'framer-motion';
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import { useSdk } from '../../store/sdk';
@@ -19,7 +19,7 @@ import { aX, firstMove, fmt, linearize } from './equations';
 import type { BarState } from './shared';
 import { CardBody, ChoiceButton, cardTitle, rgba, Stage, whisper } from './shared';
 
-const HUE = 'var(--clss-ultramarine)';
+const HUE = 'var(--wobo-ultramarine)';
 
 const ORDINALS = ['one', 'two', 'three'];
 
@@ -78,17 +78,17 @@ function buildError(item: PracticeItem): ErrorExercise | null {
 const blockStyle = (state: 'idle' | 'correct' | 'retry'): CSSProperties => ({
   border:
     state === 'correct'
-      ? '1px solid var(--clss-feedback-correct)'
+      ? '1px solid var(--wobo-feedback-correct)'
       : state === 'retry'
-        ? '1px solid var(--clss-feedback-retry)'
-        : '0.5px solid var(--clss-hairline-on-paper-strong)',
+        ? '1px solid var(--wobo-feedback-retry)'
+        : '0.5px solid var(--wobo-hairline-on-paper-strong)',
   background:
     state === 'correct'
-      ? 'var(--clss-feedback-correctSoft)'
+      ? 'var(--wobo-feedback-correctSoft)'
       : state === 'retry'
-        ? 'var(--clss-feedback-retrySoft)'
-        : 'var(--clss-paper)',
-  borderRadius: 'var(--clss-radius-md)',
+        ? 'var(--wobo-feedback-retrySoft)'
+        : 'var(--wobo-paper)',
+  borderRadius: 'var(--wobo-radius-md)',
   padding: '18px 20px',
   display: 'flex',
   flexDirection: 'column',
@@ -314,13 +314,13 @@ export function Boss({
                 fontSize: '1.45rem',
                 fontWeight: 550,
                 fontVariantNumeric: 'tabular-nums',
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               {solveItem.equation}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ color: 'var(--clss-ink-500)' }}>x =</span>
+              <span style={{ color: 'var(--wobo-ink-500)' }}>x =</span>
               <input
                 value={solveEntry}
                 onChange={(e) => setSolveEntry(e.target.value.replace(/[^0-9\-−.]/g, ''))}
@@ -334,16 +334,16 @@ export function Boss({
                   fontFamily: 'inherit',
                   fontVariantNumeric: 'tabular-nums',
                   textAlign: 'center',
-                  border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-                  borderRadius: 'var(--clss-radius-sm)',
+                  border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+                  borderRadius: 'var(--wobo-radius-sm)',
                   // no inline `outline: none` — keep the global :focus-visible ring (main.tsx)
-                  background: 'var(--clss-paper)',
-                  color: 'var(--clss-ink-900)',
+                  background: 'var(--wobo-paper)',
+                  color: 'var(--wobo-ink-900)',
                 }}
               />
             </div>
             {evaluated && results && !results[0] && solveLin && (
-              <div style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', lineHeight: 1.6 }}>
+              <div style={{ fontSize: '0.88rem', color: 'var(--wobo-ink-700)', lineHeight: 1.6 }}>
                 put your x back in: the sides make{' '}
                 {fmt(solveLin.lhs(Number(solveEntry.replace('−', '-'))))} and{' '}
                 {fmt(solveLin.rhs(Number(solveEntry.replace('−', '-'))))} — not level yet.
@@ -359,7 +359,7 @@ export function Boss({
                 fontSize: '1.15rem',
                 fontWeight: 550,
                 fontVariantNumeric: 'tabular-nums',
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               {step.lines[0]}
@@ -384,13 +384,13 @@ export function Boss({
                 fontSize: '1.15rem',
                 fontWeight: 550,
                 fontVariantNumeric: 'tabular-nums',
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               {step.lines[1]}
             </div>
             {evaluated && results && !results[1] && (
-              <div style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', lineHeight: 1.6 }}>
+              <div style={{ fontSize: '0.88rem', color: 'var(--wobo-ink-700)', lineHeight: 1.6 }}>
                 the move must undo what sits around x — here that is “
                 {step.choices[step.correctIndex]}”.
               </div>
@@ -421,7 +421,7 @@ export function Boss({
               ))}
             </div>
             {evaluated && results && !results[2] && (
-              <div style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', lineHeight: 1.6 }}>
+              <div style={{ fontSize: '0.88rem', color: 'var(--wobo-ink-700)', lineHeight: 1.6 }}>
                 the slip is where {fmt(Math.abs(error.b))} crossed the equals sign and kept its sign
                 — crossing always flips it.
               </div>
@@ -433,7 +433,7 @@ export function Boss({
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, ease: [0.2, 0, 0, 1] }}
-              style={{ textAlign: 'center', color: 'var(--clss-ink-700)', fontSize: '0.95rem' }}
+              style={{ textAlign: 'center', color: 'var(--wobo-ink-700)', fontSize: '0.95rem' }}
             >
               {passCount >= 2
                 ? passCount === 3

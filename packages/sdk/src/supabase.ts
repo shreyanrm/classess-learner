@@ -96,7 +96,7 @@ export class SupabaseRest {
       headers: { ...this.headers('content-profile'), 'content-type': 'application/json' },
       body: JSON.stringify(args),
     });
-    if (!res.ok) throw new Error(`supabase rpc ${fn} failed: ${res.status}`);
+    if (!res.ok) throw new Error(`remote store rpc ${fn} failed: ${res.status}`);
     return res.status === 204 ? null : res.json();
   }
 
@@ -105,7 +105,7 @@ export class SupabaseRest {
     const res = await fetch(`${this.cfg.url}/rest/v1/${table}?${query}`, {
       headers: this.headers('accept-profile'),
     });
-    if (!res.ok) throw new Error(`supabase select ${table} failed: ${res.status}`);
+    if (!res.ok) throw new Error(`remote store select ${table} failed: ${res.status}`);
     const rows = (await res.json()) as Record<string, unknown>[];
     return rows[0] ?? null;
   }
@@ -117,14 +117,14 @@ export class SupabaseRest {
    */
   async delete(table: string, filter: RestFilter): Promise<void> {
     if (Object.keys(filter.match).length === 0) {
-      throw new Error(`supabase delete ${table} refused: a delete must name a filter`);
+      throw new Error(`remote store delete ${table} refused: a delete must name a filter`);
     }
     const query = restQuery({ match: filter.match });
     const res = await fetch(`${this.cfg.url}/rest/v1/${table}?${query}`, {
       method: 'DELETE',
       headers: { ...this.headers('content-profile'), prefer: 'return=minimal' },
     });
-    if (!res.ok) throw new Error(`supabase delete ${table} failed: ${res.status}`);
+    if (!res.ok) throw new Error(`remote store delete ${table} failed: ${res.status}`);
   }
 
   async upsert(table: string, row: Record<string, unknown>, onConflict: string): Promise<void> {
@@ -138,6 +138,6 @@ export class SupabaseRest {
       },
       body: JSON.stringify(row),
     });
-    if (!res.ok) throw new Error(`supabase upsert ${table} failed: ${res.status}`);
+    if (!res.ok) throw new Error(`remote store upsert ${table} failed: ${res.status}`);
   }
 }

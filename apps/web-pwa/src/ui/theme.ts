@@ -1,13 +1,13 @@
 /**
  * Appearance — light / dark / system. Dark is subtle graphite (never black); the palette lives in
- * the `--clss-*` token layer (`[data-theme="dark"]`). This module only decides which theme is live
+ * the `--wobo-*` token layer (`[data-theme="dark"]`). This module only decides which theme is live
  * and writes `data-theme` on the document root. 'system' follows prefers-color-scheme live.
  */
-import { chrome, dark } from '@classess/config';
+import { chrome, dark } from '@wobo/config';
 import { useSyncExternalStore } from 'react';
 
 export type ThemePref = 'light' | 'dark' | 'system';
-const KEY = 'clss-theme-v1';
+const KEY = 'wobo-theme-v1';
 const media = () => window.matchMedia('(prefers-color-scheme: dark)');
 
 export function getThemePref(): ThemePref {
@@ -22,7 +22,7 @@ function resolve(pref: ThemePref): 'light' | 'dark' {
 /** The page colour of each theme, straight from the tokens — never a second copy of the hex. */
 const PAGE: Record<'light' | 'dark', string> = {
   light: chrome.page,
-  dark: dark['--clss-page'] ?? chrome.page,
+  dark: dark['--wobo-page'] ?? chrome.page,
 };
 
 /**

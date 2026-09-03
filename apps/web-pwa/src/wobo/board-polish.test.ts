@@ -18,7 +18,7 @@ import {
   geometryOf,
   type HandFont,
   parseHandFont,
-} from '@classess/wobo';
+} from '@wobo/wobo';
 import { GOLDEN_BOARDS } from './goldens';
 
 const FONT_PATH = new URL('../../public/fonts/Caveat-Regular.ttf', import.meta.url).pathname;
@@ -165,7 +165,7 @@ describe('a note anchored to a side lands on that side', () => {
   });
 });
 
-describe('the plane fits what she has drawn', () => {
+describe('the plane fits what Wobo has drawn', () => {
   it('three objects fill the box instead of sitting at a fifth of it', () => {
     const drawn: BoardRect[] = [
       { x: 300, y: 260, w: 90, h: 40 },

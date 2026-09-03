@@ -1,6 +1,6 @@
 'use client';
 
-import { ink, zIndex } from '@classess/config';
+import { ink, zIndex } from '@wobo/config';
 import {
   AnimatePresence,
   motion,

@@ -8,8 +8,8 @@ trustworthy — which is the foundation the whole grading spike stands on.
 from __future__ import annotations
 
 import pytest
-from classess_atom.calibration import MISCONCEPTIONS, SAMPLES
-from classess_atom.grade import verifier_ground
+from wobo_atom.calibration import MISCONCEPTIONS, SAMPLES
+from wobo_atom.grade import verifier_ground
 
 
 @pytest.mark.parametrize("sample", SAMPLES, ids=[s.id for s in SAMPLES])

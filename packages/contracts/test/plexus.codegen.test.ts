@@ -3,7 +3,7 @@
  *
  * The committed `src/generated/plexus.ts` must be byte-identical to a fresh regeneration from
  * the committed `schemas/plexus.schema.json`. If the schema changes without regenerating the
- * types, this fails. Regenerate: `bun run --filter @classess/contracts codegen:plexus`.
+ * types, this fails. Regenerate: `bun run --filter @wobo/contracts codegen:plexus`.
  */
 import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';

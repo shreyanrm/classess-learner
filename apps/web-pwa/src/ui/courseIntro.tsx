@@ -118,7 +118,7 @@ function Constellation({ topicId, hue }: { topicId: string; hue: string }) {
             y1={a.y}
             x2={b.x}
             y2={b.y}
-            stroke={e.hot ? rgba(hue, 0.32) : 'var(--clss-ink-100)'}
+            stroke={e.hot ? rgba(hue, 0.32) : 'var(--wobo-ink-100)'}
             strokeWidth={e.hot ? 1 : 0.8}
             strokeLinecap="round"
             initial={{ pathLength: 0, opacity: 0 }}
@@ -128,7 +128,7 @@ function Constellation({ topicId, hue }: { topicId: string; hue: string }) {
         );
       })}
       {nodes.map((n, i) => {
-        const fill = n.kind === 'gold' ? GOLD : n.kind === 'hue' ? hue : 'var(--clss-ink-300)';
+        const fill = n.kind === 'gold' ? GOLD : n.kind === 'hue' ? hue : 'var(--wobo-ink-300)';
         const alive = n.kind !== 'faint';
         return (
           <motion.circle

@@ -1,13 +1,13 @@
 'use client';
 
-import { duration, radius } from '@classess/config';
+import { duration, radius } from '@wobo/config';
 import { motion } from 'framer-motion';
 import { EASE, SEC } from './motion-tokens';
 import type { MotionBaseProps } from './types';
 import { useReducedMotion } from './use-reduced-motion';
 
 export interface IgniteProps extends MotionBaseProps {
-  /** The earned content-color this concept ignites into (a @classess/config accent hex). */
+  /** The earned content-color this concept ignites into (a @wobo/config accent hex). */
   accent: string;
   /** Plays when true; defaults to true so a freshly mounted concept ignites once. */
   active?: boolean;

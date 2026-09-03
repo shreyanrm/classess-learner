@@ -2,10 +2,10 @@
 
 /**
  * One conversation, two presentations (DESIGN.md §4): the home front door and the docked orb
- * share this context — she never forgets who the learner is between the two.
+ * share this context — Wobo never forgets who the learner is between the two.
  */
 
-import type { FocusObject, WoboMood } from '@classess/wobo';
+import type { FocusObject, WoboMood } from '@wobo/wobo';
 import { createContext, useContext } from 'react';
 import { scoped } from '../store/scope';
 import type { TurnExtras } from './paths/types';
@@ -20,7 +20,7 @@ export interface ChatTurn {
 
 export interface WoboChat {
   turns: ChatTurn[];
-  /** She reasons over the page she is plugged into, then speaks and acts on it. */
+  /** Wobo reasons over the page Wobo is plugged into, then speaks and acts on it. */
   ask: (text: string) => Promise<void>;
   busy: boolean;
   mood: WoboMood;
@@ -48,7 +48,7 @@ export interface WoboChat {
 
 // Scoped to the signed-in subject (store/scope.ts): a shared device must never show one learner
 // the other's conversation, and sign-out takes the transcript with it.
-const ARCHIVE_KEY = 'clss-wobo-archive-v1';
+const ARCHIVE_KEY = 'wobo-archive-v1';
 const ARCHIVE_CAP = 2000; // ponytail: localStorage quota guard; move to IndexedDB if anyone outgrows it
 export const CHAT_PAGE = 40;
 

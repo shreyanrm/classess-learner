@@ -1,13 +1,13 @@
 /**
- * @classess/wobo — the signature tutor (docs/02-DESIGN/02-wobo.md) and her connected presence.
+ * @wobo/wobo — the signature tutor (docs/02-DESIGN/02-wobo.md) and Wobo's connected presence.
  *
- * Her identity is LOCKED and encoded in `identity.ts` (asserted by tests). Her choreography is free
- * (the Wobo-cute license). The context bus + action layer make every page a canvas she is plugged
- * into: she perceives the app's own state (never a screen-share) and can draw on it and act in it.
+ * Wobo's identity is LOCKED and encoded in `identity.ts` (asserted by tests). Wobo's choreography is free
+ * (the Wobo-cute license). The context bus + action layer make every page a canvas Wobo is plugged
+ * into: Wobo perceives the app's own state (never a screen-share) and can draw on it and act in it.
  */
 
 export * from './actions';
-// The board — her hand and its three presentations (docs/BOARD.md).
+// The board — Wobo's hand and its three presentations (docs/BOARD.md).
 export * from './board';
 export * from './body/WoboBody';
 export * from './context-bus';

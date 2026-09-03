@@ -113,7 +113,7 @@ describe('sampling a behaviour', () => {
   });
 
   it('returns every scale multiplier to 1 and every offset to 0 by the end', () => {
-    // `shrink` parks her on purpose, and `point` leaves her turned to the board until released.
+    // `shrink` parks Wobo on purpose, and `point` leaves Wobo turned to the board until released.
     for (const name of BEHAVIOUR_NAMES) {
       if (behaviourSpec(name).hold || name === 'point') continue;
       const s = sampleBehaviour(name, behaviourSpec(name).dur);

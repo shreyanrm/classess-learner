@@ -13,8 +13,8 @@
  * delivered as if it were whole.
  */
 
-import { gatewayFetch, throwForGatewayStatus } from '@classess/sdk';
-import { type BoardEvent, parseBoardEvent } from '@classess/wobo';
+import { gatewayFetch, throwForGatewayStatus } from '@wobo/sdk';
+import { type BoardEvent, parseBoardEvent } from '@wobo/wobo';
 
 /** One decoded server-sent frame. `event` is the SSE event name; `data` its raw payload. */
 export interface SseFrame {
@@ -107,9 +107,9 @@ export function parseEventId(id: string | undefined): { turnId: string; seq: num
 export interface BoardContext {
   /** The learner's override, when they said "board" or "here". */
   presentation?: 'screen' | 'plane' | 'full';
-  /** The object the pen stopped on when they interrupted her last turn. */
+  /** The object the pen stopped on when they interrupted Wobo's last turn. */
   interrupted_at?: string;
-  /** Ids already on the board, so she does not redraw what is there. */
+  /** Ids already on the board, so Wobo does not redraw what is there. */
   drawn?: string[];
   /** Inside a lesson: the board is the screen. */
   lesson?: boolean;
@@ -219,7 +219,7 @@ export interface StreamBoardTurnResult {
 
 /**
  * Open the turn and drive the handlers until `done` or the signal aborts. Refusals come back typed
- * through the SDK (sign-in needed, budget spent) so the learner hears her line, never a status code.
+ * through the SDK (sign-in needed, budget spent) so the learner hears Wobo's line, never a status code.
  */
 export async function streamBoardTurn(
   options: StreamBoardTurnOptions,

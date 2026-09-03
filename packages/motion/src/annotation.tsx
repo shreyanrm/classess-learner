@@ -1,6 +1,6 @@
 'use client';
 
-import { fontFamily, ink } from '@classess/config';
+import { fontFamily, ink } from '@wobo/config';
 import { motion } from 'framer-motion';
 import type { CSSProperties, ReactNode } from 'react';
 import { EASE, SEC } from './motion-tokens';

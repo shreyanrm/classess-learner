@@ -7,7 +7,7 @@
  * draggable number scrubber. Ink on paper, hairlines, 3px corners (DESIGN.md §2).
  */
 
-import { useWoboBus } from '@classess/wobo';
+import { useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   type CSSProperties,
@@ -30,7 +30,7 @@ export function rgba(hex: string, alpha: number): string {
 // One store keyed by topicId. The atom stores a CardId string; the generated player stores a card
 // index number. A topic is only ever one kind, so the value types never collide.
 
-const POS_KEY = 'clss-course-pos-v1';
+const POS_KEY = 'wobo-course-pos-v1';
 
 export function readCoursePos(topicId: string): string | number | undefined {
   try {
@@ -54,7 +54,7 @@ export function writeCoursePos(topicId: string, pos: string | number): void {
 
 // The stars a topic earned on its FIRST completion — a replay shows these, never a fresh tally
 // (owner replay law: the walk is real, but the reward was already banked).
-const STARS_KEY = 'clss-course-stars-v1';
+const STARS_KEY = 'wobo-course-stars-v1';
 
 export function readCourseStars(topicId: string): 1 | 2 | 3 | undefined {
   try {
@@ -88,7 +88,7 @@ export const GOLD = '#FFC93C';
 export const whisper: CSSProperties = {
   fontSize: '0.72rem',
   letterSpacing: '0.14em',
-  color: 'var(--clss-ink-500)',
+  color: 'var(--wobo-ink-500)',
   fontWeight: 500,
 };
 
@@ -96,21 +96,21 @@ export const cardTitle: CSSProperties = {
   fontSize: 'clamp(1.5rem, 4vw, 1.9rem)',
   fontWeight: 550,
   letterSpacing: '-0.02em',
-  color: 'var(--clss-ink-900)',
+  color: 'var(--wobo-ink-900)',
   lineHeight: 1.2,
 };
 
 export const lead: CSSProperties = {
   fontSize: '1rem',
   lineHeight: 1.6,
-  color: 'var(--clss-ink-700)',
+  color: 'var(--wobo-ink-700)',
 };
 
 export const equationType: CSSProperties = {
   fontSize: 'clamp(1.6rem, 5vw, 2.1rem)',
   fontWeight: 550,
   letterSpacing: '-0.01em',
-  color: 'var(--clss-ink-900)',
+  color: 'var(--wobo-ink-900)',
   fontVariantNumeric: 'tabular-nums',
 };
 
@@ -171,7 +171,7 @@ export function ActionBar({
       getValidActions: () =>
         ready()
           ? [live.current.bar?.primary.label ?? 'continue']
-          : ['she is still reading this card'],
+          : ['Wobo is still reading this card'],
       applyTutorAction: (patch) => {
         if (patch.advance === true && ready()) live.current.bar?.primary.onClick();
       },
@@ -185,11 +185,11 @@ export function ActionBar({
       transition={{ type: 'spring', stiffness: 300, damping: 32 }}
       style={{
         position: 'relative',
-        borderTop: '0.5px solid var(--clss-hairline-on-paper)',
+        borderTop: '0.5px solid var(--wobo-hairline-on-paper)',
         padding: '14px 24px calc(14px + env(safe-area-inset-bottom, 0px))',
         display: 'flex',
         justifyContent: 'center',
-        background: 'var(--clss-paper)',
+        background: 'var(--wobo-paper)',
       }}
     >
       {/* the card content dissolves into the bar — a soft tonal veil above the hairline, so a scrolling
@@ -203,7 +203,7 @@ export function ActionBar({
           top: -28,
           height: 28,
           pointerEvents: 'none',
-          background: 'linear-gradient(to top, var(--clss-paper), transparent)',
+          background: 'linear-gradient(to top, var(--wobo-paper), transparent)',
         }}
       />
       <div
@@ -230,7 +230,7 @@ export function ActionBar({
             justifyContent: 'center',
             position: 'relative',
             overflow: 'hidden',
-            // never a dead button while she reads — it stays lit and fills up
+            // never a dead button while Wobo reads — it stays lit and fills up
             ...(gated ? { opacity: 1, cursor: 'default' } : {}),
           }}
         >
@@ -290,7 +290,7 @@ export function SegmentedProgress({ fraction, segments }: { fraction: number; se
               position: 'relative',
               flex: 1,
               height: 3,
-              background: 'var(--clss-ink-100)',
+              background: 'var(--wobo-ink-100)',
               overflow: 'hidden',
             }}
           >
@@ -305,7 +305,7 @@ export function SegmentedProgress({ fraction, segments }: { fraction: number; se
                     ? undefined
                     : { duration: 2, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }
                 }
-                style={{ position: 'absolute', inset: 0, background: 'var(--clss-ultramarine)' }}
+                style={{ position: 'absolute', inset: 0, background: 'var(--wobo-ultramarine)' }}
               />
             )}
             <motion.div
@@ -316,8 +316,8 @@ export function SegmentedProgress({ fraction, segments }: { fraction: number; se
                 height: '100%',
                 // the frontier's growing edge ignites ultramarine; travelled ground settles to ink
                 background: isLead
-                  ? 'linear-gradient(90deg, var(--clss-ink-900) 60%, var(--clss-ultramarine))'
-                  : 'var(--clss-ink-900)',
+                  ? 'linear-gradient(90deg, var(--wobo-ink-900) 60%, var(--wobo-ultramarine))'
+                  : 'var(--wobo-ink-900)',
               }}
             />
           </div>
@@ -359,22 +359,22 @@ export function ChoiceButton({
   const delay = showCorrect && blockWrong ? 0.4 : 0;
   const border = !evaluated
     ? chosen
-      ? '0.5px solid var(--clss-ink-900)'
-      : '0.5px solid var(--clss-hairline-on-paper-strong)'
+      ? '0.5px solid var(--wobo-ink-900)'
+      : '0.5px solid var(--wobo-hairline-on-paper-strong)'
     : showCorrect
-      ? '1px solid var(--clss-feedback-correct)'
+      ? '1px solid var(--wobo-feedback-correct)'
       : wrongPick
-        ? '1px solid var(--clss-feedback-retry)'
-        : '0.5px solid var(--clss-hairline-on-paper)';
+        ? '1px solid var(--wobo-feedback-retry)'
+        : '0.5px solid var(--wobo-hairline-on-paper)';
   const background = !evaluated
     ? chosen
-      ? 'var(--clss-ink-900)'
-      : 'var(--clss-paper)'
+      ? 'var(--wobo-ink-900)'
+      : 'var(--wobo-paper)'
     : showCorrect
-      ? 'var(--clss-feedback-correctSoft)'
+      ? 'var(--wobo-feedback-correctSoft)'
       : wrongPick
-        ? 'var(--clss-feedback-retrySoft)'
-        : 'var(--clss-paper)';
+        ? 'var(--wobo-feedback-retrySoft)'
+        : 'var(--wobo-paper)';
   return (
     <motion.button
       type="button"
@@ -390,10 +390,10 @@ export function ChoiceButton({
         fontSize: '0.95rem',
         lineHeight: 1.45,
         fontFamily: 'inherit',
-        color: !evaluated && chosen ? 'var(--clss-paper)' : 'var(--clss-ink-900)',
+        color: !evaluated && chosen ? 'var(--wobo-paper)' : 'var(--wobo-ink-900)',
         background,
         border,
-        borderRadius: 'var(--clss-radius-sm)',
+        borderRadius: 'var(--wobo-radius-sm)',
         cursor: disabled ? 'default' : 'pointer',
         transition: `background 0.25s ease ${delay}s, border-color 0.25s ease ${delay}s, color 0.2s ease`,
         ...style,
@@ -412,7 +412,7 @@ export function ChoiceButton({
  * comes from composition, never from darkness.
  */
 export function Stage({
-  hue = 'var(--clss-ultramarine)',
+  hue = 'var(--wobo-ultramarine)',
   tint = 0.06,
   tonal = false,
   minHeight = 300,
@@ -439,7 +439,7 @@ export function Stage({
         width: '100%',
         minHeight,
         borderRadius: 3,
-        background: tonal ? 'var(--clss-tonal)' : rgba(hue, tint),
+        background: tonal ? 'var(--wobo-tonal)' : rgba(hue, tint),
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -456,7 +456,7 @@ export function Stage({
 // --- The particle pop — a small burst for earned moments ------------------------------------------
 
 export function ParticlePop({
-  hue = 'var(--clss-ultramarine)',
+  hue = 'var(--wobo-ultramarine)',
   count = 12,
 }: {
   hue?: string;
@@ -631,12 +631,12 @@ export function Scrubber({
       style={{
         display: 'inline-block',
         padding: '0 6px 2px',
-        borderBottom: '2px dashed var(--clss-ink-500)',
+        borderBottom: '2px dashed var(--wobo-ink-500)',
         cursor: 'ew-resize',
         touchAction: 'none',
         userSelect: 'none',
         fontVariantNumeric: 'tabular-nums',
-        color: 'var(--clss-ink-900)',
+        color: 'var(--wobo-ink-900)',
         outlineOffset: 3,
       }}
     >

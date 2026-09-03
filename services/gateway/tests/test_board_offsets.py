@@ -20,9 +20,9 @@ import math
 from typing import Any
 
 import pytest
-from classess_gateway.board import schema
-from classess_gateway.board.pipelines import Draft, board, on, run_intent
-from classess_gateway.board.verify import Unverified
+from wobo_gateway.board import schema
+from wobo_gateway.board.pipelines import Draft, board, on, run_intent
+from wobo_gateway.board.verify import Unverified
 
 MOLECULES = [
     ("benzene", "c1ccccc1", 6, 6),

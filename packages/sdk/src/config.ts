@@ -1,4 +1,4 @@
-import type { ConsentTier } from '@classess/contracts';
+import type { ConsentTier } from '@wobo/contracts';
 
 /**
  * SDK configuration. The app reads its environment and passes values in (dependency injection), so

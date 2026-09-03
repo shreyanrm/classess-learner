@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * The plane (docs/BOARD.md §5) — a frosted board that slides in from her orb and floats over the
+ * The plane (docs/BOARD.md §5) — a frosted board that slides in from Wobo's orb and floats over the
  * screen, so the thing being explained stays visible underneath.
  *
  * It can be dragged, resized, pinned, and minimised to a thumbnail that keeps its ink; on a phone
@@ -9,8 +9,8 @@
  * summon one by name — that is the summon API the word "board" and the gesture layer both call.
  */
 
-import { frost, hairline, radius, zIndex } from '@classess/config';
-import { useReducedMotion } from '@classess/motion';
+import { frost, hairline, radius, zIndex } from '@wobo/config';
+import { useReducedMotion } from '@wobo/motion';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { BoardSurface, type BoardSurfaceProps } from './renderer';
@@ -70,7 +70,7 @@ class BoardBook {
     this.emit();
   }
 
-  /** Forget a board that was closed with nothing on it. It was never a board she kept. */
+  /** Forget a board that was closed with nothing on it. It was never a board Wobo kept. */
   dropIfEmpty(id: string): void {
     if ((this.boards.get(id)?.snapshot().length ?? 0) === 0) this.drop(id);
   }
@@ -106,7 +106,7 @@ export interface PlaneState {
   pinned: boolean;
   boardId: string;
   rect: PlaneRect;
-  /** Where it slides from — her orb. */
+  /** Where it slides from — Wobo's orb. */
   origin: { x: number; y: number } | null;
   title: string;
 }
@@ -136,7 +136,7 @@ class PlaneController {
     for (const l of this.listeners) l();
   }
 
-  /** Bring a board in. With no id it reopens the one she was last on. */
+  /** Bring a board in. With no id it reopens the one Wobo was last on. */
   summon(opts?: { boardId?: string; origin?: { x: number; y: number }; title?: string }): string {
     const boardId = opts?.boardId ?? this.state.boardId;
     boardBook.get(boardId);
@@ -177,7 +177,7 @@ class PlaneController {
   move(rect: Partial<PlaneRect>): void {
     this.set({ rect: { ...this.state.rect, ...rect } });
   }
-  /** Wipe the board she is on, keeping the plane open. */
+  /** Wipe the board Wobo is on, keeping the plane open. */
   wipe(): void {
     boardBook.get(this.state.boardId).reset();
   }
@@ -231,7 +231,7 @@ const chromeButton = (label: string, onClick: () => void, glyph: string) => (
       background: 'transparent',
       border: `0.5px solid ${hairline.onPaper}`,
       borderRadius: radius.sm,
-      color: 'var(--clss-ink-500, #6E6E76)',
+      color: 'var(--wobo-ink-500, #6E6E76)',
       cursor: 'pointer',
       font: 'inherit',
       fontSize: 12,
@@ -266,7 +266,7 @@ export function WoboPlane(props: WoboPlaneProps) {
   const dragging = useRef<{ dx: number; dy: number } | null>(null);
   const resizing = useRef<{ x: number; y: number; w: number; h: number } | null>(null);
 
-  // A plane that has never been placed opens in the lower right, above her orb.
+  // A plane that has never been placed opens in the lower right, above Wobo's orb.
   useEffect(() => {
     if (!state.open || phone) return;
     if (state.rect.x !== 0 || state.rect.y !== 0) return;
@@ -381,7 +381,7 @@ export function WoboPlane(props: WoboPlaneProps) {
         <motion.section
           key="plane"
           role="dialog"
-          aria-label={`${state.title}, her board`}
+          aria-label={`${state.title}, Wobo's board`}
           initial={reduced ? false : { opacity: 0, scale: 0.86, x: from.x, y: from.y }}
           animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
           exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.9, x: from.x, y: from.y }}
@@ -392,7 +392,7 @@ export function WoboPlane(props: WoboPlaneProps) {
             zIndex: zIndex.panel,
             display: 'flex',
             flexDirection: 'column',
-            background: 'var(--clss-frost-on-paper, rgba(255,255,255,0.78))',
+            background: 'var(--wobo-frost-on-paper, rgba(255,255,255,0.78))',
             backdropFilter: `blur(${frost.blur})`,
             WebkitBackdropFilter: `blur(${frost.blur})`,
             border: `0.5px solid ${hairline.onPaper}`,
@@ -425,7 +425,7 @@ export function WoboPlane(props: WoboPlaneProps) {
                 appearance: 'none',
                 background: 'transparent',
                 border: 'none',
-                color: 'var(--clss-ink-500, #6E6E76)',
+                color: 'var(--wobo-ink-500, #6E6E76)',
                 cursor: phone ? 'default' : 'grab',
                 flex: '1 1 auto',
                 font: 'inherit',
@@ -459,7 +459,7 @@ export function WoboPlane(props: WoboPlaneProps) {
               {...(props.onVariableChange ? { onVariableChange: props.onVariableChange } : {})}
               {...(props.fontUrl ? { fontUrl: props.fontUrl } : {})}
               autoCamera
-              label="her board"
+              label="Wobo's board"
             />
           </div>
           {phone ? null : (
@@ -498,7 +498,7 @@ export function WoboPlane(props: WoboPlaneProps) {
           exit={{ opacity: 0, scale: 0.8 }}
           transition={spring}
           style={{
-            background: 'var(--clss-frost-on-paper, rgba(255,255,255,0.78))',
+            background: 'var(--wobo-frost-on-paper, rgba(255,255,255,0.78))',
             backdropFilter: `blur(${frost.blur})`,
             WebkitBackdropFilter: `blur(${frost.blur})`,
             border: `0.5px solid ${hairline.onPaper}`,

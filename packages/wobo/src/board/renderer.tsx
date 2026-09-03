@@ -2,7 +2,7 @@
 
 /**
  * The ink renderer (docs/BOARD.md §7) — one SVG layer that draws every board object along its own
- * path, at the pace of a hand, on the beat of her voice.
+ * path, at the pace of a hand, on the beat of Wobo's voice.
  *
  * What makes it a hand and not an animation library:
  *  - every object is drawn along its stroke, with the pen's anticipation and settle (`pen.ts`);
@@ -20,7 +20,7 @@
  * out of the DOM; and the nib is a non-scaling stroke, so no transform ever rescales a pen width.
  */
 
-import { useReducedMotion } from '@classess/motion';
+import { useReducedMotion } from '@wobo/motion';
 import {
   type CSSProperties,
   memo,
@@ -83,7 +83,7 @@ export interface BoardTarget {
   getRect: () => DOMRect | null;
 }
 
-/** A region the learner drew or selected, which her next turn can anchor to. */
+/** A region the learner drew or selected, which Wobo's next turn can anchor to. */
 export interface LearnerFocus {
   id: string;
   kind: 'stroke';
@@ -107,10 +107,10 @@ export interface LearnerFocus {
  */
 const BOARD_CSS = `
 .wobo-board{
-  --wobo-ink:var(--clss-ink-900,#0D0D10);
-  --wobo-accent:var(--clss-ultramarine,#1F35E0);
-  --wobo-learner:var(--clss-ink-500,#6E6E76);
-  --wobo-faint:var(--clss-ink-300,#72727C);
+  --wobo-ink:var(--wobo-ink-900,#0D0D10);
+  --wobo-accent:var(--wobo-ultramarine,#1F35E0);
+  --wobo-learner:var(--wobo-ink-500,#6E6E76);
+  --wobo-faint:var(--wobo-ink-300,#72727C);
   --wobo-nib:2;
   --wobo-ink-opacity:1;
 }
@@ -242,7 +242,7 @@ const BoardObjectNode = memo(function BoardObjectNode(props: NodeProps) {
     const p = reduced ? (progress >= 1 ? 1 : 0) : within(progress, { from, to });
     if (p <= 0) return;
     if (glyph.drawn || !glyph.fill) {
-      // A symbol she draws by hand — the trace IS the ink.
+      // A symbol Wobo draws by hand — the trace IS the ink.
       const slotsInside = sequenceStrokes(glyph.trace.map((t) => ({ d: t.d, length: t.length })));
       glyph.trace.forEach((t, ti) => {
         const traceKey = `${glyphKey}-${ti}`;
@@ -419,7 +419,7 @@ function ControlHit(props: {
     );
   }
   if (obj.kind === 'input') {
-    // Reading, not editing: a value she wrote in. Typing into it goes through the composer.
+    // Reading, not editing: a value Wobo wrote in. Typing into it goes through the composer.
     return (
       <output aria-label={label} style={{ ...frame, cursor: 'default' }}>
         {obj.value}
@@ -647,9 +647,9 @@ function boardHeightOf(frame: BoardFrame): number {
 }
 
 /**
- * What a screen reader is told when this object lands. Her own words, from the object itself —
- * never a description of a shape she drew, which would be a caption on a picture rather than the
- * thing she actually wrote.
+ * What a screen reader is told when this object lands. Wobo's own words, from the object itself —
+ * never a description of a shape Wobo drew, which would be a caption on a picture rather than the
+ * thing Wobo actually wrote.
  */
 export function spokenLabel(object: BoardObject): string {
   const say = (v: unknown): string => (typeof v === 'string' ? v.trim() : '');
@@ -707,9 +707,9 @@ export function BoardSurface(props: BoardSurfaceProps) {
   );
 
   /**
-   * Everything she writes on the board, announced (docs/BOARD.md §8 and DESIGN.md's accessibility
+   * Everything Wobo writes on the board, announced (docs/BOARD.md §8 and DESIGN.md's accessibility
    * law). The svg carries a per-object `aria-label`, but `role="img"` is atomic to assistive
-   * technology, so the whole board read as one image called "her board" and nothing announced new
+   * technology, so the whole board read as one image called "Wobo's board" and nothing announced new
    * ink at all. The container is a group now, and this is the region that speaks each new mark.
    */
   useEffect(() => {
@@ -794,7 +794,7 @@ export function BoardSurface(props: BoardSurfaceProps) {
    *
    * BOARD.md §10 budgets 60 fps at 2,000 strokes. Re-anchoring, re-signing and re-elementing ALL of
    * them once a frame because one mark on the screen was among them cost 30 fps on a throttled
-   * machine — and a mark on the screen is her commonest turn, so that was the ordinary case.
+   * machine — and a mark on the screen is Wobo's commonest turn, so that was the ordinary case.
    */
   const liveIds = useMemo(() => {
     const live = new Set<string>();
@@ -1069,7 +1069,7 @@ export function BoardSurface(props: BoardSurfaceProps) {
   /**
    * The keyboard's pen (docs/BOARD.md §8 — the board is bidirectional, and every interaction has a
    * keyboard path). The arrows move a caret in board units, space puts the pen down and lifts it,
-   * Escape drops the stroke. Without it a keyboard-only learner could never draw on her own board
+   * Escape drops the stroke. Without it a keyboard-only learner could never draw on Wobo's own board
    * or circle anything on it — half the board, unreachable.
    */
   const onSurfaceKeyDown = (e: React.KeyboardEvent<SVGSVGElement>) => {
@@ -1160,10 +1160,10 @@ export function BoardSurface(props: BoardSurfaceProps) {
         preserveAspectRatio="xMidYMid slice"
         // NOT `role="img"`. That role is atomic to assistive technology, so every per-object
         // `aria-label` the hand writes into this tree was invisible and the whole board read as one
-        // picture called "her board". An svg with no role of its own maps to `graphics-document`,
-        // which exposes what is inside it — which is everything she wrote.
+        // picture called "Wobo's board". An svg with no role of its own maps to `graphics-document`,
+        // which exposes what is inside it — which is everything Wobo wrote.
         data-wobo-surface=""
-        aria-label={props.label ?? 'what she is drawing'}
+        aria-label={props.label ?? 'what Wobo is drawing'}
         {...(capture
           ? {
               tabIndex: 0,
@@ -1203,8 +1203,8 @@ export function BoardSurface(props: BoardSurfaceProps) {
           </g>
         ) : null}
       </svg>
-      {/* Every mark she makes, spoken. Nothing announced new ink before this, so a board was
-          silent to a screen reader however much she wrote on it. */}
+      {/* Every mark Wobo makes, spoken. Nothing announced new ink before this, so a board was
+          silent to a screen reader however much Wobo wrote on it. */}
       <div
         aria-live="polite"
         aria-atomic="false"

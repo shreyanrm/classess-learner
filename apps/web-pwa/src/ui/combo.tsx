@@ -69,7 +69,7 @@ const STAR =
  */
 export function XpTick({
   amount,
-  hue = 'var(--clss-ultramarine)',
+  hue = 'var(--wobo-ultramarine)',
 }: {
   amount: number;
   hue?: string;
@@ -109,7 +109,7 @@ export function XpTick({
  * and a soft breathing glow. It exits (AnimatePresence) the instant the chain breaks — the honest
  * break, shown without a word of guilt.
  */
-export function ComboMeter({ hue = 'var(--clss-ultramarine)' }: { hue?: string }) {
+export function ComboMeter({ hue = 'var(--wobo-ultramarine)' }: { hue?: string }) {
   const n = useCombo();
   const earned = n >= COMBO_EARN;
   return (
@@ -132,11 +132,11 @@ export function ComboMeter({ hue = 'var(--clss-ultramarine)' }: { hue?: string }
             letterSpacing: '0.08em',
             fontWeight: 600,
             textTransform: 'uppercase',
-            color: earned ? hue : 'var(--clss-ink-500)',
+            color: earned ? hue : 'var(--wobo-ink-500)',
             border: `0.5px solid ${
               earned
                 ? `color-mix(in srgb, ${hue} 45%, transparent)`
-                : 'var(--clss-hairline-on-paper-strong)'
+                : 'var(--wobo-hairline-on-paper-strong)'
             }`,
             background: earned ? `color-mix(in srgb, ${hue} 8%, transparent)` : 'transparent',
             transition: 'color 0.3s ease, border-color 0.3s ease, background 0.3s ease',

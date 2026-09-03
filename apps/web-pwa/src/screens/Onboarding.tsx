@@ -1,20 +1,20 @@
 'use client';
 
 /**
- * Onboarding — Wobo is the whole interface (owner redesign, 2026-07-07). She settles at the
+ * Onboarding — Wobo is the whole interface (owner redesign, 2026-07-07). Wobo settles at the
  * centre of the screen and asks one thing at a time, aloud (voice + a line that fades in whole,
  * gently rising — no typing). There is no thread, no dots, no chrome: the last beat fades out as
- * the next fades in, so it reads as one continuous conversation. She greets, then — before any
+ * the next fades in, so it reads as one continuous conversation. Wobo greets, then — before any
  * get-to-know-you question — makes the space theirs: sign-in is the FIRST beat and it is mandatory
  * (Google leads, phone-code the alternate). A dev bypass exists only when no account layer is
- * configured (no Supabase keys → local dev / tests). On the Google return she always asks your name
- * as its own beat — a given-name may sit prefilled, but she still asks and your answer wins — then
+ * configured (no Supabase keys → local dev / tests). On the Google return Wobo always asks your name
+ * as its own beat — a given-name may sit prefilled, but Wobo still asks and your answer wins — then
  * when you were born (a calendar; age is derived from it), class + board, and what you're into
- * (grounds her analogies from lesson one). She seals it with a personalised-plan promise, you step in.
+ * (grounds Wobo's analogies from lesson one). Wobo seals it with a personalised-plan promise, you step in.
  */
 
-import { fontFamily } from '@classess/config';
-import { useRegisterTarget, useWoboBus, WoboBody, type WoboMood } from '@classess/wobo';
+import { fontFamily } from '@wobo/config';
+import { useRegisterTarget, useWoboBus, WoboBody, type WoboMood } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { ONBOARDED_KEY, SIGNIN_SOURCE_KEY } from '../App';
@@ -35,28 +35,28 @@ import {
 } from './you/profile';
 
 // The first-run atmosphere (§1 ambient depth) — a soft brand dawn blooming from where Wobo
-// settles at the centre, so she arrives inside her own light. Token-driven; both themes.
+// settles at the centre, so Wobo arrives inside Wobo's own light. Token-driven; both themes.
 const ONBOARDING_WASH =
-  'radial-gradient(46% 40% at 50% 38%, var(--clss-ultramarine-soft) 0%, transparent 66%),' +
+  'radial-gradient(46% 40% at 50% 38%, var(--wobo-ultramarine-soft) 0%, transparent 66%),' +
   ' radial-gradient(60% 44% at 50% 40%, rgba(255,201,60,0.04) 0%, transparent 74%)';
 
 /** Survives the Google round-trip in this tab: on return, resume at the name beat (given-name prefilled). */
-const ONB_RETURN_KEY = 'clss-onb-return';
+const ONB_RETURN_KEY = 'wobo-onb-return';
 /**
- * She introduces herself ONCE, ever (owner law, 2026-09-02). This marks that the first meeting has
- * happened on this device; a learner who already knows her is greeted by name and never re-introduced.
+ * Wobo introduces themself ONCE, ever (owner law, 2026-09-02). This marks that the first meeting has
+ * happened on this device; a learner who already knows Wobo is greeted by name and never re-introduced.
  */
-const MET_KEY = 'clss-wobo-met-v1';
+const MET_KEY = 'wobo-met-v1';
 
 /**
- * The first line a learner ever hears from her — owner copy, verbatim. "Hey there." is deliberately
- * a two-word sentence: the TTS pipeline synthesizes sentence by sentence, so her voice starts on a
+ * The first line a learner ever hears from Wobo — owner copy, verbatim. "Hey there." is deliberately
+ * a two-word sentence: the TTS pipeline synthesizes sentence by sentence, so Wobo's voice starts on a
  * short one and the rest streams behind it.
  */
 const FIRST_MEETING_LINE =
   "Hey there. I'm Wobo, your AI wobot. I'll help you learn, and I'll be with you every step of the way.";
 
-/** Her hand's pace when she writes a line letter by letter (matches the overlay's note pen, ms/char). */
+/** Wobo's hand's pace when Wobo writes a line letter by letter (matches the overlay's note pen, ms/char). */
 const MS_PER_CHAR = 34;
 
 /** Off-screen but announced — the written line reaches a screen reader whole, not letter by letter. */
@@ -73,7 +73,7 @@ const SR_ONLY: CSSProperties = {
 };
 
 /**
- * Has this learner met her before? A name they actually typed counts too — a re-run is never a first
+ * Has this learner met Wobo before? A name they actually typed counts too — a re-run is never a first
  * meeting. (Must not use loadProfile(): it fills in the seed name when nothing is stored, which would
  * make every learner look like an old friend and silence the introduction for good.)
  */
@@ -88,10 +88,10 @@ function markMet(): void {
   try {
     localStorage.setItem(MET_KEY, '1');
   } catch {
-    // private mode — she simply introduces herself again on a device that can't remember
+    // private mode — Wobo simply introduces themself again on a device that can't remember
   }
 }
-/** The given name she already knows them by, if any. */
+/** The given name Wobo already knows them by, if any. */
 function knownName(): string {
   try {
     return loadProfile().name?.trim().split(/\s+/)[0] ?? '';
@@ -129,7 +129,7 @@ function normalizePhone(raw: string): string {
 const ghostButton: React.CSSProperties = {
   border: 'none',
   background: 'transparent',
-  color: 'var(--clss-ink-500)',
+  color: 'var(--wobo-ink-500)',
   fontSize: '0.85rem',
   cursor: 'pointer',
   fontFamily: 'inherit',
@@ -155,9 +155,9 @@ function Chip({
       transition={{ type: 'spring', stiffness: 400, damping: 26 }}
       style={{
         // hairline depth (tonal-step, no shadow) on the resting chip; solid ink when chosen
-        border: selected ? '0.5px solid transparent' : '0.5px solid var(--clss-hairline-on-paper)',
-        background: selected ? 'var(--clss-ink-900)' : 'var(--clss-tonal)',
-        color: selected ? 'var(--clss-paper)' : 'var(--clss-ink-700)',
+        border: selected ? '0.5px solid transparent' : '0.5px solid var(--wobo-hairline-on-paper)',
+        background: selected ? 'var(--wobo-ink-900)' : 'var(--wobo-tonal)',
+        color: selected ? 'var(--wobo-paper)' : 'var(--wobo-ink-700)',
         borderRadius: 3,
         padding: '10px 16px',
         fontSize: '0.92rem',
@@ -178,8 +178,8 @@ const fieldStyle: React.CSSProperties = {
   minWidth: 0,
   fontSize: '1.15rem',
   fontFamily: 'inherit',
-  color: 'var(--clss-ink-900)',
-  background: 'var(--clss-tonal)',
+  color: 'var(--wobo-ink-900)',
+  background: 'var(--wobo-tonal)',
   border: 'none',
   borderRadius: 3,
   // no inline `outline: none` — the global :focus-visible ring (main.tsx) marks the focused field
@@ -193,18 +193,18 @@ export function Onboarding() {
   const reduced = useReducedMotion() ?? false;
 
   const [phase, setPhase] = useState<Phase>('greet');
-  // Her current line: it types on screen and plays aloud. `onDone` runs when the typing finishes
+  // Wobo's current line: it types on screen and plays aloud. `onDone` runs when the typing finishes
   // (reveal the beat's input, or — for a statement beat like the greeting — advance on its own).
   const [line, setLine] = useState('');
-  // Her introduction alone is WRITTEN, letter by letter in her hand (Caveat) — everything after it
-  // fades in whole. `written` is how many characters of the current line her pen has laid down.
+  // Wobo's introduction alone is WRITTEN, letter by letter in Wobo's hand (Caveat) — everything after it
+  // fades in whole. `written` is how many characters of the current line Wobo's pen has laid down.
   const [handwriting, setHandwriting] = useState(false);
   const [written, setWritten] = useState(0);
   const [promptReady, setPromptReady] = useState(false);
   const [mood, setMood] = useState<WoboMood>('idle');
 
   const [name, setName] = useState('');
-  // She asks when they were born (free text — a year or a full date); age is derived, not asked.
+  // Wobo asks when they were born (free text — a year or a full date); age is derived, not asked.
   const [birthdate, setBirthdate] = useState('');
   const [age, setAge] = useState<number | null>(null);
   const [grade, setGrade] = useState<string | null>(null);
@@ -219,7 +219,7 @@ export function Onboarding() {
   const canAuth = !!account;
   const [authed, setAuthed] = useState(() => !!account?.isAuthenticated());
   // Audio can't autoplay before a gesture — the first beat waits for one warm tap, which unlocks
-  // her voice; then she greets and every later line rides the taps that advance the beats.
+  // Wobo's voice; then Wobo greets and every later line rides the taps that advance the beats.
   const [begun, setBegun] = useState(false);
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
@@ -229,11 +229,11 @@ export function Onboarding() {
   const [showPhone, setShowPhone] = useState(false);
 
   const finalName = name.trim();
-  // Setting up is a surface too: the beat she is on and what she is waiting for. It is what makes
-  // the guided tour possible later — she can point at the very control she just asked about.
+  // Setting up is a surface too: the beat Wobo is on and what Wobo is waiting for. It is what makes
+  // the guided tour possible later — Wobo can point at the very control Wobo just asked about.
   const stageRef = useRegisterTarget<HTMLDivElement>('onboarding-stage', {
     kind: 'flow',
-    label: 'setting up — the beat she is on and what she is waiting for',
+    label: 'setting up — the beat Wobo is on and what Wobo is waiting for',
     getSceneState: () => ({
       beat: phase,
       askedFor: line,
@@ -247,11 +247,11 @@ export function Onboarding() {
   // Times the input/continue reveal after each line settles (replaces the old typing-done signal).
   const revealTimer = useRef<number | undefined>(undefined);
 
-  // --- she speaks a line: it fades in whole (gently rising — no typing) and plays aloud. The
+  // --- Wobo speaks a line: it fades in whole (gently rising — no typing) and plays aloud. The
   // input/continue reveal keys off a calm delay after the line settles, not a character count. -----
   const REVEAL_DELAY = 820;
   const penTimer = useRef<number | undefined>(undefined);
-  /** A ceiling on waiting for her voice, so a dead TTS can never strand the learner on a beat. */
+  /** A ceiling on waiting for Wobo's voice, so a dead TTS can never strand the learner on a beat. */
   const voiceTimer = useRef<number | undefined>(undefined);
   const say = (
     text: string,
@@ -260,8 +260,8 @@ export function Onboarding() {
   ) => {
     setPromptReady(false);
     setLine(text);
-    // Her hand, when the line is written rather than spoken-and-shown: one character per tick,
-    // instant under reduced motion. The pen and her voice start together — one performance.
+    // Wobo's hand, when the line is written rather than spoken-and-shown: one character per tick,
+    // instant under reduced motion. The pen and Wobo's voice start together — one performance.
     window.clearInterval(penTimer.current);
     const hand = Boolean(opts?.hand) && !reduced;
     setHandwriting(Boolean(opts?.hand));
@@ -278,8 +278,8 @@ export function Onboarding() {
       }, MS_PER_CHAR);
     }
     // The reveal waits for the pen to finish the line, then the same calm beat as every other line.
-    // A line she must finish saying (her introduction) also waits for her voice, so advancing never
-    // cuts her off mid-word — with a ceiling, so a silent/failed TTS still releases the beat.
+    // A line Wobo must finish saying (Wobo's introduction) also waits for Wobo's voice, so advancing never
+    // cuts Wobo off mid-word — with a ceiling, so a silent/failed TTS still releases the beat.
     const writeMs = hand ? text.length * MS_PER_CHAR : 0;
     let penDone = false;
     let voiceDone = !opts?.awaitVoice;
@@ -374,7 +374,7 @@ export function Onboarding() {
       });
     }
     rememberInterests(interests);
-    sfx.reveal(); // her big moment — the world-build handoff
+    sfx.reveal(); // Wobo's big moment — the world-build handoff
     router.replace({ name: 'building' });
   };
 
@@ -382,13 +382,13 @@ export function Onboarding() {
   // (local dev / tests), where we go straight to the name beat.
   const afterGreet = () => (canAuth && !authed ? toAuth() : toName());
 
-  // The first warm tap unlocks her voice inside the gesture, then she greets and the flow begins.
-  // A first meeting gets her introduction — verbatim owner copy, written in her hand and spoken.
-  // Anyone she has already met is greeted by name and NEVER introduced again.
+  // The first warm tap unlocks Wobo's voice inside the gesture, then Wobo greets and the flow begins.
+  // A first meeting gets Wobo's introduction — verbatim owner copy, written in Wobo's hand and spoken.
+  // Anyone Wobo has already met is greeted by name and NEVER introduced again.
   const begin = () => {
     if (begun) return;
     setBegun(true);
-    sfx.tap(); // the gesture that unlocks her voice — and ticks the first beat in
+    sfx.tap(); // the gesture that unlocks Wobo's voice — and ticks the first beat in
     const known = knownName();
     if (hasMet()) {
       say(known ? `Good to see you again, ${known}.` : 'Good to see you again.', () =>
@@ -404,7 +404,7 @@ export function Onboarding() {
   };
 
   // A Google return, resolved: an already-onboarded account skips every question and lands home
-  // with one warm line; a new account resumes at the name beat (she ALWAYS asks — the Google
+  // with one warm line; a new account resumes at the name beat (Wobo ALWAYS asks — the Google
   // given-name only prefills, their answer wins).
   const resumeAfterAuth = async () => {
     const remote = (await account?.fetchProfile().catch(() => null)) ?? null;
@@ -448,7 +448,7 @@ export function Onboarding() {
     }
   }, [sdk]);
 
-  // Don't leave the reveal timer or her pen running past unmount.
+  // Don't leave the reveal timer or Wobo's pen running past unmount.
   useEffect(
     () => () => {
       window.clearTimeout(revealTimer.current);
@@ -533,7 +533,7 @@ export function Onboarding() {
       await sdk.identity.auth.verifyPhoneOtp(normalizePhone(phone), candidate);
       localStorage.setItem(SIGNIN_SOURCE_KEY, 'phone');
       setAuthed(true);
-      void resumeAfterAuth(); // existing account → home; new → the name beat (she still asks)
+      void resumeAfterAuth(); // existing account → home; new → the name beat (Wobo still asks)
     } catch {
       setAuthErr('That code did not match — take another look and try again');
       setMood('oops');
@@ -580,21 +580,21 @@ export function Onboarding() {
       }}
     >
       <AmbientWash gradient={ONBOARDING_WASH} />
-      {/* the one control on the page — she speaks every line, so muting is always within reach */}
+      {/* the one control on the page — Wobo speaks every line, so muting is always within reach */}
       <div style={{ position: 'fixed', top: fluidSpace.sm, right: fluidSpace.sm, zIndex: 2 }}>
         <MuteButton />
       </div>
 
-      {/* she settles at the centre — the whole interface, present before a word is asked */}
+      {/* Wobo settles at the centre — the whole interface, present before a word is asked */}
       <motion.div
         initial={{ scale: 0.55, y: -46, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.15 }}
         style={{ display: 'grid', placeItems: 'center', position: 'relative' }}
       >
-        {/* her own light — the one earned pigment hit, ultramarine "ignite at rest": a soft halo
-            that breathes so she reads as alive, brighter before the first tap (the door). Behind
-            her body, never intercepts the tap; static under reduced motion. */}
+        {/* Wobo's own light — the one earned pigment hit, ultramarine "ignite at rest": a soft halo
+            that breathes so Wobo reads as alive, brighter before the first tap (the door). Behind
+            Wobo's body, never intercepts the tap; static under reduced motion. */}
         <motion.div
           aria-hidden
           initial={false}
@@ -621,10 +621,10 @@ export function Onboarding() {
             marginTop: -115,
             borderRadius: '50%',
             background:
-              'radial-gradient(closest-side, var(--clss-ultramarine-soft) 0%, transparent 72%)',
+              'radial-gradient(closest-side, var(--wobo-ultramarine-soft) 0%, transparent 72%)',
             filter: 'blur(8px)',
             pointerEvents: 'none',
-            // behind her body but scoped to this transformed wrapper's own stacking context
+            // behind Wobo's body but scoped to this transformed wrapper's own stacking context
             zIndex: -1,
           }}
         />
@@ -635,7 +635,7 @@ export function Onboarding() {
           label={begun ? 'Wobo' : 'Wobo — tap to begin'}
           onTap={() => {
             if (!begun) {
-              begin(); // her body is the tap that unlocks her voice
+              begin(); // Wobo's body is the tap that unlocks Wobo's voice
               return;
             }
             setMood('celebrate');
@@ -644,7 +644,7 @@ export function Onboarding() {
         />
       </motion.div>
 
-      {/* one beat at a time — her line and its single input, the last fading out as the next fades in */}
+      {/* one beat at a time — Wobo's line and its single input, the last fading out as the next fades in */}
       <div
         style={{
           width: '100%',
@@ -657,7 +657,7 @@ export function Onboarding() {
         }}
       >
         {!begun ? (
-          // The one gesture that unlocks her voice — she can't autoplay before it. Her body above is
+          // The one gesture that unlocks Wobo's voice — Wobo can't autoplay before it. Wobo's body above is
           // tappable too; this is the warm, obvious door in.
           <motion.div
             variants={cascade}
@@ -677,7 +677,7 @@ export function Onboarding() {
                 fontWeight: 550,
                 letterSpacing: '-0.02em',
                 lineHeight: 1.35,
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
                 textAlign: 'center',
               }}
             >
@@ -711,18 +711,18 @@ export function Onboarding() {
                 gap: fluidSpace.md,
               }}
             >
-              {/* her question — the only text on screen; the whole line fades in and gently rises
+              {/* Wobo's question — the only text on screen; the whole line fades in and gently rises
                 (MOTION §3 spring), no typing. Keyed by the line so each new one re-animates. */}
               <div
                 style={
                   handwriting
                     ? {
-                        // her introduction, in her own hand — larger, warmer, and written on
+                        // Wobo's introduction, in Wobo's own hand — larger, warmer, and written on
                         fontFamily: fontFamily.handwritten,
                         fontSize: 'clamp(1.7rem, 1.2rem + 2.4vw, 2.6rem)',
                         fontWeight: 600,
                         lineHeight: 1.3,
-                        color: 'var(--clss-ink-900)',
+                        color: 'var(--wobo-ink-900)',
                         textAlign: 'center',
                         textWrap: 'balance',
                         maxWidth: 560,
@@ -733,7 +733,7 @@ export function Onboarding() {
                         fontWeight: 550,
                         letterSpacing: '-0.02em',
                         lineHeight: 1.35,
-                        color: 'var(--clss-ink-900)',
+                        color: 'var(--wobo-ink-900)',
                         textAlign: 'center',
                         textWrap: 'balance',
                         maxWidth: 520,
@@ -760,7 +760,7 @@ export function Onboarding() {
                 )}
               </div>
 
-              {/* the beat's single input, revealed once she has finished asking */}
+              {/* the beat's single input, revealed once Wobo has finished asking */}
               <AnimatePresence>
                 {promptReady && phase === 'name' && (
                   <motion.div
@@ -1087,7 +1087,7 @@ export function Onboarding() {
                       </div>
                     )}
                     {authErr && (
-                      <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)' }}>
                         {authErr}
                       </div>
                     )}

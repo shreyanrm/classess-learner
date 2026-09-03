@@ -10,15 +10,16 @@ from __future__ import annotations
 
 import base64
 import json
+import logging
 from pathlib import Path
 
 import pytest
-from classess_gateway.plexus import image
+from wobo_gateway.plexus import image
 
 
 @pytest.fixture(autouse=True)
 def _isolate(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("CLASSESS_IMAGE_CACHE_DIR", str(tmp_path))
+    monkeypatch.setenv("WOBO_IMAGE_CACHE_DIR", str(tmp_path))
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     monkeypatch.delenv("GOOGLE_AI_API_KEY", raising=False)
 
@@ -74,7 +75,7 @@ def test_moderation_runs_the_real_child_safety_classifier() -> None:
 
 def test_a_flagged_concept_never_generates_and_never_caches(tmp_path, monkeypatch) -> None:
     """Refusing after generating would still spend the key and still write the cache."""
-    monkeypatch.setenv("CLASSESS_IMAGE_CACHE_DIR", str(tmp_path))
+    monkeypatch.setenv("WOBO_IMAGE_CACHE_DIR", str(tmp_path))
     monkeypatch.setenv("GEMINI_API_KEY", "test-key-not-a-real-one")
 
     def _explode(*_a: object, **_k: object) -> None:
@@ -84,3 +85,29 @@ def test_a_flagged_concept_never_generates_and_never_caches(tmp_path, monkeypatc
     out = image.generate_image("send nudes", difficulty="core")
     assert out["status"] == "unavailable"
     assert not list(tmp_path.glob("*"))
+
+
+# --- the pre-rename environment variable (WOBO-PLAN §17) ---------------------------------
+def test_the_pre_rename_cache_dir_variable_is_still_read(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A host that still sets only ``CLASSESS_IMAGE_CACHE_DIR`` keeps working for one release,
+    and is told once rather than once per generated image. Delete this with the fallback."""
+    monkeypatch.delenv("WOBO_IMAGE_CACHE_DIR", raising=False)
+    monkeypatch.setenv(image._LEGACY_CACHE_DIR_ENV, str(tmp_path))
+    monkeypatch.setattr(image, "_legacy_env_announced", False)
+
+    with caplog.at_level(logging.WARNING, logger="wobo.gateway.plexus.image"):
+        assert image._cache_dir() == tmp_path
+        assert image._cache_dir() == tmp_path
+
+    said = [r for r in caplog.records if image._LEGACY_CACHE_DIR_ENV in r.getMessage()]
+    assert len(said) == 1, "the deprecation notice is said once, not once per call"
+
+
+def test_the_current_cache_dir_variable_wins_over_the_deprecated_one(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("WOBO_IMAGE_CACHE_DIR", str(tmp_path / "new"))
+    monkeypatch.setenv(image._LEGACY_CACHE_DIR_ENV, str(tmp_path / "old"))
+    assert image._cache_dir() == tmp_path / "new"

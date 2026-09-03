@@ -12,7 +12,7 @@
  * in live mode learner_state hydrates on boot and merges on write, so devices reconcile.
  */
 
-import { type LearnerState, mergeLearnerState } from '@classess/sdk';
+import { type LearnerState, mergeLearnerState } from '@wobo/sdk';
 import {
   createContext,
   type ReactNode,
@@ -155,7 +155,7 @@ if (import.meta.env.DEV) {
 
 // Which milestone trophies have already had their ceremony — a local guard so a tier is celebrated
 // exactly once, and never retroactively. Cross-device double-celebration isn't worth syncing.
-const CELEBRATED_KEY = 'clss-trophies-celebrated-v1';
+const CELEBRATED_KEY = 'wobo-trophies-celebrated-v1';
 
 function loadCelebrated(): Set<string> | null {
   try {
@@ -176,7 +176,7 @@ function saveCelebrated(set: Set<string>): void {
 
 function bumpToday() {
   try {
-    const key = 'clss-activity-counts-v1';
+    const key = 'wobo-activity-counts-v1';
     const counts = JSON.parse(localStorage.getItem(key) ?? '{}') as Record<string, number>;
     const t = today();
     counts[t] = (counts[t] ?? 0) + 1;

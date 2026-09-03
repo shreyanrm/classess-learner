@@ -1,18 +1,18 @@
 /**
  * The learner's local identity — name, grade, board, photo, activity marks, quiet settings.
- * Everything lives under clss-* keys so "start over" can honestly erase this device.
+ * Everything lives under wobo-* keys so "start over" can honestly erase this device.
  * ponytail: localStorage until real profiles sync through KGtoPG identity.
  */
 
 import { boards, learner } from '../../data/catalog';
 import { scoped } from '../../store/scope';
 
-export const PROFILE_KEY = 'clss-learner-profile';
-export const PHOTO_KEY = 'clss-profile-photo-v1';
-const ACTIVITY_KEY = 'clss-activity-v1';
-export const PARENT_KEY = 'clss-parent-link-v1';
-export const VOICE_KEY = 'clss-voice';
-export const SOUND_KEY = 'clss-ignite-sound';
+export const PROFILE_KEY = 'wobo-learner-profile';
+export const PHOTO_KEY = 'wobo-profile-photo-v1';
+const ACTIVITY_KEY = 'wobo-activity-v1';
+export const PARENT_KEY = 'wobo-parent-link-v1';
+export const VOICE_KEY = 'wobo-voice';
+export const SOUND_KEY = 'wobo-ignite-sound';
 
 export interface StoredProfile {
   name: string;
@@ -24,10 +24,10 @@ export interface StoredProfile {
   age?: number;
   /** What they're into — folded into Wobo's analogies/examples. */
   interests?: string[];
-  /** Durable accessibility profile — rides the dossier so she honors it every turn. */
+  /** Durable accessibility profile — rides the dossier so Wobo honors it every turn. */
   largeText?: boolean;
   highContrast?: boolean;
-  /** Persistent instruction language — she teaches in this until it's changed. */
+  /** Persistent instruction language — Wobo teaches in this until it's changed. */
   language?: string;
   /** From a signed-in account (Google) — display only; the opaque subject stays in the session. */
   email?: string;

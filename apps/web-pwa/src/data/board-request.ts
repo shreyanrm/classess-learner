@@ -9,7 +9,7 @@
  * queue then becomes the offline outbox for it. No new dependency, no dead endpoint in the meantime.
  */
 
-const KEY = 'clss-board-requests-v1';
+const KEY = 'wobo-board-requests-v1';
 
 export interface BoardRequest {
   board: string;

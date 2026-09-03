@@ -7,7 +7,7 @@
  * quiet, nothing bare, nothing floating. End-to-end layout, cascade entrance.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { motion } from 'framer-motion';
 import { type CSSProperties, type ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -23,10 +23,10 @@ import { AmbientWash, cascade, rise, TiltCard } from '../ui/kit';
 // The subjects door's atmospheric layer — a quiet brand dawn (§1 ambient depth): ultramarine
 // soft at the crown, a faint warm bloom below it. Token-driven, so dark theme lifts it a touch.
 const LEARN_WASH =
-  'radial-gradient(64% 40% at 50% -6%, var(--clss-ultramarine-soft) 0%, transparent 68%),' +
+  'radial-gradient(64% 40% at 50% -6%, var(--wobo-ultramarine-soft) 0%, transparent 68%),' +
   ' radial-gradient(48% 26% at 50% 30%, rgba(255,201,60,0.045) 0%, transparent 72%)';
 
-const INK = 'var(--clss-ink-900)';
+const INK = 'var(--wobo-ink-900)';
 const GOLD = '#FFC93C';
 
 /** A whisper-quiet fixed affordance, top left — the register of home's "◦ you". */
@@ -59,10 +59,10 @@ export function Whisper({
         placeItems: 'center',
         // owner law: the arrow alone — the destination lives in aria-label/title, never on screen
         padding: 9,
-        background: 'var(--clss-paper)',
-        border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+        background: 'var(--wobo-paper)',
+        border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
         borderRadius: 3,
-        color: 'var(--clss-ink-700)',
+        color: 'var(--wobo-ink-700)',
         cursor: 'pointer',
         ...style,
       }}
@@ -115,7 +115,7 @@ export function SubjectSceneBackdrop({
           {/* graph paper, whispered — drawn full-bleed; the card view clips the rest */}
           <path
             d={`M0 52 H${w} M0 104 H${w} M0 156 H${w} M66 0 V210 M133 0 V210 M200 0 V210 M266 0 V210 M333 0 V210 M400 0 V210 M466 0 V210 M533 0 V210 M600 0 V210 M666 0 V210 M733 0 V210`}
-            stroke="var(--clss-ultramarine)"
+            stroke="var(--wobo-ultramarine)"
             strokeOpacity={0.07}
             strokeWidth={1}
           />
@@ -126,7 +126,7 @@ export function SubjectSceneBackdrop({
             width={116}
             height={116}
             rx={10}
-            fill="var(--clss-ultramarine)"
+            fill="var(--wobo-ultramarine)"
             opacity={0.07}
             transform="rotate(12 334 94)"
           />
@@ -134,7 +134,7 @@ export function SubjectSceneBackdrop({
           <path
             d="M18 178 A 132 132 0 0 1 150 46"
             fill="none"
-            stroke="var(--clss-ultramarine)"
+            stroke="var(--wobo-ultramarine)"
             strokeOpacity={0.3}
             strokeWidth={1.6}
             strokeDasharray="2 7"
@@ -157,7 +157,7 @@ export function SubjectSceneBackdrop({
           </motion.g>
           <path
             d="M56 158 v20 M46 168 h20"
-            stroke="var(--clss-ultramarine)"
+            stroke="var(--wobo-ultramarine)"
             strokeOpacity={0.5}
             strokeWidth={2.4}
             strokeLinecap="round"
@@ -354,7 +354,7 @@ function SubjectCard({ subject, onOpen }: { subject: DisplaySubject; onOpen: () 
     (n, id) => n + (chaptersBySubject[id] ?? []).length,
     0,
   );
-  // Each card is its own target — she can circle "Physics" specifically, not the whole grid.
+  // Each card is its own target — Wobo can circle "Physics" specifically, not the whole grid.
   const cardRef = useRegisterTarget<HTMLDivElement>(`learn-subject-${subject.id}`, {
     kind: 'subject',
     label: `the ${subject.name} subject card`,
@@ -378,12 +378,12 @@ function SubjectCard({ subject, onOpen }: { subject: DisplaySubject; onOpen: () 
               fontSize: '1.35rem',
               fontWeight: 600,
               letterSpacing: '-0.02em',
-              color: 'var(--clss-ink-900)',
+              color: 'var(--wobo-ink-900)',
             }}
           >
             {subject.name}
           </span>
-          <span style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)', lineHeight: 1.5 }}>
+          <span style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)', lineHeight: 1.5 }}>
             {subject.line}
           </span>
           <span
@@ -442,13 +442,13 @@ export function GridHero({ prompt, support }: { prompt: string; support?: string
           fontSize: '1.5rem',
           fontWeight: 600,
           letterSpacing: '-0.025em',
-          color: 'var(--clss-ink-900)',
+          color: 'var(--wobo-ink-900)',
         }}
       >
         {prompt}
       </span>
       {support && (
-        <span style={{ fontSize: '0.85rem', color: 'var(--clss-ink-300)' }}>{support}</span>
+        <span style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-300)' }}>{support}</span>
       )}
     </div>
   );
@@ -461,7 +461,7 @@ export function Learn() {
   const gridRef = useRegisterTarget<HTMLDivElement>('learn-subjects', {
     kind: 'grid',
     label: 'the subject grid — one tap opens a subject',
-    // She reads which subjects sit on the grid and how much lives behind each, so she points at a
+    // Wobo reads which subjects sit on the grid and how much lives behind each, so Wobo points at a
     // real one instead of the whole box. Each card also registers its own fine-grained target.
     getSceneState: () => ({
       subjects: displaySubjects().map((s) => ({
@@ -502,12 +502,12 @@ export function Learn() {
             fontSize: '1.9rem',
             fontWeight: 650,
             letterSpacing: '-0.035em',
-            color: 'var(--clss-ink-900)',
+            color: 'var(--wobo-ink-900)',
           }}
         >
           Learn
         </h1>
-        <div style={{ marginTop: 6, fontSize: '0.95rem', color: 'var(--clss-ink-500)' }}>
+        <div style={{ marginTop: 6, fontSize: '0.95rem', color: 'var(--wobo-ink-500)' }}>
           Pick a subject — a topic is a course, composed for you
         </div>
       </motion.div>
@@ -534,8 +534,8 @@ export function Learn() {
         transition={{ type: 'spring', stiffness: 360, damping: 26 }}
         style={{
           width: '100%',
-          background: 'var(--clss-card)',
-          border: `1px solid ${coursesLit ? 'var(--clss-faint)' : 'var(--clss-card-border)'}`,
+          background: 'var(--wobo-card)',
+          border: `1px solid ${coursesLit ? 'var(--wobo-faint)' : 'var(--wobo-card-border)'}`,
           borderRadius: 3,
           padding: 0,
           overflow: 'hidden',
@@ -583,12 +583,12 @@ export function Learn() {
               fontSize: '1.3rem',
               fontWeight: 600,
               letterSpacing: '-0.02em',
-              color: 'var(--clss-ink-900)',
+              color: 'var(--wobo-ink-900)',
             }}
           >
             Ask Wobo for a course on anything
           </span>
-          <span style={{ fontSize: '0.88rem', color: 'var(--clss-ink-500)', lineHeight: 1.55 }}>
+          <span style={{ fontSize: '0.88rem', color: 'var(--wobo-ink-500)', lineHeight: 1.55 }}>
             Black holes, cricket physics, the history of zero — your custom courses will live here
           </span>
         </span>
@@ -602,7 +602,7 @@ export function Learn() {
             marginTop: 28,
             border: 'none',
             background: 'transparent',
-            color: 'var(--clss-ink-300)',
+            color: 'var(--wobo-ink-300)',
             fontSize: '0.82rem',
             cursor: 'pointer',
             fontFamily: 'inherit',

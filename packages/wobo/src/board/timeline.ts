@@ -16,7 +16,7 @@ export interface TimelineMark {
   /** Board-clock ms. */
   at: number;
   kind: 'ink' | 'say' | 'ask' | 'card' | 'action' | 'done';
-  /** The object id, or the first words of what she said. */
+  /** The object id, or the first words of what Wobo said. */
   label: string;
 }
 

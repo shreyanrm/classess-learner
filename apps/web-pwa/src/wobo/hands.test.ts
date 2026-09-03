@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'bun:test';
-import { SurfaceRegistry } from '@classess/wobo';
+import { SurfaceRegistry } from '@wobo/wobo';
 import {
   ARMED_TTL_MS,
   armDoIt,
@@ -25,7 +25,7 @@ describe('the permission ladder', () => {
       'buy the plan',
       'submit the answer',
       'delete my account',
-      'forget everything she knows about you',
+      'forget everything Wobo knows about you',
       'sign out',
     ]) {
       expect(permissionFor(action)).toBe('execute_with_permission');
@@ -33,7 +33,7 @@ describe('the permission ladder', () => {
     }
   });
 
-  it('lets her do the reversible, harmless things on her own', () => {
+  it("lets Wobo do the reversible, harmless things on Wobo's own", () => {
     for (const action of [
       'open the atom course',
       'show the chapter list',
@@ -57,7 +57,7 @@ describe('the permission ladder', () => {
 describe('the prepared rung', () => {
   beforeEach(() => disarm());
 
-  it('holds exactly what she offered, and nothing runs until the learner says go ahead', () => {
+  it('holds exactly what Wobo offered, and nothing runs until the learner says go ahead', () => {
     armDoIt('course-advance', 'the continue button');
     expect(armedAction()?.targetId).toBe('course-advance');
     expect(isConfirmation('go ahead')).toBe(true);
@@ -116,7 +116,7 @@ describe('the glide', () => {
   });
 });
 
-describe('finding the control she was asked about', () => {
+describe('finding the control Wobo was asked about', () => {
   const registry = () => {
     const r = new SurfaceRegistry();
     r.registerSurface({
@@ -181,7 +181,7 @@ describe('showing the learner a control', () => {
         },
       ],
     });
-    // The page scrolls while she is on her way: the point she set off towards is now empty.
+    // The page scrolls while Wobo is on Wobo's way: the point Wobo set off towards is now empty.
     where = { x: 100, y: 700, width: 80, height: 30 };
     const result = await showMe('next', { registry, reduced: true });
     expect(result.ok).toBe(true);

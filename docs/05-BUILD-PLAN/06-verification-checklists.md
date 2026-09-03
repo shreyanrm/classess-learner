@@ -2,7 +2,7 @@
 
 ## Phase 0 — Foundation
 - [ ] Monorepo builds; typecheck/lint/CI green across TS + python.
-- [ ] `ClassessEvent` envelope + initial typed payloads exist; taxonomy documented; example events validate.
+- [ ] `WoboEvent` envelope + initial typed payloads exist; taxonomy documented; example events validate.
 - [ ] Outbox append is transactional; relay publishes at-least-once, ordered, idempotent; consumer dedupes on `event_id`.
 - [ ] KGtoPG contract seed present (event schemas, mastery model, ontology types, evaluation contracts, AI-fabric interfaces, consent
       primitives, migrations); institutional surfaces excluded.

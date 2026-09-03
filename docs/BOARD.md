@@ -1,10 +1,10 @@
 # BOARD.md — how Wobo draws
 
-The board is the medium of every explanation. This file is the contract between the brain (which composes) and the hand (which draws). It is law for Wave 5 and after. Companion to `WOBO.md` (who she is), `DESIGN.md` (how the product looks) and `docs/WOBO-PLAN.md` (the build).
+The board is the medium of every explanation. This file is the contract between the brain (which composes) and the hand (which draws). It is law for Wave 5 and after. Companion to `WOBO.md` (who Wobo is), `DESIGN.md` (how the product looks) and `docs/WOBO-PLAN.md` (the build).
 
 ## 1. The idea in one paragraph
 
-The brain streams a drawing plan the way it streams words. The hand draws it stroke by stroke, timed to her voice, on one of three surfaces: directly on whatever is on screen, on a floating frosted plane, or on the full board inside a lesson. Every mark is a semantic object with an id, anchored to something real, never to pixels. Every number is computed by code and verified before it is drawn. The learner draws on the same surface and she reads their ink. A board has a history, can be saved, and can be shared as an image.
+The brain streams a drawing plan the way it streams words. The hand draws it stroke by stroke, timed to Wobo's voice, on one of three surfaces: directly on whatever is on screen, on a floating frosted plane, or on the full board inside a lesson. Every mark is a semantic object with an id, anchored to something real, never to pixels. Every number is computed by code and verified before it is drawn. The learner draws on the same surface and Wobo reads their ink. A board has a history, can be saved, and can be shared as an image.
 
 ## 2. Objects
 
@@ -37,7 +37,7 @@ Nothing is placed by screen coordinates. An anchor is one of:
 - `{ target: "<registry id>", at?: "center|top|bottom|left|right|<fraction pair>" }` — a registered surface target (a button, a card, a sim's axis, a video's frame object).
 - `{ object: "<board object id>", at?: ... }` — another board object.
 - `{ focus: "<focus id>" }` — the region the learner circled or selected.
-- `{ board: [x, y] }` — board coordinates in a 1000-unit logical space, used only for shapes she draws from scratch on the plane or the full board.
+- `{ board: [x, y] }` — board coordinates in a 1000-unit logical space, used only for shapes Wobo draws from scratch on the plane or the full board.
 
 Anchors are resolved at render time and re-resolved on scroll, resize, theme change and layout shift. A mark whose target disappears fades out; it never floats.
 
@@ -63,7 +63,7 @@ A turn is a stream of events in order:
 
 ## 5. The three presentations
 
-She picks one; the learner can override with a word ("board", "here") or a gesture.
+Wobo picks one; the learner can override with a word ("board", "here") or a gesture.
 
 | Presentation | When | Ink | Life |
 |---|---|---|---|
@@ -73,7 +73,7 @@ She picks one; the learner can override with a word ("board", "here") or a gestu
 
 The plane slides in from the orb and is frosted so the context beneath stays visible. Minimised, it keeps its ink and lives as a thumbnail near the orb. Multiple boards per session; "fresh board" starts another.
 
-**The video case.** For our own videos the frame state at the paused timestamp is a registry target set (every object in the scene spec has an id), so she annotates the frame exactly. For content we did not make, the circled region is read by a vision call and marked as such.
+**The video case.** For our own videos the frame state at the paused timestamp is a registry target set (every object in the scene spec has an id), so Wobo annotates the frame exactly. For content we did not make, the circled region is read by a vision call and marked as such.
 
 ## 6. Domain pipelines
 
@@ -89,20 +89,20 @@ The verifier (CAS, dimensional analysis, balance checks, fact base) runs before 
 ## 7. The hand
 
 - **Pen physics.** Anticipation before a stroke, slight overshoot, settle. Strokes are drawn along their path at a pace that reads as a hand, faster for long lines, slower for letters.
-- **Handwriting.** `write` uses Caveat glyphs converted to strokes so text is genuinely written, paced to the voice. The two-word first sentence rule stays: her voice starts on a short clip and the pen starts with it.
+- **Handwriting.** `write` uses Caveat glyphs converted to strokes so text is genuinely written, paced to the voice. The two-word first sentence rule stays: Wobo's voice starts on a short clip and the pen starts with it.
 - **Aesthetic.** Marker on paper in light, chalk on slate in dark; the pen sound, subtle; ink that fades; an eraser swipe; a fresh board.
-- **Choreography.** She points before she says "this". Ink never lands after the word that refers to it.
+- **Choreography.** Wobo points before saying "this". Ink never lands after the word that refers to it.
 - **Reduced motion.** Everything draws instantly, still in order, with the same voice timing.
 
 ## 8. The learner's ink
 
-The same layer captures the learner's strokes. A stroke becomes a focus object with geometry and the targets under it. She reads it in the next turn. Moving a bound control re-evaluates dependants through the brain. On tablets, stylus pressure varies weight; palm rejection is on.
+The same layer captures the learner's strokes. A stroke becomes a focus object with geometry and the targets under it. Wobo reads it in the next turn. Moving a bound control re-evaluates dependants through the brain. On tablets, stylus pressure varies weight; palm rejection is on.
 
 ## 9. Memory, history, export
 
 - Every board keeps its object list and event log; the hand can scrub back in time.
 - "Save to notes" stores the board (objects, not pixels) against the learner; "share" renders a branded image.
-- What she remembers of a board across sessions is governed by the consent tier in the brain.
+- What Wobo remembers of a board across sessions is governed by the consent tier in the brain.
 
 ## 10. Budgets
 
@@ -116,4 +116,4 @@ The same layer captures the learner's strokes. A stroke becomes a focus object w
 
 ## 11. What kills it
 
-Placing by pixels. A component that does not register its targets. A number the model wrote instead of the code computing it. Ink that lands after the word. A board that forgets what she drew. A plane that hides the thing it explains. Any of these and the board is a slideshow, not a teacher.
+Placing by pixels. A component that does not register its targets. A number the model wrote instead of the code computing it. Ink that lands after the word. A board that forgets what Wobo drew. A plane that hides the thing it explains. Any of these and the board is a slideshow, not a teacher.

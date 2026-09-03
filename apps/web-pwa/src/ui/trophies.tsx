@@ -10,7 +10,7 @@
  * ceremony overlay.
  */
 
-import { fontFamily } from '@classess/config';
+import { fontFamily } from '@wobo/config';
 import { motion } from 'framer-motion';
 import { type CSSProperties, useId } from 'react';
 
@@ -344,10 +344,10 @@ export function TrophyPlinth({
           borderRadius: 3,
           background: earned
             ? `linear-gradient(180deg, ${hue}14 0%, ${hue}06 46%, transparent 100%)`
-            : 'var(--clss-tonal)',
+            : 'var(--wobo-tonal)',
           border: earned
-            ? '1px solid var(--clss-card-border)'
-            : '1px dashed var(--clss-hairline-on-paper-strong)',
+            ? '1px solid var(--wobo-card-border)'
+            : '1px dashed var(--wobo-hairline-on-paper-strong)',
           display: 'grid',
           placeItems: 'center',
           position: 'relative',
@@ -408,7 +408,7 @@ export function TrophyPlinth({
             width: 74,
             height: 2,
             borderRadius: 2,
-            background: earned ? hue : 'var(--clss-hairline-on-paper-strong)',
+            background: earned ? hue : 'var(--wobo-hairline-on-paper-strong)',
             opacity: earned ? 0.5 : 1,
           }}
         />
@@ -418,7 +418,7 @@ export function TrophyPlinth({
           style={{
             fontSize: '0.9rem',
             fontWeight: 550,
-            color: earned ? 'var(--clss-ink-900)' : 'var(--clss-ink-faint)',
+            color: earned ? 'var(--wobo-ink-900)' : 'var(--wobo-ink-faint)',
             letterSpacing: '-0.01em',
           }}
         >
@@ -427,7 +427,7 @@ export function TrophyPlinth({
         <div
           style={{
             fontSize: '0.72rem',
-            color: earned ? 'var(--clss-ink-soft)' : 'var(--clss-ink-300)',
+            color: earned ? 'var(--wobo-ink-soft)' : 'var(--wobo-ink-300)',
             marginTop: 2,
           }}
         >

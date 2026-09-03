@@ -13,7 +13,7 @@ describe('the seeded visualization is drawn in the theme, not in black on white'
 
   it('knocks out node fills against the paper token', () => {
     const svg = seedVizSvg('conceptmap', 'photosynthesis');
-    expect(svg).toContain('var(--clss-paper)');
+    expect(svg).toContain('var(--wobo-paper)');
   });
 
   it('still escapes the concept it was handed', () => {

@@ -1,4 +1,4 @@
-import type { ClassessEvent } from '@classess/contracts';
+import type { WoboEvent } from '@wobo/contracts';
 import type { EventConsumer } from './interface';
 
 /**
@@ -20,7 +20,7 @@ export interface OutboxRow {
   eventId: string;
   occurredAt: string;
   subjectId: string;
-  event: ClassessEvent;
+  event: WoboEvent;
 }
 
 export interface OutboxSource {

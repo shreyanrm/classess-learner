@@ -4,7 +4,7 @@
  * to answer, a governed action through the capability registry, or a route to a full surface.
  *
  * These types are the client half of the gateway's additive response shape
- * (services/gateway/src/classess_gateway/wobo.py) — say/actions stay untouched; path payloads
+ * (services/gateway/src/wobo_gateway/wobo.py) — say/actions stay untouched; path payloads
  * ride alongside.
  */
 
@@ -54,7 +54,7 @@ export interface ActionAttachment {
   /** Correlates the shown card with its wobo.offer.outcome.v1 event. */
   offerId: string;
   status: 'offered' | 'taken' | 'ignored';
-  /** Her one-line account of what happened, once executed. */
+  /** Wobo's one-line account of what happened, once executed. */
   result?: string;
 }
 

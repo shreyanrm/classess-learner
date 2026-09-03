@@ -1,16 +1,16 @@
 import { describe, expect, it } from 'bun:test';
-import { BudgetExhaustedError, SignInRequiredError } from '@classess/sdk';
+import { BudgetExhaustedError, SignInRequiredError } from '@wobo/sdk';
 import { WOBBLY_LINE } from '../shell/resilience';
 import { friendlyTime, isBargeIn, isNetworkError, refusalLine } from './refusals';
 
-describe('what she says when the brain says no', () => {
-  it('401: asks them to sign in, and the app takes them to her sign-in beat', () => {
+describe('what Wobo says when the brain says no', () => {
+  it("401: asks them to sign in, and the app takes them to Wobo's sign-in beat", () => {
     const line = refusalLine(new SignInRequiredError());
     expect(line.signIn).toBe(true);
     expect(line.text).toMatch(/sign in/i);
   });
 
-  it('429: says when she is free again, in the learner’s own clock', () => {
+  it('429: says when Wobo is free again, in the learner’s own clock', () => {
     const reset = new Date(Date.now() + 3_600_000).toISOString();
     const line = refusalLine(new BudgetExhaustedError('spent', reset, 0));
     expect(line.signIn).toBe(false);
@@ -20,7 +20,7 @@ describe('what she says when the brain says no', () => {
     expect(line.text).toMatch(/come back/i);
   });
 
-  it('429 with no reset time still lands as her sentence, not an error', () => {
+  it("429 with no reset time still lands as Wobo's sentence, not an error", () => {
     const line = refusalLine(
       new BudgetExhaustedError('That is everything I can carry today.', null, null),
     );
@@ -34,7 +34,7 @@ describe('what she says when the brain says no', () => {
       refusalLine(new Error('litellm.APIConnectionError: gemini-2.5-flash quota exceeded')),
     ].map((l) => l.text);
     for (const text of lines) {
-      expect(text).not.toMatch(/gemini|openai|claude|anthropic|google|classess|gpt|litellm/i);
+      expect(text).not.toMatch(/gemini|openai|claude|anthropic|google|gpt|litellm/i);
       expect(text).not.toMatch(/\b(401|403|429|5\d\d)\b/);
       expect(text).not.toMatch(/[₹$]|upgrade|plan|price/i);
       expect(text.length).toBeGreaterThan(10);
@@ -57,7 +57,7 @@ describe('what she says when the brain says no', () => {
 /**
  * BOARD.md §4: on an interrupt the pen lifts, the voice stops, and what is drawn stays. Nothing
  * there is an error. The abort rejects the in-flight fetch, and reading that as a refusal appended
- * "Give me a moment, then ask me again." to her own half-finished sentence — telling the learner to
+ * "Give me a moment, then ask me again." to Wobo's own half-finished sentence — telling the learner to
  * try again for something they deliberately did.
  */
 describe('barging in', () => {
@@ -71,7 +71,7 @@ describe('barging in', () => {
     expect(refusalLine(plain).text).toBe('');
   });
 
-  it('still has her line for everything that is genuinely wrong', () => {
+  it("still has Wobo's line for everything that is genuinely wrong", () => {
     expect(refusalLine(new Error('socket hang up')).text).not.toBe('');
   });
 
@@ -84,10 +84,10 @@ describe('barging in', () => {
 
 /**
  * Family N's dead-end rule: a link that wobbled is not "something went wrong". `resilience.ts`
- * already had her line for it; nothing said it, so a 2G stall reached the learner as the generic
+ * already had Wobo's line for it; nothing said it, so a 2G stall reached the learner as the generic
  * trouble copy.
  */
-describe('a network stall gets her own line', () => {
+describe("a network stall gets Wobo's own line", () => {
   const stalls = [
     new TypeError('Failed to fetch'), // Chrome
     new TypeError('NetworkError when attempting to fetch resource.'), // Firefox

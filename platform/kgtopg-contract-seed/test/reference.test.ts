@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { type Actor, type ClassessEvent, type Context, makeEvent } from '@classess/contracts';
+import { type Actor, type Context, makeEvent, type WoboEvent } from '@wobo/contracts';
 import { ATOM_NODE_IDS } from '../src/atom-seed';
 import { InMemoryKgtopg } from '../src/reference/in-memory';
 
@@ -10,12 +10,7 @@ const actor: Actor = {
 };
 const context: Context = { app: 'learner', env: 'dev', consent_tier: 'un_elevated' };
 
-function evidence(
-  nodeId: string,
-  correct: boolean,
-  independence: number,
-  id: string,
-): ClassessEvent {
+function evidence(nodeId: string, correct: boolean, independence: number, id: string): WoboEvent {
   return makeEvent({
     event_id: id,
     event_type: 'evidence.recorded.v1',

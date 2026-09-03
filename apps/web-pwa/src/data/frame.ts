@@ -153,7 +153,7 @@ const topicReg = new Map<string, Topic>();
 const chapterReg = new Map<string, Chapter>();
 
 const key = (boardId: string, grade: string) => `${boardId}:${grade}`;
-const persistKey = (boardId: string, grade: string) => `clss-frame-v1:${boardId}:${grade}`;
+const persistKey = (boardId: string, grade: string) => `wobo-frame-v1:${boardId}:${grade}`;
 
 function register(frame: Frame): Frame {
   memory.set(key(frame.boardId, frame.grade), frame);

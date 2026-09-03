@@ -10,7 +10,7 @@ const quiet = {
   engaged: false,
 };
 
-describe('when she leans in', () => {
+describe('when Wobo leans in', () => {
   it('offers after three wrong actions on the balanced dial', () => {
     expect(shouldLeanIn({ ...quiet, misses: 2, lastInputAt: 1000 }, 1000, 'balanced')).toBeNull();
     expect(shouldLeanIn({ ...quiet, misses: 3, lastInputAt: 1000 }, 1000, 'balanced')).toBe(
@@ -29,7 +29,7 @@ describe('when she leans in', () => {
     expect(THRESHOLDS.quiet.misses).toBe(Number.POSITIVE_INFINITY);
   });
 
-  it('never talks over herself, never interrupts typing, never doubles up on an open drawer', () => {
+  it('never talks over themself, never interrupts typing, never doubles up on an open drawer', () => {
     const ready = { ...quiet, misses: 9, lastInputAt: 0 };
     expect(shouldLeanIn({ ...ready, speaking: true }, 100_000, 'balanced')).toBeNull();
     expect(shouldLeanIn({ ...ready, typing: true }, 100_000, 'balanced')).toBeNull();
@@ -65,7 +65,7 @@ describe('wrong actions in a row, off the event backbone', () => {
   });
 });
 
-describe('what she says when she leans in', () => {
+describe('what Wobo says when Wobo leans in', () => {
   it('offers, never nags, and never shouts', () => {
     for (const line of [
       leanInLine('misses', 'Linear equations'),

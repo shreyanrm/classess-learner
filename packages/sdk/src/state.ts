@@ -174,9 +174,9 @@ function defaultStorage(): KVStorage {
 }
 
 /** The same keys the app has always used, so existing devices carry their progress over. */
-export const STATE_CACHE_KEY = 'clss-progress-v1';
+export const STATE_CACHE_KEY = 'wobo-progress-v1';
 function threadCacheKey(thread: string): string {
-  return thread === 'wobo' ? 'clss-wobo-conversation-v1' : `clss-thread-${thread}-v1`;
+  return thread === 'wobo' ? 'wobo-conversation-v1' : `wobo-thread-${thread}-v1`;
 }
 
 /**
@@ -188,15 +188,15 @@ function threadCacheKey(thread: string): string {
 const ADOPTABLE_KEYS: readonly string[] = [
   STATE_CACHE_KEY,
   threadCacheKey('wobo'),
-  'clss-vidya-conversation-v1',
+  'wobo-vidya-conversation-v1',
 ];
 
 /** Records WHICH subject adopted the legacy bucket, so adoption happens exactly once per device. */
-export const ADOPTED_MARKER_KEY = 'clss-state-adopted-v1';
+export const ADOPTED_MARKER_KEY = 'wobo-state-adopted-v1';
 
 /**
- * Pre-rebrand thread ids. The tutor was called Vidya, so her thread — its localStorage key, its
- * `learner_threads.thread` value, and the `role` on every turn she spoke — was written as 'vidya'.
+ * Pre-rebrand thread ids. The tutor was called Vidya, so Wobo's thread — its localStorage key, its
+ * `learner_threads.thread` value, and the `role` on every turn Wobo spoke — was written as 'vidya'.
  * Reads fall back through this map so a device or account that predates the rename carries its
  * conversation over; writes only ever use the new id, so each thread migrates on first save.
  */
@@ -204,7 +204,7 @@ const LEGACY_THREAD_IDS: Record<string, string> = { wobo: 'vidya' };
 
 /** The pre-rebrand localStorage key for a thread (unscoped); null when the thread has no past. */
 function legacyThreadCacheKey(thread: string): string | null {
-  return thread === 'wobo' ? 'clss-vidya-conversation-v1' : null;
+  return thread === 'wobo' ? 'wobo-vidya-conversation-v1' : null;
 }
 
 /** Rewrite the speaker on turns persisted before the rename. */

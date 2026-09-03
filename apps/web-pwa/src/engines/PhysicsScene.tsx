@@ -17,12 +17,12 @@
  * and constant-correct before serving. A wrong constant ships a wrong mental model, so nothing here
  * is "merely plausible".
  *
- * Every kind registers a Wobo scene target (useRegisterTarget): she reads the live state at code
+ * Every kind registers a Wobo scene target (useRegisterTarget): Wobo reads the live state at code
  * level (getSceneState) and can DRIVE it (applyTutorAction) to demonstrate. Mute-aware, both themes,
  * reduced-motion aware.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { useReducedMotion } from 'framer-motion';
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -185,10 +185,10 @@ function Readouts({
   return (
     <div
       style={{
-        border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-        borderRadius: 'var(--clss-radius-md)',
+        border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+        borderRadius: 'var(--wobo-radius-md)',
         padding: '2px 20px',
-        background: 'var(--clss-paper)',
+        background: 'var(--wobo-paper)',
       }}
     >
       {items.map((o, i) => (
@@ -198,18 +198,18 @@ function Readouts({
               style={{
                 height: 1,
                 transform: 'scaleY(0.5)',
-                background: 'var(--clss-hairline-on-paper)',
+                background: 'var(--wobo-hairline-on-paper)',
               }}
             />
           )}
           <div style={readoutRow}>
-            <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>{o.label}</div>
+            <div style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)' }}>{o.label}</div>
             <div
               style={{
                 fontSize: '1.15rem',
                 fontWeight: 550,
                 fontVariantNumeric: 'tabular-nums',
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               {formatSimNumber(o.value)}
@@ -235,7 +235,7 @@ function Slider({
 }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-      <div style={{ minWidth: 92, fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>
+      <div style={{ minWidth: 92, fontSize: '0.85rem', color: 'var(--wobo-ink-500)' }}>
         {param.label}
       </div>
       <input
@@ -255,7 +255,7 @@ function Slider({
           fontVariantNumeric: 'tabular-nums',
           fontSize: '1.02rem',
           fontWeight: 550,
-          color: 'var(--clss-ink-900)',
+          color: 'var(--wobo-ink-900)',
         }}
       >
         {formatSimNumber(value)}
@@ -431,7 +431,7 @@ function ProjectileScene({
               y1={VB - PAD}
               x2={VB - PAD}
               y2={VB - PAD}
-              stroke="var(--clss-ink-300)"
+              stroke="var(--wobo-ink-300)"
               strokeWidth={0.6}
             />
             <line
@@ -439,14 +439,14 @@ function ProjectileScene({
               y1={PAD}
               x2={PAD}
               y2={VB - PAD}
-              stroke="var(--clss-ink-300)"
+              stroke="var(--wobo-ink-300)"
               strokeWidth={0.6}
             />
             {/* the analytic parabola */}
             <path
               d={path}
               fill="none"
-              stroke="var(--clss-ink-700)"
+              stroke="var(--wobo-ink-700)"
               strokeWidth={1.6}
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -659,7 +659,7 @@ function FreeBodyScene({
           >
             <title>free-body diagram</title>
             {/* the body */}
-            <circle cx={FB_C} cy={FB_C} r={7} fill="var(--clss-ink-700)" />
+            <circle cx={FB_C} cy={FB_C} r={7} fill="var(--wobo-ink-700)" />
             {/* the resultant (bold, hue) */}
             {rMag > 0.4 && (
               <path
@@ -678,7 +678,7 @@ function FreeBodyScene({
                   <path
                     d={arrow(FB_C, FB_C, t.x, t.y)}
                     fill="none"
-                    stroke="var(--clss-ink-500)"
+                    stroke="var(--wobo-ink-500)"
                     strokeWidth={1.4}
                     strokeLinecap="round"
                   />
@@ -686,7 +686,7 @@ function FreeBodyScene({
                     cx={t.x}
                     cy={t.y}
                     r={7}
-                    fill="var(--clss-paper)"
+                    fill="var(--wobo-paper)"
                     stroke={hue}
                     strokeWidth={1.4}
                     style={{ cursor: 'grab' }}
@@ -700,7 +700,7 @@ function FreeBodyScene({
                     y={t.y - 11}
                     textAnchor="middle"
                     fontSize={9}
-                    fill="var(--clss-ink-700)"
+                    fill="var(--wobo-ink-700)"
                   >
                     {f.label}
                   </text>
@@ -842,7 +842,7 @@ function WaveScene({
               y1={WV_H / 2}
               x2={WV_W}
               y2={WV_H / 2}
-              stroke="var(--clss-ink-300)"
+              stroke="var(--wobo-ink-300)"
               strokeWidth={0.5}
             />
             {comps.map((c) => (
@@ -850,7 +850,7 @@ function WaveScene({
                 key={c.id}
                 d={sample(compFn(c))}
                 fill="none"
-                stroke="var(--clss-ink-400)"
+                stroke="var(--wobo-ink-400)"
                 strokeWidth={0.9}
                 opacity={0.55}
               />

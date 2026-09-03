@@ -12,7 +12,7 @@ const STROKE = 0.9;
 
 /**
  * The voice mark — NOT a microphone. A sound-bloom: three arcs rising from a single node,
- * a voice opening into the room. While she listens the arcs breathe outward in sequence.
+ * a voice opening into the room. While Wobo listens the arcs breathe outward in sequence.
  */
 export function MicBloomIcon({ active = false, size = 18 }: { active?: boolean; size?: number }) {
   // arcs centred on the node at (9, 14.5), opening upward
@@ -172,10 +172,10 @@ export function ChevronIcon({ size = 14 }: { size?: number }) {
   );
 }
 
-/** Her four-point spark — the chip mark. The accent IS the mark. */
+/** Wobo's four-point spark — the chip mark. The accent IS the mark. */
 export function SparkIcon({
   size = 12,
-  color = 'var(--clss-ultramarine)',
+  color = 'var(--wobo-ultramarine)',
 }: {
   size?: number;
   color?: string;
@@ -197,7 +197,7 @@ export function SparkIcon({
   );
 }
 
-/** The mic — a sound wave, seven rounded bars; they dance while she listens. Never a wifi arc. */
+/** The mic — a sound wave, seven rounded bars; they dance while Wobo listens. Never a wifi arc. */
 const BAR_IDS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'] as const;
 
 export function WaveformIcon({ active = false, size = 18 }: { active?: boolean; size?: number }) {

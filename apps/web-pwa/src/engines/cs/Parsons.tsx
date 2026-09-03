@@ -6,11 +6,11 @@
  * distractor line (a plausible-but-wrong line) turns it into a debugging exercise. Verify runs the
  * assembled program (when an expected output is given) or checks the order — deterministic either way.
  *
- * Wobo-drivable: she reads the tray, the assembled order, and correctness, and can arrange the
+ * Wobo-drivable: Wobo reads the tray, the assembled order, and correctness, and can arrange the
  * solution or verify it to demonstrate.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, Reorder, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../../screens/course/shared';
@@ -88,9 +88,9 @@ function LineChip({
 }) {
   const accent =
     verdict === 'ok'
-      ? 'var(--clss-feedback-correct)'
+      ? 'var(--wobo-feedback-correct)'
       : verdict === 'bad'
-        ? 'var(--clss-feedback-wrong)'
+        ? 'var(--wobo-feedback-wrong)'
         : hue;
   return (
     <div
@@ -99,9 +99,9 @@ function LineChip({
         alignItems: 'center',
         gap: 8,
         padding: '8px 10px',
-        borderRadius: 'var(--clss-radius-sm)',
-        border: `0.5px solid ${verdict === 'none' ? 'var(--clss-hairline-on-paper-strong)' : accent}`,
-        background: 'var(--clss-card)',
+        borderRadius: 'var(--wobo-radius-sm)',
+        border: `0.5px solid ${verdict === 'none' ? 'var(--wobo-hairline-on-paper-strong)' : accent}`,
+        background: 'var(--wobo-card)',
         boxShadow: `inset 3px 0 0 ${accent}`,
         cursor: side === 'solution' ? 'grab' : 'default',
       }}
@@ -112,7 +112,7 @@ function LineChip({
           flex: 1,
           fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
           fontSize: '0.86rem',
-          color: 'var(--clss-ink-900)',
+          color: 'var(--wobo-ink-900)',
           whiteSpace: 'pre',
           overflowX: 'auto',
         }}
@@ -130,9 +130,9 @@ function LineChip({
           width: 24,
           height: 24,
           borderRadius: 6,
-          border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-          background: 'var(--clss-paper)',
-          color: 'var(--clss-ink-700)',
+          border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+          background: 'var(--wobo-paper)',
+          color: 'var(--wobo-ink-700)',
           cursor: 'pointer',
           flexShrink: 0,
           lineHeight: 1,
@@ -330,11 +330,11 @@ export function Parsons({
           <div style={{ ...whisper, marginBottom: 6 }}>your program</div>
           <div
             style={{
-              border: `0.5px solid ${result === 'right' ? 'var(--clss-feedback-correct)' : result === 'wrong' ? 'var(--clss-feedback-wrong)' : 'var(--clss-hairline-on-paper)'}`,
-              borderRadius: 'var(--clss-radius-md)',
+              border: `0.5px solid ${result === 'right' ? 'var(--wobo-feedback-correct)' : result === 'wrong' ? 'var(--wobo-feedback-wrong)' : 'var(--wobo-hairline-on-paper)'}`,
+              borderRadius: 'var(--wobo-radius-md)',
               padding: 10,
               minHeight: 56,
-              background: 'var(--clss-canvas)',
+              background: 'var(--wobo-canvas)',
             }}
           >
             {solution.length === 0 ? (
@@ -410,10 +410,10 @@ export function Parsons({
               transition={{ type: 'spring', stiffness: 320, damping: 28 }}
               style={{
                 padding: '12px 14px',
-                borderRadius: 'var(--clss-radius-sm)',
-                background: 'var(--clss-canvas)',
-                border: `0.5px solid ${result === 'right' ? 'var(--clss-feedback-correct)' : 'var(--clss-hairline-on-paper-strong)'}`,
-                color: 'var(--clss-ink-700)',
+                borderRadius: 'var(--wobo-radius-sm)',
+                background: 'var(--wobo-canvas)',
+                border: `0.5px solid ${result === 'right' ? 'var(--wobo-feedback-correct)' : 'var(--wobo-hairline-on-paper-strong)'}`,
+                color: 'var(--wobo-ink-700)',
                 fontSize: '0.92rem',
               }}
             >
@@ -427,11 +427,11 @@ export function Parsons({
                   style={{
                     marginTop: 8,
                     padding: '8px 10px',
-                    background: 'var(--clss-paper)',
+                    background: 'var(--wobo-paper)',
                     borderRadius: 6,
                     fontSize: '0.82rem',
                     fontFamily: 'ui-monospace, Menlo, monospace',
-                    color: 'var(--clss-ink-900)',
+                    color: 'var(--wobo-ink-900)',
                     whiteSpace: 'pre-wrap',
                     overflowX: 'auto',
                   }}

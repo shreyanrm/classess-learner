@@ -7,7 +7,7 @@
 
 import { loadProfile } from '../screens/you/profile';
 
-const STYLE_ID = 'clss-access';
+const STYLE_ID = 'wobo-access';
 
 function ensureStyle() {
   if (document.getElementById(STYLE_ID)) return;
@@ -18,10 +18,10 @@ function ensureStyle() {
   s.textContent = `
 :root[data-large-text="on"] { font-size: 118%; }
 :root[data-contrast="high"] {
-  --clss-ink-500: var(--clss-ink-900);
-  --clss-ink-300: var(--clss-ink-700);
-  --clss-ink-faint: var(--clss-ink-700);
-  --clss-hairline-on-paper-strong: var(--clss-ink-900);
+  --wobo-ink-500: var(--wobo-ink-900);
+  --wobo-ink-300: var(--wobo-ink-700);
+  --wobo-ink-faint: var(--wobo-ink-700);
+  --wobo-hairline-on-paper-strong: var(--wobo-ink-900);
 }`;
   document.head.appendChild(s);
 }

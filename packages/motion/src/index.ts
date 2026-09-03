@@ -1,8 +1,8 @@
 /**
- * @classess/motion — the named, shared motion language (docs/02-DESIGN/01-motion-system.md).
+ * @wobo/motion — the named, shared motion language (docs/02-DESIGN/01-motion-system.md).
  *
  * GPU-friendly primitives (transform/opacity; filter only where it IS the meaning). Every motion
- * carries meaning; timing and easing come from @classess/config; no drop shadows anywhere. Every
+ * carries meaning; timing and easing come from @wobo/config; no drop shadows anywhere. Every
  * primitive honours `prefers-reduced-motion` via `useReducedMotion` and ships a calm equivalent.
  */
 

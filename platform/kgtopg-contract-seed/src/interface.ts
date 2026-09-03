@@ -1,4 +1,4 @@
-import type { ClassessEvent } from '@classess/contracts';
+import type { WoboEvent } from '@wobo/contracts';
 import type {
   ConsentGrant,
   ConsentTierView,
@@ -32,7 +32,7 @@ export interface KGtoPG {
     /** The orchestrator hook: the node that best advances mastery along the prereq graph. */
     getNextBestNode(subjectId: string, scope?: string): Promise<OntologyNode | null>;
     /** Evidence is recorded via an event, idempotently. */
-    recordEvidence(event: ClassessEvent): Promise<void>;
+    recordEvidence(event: WoboEvent): Promise<void>;
   };
   twin: {
     query(subjectId: string, question: string): Promise<TwinAnswer>;
@@ -49,5 +49,5 @@ export interface KGtoPG {
  * on event_id: consuming the same event twice is a no-op that reports `deduped`.
  */
 export interface EventConsumer {
-  consume(event: ClassessEvent): Promise<{ accepted: boolean; deduped: boolean }>;
+  consume(event: WoboEvent): Promise<{ accepted: boolean; deduped: boolean }>;
 }

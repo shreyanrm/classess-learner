@@ -15,7 +15,7 @@
  * fixtures are never hand-edited.
  */
 
-import type { BoardEvent, BoardObjectKind, Presentation } from '@classess/wobo';
+import type { BoardEvent, BoardObjectKind, Presentation } from '@wobo/wobo';
 
 /** Which of the four anchor forms an object uses. Never "pixels": there is no fifth form. */
 export type AnchorForm = 'board' | 'object' | 'target' | 'focus';
@@ -35,7 +35,7 @@ export interface GoldenNumber {
 }
 
 export interface GoldenExpectation {
-  /** Every object id, in the order she inks them. */
+  /** Every object id, in the order Wobo inks them. */
   ids: string[];
   /** The kind of each id, in the same order. */
   kinds: BoardObjectKind[];
@@ -46,7 +46,7 @@ export interface GoldenExpectation {
    * which is what proves an anchor actually resolved rather than defaulting to the origin.
    */
   hangsOff: [string, string][];
-  /** Text she writes, in the order it lands — the derivation, read off the DOM. */
+  /** Text Wobo writes, in the order it lands — the derivation, read off the DOM. */
   written: string[];
   /** Every computed quantity on the board. */
   numbers: GoldenNumber[];
@@ -58,7 +58,7 @@ export interface GoldenBoard {
   prompt: string;
   /** The board's own name — it titles the surface and names the export. */
   title: string;
-  /** Which surface she chose, and why the choice is right (BOARD.md §5). */
+  /** Which surface Wobo chose, and why the choice is right (BOARD.md §5). */
   presentation: Presentation;
   subject: 'math' | 'physics' | 'chemistry' | 'biology' | 'social';
   expect: GoldenExpectation;

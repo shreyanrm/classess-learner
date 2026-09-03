@@ -50,7 +50,7 @@ def mint(
 @pytest.fixture(autouse=True)
 def _gateway_test_env(monkeypatch: pytest.MonkeyPatch) -> None:
     """A verifiable identity and empty meters for every test."""
-    from classess_gateway import auth, budget, consent, voice
+    from wobo_gateway import auth, budget, consent, voice
 
     monkeypatch.setenv("SUPABASE_JWT_SECRET", TEST_JWT_SECRET)
     # No Supabase project in tests: consent lookups must never touch the network.

@@ -1,25 +1,25 @@
-import { woboMolten } from '@classess/config';
+import { woboMolten } from '@wobo/config';
 
 /**
  * Wobo's identity is LOCKED (docs/02-DESIGN/02-wobo.md). This module encodes it so the lock is a
  * fact in code, not a note in a doc. Choreography is free (the Wobo-cute license) — identity is not.
  *
- * You MAY NOT change: her colour (molten only), her form (a single round squircle jelly), her matte
- * surface, her two eyes, or the existence of the flame-glow beneath her (it replaces any drop shadow
+ * You MAY NOT change: Wobo's colour (molten only), Wobo's form (a single round squircle jelly), Wobo's matte
+ * surface, Wobo's two eyes, or the existence of the flame-glow beneath Wobo (it replaces any drop shadow
  * and always exists). Everything below is frozen and asserted by tests.
  */
 export const WOBO_IDENTITY = Object.freeze({
   form: 'round_squircle_jelly',
   surface: 'matte',
   colorFamily: 'molten',
-  color: woboMolten, // #FF5A1F — molten only, reserved for her alone (DESIGN.md §2)
+  color: woboMolten, // #FF5A1F — molten only, reserved for Wobo alone (DESIGN.md §2)
   eyes: 2,
-  flame: 'always', // the flame-glow beneath her always exists and flickers
+  flame: 'always', // the flame-glow beneath Wobo always exists and flickers
 } as const);
 
 /**
- * The molten palette Wobo is rendered in — her warmth runs from molten orange into a rose-pink
- * bloom (the owner-approved body gradient), with one small golden spark that is hers alone.
+ * The molten palette Wobo is rendered in — Wobo's warmth runs from molten orange into a rose-pink
+ * bloom (the owner-approved body gradient), with one small golden spark that is Wobo's alone.
  */
 export const MOLTEN = Object.freeze({
   core: '#FF9E62',
@@ -35,8 +35,8 @@ export const MOLTEN = Object.freeze({
 } as const);
 
 /**
- * Wobo's mood — the page chooses it, and it drives her reactions and her flame. This is the license
- * surface: pages pick the mood that fits the moment; her identity never changes with it.
+ * Wobo's mood — the page chooses it, and it drives Wobo's reactions and Wobo's flame. This is the license
+ * surface: pages pick the mood that fits the moment; Wobo's identity never changes with it.
  */
 export type WoboMood =
   | 'idle' // present, gently breathing
@@ -46,7 +46,7 @@ export type WoboMood =
   | 'celebrate' // a celebratory bob on a mastered node
   | 'waiting' // quietly dimmed to an ember
   | 'hint' // flame flickers brighter as a hint escalates
-  | 'explaining' // gesturing toward what she annotates (DESIGN.md §4)
+  | 'explaining' // gesturing toward what Wobo annotates (DESIGN.md §4)
   | 'resting' // a slow calm breath — sanctioned rest, never guilt (DESIGN.md §4)
   | 'oops'; // a sympathetic wince on a wrong answer — with them, never at them
 

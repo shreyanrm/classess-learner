@@ -51,7 +51,7 @@ export function LevelBadge({
   const r = size / 2 - 2;
   const c = 2 * Math.PI * r;
   // subject-neutral ink fills the arc — XP-to-next is progress, not mastery, so it never takes pigment
-  const ring = 'var(--clss-ink-900)';
+  const ring = 'var(--wobo-ink-900)';
   return (
     <motion.span
       title={`level ${info.level} · ${info.intoLevel}/${info.span} xp to level ${info.level + 1}`}
@@ -79,7 +79,7 @@ export function LevelBadge({
           cy={size / 2}
           r={r}
           fill="none"
-          stroke="var(--clss-card-border)"
+          stroke="var(--wobo-card-border)"
           strokeWidth={2.5}
         />
         <motion.circle
@@ -100,7 +100,7 @@ export function LevelBadge({
         style={{
           fontSize: size > 40 ? '1.1rem' : '0.82rem',
           fontWeight: 700,
-          color: 'var(--clss-ink)',
+          color: 'var(--wobo-ink)',
           fontVariantNumeric: 'tabular-nums',
           lineHeight: 1,
         }}
@@ -152,7 +152,7 @@ function IdentityAvatar({
           cy={size / 2}
           r={r}
           fill="none"
-          stroke="var(--clss-card-border)"
+          stroke="var(--wobo-card-border)"
           strokeWidth={2.5}
         />
         <motion.circle
@@ -160,7 +160,7 @@ function IdentityAvatar({
           cy={size / 2}
           r={r}
           fill="none"
-          stroke="var(--clss-ink-900)"
+          stroke="var(--wobo-ink-900)"
           strokeWidth={2.5}
           strokeLinecap="round"
           strokeDasharray={c}
@@ -185,7 +185,7 @@ function IdentityAvatar({
           height: 32,
           borderRadius: '50%', // the frame matches the face — avatars are circles, so is their button
           border: 'none',
-          background: 'var(--clss-tonal)',
+          background: 'var(--wobo-tonal)',
           padding: 0,
           overflow: 'hidden',
           fontFamily: 'inherit',
@@ -207,9 +207,9 @@ function IdentityAvatar({
           height: 16,
           padding: '0 3px',
           borderRadius: 999,
-          background: 'var(--clss-ink-900)',
-          border: '1.5px solid var(--clss-paper)',
-          color: 'var(--clss-on-ink)',
+          background: 'var(--wobo-ink-900)',
+          border: '1.5px solid var(--wobo-paper)',
+          color: 'var(--wobo-on-ink)',
           fontSize: '0.62rem',
           fontWeight: 700,
           fontVariantNumeric: 'tabular-nums',
@@ -228,7 +228,7 @@ function IdentityAvatar({
 /** One earned moment: the number rising with tiny stars arcing out, subject-hued, spring physics. */
 function StarBurst({ bloom }: { bloom: XpBloom }) {
   const still = useReducedMotion();
-  const hue = bloom.hue ?? 'var(--clss-ultramarine)';
+  const hue = bloom.hue ?? 'var(--wobo-ultramarine)';
   const levelUp = bloom.crossedTo != null;
   // more stars for a bigger earn; a level-up gets a full ring
   const count = levelUp ? 9 : Math.min(4, 2 + Math.floor(bloom.amount / 60));
@@ -417,12 +417,12 @@ const chipStyle = {
   gap: 7,
   height: 34,
   padding: '0 13px',
-  background: 'var(--clss-tonal)',
+  background: 'var(--wobo-tonal)',
   border: 'none',
   borderRadius: 3,
   fontSize: '0.84rem',
   fontWeight: 550,
-  color: 'var(--clss-ink)',
+  color: 'var(--wobo-ink)',
   fontFamily: 'inherit',
   whiteSpace: 'nowrap',
 } as const;
@@ -471,7 +471,7 @@ export function AppHeader() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        zIndex: 'var(--clss-z-toast)' as unknown as number,
+        zIndex: 'var(--wobo-z-toast)' as unknown as number,
         pointerEvents: 'none',
         background: scrolled ? 'rgba(255,255,255,0.62)' : 'rgba(255,255,255,0)',
         backdropFilter: scrolled ? 'blur(18px) saturate(1.6)' : 'none',
@@ -544,12 +544,12 @@ export function AppHeader() {
                 right: 0,
                 width: 300,
                 padding: '14px 16px',
-                background: 'var(--clss-card)',
-                border: '1px solid var(--clss-card-border)',
+                background: 'var(--wobo-card)',
+                border: '1px solid var(--wobo-card-border)',
                 borderRadius: 3,
                 fontSize: '0.9rem',
                 lineHeight: 1.55,
-                color: 'var(--clss-ink-soft)',
+                color: 'var(--wobo-ink-soft)',
                 textAlign: 'left',
               }}
             >

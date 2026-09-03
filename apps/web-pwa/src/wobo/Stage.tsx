@@ -1,20 +1,20 @@
 'use client';
 
 /**
- * The stage — everything of hers that lives above the app, mounted once at the root
+ * The stage — everything of Wobo's that lives above the app, mounted once at the root
  * (docs/WOBO-PLAN.md §1, docs/BOARD.md §5).
  *
- * In one layer stack: the gesture sense over the whole app, her ink on the screen, the frosted
- * plane, the full board a lesson turns into, the cursor she shows things with, and the dev
- * inspector. Nothing here is a screen; everything here is her.
+ * In one layer stack: the gesture sense over the whole app, Wobo's ink on the screen, the frosted
+ * plane, the full board a lesson turns into, the cursor Wobo shows things with, and the dev
+ * inspector. Nothing here is a screen; everything here is Wobo.
  *
  * The laws it keeps: nothing is placed by pixels (every mark anchors to a registry target, a focus
  * region, another object or board space); reduced motion is honoured by the renderer it mounts;
  * every interaction has a keyboard path; one hit of pigment; no shadows; 3 px corners.
  */
 
-import { frost, hairline, radius, ultramarine, zIndex } from '@classess/config';
-import { useReducedMotion } from '@classess/motion';
+import { frost, hairline, radius, ultramarine, zIndex } from '@wobo/config';
+import { useReducedMotion } from '@wobo/motion';
 import {
   anchorRectOf,
   BoardSurface,
@@ -29,7 +29,7 @@ import {
   useWoboBus,
   WoboFullBoard,
   WoboPlane,
-} from '@classess/wobo';
+} from '@wobo/wobo';
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { saveBoardToNotes } from './board-notes';
 import { boardTargets, boardTurn, focusRegionsFor, lessonStore, screenStore } from './board-turn';
@@ -44,7 +44,7 @@ export interface WoboStageProps {
   title?: string;
   /** The learner circled, selected, long-pressed or drew: this is what "this" means now. */
   onFocus?: (focus: FocusObject | null) => void;
-  /** The chip, the hotkey: they ask her about what is in hand. */
+  /** The chip, the hotkey: they ask Wobo about what is in hand. */
   onAsk?: (focus: FocusObject | null) => void;
   /** Hold-to-talk on the desktop hotkey. */
   onHoldStart?: () => void;
@@ -54,11 +54,11 @@ export interface WoboStageProps {
     variable: string,
     value: number | boolean | string | [number, number],
   ) => void;
-  /** The gesture layer is off inside her own full-screen flows (onboarding, a design concept). */
+  /** The gesture layer is off inside Wobo's own full-screen flows (onboarding, a design concept). */
   gestures?: boolean;
 }
 
-/** Her ink, her boards, her hands — one mount, above everything. */
+/** Wobo's ink, Wobo's boards, Wobo's hands — one mount, above everything. */
 export function WoboStage(props: WoboStageProps) {
   const { route, title, gestures = true } = props;
   useBusRegistryBridge(route);
@@ -117,13 +117,13 @@ export function WoboStage(props: WoboStageProps) {
         />
       ) : null}
       {/* Ink on the screen: fixed to the viewport, anchored to what is under it, fading like a
-          whiteboard. She never draws on it; the learner's ink belongs on a board. */}
+          whiteboard. Wobo never draws on it; the learner's ink belongs on a board. */}
       <BoardSurface
         fixed
         store={screenStore}
         targets={boardTargets}
         focusRegions={focusRegions}
-        label="her ink on this screen"
+        label="Wobo's ink on this screen"
       />
       <WoboPlane
         targets={boardTargets}
@@ -140,7 +140,7 @@ export function WoboStage(props: WoboStageProps) {
 }
 
 /**
- * The plane is a surface like any other — she can point at it, tell a learner it is there, and be
+ * The plane is a surface like any other — Wobo can point at it, tell a learner it is there, and be
  * asked to put it away. Its rect is read off the live dialog, so moving or resizing it is followed
  * without a single stored coordinate.
  */
@@ -155,9 +155,9 @@ function usePlaneTarget(): void {
     return registerTarget({
       id: 'wobo-plane',
       kind: 'board',
-      label: `${state.title} — her board, floating over this screen`,
+      label: `${state.title} — Wobo's board, floating over this screen`,
       getRect: () => {
-        const el = document.querySelector('[role="dialog"][aria-label*="her board"]');
+        const el = document.querySelector('[role="dialog"][aria-label*="Wobo\'s board"]');
         return el ? el.getBoundingClientRect() : null;
       },
       getSceneState: () => ({
@@ -178,7 +178,7 @@ function usePlaneTarget(): void {
 // --- The full board a lesson becomes ---------------------------------------------------------------
 
 /**
- * Inside a lesson the board is the screen (docs/BOARD.md §5). It arrives only once she has actually
+ * Inside a lesson the board is the screen (docs/BOARD.md §5). It arrives only once Wobo has actually
  * drawn something, and there is always a way back to the lesson — the board is never a trap.
  */
 function LessonBoard({ title }: { title?: string }) {
@@ -208,7 +208,7 @@ function LessonBoard({ title }: { title?: string }) {
   return (
     <div
       style={{
-        background: 'var(--clss-page, #FFFFFF)',
+        background: 'var(--wobo-page, #FFFFFF)',
         inset: 0,
         position: 'fixed',
         zIndex: zIndex.panel,
@@ -228,7 +228,7 @@ function LessonBoard({ title }: { title?: string }) {
           background: 'transparent',
           border: `0.5px solid ${hairline.onPaper}`,
           borderRadius: radius.sm,
-          color: 'var(--clss-ink-500, #6E6E76)',
+          color: 'var(--wobo-ink-500, #6E6E76)',
           cursor: 'pointer',
           font: 'inherit',
           fontSize: 12,
@@ -328,7 +328,7 @@ function BoardKeeper({ title, route }: { title?: string; route: string }) {
           back to the film
         </button>
       ) : null}
-      <span aria-live="polite" style={{ color: 'var(--clss-ink-500, #6E6E76)', fontSize: 12 }}>
+      <span aria-live="polite" style={{ color: 'var(--wobo-ink-500, #6E6E76)', fontSize: 12 }}>
         {kept ?? ''}
       </span>
     </div>
@@ -340,7 +340,7 @@ const keeperButton: React.CSSProperties = {
   background: 'transparent',
   border: `0.5px solid ${hairline.onPaper}`,
   borderRadius: radius.sm,
-  color: 'var(--clss-ink-500, #6E6E76)',
+  color: 'var(--wobo-ink-500, #6E6E76)',
   cursor: 'pointer',
   font: 'inherit',
   fontSize: 12,
@@ -350,9 +350,9 @@ const keeperButton: React.CSSProperties = {
 // --- "Show me" ---------------------------------------------------------------------------------------
 
 /**
- * The cursor she shows things with: a real pointer gliding to a real control on the real screen. It
- * is inert (`pointer-events: none`) — she taps the control itself, the way the learner would. The
- * line she narrates is announced, so the move is not lost on anyone who is not watching the pixels.
+ * The cursor Wobo shows things with: a real pointer gliding to a real control on the real screen. It
+ * is inert (`pointer-events: none`) — Wobo taps the control itself, the way the learner would. The
+ * line Wobo narrates is announced, so the move is not lost on anyone who is not watching the pixels.
  */
 export function ShowMeCursor() {
   const state = useSyncExternalStore(showCursor.subscribe, showCursor.get, showCursor.get);
@@ -370,7 +370,7 @@ export function ShowMeCursor() {
     >
       <div
         aria-hidden
-        // Where she is, and what she is doing there — readable from outside, so "show me" can be
+        // Where Wobo is, and what Wobo is doing there — readable from outside, so "show me" can be
         // proved to have reached the real control rather than merely narrated.
         data-wobo-cursor={state.tapping ? 'tapping' : 'gliding'}
         data-wobo-cursor-saying={state.saying ?? ''}

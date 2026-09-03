@@ -4,7 +4,7 @@
  * Run: `bun run codegen` (from packages/contracts).
  * Writes the same bundle to two places so neither language reads across package dirs:
  *   - packages/contracts/schemas/contracts.bundle.json   (language-neutral artifact)
- *   - services/contracts/src/classess_contracts/_bundle.json  (Python mirror, validated at import)
+ *   - services/contracts/src/wobo_contracts/_bundle.json  (Python mirror, validated at import)
  *
  * The drift gate is `test/contracts.codegen.test.ts`: it rebuilds the bundle here and asserts both
  * committed files are byte-identical to it. Change a schema without regenerating and it fails.
@@ -27,7 +27,7 @@ export function buildBundleJson(): string {
     // The dialect Zod actually emits — and the one the Python mirror validates with
     // (`Draft202012Validator`). The old draft-07 header described neither side.
     $schema: 'https://json-schema.org/draft/2020-12/schema',
-    generated_by: '@classess/contracts codegen (do not edit by hand)',
+    generated_by: '@wobo/contracts codegen (do not edit by hand)',
     version: 'v1',
     envelope: z.toJSONSchema(EnvelopeBase),
     event_types: EVENT_TYPES,
@@ -40,7 +40,7 @@ export function buildBundleJson(): string {
 /** Both committed copies of the bundle. The test asserts each one matches `buildBundleJson()`. */
 export const BUNDLE_TARGETS = [
   join(here, '..', 'schemas', 'contracts.bundle.json'),
-  join(repoRoot, 'services', 'contracts', 'src', 'classess_contracts', '_bundle.json'),
+  join(repoRoot, 'services', 'contracts', 'src', 'wobo_contracts', '_bundle.json'),
 ];
 
 /** Written only when this file is run as a script, never on import (the test imports it). */

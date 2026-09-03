@@ -4,7 +4,7 @@
  * A gesture (a selection, a circle, a hold, a hotkey) resolves against the surface registry into
  * one structured object: which targets are inside it, the text and the numbers it contains, its
  * rect, and the owning surface's state. Never a screenshot of our own UI — we read the registry,
- * so she is never off by one.
+ * so Wobo is never off by one.
  *
  * Everything here is geometry and grammar, unit-tested without a browser. The one window it reads
  * is the page's scroll offset at the moment a focus is made (:func:`pageScroll`), because a rect in
@@ -169,7 +169,7 @@ const NUMBER_PATTERN = /-?\d[\d,]*(?:\.\d+)?/g;
 
 /**
  * Every number visible in a piece of text, in order, de-duplicated. Thousands separators are
- * understood; a trailing comma is not part of the number. She quotes the learner's own numbers back,
+ * understood; a trailing comma is not part of the number. Wobo quotes the learner's own numbers back,
  * so this is read from the screen and never invented.
  */
 export function extractNumbers(text: string, max = FOCUS_NUMBER_MAX): number[] {
@@ -252,7 +252,7 @@ export function createFocus(draft: FocusDraft): FocusObject {
 
 /**
  * The owning surface's live state for a focus: the value each hit target publishes, keyed by id.
- * This is the code-level read that makes her exact — the same numbers the component holds.
+ * This is the code-level read that makes Wobo exact — the same numbers the component holds.
  */
 export function ownerStateOf(
   targets: readonly SurfaceTarget[],
@@ -272,7 +272,7 @@ export function ownerStateOf(
   return state;
 }
 
-/** The text the hit targets carry, joined in registry order — evidence, in her hands. */
+/** The text the hit targets carry, joined in registry order — evidence, in Wobo's hands. */
 export function textOfTargets(
   targets: readonly SurfaceTarget[],
   targetIds: readonly string[],
@@ -328,7 +328,7 @@ export function focusRectNow(
   opts: { target?: (id: string) => Rect | null; scroll?: Point } = {},
 ): Rect {
   const rect = plainRect(focus.rect) ?? EMPTY_RECT;
-  // The region the learner drew is the region she marks — the targets say how far it has TRAVELLED,
+  // The region the learner drew is the region Wobo marks — the targets say how far it has TRAVELLED,
   // they never replace it. Using their union instead drew a ring round the whole page when the loop
   // happened to enclose a container as well as the thing inside it.
   const then = focus.anchorRect ? plainRect(focus.anchorRect) : null;
@@ -406,7 +406,7 @@ const KIND_PHRASE: Record<FocusKind, string> = {
 
 /**
  * What a screen reader says when a focus is made, and what the chip's accessible name describes.
- * Sentence case, no emoji, no exclamation marks — she is calm about it.
+ * Sentence case, no emoji, no exclamation marks — Wobo is calm about it.
  */
 export function describeFocus(focus: FocusObject): string {
   const verb = KIND_PHRASE[focus.kind];

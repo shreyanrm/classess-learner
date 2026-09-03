@@ -1,5 +1,5 @@
 /**
- * The board — her hand, on three surfaces (docs/BOARD.md).
+ * The board — Wobo's hand, on three surfaces (docs/BOARD.md).
  *
  * `schema.ts` is the grammar and the single source of truth (mirrored into the brain by
  * `scripts/board-schema-codegen.ts`). `anchors.ts` keeps every mark tied to something real.

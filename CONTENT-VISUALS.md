@@ -143,7 +143,7 @@ Canvas is `0..100` by `0..62` (discovery/compare) or the diagram's own viewBox.
 - A hairline-outline object as the focal subject (wireframe / blueprint look).
 - A single abstract mark floating in a big empty tinted box.
 - Gradients, drop-shadows, glows, bevels-as-glass, neumorphism, "3D-render" gloss.
-- Emoji, clip-art, stock-icon silhouettes, mascots (Wobo is the only character, and she is chrome).
+- Emoji, clip-art, stock-icon silhouettes, mascots (Wobo is the only character, and Wobo is chrome).
 - More than the subject-hue family + ink + one accent; any rainbow.
 - Text that carries meaning the picture leaves out.
 - A tiny timid object adrift in dead margin — or the opposite, a clutter of many small strokes.

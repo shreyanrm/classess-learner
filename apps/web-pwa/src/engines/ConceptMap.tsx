@@ -3,15 +3,15 @@
 /**
  * ConceptMap — a concept map (DESIGN.md §9): a web of relationships drawn from the real graph,
  * structural not decorative. Nodes are laid out by a deterministic seeded layout, each is tappable,
- * and each registers as a Wobo target so she can annotate ("this one connects back to…") on the
+ * and each registers as a Wobo target so Wobo can annotate ("this one connects back to…") on the
  * exact node. Tapping a node lights it and its relationships; the edges name how ideas connect.
  *
  * Spec-driven: the composer emits { nodes, edges, seed?, root? }. Registers a map-level scene target
- * she can DRIVE — select a node to demonstrate a path (applyTutorAction) — plus a per-node ink
+ * Wobo can DRIVE — select a node to demonstrate a path (applyTutorAction) — plus a per-node ink
  * target each. Reduced-motion + mute aware; both themes; no new deps.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -110,7 +110,7 @@ function layout(spec: ConceptMapSpec): Placed[] {
   return placed;
 }
 
-// --- A single node (its own ink target so she can annotate the exact concept) ----------------------
+// --- A single node (its own ink target so Wobo can annotate the exact concept) ----------------------
 
 function NodePill({
   node,
@@ -151,9 +151,9 @@ function NodePill({
         lineHeight: 1.25,
         fontFamily: 'inherit',
         textAlign: 'center',
-        color: lit ? 'var(--clss-paper)' : 'var(--clss-ink-900)',
-        background: lit ? hue : 'var(--clss-paper)',
-        border: `1px solid ${lit ? hue : 'var(--clss-hairline-on-paper-strong)'}`,
+        color: lit ? 'var(--wobo-paper)' : 'var(--wobo-ink-900)',
+        background: lit ? hue : 'var(--wobo-paper)',
+        border: `1px solid ${lit ? hue : 'var(--wobo-hairline-on-paper-strong)'}`,
         borderRadius: 999,
         cursor: 'pointer',
         whiteSpace: 'normal',
@@ -262,7 +262,7 @@ export function ConceptMap({
             height: 320,
             background: rgba(hue, 0.05),
             borderRadius: 3,
-            border: '0.5px solid var(--clss-hairline-on-paper)',
+            border: '0.5px solid var(--wobo-hairline-on-paper)',
             overflow: 'hidden',
           }}
         >
@@ -289,7 +289,7 @@ export function ConceptMap({
                   y1={a.y}
                   x2={b.x}
                   y2={b.y}
-                  stroke={active ? hue : 'var(--clss-ink-300)'}
+                  stroke={active ? hue : 'var(--wobo-ink-300)'}
                   strokeWidth={active ? 0.9 : 0.5}
                   opacity={selected == null || active ? 1 : 0.35}
                   style={{ transition: 'stroke 0.25s, opacity 0.25s' }}
@@ -321,14 +321,14 @@ export function ConceptMap({
               exit={{ opacity: 0, y: -6 }}
               transition={{ type: 'spring', stiffness: 320, damping: 26 }}
               style={{
-                border: '1px solid var(--clss-feedback-correct)',
-                background: 'var(--clss-feedback-correctSoft)',
+                border: '1px solid var(--wobo-feedback-correct)',
+                background: 'var(--wobo-feedback-correctSoft)',
                 borderRadius: 3,
                 padding: '14px 16px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 6,
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               <span style={{ ...whisper }}>{selectedNode.label}</span>
@@ -363,7 +363,7 @@ export function ConceptMap({
                 ...lead,
                 borderLeft: `2px solid ${hue}`,
                 paddingLeft: 14,
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               tap any concept to light up everything it connects to.

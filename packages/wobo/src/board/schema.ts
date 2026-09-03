@@ -4,11 +4,11 @@
  * The brain composes objects; the hand renders them; both sides keep the same list so either can
  * refer to any object later by id. This file is generated into the Python mirror the brain
  * validates against (`bun run --cwd packages/wobo board:codegen`), so the grammar can never drift
- * between the two halves of her.
+ * between the two halves of Wobo.
  *
  * Three laws are encoded here rather than left to convention:
  *  1. Nothing is placed by pixels. Every object carries an `anchor`, and the only coordinate form
- *     is board space — a 1000-unit logical width — used solely for shapes she draws from scratch.
+ *     is board space — a 1000-unit logical width — used solely for shapes Wobo draws from scratch.
  *  2. Every number on a board is computed by code. A `number` object carries `verified`; the hand
  *     refuses to draw one that is false (see `renderer.tsx`).
  *  3. Colour resolves through theme tokens, never literals. `style.ink` is a role, not a hex.
@@ -65,7 +65,7 @@ export type BoardAnchor = Extract<Anchor, { board: BoardPoint }>;
 
 /**
  * Ink roles, resolved through the theme (marker on paper in light, chalk on slate in dark):
- * `wobo` is her hand, `accent` is the one hit of pigment (ultramarine — her pen tip), `learner`
+ * `wobo` is Wobo's hand, `accent` is the one hit of pigment (ultramarine — Wobo's pen tip), `learner`
  * is the child's own stroke, `faint` is structure that must not compete.
  */
 export const INK_ROLES = ['wobo', 'accent', 'learner', 'faint'] as const;
@@ -385,7 +385,7 @@ export const isControlKind = (k: string): k is ControlKind => CONTROL_SET.has(k)
 // --- Object memory: patches on objects already drawn ---------------------------------------------
 
 /**
- * She can come back to anything she drew. A patch names an existing id and says what happens to it,
+ * Wobo can come back to anything Wobo drew. A patch names an existing id and says what happens to it,
  * so "this one" is a real reference rather than a redraw from scratch.
  */
 export const BoardPatchSchema = z.discriminatedUnion('kind', [
@@ -426,7 +426,7 @@ export function isPatch(payload: InkPayload): payload is BoardPatch {
 
 // --- The streaming protocol (BOARD.md §4) ---------------------------------------------------------
 
-/** Which surface an event's ink lands on. She picks; the learner may override. */
+/** Which surface an event's ink lands on. Wobo picks; the learner may override. */
 export const PRESENTATIONS = ['screen', 'plane', 'full'] as const;
 export const PresentationSchema = z.enum(PRESENTATIONS);
 export type Presentation = (typeof PRESENTATIONS)[number];
@@ -464,7 +464,7 @@ export const CardEventSchema = z.object({
 });
 export const DoneEventSchema = z.object({
   type: z.literal('done'),
-  /** Set when the learner stopped her: the object the pen was on when it lifted. */
+  /** Set when the learner stopped Wobo: the object the pen was on when it lifted. */
   interruptedAt: z.string().min(1).optional(),
   t: z.number().min(0).optional(),
 });

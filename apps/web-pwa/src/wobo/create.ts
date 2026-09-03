@@ -207,7 +207,7 @@ export interface DoodleSpec {
   concept: string;
   /** One true fact hooked onto the delight — never made-up (WOBO.md persona law). */
   fact?: string;
-  /** Seed so the same ask redraws the same critter (until she re-inks it fresh). */
+  /** Seed so the same ask redraws the same critter (until Wobo re-inks it fresh). */
   seed?: number;
 }
 
@@ -264,7 +264,7 @@ export function seedDoodle(concept: string): DoodleSpec {
   return { concept: c, fact: trueFactFor(c), seed: hash(c) };
 }
 
-/** A friendly seeded critter drawn in her hand — one generator, a different creature per seed. */
+/** A friendly seeded critter drawn in Wobo's hand — one generator, a different creature per seed. */
 export interface DoodleArt {
   viewBox: string;
   body: string;

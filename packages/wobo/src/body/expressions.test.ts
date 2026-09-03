@@ -71,7 +71,7 @@ describe('the expression table', () => {
     expect(withSpark).toEqual(['aha']);
   });
 
-  it('keeps her notes in her voice — sentence case, no emoji, no exclamation marks', () => {
+  it("keeps Wobo's notes in Wobo's voice — sentence case, no emoji, no exclamation marks", () => {
     for (const name of EXPRESSION_NAMES) {
       const note = expressionNote(name);
       expect(note).not.toContain('!');

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 import { availableModes, MODE_BY_ID, MODES, modeFromText, modePrompt } from './modes';
 
-describe('her modes', () => {
+describe("Wobo's modes", () => {
   it('are the nine a learner asks a tutor for, each reachable by id', () => {
     expect(MODES).toHaveLength(9);
     for (const mode of MODES) expect(MODE_BY_ID[mode.id]).toBe(mode);

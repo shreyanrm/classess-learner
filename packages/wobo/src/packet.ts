@@ -2,7 +2,7 @@
  * The context packet — everything Wobo is given for one turn (docs/WOBO-PLAN.md §1, §5.3).
  *
  * Per turn: what the learner pointed at, what is on screen, where they are, what they are doing,
- * what her mind holds about them, and the last few turns — assembled here, on the client, and sent
+ * what Wobo's mind holds about them, and the last few turns — assembled here, on the client, and sent
  * up through the one seam (`wobo.turn`). The client holds no key, no model id and no limit; this
  * file only decides what is worth saying and what has to be left out.
  *
@@ -27,7 +27,7 @@ export interface TaskState {
   beat?: string;
   attempt?: number;
   score?: number;
-  /** The rung of the assistance ladder she is on. */
+  /** The rung of the assistance ladder Wobo is on. */
   mode?: string;
   [key: string]: unknown;
 }
@@ -39,9 +39,9 @@ export interface MindSummary {
   topic?: string;
   /** The mistakes worth having in mind, most recent last. */
   mistakes?: string[];
-  /** The world she explains in when they ask for their own language. */
+  /** The world Wobo explains in when they ask for their own language. */
   analogy?: string;
-  /** Server-derived; carried so she never offers past the door the brain opened. */
+  /** Server-derived; carried so Wobo never offers past the door the brain opened. */
   consentTier?: string;
   plan?: string;
 }
@@ -209,7 +209,7 @@ const LADDER: Reduction[] = [
     apply: (p) => {
       const mistakes = p.mind?.mistakes;
       if (!p.mind || !mistakes || mistakes.length === 0) return false;
-      // Oldest mistake goes first; the most recent one is the one she is teaching against.
+      // Oldest mistake goes first; the most recent one is the one Wobo is teaching against.
       p.mind = { ...p.mind, mistakes: mistakes.length > 1 ? mistakes.slice(1) : undefined };
       p.mind = compact(p.mind);
       return true;

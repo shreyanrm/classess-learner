@@ -37,7 +37,7 @@ describe('boards a session keeps', () => {
       kept.push(id);
     }
     expect(boardBook.ids().length).toBeLessThanOrEqual(8);
-    // The board she is actually looking at is always still there.
+    // The board Wobo is actually looking at is always still there.
     expect(boardBook.ids()).toContain(plane.get().boardId);
     expect(plane.get().boardId).toBe(kept[kept.length - 1] as string);
     for (const id of boardBook.ids()) boardBook.drop(id);

@@ -4,18 +4,18 @@
  * PerturbationSandbox — "break it" (DESIGN.md §9). A law lives inside an assumption; this engine
  * exposes the ONE parameter where the assumption fails as a slider. Dragging toward the breakpoint
  * animates the model diverging (the plotted output shoots to the asymptote), and at the edge the
- * hidden assumption is revealed in her ink hand — the annotation and the "why not in reality?" line.
+ * hidden assumption is revealed in Wobo's ink hand — the annotation and the "why not in reality?" line.
  *
  * Ohm's law with R→0 (current diverges — real wires have internal resistance); an ideal gas with
  * V→0; an n-slider for a sampling statistic. All spec-driven: the composer emits
  * { model(law), param, range, breakpoint, revelation } and this shell renders and drives it.
  *
- * Registers as a Wobo scene target: she reads the slider + output + broken state (getSceneState),
- * and can DRIVE it to demonstrate the divergence herself (applyTutorAction). Output arithmetic is
+ * Registers as a Wobo scene target: Wobo reads the slider + output + broken state (getSceneState),
+ * and can DRIVE it to demonstrate the divergence directly (applyTutorAction). Output arithmetic is
  * evaluated by SimRunner's safe parser — never eval. Reduced-motion + mute aware; both themes.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type CSSProperties, useEffect, useMemo, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -38,7 +38,7 @@ export interface PerturbSpec {
     at: number;
     /** The side the param travels to reach the edge (R→0 is 'below'; V→∞ is 'above'). */
     approach: 'below' | 'above';
-    /** The hidden assumption the ideal model quietly makes — her ink annotation at the edge. */
+    /** The hidden assumption the ideal model quietly makes — Wobo's ink annotation at the edge. */
     assumption: string;
     /** Why the real world refuses to diverge — the reveal that lands once it breaks. */
     revelation: string;
@@ -104,7 +104,7 @@ const equationRow: CSSProperties = {
   letterSpacing: '-0.01em',
   fontVariantNumeric: 'tabular-nums',
   textAlign: 'center',
-  color: 'var(--clss-ink-900)',
+  color: 'var(--wobo-ink-900)',
 };
 
 /** True once the param has reached the failure edge — the model is broken. */
@@ -179,7 +179,7 @@ export function PerturbationSandbox({
     setBar({ primary: { label: 'continue', disabled: !broke, onClick: onDone } });
   }, [broke, setBar, onDone]);
 
-  // she reads the sandbox at code level, and can drive the slider to demonstrate the divergence
+  // Wobo reads the sandbox at code level, and can drive the slider to demonstrate the divergence
   const applyTutorAction = (patch: Record<string, unknown>) => {
     if (patch.break === true) return setValue(spec.breakpoint.at);
     if (num(patch.value)) setValue(Math.max(min, Math.min(max, patch.value)));
@@ -239,7 +239,7 @@ export function PerturbationSandbox({
               y1={VB_H - PAD_B}
               x2={VB_W - PAD_R}
               y2={VB_H - PAD_B}
-              stroke="var(--clss-ink-300)"
+              stroke="var(--wobo-ink-300)"
               strokeWidth={0.5}
             />
             <line
@@ -247,7 +247,7 @@ export function PerturbationSandbox({
               y1={PAD_T}
               x2={PAD_L}
               y2={VB_H - PAD_B}
-              stroke="var(--clss-ink-300)"
+              stroke="var(--wobo-ink-300)"
               strokeWidth={0.5}
             />
             {/* the breakpoint edge — a dashed wall the curve races toward */}
@@ -264,7 +264,7 @@ export function PerturbationSandbox({
             <path
               d={plot.d}
               fill="none"
-              stroke="var(--clss-ink-700)"
+              stroke="var(--wobo-ink-700)"
               strokeWidth={1.3}
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -292,7 +292,7 @@ export function PerturbationSandbox({
               animate={reduced || !broke ? undefined : { r: [2.6, 3.4, 2.6] }}
               transition={{ duration: 0.8, repeat: broke ? Number.POSITIVE_INFINITY : 0 }}
             />
-            {/* her ink annotation at the edge — the hidden assumption, drawn only when broken */}
+            {/* Wobo's ink annotation at the edge — the hidden assumption, drawn only when broken */}
             <AnimatePresence>
               {broke && (
                 <motion.g
@@ -324,7 +324,7 @@ export function PerturbationSandbox({
             padding: '4px 2px',
           }}
         >
-          <div style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>
+          <div style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)' }}>
             {spec.output.label}
           </div>
           <div
@@ -332,7 +332,7 @@ export function PerturbationSandbox({
               fontSize: '1.5rem',
               fontWeight: 560,
               fontVariantNumeric: 'tabular-nums',
-              color: broke ? hue : 'var(--clss-ink-900)',
+              color: broke ? hue : 'var(--wobo-ink-900)',
               transition: 'color 0.3s ease',
             }}
           >
@@ -362,7 +362,7 @@ export function PerturbationSandbox({
               fontVariantNumeric: 'tabular-nums',
               fontSize: '1.05rem',
               fontWeight: 560,
-              color: 'var(--clss-ink-900)',
+              color: 'var(--wobo-ink-900)',
             }}
           >
             {spec.param.label} {formatSimNumber(value)}
@@ -374,7 +374,7 @@ export function PerturbationSandbox({
             ...lead,
             borderLeft: `2px solid ${hue}`,
             paddingLeft: 14,
-            color: 'var(--clss-ink-900)',
+            color: 'var(--wobo-ink-900)',
           }}
         >
           drag {spec.param.label} toward {formatSimNumber(spec.breakpoint.at)} and watch{' '}
@@ -392,13 +392,13 @@ export function PerturbationSandbox({
             >
               <div
                 style={{
-                  border: '1px solid var(--clss-feedback-correct)',
-                  background: 'var(--clss-feedback-correctSoft)',
+                  border: '1px solid var(--wobo-feedback-correct)',
+                  background: 'var(--wobo-feedback-correctSoft)',
                   borderRadius: 3,
                   padding: '14px 16px',
                   fontSize: '1.02rem',
                   lineHeight: 1.6,
-                  color: 'var(--clss-ink-900)',
+                  color: 'var(--wobo-ink-900)',
                 }}
               >
                 <span style={{ ...whisper, display: 'block', marginBottom: 6 }}>
@@ -410,7 +410,7 @@ export function PerturbationSandbox({
                 <span aria-hidden style={{ color: hue, fontSize: '1.1rem', lineHeight: 1.4 }}>
                   ◍
                 </span>
-                <div style={{ ...lead, fontStyle: 'italic', color: 'var(--clss-ink-700)' }}>
+                <div style={{ ...lead, fontStyle: 'italic', color: 'var(--wobo-ink-700)' }}>
                   {spec.breakpoint.revelation}
                 </div>
               </div>

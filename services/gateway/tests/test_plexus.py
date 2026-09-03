@@ -6,15 +6,15 @@ import hashlib
 import json
 
 import pytest
-from classess_gateway.app import CapabilityRequest, Gateway
-from classess_gateway.cache import InMemoryCache
-from classess_gateway.plexus import store
-from classess_gateway.plexus.engines import _verify_sim, _verify_video
-from classess_gateway.plexus.sanitize import sanitize_svg
-from classess_gateway.providers import MockProvider
-from classess_gateway.registry import ConsentTier
-from classess_gateway.telemetry import MetricsSink
-from classess_verifier.cas import parse_equation
+from wobo_gateway.app import CapabilityRequest, Gateway
+from wobo_gateway.cache import InMemoryCache
+from wobo_gateway.plexus import store
+from wobo_gateway.plexus.engines import _verify_sim, _verify_video
+from wobo_gateway.plexus.sanitize import sanitize_svg
+from wobo_gateway.providers import MockProvider
+from wobo_gateway.registry import ConsentTier
+from wobo_gateway.telemetry import MetricsSink
+from wobo_verifier.cas import parse_equation
 
 ENGINES = ("engine.compose", "engine.simulate", "engine.diagram", "engine.video")
 
@@ -93,7 +93,7 @@ def test_compose_outline_shape() -> None:
 
 
 def test_compose_refuses_ambiguous_or_missing_answers() -> None:
-    from classess_gateway.plexus.engines import _verify_items
+    from wobo_gateway.plexus.engines import _verify_items
 
     # answer absent from options
     assert (
@@ -176,7 +176,7 @@ def _compose_spec(cards: list[dict]) -> dict:
 
 
 def test_verify_discovery_mirrors_client_contract() -> None:
-    from classess_gateway.plexus.engines import _verify_discovery
+    from wobo_gateway.plexus.engines import _verify_discovery
 
     ok = _verify_discovery(_valid_discovery())
     assert ok is not None
@@ -205,7 +205,7 @@ def test_verify_discovery_mirrors_client_contract() -> None:
 
 
 def test_compose_keeps_valid_discovery_and_drops_malformed() -> None:
-    from classess_gateway.plexus.engines import _verify_compose
+    from wobo_gateway.plexus.engines import _verify_compose
 
     spec = _compose_spec(
         [
@@ -221,7 +221,7 @@ def test_compose_keeps_valid_discovery_and_drops_malformed() -> None:
 
 
 def test_compose_emits_image_spec_for_organic_visual() -> None:
-    from classess_gateway.plexus.engines import _verify_compose, _verify_image_spec
+    from wobo_gateway.plexus.engines import _verify_compose, _verify_image_spec
 
     assert _verify_image_spec({"subject": "a plant cell", "caption": "labelled"}) == {
         "subject": "a plant cell",
@@ -466,7 +466,7 @@ def _valid_activities() -> dict:
 def test_compose_preserves_every_rich_activity_field() -> None:
     """The verifier orchestrates the full type universe: every valid card activity survives to the
     client verbatim; a malformed one is dropped, never the card (fix, 2026-07-07)."""
-    from classess_gateway.plexus.engines import _CARD_ACTIVITIES, _verify_compose
+    from wobo_gateway.plexus.engines import _CARD_ACTIVITIES, _verify_compose
 
     activities = _valid_activities()
     assert set(activities) == set(
@@ -507,7 +507,7 @@ def test_compose_preserves_every_rich_activity_field() -> None:
     ],
 )
 def test_compose_drops_malformed_activity_but_keeps_card(field: str, mangle) -> None:
-    from classess_gateway.plexus.engines import _verify_compose
+    from wobo_gateway.plexus.engines import _verify_compose
 
     bad = mangle(_valid_activities()[field])
     out = _verify_compose(_compose_spec([{field: bad}]), "topic", "core")
@@ -565,7 +565,7 @@ def test_seed_compose_teaches_via_guided_discovery() -> None:
 
 def test_image_raster_seam_wraps_gemini_result(monkeypatch) -> None:
     """engine.diagram's raster path (the Nano Banana seam) wraps a Gemini image as inline SVG."""
-    from classess_gateway.plexus import engines, image
+    from wobo_gateway.plexus import engines, image
 
     monkeypatch.setattr(
         image,
@@ -641,7 +641,7 @@ def test_simulate_refuses_non_mathematical_formula() -> None:
 
 
 def test_seed_sim_is_topic_aware_and_never_wrong_subject() -> None:
-    from classess_gateway.plexus.engines import _seed_sim
+    from wobo_gateway.plexus.engines import _seed_sim
 
     assert _seed_sim("Ohm's law and circuits")["formula"] == "V = I*R"
     assert _seed_sim("speed, distance and time")["formula"] == "d = v*t"
@@ -662,7 +662,7 @@ _GOOD_SIM = (
 
 
 def test_generate_sim_live_retries_once_feeding_the_verifier_reason(monkeypatch) -> None:
-    from classess_gateway.plexus import engines
+    from wobo_gateway.plexus import engines
 
     drafts = iter([_BAD_SIM, _GOOD_SIM])
     seen: list[str] = []
@@ -684,7 +684,7 @@ def test_generate_sim_live_retries_once_feeding_the_verifier_reason(monkeypatch)
 def test_generate_sim_live_raises_after_a_failed_retry(monkeypatch) -> None:
     """A sim that refuses even after the retry raises — the caller seeds a topic-aware floor rather
     than swallowing the refusal and serving a wrong sim."""
-    from classess_gateway.plexus import engines
+    from wobo_gateway.plexus import engines
 
     monkeypatch.setattr(engines, "_complete", lambda *a, **k: (_BAD_SIM, 3))
     with pytest.raises(ValueError):
@@ -730,8 +730,8 @@ _VALID_PLAN = (
 
 
 def _video_routing():
-    from classess_gateway.registry import policy
-    from classess_gateway.routing import resolve, resolve_any
+    from wobo_gateway.registry import policy
+    from wobo_gateway.routing import resolve, resolve_any
 
     pol = policy("engine.video")
     primary = resolve(pol.primary, pol.track).provider_model
@@ -744,8 +744,8 @@ def test_video_defaults_to_the_generate_tier_and_escalates_one_rung() -> None:
     escalates only on a rejection — one rung, to the REASON tier (Sol). The error-failover rung
     underneath is the verify tier (Opus 5), so an outage still yields content from the other
     provider."""
-    from classess_gateway.registry import escalate_for, policy
-    from classess_gateway.routing import Tier, resolve, resolve_any
+    from wobo_gateway.registry import escalate_for, policy
+    from wobo_gateway.routing import Tier, resolve, resolve_any
 
     pol = policy("engine.video")
     assert pol.tier is Tier.GENERATE
@@ -756,7 +756,7 @@ def test_video_defaults_to_the_generate_tier_and_escalates_one_rung() -> None:
 
 def _patch_complete(monkeypatch, plans: dict[str, str]) -> list[str]:
     """Route each engine _complete call to a canned scene-plan JSON, recording the models hit."""
-    from classess_gateway.plexus import engines
+    from wobo_gateway.plexus import engines
 
     calls: list[str] = []
 
@@ -769,7 +769,7 @@ def _patch_complete(monkeypatch, plans: dict[str, str]) -> list[str]:
 
 
 def test_video_escalates_when_scene_plan_flags_complex(monkeypatch) -> None:
-    from classess_gateway.plexus.engines import _generate_video_live
+    from wobo_gateway.plexus.engines import _generate_video_live
 
     primary, fallbacks = _video_routing()
     opus = fallbacks[0]
@@ -787,7 +787,7 @@ def test_video_escalates_when_scene_plan_flags_complex(monkeypatch) -> None:
 
 
 def test_video_escalates_when_sonnet_draft_fails_verification(monkeypatch) -> None:
-    from classess_gateway.plexus.engines import _generate_video_live
+    from wobo_gateway.plexus.engines import _generate_video_live
 
     primary, fallbacks = _video_routing()
     opus = fallbacks[0]
@@ -802,7 +802,7 @@ def test_video_escalates_when_sonnet_draft_fails_verification(monkeypatch) -> No
 
 
 def test_video_stays_on_primary_for_a_simple_valid_plan(monkeypatch) -> None:
-    from classess_gateway.plexus.engines import _generate_video_live
+    from wobo_gateway.plexus.engines import _generate_video_live
 
     primary, fallbacks = _video_routing()
     # a simple, valid plan never escalates — the reasoner is reserved for when it is needed
@@ -818,7 +818,7 @@ def test_pcm_narration_wrapped_as_playable_wav() -> None:
     """Gemini returns raw PCM; the browser needs a WAV container to play it."""
     import base64
 
-    from classess_gateway.plexus.media import _as_playable
+    from wobo_gateway.plexus.media import _as_playable
 
     pcm_b64 = base64.b64encode(b"\x00\x01" * 100).decode()
     out = _as_playable("audio/pcm;rate=24000", pcm_b64)
@@ -833,7 +833,7 @@ def test_wav_duration_ms_measures_beat_length() -> None:
     """The measured WAV length is the authoritative beat duration (MOTION.md §5)."""
     import base64
 
-    from classess_gateway.plexus.media import _as_playable, wav_duration_ms
+    from wobo_gateway.plexus.media import _as_playable, wav_duration_ms
 
     # 24000 frames (2 bytes each) at 24 kHz mono == exactly one second
     wav = _as_playable("audio/pcm;rate=24000", base64.b64encode(b"\x00\x01" * 24000).decode())
@@ -846,8 +846,8 @@ def test_video_attaches_per_scene_audio(monkeypatch) -> None:
     never one joined blob (MOTION.md §5 sync law)."""
     import base64
 
-    from classess_gateway.plexus import engines
-    from classess_gateway.plexus.media import _as_playable
+    from wobo_gateway.plexus import engines
+    from wobo_gateway.plexus.media import _as_playable
 
     sonnet, fallbacks = _video_routing()
     _patch_complete(monkeypatch, {sonnet: _VALID_PLAN % "simple"})
@@ -866,7 +866,7 @@ def test_video_attaches_per_scene_audio(monkeypatch) -> None:
 
 
 def test_seed_video_is_genuinely_animated() -> None:
-    from classess_gateway.plexus.engines import _seed_video
+    from wobo_gateway.plexus.engines import _seed_video
 
     scenes = _seed_video("photosynthesis")["scenes"]
     joined = " ".join(s["visual"]["payload"] for s in scenes)
@@ -955,7 +955,7 @@ def test_two_boards_same_concept_generate_once_serve_both(cache_dir) -> None:
 def test_live_serve_regenerates_pre_doctrine_prompt_versions(monkeypatch, cache_dir) -> None:
     """An artifact cached under an older composer prompt regenerates on first live serve — the
     current doctrine (visual law, fact base, schemas) supersedes it; the ledger keeps the old."""
-    from classess_gateway.plexus import engines
+    from wobo_gateway.plexus import engines
 
     def record_at(version: str) -> dict:
         return {
@@ -1043,7 +1043,7 @@ def test_board_shared_hit_reuses_and_personalization_never_baked_in(cache_dir) -
 
 
 def test_one_generation_per_learner_gate() -> None:
-    from classess_gateway.plexus import engines
+    from wobo_gateway.plexus import engines
 
     # simulate a generation already in flight for this learner
     engines._gen_in_flight.add("busy-user")
@@ -1065,7 +1065,7 @@ def test_one_generation_per_learner_gate() -> None:
 def test_the_slot_ignores_a_client_supplied_user_field() -> None:
     """``payload["user"]`` was the slot key. Naming a victim there squatted THEIR slot for the
     length of a generation; the key is the verified subject now, so the field does nothing."""
-    from classess_gateway.plexus import engines
+    from wobo_gateway.plexus import engines
 
     engines._gen_in_flight.add("victim")
     try:
@@ -1080,7 +1080,7 @@ def test_the_slot_ignores_a_client_supplied_user_field() -> None:
 def test_an_unattributed_generation_is_refused_not_waved_through() -> None:
     """Omitting the key used to skip the gate entirely — unlimited concurrent generations for
     the price of deleting one field. An empty subject is a refusal."""
-    from classess_gateway.plexus import engines
+    from wobo_gateway.plexus import engines
 
     with pytest.raises(engines.GenerationUnattributed):
         engines.run_engine(
@@ -1280,7 +1280,7 @@ def test_migration_is_idempotent(cache_dir) -> None:
 
 
 def test_valid_smiles_handles_nested_branches_without_leaking_state() -> None:
-    from classess_gateway.plexus import chem
+    from wobo_gateway.plexus import chem
 
     assert chem.valid_smiles("CC(C(C)C)C") is True  # branch inside a branch
     assert chem.valid_smiles("C(C(C)(C)C)(C)(C)C") is True  # deeper nesting, still in valence
@@ -1296,7 +1296,7 @@ def test_valid_smiles_is_thread_safe_across_concurrent_calls() -> None:
     """Module-global branch state made two concurrent validations corrupt each other."""
     import threading
 
-    from classess_gateway.plexus import chem
+    from wobo_gateway.plexus import chem
 
     bad: list[str] = []
 
@@ -1337,7 +1337,7 @@ def _choro(values: list[dict[str, object]], extreme: str = "max") -> dict[str, o
 
 
 def test_choropleth_with_a_tied_extreme_is_refused() -> None:
-    from classess_gateway.plexus.maps import verify_map_scene
+    from wobo_gateway.plexus.maps import verify_map_scene
 
     tied_max = _choro(
         [
@@ -1360,7 +1360,7 @@ def test_choropleth_with_a_tied_extreme_is_refused() -> None:
 
 
 def test_choropleth_with_a_unique_extreme_still_passes() -> None:
-    from classess_gateway.plexus.maps import verify_map_scene
+    from wobo_gateway.plexus.maps import verify_map_scene
 
     # a tie BELOW the extreme is harmless — the argmax is still exactly one state
     scene = _choro(
@@ -1390,8 +1390,8 @@ def test_telemetry_event_fields_survive_the_json_formatter() -> None:
     ``record.fields`` and drops every other custom key, so any other name logs nothing."""
     import logging
 
-    from classess_gateway.app import _JsonFormatter
-    from classess_gateway.telemetry import TelemetryEvent, emit
+    from wobo_gateway.app import _JsonFormatter
+    from wobo_gateway.telemetry import TelemetryEvent, emit
 
     records: list[logging.LogRecord] = []
 
@@ -1399,7 +1399,7 @@ def test_telemetry_event_fields_survive_the_json_formatter() -> None:
         def emit(self, record: logging.LogRecord) -> None:
             records.append(record)
 
-    logger = logging.getLogger("classess.gateway.telemetry")
+    logger = logging.getLogger("wobo.gateway.telemetry")
     handler = _Capture()
     logger.addHandler(handler)
     previous = logger.level

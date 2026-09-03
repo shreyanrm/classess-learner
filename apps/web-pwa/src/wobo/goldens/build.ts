@@ -1,10 +1,10 @@
 /**
- * The golden boards — twelve turns she can be held to (docs/BOARD.md; WOBO-PLAN §2).
+ * The golden boards — twelve turns Wobo can be held to (docs/BOARD.md; WOBO-PLAN §2).
  *
  * Run me:  bun run apps/web-pwa/src/wobo/goldens/build.ts
  *
  * Everything a golden board shows is computed HERE, in code, from the physics or the arithmetic —
- * never typed in as a literal she then "explains". The output is twelve JSON plans plus a manifest,
+ * never typed in as a literal Wobo then "explains". The output is twelve JSON plans plus a manifest,
  * read by the bench (the hand) and by `services/gateway/tests/test_board_golden.py` (the brain),
  * which recomputes every one of these numbers independently before it lets the fixture pass.
  *
@@ -25,7 +25,7 @@ import {
   type BoardPoint,
   type Presentation,
   parseBoardPlan,
-} from '@classess/wobo';
+} from '@wobo/wobo';
 import type { AnchorForm, GoldenBoard, GoldenExpectation, GoldenNumber } from './types';
 
 // --- the little language a board is written in ----------------------------------------------------

@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { chrome, dark } from '@classess/config';
+import { chrome, dark } from '@wobo/config';
 
 const APP = join(import.meta.dir, '..');
 const html = readFileSync(join(APP, 'index.html'), 'utf8');
 
 const LIGHT_PAGE = chrome.page;
-const DARK_PAGE = dark['--clss-page'] as string;
+const DARK_PAGE = dark['--wobo-page'] as string;
 
 /**
  * The document shell is what a learner on a cheap phone sees before a single byte of JS runs. What
@@ -58,7 +58,7 @@ describe('the document shell paints correctly before any JS', () => {
   });
 
   it('names those bundled families in the type stack', async () => {
-    const { fontFamily } = await import('@classess/config');
+    const { fontFamily } = await import('@wobo/config');
     expect(fontFamily.system).toContain('Plus Jakarta Sans Variable');
     expect(fontFamily.handwritten).toContain('Caveat Variable');
   });

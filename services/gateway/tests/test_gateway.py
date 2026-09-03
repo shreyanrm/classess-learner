@@ -7,15 +7,16 @@ suite goes through the same door production does.
 from __future__ import annotations
 
 import pytest
-from classess_gateway.app import (
+from fastapi.testclient import TestClient
+from wobo_gateway.app import (
     CapabilityRequest,
     ConsentDenied,
     Gateway,
     create_app,
 )
-from classess_gateway.cache import InMemoryCache
-from classess_gateway.providers import MockProvider
-from classess_gateway.registry import (
+from wobo_gateway.cache import InMemoryCache
+from wobo_gateway.providers import MockProvider
+from wobo_gateway.registry import (
     EXPECTED_CAPABILITIES,
     ConsentTier,
     capabilities,
@@ -23,7 +24,7 @@ from classess_gateway.registry import (
     policy,
     validate_registry,
 )
-from classess_gateway.routing import (
+from wobo_gateway.routing import (
     Tier,
     Track,
     escalate,
@@ -34,8 +35,7 @@ from classess_gateway.routing import (
     tier_model,
     track_separation_holds,
 )
-from classess_gateway.telemetry import MetricsSink
-from fastapi.testclient import TestClient
+from wobo_gateway.telemetry import MetricsSink
 
 ELEVATED_ONLY = ("archetype.classify", "peakcut.evaluate")
 
@@ -131,7 +131,7 @@ def test_the_cost_rule_escalates_one_tier_and_logs_the_reason(caplog) -> None:
     ONE rung, and the reason is logged so the hard list stays honest."""
     import logging
 
-    with caplog.at_level(logging.INFO, logger="classess.gateway.telemetry"):
+    with caplog.at_level(logging.INFO, logger="wobo.gateway.telemetry"):
         escalated = escalate_for("engine.compose", "verifier rejected the derivation")
     assert escalated == TIER_TABLE[Tier.REASON][0]  # generate -> reason, not straight to the top
     line = next(r for r in caplog.records if r.getMessage() == "gateway.escalation")
@@ -199,7 +199,7 @@ def test_grade_attempt_live_returns_correct_and_feedback(monkeypatch) -> None:
     import sys
     import types
 
-    from classess_gateway.providers import _grade_attempt
+    from wobo_gateway.providers import _grade_attempt
 
     fake = types.ModuleType("litellm")
     fake.drop_params = False
@@ -228,7 +228,7 @@ def test_grade_attempt_live_returns_correct_and_feedback(monkeypatch) -> None:
 def test_gateway_reports_the_model_that_actually_answered_on_fallback() -> None:
     """When a provider reports a fallback model, telemetry and the response carry IT — never the
     tier primary that never ran."""
-    from classess_gateway.providers import ProviderResponse
+    from wobo_gateway.providers import ProviderResponse
 
     class FallbackProvider:
         def complete(self, *, provider_model, capability, payload, fallbacks=(), **_):  # noqa: ANN001
@@ -310,7 +310,7 @@ def test_http_surface(auth) -> None:
 
 # --- the dossier: identity + facts ride every Wobo turn (WOBO.md §7) -----------------
 def test_dossier_renders_identity_and_facts() -> None:
-    from classess_gateway.wobo import _build_user_prompt
+    from wobo_gateway.wobo import _build_user_prompt
 
     context = {
         "lifetime": {
@@ -327,14 +327,14 @@ def test_dossier_renders_identity_and_facts() -> None:
 
 
 def test_dossier_is_empty_when_nothing_is_known() -> None:
-    from classess_gateway.wobo import _build_user_prompt
+    from wobo_gateway.wobo import _build_user_prompt
 
     prompt = _build_user_prompt({}, None)
     assert "Who you are teaching" not in prompt
 
 
 def test_machine_room_renders_internal_state() -> None:
-    from classess_gateway.wobo import _build_user_prompt
+    from wobo_gateway.wobo import _build_user_prompt
 
     context = {
         "machine": {
@@ -365,14 +365,14 @@ def test_machine_room_renders_internal_state() -> None:
 
 
 def test_machine_room_is_empty_when_nothing_is_known() -> None:
-    from classess_gateway.wobo import _build_user_prompt
+    from wobo_gateway.wobo import _build_user_prompt
 
     prompt = _build_user_prompt({}, None)
     assert "Machine room" not in prompt
 
 
 def test_mock_turn_answers_the_name_question() -> None:
-    from classess_gateway.wobo import mock_wobo_turn
+    from wobo_gateway.wobo import mock_wobo_turn
 
     out = mock_wobo_turn(
         {
@@ -386,7 +386,7 @@ def test_mock_turn_answers_the_name_question() -> None:
 
 
 def test_mock_turn_remembers_a_preferred_name() -> None:
-    from classess_gateway.wobo import mock_wobo_turn
+    from wobo_gateway.wobo import mock_wobo_turn
 
     out = mock_wobo_turn({"context": {"turn": {"lastUserInput": "call me Ravi"}}})
     remembers = [a for a in out["actions"] if a.get("type") == "remember"]
@@ -411,7 +411,7 @@ def test_cors_allows_our_vercel_preview_origins_outside_prod(
     r = client.options(
         "/v1/capability/wobo.turn",
         headers={
-            "origin": "https://classess-learner-abc123xyz-depl-shreyan.vercel.app",
+            "origin": "https://wobo-abc123xyz-depl-shreyan.vercel.app",
             "access-control-request-method": "POST",
         },
     )
@@ -433,7 +433,7 @@ def test_prod_cors_is_exactly_the_one_app_origin(monkeypatch: pytest.MonkeyPatch
     otherwise hold a credentialed cross-origin door into production."""
     monkeypatch.setenv("ENV", "prod")
     monkeypatch.setenv("SUPABASE_JWT_SECRET", "x" * 32)
-    from classess_gateway import app as app_mod
+    from wobo_gateway import app as app_mod
 
     assert app_mod._preview_origin_regex() is None
 
@@ -441,7 +441,7 @@ def test_prod_cors_is_exactly_the_one_app_origin(monkeypatch: pytest.MonkeyPatch
     preview = client.options(
         "/v1/capability/wobo.turn",
         headers={
-            "origin": "https://classess-learner-abc123xyz-depl-shreyan.vercel.app",
+            "origin": "https://wobo-abc123xyz-depl-shreyan.vercel.app",
             "access-control-request-method": "POST",
         },
     )
@@ -493,14 +493,17 @@ def test_prod_cors_excludes_localhost(monkeypatch: pytest.MonkeyPatch) -> None:
     from fastapi.testclient import TestClient
 
     monkeypatch.setenv("ENV", "prod")
+    from wobo_gateway import app as app_mod
+
     client = TestClient(create_app(make_gateway()))
     preflight = {"Access-Control-Request-Method": "POST"}
 
+    # the one allowed origin is APP_URL itself, whatever the host set it to
     allowed = client.options(
         "/v1/capabilities",
-        headers={"Origin": "https://learner.classess.com", **preflight},
+        headers={"Origin": app_mod.APP_URL, **preflight},
     )
-    assert allowed.headers["access-control-allow-origin"] == "https://learner.classess.com"
+    assert allowed.headers["access-control-allow-origin"] == app_mod.APP_URL
 
     denied = client.options(
         "/v1/capabilities",
@@ -532,7 +535,7 @@ def test_capability_routes_are_rate_limited_per_subject(
     monkeypatch.setenv("RATE_LIMIT_PER_MINUTE", "3")
     # pin the wall clock so all four posts land in one rate-limit window
     monkeypatch.setattr(
-        "classess_gateway.app.time",
+        "wobo_gateway.app.time",
         SimpleNamespace(time=lambda: 1_000_000.0, perf_counter=time.perf_counter),
     )
     client = TestClient(create_app(make_gateway()))
@@ -561,8 +564,8 @@ def test_second_concurrent_generation_gets_429_retry_after(tmp_path, monkeypatch
     The slot is keyed on the VERIFIED SUBJECT, not on ``payload["user"]`` — so the pretend
     in-flight generation is registered under the token's subject, and a body that names someone
     else changes nothing."""
-    from classess_gateway.plexus import engines
     from fastapi.testclient import TestClient
+    from wobo_gateway.plexus import engines
 
     monkeypatch.setenv("PLEXUS_CACHE_DIR", str(tmp_path))
     client = TestClient(create_app(make_gateway()))

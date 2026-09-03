@@ -3,7 +3,7 @@
  *
  * A device can carry more than one learner: a sibling signs in on the family tablet, a child hands
  * the phone back to a parent, an anonymous first session becomes a real account. Anything personal
- * — her whole transcript, the mind dossier, the face, the profile — is keyed by the subject who
+ * — Wobo's whole transcript, the mind dossier, the face, the profile — is keyed by the subject who
  * owns it, so nothing of one learner is ever readable by the next. Signing out removes that
  * learner's keys from this device outright.
  *
@@ -18,18 +18,18 @@
 
 /** Everything that belongs to one learner and must never bleed between accounts. */
 export const SCOPED_KEYS = [
-  'clss-wobo-archive-v1',
-  'clss-mind-v1',
-  'clss-avatar-v1',
-  'clss-learner-profile',
-  'clss-profile-photo-v1',
-  // The boards she and the learner drew together, kept as objects. They are the learner's work:
+  'wobo-archive-v1',
+  'wobo-mind-v1',
+  'wobo-avatar-v1',
+  'wobo-learner-profile',
+  'wobo-profile-photo-v1',
+  // The boards Wobo and the learner drew together, kept as objects. They are the learner's work:
   // they carry across an anonymous-to-account upgrade, and they leave the device on sign-out.
-  'clss-board-notes-v1',
+  'wobo-board-notes-v1',
 ] as const;
 
 /** Where the last scope is remembered, so an upgrade (anonymous → account) can carry data across. */
-const SCOPE_KEY = 'clss-scope-v1';
+const SCOPE_KEY = 'wobo-scope-v1';
 
 /** The subject a device was last scoped to, and whether they were still anonymous. */
 export interface RememberedScope {

@@ -40,8 +40,8 @@ function Chip({
       style={{
         // the one chip system: tonal at rest, solid ink when chosen — 3px, never pills
         border: 'none',
-        background: selected ? 'var(--clss-ink-900)' : 'var(--clss-tonal)',
-        color: selected ? 'var(--clss-paper)' : 'var(--clss-ink-700)',
+        background: selected ? 'var(--wobo-ink-900)' : 'var(--wobo-tonal)',
+        color: selected ? 'var(--wobo-paper)' : 'var(--wobo-ink-700)',
         borderRadius: 3,
         padding: '9px 15px',
         fontSize: '0.9rem',
@@ -104,7 +104,7 @@ export function BoardPicker({
         {regions.map((region) => (
           <div key={region} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div
-              style={{ fontSize: '0.72rem', color: 'var(--clss-ink-300)', letterSpacing: '0.1em' }}
+              style={{ fontSize: '0.72rem', color: 'var(--wobo-ink-300)', letterSpacing: '0.1em' }}
             >
               {region}
             </div>
@@ -133,7 +133,7 @@ export function BoardPicker({
             alignSelf: 'flex-start',
             border: 'none',
             background: 'transparent',
-            color: 'var(--clss-ink-500)',
+            color: 'var(--wobo-ink-500)',
             fontSize: '0.85rem',
             cursor: 'pointer',
             fontFamily: 'inherit',
@@ -159,8 +159,8 @@ export function BoardPicker({
               minWidth: 0,
               fontSize: '1rem',
               fontFamily: 'inherit',
-              color: 'var(--clss-ink-900)',
-              background: 'var(--clss-tonal)',
+              color: 'var(--wobo-ink-900)',
+              background: 'var(--wobo-tonal)',
               border: 'none',
               borderRadius: 3,
               padding: '11px 14px',
@@ -183,7 +183,7 @@ export function BoardPicker({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
             transition={{ duration: 0.24, ease: [0.2, 0, 0, 1] }}
-            style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)', lineHeight: 1.5 }}
+            style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)', lineHeight: 1.5 }}
           >
             I'll try to source {boardId} when you arrive
           </motion.div>
@@ -273,7 +273,7 @@ export function GradeBoardPicker({
               <div
                 style={{
                   fontSize: '0.72rem',
-                  color: 'var(--clss-ink-300)',
+                  color: 'var(--wobo-ink-300)',
                   letterSpacing: '0.1em',
                 }}
               >
@@ -301,7 +301,7 @@ export function GradeBoardPicker({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 4 }}
               transition={{ duration: 0.24, ease: [0.2, 0, 0, 1] }}
-              style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)', lineHeight: 1.5 }}
+              style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)', lineHeight: 1.5 }}
             >
               I'll fetch this board's world when you arrive
             </motion.div>

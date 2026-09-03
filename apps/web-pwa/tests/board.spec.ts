@@ -5,18 +5,19 @@
  * science — are played into the bench and then read back out of the DOM. What is asserted is
  * structure and never pixels:
  *
- *  · every object in the plan landed, in the order she inked it;
+ *  · every object in the plan landed, in the order Wobo inked it;
  *  · every mark is placed by an anchor, and a mark that hangs off another object genuinely
  *    overlaps it — which is the only real proof an anchor resolved rather than defaulting to 0,0;
  *  · nothing floats outside the surface it belongs to;
  *  · the derivation is written in order, word for word;
- *  · every quantity she drew is one the verifier signed, and none was refused.
+ *  · every quantity Wobo drew is one the verifier signed, and none was refused.
  *
  * Two screenshots per board, light and dark, land in the wave's golden folder — the eye's copy of
  * the same contract, for a human to look at when a diff is argued about.
  */
 
 import { mkdirSync, readFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expect, type Page, test } from '@playwright/test';
@@ -27,9 +28,10 @@ import { expect, type Page, test } from '@playwright/test';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const GOLDENS = join(HERE, '../src/wobo/goldens');
-const SHOTS =
-  process.env.WOBO_GOLDEN_SHOTS ??
-  '/private/tmp/claude-501/-Users-depl-Documents-classess-learner/e78e989d-9890-46b7-8ea9-a8b6fca9a943/scratchpad/wave5/golden';
+// Outside the repo by default (they are a human's reference copy, not an artifact to commit) and
+// machine-independent: an absolute path baked in from whoever ran the suite first is a path that
+// exists on exactly one laptop. Point WOBO_GOLDEN_SHOTS somewhere else to collect them.
+const SHOTS = process.env.WOBO_GOLDEN_SHOTS ?? join(tmpdir(), 'wobo-golden-boards');
 
 interface ManifestEntry {
   name: string;
@@ -142,7 +144,7 @@ test.describe('the golden boards', () => {
   });
 
   for (const entry of manifest) {
-    test(`${entry.name} — she draws it, anchored, in order`, async ({ page }) => {
+    test(`${entry.name} — Wobo draws it, anchored, in order`, async ({ page }) => {
       const board = golden(entry.name);
       await playGolden(page, entry.name, 'light');
 
@@ -162,7 +164,7 @@ test.describe('the golden boards', () => {
       for (const id of board.expect.ids) {
         expect(byId.has(id), `${id} never reached the board`).toBe(true);
       }
-      // Ink order survives all the way to the DOM: she draws in the order she planned.
+      // Ink order survives all the way to the DOM: Wobo draws in the order Wobo planned.
       expect(objects.map((o) => o.id)).toEqual(board.expect.ids);
 
       // --- the anchors actually resolved ------------------------------------------------------
@@ -194,7 +196,7 @@ test.describe('the golden boards', () => {
         ).toBeLessThanOrEqual(limit);
       }
 
-      // --- the words, in the order she writes them --------------------------------------------
+      // --- the words, in the order Wobo writes them --------------------------------------------
       // Read off the objects themselves rather than off a bag of labels: a derivation repeats
       // itself (three sixes in a balanced equation, two plus signs), and what is being asserted is
       // that each written line came out of the object that was meant to carry it, in ink order.

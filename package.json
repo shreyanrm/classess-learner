@@ -1,5 +1,5 @@
 {
-  "name": "classess-learner",
+  "name": "wobo-learner",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -17,6 +17,10 @@
     "typecheck": "bun run --filter '*' typecheck",
     "test": "bun run --filter '*' test",
     "build": "bun run --filter '*' build",
+    "gate": "bash scripts/gates.sh",
+    "gate:no-classess": "python3 scripts/gate_no_classess.py",
+    "gate:white-label": "python3 scripts/gate_white_label.py",
+    "gate:pronouns": "python3 scripts/gate_pronouns.py",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",

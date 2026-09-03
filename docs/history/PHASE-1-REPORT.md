@@ -7,7 +7,7 @@ concept **ignites** on real mastery. Wobo runs **live on real Claude**.
 
 Branch: `phase-1-the-atom` (stacked on Phase 0). PR opened for review.
 
-Honest remaining polish (not blocking "atom proven"): Wobo **voice** (Gemini STT/TTS) and **streaming
+Honest remaining polish (not blocking "atom proven"): Wobo's **voice** (Gemini STT/TTS) and **streaming
 first-token** are wired conceptually but not yet live; events use the **in-memory backbone** today (the
 Supabase outbox transport — built and proven in Phase 0 — binds when the dev JWT lands).
 
@@ -22,7 +22,7 @@ linear-equation working samples on Anthropic:
 | Metric | Result | Meaning |
 |---|---|---|
 | Correctness agreement | **100%** | The verifier grounding is trustworthy |
-| Localization (first wrong step) | **100%** | She reads the actual working exactly (perception) |
+| Localization (first wrong step) | **100%** | Wobo reads the actual working exactly (perception) |
 | Misconception diagnosis (Claude vs human) | **88%** | Strong; the misses are defensible |
 | Hint never hands the answer *when stuck* | **100%** | The real guardrail holds |
 | Median grounded-grade latency | **~2.7s** | Full completion; streaming gets first-token lower |
@@ -91,7 +91,7 @@ bun run --filter @classess/web-pwa dev        # open http://localhost:5173
 
 **Walk the atom (what to click, what to watch):**
 1. **Today** — greeting for Aanya; the linear-equations tile is **monochrome** (not started); the band reads "Not started".
-2. **Tap the concept → Learn** — the opener pose, then the working canvas. Write a wrong line (e.g. `2x = 10`, `x = 5`) and tap **Check with Wobo**. She highlights your wrong line in **Molten** and asks a leading question — never the answer. (Live mode: real grounded Claude; mock: a canned grounded response.)
+2. **Tap the concept → Learn** — the opener pose, then the working canvas. Write a wrong line (e.g. `2x = 10`, `x = 5`) and tap **Check with Wobo**. Wobo highlights your wrong line in **Molten** and asks a leading question — never the answer. (Live mode: real grounded Claude; mock: a canned grounded response.)
 3. **Practice on your own** — Wobo dims to an ember; answer the items unaided. Get 4–5 correct.
 4. **Back → Today** — the concept has **ignited** into its colour (mastered), the band reads **Independent**, and an efficacy line says *"You moved from not started to independent."*
 
@@ -113,7 +113,7 @@ Evidence: **71 TS + 56 Python tests** green, Biome + Ruff clean, typecheck 8/8, 
 and the live Wobo turn reproducible on real AI.
 
 ## Decisions this phase
-- **Wobo connected presence** (your directive): every page is her canvas via the Context Bus + Action
+- **Wobo connected presence** (your directive): every page is Wobo's canvas via the Context Bus + Action
   Layer + highlight overlay; highlight palette Molten → Acid → Ultramarine.
 - **Track routing:** Wobo runs on real Track-1 Claude Haiku (fast) escalating to Sonnet; the Track-2 tutor
   SLM replaces the primary through the registry once trained, no code change.

@@ -2,17 +2,22 @@
 // (the stack law: everything ships locally). Variable files: one request each, every weight.
 import '@fontsource-variable/caveat';
 import '@fontsource-variable/plus-jakarta-sans';
-import { fontFamily } from '@classess/config';
-import { cssVariables } from '@classess/config/css';
+import { fontFamily } from '@wobo/config';
+import { cssVariables } from '@wobo/config/css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { migrateLegacyKeys } from './store/legacy-keys';
 import { initAccess } from './ui/access';
 import { ensureDefaultAvatar } from './ui/avatars';
 import { initTheme } from './ui/theme';
 
+// FIRST, before any store reads: an already-installed device still has its world under the
+// pre-rename key names. Move it forward, once, or the rename would read as a wipe.
+migrateLegacyKeys();
+
 // Inject the design tokens once, plus a minimal token-driven base reset. No hardcoded hexes.
-const STYLE_ID = 'clss-tokens';
+const STYLE_ID = 'wobo-tokens';
 if (!document.getElementById(STYLE_ID)) {
   const style = document.createElement('style');
   style.id = STYLE_ID;
@@ -25,11 +30,11 @@ html, body { margin: 0; }
 html { scroll-behavior: smooth; }
 body {
   font-family: ${fontFamily.system};
-  color: var(--clss-ink-900);
+  color: var(--wobo-ink-900);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   /* Paper in light, soft graphite in dark — never pure black (DESIGN.md §2). */
-  background: var(--clss-page);
+  background: var(--wobo-page);
   transition: background 0.3s ease, color 0.3s ease;
 }
 /* Type as craft: confident, tightly-tracked display; balanced headings; tidy prose. */
@@ -37,8 +42,8 @@ h1, h2, h3, h4 { letter-spacing: -0.022em; text-wrap: balance; margin: 0; }
 h1 { letter-spacing: -0.032em; }
 p, li { text-wrap: pretty; }
 /* Ultramarine is the signature pigment — selection and focus carry it, nothing else in chrome does. */
-::selection { background: var(--clss-ultramarine-wash); color: var(--clss-ink-900); }
-:focus-visible { outline: 2px solid var(--clss-ultramarine-ring); outline-offset: 2px; }
+::selection { background: var(--wobo-ultramarine-wash); color: var(--wobo-ink-900); }
+:focus-visible { outline: 2px solid var(--wobo-ultramarine-ring); outline-offset: 2px; }
 /* One scrollbar: the page's own, thin and quiet. Inner scroll areas scroll invisibly. */
 html { scrollbar-width: none; }
 ::-webkit-scrollbar { display: none; width: 0; height: 0; }

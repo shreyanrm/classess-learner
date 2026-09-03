@@ -8,15 +8,15 @@ Task tracking lives in `docs/WOBO-TASKS.md`. Both files are updated at the end o
 
 ## 0. North star
 
-Wobo is a tutor who thinks on a board while she talks, for every child on every syllabus, free by default. She is present on every screen, reads what the learner points at, and answers by drawing. The category reference is Brilliant.org; the bar is above it: playful in the character, professional in the chrome, flawless in execution.
+Wobo is a tutor who thinks on a board while talking, for every child on every syllabus, free by default. Wobo is present on every screen, reads what the learner points at, and answers by drawing. The category reference is Brilliant.org; the bar is above it: playful in the character, professional in the chrome, flawless in execution.
 
 Non-negotiables carried from the laws: one hit of pigment per view, no shadows, sentence case, no emoji, no exclamation marks in product copy; consent and age are capability doors; no generated fact reaches a child unverified; the learner's data is theirs and deletable.
 
 ## 1. Architecture: companion and brain
 
-**Wobo (the companion)** is the face, senses, hands and voice. She runs in the client and has full access to the nervous system. She has no intelligence of her own beyond choreography and never holds a credential, a key, a model name, or a limit.
+**Wobo (the companion)** is the face, senses, hands and voice. Wobo runs in the client and has full access to the nervous system. Wobo has no intelligence of their own beyond choreography and never holds a credential, a key, a model name, or a limit.
 
-**The brain** is the gateway (`services/gateway`) and the services behind it. It decides everything: which model, what budget remains, what the learner is allowed at their consent tier, what content to compose, what she may remember, what is safe to say. Free limits are enforced here and only here.
+**The brain** is the gateway (`services/gateway`) and the services behind it. It decides everything: which model, what budget remains, what the learner is allowed at their consent tier, what content to compose, what Wobo may remember, what is safe to say. Free limits are enforced here and only here.
 
 **The nervous system** (client, `packages/wobo` + `apps/web-pwa/src/wobo`):
 
@@ -32,23 +32,23 @@ Non-negotiables carried from the laws: one hit of pigment per view, no shadows, 
 
 ## 2. The board
 
-The board is the medium of every explanation. The brain streams a drawing plan the way it streams words; her hand draws it stroke by stroke, timed to her voice. All SVG, generated from her own thought, exact because every number is computed by code.
+The board is the medium of every explanation. The brain streams a drawing plan the way it streams words; Wobo's hand draws it stroke by stroke, timed to Wobo's voice. All SVG, generated from Wobo's own thought, exact because every number is computed by code.
 
 **Three presentations, one grammar, one renderer:**
 
-1. **Ink on the screen.** She draws on and around whatever is there: a paused video, an outline, a setting, a sim. Anchored to what's on screen; fades like a whiteboard.
-2. **The plane.** A frosted, translucent board slides in from her orb and floats over the current screen. Movable, resizable, pinnable, minimizable to a thumbnail with its ink intact. A sheet on phones. Summonable by gesture or by saying "board". Its ink persists until wiped.
+1. **Ink on the screen.** Wobo draws on and around whatever is there: a paused video, an outline, a setting, a sim. Anchored to what's on screen; fades like a whiteboard.
+2. **The plane.** A frosted, translucent board slides in from Wobo's orb and floats over the current screen. Movable, resizable, pinnable, minimizable to a thumbnail with its ink intact. A sheet on phones. Summonable by gesture or by saying "board". Its ink persists until wiped.
 3. **The full board.** Inside a lesson the board is the screen.
 
-Her rule: a pointer or one line stays on screen; a derivation or a diagram from scratch gets the plane; a lesson gets the full board. The learner can override with a word.
+Wobo's rule: a pointer or one line stays on screen; a derivation or a diagram from scratch gets the plane; a lesson gets the full board. The learner can override with a word.
 
 **The grammar** (streamed, compact): point, circle, underline, arrow, bracket, strike, number, write, erase, wipe, and shape primitives: line, polyline, curve, polygon, ellipse, axis, grid, table, label, tex, bond, atom, arrowhead, region. Every object has an id and can be re-pointed, moved, faded, or redrawn later. Layout hints only; a layout engine places objects so nothing collides.
 
-**Domain pipelines under the grammar:** graphs and constructions from the installed math libraries; molecules from SMILES through RDKit into stroke order a chemist would draw; equations rendered to paths so she genuinely writes them; physics diagrams from computed geometry; maps and cells from the existing scene specs. Every quantity passes the verifier (CAS, dimensional analysis, balance checks) before it is drawn.
+**Domain pipelines under the grammar:** graphs and constructions from the installed math libraries; molecules from SMILES through RDKit into stroke order a chemist would draw; equations rendered to paths so Wobo genuinely writes them; physics diagrams from computed geometry; maps and cells from the existing scene specs. Every quantity passes the verifier (CAS, dimensional analysis, balance checks) before it is drawn.
 
-**Feel:** pen physics with anticipation and settle, chalk or marker aesthetics per theme, the pen sound, handwriting in Caveat letter by letter, ink that fades, an eraser swipe, a fresh board. She points before she says "this".
+**Feel:** pen physics with anticipation and settle, chalk or marker aesthetics per theme, the pen sound, handwriting in Caveat letter by letter, ink that fades, an eraser swipe, a fresh board. Wobo points before saying "this".
 
-**Bidirectional:** the learner draws on the same board; she reads their ink; moving her tangent updates her numbers. Stylus on tablets.
+**Bidirectional:** the learner draws on the same board; Wobo reads their ink; moving Wobo's tangent updates the numbers. Stylus on tablets.
 
 **The artifact:** a board has a timeline to scrub, saves to notes, and exports as a shareable image. This is the proof loop.
 
@@ -68,17 +68,17 @@ Her rule: a pointer or one line stays on screen; a derivation or a diagram from 
 
 **Proactive:** when the bus shows three wrong drags or forty idle seconds, the orb leans in and offers a pointer. Governed by the quiet/balanced/proactive dial.
 
-**Memory:** what she remembers is set by the consent tier, enforced in the brain, visible and erasable on a memory page.
+**Memory:** what Wobo remembers is set by the consent tier, enforced in the brain, visible and erasable on a memory page.
 
-**Horizons after the core:** snap a homework page and she grades the working; handwriting canvas with math recognition; code-switching across Hinglish and vernacular; parent mode narrating the week; vision fallback for content we did not make.
+**Horizons after the core:** snap a homework page and Wobo grades the working; handwriting canvas with math recognition; code-switching across Hinglish and vernacular; parent mode narrating the week; vision fallback for content we did not make.
 
 ## 4. Curriculum
 
 **Registry of boards and curricula.** A searchable global list with aliases, country, levels, and official sites: national boards, every Indian state board, NIOS, IB, Cambridge, Edexcel, AP, US states, UK nations, Australian states, Canadian provinces, common homeschool programmes. Drafted, then verified, then extended by discovery.
 
-**Not listed? Type it and she looks.** A discovery job searches for the official syllabus, fetches it, extracts the outline into our schema, cross-checks with a second model and structural checks, and saves it to the global database as provisional with provenance. The learner sees it at once with an honest label. Promotion to verified after checks pass; owner review available.
+**Not listed? Type it and Wobo looks.** A discovery job searches for the official syllabus, fetches it, extracts the outline into our schema, cross-checks with a second model and structural checks, and saves it to the global database as provisional with provenance. The learner sees it at once with an honest label. Promotion to verified after checks pass; owner review available.
 
-**Nothing found? They bring their own.** Paste, type, photo, PDF. She structures it into a personal syllabus and builds the plan. Optionally offered to the global database as community-contributed, moderated.
+**Nothing found? They bring their own.** Paste, type, photo, PDF. Wobo structures it into a personal syllabus and builds the plan. Optionally offered to the global database as community-contributed, moderated.
 
 **Ontology, versioned by academic year:** framework, version, level, subject, unit, topic, learning objective; provenance on every node; CASE export mapping. Never overwritten, only new versions. A freshness crawler watches official pages and diffs new releases; Wobo tells the learner what moved.
 
@@ -94,19 +94,19 @@ Replaces the static catalog file and the fragile "frame" system.
 
 **Visual by default (owner law, 2026-09-03).** Pretty much everything is visual. Brilliant.org is the bar and ours is higher: their visuals are authored once for everyone; ours are drawn live, for this learner, on their own syllabus, and they can be circled, dragged and asked about. Every explanation is a board drawing, a simulation, a diagram, a graph, a construction, an animation, or an interactive; text is the caption of a visual, never the lesson. A lesson beat with no visual object is a defect, and the golden-board suite asserts that every beat carries at least one drawn object. Where a visual would not help (a definition, a name), it stays one short line beside the thing it names, never a paragraph.
 
-Courses, practice runs, mini-workbooks, flashcards, boss battles, the daily thread, XP, the knowledge twin all stay. Each becomes board-native: a quiz is Wobo asking on the board and grading the working; a boss battle is a live problem she draws and you solve on the same surface; feedback is ink on the mistake.
+Courses, practice runs, mini-workbooks, flashcards, boss battles, the daily thread, XP, the knowledge twin all stay. Each becomes board-native: a quiz is Wobo asking on the board and grading the working; a boss battle is a live problem Wobo draws and you solve on the same surface; feedback is ink on the mistake.
 
 Evaluation upgrades: free-reasoning grading of text, voice, and handwriting; the assistance ladder that visibly fades; the "I think I'm right" re-grade; the calibration harness against human-graded sets; misconception detonation from the learner's own numbers. The audit's grading bugs are fixed in Wave 3.
 
 ## 6. Experience
 
-**Landing page.** The board's first performance. A chalk cursor with a fading ink trace in WebGL; Wobo alive in a shader hero, eyes following the cursor; scroll-driven lesson where she draws as you scroll; a live mini-board the visitor can type into; then calm editorial sections: every board on earth, the parent's weekly artifact, pricing annual-first, the invitation. Lazy-loaded, fast on cheap phones, honours reduced motion.
+**Landing page.** The board's first performance. A chalk cursor with a fading ink trace in WebGL; Wobo alive in a shader hero, eyes following the cursor; scroll-driven lesson where Wobo draws as you scroll; a live mini-board the visitor can type into; then calm editorial sections: every board on earth, the parent's weekly artifact, pricing annual-first, the invitation. Lazy-loaded, fast on cheap phones, honours reduced motion.
 
 **Auth and legal.** Login and sign-up (Google, phone OTP), terms, privacy, user agreement, cookie and consent notice, parental consent flow for minors, deletion path. Drafted in full to DPDP and children's-data requirements; lawyer review before launch.
 
-**Onboarding, the first five minutes.** Intro (done), then sign in first (Google or phone OTP; the account carries the name). Then one question: what are you studying right now? Text, voice, or a photo. She infers board and class; one tap confirms. Then the aha: she teaches one real thing on the board. Then the guided tour: Wobo walks the learner through what they can do and how, Clicky-style, pointing at the real controls (the thread, Learn, Practice, the board, the plane, asking by circling, push-to-talk), with the learner trying each. Three quick questions light the map. Interests fold into the first analogy. Board picker is a search with a "not listed? show me your syllabus" path. Returning learners see nothing. (Owner decision 2026-09-02: sign-in before the aha, not after.)
+**Onboarding, the first five minutes.** Intro (done), then sign in first (Google or phone OTP; the account carries the name). Then one question: what are you studying right now? Text, voice, or a photo. Wobo infers board and class; one tap confirms. Then the aha: Wobo teaches one real thing on the board. Then the guided tour: Wobo walks the learner through what they can do and how, Clicky-style, pointing at the real controls (the thread, Learn, Practice, the board, the plane, asking by circling, push-to-talk), with the learner trying each. Three quick questions light the map. Interests fold into the first analogy. Board picker is a search with a "not listed? show me your syllabus" path. Returning learners see nothing. (Owner decision 2026-09-02: sign-in before the aha, not after.)
 
-**UI raise.** One design pass through every surface against `DESIGN.md`, with Brilliant as the floor. Poppins for UI, Caveat for her hand. Fixes from the audit folded in: tokenised surfaces in both themes, one hit of pigment, chat on the home front door, reduced motion honoured, the twin as hero art, illustration and empty states with craft. Two or three screens shown to the owner before rollout.
+**UI raise.** One design pass through every surface against `DESIGN.md`, with Brilliant as the floor. Poppins for UI, Caveat for Wobo's hand. Fixes from the audit folded in: tokenised surfaces in both themes, one hit of pigment, chat on the home front door, reduced motion honoured, the twin as hero art, illustration and empty states with craft. Two or three screens shown to the owner before rollout.
 
 ## 7. Platforms
 
@@ -194,6 +194,19 @@ Marketing is a product surface, not a campaign. Every tactic is behaviour-timed,
 - **The engine underneath.** Every lever flaggable and A/B-testable; the adaptive tactic engine selects copy, reward type, framing and timing per archetype; attribution and cohort retention tracked; a fraud and integrity layer on referrals and sponsored seats.
 - **Compliance rails.** Marketing consent lives with the parent for minors; DPDP-clean; no dark patterns in cancel flows; every message has an off switch.
 
+### 14.1 Hospitality (owner law, 2026-09-03)
+
+Experience, design and relevance make the business; frequency, assurance, reminding and confirming, and the other kinds of hospitality are how we win. We celebrate wins with the learner all along the way, we praise, we motivate, we wish them well on their festivals, and we are there for them even when they never asked, building the trust that we can take care of them. Concretely:
+
+- **Confirm everything.** Every action gets an acknowledgement in the product and, when it matters, an email: sign-up, first lesson, plan change, payment, parent link, streak saved, flag received, flag fixed, account changes.
+- **Remind with care.** Reminders arrive at the learner's own time, in Wobo's voice, with the thing they were doing pictured; frequency is a visible dial the learner and the parent can set; never a generic nag.
+- **Reassure.** Weekly summaries to parents in Wobo's voice; "your place is saved"; receipts that explain; cancel flows that thank and keep the door open; a note when something we broke is fixed.
+- **Celebrate along the way.** First lesson, first week, first month, a unit finished, a boss beaten, a streak milestone, a personal best, a hard topic cracked: Wobo marks it on the spot (a drawn flourish, a line in the learner's name) and the parent hears about the big ones.
+- **Praise and motivate.** Praise is specific and about behaviour (asked for help after a miss, came back after a gap, tried a harder one), never empty; motivation is a picture of the next small step, not pressure.
+- **Festivals.** Wishes on the learner's own festivals by country and calendar (Diwali, Holi, Eid, Christmas, Pongal, Onam, Navratri, Dussehra, Chinese New Year, Ramadan, Vaisakhi, the regional new years, exam-result days, birthdays) in Wobo's hand, with the seasonal gift framing from §14 where a plan is in view; the price never varies, the gift and the moment do.
+- **There unasked.** Check-ins after a hard week, before an exam the syllabus calendar knows about, after a silence, after a wrong-answer streak; a parent nudge when a child has gone quiet. All of it opt-out in one tap, respectful of school hours and sleep, and never more than the dial allows.
+- **Relevance gate.** Anything that is not about this learner's syllabus, class, last lesson or their own calendar does not send.
+
 ## 15. Every element earns its place (owner law, 2026-09-03)
 
 User experience is one of the highest priorities. Everything on every page must make sense and have a valid reason to be there. Valid reasons are three: it serves a learner task; it carries the brand or the character (the cool factor, the moment that makes someone smile, Wobo doing something delightful); or it is simply nice to have there and someone can say why. What goes is the irrelevant: leftovers, chrome nobody would miss, controls that duplicate another, copy that explains nothing. Concretely: for every screen we ship, an element inventory names each visible thing (control, label, chip, card, line of copy, animation) with its reason in one of the three kinds; anything without one is removed, not restyled. One screen, one intention (DESIGN.md law 1); the simple thing first, depth on request (law 6). Copy is written from the learner's side of the screen and says exactly what happens. Every wave's QA includes this audit; the Wave 7 UI raise starts from the inventory, not from the existing layout. The owner reviews the inventory for the main surfaces before rollout.
@@ -204,13 +217,13 @@ The owner walked Brilliant end to end on 2026-09-03 (44 screenshots, About and G
 
 **Answering is doing.** Brilliant's best move is that the answer is a manipulation of the thing itself: shade half the square, drop a point on the grid, tap digits into a coordinate, use a maths keyboard for fractions and roots. Ours: every practice item has an interactive answer kind chosen by the brain, never a text choice where a visual act exists. The answer kinds we ship: shade regions, place or drag points, drag a slider, order or match, build with a number pad or expression keyboard, draw a line or angle on the board, circle the part, choose among visuals. "Start over" always beside the interactive; "Check" is the one primary control; keyboard and screen-reader paths for each. Onboarding's placement uses these same kinds, so the first test already looks like the product, with the spacing and rhythm of a finished page, not a form.
 
-**Hand-held explanations.** Brilliant's tutor, when the learner is wrong, says "Not quite, but that's okay", offers "Get help" and "Try again", asks a Socratic question, offers a "Why was my answer wrong?" chip, reveals the answer after two misses with "Want to learn why?", then walks it step by step with small choice buttons (1 / −1 / both) and highlights the relevant region of the screen as it talks. Ours does all of that, and the highlight is Wobo drawing on the very control: the ring on the shaded square, the arrow at the point she means, the equation written in her hand beside the graph. Copy laws hold: no exclamation marks, no emoji, warm and short. State reads at a glance: the frame hairline and her expression change for right, wrong and thinking; a tick or a small wobble is drawn by her hand, never a colour flood.
+**Hand-held explanations.** Brilliant's tutor, when the learner is wrong, says "Not quite, but that's okay", offers "Get help" and "Try again", asks a Socratic question, offers a "Why was my answer wrong?" chip, reveals the answer after two misses with "Want to learn why?", then walks it step by step with small choice buttons (1 / −1 / both) and highlights the relevant region of the screen as it talks. Ours does all of that, and the highlight is Wobo drawing on the very control: the ring on the shaded square, the arrow at the point Wobo means, the equation written in Wobo's hand beside the graph. Copy laws hold: no exclamation marks, no emoji, warm and short. State reads at a glance: the frame hairline and Wobo's expression change for right, wrong and thinking; a tick or a small wobble is drawn by Wobo's hand, never a colour flood.
 
 **Never lose progress.** Brilliant threatens: "If you quit, you will lose your progress and XP." We save every step, so leaving says "Leave for now? Your place is saved." Honesty is a feature.
 
-**The loader is the character.** Brilliant loads with its mascot on a beam of light. Wobo loads by drawing: a pen line that becomes the page's first hairline, then her body settles into the orb. One motion, under a second, reduced-motion safe.
+**The loader is the character.** Brilliant loads with its mascot on a beam of light. Wobo loads by drawing: a pen line that becomes the page's first hairline, then Wobo's body settles into the orb. One motion, under a second, reduced-motion safe.
 
-**Flag anything.** Brilliant has a flag on every problem that opens a ticket with an automatic screenshot, annotation tools (pen, circle, rectangle, blur), ticket type (bug, question, improvement), screen recording and file attach. Ours: a quiet flag on every content unit, the screenshot taken by our own renderer, annotation with her ink tools, a blur tool for privacy, type, description, and Wobo can raise the same flag by voice ("this is wrong"). Flags land in a table the owner can read and an email digest; the learner sees a thank you and, when fixed, a note.
+**Flag anything.** Brilliant has a flag on every problem that opens a ticket with an automatic screenshot, annotation tools (pen, circle, rectangle, blur), ticket type (bug, question, improvement), screen recording and file attach. Ours: a quiet flag on every content unit, the screenshot taken by our own renderer, annotation with Wobo's ink tools, a blur tool for privacy, type, description, and Wobo can raise the same flag by voice ("this is wrong"). Flags land in a table the owner can read and an email digest; the learner sees a thank you and, when fixed, a note.
 
 **Help that is mostly Wobo, plus a real help centre.** Brilliant has a searchable help centre in three columns (basics, product features, courses and curriculum) with illustrated articles, and settings for account, plan and preferences (appearance auto/light/dark, reduce motion on/off/auto, narration toggle, sound effects toggle, email notifications by category, verified email, add email, password). Ours ships all of those pages, written for Wobo, and Wobo answers help questions grounded on that content before a page is ever needed. We add: voice and accent, language, the parent link, data and privacy (export, delete), consent, and the plan.
 
@@ -218,7 +231,7 @@ The owner walked Brilliant end to end on 2026-09-03 (44 screenshots, About and G
 
 **Home and courses.** Brilliant's home: a search box ("What do you want to learn?") that opens an ask panel with clarifying chips and recommends a lesson card; attachments with the safety line "Never share pictures of people or personal info"; a streak widget; the current course card with level and lesson list; grade-banded learning paths with progress bars, "New" badges and favourites. Ours: the ask box is Wobo; the clarifying chips and the recommended card come from the brain against the learner's own syllabus; the safety line stays verbatim in spirit; paths are the learner's board and class, not a generic ladder.
 
-**Progress in the tutor's voice.** Brilliant's "You" page: a week/month/year toggle, "This week's summary" written by the tutor ("You asked me 6 questions this week, which tells me you're working through problems instead of skipping them"), activity snapshot, problems-solved chart, learning progress, and learning strengths as behaviour-based praise (resilience: asked for help after a wrong answer; initiative: asked on your own). Ours: the same page in Wobo's voice, the same behaviour-based strengths, drawn charts in her hand, and the parent link shares this page read-only.
+**Progress in the tutor's voice.** Brilliant's "You" page: a week/month/year toggle, "This week's summary" written by the tutor ("You asked me 6 questions this week, which tells me you're working through problems instead of skipping them"), activity snapshot, problems-solved chart, learning progress, and learning strengths as behaviour-based praise (resilience: asked for help after a wrong answer; initiative: asked on your own). Ours: the same page in Wobo's voice, the same behaviour-based strengths, drawn charts in Wobo's hand, and the parent link shares this page read-only.
 
 **About and mission.** Brilliant's About: mission headline, "what we do", "our approach" with a real growth chart, "our learners", "what we teach" as a concept map, accreditation, method accordion, reading list, careers, kidSAFE membership. Ours ships an About page with a mission, how Wobo teaches (drawn live), what we cover (the boards), our promises (privacy, honesty, no manipulation), and the legal set. The concept map on their About page is exactly our curriculum concept graph; we can draw ours live.
 
@@ -234,7 +247,7 @@ White-label means nobody using or inspecting the product can tell which models o
 
 Every surface works on a phone in portrait, a tablet in either orientation, a laptop, and a large monitor, with touch, mouse, stylus and keyboard, with a screen reader and with reduced motion. Nothing is "desktop first" or "mobile first"; the layout is composed per breakpoint, and every proof we take is taken at three widths (360, 820, 1440) and both themes. Board ink, the plane and the gesture layer follow the same rule: on a phone the plane is a sheet, the lasso is a finger, hold-to-talk is a long press.
 
-And the whole thing feels handcrafted for the one learner using it: her hand on the board, their name in her mouth, their syllabus, their board and class, their pace; copy that reads like a person wrote it for them; nothing that looks poured out of a template. Personalised is not a settings toggle, it is the default state of every page.
+And the whole thing feels handcrafted for the one learner using it: Wobo's hand on the board, their name in Wobo's mouth, their syllabus, their board and class, their pace; copy that reads like a person wrote it for them; nothing that looks poured out of a template. Personalised is not a settings toggle, it is the default state of every page.
 
 ## 19. Wobo has no gender
 

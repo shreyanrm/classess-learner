@@ -1,15 +1,15 @@
 'use client';
 
 /**
- * The docked Wobo (DESIGN.md §4) — she flies in on every page, floats in a slow idle drift at the
- * bottom right, and one tap opens her full-height drawer on the right. Her words arrive in her
- * own hand — Caveat, written letter by letter. Her canvas ink lives in the overlay and fades;
- * nothing she draws is saved.
+ * The docked Wobo (DESIGN.md §4) — Wobo flies in on every page, floats in a slow idle drift at the
+ * bottom right, and one tap opens Wobo's full-height drawer on the right. Wobo's words arrive in Wobo
+ * own hand — Caveat, written letter by letter. Wobo's canvas ink lives in the overlay and fades;
+ * nothing Wobo draws is saved.
  */
 
-import { fontFamily } from '@classess/config';
-import { useReducedMotion } from '@classess/motion';
-import { plane, useWoboBus, WoboBody } from '@classess/wobo';
+import { fontFamily } from '@wobo/config';
+import { useReducedMotion } from '@wobo/motion';
+import { plane, useWoboBus, WoboBody } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type FormEvent, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useRouter } from '../shell/router';
@@ -42,7 +42,7 @@ import { useWoboVoice } from './voice';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** A sentence being written is never interrupted — she waits for the full stop. */
+/** A sentence being written is never interrupted — Wobo waits for the full stop. */
 function isTypingNow(): boolean {
   if (typeof document === 'undefined') return false;
   const el = document.activeElement as HTMLElement | null;
@@ -51,7 +51,7 @@ function isTypingNow(): boolean {
   return tag === 'INPUT' || tag === 'TEXTAREA' || el.isContentEditable === true;
 }
 
-/** Teach-back (WOBO.md §8): she plays the student; the exchange is ephemeral, like her ink. */
+/** Teach-back (WOBO.md §8): Wobo plays the student; the exchange is ephemeral, like Wobo's ink. */
 interface TeachBack {
   topic: string;
   nodeId?: string;
@@ -63,7 +63,7 @@ interface TeachBack {
 const offerButton: React.CSSProperties = {
   border: 'none',
   background: 'transparent',
-  color: 'var(--clss-ink-900)',
+  color: 'var(--wobo-ink-900)',
   cursor: 'pointer',
   fontFamily: 'inherit',
   fontSize: '0.78rem',
@@ -71,7 +71,7 @@ const offerButton: React.CSSProperties = {
   padding: 0,
 };
 
-/** Her hand: letter-by-letter reveal for the newest line she speaks. */
+/** Wobo's hand: letter-by-letter reveal for the newest line Wobo speaks. */
 function Handwritten({ text, animate }: { text: string; animate: boolean }) {
   const [shown, setShown] = useState(animate ? 0 : text.length);
   useEffect(() => {
@@ -88,7 +88,7 @@ function Handwritten({ text, animate }: { text: string; animate: boolean }) {
     }, 22);
     return () => clearInterval(timer);
   }, [text, animate]);
-  // her words sit on the page — no outline, no box; the learner's inputs carry the bubble
+  // Wobo's words sit on the page — no outline, no box; the learner's inputs carry the bubble
   return (
     <span
       style={{
@@ -96,7 +96,7 @@ function Handwritten({ text, animate }: { text: string; animate: boolean }) {
         padding: '2px 2px',
         fontSize: '0.92rem',
         lineHeight: 1.6,
-        color: 'var(--clss-ink)',
+        color: 'var(--wobo-ink)',
       }}
     >
       {text.slice(0, shown)}
@@ -117,7 +117,7 @@ export function WoboCompanion() {
   const [draft, setDraft] = useState('');
   const [voiceNote, setVoiceNote] = useState<string | null>(null);
   const [tb, setTb] = useState<TeachBack | null>(null);
-  // Push-to-talk on her docked body: the live-voice halo, and a docked note when she can't answer.
+  // Push-to-talk on Wobo's docked body: the live-voice halo, and a docked note when Wobo can't answer.
   const [ptt, setPtt] = useState(false);
   const [pttNote, setPttNote] = useState<string | null>(null);
   const reduced = useReducedMotion();
@@ -144,7 +144,7 @@ export function WoboCompanion() {
   // one scroll area, two threads: the conversation, or the ephemeral teach-back exchange
   const thread: { id: string; role: string; text: string }[] = tb ? tb.turns : turns;
 
-  // what she is plugged into right now — the current topic makes teach-back possible.
+  // what Wobo is plugged into right now — the current topic makes teach-back possible.
   // gated by route: the bus's curriculum lingers after a course closes, the page does not.
   const ctx = open ? bus.assembleContext() : null;
   const onCourse = ctx !== null && (ctx.page.route === 'course' || ctx.page.route === 'sandbox');
@@ -172,7 +172,7 @@ export function WoboCompanion() {
     setMood('idle');
   };
 
-  // the learner teaches; she probes exactly one gap per turn — bonus XP when the lesson lands
+  // the learner teaches; Wobo probes exactly one gap per turn — bonus XP when the lesson lands
   const submitTeachBack = (text: string) => {
     if (!tb) return;
     sdk.events.record(
@@ -235,22 +235,22 @@ export function WoboCompanion() {
     });
   };
 
-  // A brief note beside the docked orb — she can't hold a voice conversation right now.
+  // A brief note beside the docked orb — Wobo can't hold a voice conversation right now.
   const flashPttNote = (msg: string) => {
     setPttNote(msg);
     window.setTimeout(() => setPttNote(null), 2600);
   };
 
-  // Hold her docked body to talk (owner law): the mic opens, she listens; release completes the
-  // utterance and she replies aloud, docked — no drawer opens. A quick tap stays the poke.
+  // Hold Wobo's docked body to talk (owner law): the mic opens, Wobo listens; release completes the
+  // utterance and Wobo replies aloud, docked — no drawer opens. A quick tap stays the poke.
   const holdStart = () => {
     if (open || voiceOn) return; // the drawer has its own mic; never run two sessions
     // Barge-in by voice (docs/BOARD.md §4): the moment the learner speaks, the pen lifts where it
-    // is and her voice stops with it. What is drawn stays, and the object she was on rides the
-    // next turn so she resumes rather than starting again.
+    // is and Wobo's voice stops with it. What is drawn stays, and the object Wobo was on rides the
+    // next turn so Wobo resumes rather than starting again.
     boardTurn.interrupt();
     if (isMuted()) {
-      flashPttNote('unmute to talk with her'); // the mute law governs sound
+      flashPttNote('unmute to talk with Wobo'); // the mute law governs sound
       return;
     }
     setPtt(true);
@@ -267,15 +267,15 @@ export function WoboCompanion() {
   };
   const holdEnd = () => {
     if (!ptt) return;
-    voice.finishTurn(); // stop capturing, let her spoken reply stream back, then the session closes
+    voice.finishTurn(); // stop capturing, let Wobo's spoken reply stream back, then the session closes
   };
 
-  // The session can end on its own — her reply finishing, an abort, a drop. Retire the halo with it.
+  // The session can end on its own — Wobo's reply finishing, an abort, a drop. Retire the halo with it.
   useEffect(() => {
     if (voice.status === 'idle' || voice.status === 'unavailable') setPtt(false);
   }, [voice.status]);
 
-  // --- her body, on real signals (WOBO-TASKS §5.7) ------------------------------------------------
+  // --- Wobo's body, on real signals (WOBO-TASKS §5.7) ------------------------------------------------
   // Listening is the microphone actually being open; drawing is the pen actually being down;
   // thinking is a plan actually streaming; the aha is a real award crossing. Nothing here is a
   // timer and nothing is canned.
@@ -303,8 +303,8 @@ export function WoboCompanion() {
   });
 
   // --- proactive lean-in (WOBO-PLAN §3) -----------------------------------------------------------
-  // Three wrong actions or forty idle seconds, governed by the dial the learner set in You. She
-  // never talks over herself, never interrupts typing, and offers once before a long cooldown.
+  // Three wrong actions or forty idle seconds, governed by the dial the learner set in You. Wobo
+  // never talks over themself, never interrupts typing, and offers once before a long cooldown.
   const [offer, setOffer] = useState<{ reason: LeanReason; line: string } | null>(null);
   const offerRef = useRef<{ reason: LeanReason; line: string } | null>(null);
   offerRef.current = offer;
@@ -340,14 +340,14 @@ export function WoboCompanion() {
     const id = window.setInterval(tick, 5000);
     return () => window.clearInterval(id);
   }, [sdk, topicName]);
-  // Her offer is never a wall: it retires on its own if the learner carries on without it.
+  // Wobo's offer is never a wall: it retires on its own if the learner carries on without it.
   useEffect(() => {
     if (!offer) return;
     const t = window.setTimeout(() => setOffer(null), 12_000);
     return () => window.clearTimeout(t);
   }, [offer]);
 
-  // Closing the drawer only contracts her — she stays docked (FlyingWobo never unmounts). And a
+  // Closing the drawer only contracts Wobo — Wobo stays docked (FlyingWobo never unmounts). And a
   // live mic must not outlive the drawer, so any voice session is stopped on close (stop() no-ops
   // when idle). Both close affordances route through here.
   const close = () => {
@@ -364,7 +364,7 @@ export function WoboCompanion() {
   /**
    * The drawer is a modal surface, so it owes the three things a dialog owes: focus lands inside it
    * on open, Escape closes it, and focus returns to whatever opened it. Without these a keyboard or
-   * screen-reader learner could open her and then be nowhere.
+   * screen-reader learner could open Wobo and then be nowhere.
    */
   // `close` reads only refs and setters, so re-binding the listener on every render of it would be
   // churn for nothing — open IS the trigger.
@@ -407,10 +407,10 @@ export function WoboCompanion() {
 
   return (
     <>
-      {/* She is always docked and mounted — the drawer only overlays her. Closing it must never
-          remove her (the owner's complaint); hiding via visibility keeps her in place with no
-          re-fly, and the fixed drawer (higher z) covers her while open. */}
-      {/* The push-to-talk halo — a soft molten pulse ring around her while she is on a live hold,
+      {/* Wobo is always docked and mounted — the drawer only overlays Wobo. Closing it must never
+          remove Wobo (the owner's complaint); hiding via visibility keeps Wobo in place with no
+          re-fly, and the fixed drawer (higher z) covers Wobo while open. */}
+      {/* The push-to-talk halo — a soft molten pulse ring around Wobo while Wobo is on a live hold,
           visible without any drawer. Reduced motion: a calm static ring. */}
       {ptt && (
         <motion.div
@@ -432,7 +432,7 @@ export function WoboCompanion() {
               'radial-gradient(circle at 50% 50%, rgba(255,90,31,0.22), rgba(255,90,31,0) 68%)',
             border: '1.5px solid rgba(255,120,60,0.5)',
             opacity: reduced ? 0.5 : undefined,
-            zIndex: 'var(--clss-z-woboPresence)' as unknown as number,
+            zIndex: 'var(--wobo-z-woboPresence)' as unknown as number,
             pointerEvents: 'none',
           }}
         />
@@ -441,13 +441,13 @@ export function WoboCompanion() {
         <FlyingWobo
           routeKey={route.name}
           mood={expression}
-          // Her eyes go to what the learner circled, and her idle life runs off real quiet.
+          // Wobo's eyes go to what the learner circled, and Wobo's idle life runs off real quiet.
           focus={focus?.rect ?? null}
           idleSince={idleSince}
           behaviour={offer ? 'lean' : null}
           behaviourKey={leanKey}
-          // Realism: while she's inking, her body turns toward the mark on the page (the bus reports
-          // where). The docked orb sits bottom-right; the angle runs from her to the ink.
+          // Realism: while Wobo is inking, Wobo's body turns toward the mark on the page (the bus reports
+          // where). The docked orb sits bottom-right; the angle runs from Wobo to the ink.
           gestureAngle={
             bus.focusPoint && typeof window !== 'undefined'
               ? Math.atan2(
@@ -457,14 +457,14 @@ export function WoboCompanion() {
               : undefined
           }
           onTap={() => {
-            sfx.breath(true); // a soft breath as her drawer slides open
+            sfx.breath(true); // a soft breath as Wobo's drawer slides open
             setOpen(true);
           }}
           onHoldStart={holdStart}
           onHoldEnd={holdEnd}
         />
       </div>
-      {/* The lean-in: she offers a pointer, she does not take over. Both answers are one tap, and
+      {/* The lean-in: Wobo offers a pointer, Wobo does not take over. Both answers are one tap, and
           walking away is an answer too — it retires on its own. */}
       {offer && !open && (
         <div
@@ -474,16 +474,16 @@ export function WoboCompanion() {
             bottom: 100,
             maxWidth: 240,
             padding: '8px 10px',
-            borderRadius: 'var(--clss-radius-sm)',
-            background: 'var(--clss-frost-on-paper)',
-            backdropFilter: 'blur(var(--clss-frost-blur))',
-            WebkitBackdropFilter: 'blur(var(--clss-frost-blur))',
-            border: '0.5px solid var(--clss-hairline-on-paper)',
-            color: 'var(--clss-ink-700)',
+            borderRadius: 'var(--wobo-radius-sm)',
+            background: 'var(--wobo-frost-on-paper)',
+            backdropFilter: 'blur(var(--wobo-frost-blur))',
+            WebkitBackdropFilter: 'blur(var(--wobo-frost-blur))',
+            border: '0.5px solid var(--wobo-hairline-on-paper)',
+            color: 'var(--wobo-ink-700)',
             fontSize: '0.8rem',
             lineHeight: 1.45,
             textAlign: 'right',
-            zIndex: 'var(--clss-z-panel)' as unknown as number,
+            zIndex: 'var(--wobo-z-panel)' as unknown as number,
           }}
         >
           {offer.line}
@@ -512,15 +512,15 @@ export function WoboCompanion() {
             bottom: 100,
             maxWidth: 210,
             padding: '6px 10px',
-            borderRadius: 'var(--clss-radius-sm)',
-            background: 'var(--clss-frost-on-paper)',
-            backdropFilter: 'blur(var(--clss-frost-blur))',
-            WebkitBackdropFilter: 'blur(var(--clss-frost-blur))',
-            border: '0.5px solid var(--clss-hairline-on-paper)',
-            color: 'var(--clss-ink-500)',
+            borderRadius: 'var(--wobo-radius-sm)',
+            background: 'var(--wobo-frost-on-paper)',
+            backdropFilter: 'blur(var(--wobo-frost-blur))',
+            WebkitBackdropFilter: 'blur(var(--wobo-frost-blur))',
+            border: '0.5px solid var(--wobo-hairline-on-paper)',
+            color: 'var(--wobo-ink-500)',
             fontSize: '0.78rem',
             textAlign: 'right',
-            zIndex: 'var(--clss-z-panel)' as unknown as number,
+            zIndex: 'var(--wobo-z-panel)' as unknown as number,
             pointerEvents: 'none',
           }}
         >
@@ -544,12 +544,12 @@ export function WoboCompanion() {
               right: 0,
               bottom: 0,
               width: 'min(420px, 94vw)',
-              zIndex: 'var(--clss-z-panel)' as unknown as number,
-              background: 'var(--clss-frost-on-paper)',
-              backdropFilter: 'blur(var(--clss-frost-blur))',
-              WebkitBackdropFilter: 'blur(var(--clss-frost-blur))',
-              borderLeft: '0.5px solid var(--clss-hairline-on-paper-strong)',
-              borderTop: '0.5px solid var(--clss-hairline-on-paper)',
+              zIndex: 'var(--wobo-z-panel)' as unknown as number,
+              background: 'var(--wobo-frost-on-paper)',
+              backdropFilter: 'blur(var(--wobo-frost-blur))',
+              WebkitBackdropFilter: 'blur(var(--wobo-frost-blur))',
+              borderLeft: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+              borderTop: '0.5px solid var(--wobo-hairline-on-paper)',
               display: 'flex',
               flexDirection: 'column',
             }}
@@ -560,7 +560,7 @@ export function WoboCompanion() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 12,
-                borderBottom: '0.5px solid var(--clss-hairline-on-paper)',
+                borderBottom: '0.5px solid var(--wobo-hairline-on-paper)',
               }}
             >
               <WoboBody
@@ -569,12 +569,12 @@ export function WoboCompanion() {
                 gaze="pointer"
               />
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 600, color: 'var(--clss-ink-900)', lineHeight: 1.1 }}>
+                <div style={{ fontWeight: 600, color: 'var(--wobo-ink-900)', lineHeight: 1.1 }}>
                   Wobo
                 </div>
                 {/* the quiet mode whisper — the assistance ladder, worn lightly */}
-                <div style={{ fontSize: '0.75rem', color: 'var(--clss-ink-500)' }}>
-                  {busy ? 'Thinking…' : tb ? 'Teach-back · she is the student' : modeWhisper(mode)}
+                <div style={{ fontSize: '0.75rem', color: 'var(--wobo-ink-500)' }}>
+                  {busy ? 'Thinking…' : tb ? 'Teach-back · Wobo is the student' : modeWhisper(mode)}
                 </div>
               </div>
               <MuteButton />
@@ -589,7 +589,7 @@ export function WoboCompanion() {
                 style={{
                   border: 'none',
                   background: 'transparent',
-                  color: 'var(--clss-ink-500)',
+                  color: 'var(--wobo-ink-500)',
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                   fontSize: '0.78rem',
@@ -607,7 +607,7 @@ export function WoboCompanion() {
                 style={{
                   border: 'none',
                   background: 'transparent',
-                  color: 'var(--clss-ink-500)',
+                  color: 'var(--wobo-ink-500)',
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                   lineHeight: 1,
@@ -618,7 +618,7 @@ export function WoboCompanion() {
               </button>
             </div>
 
-            {/* teach-back rides above the thread — ephemeral, like her ink; nothing saved */}
+            {/* teach-back rides above the thread — ephemeral, like Wobo's ink; nothing saved */}
             {tb && (
               <div
                 style={{
@@ -626,9 +626,9 @@ export function WoboCompanion() {
                   alignItems: 'center',
                   gap: 10,
                   padding: '8px 18px',
-                  borderBottom: '0.5px solid var(--clss-hairline-on-paper)',
+                  borderBottom: '0.5px solid var(--wobo-hairline-on-paper)',
                   fontSize: '0.78rem',
-                  color: 'var(--clss-ink-500)',
+                  color: 'var(--wobo-ink-500)',
                 }}
               >
                 <span style={{ flex: 1 }}>you are teaching: {tb.topic.toLowerCase()}</span>
@@ -638,7 +638,7 @@ export function WoboCompanion() {
                   style={{
                     border: 'none',
                     background: 'transparent',
-                    color: 'var(--clss-ink-500)',
+                    color: 'var(--wobo-ink-500)',
                     cursor: 'pointer',
                     fontFamily: 'inherit',
                     fontSize: '0.78rem',
@@ -670,11 +670,11 @@ export function WoboCompanion() {
                       alignSelf: 'flex-end',
                       maxWidth: '85%',
                       padding: '8px 13px',
-                      borderRadius: 'var(--clss-radius-md)',
+                      borderRadius: 'var(--wobo-radius-md)',
                       fontSize: '0.92rem',
                       lineHeight: 1.5,
-                      background: 'var(--clss-ink-900)',
-                      color: 'var(--clss-paper)',
+                      background: 'var(--wobo-ink-900)',
+                      color: 'var(--wobo-paper)',
                     }}
                   >
                     {t.text}
@@ -715,7 +715,7 @@ export function WoboCompanion() {
                   style={{
                     fontFamily: fontFamily.handwritten,
                     fontSize: '1.2rem',
-                    color: 'var(--clss-ink-500)',
+                    color: 'var(--wobo-ink-500)',
                   }}
                 >
                   …
@@ -731,21 +731,21 @@ export function WoboCompanion() {
                 style={{
                   margin: '0 14px',
                   padding: '9px 12px',
-                  border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-                  borderRadius: 'var(--clss-radius-sm)',
-                  background: 'var(--clss-paper)',
-                  color: 'var(--clss-ink-700)',
+                  border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+                  borderRadius: 'var(--wobo-radius-sm)',
+                  background: 'var(--wobo-paper)',
+                  color: 'var(--wobo-ink-700)',
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                   fontSize: '0.85rem',
                   textAlign: 'left',
                 }}
               >
-                teach her: {topicName.toLowerCase()} — she plays the student
+                teach Wobo: {topicName.toLowerCase()} — Wobo plays the student
               </button>
             )}
 
-            {/* Her modes, at hand (WOBO-PLAN §3). The ones that need something in hand appear only
+            {/* Wobo's modes, at hand (WOBO-PLAN §3). The ones that need something in hand appear only
                 once there is something in hand — the same list the palette and voice reach. */}
             {!tb && (
               <div
@@ -763,10 +763,10 @@ export function WoboCompanion() {
                     onClick={() => void ask(modePrompt(m.id, focus?.text))}
                     title={m.hint}
                     style={{
-                      border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-                      borderRadius: 'var(--clss-radius-sm)',
+                      border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+                      borderRadius: 'var(--wobo-radius-sm)',
                       background: 'transparent',
-                      color: 'var(--clss-ink-500)',
+                      color: 'var(--wobo-ink-500)',
                       cursor: 'pointer',
                       fontFamily: 'inherit',
                       fontSize: '0.76rem',
@@ -784,7 +784,7 @@ export function WoboCompanion() {
                 display: 'flex',
                 gap: 8,
                 padding: 14,
-                borderTop: '0.5px solid var(--clss-hairline-on-paper)',
+                borderTop: '0.5px solid var(--wobo-hairline-on-paper)',
                 alignItems: 'center',
               }}
             >
@@ -794,16 +794,16 @@ export function WoboCompanion() {
                 onChange={(e) => setDraft(e.target.value)}
                 onFocus={() => setMood('listening')}
                 onBlur={() => setMood('idle')}
-                placeholder={tb && !tb.done ? 'Explain it to her…' : 'Ask or do anything…'}
+                placeholder={tb && !tb.done ? 'Explain it to Wobo…' : 'Ask or do anything…'}
                 style={{
                   flex: 1,
-                  border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-                  borderRadius: 'var(--clss-radius-sm)',
+                  border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+                  borderRadius: 'var(--wobo-radius-sm)',
                   padding: '10px 12px',
                   fontSize: '0.92rem',
                   fontFamily: 'inherit',
-                  background: 'var(--clss-paper)',
-                  color: 'var(--clss-ink-900)',
+                  background: 'var(--wobo-paper)',
+                  color: 'var(--wobo-ink-900)',
                 }}
               />
               <button
@@ -813,7 +813,7 @@ export function WoboCompanion() {
                 style={{
                   border: 'none',
                   background: 'transparent',
-                  color: voiceOn ? 'var(--clss-ink-900)' : 'var(--clss-ink-500)',
+                  color: voiceOn ? 'var(--wobo-ink-900)' : 'var(--wobo-ink-500)',
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                   fontSize: '0.85rem',
@@ -836,9 +836,9 @@ export function WoboCompanion() {
                     transition={{ type: 'spring', stiffness: 380, damping: 26 }}
                     style={{
                       border: 'none',
-                      background: 'var(--clss-ink-900)',
-                      color: 'var(--clss-paper)',
-                      borderRadius: 'var(--clss-radius-sm)',
+                      background: 'var(--wobo-ink-900)',
+                      color: 'var(--wobo-paper)',
+                      borderRadius: 'var(--wobo-radius-sm)',
                       padding: '10px 14px',
                       cursor: busy ? 'default' : 'pointer',
                       fontFamily: 'inherit',
@@ -857,7 +857,7 @@ export function WoboCompanion() {
               <div
                 style={{
                   padding: '0 14px 10px',
-                  color: 'var(--clss-ink-500)',
+                  color: 'var(--wobo-ink-500)',
                   fontSize: '0.78rem',
                 }}
               >

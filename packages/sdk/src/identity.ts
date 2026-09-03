@@ -1,4 +1,4 @@
-import type { ConsentTier } from '@classess/contracts';
+import type { ConsentTier } from '@wobo/contracts';
 import type { SdkConfig } from './config';
 import type { KVStorage } from './state';
 
@@ -20,7 +20,7 @@ export interface Session {
 /** Raised by the auth seams when running in dev-mock mode (no live auth to perform). */
 export class AuthNotEnabledError extends Error {
   constructor(seam: string) {
-    super(`${seam} is not available in dev-mock mode; flip DEV_AUTH=false for live Supabase auth.`);
+    super(`${seam} is not available in dev-mock mode; flip DEV_AUTH=false for live account auth.`);
     this.name = 'AuthNotEnabledError';
   }
 }
@@ -51,7 +51,7 @@ export interface AccountLink {
 export interface AuthSeams {
   /**
    * Establish an anonymous learner so a first-time visitor carries a real JWT before they ever sign
-   * in — this is what lets her teach on the first screen while the brain still knows who is asking
+   * in — this is what lets Wobo teach on the first screen while the brain still knows who is asking
    * (a small day's budget, no elevated doors). Resolves to the existing session when there is one.
    */
   signInAnonymously(): Promise<Session>;
@@ -137,8 +137,8 @@ export class DevMockIdentity implements IdentityProvider {
 
 // --- Live Supabase auth ---------------------------------------------------------------------------
 
-/** Where the live session persists on-device (a clss-* key so "start over" erases it too). */
-export const AUTH_SESSION_KEY = 'clss-auth-session-v1';
+/** Where the live session persists on-device (a wobo-* key so "start over" erases it too). */
+export const AUTH_SESSION_KEY = 'wobo-auth-session-v1';
 
 export interface SupabaseAuthConfig {
   /** Supabase project URL (env only). */
@@ -230,7 +230,7 @@ async function gotrueError(res: Response): Promise<string> {
 
 /**
  * The live identity: Supabase Auth (GoTrue) over plain fetch — phone-OTP-first plus Google via the
- * OAuth redirect flow. The session persists under a clss-* key, refreshes itself before expiry, and
+ * OAuth redirect flow. The session persists under a wobo-* key, refreshes itself before expiry, and
  * exposes auth.uid() as the canonical subject_id.
  *
  * Consent stays `un_elevated` until verifiable parental consent exists (DPDP) — elevation is a

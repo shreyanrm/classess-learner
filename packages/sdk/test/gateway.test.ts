@@ -79,7 +79,7 @@ describe('every gateway call carries an identity', () => {
   });
 });
 
-describe('the brain’s refusals arrive in her voice', () => {
+describe("the brain’s refusals arrive in Wobo's voice", () => {
   it('401 becomes a sign-in prompt, never a status code', async () => {
     capture(() => Response.json({ code: 'sign_in_required' }, { status: 401 }));
     // Typed as the seam the app holds: it still passes a tier, and it still never ships.
@@ -90,7 +90,7 @@ describe('the brain’s refusals arrive in her voice', () => {
     expect(err).toBeInstanceOf(SignInRequiredError);
     expect((err as SignInRequiredError).code).toBe('sign_in_required');
     expect((err as Error).message).toMatch(/sign in/i);
-    expect((err as Error).message).not.toMatch(/401|gemini|openai|claude|classess/i);
+    expect((err as Error).message).not.toMatch(/401|gemini|openai|claude|litellm/i);
   });
 
   it('429 carries what is left and when it refills', async () => {

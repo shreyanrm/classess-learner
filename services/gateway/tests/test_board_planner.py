@@ -6,8 +6,8 @@ Nothing placed by pixels. No number the model wrote. Nothing that floats. Not mo
 from __future__ import annotations
 
 import pytest
-from classess_gateway.board import schema
-from classess_gateway.board.planner import (
+from wobo_gateway.board import schema
+from wobo_gateway.board.planner import (
     MAX_OBJECTS,
     Surface,
     TooMuchAtOnce,
@@ -241,7 +241,7 @@ def test_the_brain_validates_against_the_generated_mirror() -> None:
     """`packages/wobo/src/board/schema.ts` is the source of truth; the generated Python mirror is
     what this module validates against. If the two ever drift, this fails rather than a learner
     seeing an object the hand cannot draw."""
-    from classess_gateway import board_schema
+    from wobo_gateway import board_schema
 
     assert list(schema.OBJECT_KINDS) == list(board_schema.OBJECT_KINDS)
     assert list(schema.PATCH_KINDS) == list(board_schema.PATCH_KINDS)

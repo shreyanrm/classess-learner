@@ -8,7 +8,7 @@ Wobo is a B2C, AI-native consumer learning app — the flagship consumer product
 ecosystem, and the reference implementation of the **Dot eVentures education ecosystem**. The
 ecosystem is the entity; **KGtoPG** (the governed identity + data + intelligence platform) and
 **Wobo** are both citizens of it.
-The app is built to plug into KGtoPG correctly, proving the pattern every future product follows. Wobo is also the name of the tutor who lives in the app; in these docs "she" always means the tutor.
+The app is built to plug into KGtoPG correctly, proving the pattern every future product follows. Wobo is also the name of the tutor who lives in the app; in these docs "Wobo" means the tutor. Wobo has no gender: use the name, and they/them only when a pronoun is unavoidable.
 
 North star: *"Brilliant.org, but AI-native, built for India, premium, with mechanics nobody in edtech has shipped."*
 Governing frame: **cognitive fitness — a gym for the mind**, not edtech.
@@ -27,7 +27,7 @@ Governing frame: **cognitive fitness — a gym for the mind**, not edtech.
 2. **Event contract from the first commit.** Every meaningful action emits a clean, attributed event. Non-negotiable.
 3. **Correctness is existential.** No generated content reaches a learner unverified. A wrong answer to a child is a failure.
 4. **Auth is built LAST, on explicit approval.** Build the structure and wiring now; do not implement real auth until told.
-5. **Wobo-cute license.** Within the locked Wobo system, you have creative freedom to make her delightful per page. Never alter her identity.
+5. **Wobo-cute license.** Within the locked Wobo system, you have creative freedom to make Wobo delightful per page. Never alter Wobo's identity.
 
 ## Working posture for Claude Code
 - Work **phase by phase**. At each phase gate, stop, summarize what you built, and wait for verification.
@@ -39,7 +39,7 @@ Governing frame: **cognitive fitness — a gym for the mind**, not edtech.
 ---
 
 ## Additions (v1.1)
-- **`Classess-Learner-Master-Document.pdf`** is included at the folder root — the full narrative vision behind these terse build docs.
+- **`Wobo-Master-Document.pdf`** is included at the folder root — the full narrative vision behind these terse build docs.
   Read it after `00-CONTEXT/` for complete context; the build docs override it where they are more specific.
 - **`01-ARCHITECTURE/06-content-and-courses.md`** — where teaching content comes from (Plexus, catalogs, the verifier-gated cache, and
   exactly what to seed for the atom).

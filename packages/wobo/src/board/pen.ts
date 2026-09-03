@@ -271,11 +271,11 @@ export function fadeOpacity(age: number, ttl: number | undefined, fade = 480): n
 
 /**
  * A tick as the nib lands — a few milliseconds of filtered noise, synthesized, no asset. It shares
- * the app's one mute switch: `speech.tsx` writes this key and fires this event, so muting her voice
- * mutes her pen. Read, never written, from here.
+ * the app's one mute switch: `speech.tsx` writes this key and fires this event, so muting Wobo's voice
+ * mutes Wobo's pen. Read, never written, from here.
  */
-const MUTE_KEY = 'clss-voice-muted-v1';
-const MUTE_EVENT = 'clss-mute-changed';
+const MUTE_KEY = 'wobo-voice-muted-v1';
+const MUTE_EVENT = 'wobo-mute-changed';
 
 let muted: boolean | null = null;
 

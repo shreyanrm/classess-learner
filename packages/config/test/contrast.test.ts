@@ -33,24 +33,24 @@ describe('faint ink clears the WCAG AA floor for real text', () => {
   });
 
   it('passes AA on graphite', () => {
-    const faint = dark['--clss-ink-faint'] as string;
-    const page = dark['--clss-page'] as string;
+    const faint = dark['--wobo-ink-faint'] as string;
+    const page = dark['--wobo-page'] as string;
     expect(contrastRatio(faint, page)).toBeGreaterThanOrEqual(4.5);
   });
 
   it('is the whisper value the ink scale already computed, in both themes', () => {
     expect(chrome.inkFaint).toBe(ink[300]);
-    expect(dark['--clss-ink-faint']).toBe(dark['--clss-ink-300']);
+    expect(dark['--wobo-ink-faint']).toBe(dark['--wobo-ink-300']);
   });
 
   it('keeps the rest of the text ramp above the floor too', () => {
     expect(contrastRatio(chrome.ink, paper)).toBeGreaterThanOrEqual(4.5);
     expect(contrastRatio(chrome.inkSoft, paper)).toBeGreaterThanOrEqual(4.5);
     expect(
-      contrastRatio(dark['--clss-ink'] as string, dark['--clss-page'] as string),
+      contrastRatio(dark['--wobo-ink'] as string, dark['--wobo-page'] as string),
     ).toBeGreaterThanOrEqual(4.5);
     expect(
-      contrastRatio(dark['--clss-ink-soft'] as string, dark['--clss-page'] as string),
+      contrastRatio(dark['--wobo-ink-soft'] as string, dark['--wobo-page'] as string),
     ).toBeGreaterThanOrEqual(4.5);
   });
 });

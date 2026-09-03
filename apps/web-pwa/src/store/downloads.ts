@@ -26,8 +26,8 @@ export interface Download {
   seen: boolean;
 }
 
-const KEY = 'clss-downloads-v1';
-const EVT = 'clss-downloads-changed';
+const KEY = 'wobo-downloads-v1';
+const EVT = 'wobo-downloads-changed';
 
 function load(): Download[] {
   try {

@@ -88,7 +88,7 @@ function keyword(text: string): string | null {
 
 // --- Per-topic recall pool (board-shared cache) ---------------------------------------------------
 
-const POOL_KEY = (topicId: string) => `clss-forge-pool-v1:${topicId}`;
+const POOL_KEY = (topicId: string) => `wobo-forge-pool-v1:${topicId}`;
 const mem = new Map<string, WorkbookItem[]>();
 
 /** Cloze items grounded in the topic's real blurb — the recall floor every topic can supply. */

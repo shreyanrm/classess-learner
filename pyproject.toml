@@ -1,5 +1,5 @@
 [project]
-name = "classess-learner-workspace"
+name = "wobo-workspace"
 version = "0.0.0"
 description = "Wobo — Python services workspace (BFF, gateway, verifier, Plexus)"
 requires-python = ">=3.12"
@@ -9,15 +9,19 @@ dependencies = []
 dev = ["pytest>=8.2", "ruff>=0.6"]
 
 [tool.uv.workspace]
-# Members are added as each Python package is created. Globbing avoids editing this on every add.
-# content/catalogs is data (board catalog JSON), content/cache is the Plexus artifact
-# cache (written at runtime by the gateway), and content/factbase is the NCERT fact-base data +
-# standalone build scripts — none is a Python package.
+# services/* is globbed because a service is a Python package by definition; content/ is not.
+# Everything under content/ is data or a standalone build script — board catalogs, the Plexus
+# artifact cache, the NCERT fact-base, the framework registry seed, the hospitality calendars —
+# and exactly one directory, content/atom, is a real uv package. Naming it rather than globbing
+# `content/*` with a growing exclude list means the next data directory someone adds does not
+# break `uv sync --all-packages` on the day it lands. Add a line here when a content directory
+# genuinely becomes a package (i.e. gains a pyproject.toml).
+#
 # services/render-worker has no pyproject.toml (a Node/TS render service with a Python queue
-# consumer), so the Python workspace glob must skip it — otherwise every `uv run` fails trying to
-# resolve it as a member. Drop this exclude if it later becomes a real uv package (adds pyproject).
-members = ["services/*", "content/*"]
-exclude = ["content/catalogs", "content/cache", "content/factbase", "services/render-worker"]
+# consumer), so it is excluded — otherwise every `uv run` fails trying to resolve it as a member.
+# Drop that exclude if it later becomes a real uv package.
+members = ["services/*", "content/atom"]
+exclude = ["services/render-worker"]
 
 [tool.ruff]
 line-length = 100
@@ -35,15 +39,15 @@ select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
 # Prompt- and data-heavy modules: an LLM system prompt, a calibration dataset, and spike prose
 # have legitimately long lines. E501 is noise there; all real code-quality lints stay enforced.
 "content/atom/**" = ["E501"]
-"services/gateway/src/classess_gateway/wobo.py" = ["E501"]
+"services/gateway/src/wobo_gateway/wobo.py" = ["E501"]
 # engine prompts + inline SVG/JSON string literals: legitimately long lines, E501 is noise
-"services/gateway/src/classess_gateway/plexus/engines.py" = ["E501"]
+"services/gateway/src/wobo_gateway/plexus/engines.py" = ["E501"]
 # subject validators: doctrine docstrings + inline self-check data (same justification as engines.py)
-"services/gateway/src/classess_gateway/plexus/bio.py" = ["E501"]
-"services/gateway/src/classess_gateway/plexus/social.py" = ["E501"]
-"services/gateway/src/classess_gateway/plexus/maps.py" = ["E501"]
+"services/gateway/src/wobo_gateway/plexus/bio.py" = ["E501"]
+"services/gateway/src/wobo_gateway/plexus/social.py" = ["E501"]
+"services/gateway/src/wobo_gateway/plexus/maps.py" = ["E501"]
 # email templates are inline-styled HTML string literals — long lines are the format, not slop
-"services/gateway/src/classess_gateway/email_templates.py" = ["E501"]
+"services/gateway/src/wobo_gateway/email_templates.py" = ["E501"]
 "services/gateway/tests/test_wobo.py" = ["E501"]
 # the fact-base builder and its patch script: LLM system prompts, run-command docstrings, and
 # embedded Python source strings. Same justification as content/atom/** — every other lint stays on.
@@ -54,7 +58,7 @@ select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
 # GENERATED from packages/wobo/src/board/schema.ts (bun run --cwd packages/wobo
 # board:codegen). The grammar travels as one JSON literal per schema so the mirror is
 # byte-stable; formatting it by hand would be edited away on the next regeneration.
-"services/gateway/src/classess_gateway/board_schema.py" = ["E501", "B905"]
+"services/gateway/src/wobo_gateway/board_schema.py" = ["E501", "B905"]
 
 [tool.pytest.ini_options]
 addopts = "-q"

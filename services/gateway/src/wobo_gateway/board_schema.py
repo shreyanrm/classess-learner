@@ -1,0 +1,234 @@
+"""The board grammar, mirrored from the hand.
+
+GENERATED FILE — do not edit. The source of truth is
+`packages/wobo/src/board/schema.ts`; regenerate with:
+
+    bun run --cwd packages/wobo board:codegen
+
+The brain validates every plan it composes against this mirror, so the grammar can never
+drift between the two halves of Wobo (docs/BOARD.md §2-§4).
+"""
+
+from __future__ import annotations
+
+import json
+from typing import Any
+
+BOARD_UNITS = 1000
+MARK_KINDS = [
+    "point",
+    "circle",
+    "underline",
+    "arrow",
+    "bracket",
+    "strike",
+    "number",
+    "write",
+    "erase",
+    "wipe",
+]
+SHAPE_KINDS = [
+    "line",
+    "polyline",
+    "curve",
+    "polygon",
+    "ellipse",
+    "axis",
+    "grid",
+    "table",
+    "label",
+    "tex",
+    "bond",
+    "atom",
+    "region",
+    "image",
+]
+CONTROL_KINDS = [
+    "slider",
+    "toggle",
+    "input",
+    "drag",
+]
+PATCH_KINDS = [
+    "fade",
+    "remove",
+    "redraw",
+    "repoint",
+    "move",
+    "restyle",
+]
+INK_ROLES = [
+    "wobo",
+    "accent",
+    "learner",
+    "faint",
+]
+PRESENTATIONS = [
+    "screen",
+    "plane",
+    "full",
+]
+OBJECT_KINDS = MARK_KINDS + SHAPE_KINDS + CONTROL_KINDS
+
+# The schemas travel as JSON so the mirror stays small and byte-stable. Read the grammar in
+# `packages/wobo/src/board/schema.ts`, never here.
+_DEFS: dict[str, Any] = json.loads(
+    '{"__schema0":{"type":"string","minLength":1,"maxLength":64},"__schema1":{"anyOf":[{"type":"object","properties":{"target":{"type":"string","minLength":1},"at":{"$ref":"#/$defs/__schema2"},"offset":{"$ref":"#/$defs/__schema4"}},"required":["target"]},{"type":"object","properties":{"object":{"type":"string","minLength":1},"at":{"$ref":"#/$defs/__schema2"},"offset":{"$ref":"#/$defs/__schema4"}},"required":["object"]},{"type":"object","properties":{"focus":{"type":"string","minLength":1},"at":{"$ref":"#/$defs/__schema2"},"offset":{"$ref":"#/$defs/__schema4"}},"required":["focus"]},{"type":"object","properties":{"board":{"$ref":"#/$defs/__schema5"},"offset":{"$ref":"#/$defs/__schema4"}},"required":["board"]}]},"__schema2":{"anyOf":[{"type":"string","enum":["center","top","bottom","left","right","topLeft","topRight","bottomLeft","bottomRight"]},{"type":"array","prefixItems":[{"$ref":"#/$defs/__schema3"},{"$ref":"#/$defs/__schema3"}]}]},"__schema3":{"type":"number"},"__schema4":{"type":"array","prefixItems":[{"$ref":"#/$defs/__schema3"},{"$ref":"#/$defs/__schema3"}]},"__schema5":{"type":"array","prefixItems":[{"$ref":"#/$defs/__schema3"},{"$ref":"#/$defs/__schema3"}]},"__schema6":{"$ref":"#/$defs/__schema7"},"__schema7":{"type":"object","properties":{"ink":{"type":"string","enum":["wobo","accent","learner","faint"]},"weight":{"type":"integer","minimum":1,"maximum":4},"dash":{"anyOf":[{"type":"boolean"},{"minItems":2,"maxItems":6,"type":"array","items":{"$ref":"#/$defs/__schema8"}}]},"fill":{"type":"string","enum":["none","wash","solid"]},"opacity":{"type":"number","minimum":0,"maximum":1}}},"__schema8":{"type":"number","exclusiveMinimum":0},"__schema9":{"$ref":"#/$defs/__schema10"},"__schema10":{"type":"object","properties":{"start":{"type":"number","minimum":0},"dur":{"type":"number","exclusiveMinimum":0},"ttl":{"type":"number","exclusiveMinimum":0}}},"__schema11":{"maxItems":16,"type":"array","items":{"$ref":"#/$defs/__schema12"}},"__schema12":{"type":"string","minLength":1},"__schema13":{"type":"string","minLength":1,"maxLength":400},"__schema14":{"minItems":2,"maxItems":400,"type":"array","items":{"$ref":"#/$defs/__schema5"}},"__schema15":{"minItems":1,"maxItems":12,"type":"array","items":{"$ref":"#/$defs/__schema16"}},"__schema16":{"type":"string","maxLength":40},"__schema17":{"type":"string","minLength":1,"maxLength":40},"__schema18":{"type":"string","minLength":1}}'
+)
+
+BOARD_OBJECT_SCHEMA: dict[str, Any] = json.loads(
+    '{"$schema":"https://json-schema.org/draft/2020-12/schema","oneOf":[{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"point"}},"required":["id","anchor","kind"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"circle"},"pad":{"$ref":"#/$defs/__schema3"}},"required":["id","anchor","kind"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"underline"}},"required":["id","anchor","kind"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"arrow"},"from":{"$ref":"#/$defs/__schema1"},"curve":{"$ref":"#/$defs/__schema3"}},"required":["id","anchor","kind"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"bracket"},"side":{"type":"string","enum":["left","right","top","bottom"]},"label":{"$ref":"#/$defs/__schema13"}},"required":["id","anchor","kind"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"strike"}},"required":["id","anchor","kind"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"number"},"value":{"$ref":"#/$defs/__schema3"},"unit":{"type":"string","maxLength":16},"label":{"type":"string","maxLength":80},"precision":{"type":"integer","minimum":0,"maximum":8},"verified":{"type":"boolean"},"check":{"type":"string","maxLength":60}},"required":["id","anchor","kind","value","verified"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"write"},"text":{"$ref":"#/$defs/__schema13"},"size":{"type":"number","exclusiveMinimum":0},"maxWidth":{"type":"number","exclusiveMinimum":0}},"required":["id","anchor","kind","text"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"erase"},"object":{"type":"string","minLength":1}},"required":["id","anchor","kind","object"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"kind":{"type":"string","const":"wipe"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema7"},"t":{"$ref":"#/$defs/__schema10"}},"required":["id","kind"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"line"},"to":{"$ref":"#/$defs/__schema1"}},"required":["id","anchor","kind","to"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"polyline"},"points":{"$ref":"#/$defs/__schema14"}},"required":["id","anchor","kind","points"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"curve"},"points":{"$ref":"#/$defs/__schema14"},"closed":{"type":"boolean"}},"required":["id","anchor","kind","points"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"polygon"},"points":{"$ref":"#/$defs/__schema14"}},"required":["id","anchor","kind","points"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"ellipse"},"rx":{"type":"number","exclusiveMinimum":0},"ry":{"type":"number","exclusiveMinimum":0}},"required":["id","anchor","kind","rx","ry"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"axis"},"orientation":{"type":"string","enum":["x","y"]},"min":{"$ref":"#/$defs/__schema3"},"max":{"$ref":"#/$defs/__schema3"},"step":{"type":"number","exclusiveMinimum":0},"length":{"type":"number","exclusiveMinimum":0},"label":{"type":"string","maxLength":40},"ticks":{"type":"boolean"}},"required":["id","anchor","kind","orientation","min","max","step","length"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"grid"},"cols":{"type":"integer","minimum":1,"maximum":60},"rows":{"type":"integer","minimum":1,"maximum":60},"w":{"type":"number","exclusiveMinimum":0},"h":{"type":"number","exclusiveMinimum":0}},"required":["id","anchor","kind","cols","rows","w","h"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"table"},"rows":{"minItems":1,"maxItems":24,"type":"array","items":{"$ref":"#/$defs/__schema15"}},"w":{"type":"number","exclusiveMinimum":0},"rowHeight":{"type":"number","exclusiveMinimum":0}},"required":["id","anchor","kind","rows","w"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"label"},"text":{"$ref":"#/$defs/__schema13"},"size":{"type":"number","exclusiveMinimum":0}},"required":["id","anchor","kind","text"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"tex"},"tex":{"type":"string","minLength":1,"maxLength":400},"size":{"type":"number","exclusiveMinimum":0}},"required":["id","anchor","kind","tex"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"bond"},"to":{"$ref":"#/$defs/__schema5"},"order":{"anyOf":[{"type":"number","const":1},{"type":"number","const":2},{"type":"number","const":3}]},"wedge":{"type":"string","enum":["none","up","down"]}},"required":["id","anchor","kind","to"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"atom"},"symbol":{"type":"string","minLength":1,"maxLength":3},"charge":{"type":"integer","minimum":-4,"maximum":4},"lonePairs":{"type":"integer","minimum":0,"maximum":4},"size":{"type":"number","exclusiveMinimum":0}},"required":["id","anchor","kind","symbol"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"region"},"w":{"type":"number","exclusiveMinimum":0},"h":{"type":"number","exclusiveMinimum":0},"title":{"type":"string","maxLength":80}},"required":["id","anchor","kind","w","h"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"image"},"href":{"type":"string","minLength":1,"maxLength":2048},"w":{"type":"number","exclusiveMinimum":0},"h":{"type":"number","exclusiveMinimum":0},"alt":{"type":"string","maxLength":160}},"required":["id","anchor","kind","href","w","h","alt"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"slider"},"variable":{"$ref":"#/$defs/__schema17"},"min":{"$ref":"#/$defs/__schema3"},"max":{"$ref":"#/$defs/__schema3"},"value":{"$ref":"#/$defs/__schema3"},"step":{"type":"number","exclusiveMinimum":0},"w":{"type":"number","exclusiveMinimum":0},"label":{"type":"string","maxLength":40}},"required":["id","anchor","kind","variable","min","max","value"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"toggle"},"variable":{"$ref":"#/$defs/__schema17"},"value":{"type":"boolean"},"label":{"type":"string","maxLength":40}},"required":["id","anchor","kind","variable","value"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"input"},"variable":{"$ref":"#/$defs/__schema17"},"value":{"type":"string","maxLength":80},"w":{"type":"number","exclusiveMinimum":0},"label":{"type":"string","maxLength":40}},"required":["id","anchor","kind","variable","value"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"drag"},"variable":{"$ref":"#/$defs/__schema17"},"value":{"$ref":"#/$defs/__schema5"},"bounds":{"type":"array","prefixItems":[{"$ref":"#/$defs/__schema5"},{"$ref":"#/$defs/__schema5"}]},"label":{"type":"string","maxLength":40}},"required":["id","anchor","kind","variable","value"]}],"$defs":{"__schema0":{"type":"string","minLength":1,"maxLength":64},"__schema1":{"anyOf":[{"type":"object","properties":{"target":{"type":"string","minLength":1},"at":{"$ref":"#/$defs/__schema2"},"offset":{"$ref":"#/$defs/__schema4"}},"required":["target"]},{"type":"object","properties":{"object":{"type":"string","minLength":1},"at":{"$ref":"#/$defs/__schema2"},"offset":{"$ref":"#/$defs/__schema4"}},"required":["object"]},{"type":"object","properties":{"focus":{"type":"string","minLength":1},"at":{"$ref":"#/$defs/__schema2"},"offset":{"$ref":"#/$defs/__schema4"}},"required":["focus"]},{"type":"object","properties":{"board":{"$ref":"#/$defs/__schema5"},"offset":{"$ref":"#/$defs/__schema4"}},"required":["board"]}]},"__schema2":{"anyOf":[{"type":"string","enum":["center","top","bottom","left","right","topLeft","topRight","bottomLeft","bottomRight"]},{"type":"array","prefixItems":[{"$ref":"#/$defs/__schema3"},{"$ref":"#/$defs/__schema3"}]}]},"__schema3":{"type":"number"},"__schema4":{"type":"array","prefixItems":[{"$ref":"#/$defs/__schema3"},{"$ref":"#/$defs/__schema3"}]},"__schema5":{"type":"array","prefixItems":[{"$ref":"#/$defs/__schema3"},{"$ref":"#/$defs/__schema3"}]},"__schema6":{"$ref":"#/$defs/__schema7"},"__schema7":{"type":"object","properties":{"ink":{"type":"string","enum":["wobo","accent","learner","faint"]},"weight":{"type":"integer","minimum":1,"maximum":4},"dash":{"anyOf":[{"type":"boolean"},{"minItems":2,"maxItems":6,"type":"array","items":{"$ref":"#/$defs/__schema8"}}]},"fill":{"type":"string","enum":["none","wash","solid"]},"opacity":{"type":"number","minimum":0,"maximum":1}}},"__schema8":{"type":"number","exclusiveMinimum":0},"__schema9":{"$ref":"#/$defs/__schema10"},"__schema10":{"type":"object","properties":{"start":{"type":"number","minimum":0},"dur":{"type":"number","exclusiveMinimum":0},"ttl":{"type":"number","exclusiveMinimum":0}}},"__schema11":{"maxItems":16,"type":"array","items":{"$ref":"#/$defs/__schema12"}},"__schema12":{"type":"string","minLength":1},"__schema13":{"type":"string","minLength":1,"maxLength":400},"__schema14":{"minItems":2,"maxItems":400,"type":"array","items":{"$ref":"#/$defs/__schema5"}},"__schema15":{"minItems":1,"maxItems":12,"type":"array","items":{"$ref":"#/$defs/__schema16"}},"__schema16":{"type":"string","maxLength":40},"__schema17":{"type":"string","minLength":1,"maxLength":40}}}'
+)
+
+BOARD_PATCH_SCHEMA: dict[str, Any] = json.loads(
+    '{"$schema":"https://json-schema.org/draft/2020-12/schema","oneOf":[{"type":"object","properties":{"id":{"type":"string","minLength":1},"kind":{"type":"string","const":"fade"},"t":{"$ref":"#/$defs/__schema0"}},"required":["id","kind"]},{"type":"object","properties":{"id":{"type":"string","minLength":1},"kind":{"type":"string","const":"remove"},"t":{"$ref":"#/$defs/__schema0"}},"required":["id","kind"]},{"type":"object","properties":{"id":{"type":"string","minLength":1},"kind":{"type":"string","const":"redraw"},"t":{"$ref":"#/$defs/__schema0"}},"required":["id","kind"]},{"type":"object","properties":{"id":{"type":"string","minLength":1},"kind":{"type":"string","const":"repoint"},"anchor":{"$ref":"#/$defs/__schema1"},"t":{"$ref":"#/$defs/__schema0"}},"required":["id","kind","anchor"]},{"type":"object","properties":{"id":{"type":"string","minLength":1},"kind":{"type":"string","const":"move"},"anchor":{"$ref":"#/$defs/__schema1"},"t":{"$ref":"#/$defs/__schema0"}},"required":["id","kind","anchor"]},{"type":"object","properties":{"id":{"type":"string","minLength":1},"kind":{"type":"string","const":"restyle"},"style":{"type":"object","properties":{"ink":{"type":"string","enum":["wobo","accent","learner","faint"]},"weight":{"type":"integer","minimum":1,"maximum":4},"dash":{"anyOf":[{"type":"boolean"},{"minItems":2,"maxItems":6,"type":"array","items":{"$ref":"#/$defs/__schema5"}}]},"fill":{"type":"string","enum":["none","wash","solid"]},"opacity":{"type":"number","minimum":0,"maximum":1}}},"t":{"$ref":"#/$defs/__schema0"}},"required":["id","kind","style"]}],"$defs":{"__schema0":{"type":"object","properties":{"start":{"type":"number","minimum":0},"dur":{"type":"number","exclusiveMinimum":0},"ttl":{"type":"number","exclusiveMinimum":0}}},"__schema1":{"anyOf":[{"type":"object","properties":{"target":{"type":"string","minLength":1},"at":{"$ref":"#/$defs/__schema2"},"offset":{"$ref":"#/$defs/__schema4"}},"required":["target"]},{"type":"object","properties":{"object":{"type":"string","minLength":1},"at":{"$ref":"#/$defs/__schema2"},"offset":{"$ref":"#/$defs/__schema4"}},"required":["object"]},{"type":"object","properties":{"focus":{"type":"string","minLength":1},"at":{"$ref":"#/$defs/__schema2"},"offset":{"$ref":"#/$defs/__schema4"}},"required":["focus"]},{"type":"object","properties":{"board":{"type":"array","prefixItems":[{"$ref":"#/$defs/__schema3"},{"$ref":"#/$defs/__schema3"}]},"offset":{"$ref":"#/$defs/__schema4"}},"required":["board"]}]},"__schema2":{"anyOf":[{"type":"string","enum":["center","top","bottom","left","right","topLeft","topRight","bottomLeft","bottomRight"]},{"type":"array","prefixItems":[{"$ref":"#/$defs/__schema3"},{"$ref":"#/$defs/__schema3"}]}]},"__schema3":{"type":"number"},"__schema4":{"type":"array","prefixItems":[{"$ref":"#/$defs/__schema3"},{"$ref":"#/$defs/__schema3"}]},"__schema5":{"type":"number","exclusiveMinimum":0}}}'
+)
+
+BOARD_EVENT_SCHEMA: dict[str, Any] = json.loads(
+    '{"$schema":"https://json-schema.org/draft/2020-12/schema","oneOf":[{"type":"object","properties":{"type":{"type":"string","const":"say"},"text":{"type":"string","minLength":1,"maxLength":2000},"t":{"type":"number","minimum":0}},"required":["type","text"]},{"type":"object","properties":{"type":{"type":"string","const":"ink"},"object":{"anyOf":[{"oneOf":[{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"point"}},"required":["id","anchor","kind"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"circle"},"pad":{"$ref":"#/$defs/__schema3"}},"required":["id","anchor","kind"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"underline"}},"required":["id","anchor","kind"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"arrow"},"from":{"$ref":"#/$defs/__schema1"},"curve":{"$ref":"#/$defs/__schema3"}},"required":["id","anchor","kind"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"bracket"},"side":{"type":"string","enum":["left","right","top","bottom"]},"label":{"$ref":"#/$defs/__schema13"}},"required":["id","anchor","kind"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"strike"}},"required":["id","anchor","kind"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"number"},"value":{"$ref":"#/$defs/__schema3"},"unit":{"type":"string","maxLength":16},"label":{"type":"string","maxLength":80},"precision":{"type":"integer","minimum":0,"maximum":8},"verified":{"type":"boolean"},"check":{"type":"string","maxLength":60}},"required":["id","anchor","kind","value","verified"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"write"},"text":{"$ref":"#/$defs/__schema13"},"size":{"type":"number","exclusiveMinimum":0},"maxWidth":{"type":"number","exclusiveMinimum":0}},"required":["id","anchor","kind","text"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"erase"},"object":{"type":"string","minLength":1}},"required":["id","anchor","kind","object"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"kind":{"type":"string","const":"wipe"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema7"},"t":{"$ref":"#/$defs/__schema10"}},"required":["id","kind"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"line"},"to":{"$ref":"#/$defs/__schema1"}},"required":["id","anchor","kind","to"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"polyline"},"points":{"$ref":"#/$defs/__schema14"}},"required":["id","anchor","kind","points"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"curve"},"points":{"$ref":"#/$defs/__schema14"},"closed":{"type":"boolean"}},"required":["id","anchor","kind","points"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"polygon"},"points":{"$ref":"#/$defs/__schema14"}},"required":["id","anchor","kind","points"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"ellipse"},"rx":{"type":"number","exclusiveMinimum":0},"ry":{"type":"number","exclusiveMinimum":0}},"required":["id","anchor","kind","rx","ry"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"axis"},"orientation":{"type":"string","enum":["x","y"]},"min":{"$ref":"#/$defs/__schema3"},"max":{"$ref":"#/$defs/__schema3"},"step":{"type":"number","exclusiveMinimum":0},"length":{"type":"number","exclusiveMinimum":0},"label":{"type":"string","maxLength":40},"ticks":{"type":"boolean"}},"required":["id","anchor","kind","orientation","min","max","step","length"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"grid"},"cols":{"type":"integer","minimum":1,"maximum":60},"rows":{"type":"integer","minimum":1,"maximum":60},"w":{"type":"number","exclusiveMinimum":0},"h":{"type":"number","exclusiveMinimum":0}},"required":["id","anchor","kind","cols","rows","w","h"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"table"},"rows":{"minItems":1,"maxItems":24,"type":"array","items":{"$ref":"#/$defs/__schema15"}},"w":{"type":"number","exclusiveMinimum":0},"rowHeight":{"type":"number","exclusiveMinimum":0}},"required":["id","anchor","kind","rows","w"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"label"},"text":{"$ref":"#/$defs/__schema13"},"size":{"type":"number","exclusiveMinimum":0}},"required":["id","anchor","kind","text"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"tex"},"tex":{"type":"string","minLength":1,"maxLength":400},"size":{"type":"number","exclusiveMinimum":0}},"required":["id","anchor","kind","tex"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"bond"},"to":{"$ref":"#/$defs/__schema5"},"order":{"anyOf":[{"type":"number","const":1},{"type":"number","const":2},{"type":"number","const":3}]},"wedge":{"type":"string","enum":["none","up","down"]}},"required":["id","anchor","kind","to"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"atom"},"symbol":{"type":"string","minLength":1,"maxLength":3},"charge":{"type":"integer","minimum":-4,"maximum":4},"lonePairs":{"type":"integer","minimum":0,"maximum":4},"size":{"type":"number","exclusiveMinimum":0}},"required":["id","anchor","kind","symbol"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"region"},"w":{"type":"number","exclusiveMinimum":0},"h":{"type":"number","exclusiveMinimum":0},"title":{"type":"string","maxLength":80}},"required":["id","anchor","kind","w","h"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"image"},"href":{"type":"string","minLength":1,"maxLength":2048},"w":{"type":"number","exclusiveMinimum":0},"h":{"type":"number","exclusiveMinimum":0},"alt":{"type":"string","maxLength":160}},"required":["id","anchor","kind","href","w","h","alt"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"slider"},"variable":{"$ref":"#/$defs/__schema17"},"min":{"$ref":"#/$defs/__schema3"},"max":{"$ref":"#/$defs/__schema3"},"value":{"$ref":"#/$defs/__schema3"},"step":{"type":"number","exclusiveMinimum":0},"w":{"type":"number","exclusiveMinimum":0},"label":{"type":"string","maxLength":40}},"required":["id","anchor","kind","variable","min","max","value"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"toggle"},"variable":{"$ref":"#/$defs/__schema17"},"value":{"type":"boolean"},"label":{"type":"string","maxLength":40}},"required":["id","anchor","kind","variable","value"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"input"},"variable":{"$ref":"#/$defs/__schema17"},"value":{"type":"string","maxLength":80},"w":{"type":"number","exclusiveMinimum":0},"label":{"type":"string","maxLength":40}},"required":["id","anchor","kind","variable","value"]},{"type":"object","properties":{"id":{"$ref":"#/$defs/__schema0"},"anchor":{"$ref":"#/$defs/__schema1"},"style":{"$ref":"#/$defs/__schema6"},"t":{"$ref":"#/$defs/__schema9"},"depends":{"$ref":"#/$defs/__schema11"},"kind":{"type":"string","const":"drag"},"variable":{"$ref":"#/$defs/__schema17"},"value":{"$ref":"#/$defs/__schema5"},"bounds":{"type":"array","prefixItems":[{"$ref":"#/$defs/__schema5"},{"$ref":"#/$defs/__schema5"}]},"label":{"type":"string","maxLength":40}},"required":["id","anchor","kind","variable","value"]}]},{"oneOf":[{"type":"object","properties":{"id":{"type":"string","minLength":1},"kind":{"type":"string","const":"fade"},"t":{"$ref":"#/$defs/__schema10"}},"required":["id","kind"]},{"type":"object","properties":{"id":{"type":"string","minLength":1},"kind":{"type":"string","const":"remove"},"t":{"$ref":"#/$defs/__schema10"}},"required":["id","kind"]},{"type":"object","properties":{"id":{"type":"string","minLength":1},"kind":{"type":"string","const":"redraw"},"t":{"$ref":"#/$defs/__schema10"}},"required":["id","kind"]},{"type":"object","properties":{"id":{"type":"string","minLength":1},"kind":{"type":"string","const":"repoint"},"anchor":{"$ref":"#/$defs/__schema1"},"t":{"$ref":"#/$defs/__schema10"}},"required":["id","kind","anchor"]},{"type":"object","properties":{"id":{"type":"string","minLength":1},"kind":{"type":"string","const":"move"},"anchor":{"$ref":"#/$defs/__schema1"},"t":{"$ref":"#/$defs/__schema10"}},"required":["id","kind","anchor"]},{"type":"object","properties":{"id":{"type":"string","minLength":1},"kind":{"type":"string","const":"restyle"},"style":{"$ref":"#/$defs/__schema7"},"t":{"$ref":"#/$defs/__schema10"}},"required":["id","kind","style"]}]}]},"t":{"type":"number","minimum":0},"on":{"type":"string","enum":["screen","plane","full"]}},"required":["type","object"]},{"type":"object","properties":{"type":{"type":"string","const":"action"},"name":{"type":"string","minLength":1,"maxLength":60},"args":{"type":"object","propertyNames":{"type":"string"},"additionalProperties":{}},"needs":{"type":"string","enum":["none","permission"]},"t":{"type":"number","minimum":0}},"required":["type","name"]},{"type":"object","properties":{"type":{"type":"string","const":"ask"},"prompt":{"type":"string","minLength":1,"maxLength":400},"targets":{"maxItems":24,"type":"array","items":{"$ref":"#/$defs/__schema18"}},"t":{"type":"number","minimum":0}},"required":["type","prompt"]},{"type":"object","properties":{"type":{"type":"string","const":"card"},"id":{"type":"string","minLength":1,"maxLength":64},"title":{"type":"string","maxLength":120},"body":{"type":"string","maxLength":2000},"t":{"type":"number","minimum":0}},"required":["type","id"]},{"type":"object","properties":{"type":{"type":"string","const":"done"},"interruptedAt":{"type":"string","minLength":1},"t":{"type":"number","minimum":0}},"required":["type"]}],"$defs":{"__schema0":{"type":"string","minLength":1,"maxLength":64},"__schema1":{"anyOf":[{"type":"object","properties":{"target":{"type":"string","minLength":1},"at":{"$ref":"#/$defs/__schema2"},"offset":{"$ref":"#/$defs/__schema4"}},"required":["target"]},{"type":"object","properties":{"object":{"type":"string","minLength":1},"at":{"$ref":"#/$defs/__schema2"},"offset":{"$ref":"#/$defs/__schema4"}},"required":["object"]},{"type":"object","properties":{"focus":{"type":"string","minLength":1},"at":{"$ref":"#/$defs/__schema2"},"offset":{"$ref":"#/$defs/__schema4"}},"required":["focus"]},{"type":"object","properties":{"board":{"$ref":"#/$defs/__schema5"},"offset":{"$ref":"#/$defs/__schema4"}},"required":["board"]}]},"__schema2":{"anyOf":[{"type":"string","enum":["center","top","bottom","left","right","topLeft","topRight","bottomLeft","bottomRight"]},{"type":"array","prefixItems":[{"$ref":"#/$defs/__schema3"},{"$ref":"#/$defs/__schema3"}]}]},"__schema3":{"type":"number"},"__schema4":{"type":"array","prefixItems":[{"$ref":"#/$defs/__schema3"},{"$ref":"#/$defs/__schema3"}]},"__schema5":{"type":"array","prefixItems":[{"$ref":"#/$defs/__schema3"},{"$ref":"#/$defs/__schema3"}]},"__schema6":{"$ref":"#/$defs/__schema7"},"__schema7":{"type":"object","properties":{"ink":{"type":"string","enum":["wobo","accent","learner","faint"]},"weight":{"type":"integer","minimum":1,"maximum":4},"dash":{"anyOf":[{"type":"boolean"},{"minItems":2,"maxItems":6,"type":"array","items":{"$ref":"#/$defs/__schema8"}}]},"fill":{"type":"string","enum":["none","wash","solid"]},"opacity":{"type":"number","minimum":0,"maximum":1}}},"__schema8":{"type":"number","exclusiveMinimum":0},"__schema9":{"$ref":"#/$defs/__schema10"},"__schema10":{"type":"object","properties":{"start":{"type":"number","minimum":0},"dur":{"type":"number","exclusiveMinimum":0},"ttl":{"type":"number","exclusiveMinimum":0}}},"__schema11":{"maxItems":16,"type":"array","items":{"$ref":"#/$defs/__schema12"}},"__schema12":{"type":"string","minLength":1},"__schema13":{"type":"string","minLength":1,"maxLength":400},"__schema14":{"minItems":2,"maxItems":400,"type":"array","items":{"$ref":"#/$defs/__schema5"}},"__schema15":{"minItems":1,"maxItems":12,"type":"array","items":{"$ref":"#/$defs/__schema16"}},"__schema16":{"type":"string","maxLength":40},"__schema17":{"type":"string","minLength":1,"maxLength":40},"__schema18":{"type":"string","minLength":1}}}'
+)
+
+BOARD_PLAN_SCHEMA: dict[str, Any] = {
+    "type": "array",
+    "items": BOARD_EVENT_SCHEMA,
+    "maxItems": 600,
+}
+
+# --- A dependency-free validator over the subset of JSON Schema zod emits -------------------------
+
+
+def _type_ok(value: Any, expected: str) -> bool:
+    if expected == "object":
+        return isinstance(value, dict)
+    if expected == "array":
+        return isinstance(value, list)
+    if expected == "string":
+        return isinstance(value, str)
+    if expected == "integer":
+        return isinstance(value, int) and not isinstance(value, bool)
+    if expected == "number":
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+    if expected == "boolean":
+        return isinstance(value, bool)
+    if expected == "null":
+        return value is None
+    return True
+
+
+def validate(value: Any, schema: dict[str, Any], path: str = "") -> list[str]:
+    """Every way `value` fails `schema`, as readable paths. Empty list means it is valid."""
+    errors: list[str] = []
+    here = path or "$"
+
+    if "$ref" in schema:
+        ref = schema["$ref"]
+        target = _DEFS.get(ref.rsplit("/", 1)[-1])
+        if target is not None:
+            return validate(value, target, path)
+
+    if "const" in schema and value != schema["const"]:
+        errors.append(f"{here}: expected {schema['const']!r}")
+    if "enum" in schema and value not in schema["enum"]:
+        errors.append(f"{here}: not one of {schema['enum']!r}")
+
+    expected = schema.get("type")
+    if isinstance(expected, str) and not _type_ok(value, expected):
+        errors.append(f"{here}: expected {expected}")
+        return errors
+    if isinstance(expected, list) and not any(_type_ok(value, t) for t in expected):
+        errors.append(f"{here}: expected one of {expected}")
+        return errors
+
+    for key in ("anyOf", "oneOf"):
+        if key in schema:
+            branches = [validate(value, branch, path) for branch in schema[key]]
+            if all(branch for branch in branches):
+                shortest = min(branches, key=len)
+                errors.append(f"{here}: matched no variant ({'; '.join(shortest)})")
+
+    if "allOf" in schema:
+        for branch in schema["allOf"]:
+            errors.extend(validate(value, branch, path))
+
+    if isinstance(value, dict):
+        properties = schema.get("properties", {})
+        for name in schema.get("required", []):
+            if name not in value:
+                errors.append(f"{here}.{name}: required")
+        for name, child in value.items():
+            if name in properties:
+                errors.extend(validate(child, properties[name], f"{here}.{name}"))
+            elif schema.get("additionalProperties") is False:
+                errors.append(f"{here}.{name}: not allowed")
+
+    if isinstance(value, list):
+        prefix = schema.get("prefixItems")
+        if prefix is not None:
+            if len(value) != len(prefix):
+                errors.append(f"{here}: expected {len(prefix)} items")
+            for i, (child, child_schema) in enumerate(zip(value, prefix)):
+                errors.extend(validate(child, child_schema, f"{here}[{i}]"))
+        elif isinstance(schema.get("items"), dict):
+            for i, child in enumerate(value):
+                errors.extend(validate(child, schema["items"], f"{here}[{i}]"))
+        if "minItems" in schema and len(value) < schema["minItems"]:
+            errors.append(f"{here}: needs at least {schema['minItems']} items")
+        if "maxItems" in schema and len(value) > schema["maxItems"]:
+            errors.append(f"{here}: at most {schema['maxItems']} items")
+
+    if isinstance(value, str):
+        if "minLength" in schema and len(value) < schema["minLength"]:
+            errors.append(f"{here}: too short")
+        if "maxLength" in schema and len(value) > schema["maxLength"]:
+            errors.append(f"{here}: too long")
+
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        if "minimum" in schema and value < schema["minimum"]:
+            errors.append(f"{here}: below {schema['minimum']}")
+        if "maximum" in schema and value > schema["maximum"]:
+            errors.append(f"{here}: above {schema['maximum']}")
+        if "exclusiveMinimum" in schema and value <= schema["exclusiveMinimum"]:
+            errors.append(f"{here}: must exceed {schema['exclusiveMinimum']}")
+
+    return errors
+
+
+def is_valid_object(value: Any) -> bool:
+    """True when this is a drawable board object."""
+    return not validate(value, BOARD_OBJECT_SCHEMA)
+
+
+def is_valid_event(value: Any) -> bool:
+    """True when this is a well-formed streamed event."""
+    return not validate(value, BOARD_EVENT_SCHEMA)
+
+
+def is_drawable(obj: Any) -> bool:
+    """Law: every number on a board is computed by code and verified before it is drawn."""
+    if not isinstance(obj, dict):
+        return False
+    if obj.get("kind") != "number":
+        return True
+    return obj.get("verified") is True
+
+
+def parse_board_event(raw: Any) -> dict[str, Any] | None:
+    """One streamed frame, or None. A malformed frame is dropped, never fatal."""
+    return raw if isinstance(raw, dict) and is_valid_event(raw) else None
+
+
+def parse_board_plan(raw: Any) -> list[dict[str, Any]]:
+    """A whole plan, keeping only the frames that validate."""
+    if not isinstance(raw, list):
+        return []
+    return [event for event in (parse_board_event(item) for item in raw) if event is not None]
+
+
+def refuse_unverified(plan: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Drop every ink frame carrying a quantity the verifier never passed."""
+    kept: list[dict[str, Any]] = []
+    for event in plan:
+        if event.get("type") == "ink" and not is_drawable(event.get("object")):
+            continue
+        kept.append(event)
+    return kept

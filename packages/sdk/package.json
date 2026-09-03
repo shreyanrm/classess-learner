@@ -1,5 +1,5 @@
 {
-  "name": "@classess/sdk",
+  "name": "@wobo/sdk",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -11,8 +11,8 @@
     "test": "bun test"
   },
   "dependencies": {
-    "@classess/contracts": "workspace:*",
-    "@classess/kgtopg-contract-seed": "workspace:*"
+    "@wobo/contracts": "workspace:*",
+    "@wobo/kgtopg-contract-seed": "workspace:*"
   },
   "devDependencies": {
     "@types/bun": "latest"

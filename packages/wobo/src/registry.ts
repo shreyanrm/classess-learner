@@ -794,7 +794,7 @@ export function RegistryInspector(props?: {
         'div',
         {
           key: target.id,
-          // The id on the node itself, so a QA pass can assert what she can see rather than
+          // The id on the node itself, so a QA pass can assert what Wobo can see rather than
           // counting rectangles in a screenshot.
           'data-wobo-inspect': target.id,
           style: {

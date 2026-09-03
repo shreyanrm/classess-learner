@@ -10,7 +10,7 @@
  * respected. Docked Wobo celebrates, then settles.
  */
 
-import { useWoboBus } from '@classess/wobo';
+import { useWoboBus } from '@wobo/wobo';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import type { Topic } from '../../data/model';
@@ -246,7 +246,7 @@ export function Greeting({
           <TopicSigil id={topic.id} size={130} mastered hue={hue} draw />
         </motion.div>
 
-        {/* the cast arrives to celebrate — her world catching the same light */}
+        {/* the cast arrives to celebrate — Wobo's world catching the same light */}
         <motion.div
           aria-hidden
           initial={{ opacity: 0, y: 18 }}
@@ -304,7 +304,7 @@ export function Greeting({
             fontWeight: 550,
             letterSpacing: '-0.02em',
             lineHeight: 1.25,
-            color: 'var(--clss-ink-900)',
+            color: 'var(--wobo-ink-900)',
           }}
         >
           {replay ? 'You walked it again.' : provedLine(stars)}
@@ -332,7 +332,7 @@ export function Greeting({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.1, duration: 0.5 }}
-            style={{ marginTop: 18, fontSize: '0.88rem', color: 'var(--clss-ink-500)' }}
+            style={{ marginTop: 18, fontSize: '0.88rem', color: 'var(--wobo-ink-500)' }}
           >
             the map just caught light.
           </motion.div>

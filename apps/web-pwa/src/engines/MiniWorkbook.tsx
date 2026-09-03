@@ -12,12 +12,12 @@
  *   label  — tap a point on a small SVG diagram, then tap its label from the bank
  *   order  — put shuffled steps into sequence by tapping them in order
  *
- * Publishes its working state to the Wobo bus and registers as a scene target she can read and
+ * Publishes its working state to the Wobo bus and registers as a scene target Wobo can read and
  * drive (applyTutorAction: { check } grades, { reveal } fills the answers). Reduced-motion + mute
  * aware; both themes; no new deps.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -228,21 +228,21 @@ const chipStyle = (state: 'idle' | 'chosen' | 'correct' | 'wrong', hue: string) 
   transition: 'all 0.2s ease',
   border:
     state === 'correct'
-      ? '1px solid var(--clss-feedback-correct)'
+      ? '1px solid var(--wobo-feedback-correct)'
       : state === 'wrong'
-        ? '1px solid var(--clss-feedback-retry)'
+        ? '1px solid var(--wobo-feedback-retry)'
         : state === 'chosen'
           ? `1px solid ${hue}`
-          : '0.5px solid var(--clss-hairline-on-paper-strong)',
+          : '0.5px solid var(--wobo-hairline-on-paper-strong)',
   background:
     state === 'chosen'
       ? rgba(hue, 0.12)
       : state === 'correct'
-        ? 'var(--clss-feedback-correctSoft)'
+        ? 'var(--wobo-feedback-correctSoft)'
         : state === 'wrong'
-          ? 'var(--clss-feedback-retrySoft)'
-          : 'var(--clss-paper)',
-  color: 'var(--clss-ink-900)',
+          ? 'var(--wobo-feedback-retrySoft)'
+          : 'var(--wobo-paper)',
+  color: 'var(--wobo-ink-900)',
 });
 
 // --- Match ----------------------------------------------------------------------------------------
@@ -349,7 +349,7 @@ function FillView({
   const nextEmpty = ans.filled.indexOf(null);
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <div style={{ ...lead, color: 'var(--clss-ink-900)', lineHeight: 2 }}>
+      <div style={{ ...lead, color: 'var(--wobo-ink-900)', lineHeight: 2 }}>
         {parts.map((part, i) => {
           const blankIdx = i; // there are parts.length-1 blanks; blank i sits after part i
           const val = ans.filled[blankIdx];
@@ -368,16 +368,16 @@ function FillView({
                     margin: '0 3px',
                     padding: '2px 8px',
                     borderRadius: 6,
-                    border: `1px solid ${graded ? (correct ? 'var(--clss-feedback-correct)' : 'var(--clss-feedback-retry)') : val ? hue : 'var(--clss-hairline-on-paper-strong)'}`,
+                    border: `1px solid ${graded ? (correct ? 'var(--wobo-feedback-correct)' : 'var(--wobo-feedback-retry)') : val ? hue : 'var(--wobo-hairline-on-paper-strong)'}`,
                     borderBottomWidth: 2,
                     background: val
                       ? graded
                         ? correct
-                          ? 'var(--clss-feedback-correctSoft)'
-                          : 'var(--clss-feedback-retrySoft)'
+                          ? 'var(--wobo-feedback-correctSoft)'
+                          : 'var(--wobo-feedback-retrySoft)'
                         : rgba(hue, 0.1)
                       : 'transparent',
-                    color: 'var(--clss-ink-900)',
+                    color: 'var(--wobo-ink-900)',
                     cursor: graded || val === null ? 'default' : 'pointer',
                     fontFamily: 'inherit',
                     fontSize: '0.95rem',
@@ -386,7 +386,7 @@ function FillView({
                   {val ?? ' '}
                   {graded && !correct && (
                     <span
-                      style={{ ...whisper, marginLeft: 6, color: 'var(--clss-feedback-correct)' }}
+                      style={{ ...whisper, marginLeft: 6, color: 'var(--wobo-feedback-correct)' }}
                     >
                       {item.blanks[blankIdx]}
                     </span>
@@ -456,7 +456,7 @@ function LabelView({
           height={60}
           rx={3}
           fill="none"
-          stroke="var(--clss-hairline-on-paper)"
+          stroke="var(--wobo-hairline-on-paper)"
           strokeWidth={0.5}
         />
         {item.points.map((p) => {
@@ -464,13 +464,13 @@ function LabelView({
           const correct = graded && val === p.label;
           const stroke = graded
             ? correct
-              ? 'var(--clss-feedback-correct)'
-              : 'var(--clss-feedback-retry)'
+              ? 'var(--wobo-feedback-correct)'
+              : 'var(--wobo-feedback-retry)'
             : sel === p.id
               ? hue
               : val
                 ? hue
-                : 'var(--clss-ink-500)';
+                : 'var(--wobo-ink-500)';
           return (
             // biome-ignore lint/a11y/useSemanticElements: an SVG hit target can't be a real <button>
             <g
@@ -491,7 +491,7 @@ function LabelView({
                 cx={p.x}
                 cy={p.y}
                 r={2.6}
-                fill={val ? rgba(hue, 0.8) : 'var(--clss-paper)'}
+                fill={val ? rgba(hue, 0.8) : 'var(--wobo-paper)'}
                 stroke={stroke}
                 strokeWidth={1.2}
               />
@@ -592,8 +592,8 @@ function OrderView({
                 placeItems: 'center',
                 fontSize: '0.72rem',
                 fontWeight: 600,
-                background: picked ? hue : 'var(--clss-tonal)',
-                color: picked ? 'var(--clss-on-ink)' : 'var(--clss-ink-500)',
+                background: picked ? hue : 'var(--wobo-tonal)',
+                color: picked ? 'var(--wobo-on-ink)' : 'var(--wobo-ink-500)',
               }}
             >
               {picked ? pos + 1 : '·'}
@@ -665,7 +665,7 @@ export function MiniWorkbook({
     setGraded(true);
   };
 
-  // reveal: fill every item with the correct answer (her demonstration), then grade
+  // reveal: fill every item with the correct answer (Wobo's demonstration), then grade
   const revealAll = () => {
     setAnswers(
       // biome-ignore lint/suspicious/useIterableCallbackReturn: switch is exhaustive over WorkbookItem kinds
@@ -709,7 +709,7 @@ export function MiniWorkbook({
     }
   }, [graded, allComplete, answers, setBar, onDone]);
 
-  // she reads the workbook at code level, and can drive it
+  // Wobo reads the workbook at code level, and can drive it
   const doneCount = spec.items.filter((it, i) => itemComplete(it, answers[i] as ItemAnswer)).length;
   const stageRef = useRegisterTarget<HTMLDivElement>(`workbook-${spec.id}`, {
     kind: 'workbook',
@@ -773,14 +773,14 @@ export function MiniWorkbook({
               style={{
                 border: graded
                   ? done
-                    ? '1px solid var(--clss-feedback-correct)'
-                    : '1px solid var(--clss-feedback-retry)'
-                  : '0.5px solid var(--clss-hairline-on-paper-strong)',
+                    ? '1px solid var(--wobo-feedback-correct)'
+                    : '1px solid var(--wobo-feedback-retry)'
+                  : '0.5px solid var(--wobo-hairline-on-paper-strong)',
                 background: graded
                   ? done
-                    ? 'var(--clss-feedback-correctSoft)'
-                    : 'var(--clss-feedback-retrySoft)'
-                  : 'var(--clss-paper)',
+                    ? 'var(--wobo-feedback-correctSoft)'
+                    : 'var(--wobo-feedback-retrySoft)'
+                  : 'var(--wobo-paper)',
                 borderRadius: 3,
                 padding: '16px 18px',
                 display: 'flex',
@@ -792,7 +792,7 @@ export function MiniWorkbook({
                 style={{
                   fontSize: '1rem',
                   fontWeight: 520,
-                  color: 'var(--clss-ink-900)',
+                  color: 'var(--wobo-ink-900)',
                   lineHeight: 1.5,
                 }}
               >
@@ -851,7 +851,7 @@ export function MiniWorkbook({
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              style={{ textAlign: 'center', color: 'var(--clss-ink-700)', fontSize: '0.95rem' }}
+              style={{ textAlign: 'center', color: 'var(--wobo-ink-700)', fontSize: '0.95rem' }}
             >
               {correctness().every(Boolean)
                 ? 'all of them — clean.'

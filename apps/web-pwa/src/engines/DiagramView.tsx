@@ -2,14 +2,14 @@
 
 /**
  * DiagramView — renders a generated SVG diagram after sanitization (the trust boundary between
- * model output and the DOM), registered on the Wobo bus so she can annotate it like any other
+ * model output and the DOM), registered on the Wobo bus so Wobo can annotate it like any other
  * surface. SVG is the diagram medium of record (DESIGN.md §9, §10).
  *
  * The sanitized DOM tree is inserted directly (importNode) — never serialized back to a string
  * and re-parsed as HTML, so there is no innerHTML/mXSS surface at all.
  */
 
-import { useRegisterTarget } from '@classess/wobo';
+import { useRegisterTarget } from '@wobo/wobo';
 import { type CSSProperties, useEffect, useMemo, useRef } from 'react';
 import { whisper } from '../screens/course/shared';
 
@@ -137,8 +137,8 @@ export function DiagramView({
               ...whisper,
               padding: '30px 0',
               textAlign: 'center',
-              border: '0.5px solid var(--clss-hairline-on-paper)',
-              borderRadius: 'var(--clss-radius-md)',
+              border: '0.5px solid var(--wobo-hairline-on-paper)',
+              borderRadius: 'var(--wobo-radius-md)',
             }}
           >
             this diagram is being redrawn

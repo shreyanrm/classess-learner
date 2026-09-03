@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
-import type { AnnotatableTarget } from '@classess/wobo';
-import { SurfaceRegistry } from '@classess/wobo';
+import type { AnnotatableTarget } from '@wobo/wobo';
+import { SurfaceRegistry } from '@wobo/wobo';
 import {
   actionsOf,
   surfaceFromBus,
@@ -56,7 +56,7 @@ describe('the bridge from the scene bus to the registry', () => {
     expect(target.value?.()).toEqual({ equation: '2x + 3 = 11' });
   });
 
-  it('offers no action for a target that cannot be driven — she never claims a hand she lacks', () => {
+  it('offers no action for a target that cannot be driven — Wobo never claims a hand Wobo lacks', () => {
     expect(actionsOf(plain())).toBeUndefined();
     expect(targetFromBus(plain()).actions).toBeUndefined();
   });

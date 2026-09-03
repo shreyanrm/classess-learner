@@ -148,7 +148,7 @@ describe('reduceActions', () => {
     const e = reduceActions(parsed);
     expect(e.redrawMarks).toBe(true);
     expect(e.says).toEqual(['it faded — here it is again']);
-    // default is false when she draws normally
+    // default is false when Wobo draws normally
     expect(reduceActions([{ type: 'say', text: 'x' }]).redrawMarks).toBe(false);
   });
 });

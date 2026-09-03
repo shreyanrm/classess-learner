@@ -1,20 +1,20 @@
 'use client';
 
 /**
- * Wobo in flight. On every page she flies in from somewhere — arcs through the room, banks
- * into the turn, and settles onto her dock with a soft bounce. She never stops floating: docked,
- * a slow organic drift (bob, a whisper of sway and tilt) keeps her mid-swoosh — the same being
- * that glides between routes, never a metronome, never a beam pinning her to the ground.
+ * Wobo in flight. On every page Wobo flies in from somewhere — arcs through the room, banks
+ * into the turn, and settles onto Wobo's dock with a soft bounce. Wobo never stops floating: docked,
+ * a slow organic drift (bob, a whisper of sway and tilt) keeps Wobo mid-swoosh — the same being
+ * that glides between routes, never a metronome, never a beam pinning Wobo to the ground.
  */
 
-import { useReducedMotion } from '@classess/motion';
+import { useReducedMotion } from '@wobo/motion';
 import {
   type TrackRect,
   type WoboBehaviour,
   WoboBody,
   type WoboExpression,
   type WoboMood,
-} from '@classess/wobo';
+} from '@wobo/wobo';
 import {
   animate,
   motion,
@@ -26,8 +26,8 @@ import {
 } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 
-// Once per browser session she performs the full arrival; after that she only glides.
-const FLEW_KEY = 'clss-wobo-flew';
+// Once per browser session Wobo performs the full arrival; after that Wobo only glides.
+const FLEW_KEY = 'wobo-flew';
 
 export function FlyingWobo({
   routeKey,
@@ -45,18 +45,18 @@ export function FlyingWobo({
 }: {
   routeKey: string;
   mood: WoboMood | WoboExpression;
-  /** Direction (radians) she leans + gazes toward while explaining — toward the ink she's drawing. */
+  /** Direction (radians) Wobo leans + gazes toward while explaining — toward the ink Wobo is drawing. */
   gestureAngle?: number;
-  /** What the learner pointed at: her eyes go there before anything else. */
+  /** What the learner pointed at: Wobo's eyes go there before anything else. */
   focus?: TrackRect | null;
-  /** When the learner last did anything, anywhere — her idle life runs off real quiet, not a timer. */
+  /** When the learner last did anything, anywhere — Wobo's idle life runs off real quiet, not a timer. */
   idleSince?: number;
-  /** One played behaviour — she leans, points, or startles when something real happens. */
+  /** One played behaviour — Wobo leans, points, or startles when something real happens. */
   behaviour?: WoboBehaviour | null;
   behaviourKey?: string | number;
   onTap: () => void;
   onDoubleTap?: () => void;
-  /** Push-to-talk on her docked body — forwarded straight to WoboBody. */
+  /** Push-to-talk on Wobo's docked body — forwarded straight to WoboBody. */
   onHoldStart?: () => void;
   onHoldEnd?: () => void;
   size?: number;
@@ -72,18 +72,18 @@ export function FlyingWobo({
   const ex = useMotionValue(0);
   const ey = useMotionValue(0);
   const op = useMotionValue(0);
-  // Anticipation squash — she loads before she launches.
+  // Anticipation squash — Wobo loads before Wobo launches.
   const sqx = useMotionValue(1);
   const sqy = useMotionValue(1);
-  // Banking is truthful: it reads her real horizontal velocity and relaxes to 0 as she settles.
+  // Banking is truthful: it reads Wobo's real horizontal velocity and relaxes to 0 as Wobo settles.
   const evx = useVelocity(ex);
   const bank = useTransform(evx, (v) => Math.max(-22, Math.min(22, v * 0.012)));
 
-  // Docked responsiveness: she drifts a few px toward the cursor — alive, never in the way.
+  // Docked responsiveness: Wobo drifts a few px toward the cursor — alive, never in the way.
   const px = useSpring(0, { stiffness: 60, damping: 18 });
   const py = useSpring(0, { stiffness: 60, damping: 18 });
   useEffect(() => {
-    if (reduced) return; // reduced-motion: she stays put — no drift, no pointer lean.
+    if (reduced) return; // reduced-motion: Wobo stays put — no drift, no pointer lean.
     const onMove = (e: PointerEvent) => {
       px.set(Math.max(-8, Math.min(8, (e.clientX - window.innerWidth + 60) * 0.02)));
       py.set(Math.max(-8, Math.min(8, (e.clientY - window.innerHeight + 60) * 0.02)));
@@ -92,9 +92,9 @@ export function FlyingWobo({
     return () => window.removeEventListener('pointermove', onMove);
   }, [px, py, reduced]);
 
-  // The perpetual idle drift — docked, she wanders a slow organic loop, not a metronomic bob.
+  // The perpetual idle drift — docked, Wobo wanders a slow organic loop, not a metronomic bob.
   // Layered incommensurate periods (bob ≈5s, sway ≈6.6s, tilt ≈5.6s) with phase offsets trace a
-  // soft Lissajous float; the spring/velocity feel rides in on her pointer springs folded below.
+  // soft Lissajous float; the spring/velocity feel rides in on Wobo's pointer springs folded below.
   const driftY = useTransform(time, (ms) =>
     reduced ? 0 : Math.sin(ms / 800) * 7 + Math.sin(ms / 520) * 1.3,
   );
@@ -103,7 +103,7 @@ export function FlyingWobo({
   );
   const driftRot = useTransform(time, (ms) => (reduced ? 0 : Math.sin(ms / 900 + 1.3) * 1.5));
 
-  // Pointer drift folded into the same values — velocity-continuous springs, her route-glide feel.
+  // Pointer drift folded into the same values — velocity-continuous springs, Wobo's route-glide feel.
   const idleX = useTransform([driftX, px], ([d, p]: number[]) => (d ?? 0) + (p ?? 0));
   const idleY = useTransform([driftY, py], ([d, p]: number[]) => (d ?? 0) + (p ?? 0));
 
@@ -124,7 +124,7 @@ export function FlyingWobo({
     const flew = sessionStorage.getItem(FLEW_KEY);
 
     // FREQUENCY LAW: later route changes get a short, low-amplitude glide into the dock —
-    // present already, she just eases back in. Never the grand arrival twice.
+    // present already, Wobo just eases back in. Never the grand arrival twice.
     if (flew) {
       op.set(1);
       ex.jump(-Math.min(46, w * 0.05));
@@ -142,8 +142,8 @@ export function FlyingWobo({
     op.set(0);
     setFlying(true);
 
-    // Anticipation: the squash is her visible load, and an underdamped spring eases in from rest
-    // on its own — she barely moves for the first breath, then launches. No timing gap to cancel.
+    // Anticipation: the squash is Wobo's visible load, and an underdamped spring eases in from rest
+    // on its own — Wobo barely moves for the first breath, then launches. No timing gap to cancel.
     animate(op, 1, { duration: 0.24 });
     animate(sqx, [1, 1.12, 0.98, 1], { duration: 0.34, ease: 'easeOut' });
     animate(sqy, [1, 0.86, 1.04, 1], { duration: 0.34, ease: 'easeOut' });
@@ -154,7 +154,7 @@ export function FlyingWobo({
     const home = animate(ex, 0, { type: 'spring', stiffness: 45, damping: 13 });
     void home.then(() => setFlying(false)).catch(() => setFlying(false));
 
-    // No matter what interrupts the flight, she always lands, visible, on her dock.
+    // No matter what interrupts the flight, Wobo always lands, visible, on Wobo's dock.
     const safety = window.setTimeout(() => {
       ex.jump(0);
       ey.jump(0);
@@ -173,14 +173,14 @@ export function FlyingWobo({
         right: 22,
         bottom: 26,
         opacity: op,
-        zIndex: 'var(--clss-z-woboPresence)' as unknown as number,
+        zIndex: 'var(--wobo-z-woboPresence)' as unknown as number,
         pointerEvents: flying ? 'none' : 'auto',
       }}
     >
       {/* The flight body — position, bank and squash all live on real motion values. */}
       <motion.div style={{ x: ex, y: ey, rotate: bank, scaleX: sqx, scaleY: sqy }}>
         <motion.div style={{ x: idleX, y: idleY, rotate: driftRot }}>
-          {/* Her motion flame — an upside-down fire, trailing beneath her as she flies. */}
+          {/* Wobo's motion flame — an upside-down fire, trailing beneath Wobo as Wobo flies. */}
           <motion.div
             aria-hidden
             animate={{ opacity: flying ? 1 : 0 }}
@@ -232,9 +232,9 @@ export function FlyingWobo({
           <WoboBody
             size={size}
             mood={flying ? 'hint' : mood}
-            // Her eyes go, in order, to what the learner circled, then to the ink she is laying
-            // down, then to the cursor. Flight owns her gaze during arrival, so none of it applies
-            // until she has landed.
+            // Wobo's eyes go, in order, to what the learner circled, then to the ink Wobo is laying
+            // down, then to the cursor. Flight owns Wobo's gaze during arrival, so none of it applies
+            // until Wobo has landed.
             focus={flying ? null : (focus ?? null)}
             gaze={flying || focus ? undefined : gestureAngle !== undefined ? undefined : 'pointer'}
             gestureAngle={flying ? undefined : gestureAngle}
@@ -243,7 +243,7 @@ export function FlyingWobo({
             {...(behaviourKey !== undefined ? { behaviourKey } : {})}
             onTap={onTap}
             {...(onDoubleTap ? { onDoubleTap } : {})}
-            // Push-to-talk only once she has landed — a hold during the arrival would fight it.
+            // Push-to-talk only once Wobo has landed — a hold during the arrival would fight it.
             onHoldStart={flying ? undefined : onHoldStart}
             onHoldEnd={flying ? undefined : onHoldEnd}
             label="Talk to Wobo"

@@ -5,7 +5,7 @@
  * words out of `payload.context.turn.lastUserInput` in TWO places:
  *
  *   · `safety.py::inbound_text` — the inbound screen, which runs before anything reaches a model;
- *   · `wobo.py::mock_board_plan` / `run_board_plan` — what she is actually being asked to draw.
+ *   · `wobo.py::mock_board_plan` / `run_board_plan` — what Wobo is actually being asked to draw.
  *
  * App.tsx once passed `woboTurnPayload(context).context` here — the inside of the envelope rather
  * than the envelope — so both readings landed on nothing: every board turn was screened against an

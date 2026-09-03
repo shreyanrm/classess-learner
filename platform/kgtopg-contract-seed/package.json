@@ -1,5 +1,5 @@
 {
-  "name": "@classess/kgtopg-contract-seed",
+  "name": "@wobo/kgtopg-contract-seed",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,7 @@
     "test": "bun test"
   },
   "dependencies": {
-    "@classess/contracts": "workspace:*"
+    "@wobo/contracts": "workspace:*"
   },
   "devDependencies": {
     "@types/bun": "latest"

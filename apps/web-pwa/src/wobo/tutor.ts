@@ -5,11 +5,11 @@
  * below check-my-work, the "I think I'm right" re-grade path, teach-back (the protégé effect),
  * and the concept-graph bridge that travels only over mastered ground.
  *
- * The ladder state lives here as one small module store shared by her drawer and the course
- * player — the conversation and the canvas always agree on how much support she is giving.
+ * The ladder state lives here as one small module store shared by Wobo's drawer and the course
+ * player — the conversation and the canvas always agree on how much support Wobo is giving.
  */
 
-import type { PracticeItem, Sdk } from '@classess/sdk';
+import type { PracticeItem, Sdk } from '@wobo/sdk';
 import { useSyncExternalStore } from 'react';
 import type { Topic } from '../data/model';
 import { firstMove, fmt, linearize } from '../screens/course/equations';
@@ -41,7 +41,7 @@ export const modeWhisper = (m: AssistMode): string => WHISPERS[m];
 
 const idx = (m: AssistMode) => LADDER.indexOf(m);
 
-/** Below this rung she never hands the final answer — the hint ladder stops one move short. */
+/** Below this rung Wobo never hands the final answer — the hint ladder stops one move short. */
 export const ANSWER_FLOOR: AssistMode = 'check_my_work';
 export const canRevealAnswer = (m: AssistMode): boolean => idx(m) >= idx(ANSWER_FLOOR);
 /** Hint depths run 1..4; depth 4 (the answer check) opens only at check-my-work and beyond. */
@@ -82,7 +82,7 @@ export function noteCorrect(): void {
   }
 }
 
-/** Two misses in a row and she steps closer — one rung toward learn. Never below it. */
+/** Two misses in a row and Wobo steps closer — one rung toward learn. Never below it. */
 export function noteMiss(): void {
   const streak = state.missStreak + 1;
   if (streak >= 2 && idx(state.mode) > 0) {
@@ -168,7 +168,7 @@ export async function regrade(sdk: Sdk, item: PracticeItem, value: number): Prom
   };
 }
 
-// --- teach-back (she plays the student; one gap probed per turn) -----------------------------------
+// --- teach-back (Wobo plays the student; one gap probed per turn) -----------------------------------
 
 export interface TeachBackTurn {
   id: string;
@@ -207,8 +207,8 @@ export function teachBackOpening(topic: string): string {
 }
 
 /**
- * One learner explanation in; exactly one probe out — the first gap her student-self genuinely
- * cannot fill from what was said. When nothing is missing (or she has probed her fill), the
+ * One learner explanation in; exactly one probe out — the first gap Wobo's student-self genuinely
+ * cannot fill from what was said. When nothing is missing (or Wobo has probed their fill), the
  * teach-back is complete.
  */
 export function probeTeachBack(

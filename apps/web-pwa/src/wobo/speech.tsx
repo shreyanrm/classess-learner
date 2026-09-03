@@ -1,20 +1,20 @@
 'use client';
 
 /**
- * Wobo speaks what she writes. Every reply plays aloud through the gateway's TTS (the same
- * voice as the live relay), starting as her ink starts — one performance, sound and hand
+ * Wobo speaks what Wobo writes. Every reply plays aloud through the gateway's TTS (the same
+ * voice as the live relay), starting as Wobo's ink starts — one performance, sound and hand
  * together. Mute silences the sound only, never the words; the mic conversation always speaks
  * back and ignores this switch entirely.
  */
 
-import { gatewayFetch, mintVoiceToken, voiceSocketUrl } from '@classess/sdk';
+import { gatewayFetch, mintVoiceToken, voiceSocketUrl } from '@wobo/sdk';
 import {
   planPerformance,
   useWoboBus,
   type WoboAction,
   type WoboBus,
   type WoboMood,
-} from '@classess/wobo';
+} from '@wobo/wobo';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { currentFidelity, isOffline } from '../shell/resilience';
 import { type ChatTurn, useWoboChat } from './chat';
@@ -26,8 +26,8 @@ import { base64ToFloat32 } from './voice';
 const TTS_TIMEOUT_MS = 8000;
 
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
-const MUTE_KEY = 'clss-voice-muted-v1';
-const MUTE_EVENT = 'clss-mute-changed';
+const MUTE_KEY = 'wobo-voice-muted-v1';
+const MUTE_EVENT = 'wobo-mute-changed';
 
 export function isMuted(): boolean {
   try {
@@ -55,7 +55,7 @@ const streamSources = new Set<AudioBufferSourceNode>();
 // Bumped on every stop/new-utterance so a running sentence pipeline knows it was superseded.
 let speechGen = 0;
 
-// ONE shared AudioContext for all her speech, lazily created (mirrors ui/sound.ts). A fresh
+// ONE shared AudioContext for all Wobo's speech, lazily created (mirrors ui/sound.ts). A fresh
 // context per sentence starts 'suspended' on Safari/iOS — and always when narration auto-fires
 // before any gesture (cold reload / deep-link into a course) — so source.start() is silent and
 // onended never fires. Sharing one context lets us unlock it on the first user gesture below.
@@ -201,7 +201,7 @@ async function synth(
   text: string,
 ): Promise<{ samples: Float32Array<ArrayBuffer>; rate: number } | null> {
   // Offline (or keyless): don't burn the timeout on a fetch that can't land — fall straight to
-  // text. The reply is already on screen; her voice is the grace, not the help.
+  // text. The reply is already on screen; Wobo's voice is the grace, not the help.
   if (!GATEWAY_URL || !text.trim() || isOffline()) return null;
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TTS_TIMEOUT_MS);
@@ -279,7 +279,7 @@ async function playSamples(
 /**
  * Stream the whole line through the gateway's voice socket — playback starts at the first
  * ~200 ms audio chunk instead of waiting on the full clip (~4 s sooner to first sound; verified
- * verbatim so she reads the exact line). Resolves `true` once audio has begun (the caller is done),
+ * verbatim so Wobo reads the exact line). Resolves `true` once audio has begun (the caller is done),
  * `false` if it can't start — the caller then falls back to the buffered path, so voice never
  * regresses. A watchdog bails to the fallback if no audio arrives in time.
  */
@@ -295,7 +295,7 @@ async function speakStream(
   if (gen !== speechGen) return true; // superseded during the resume await — treat as handled
   // A websocket carries no headers we control, so identity is proved over authenticated HTTP and
   // the socket carries the short-lived, single-use token it mints. No token, no stream — the
-  // buffered path below still speaks her line.
+  // buffered path below still speaks Wobo's line.
   // ponytail: one extra round-trip before first audio; a pre-minted token pool is the upgrade if
   // that ever shows up next to the ~4s the stream already saves.
   const minted = await mintVoiceToken(GATEWAY_URL);
@@ -440,7 +440,7 @@ export async function speakLine(text: string, opts?: { onDone?: () => void }): P
     }
     finish();
   } catch {
-    // Never fail silently: her words are already on screen — just release any gate waiting on us
+    // Never fail silently: Wobo's words are already on screen — just release any gate waiting on us
     // (the course advance button) so a TTS hiccup can never strand the learner on a locked card.
     finish();
   }
@@ -448,9 +448,9 @@ export async function speakLine(text: string, opts?: { onDone?: () => void }): P
 
 // --- THE CONDUCTOR: one continuous performance, voice and hand together ---------------------------
 //
-// A choreographed turn's ink no longer lands all at once. She speaks her line sentence by sentence,
+// A choreographed turn's ink no longer lands all at once. Wobo speaks their line sentence by sentence,
 // and each action's sync anchor (withSentence / afterSentence, set by the gateway) fires its ink on
-// that exact beat — the underline lands as she says the term, the arrow arrives as she references it,
+// that exact beat — the underline lands as Wobo says the term, the arrow arrives as Wobo references it,
 // and a written note is paced to the audio length of the sentence carrying it, so the hand keeps up
 // with the voice. Unanchored actions were already dispatched at once by the caller (backward compat).
 
@@ -507,7 +507,7 @@ const moodOfBeat = (beat: WoboAction[]): WoboMood | undefined => {
 /**
  * Perform one choreographed turn: speak `text` and land each anchored action on its sentence beat.
  * The caller has already dispatched the unanchored (immediate) actions. Mood follows content —
- * anchored setMood beats drive her body as she writes (thinking on the setup, bright on the reveal).
+ * anchored setMood beats drive Wobo's body as Wobo writes (thinking on the setup, bright on the reveal).
  */
 export async function performTurn(
   text: string,
@@ -559,7 +559,7 @@ export async function performTurn(
 // --- THE UTTERANCE CLOCK: what the board's hand is timed against ---------------------------------
 //
 // A board turn's plan carries `t.start` on every object, measured from the beginning of the current
-// utterance (docs/BOARD.md §2). The clock that zero is measured from lives HERE, with her voice, not
+// utterance (docs/BOARD.md §2). The clock that zero is measured from lives HERE, with Wobo's voice, not
 // in the renderer: the performance opens, the board is zeroed on the same instant, and the pen then
 // leads the first syllable by exactly the time that syllable takes to arrive — a hand's anticipation
 // before a stroke, which is what BOARD.md §7 asks for and what keeps the first stroke inside its
@@ -575,18 +575,18 @@ export interface UtteranceClock {
 }
 
 export interface Utterance {
-  /** Queue a line of hers. Safe to call while she is already speaking. */
+  /** Queue a line of Wobo's. Safe to call while Wobo is already speaking. */
   say: (text: string) => void;
   /** No more lines are coming; `done` resolves once the queue drains. */
   end: () => void;
-  /** The learner cut her off: the voice stops mid-word and the queue is dropped. */
+  /** The learner cut Wobo off: the voice stops mid-word and the queue is dropped. */
   stop: () => void;
-  /** Resolves when she has finished speaking, been superseded, or been stopped. */
+  /** Resolves when Wobo has finished speaking, been superseded, or been stopped. */
   readonly done: Promise<void>;
 }
 
 /**
- * Open one utterance. `clock` is read at the moment the performance opens (the board she is drawing
+ * Open one utterance. `clock` is read at the moment the performance opens (the board Wobo is drawing
  * on can be chosen on the first object, so it is a getter, not a value).
  */
 export function startUtterance(clock?: () => UtteranceClock | null | undefined): Utterance {
@@ -663,14 +663,14 @@ function takePerformance(turnId: string): WoboAction[] | undefined {
 }
 
 /**
- * Always-mounted: the conductor. It watches the one conversation and, as each new line of hers
+ * Always-mounted: the conductor. It watches the one conversation and, as each new line of Wobo's
  * lands, either performs it (speak + choreographed ink beats, when App registered anchors) or simply
  * speaks it. Sound and hand move together — one continuous performance, like a tutor at a whiteboard.
  */
 export function SpeechNarrator() {
   const { turns, setMood } = useWoboChat();
   const bus = useWoboBus();
-  // Mark everything already said before this mount as spoken — she only voices NEW lines.
+  // Mark everything already said before this mount as spoken — Wobo only voices NEW lines.
   // Initialized synchronously (not in the effect) so a mount that happens mid-exchange, while
   // the newest turn is the learner's, can never swallow the reply that follows it.
   const spokenUpTo = useRef<string | null>(null);
@@ -702,10 +702,10 @@ export function SpeechNarrator() {
   return null;
 }
 
-// --- Card narration: she reads each course card aloud, and the advance button waits for her ------
+// --- Card narration: Wobo reads each course card aloud, and the advance button waits for Wobo ------
 //
 // A card announces its core line on arrival; the course shell speaks it and, for teaching cards,
-// gates "begin/continue" until she finishes — or, when muted, until an equal reading time passes.
+// gates "begin/continue" until Wobo finishes — or, when muted, until an equal reading time passes.
 // A tiny window-event singleton so any card can announce without threading props through the deck.
 
 interface Narration {
@@ -714,22 +714,22 @@ interface Narration {
   gate: boolean;
 }
 let currentNarration: Narration = { key: 'none', text: '', gate: false };
-const NARR_EVENT = 'clss-card-narration';
+const NARR_EVENT = 'wobo-card-narration';
 
-/** A card calls this on arrival. `gate` locks the advance button while she reads (teaching cards). */
+/** A card calls this on arrival. `gate` locks the advance button while Wobo reads (teaching cards). */
 export function announceCard(key: string, text: string, gate = true): void {
   currentNarration = { key, text, gate };
   window.dispatchEvent(new Event(NARR_EVENT));
 }
 
-/** Rough spoken/read duration for a line — the fallback clock when she is muted. */
+/** Rough spoken/read duration for a line — the fallback clock when Wobo is muted. */
 export function estimateReadMs(text: string): number {
   const words = text.trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1600, Math.min(14000, (words / 165) * 60000)); // ~165 wpm
 }
 
 export interface CardNarration {
-  /** True once she has finished reading (or the muted reading clock elapsed). */
+  /** True once Wobo has finished reading (or the muted reading clock elapsed). */
   ready: boolean;
   /** 0→1 fill for the locked advance button — never a dead button. */
   progress: number;
@@ -741,7 +741,7 @@ export interface CardNarration {
 
 /**
  * Mounted once by the course shell. Watches announced cards, speaks each on arrival, and reports
- * readiness so the advance button can wait for her. When muted, a reading-time clock stands in.
+ * readiness so the advance button can wait for Wobo. When muted, a reading-time clock stands in.
  */
 export function useCardNarration(): CardNarration {
   const [narr, setNarr] = useState<Narration>(currentNarration);
@@ -771,7 +771,7 @@ export function useCardNarration(): CardNarration {
     let cancelled = false;
     let audioDone = false;
     const dur = estimateReadMs(narr.text);
-    // Hard ceiling: if her onDone is ever lost (a socket that neither closes nor errors), the gate
+    // Hard ceiling: if Wobo's onDone is ever lost (a socket that neither closes nor errors), the gate
     // degrades to the reading clock instead of locking the learner on the card forever.
     const ceiling = dur * 2 + 5000;
     const started = performance.now();
@@ -780,7 +780,7 @@ export function useCardNarration(): CardNarration {
       if (cancelled) return;
       const elapsed = performance.now() - started;
       const t = elapsed / dur;
-      // Re-read the switch each frame: muting mid-line cuts her off, and from then on the reading
+      // Re-read the switch each frame: muting mid-line cuts Wobo off, and from then on the reading
       // clock — not an audio callback that will never come — has to carry the gate.
       const muted = isMuted();
       if (audioDone || elapsed >= ceiling || (muted && t >= 1)) {
@@ -788,7 +788,7 @@ export function useCardNarration(): CardNarration {
         setReady(true);
         return;
       }
-      // ramp toward 0.95 on the estimate, then snap to done when her audio actually ends
+      // ramp toward 0.95 on the estimate, then snap to done when Wobo's audio actually ends
       setProgress(muted ? Math.min(1, t) : Math.min(0.95, t * 0.95));
       raf = requestAnimationFrame(tick);
     };
@@ -818,7 +818,7 @@ export function ReplayButton({ onReplay, size = 17 }: { onReplay: () => void; si
       style={{
         border: 'none',
         background: 'transparent',
-        color: 'var(--clss-ink)',
+        color: 'var(--wobo-ink)',
         cursor: 'pointer',
         fontFamily: 'inherit',
         padding: 6,
@@ -854,7 +854,7 @@ export function ReplayButton({ onReplay, size = 17 }: { onReplay: () => void; si
   );
 }
 
-/** The sound switch — mutes her voice, never her words. Lives beside her name. */
+/** The sound switch — mutes Wobo's voice, never Wobo's words. Lives beside Wobo's name. */
 export function MuteButton({ size = 17 }: { size?: number }) {
   const [muted, setMutedState] = useState(isMuted);
   useEffect(() => {
@@ -872,11 +872,11 @@ export function MuteButton({ size = 17 }: { size?: number }) {
       onClick={() => setMuted(!muted)}
       aria-label={muted ? 'Unmute Wobo' : 'Mute Wobo'}
       aria-pressed={muted}
-      title={muted ? 'Her voice is off — words still arrive' : 'She speaks her replies'}
+      title={muted ? "Wobo's voice is off — words still arrive" : 'Wobo speaks replies aloud'}
       style={{
         border: 'none',
         background: 'transparent',
-        color: muted ? 'var(--clss-ink-faint)' : 'var(--clss-ink)',
+        color: muted ? 'var(--wobo-ink-faint)' : 'var(--wobo-ink)',
         cursor: 'pointer',
         fontFamily: 'inherit',
         padding: 6,
@@ -892,7 +892,7 @@ export function MuteButton({ size = 17 }: { size?: number }) {
         aria-hidden
         role="presentation"
       >
-        {/* a small speaker, hers */}
+        {/* a small speaker, Wobo's own */}
         <path
           d="M3.5 7.5 H6.8 L10.6 4.4 V15.6 L6.8 12.5 H3.5 Z"
           fill="currentColor"

@@ -39,8 +39,8 @@ export interface ForgedWorkbook {
   attempts: ForgeAttempt[];
 }
 
-const KEY = 'clss-forged-v1';
-const EVT = 'clss-forged-changed';
+const KEY = 'wobo-forged-v1';
+const EVT = 'wobo-forged-changed';
 
 function load(): ForgedWorkbook[] {
   try {

@@ -3,7 +3,7 @@
 /**
  * Avatars — the cast, the ported buddies, and the menagerie as the learner's face. Each figure
  * becomes a head/bust tile on its own soft hue wash; the learner picks one, uploads a photo, or
- * stays with their initial. The choice persists as clss-avatar-v1 and everything renders through
+ * stays with their initial. The choice persists as wobo-avatar-v1 and everything renders through
  * renderAvatar().
  */
 
@@ -16,12 +16,12 @@ export type AvatarId = keyof typeof AVATARS;
 
 export type AvatarChoice = { kind: 'photo' | 'cast' | 'initial'; castId?: AvatarId };
 
-export const AVATAR_KEY = 'clss-avatar-v1';
+export const AVATAR_KEY = 'wobo-avatar-v1';
 /** Fired on every saveAvatarChoice so always-mounted chrome (the header) re-reads instantly. */
-export const AVATAR_CHANGED_EVENT = 'clss-avatar-changed';
+export const AVATAR_CHANGED_EVENT = 'wobo-avatar-changed';
 // ponytail: mirrors PHOTO_KEY in screens/you/profile.ts — ui/ must not import from screens/
-const PHOTO_KEY = 'clss-profile-photo-v1';
-const PROFILE_KEY = 'clss-learner-profile';
+const PHOTO_KEY = 'wobo-profile-photo-v1';
+const PROFILE_KEY = 'wobo-learner-profile';
 
 // --- one resolver for every figure, whatever registry it lives in --------------------------------
 /** Only size + animate are ever passed to a tile; mood/flip stay at each figure's default. */

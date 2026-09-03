@@ -1,6 +1,6 @@
 /**
- * The board's memory. One ordered list of objects, an index by id, and the event log — so she can
- * come back to anything she drew ("this one"), the learner can scrub the history, and the board can
+ * The board's memory. One ordered list of objects, an index by id, and the event log — so Wobo can
+ * come back to anything Wobo drew ("this one"), the learner can scrub the history, and the board can
  * be saved as objects rather than pixels (docs/BOARD.md §2, §9).
  *
  * No React and no DOM: the store is a plain observable object, which is what lets the renderer
@@ -98,7 +98,7 @@ export class BoardStore {
   readonly log: BoardLogEntry[] = [];
   /** Numbers the verifier never passed. The hand refuses them; QA reads them here. */
   readonly refused: BoardObject[] = [];
-  /** The last `ask` she is waiting on, if any. */
+  /** The last `ask` Wobo is waiting on, if any. */
   pendingAsk: { prompt: string; targets: string[] } | null = null;
   /** True once `done` has landed for the current turn. */
   turnDone = false;

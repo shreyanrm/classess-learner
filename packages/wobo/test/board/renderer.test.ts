@@ -56,17 +56,17 @@ describe('surface helpers', () => {
 });
 
 /**
- * Everything she writes on a board is announced (docs/BOARD.md §8, DESIGN.md's accessibility law).
+ * Everything Wobo writes on a board is announced (docs/BOARD.md §8, DESIGN.md's accessibility law).
  *
  * The surface used to be `role="img"`, which is atomic to assistive technology: the thirteen
  * per-object aria-labels the hand writes into the tree were invisible, the whole board read as one
- * image called "her board", and nothing announced new ink at all. This is the text that now goes
- * into the live region beside the surface — her own words, taken off the object itself.
+ * image called "Wobo's board", and nothing announced new ink at all. This is the text that now goes
+ * into the live region beside the surface — Wobo's own words, taken off the object itself.
  */
 describe('what a screen reader is told about a board', () => {
   const said = (object: Record<string, unknown>) => spokenLabel(object as never);
 
-  it('reads the words she wrote', () => {
+  it('reads the words Wobo wrote', () => {
     expect(said({ id: 'a', kind: 'write', text: 'the first revolt' })).toBe('the first revolt');
     expect(said({ id: 'b', kind: 'label', text: '1857' })).toBe('1857');
     expect(said({ id: 'c', kind: 'tex', tex: 'a^2 + b^2' })).toBe('a^2 + b^2');
@@ -78,7 +78,7 @@ describe('what a screen reader is told about a board', () => {
       '9.81 m/s2',
     );
     expect(said({ id: 'n', kind: 'number', value: 90, verified: true })).toBe('90');
-    // A label on the number is her sentence about it, and wins over the bare digits.
+    // A label on the number is Wobo's sentence about it, and wins over the bare digits.
     expect(
       said({ id: 'n', kind: 'number', value: 90, label: 'from 1857 to 1947 = 90 years' }),
     ).toBe('from 1857 to 1947 = 90 years');

@@ -12,10 +12,10 @@
  * the output.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { python } from '@codemirror/lang-python';
 import { EditorState, StateEffect, StateField } from '@codemirror/state';
 import { Decoration, type DecorationSet, EditorView, type ViewUpdate } from '@codemirror/view';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { basicSetup } from 'codemirror';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -58,18 +58,18 @@ const highlightField = StateField.define<DecorationSet>({
 });
 
 const editorTheme = EditorView.theme({
-  '&': { backgroundColor: 'transparent', color: 'var(--clss-ink-900)', fontSize: '0.86rem' },
+  '&': { backgroundColor: 'transparent', color: 'var(--wobo-ink-900)', fontSize: '0.86rem' },
   '&.cm-focused': { outline: 'none' },
   '.cm-content': { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', padding: '6px 0' },
   '.cm-gutters': {
     backgroundColor: 'transparent',
     border: 'none',
-    color: 'var(--clss-ink-500)',
+    color: 'var(--wobo-ink-500)',
   },
   '.cm-activeLine, .cm-activeLineGutter': { backgroundColor: 'transparent' },
   '.cm-exec-line': { backgroundColor: 'var(--exec-hi)' },
-  '.cm-cursor': { borderLeftColor: 'var(--clss-ink-900)' },
-  '.cm-selectionBackground, ::selection': { backgroundColor: 'var(--clss-ink-100)' },
+  '.cm-cursor': { borderLeftColor: 'var(--wobo-ink-900)' },
+  '.cm-selectionBackground, ::selection': { backgroundColor: 'var(--wobo-ink-100)' },
 });
 
 /** Imperative CodeMirror bound into React: an editable Python doc that can be told which line glows. */
@@ -150,16 +150,16 @@ function VarBox({
         flexDirection: 'column',
         gap: 3,
         padding: '8px 10px',
-        borderRadius: 'var(--clss-radius-sm)',
-        border: `0.5px solid ${changed ? 'var(--exec-accent)' : 'var(--clss-hairline-on-paper-strong)'}`,
-        background: changed ? 'var(--exec-hi)' : 'var(--clss-card)',
+        borderRadius: 'var(--wobo-radius-sm)',
+        border: `0.5px solid ${changed ? 'var(--exec-accent)' : 'var(--wobo-hairline-on-paper-strong)'}`,
+        background: changed ? 'var(--exec-hi)' : 'var(--wobo-card)',
         minWidth: 64,
       }}
     >
       <span
         style={{
           fontSize: '0.7rem',
-          color: 'var(--clss-ink-500)',
+          color: 'var(--wobo-ink-500)',
           fontFamily: 'ui-monospace, Menlo, monospace',
         }}
       >
@@ -170,7 +170,7 @@ function VarBox({
           fontSize: '1.05rem',
           fontWeight: 550,
           fontVariantNumeric: 'tabular-nums',
-          color: 'var(--clss-ink-900)',
+          color: 'var(--wobo-ink-900)',
           fontFamily: 'ui-monospace, Menlo, monospace',
         }}
       >
@@ -415,7 +415,7 @@ export function ExecViz({
     >
       {spec.title && <div style={whisper}>{spec.title}</div>}
       {spec.prompt && (
-        <div style={{ fontSize: '0.95rem', lineHeight: 1.6, color: 'var(--clss-ink-700)' }}>
+        <div style={{ fontSize: '0.95rem', lineHeight: 1.6, color: 'var(--wobo-ink-700)' }}>
           {spec.prompt}
         </div>
       )}
@@ -431,9 +431,9 @@ export function ExecViz({
         {/* left: the code */}
         <div
           style={{
-            border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-            borderRadius: 'var(--clss-radius-md)',
-            background: 'var(--clss-card)',
+            border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+            borderRadius: 'var(--wobo-radius-md)',
+            background: 'var(--wobo-card)',
             overflow: 'hidden',
             minWidth: 0,
           }}
@@ -486,11 +486,11 @@ export function ExecViz({
                       style={{
                         padding: '6px 10px',
                         borderRadius: 6,
-                        background: i === 0 ? rgba(accent, 0.14) : 'var(--clss-canvas)',
-                        border: `0.5px solid ${i === 0 ? accent : 'var(--clss-hairline-on-paper)'}`,
+                        background: i === 0 ? rgba(accent, 0.14) : 'var(--wobo-canvas)',
+                        border: `0.5px solid ${i === 0 ? accent : 'var(--wobo-hairline-on-paper)'}`,
                         fontFamily: 'ui-monospace, Menlo, monospace',
                         fontSize: '0.82rem',
-                        color: 'var(--clss-ink-900)',
+                        color: 'var(--wobo-ink-900)',
                       }}
                     >
                       {fn === '<module>' ? 'module' : `${fn}()`}
@@ -509,14 +509,14 @@ export function ExecViz({
                 minHeight: 22,
                 fontFamily: 'ui-monospace, Menlo, monospace',
                 fontSize: '0.84rem',
-                color: error ? 'var(--clss-feedback-wrong)' : 'var(--clss-ink-900)',
+                color: error ? 'var(--wobo-feedback-wrong)' : 'var(--wobo-ink-900)',
                 whiteSpace: 'pre-wrap',
                 overflowX: 'auto',
               }}
             >
               {error ?? shownOutput ?? ''}
               {!error && steps && shownOutput === '' && (
-                <span style={{ color: 'var(--clss-ink-500)' }}>(no output yet)</span>
+                <span style={{ color: 'var(--wobo-ink-500)' }}>(no output yet)</span>
               )}
             </pre>
           </Panel>
@@ -575,10 +575,10 @@ export function ExecViz({
         <div
           style={{
             padding: '12px 14px',
-            borderRadius: 'var(--clss-radius-sm)',
-            background: 'var(--clss-canvas)',
-            border: `0.5px solid ${pass ? 'var(--clss-feedback-correct)' : 'var(--clss-hairline-on-paper-strong)'}`,
-            color: 'var(--clss-ink-700)',
+            borderRadius: 'var(--wobo-radius-sm)',
+            background: 'var(--wobo-canvas)',
+            border: `0.5px solid ${pass ? 'var(--wobo-feedback-correct)' : 'var(--wobo-hairline-on-paper-strong)'}`,
+            color: 'var(--wobo-ink-700)',
             fontSize: '0.92rem',
           }}
         >
@@ -597,9 +597,9 @@ function Panel({ label, children }: { label: string; children: React.ReactNode }
   return (
     <div
       style={{
-        border: '0.5px solid var(--clss-hairline-on-paper)',
-        borderRadius: 'var(--clss-radius-md)',
-        background: 'var(--clss-canvas)',
+        border: '0.5px solid var(--wobo-hairline-on-paper)',
+        borderRadius: 'var(--wobo-radius-md)',
+        background: 'var(--wobo-canvas)',
         padding: '10px 12px 12px',
       }}
     >
@@ -610,7 +610,7 @@ function Panel({ label, children }: { label: string; children: React.ReactNode }
 }
 
 function Empty({ children }: { children: React.ReactNode }) {
-  return <div style={{ fontSize: '0.82rem', color: 'var(--clss-ink-500)' }}>{children}</div>;
+  return <div style={{ fontSize: '0.82rem', color: 'var(--wobo-ink-500)' }}>{children}</div>;
 }
 
 function TransportBtn({
@@ -638,9 +638,9 @@ function TransportBtn({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 8,
-        border: '0.5px solid var(--clss-hairline-on-paper-strong)',
-        background: 'var(--clss-card)',
-        color: disabled ? 'var(--clss-ink-500)' : 'var(--clss-ink-900)',
+        border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
+        background: 'var(--wobo-card)',
+        color: disabled ? 'var(--wobo-ink-500)' : 'var(--wobo-ink-900)',
         opacity: disabled ? 0.5 : 1,
         cursor: disabled ? 'default' : 'pointer',
         fontSize: '0.9rem',

@@ -15,8 +15,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from classess_gateway.board import schema
-from classess_gateway.board.planner import plan_board
+from wobo_gateway.board import schema
+from wobo_gateway.board.planner import plan_board
 
 GRAVITY_ROWS = [["body", "gravity"], ["Mercury", "3.71 m/s2"], ["Venus", "24.79 m/s2"]]
 

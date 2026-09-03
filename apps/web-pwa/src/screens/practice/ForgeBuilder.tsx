@@ -5,12 +5,12 @@
  * have already touched (completed or attempted chapters and topics); untouched topics are visible
  * but honestly unpickable, with a playful note, because you can't drill what you haven't met yet.
  * Each pick stacks as a page in a growing workbook; you choose its size and its balance; Wobo
- * suggests through her normal action path (she reads the builder at code level and can add a pick,
- * set the size, or forge it herself). Binding fires a spring and a sound, then it goes to the
+ * suggests through Wobo's normal action path (Wobo reads the builder at code level and can add a pick,
+ * set the size, or forge it directly). Binding fires a spring and a sound, then it goes to the
  * downloading queue and lands on your shelf.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import { chaptersBySubject, subjects, topicById } from '../../data/catalog';
@@ -78,7 +78,7 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
       p.includes(id) ? p.filter((x) => x !== id) : p.length < MAX_PICKS ? [...p, id] : p,
     );
 
-  // she perceives the builder and can drive it — her normal action path (component contract §12)
+  // Wobo perceives the builder and can drive it — Wobo's normal action path (component contract §12)
   const stageRef = useRegisterTarget<HTMLDivElement>('forge-builder', {
     kind: 'input',
     label: 'the forge — a custom practice workbook being built',
@@ -132,9 +132,9 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
           <div
             style={{
               padding: '28px 24px',
-              border: '0.5px dashed var(--clss-hairline-on-paper-strong)',
+              border: '0.5px dashed var(--wobo-hairline-on-paper-strong)',
               borderRadius: 3,
-              color: 'var(--clss-ink-500)',
+              color: 'var(--wobo-ink-500)',
               lineHeight: 1.6,
             }}
           >
@@ -153,7 +153,7 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
                         style={{
                           fontSize: '0.9rem',
                           fontWeight: 600,
-                          color: 'var(--clss-ink-700)',
+                          color: 'var(--wobo-ink-700)',
                           marginBottom: 8,
                         }}
                       >
@@ -179,11 +179,11 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
                                 fontSize: '0.88rem',
                                 borderRadius: 999,
                                 cursor: can ? 'pointer' : 'not-allowed',
-                                color: can ? 'var(--clss-ink-900)' : 'var(--clss-ink-300)',
+                                color: can ? 'var(--wobo-ink-900)' : 'var(--wobo-ink-300)',
                                 border: on
                                   ? `1px solid ${th}`
-                                  : '0.5px solid var(--clss-hairline-on-paper-strong)',
-                                background: on ? rgba(th, 0.12) : 'var(--clss-paper)',
+                                  : '0.5px solid var(--wobo-hairline-on-paper-strong)',
+                                background: on ? rgba(th, 0.12) : 'var(--wobo-paper)',
                                 opacity: can ? 1 : 0.55,
                                 transition: 'all 0.18s ease',
                                 display: 'inline-flex',
@@ -233,10 +233,10 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
                   width: 148,
                   height: 168,
                   borderRadius: 4,
-                  border: '0.5px dashed var(--clss-hairline-on-paper-strong)',
+                  border: '0.5px dashed var(--wobo-hairline-on-paper-strong)',
                   display: 'grid',
                   placeItems: 'center',
-                  color: 'var(--clss-ink-300)',
+                  color: 'var(--wobo-ink-300)',
                   fontSize: '0.82rem',
                   textAlign: 'center',
                   padding: 16,
@@ -273,7 +273,7 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
                     width: 148,
                     height: 168,
                     borderRadius: 4,
-                    background: 'var(--clss-card)',
+                    background: 'var(--wobo-card)',
                     border: `0.5px solid ${rgba(hueForTopic(id), 0.5)}`,
                     borderLeft: `3px solid ${hueForTopic(id)}`,
                     padding: '14px 14px 14px 16px',
@@ -288,7 +288,7 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
                     style={{
                       fontSize: '0.9rem',
                       fontWeight: 560,
-                      color: 'var(--clss-ink-900)',
+                      color: 'var(--wobo-ink-900)',
                       lineHeight: 1.35,
                     }}
                   >
@@ -335,7 +335,7 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
           </div>
         </div>
 
-        {/* Wobo's suggestion — her normal action path, offered as a tap */}
+        {/* Wobo's suggestion — Wobo's normal action path, offered as a tap */}
         <AnimatePresence>
           {suggestion && (
             <motion.button
@@ -349,15 +349,15 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
                 padding: '11px 14px',
                 borderRadius: 3,
                 border: `0.5px solid ${rgba('#1F35E0', 0.4)}`,
-                background: 'var(--clss-ultramarine-soft)',
+                background: 'var(--wobo-ultramarine-soft)',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
                 fontSize: '0.86rem',
                 lineHeight: 1.5,
               }}
             >
-              <span style={{ ...whisper, color: 'var(--clss-ultramarine)' }}>Wobo</span>
+              <span style={{ ...whisper, color: 'var(--wobo-ultramarine)' }}>Wobo</span>
               <div style={{ marginTop: 3 }}>
                 you slipped on “{suggestion.name}” lately — add it to the forge?
               </div>
@@ -379,8 +379,8 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
             fontFamily: 'inherit',
             fontSize: '1rem',
             fontWeight: 600,
-            color: picks.length === 0 ? 'var(--clss-ink-300)' : 'var(--clss-on-ink)',
-            background: picks.length === 0 ? 'var(--clss-tonal)' : 'var(--clss-ultramarine)',
+            color: picks.length === 0 ? 'var(--wobo-ink-300)' : 'var(--wobo-on-ink)',
+            background: picks.length === 0 ? 'var(--wobo-tonal)' : 'var(--wobo-ultramarine)',
             transition: 'background 0.2s ease, color 0.2s ease',
             display: 'inline-flex',
             alignItems: 'center',
@@ -408,9 +408,9 @@ function segStyle(active: boolean, hue: string, single = false): React.CSSProper
     cursor: 'pointer',
     fontFamily: 'inherit',
     fontSize: '0.82rem',
-    color: active ? 'var(--clss-ink-900)' : 'var(--clss-ink-500)',
-    border: active ? `1px solid ${hue}` : '0.5px solid var(--clss-hairline-on-paper-strong)',
-    background: active ? rgba(hue, 0.1) : 'var(--clss-paper)',
+    color: active ? 'var(--wobo-ink-900)' : 'var(--wobo-ink-500)',
+    border: active ? `1px solid ${hue}` : '0.5px solid var(--wobo-hairline-on-paper-strong)',
+    background: active ? rgba(hue, 0.1) : 'var(--wobo-paper)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',

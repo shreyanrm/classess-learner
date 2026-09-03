@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from classess_verifier import (
+from wobo_verifier import (
     CheckResult,
     MockCrossChecker,
     decide,

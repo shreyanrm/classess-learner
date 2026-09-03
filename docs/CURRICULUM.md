@@ -4,7 +4,7 @@ The contract for Wave 6. Companion to `docs/WOBO-PLAN.md` §4 and `docs/BOARD.md
 
 ## 1. The idea in one paragraph
 
-A learner types the name of their board or curriculum and picks it from a global list. If it is not there, they type it anyway and the brain goes looking for the official syllabus, extracts it into our schema, checks it, and saves it to the global registry as provisional with its source attached, so the next learner from that board gets it instantly. If nothing official exists, the learner shows Wobo their own syllabus and she builds a personal one. Everything below the framework is generated lazily: chapters on selection, topics on open, content on open. Every node carries provenance and an honest label. The learner's edits sit on top of the canonical version and survive updates. Board topics map onto one canonical concept graph so generated content is reused across boards.
+A learner types the name of their board or curriculum and picks it from a global list. If it is not there, they type it anyway and the brain goes looking for the official syllabus, extracts it into our schema, checks it, and saves it to the global registry as provisional with its source attached, so the next learner from that board gets it instantly. If nothing official exists, the learner shows Wobo their own syllabus and Wobo builds a personal one. Everything below the framework is generated lazily: chapters on selection, topics on open, content on open. Every node carries provenance and an honest label. The learner's edits sit on top of the canonical version and survive updates. Board topics map onto one canonical concept graph so generated content is reused across boards.
 
 ## 2. Ontology
 
@@ -39,7 +39,7 @@ Triggered when a learner types a framework that is not in the registry, or opens
 3. **Check.** The verify tier (the other provider) re-reads the source and the extraction independently; structural checks run in code: unit counts against the document's own table of contents, level coverage, duplicate and empty nodes, name sanity, ordering. Anything failing is redrawn once, then refused.
 4. **Store.** Saved as `provisional` with the full provenance and the source document hash. The learner sees it immediately with the honest label. The next learner from the same framework and level gets it from the registry, never a second discovery.
 5. **Promote.** `verified` when the checks passed and two different learners have used it without structural edits, or when the owner reviews it in the review queue. Anything flagged stays provisional.
-6. **Fail honestly.** If nothing official is found inside the budget, Wobo says so in one line and offers the own-syllabus path immediately. She never invents a syllabus.
+6. **Fail honestly.** If nothing official is found inside the budget, Wobo says so in one line and offers the own-syllabus path immediately. Wobo never invents a syllabus.
 
 ## 5. Provenance and labels
 

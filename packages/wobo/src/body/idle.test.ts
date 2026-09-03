@@ -54,7 +54,7 @@ describe('the idle scheduler', () => {
   });
 });
 
-describe('what fires when she crosses a stage', () => {
+describe('what fires when Wobo crosses a stage', () => {
   it('does nothing when the stage has not changed', () => {
     expect(idleTransition(2, 2)).toBeNull();
   });
@@ -72,7 +72,7 @@ describe('what fires when she crosses a stage', () => {
     expect(idleTransition(1, 0)).toEqual({ expression: 'idle' });
   });
 
-  it('has nothing to say about the first quiet stage — she just starts looking about', () => {
+  it('has nothing to say about the first quiet stage — Wobo just starts looking about', () => {
     expect(idleTransition(0, 1)).toBeNull();
   });
 });
@@ -83,7 +83,7 @@ describe('glances', () => {
     expect(nextGlanceDelay(() => 1)).toBe(2700);
   });
 
-  it('wanders inside her reach, centred on straight ahead', () => {
+  it("wanders inside Wobo's reach, centred on straight ahead", () => {
     expect(nextGlanceTarget(() => 0.5)).toEqual([0, 0]);
     expect(nextGlanceTarget(() => 0)).toEqual([-22, -13]);
     expect(nextGlanceTarget(() => 1)).toEqual([22, 13]);
@@ -91,24 +91,24 @@ describe('glances', () => {
 });
 
 /**
- * Her idle life belongs to the LEARNER's quiet, not to hers. Speaking, drawing, listening and
+ * Wobo's idle life belongs to the LEARNER's quiet, not to Wobo's. Speaking, drawing, listening and
  * thinking are not among the four input events the app watches, so without these two rules a
- * learner sat through a two-minute explanation watching her get bored, yawn and fall asleep.
+ * learner sat through a two-minute explanation watching Wobo get bored, yawn and fall asleep.
  */
-describe('she is not idle while she has something to do', () => {
-  it('holds her idle clock at now for as long as the app has her doing something', () => {
+describe('Wobo is not idle while Wobo has something to do', () => {
+  it("holds Wobo's idle clock at now for as long as the app has Wobo doing something", () => {
     expect(idleClock('explaining', 1_000, 40_000)).toBe(40_000);
     expect(idleClock('drawing', 1_000, 40_000)).toBe(40_000);
     // Idle is idle: the learner's own quiet is measured honestly.
     expect(idleClock('idle', 1_000, 40_000)).toBe(1_000);
   });
 
-  it('never reaches a doze while she is explaining', () => {
+  it('never reaches a doze while Wobo is explaining', () => {
     const spokeFrom = 1_000;
     for (const now of [spokeFrom + 13_000, spokeFrom + 21_000, spokeFrom + 36_000]) {
       expect(idleStageFor(now - idleClock('explaining', spokeFrom, now))).toBe(0);
     }
-    // The same silence with nothing to do does put her to sleep, which is the behaviour we keep.
+    // The same silence with nothing to do does put Wobo to sleep, which is the behaviour we keep.
     expect(
       idleStageFor(spokeFrom + 36_000 - idleClock('idle', spokeFrom, spokeFrom + 36_000)),
     ).toBe(4);
@@ -119,8 +119,8 @@ describe('she is not idle while she has something to do', () => {
     expect(baseInForce('idle', 'listening', 3)).toBe('listening');
   });
 
-  it('lets her idle life colour her only when the app has nothing to say', () => {
-    // Stage 3 with nothing asked of her: her yawn stands.
+  it("lets Wobo's idle life colour Wobo only when the app has nothing to say", () => {
+    // Stage 3 with nothing asked of Wobo: Wobo's yawn stands.
     expect(baseInForce('sleepy', 'idle', 3)).toBe('sleepy');
     // Back at stage 0 the app's answer takes over again.
     expect(baseInForce('sleepy', 'idle', 0)).toBe('idle');

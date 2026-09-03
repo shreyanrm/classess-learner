@@ -1,4 +1,4 @@
-import type { ClassessEvent, MasteryBand } from '@classess/contracts';
+import type { MasteryBand, WoboEvent } from '@wobo/contracts';
 import { ATOM_NODES } from '../atom-seed';
 import type {
   ConsentGrant,
@@ -85,7 +85,7 @@ export class InMemoryKgtopg implements KGtoPG, EventConsumer {
   }
 
   /** Idempotent event consumption (the "up" write target). */
-  async consume(event: ClassessEvent): Promise<{ accepted: boolean; deduped: boolean }> {
+  async consume(event: WoboEvent): Promise<{ accepted: boolean; deduped: boolean }> {
     if (this.seen.has(event.event_id)) return { accepted: true, deduped: true };
     this.seen.add(event.event_id);
     this.applyEvidence(event);
@@ -100,7 +100,7 @@ export class InMemoryKgtopg implements KGtoPG, EventConsumer {
     return `${subjectId}|${nodeId}`;
   }
 
-  private applyEvidence(event: ClassessEvent): void {
+  private applyEvidence(event: WoboEvent): void {
     const subject = event.actor.subject_id;
     let point: { nodeId: string; ev: EvidencePoint } | null = null;
 

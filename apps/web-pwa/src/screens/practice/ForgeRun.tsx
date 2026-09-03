@@ -44,7 +44,7 @@ export function ForgeRun({ id, onExit }: { id: string; onExit: () => void }) {
     return () => setReplay(false);
   }, [setReplay, replay]);
 
-  const hue = forge ? hueForTopic(forge.picks[0] ?? '') : 'var(--clss-ultramarine)';
+  const hue = forge ? hueForTopic(forge.picks[0] ?? '') : 'var(--wobo-ultramarine)';
   const pages = useMemo(() => forge?.pages ?? [], [forge]);
 
   const advance = useCallback(
@@ -114,7 +114,7 @@ export function ForgeRun({ id, onExit }: { id: string; onExit: () => void }) {
         position: 'fixed',
         inset: 0,
         zIndex: 40,
-        background: 'var(--clss-paper)',
+        background: 'var(--wobo-paper)',
         display: 'flex',
         flexDirection: 'column',
       }}
@@ -136,7 +136,7 @@ export function ForgeRun({ id, onExit }: { id: string; onExit: () => void }) {
           cursor: 'pointer',
           fontFamily: 'inherit',
           fontSize: '0.9rem',
-          color: 'var(--clss-ink-500)',
+          color: 'var(--wobo-ink-500)',
         }}
       >
         <span style={{ transform: 'rotate(180deg)', display: 'inline-flex' }}>
@@ -150,7 +150,7 @@ export function ForgeRun({ id, onExit }: { id: string; onExit: () => void }) {
           <CardBody maxWidth={560}>
             <div style={whisper}>a forged workbook · {forge.pages.length} pages</div>
             <div style={{ ...cardTitle, marginTop: 8 }}>{forge.title.toLowerCase()}</div>
-            <div style={{ marginTop: 6, color: 'var(--clss-ink-500)', fontSize: '0.95rem' }}>
+            <div style={{ marginTop: 6, color: 'var(--wobo-ink-500)', fontSize: '0.95rem' }}>
               {forge.total} items · {SIZE_LABEL[forge.size]} · {MIX_LABEL[forge.mix]}
             </div>
             <Stage hue={hue} tint={0.05} minHeight={0} style={{ marginTop: 20, padding: 20 }}>
@@ -163,11 +163,11 @@ export function ForgeRun({ id, onExit }: { id: string; onExit: () => void }) {
                       alignItems: 'center',
                       gap: 10,
                       padding: '10px 14px',
-                      background: 'var(--clss-paper)',
+                      background: 'var(--wobo-paper)',
                       border: `0.5px solid ${rgba(hue, 0.4)}`,
                       borderRadius: 3,
                       fontSize: '0.95rem',
-                      color: 'var(--clss-ink-900)',
+                      color: 'var(--wobo-ink-900)',
                     }}
                   >
                     <span style={{ ...whisper, minWidth: 16 }}>{i + 1}</span>
@@ -205,12 +205,12 @@ export function ForgeRun({ id, onExit }: { id: string; onExit: () => void }) {
                   fontSize: '3rem',
                   fontWeight: 650,
                   letterSpacing: '-0.03em',
-                  color: 'var(--clss-ink-900)',
+                  color: 'var(--wobo-ink-900)',
                   fontVariantNumeric: 'tabular-nums',
                 }}
               >
                 {score.current.correct}
-                <span style={{ color: 'var(--clss-ink-300)', fontWeight: 500 }}>
+                <span style={{ color: 'var(--wobo-ink-300)', fontWeight: 500 }}>
                   {' / '}
                   {score.current.total}
                 </span>
@@ -219,7 +219,7 @@ export function ForgeRun({ id, onExit }: { id: string; onExit: () => void }) {
                 style={{
                   marginTop: 6,
                   fontWeight: 600,
-                  color: pct >= 80 ? 'var(--clss-feedback-correct)' : hue,
+                  color: pct >= 80 ? 'var(--wobo-feedback-correct)' : hue,
                 }}
               >
                 {pct}% held
@@ -227,7 +227,7 @@ export function ForgeRun({ id, onExit }: { id: string; onExit: () => void }) {
               <div
                 style={{
                   marginTop: 14,
-                  color: 'var(--clss-ink-500)',
+                  color: 'var(--wobo-ink-500)',
                   fontSize: '0.95rem',
                   lineHeight: 1.6,
                 }}

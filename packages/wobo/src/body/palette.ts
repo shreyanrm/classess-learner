@@ -1,22 +1,22 @@
 /**
- * The ink visor wobot — her locked palette (owner call, 2026-09-02).
+ * The ink visor wobot — Wobo's locked palette (owner call, 2026-09-02).
  *
  * Light: a near-black body carrying a white visor. Dark: the tones invert — a paper body carrying a
- * near-black visor. Her eyes are ultramarine in both, and they are the ONLY pigment on the screen
- * (DESIGN.md §2, law 4). A half-pixel hairline in the opposite tone rims her so she stays legible
+ * near-black visor. Wobo's eyes are ultramarine in both, and they are the ONLY pigment on the screen
+ * (DESIGN.md §2, law 4). A half-pixel hairline in the opposite tone rims Wobo so Wobo stays legible
  * over any content: over dark content in light theme, over light content in dark theme.
  *
- * These are her identity, not choreography. Anything that renders her reads them from here.
+ * These are Wobo's identity, not choreography. Anything that renders Wobo reads them from here.
  */
 
 export interface RigTones {
-  /** Her body — the near-black shell in light, the paper shell in dark. */
+  /** Wobo's body — the near-black shell in light, the paper shell in dark. */
   body: string;
-  /** The visor she carries her eyes in — the opposite tone to the body. */
+  /** The visor Wobo carries their eyes in — the opposite tone to the body. */
   visor: string;
-  /** Her eyes and her pen tip. The one hit of pigment. */
+  /** Wobo's eyes and Wobo's pen tip. The one hit of pigment. */
   eye: string;
-  /** The half-pixel rim, in the opposite tone, that keeps her legible over any content. */
+  /** The half-pixel rim, in the opposite tone, that keeps Wobo legible over any content. */
   hairline: string;
 }
 
@@ -34,11 +34,11 @@ export const RIG_DARK: Readonly<RigTones> = Object.freeze({
   hairline: 'rgba(13,13,16,0.40)',
 });
 
-/** Her body is 92% ink, never a solid hole punched through the page. */
+/** Wobo's body is 92% ink, never a solid hole punched through the page. */
 export const RIG_BODY_OPACITY = 0.92;
 
 /** The class every rig root carries; the tokens below hang off it. */
-export const RIG_CLASS = 'clss-wobo-rig';
+export const RIG_CLASS = 'wobo-rig';
 
 /**
  * The rig's own token layer. Theme is a CSS concern, never a JS observer: the app writes
@@ -51,7 +51,7 @@ export const RIG_CSS = `
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .${RIG_CLASS}{--wr-body:${RIG_DARK.body};--wr-visor:${RIG_DARK.visor};--wr-eye:${RIG_DARK.eye};--wr-hair:${RIG_DARK.hairline}}}
 `.trim();
 
-const STYLE_ID = 'clss-wobo-rig-styles';
+const STYLE_ID = 'wobo-rig-styles';
 
 /** Inject the rig token layer once per document. No-op on the server and on repeat calls. */
 export function ensureRigStyles(): void {

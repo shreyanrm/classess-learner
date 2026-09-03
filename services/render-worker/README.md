@@ -1,4 +1,4 @@
-# @classess/render-worker
+# @wobo/render-worker
 
 Renders a cached **video scene-plan artifact** (from the `engine.video` pipeline) to an **MP4**,
 beat-synced to the measured narration audio. Our explainers normally play **live** in the browser
@@ -11,7 +11,7 @@ downloadable/shareable MP4 of the exact same film for offline, social, or CDN us
 
 This package depends on **[Remotion](https://remotion.dev)**. Remotion is **free for individuals and
 small teams, but a paid company licence is required for companies past a size/usage threshold**
-(see <https://remotion.dev/license> and `remotion/LICENSE.md`). **Classess must hold a valid Remotion
+(see <https://remotion.dev/license> and `remotion/LICENSE.md`). **Wobo must hold a valid Remotion
 company licence before this worker is run in production or as part of the business.** This is the
 sole reason Remotion is quarantined in this package and nowhere else in the monorepo — do not add
 `remotion`, `@remotion/*`, or any transitive render dep to the app or the gateway.

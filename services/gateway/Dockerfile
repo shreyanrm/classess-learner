@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # The model gateway (the brain). Build from the REPO ROOT (the uv workspace is the context):
-#   docker build -f services/gateway/Dockerfile -t classess-gateway .
+#   docker build -f services/gateway/Dockerfile -t wobo-gateway .
 # Railway is the only host (DEPLOY.md §2); it builds this file and injects PORT.
 # Secrets NEVER bake into this image — everything arrives via environment at runtime.
 
@@ -15,13 +15,13 @@ COPY services/contracts/pyproject.toml services/contracts/
 COPY services/verifier/pyproject.toml services/verifier/
 COPY services/gateway/pyproject.toml services/gateway/
 COPY content/atom/pyproject.toml content/atom/
-RUN uv sync --frozen --no-dev --no-editable --no-install-workspace --package classess-gateway
+RUN uv sync --frozen --no-dev --no-editable --no-install-workspace --package wobo-gateway
 
 # Sources second: a code change only rebuilds the small workspace wheels.
 COPY services/contracts/src services/contracts/src
 COPY services/verifier/src services/verifier/src
 COPY services/gateway/src services/gateway/src
-RUN uv sync --frozen --no-dev --no-editable --package classess-gateway
+RUN uv sync --frozen --no-dev --no-editable --package wobo-gateway
 
 FROM python:3.12-slim-bookworm
 RUN useradd --create-home --uid 10001 gateway
@@ -45,7 +45,7 @@ COPY --chown=gateway:gateway content/factbase/facts.v1.jsonl /app/content/factba
 # so discovery is explicit instead of depending on the install layout.
 ENV PATH="/app/.venv/bin:$PATH" \
     PLEXUS_CACHE_DIR=/home/gateway/cache \
-    CLASSESS_IMAGE_CACHE_DIR=/home/gateway/cache/images \
+    WOBO_IMAGE_CACHE_DIR=/home/gateway/cache/images \
     PLEXUS_CONCEPTS_PATH=/app/content/catalogs/concepts.json \
     FACTBASE_DIR=/app/content/factbase
 USER gateway
@@ -66,4 +66,4 @@ HEALTHCHECK --interval=15s --timeout=3s --start-period=10s --retries=3 \
 # to anyone who rotates a header. One decision in one place instead: uvicorn always reports
 # the true peer, and the gateway believes a forwarded hop only under TRUST_PROXY=1
 # (app._client_ip), where it takes the LAST hop — the one our own platform appended.
-CMD ["sh", "-c", "uvicorn classess_gateway.app:app --host 0.0.0.0 --port ${PORT:-8081} --no-access-log --forwarded-allow-ips ''"]
+CMD ["sh", "-c", "uvicorn wobo_gateway.app:app --host 0.0.0.0 --port ${PORT:-8081} --no-access-log --forwarded-allow-ips ''"]

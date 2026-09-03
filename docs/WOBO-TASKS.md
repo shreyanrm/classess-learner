@@ -7,7 +7,7 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 ## Wave 0 — Land and unblock
 
 - [x] Rebrand Classess Learner and Vidya to Wobo across app, gateway, contracts, docs — `09a2bf4`
-- [x] First-meeting introduction (owner copy), written in her hand and spoken once — `09a2bf4`
+- [x] First-meeting introduction (owner copy), written in Wobo's hand and spoken once — `09a2bf4`
 - [x] Brand assets: inline wordmark, favicon, PWA icons, video watermark — `09a2bf4`
 - [x] Plan and task list committed
 - [x] **owner** Restore Supabase project `keepraxqagzgjrrweryt` — restored 2026-09-02; hostname resolves; auth answers
@@ -361,7 +361,7 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 ### 5.3 Context packet and the `wobo.turn` seam
 - [ ] **Packet builder** — focus + registry snapshot + route + task state (beat, attempt, score) + learner mind summary (mastery band for the current topic, recent mistakes, preferred analogy, consent tier, plan) + last N turns, under a token budget with priority truncation
 - [ ] **Turn protocol** — `wobo.turn` streams a mixed sequence of `say`, `ink`, `action`, `ask`, `card` events; ordering guarantees; cancellation on interrupt; resume after network loss
-- [ ] **Interrupt** — the learner can stop her mid-sentence (tap, key, voice); ink stops with the voice; partial board state stays
+- [ ] **Interrupt** — the learner can stop Wobo mid-sentence (tap, key, voice); ink stops with the voice; partial board state stays
 - [ ] **Latency budget** — first speech under 1.5 s on a cheap Android phone over 4G; first stroke under 1 s; measured, not assumed
 
 ### 5.4 Ink renderer and the board grammar
@@ -372,8 +372,8 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 - [ ] **Handwriting** — Caveat glyph-to-stroke so `write` genuinely writes, paced to speech; the two-word-first-sentence rule preserved for TTS
 - [ ] **Equations** — `tex` rendered to paths and written stroke by stroke, not revealed
 - [ ] **Layout engine** — places objects on the plane and the full board so nothing collides; label margins; auto-scroll and zoom when the board fills
-- [ ] **Object memory** — re-point, move, fade, redraw any earlier object by id within a session; she can say "this one" and tap it
-- [ ] **Bidirectional** — the learner draws on the same layer; she reads their ink; moving her tangent updates her numbers
+- [ ] **Object memory** — re-point, move, fade, redraw any earlier object by id within a session; Wobo can say "this one" and tap it
+- [ ] **Bidirectional** — the learner draws on the same layer; Wobo reads their ink; moving Wobo's tangent updates the numbers
 - [ ] **Timeline and export** — scrub a board's history; save to notes; export as a shareable image (the proof loop)
 - [ ] **Performance** — thousands of strokes at 60 fps on a cheap phone; virtualised history; GPU-friendly transforms only
 
@@ -381,8 +381,8 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 - [ ] **Ink on the screen** — over any surface, including a paused video (our videos expose frame state from the scene spec at the paused timestamp), a syllabus outline, a setting, a sim; fades
 - [ ] **The plane** — frosted overlay board sliding in from the orb; drag, resize, pin, minimize to thumbnail with ink intact; sheet on phones; summon by gesture or the word "board"; ink persists until wiped; multiple boards per session; "fresh board"
 - [ ] **The full board** — inside lessons, full-bleed; the course player becomes a board with cards as regions
-- [ ] **Presentation choice** — her rule (pointer or one line on screen; derivation or diagram on the plane; lesson on the full board) plus learner override by word or gesture
-- [ ] **Video handoff** — pause, ask, she annotates the frame or opens the plane beside it, then returns the learner to the paused position
+- [ ] **Presentation choice** — Wobo's rule (pointer or one line on screen; derivation or diagram on the plane; lesson on the full board) plus learner override by word or gesture
+- [ ] **Video handoff** — pause, ask, Wobo annotates the frame or opens the plane beside it, then returns the learner to the paused position
 
 ### 5.6 Domain pipelines under the grammar
 - [ ] **Math** — axes, curves, tangents, constructions with visible compass arcs, number lines, long division, area models, derivations line by line with the substituted step underlined
@@ -397,10 +397,10 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 - [ ] **Show me** — a visible cursor glides to the real control, taps, narrates, via the registry; works on every registered screen
 - [ ] **Do it** — executes under the permission ladder (recommend, prepare, execute with permission, safe automatic); communicate, buy, submit, delete always ask
 - [ ] **Explain this** / **why is this wrong** / **check my work** / **quiz me** / **say it in my world** (analogy) / **read it aloud** / **teach it back to me** — each a mode with its own prompt shape and board behaviour
-- [ ] **Watch me do one** — she drives a sim with the cursor visibly, then hands over; first rung of the assistance ladder
+- [ ] **Watch me do one** — Wobo drives a sim with the cursor visibly, then hands over; first rung of the assistance ladder
 - [ ] **Proactive lean-in** — three wrong actions or forty idle seconds offers a pointer; governed by the quiet/balanced/proactive dial; never interrupts speech or typing
-- [ ] **Voice** — push-to-talk on the orb and a desktop hotkey; accent by the learner's country with American English fallback; no always-listening; barge-in stops her
-- [ ] **Memory page** — what she remembers, set by consent tier, visible and erasable; erasure propagates to the brain
+- [ ] **Voice** — push-to-talk on the orb and a desktop hotkey; accent by the learner's country with American English fallback; no always-listening; barge-in stops Wobo
+- [ ] **Memory page** — what Wobo remembers, set by consent tier, visible and erasable; erasure propagates to the brain
 - [ ] **Vision fallback** — for content we did not make (a PDF, an embedded page) the circled region is read by a vision call; labelled as such
 - [ ] **Engine absorption plan** — each existing engine mapped to board idioms; absorbed one at a time behind a flag without breaking lessons
 
@@ -442,8 +442,8 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 ### 7.1 Landing page (**design**)
 - [ ] **Chalk cursor with fading ink trace** — WebGL, silky at any frame rate; warms on headings; off on touch devices
 - [ ] **Wobo hero** — real-time jelly orb in a shader; weight and squash; eyes follow the cursor; blinks; falls back to a static image on weak devices
-- [ ] **Scroll-driven lesson** — she draws as you scroll: a triangle, self-labelling angles, a derivation down the margin, a molecule assembling; pinned sections; the visitor controls the pace
-- [ ] **Live mini-board** — type a prompt and watch her draw, on the page, before sign-up; rate-limited through the brain's anonymous budget
+- [ ] **Scroll-driven lesson** — Wobo draws as you scroll: a triangle, self-labelling angles, a derivation down the margin, a molecule assembling; pinned sections; the visitor controls the pace
+- [ ] **Live mini-board** — type a prompt and watch Wobo draw, on the page, before sign-up; rate-limited through the brain's anonymous budget
 - [ ] **Story sections** — every board on earth (a globe of frameworks); the parent's weekly artifact; how it's free; pricing annual-first (dummy values until real); the invitation
 - [ ] **Copy** — outcome-led, calm, certain; sentence case; no exclamation marks
 - [ ] **Performance** — lazy-loaded effects, under 1 MB before interaction on a cheap phone, reduced motion honoured, Lighthouse 90+ on mobile
@@ -470,7 +470,7 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 - [ ] **Intro** (done) then **sign in first** — Google or phone OTP; name from the account; birthdate only where consent law needs it, with the parent path
 - [ ] **One question** — what are you studying right now? Text, voice, or a photo of a textbook or timetable
 - [ ] **Inference and one-tap confirm** — board and class inferred; board search with "not listed? show me your syllabus"
-- [ ] **The aha** — she teaches one real thing from that topic on the board, drawing as she talks
+- [ ] **The aha** — Wobo teaches one real thing from that topic on the board, drawing as Wobo talks
 - [ ] **Guided tour** — Wobo shows what they can do and how: the thread, Learn, Practice, the board, the plane, asking by circling, push-to-talk; pointing at the real controls; the learner tries each; skippable, resumable
 - [ ] **Endowed progress** — three quick questions light the map
 - [ ] **Interests** — folded into the first analogy choice (cricket, Formula 1, music, games), not a list
@@ -479,7 +479,7 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 
 ### 7.5 UI raise (**design**)
 - [ ] **Element inventory per screen (design, owner law)** — for every surface (landing, auth, onboarding beats, home, Learn, Subject, Course, Practice, Progress, You, the plane, settings, emails): list every visible element with the learner task it serves and the evidence it is needed; remove anything without a reason; copy written from the learner's side; owner reviews the main surfaces before rollout
-- [ ] **Typography** — Poppins for UI, Caveat for her hand; tokens updated; Google Sans references removed
+- [ ] **Typography** — Poppins for UI, Caveat for Wobo's hand; tokens updated; Google Sans references removed
 - [ ] **Tokens** — light and dark complete; every surface through tokens; no hardcoded whites; one hit of pigment; no shadows; 3 px radius
 - [ ] **Chrome** — header, palette, doors, cards, buttons, inputs, chips, toasts, sheets redesigned to one system
 - [ ] **Home** — the thread made genuinely minimal; chat on the home front door, no separate chat route
@@ -489,7 +489,7 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 - [ ] **Motion** — one system; entrance choreography; magnetic buttons; reduced motion honoured everywhere
 - [ ] **Mobile** — 360 px to tablets; touch targets 44 px; no fixed widths; safe areas
 - [ ] **Accessibility** — keyboard paths for every course beat; focus-visible; aria on icon buttons; contrast checked in both themes
-- [ ] **White-label sweep** — nothing user-facing names Classess, Claude, Gemini, OpenAI, Google, or any provider; provider errors rewritten in Wobo's voice; model ids never leave the brain
+- [x] **White-label sweep** — nothing user-facing names Classess, Claude, Gemini, OpenAI, Google, or any provider; provider errors rewritten in Wobo's voice; model ids never leave the brain — the `white-label` gate (`scripts/gate_white_label.py`) now fails CI on a vendor name in the built bundle, in a gateway string a client receives, or in shipped source; the SDK's persistence errors were rewritten to "remote store"
 - [ ] **Owner approval** — two or three screens shown before rollout
 
 ### 7.6 Board-native content and evaluation
@@ -497,7 +497,7 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 - [ ] **Courses** — the course player as a full board; cards as regions; beats as board moments
 - [ ] **Practice runs** — questions asked on the board; working graded, not only the answer
 - [ ] **Mini-workbooks, flashcards, derivations, word problems** — as board idioms
-- [ ] **Boss battles** — a live problem she draws; solved on the same surface; victory theatre kept
+- [ ] **Boss battles** — a live problem Wobo draws; solved on the same surface; victory theatre kept
 - [ ] **Daily thread, XP, streaks with taste, trophies** — retained and refined
 - [ ] **Free-reasoning grading** — text, voice, and handwriting; rubric versions; confidence bands (auto-accept high, escalate middle)
 - [ ] **Assistance ladder** — Learn, Coach, Hint, Work-with-me, Check-my-work, Challenge, Assessment; support visibly fades
@@ -527,13 +527,13 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 ### 7.9 Answering is doing (Brilliant floor, our bar)
 - [ ] **Answer kinds** — brain chooses per item from: shade regions, place/drag points, slider, order/match, number pad, expression keyboard (fractions, roots, powers), draw a line/angle on the board, circle the part, choose among visuals; no text multiple-choice where a visual act exists; each kind has keyboard + screen-reader path, "Start over", one primary "Check"
 - [ ] **Placement uses the same kinds** — onboarding's diagnostic is visual and interactive with finished-page spacing (owner law 2026-09-03); no form-looking test
-- [ ] **State at a glance** — frame hairline + Wobo's expression change for right/wrong/thinking; tick/wobble drawn by her hand; never a colour flood; no exclamation marks
+- [ ] **State at a glance** — frame hairline + Wobo's expression change for right/wrong/thinking; tick/wobble drawn by Wobo's hand; never a colour flood; no exclamation marks
 - [ ] **Hand-held explanations** — wrong → "Not quite, that's okay" + Get help / Try again; Socratic question; "Why was my answer wrong?" chip; reveal after two misses with "Want to learn why?"; step-wise with small choice buttons; every step draws on the actual control (ring, arrow, written equation)
 - [ ] **Never lose progress** — every step saved; leaving says "Leave for now? Your place is saved."; no threat dialogs
 
 ### 7.10 Loader, flags, help, settings
 - [ ] **Loader is the character** — pen line becomes the page's first hairline, body settles into the orb; <1 s; reduced-motion variant
-- [ ] **Flag anything** — flag on every content unit; our own screenshot; annotation with her ink (pen, circle, rect, blur); type (bug/question/improvement); description; voice flag via Wobo; `learner.flags` table + owner email digest; thank-you and fixed-note to learner
+- [ ] **Flag anything** — flag on every content unit; our own screenshot; annotation with Wobo's ink (pen, circle, rect, blur); type (bug/question/improvement); description; voice flag via Wobo; `learner.flags` table + owner email digest; thank-you and fixed-note to learner
 - [ ] **Help centre** — searchable; three groups (Wobo basics, product features, boards and curriculum); illustrated articles written for Wobo; Wobo answers help grounded on this content first
 - [ ] **Settings** — Account (name, email verified/primary, add email, password, delete account, export data), Plan, Preferences (appearance auto/light/dark, reduce motion on/off/auto, narration toggle, sound effects toggle, voice and accent, language, email notifications by category), Parent link, Privacy and consent
 
@@ -552,15 +552,15 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 
 ### 7.13 Rebrand everywhere + white-label (plan §17)
 - [ ] **Accounts** — GitHub repo → wobo (done by orchestrator 2026-09-03 if rename succeeded; see git remote); Vercel project → wobo; Railway project + service → wobo; Supabase project "Wobo" (done); OAuth app names; email sender name
-- [ ] **Code names** — `@classess/*` → `@wobo/*`; `classess_gateway` → `wobo_gateway`; env prefixes; storage keys `clss-*` → `wobo-*` with migration; SW cache names; CSS prefixes; test fixtures; docs
-- [ ] **Nothing leaks** — no provider/model/vendor name in any response, error, client-visible header/log, bundle string, email, or legal page beyond generic "third-party AI and infrastructure providers"; strip `server`/`x-powered-by`; generic error bodies; OpenAPI off; production source maps off; grep gate in CI for provider names in built assets and templates
+- [x] **Code names** — `@classess/*` → `@wobo/*`; `classess_gateway` → `wobo_gateway`; env prefixes; storage keys `clss-*` → `wobo-*` with migration; SW cache names; CSS prefixes; test fixtures; docs — held by the `no-classess` gate (`scripts/gate_no_classess.py`). Survivors, each with a written reason in `scripts/gate_allowlist.py`: the live Railway hostname in `apps/web-pwa/.env.production` and `vercel.json` (blocked on the service rename), the one-release `CLASSESS_IMAGE_CACHE_DIR` shim, the sibling-product name in ecosystem prose, and the law/ledger text that has to quote the old name
+- [x] **Nothing leaks** — no provider/model/vendor name in any response, error, client-visible header/log, bundle string, email, or legal page beyond generic "third-party AI and infrastructure providers"; strip `server`/`x-powered-by`; generic error bodies; OpenAPI off; production source maps off; grep gate in CI for provider names in built assets and templates — the gate ships as the `gates` CI job. It parses the gateway rather than grepping it, so `routing.py` may name a model while a `detail=` body may not
 - [ ] **Domain wave** — custom domain for web, api and mail; database host proxied through our domain or fronted by a CDN; until then hosting and database hosts are visible in the network tab (owner informed)
 
 ### 7.14 Device agnostic + handcrafted (plan §18)
-- [ ] **Pronoun pass (plan §19)** — repo-wide rewrite of she/her → name-first or they/them for Wobo across docs, prompts (wobo.py persona, board planner, email templates), code comments, tests, legal/marketing drafts; Wobo's self-description answer; CI grep gate
+- [x] **Pronoun pass (plan §19)** — repo-wide rewrite of she/her → name-first or they/them for Wobo across docs, prompts (wobo.py persona, board planner, email templates), code comments, tests, legal/marketing drafts; Wobo's self-description answer; CI grep gate — `scripts/gate_pronouns.py` fails on a gendered pronoun within 60 characters of "Wobo"; `WOBO.md`, `WOBO-CAPABILITIES.md`, `CONTENT-VISUALS.md`, `SUBJECTS.md` and `DECISIONS.md` were the last files carrying them
 - [ ] **Three-width proofs** — every screen proven at 360 / 820 / 1440 in both themes; touch, mouse, stylus, keyboard; portrait and landscape on tablet; screen reader path; reduced motion
 - [ ] **Board on small screens** — plane as sheet, lasso by finger, hold-to-talk as long press; ink scales with the target
-- [ ] **Handcrafted default** — her hand, their name, their syllabus, their pace on every page; copy audit for template smell; no generic empty states
+- [ ] **Handcrafted default** — Wobo's hand, their name, their syllabus, their pace on every page; copy audit for template smell; no generic empty states
 
 ## Wave 8 — Platforms and launch
 
@@ -575,7 +575,7 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 
 ## Wave 9 — Horizons
 
-- [ ] Snap a homework page; she grades the working
+- [ ] Snap a homework page; Wobo grades the working
 - [ ] Handwriting canvas with math recognition
 - [ ] Code-switching across Hinglish and vernacular; vernacular interfaces
 - [ ] Parent mode narrating the week; WhatsApp presence

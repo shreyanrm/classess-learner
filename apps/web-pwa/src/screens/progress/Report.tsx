@@ -14,7 +14,7 @@ import { useSdk } from '../../store/sdk';
 import { fluidType, Hairline, Reveal } from '../../ui/kit';
 import { STARS, type Star, type StarState } from './twin-data';
 
-const ULTRA = 'var(--clss-ultramarine)';
+const ULTRA = 'var(--wobo-ultramarine)';
 
 // --- pure evidence math (kept testable) ----------------------------------------------------------
 
@@ -193,8 +193,8 @@ function AccuracyBar({ label, ratio, total }: { label: string; ratio: number; to
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-        <span style={{ fontSize: fluidType.small, color: 'var(--clss-ink-900)' }}>{label}</span>
-        <span style={{ fontSize: fluidType.small, color: 'var(--clss-ink-faint)', flexShrink: 0 }}>
+        <span style={{ fontSize: fluidType.small, color: 'var(--wobo-ink-900)' }}>{label}</span>
+        <span style={{ fontSize: fluidType.small, color: 'var(--wobo-ink-faint)', flexShrink: 0 }}>
           {pct}% · {total} tried
         </span>
       </div>
@@ -202,7 +202,7 @@ function AccuracyBar({ label, ratio, total }: { label: string; ratio: number; to
         style={{
           height: 4,
           borderRadius: 2,
-          background: 'var(--clss-tonal)',
+          background: 'var(--wobo-tonal)',
           overflow: 'hidden',
         }}
       >
@@ -217,7 +217,7 @@ function AccuracyBar({ label, ratio, total }: { label: string; ratio: number; to
             height: '100%',
             borderRadius: 2,
             background:
-              ratio >= 0.75 ? ULTRA : ratio >= 0.5 ? '#66B300' : 'var(--clss-feedback-retry)',
+              ratio >= 0.75 ? ULTRA : ratio >= 0.5 ? '#66B300' : 'var(--wobo-feedback-retry)',
           }}
         />
       </div>
@@ -229,8 +229,8 @@ function Panel({ children }: { children: React.ReactNode }) {
   return (
     <div
       style={{
-        background: 'var(--clss-card)',
-        border: '1px solid var(--clss-card-border)',
+        background: 'var(--wobo-card)',
+        border: '1px solid var(--wobo-card-border)',
         borderRadius: 3,
         padding: '18px 18px 16px',
         display: 'flex',
@@ -248,7 +248,7 @@ const eyebrow = {
   fontWeight: 600,
   letterSpacing: '0.12em',
   textTransform: 'uppercase' as const,
-  color: 'var(--clss-ink-faint)',
+  color: 'var(--wobo-ink-faint)',
 };
 
 export function ProgressReport({
@@ -265,7 +265,7 @@ export function ProgressReport({
 
   const counts = useMemo<Record<string, number>>(() => {
     try {
-      return JSON.parse(localStorage.getItem('clss-activity-counts-v1') ?? '{}');
+      return JSON.parse(localStorage.getItem('wobo-activity-counts-v1') ?? '{}');
     } catch {
       return {};
     }
@@ -313,7 +313,7 @@ export function ProgressReport({
             style={{
               marginTop: 6,
               fontSize: fluidType.small,
-              color: 'var(--clss-ink-faint)',
+              color: 'var(--wobo-ink-faint)',
             }}
           >
             Drawn from what you have actually done — not a guess
@@ -325,8 +325,8 @@ export function ProgressReport({
       <Reveal delay={0.04}>
         <div
           style={{
-            background: 'var(--clss-ultramarine-soft)',
-            border: '1px solid var(--clss-ultramarine-wash)',
+            background: 'var(--wobo-ultramarine-soft)',
+            border: '1px solid var(--wobo-ultramarine-wash)',
             borderRadius: 3,
             padding: '20px 20px 18px',
             display: 'flex',
@@ -341,13 +341,13 @@ export function ProgressReport({
               fontWeight: 550,
               letterSpacing: '-0.01em',
               lineHeight: 1.4,
-              color: 'var(--clss-ink-900)',
+              color: 'var(--wobo-ink-900)',
             }}
           >
             {trajectory.line}
           </div>
           {trajectory.kind === 'projected' && (
-            <div style={{ fontSize: fluidType.small, color: 'var(--clss-ink-soft)' }}>
+            <div style={{ fontSize: fluidType.small, color: 'var(--wobo-ink-soft)' }}>
               based on {mastered} mastered across {trajectory.activeDays} active{' '}
               {trajectory.activeDays === 1 ? 'day' : 'days'} · a straight-line estimate, it moves as
               you do
@@ -371,7 +371,7 @@ export function ProgressReport({
               <div
                 style={{
                   fontSize: fluidType.small,
-                  color: 'var(--clss-ink-soft)',
+                  color: 'var(--wobo-ink-soft)',
                   lineHeight: 1.5,
                 }}
               >
@@ -390,7 +390,7 @@ export function ProgressReport({
                         flexShrink: 0,
                       }}
                     />
-                    <span style={{ fontSize: fluidType.small, color: 'var(--clss-ink-900)' }}>
+                    <span style={{ fontSize: fluidType.small, color: 'var(--wobo-ink-900)' }}>
                       {nameOf(s)}
                     </span>
                   </div>
@@ -407,7 +407,7 @@ export function ProgressReport({
               <div
                 style={{
                   fontSize: fluidType.small,
-                  color: 'var(--clss-ink-soft)',
+                  color: 'var(--wobo-ink-soft)',
                   lineHeight: 1.5,
                 }}
               >
@@ -434,9 +434,9 @@ export function ProgressReport({
                           flexShrink: 0,
                         }}
                       />
-                      <span style={{ fontSize: fluidType.small, color: 'var(--clss-ink-900)' }}>
+                      <span style={{ fontSize: fluidType.small, color: 'var(--wobo-ink-900)' }}>
                         {nameOf(r.star)}
-                        <span style={{ color: 'var(--clss-ink-faint)' }}> · with guidance</span>
+                        <span style={{ color: 'var(--wobo-ink-faint)' }}> · with guidance</span>
                       </span>
                     </div>
                   ),
@@ -453,14 +453,14 @@ export function ProgressReport({
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
             <div style={eyebrow}>Last 30 days</div>
             {medianSec !== undefined && (
-              <div style={{ fontSize: fluidType.small, color: 'var(--clss-ink-faint)' }}>
+              <div style={{ fontSize: fluidType.small, color: 'var(--wobo-ink-faint)' }}>
                 ~{medianSec}s per answer
               </div>
             )}
           </div>
           <ActivityGraph counts={counts} now={now} />
           <Hairline />
-          <div style={{ fontSize: fluidType.small, color: 'var(--clss-ink-soft)' }}>
+          <div style={{ fontSize: fluidType.small, color: 'var(--wobo-ink-soft)' }}>
             Quiet days are part of it — the line only needs to keep coming back.
           </div>
         </Panel>

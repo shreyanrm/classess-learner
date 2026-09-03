@@ -18,15 +18,15 @@
  * honest fallback (the SMILES + formula) if the library is unavailable — the same "refusal is
  * invisible" doctrine the rest of Plexus follows. The balancer and titration need no dependency.
  *
- * Registers as a Wobo scene target: she reads the live coefficients / pH (getSceneState), knows the
- * valid moves (getValidActions), and can DRIVE the scene herself — set a coefficient, add a drop
+ * Registers as a Wobo scene target: Wobo reads the live coefficients / pH (getSceneState), knows the
+ * valid moves (getValidActions), and can DRIVE the scene directly — set a coefficient, add a drop
  * (applyTutorAction). Reduced-motion + mute aware; both themes; sentence-case, playful copy.
  *
  * The element-count parser + conservation check mirror the gateway's `plexus/chem.py` exactly, so a
  * balance spec that would be refused server-side is refused here too (one grammar, both ends).
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
@@ -431,7 +431,7 @@ function Balancer({
     setBar({ primary: { label: 'continue', disabled: !balanced, onClick: onDone } });
   }, [balanced, setBar, onDone]);
 
-  // she reads the live coefficients + conservation, and can drive a coefficient herself
+  // Wobo reads the live coefficients + conservation, and can drive a coefficient directly
   const applyTutorAction = (patch: Record<string, unknown>) => {
     const set = isRecord(patch.set) ? patch.set : patch;
     const idx = num(set.index) ? Math.round(set.index) : undefined;
@@ -486,7 +486,7 @@ function Balancer({
           key={`${offset}-${t.formula}-${i}`}
           style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
         >
-          {i > 0 && <span style={{ color: 'var(--clss-ink-500)', margin: '0 2px' }}>+</span>}
+          {i > 0 && <span style={{ color: 'var(--wobo-ink-500)', margin: '0 2px' }}>+</span>}
           <span style={{ color: hue, fontWeight: 600, fontSize: '1.15rem' }}>
             <Scrubber
               value={coeffs[offset + i] ?? 1}
@@ -496,7 +496,7 @@ function Balancer({
               label={`coefficient of ${t.formula}`}
             />
           </span>
-          <span style={{ fontSize: '1.15rem', color: 'var(--clss-ink-900)' }}>
+          <span style={{ fontSize: '1.15rem', color: 'var(--wobo-ink-900)' }}>
             <Formula formula={t.formula} coefficient={1} />
           </span>
         </span>
@@ -530,7 +530,7 @@ function Balancer({
           >
             <Side side={spec.reactants} offset={0} />
             <motion.span
-              animate={{ color: balanced ? hue : 'var(--clss-ink-500)' }}
+              animate={{ color: balanced ? hue : 'var(--wobo-ink-500)' }}
               style={{ fontSize: '1.3rem', fontWeight: 600, margin: '0 4px' }}
             >
               →
@@ -542,7 +542,7 @@ function Balancer({
         {/* the live conservation ledger — the thing that makes "balanced" visible */}
         <div
           style={{
-            border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+            border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
             borderRadius: 3,
             padding: '12px 16px',
             display: 'flex',
@@ -566,18 +566,18 @@ function Balancer({
                   fontVariantNumeric: 'tabular-nums',
                 }}
               >
-                <div style={{ textAlign: 'right', color: 'var(--clss-ink-700)' }}>{l}</div>
+                <div style={{ textAlign: 'right', color: 'var(--wobo-ink-700)' }}>{l}</div>
                 <div
                   style={{
                     fontWeight: 600,
-                    color: ok ? hue : 'var(--clss-ink-900)',
+                    color: ok ? hue : 'var(--wobo-ink-900)',
                     minWidth: 24,
                     textAlign: 'center',
                   }}
                 >
                   {el}
                 </div>
-                <div style={{ textAlign: 'left', color: 'var(--clss-ink-700)' }}>{r}</div>
+                <div style={{ textAlign: 'left', color: 'var(--wobo-ink-700)' }}>{r}</div>
                 <AnimatePresence mode="popLayout" initial={false}>
                   <motion.div
                     key={ok ? 'ok' : 'no'}
@@ -585,7 +585,7 @@ function Balancer({
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.6 }}
                     transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                    style={{ color: ok ? hue : 'var(--clss-ink-300)', fontSize: '0.9rem' }}
+                    style={{ color: ok ? hue : 'var(--wobo-ink-300)', fontSize: '0.9rem' }}
                   >
                     {ok ? '✓' : '≠'}
                   </motion.div>
@@ -603,13 +603,13 @@ function Balancer({
               exit={{ opacity: 0 }}
               transition={{ type: 'spring', stiffness: 300, damping: 28 }}
               style={{
-                border: '1px solid var(--clss-feedback-correct)',
-                background: 'var(--clss-feedback-correctSoft)',
+                border: '1px solid var(--wobo-feedback-correct)',
+                background: 'var(--wobo-feedback-correctSoft)',
                 borderRadius: 3,
                 padding: '14px 16px',
                 fontSize: '1rem',
                 lineHeight: 1.6,
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
               }}
             >
               balanced. every atom that goes in comes out — mass is conserved, so the coefficients
@@ -623,7 +623,7 @@ function Balancer({
               ...lead,
               borderLeft: `2px solid ${hue}`,
               paddingLeft: 14,
-              color: 'var(--clss-ink-900)',
+              color: 'var(--wobo-ink-900)',
             }}
           >
             {spec.caption ??
@@ -843,7 +843,7 @@ function Titration({
                   y1="0"
                   x2="30"
                   y2="14"
-                  stroke="var(--clss-ink-300)"
+                  stroke="var(--wobo-ink-300)"
                   strokeWidth="1.2"
                 />
                 <AnimatePresence>
@@ -860,8 +860,8 @@ function Titration({
                 {/* flask body */}
                 <path
                   d="M22 28 L22 42 L12 74 Q12 82 20 82 L40 82 Q48 82 48 74 L38 42 L38 28 Z"
-                  fill="var(--clss-paper)"
-                  stroke="var(--clss-ink-500)"
+                  fill="var(--wobo-paper)"
+                  stroke="var(--wobo-ink-500)"
                   strokeWidth="1.2"
                 />
                 {/* liquid */}
@@ -876,8 +876,8 @@ function Titration({
                   y="24"
                   width="12"
                   height="6"
-                  fill="var(--clss-paper)"
-                  stroke="var(--clss-ink-500)"
+                  fill="var(--wobo-paper)"
+                  stroke="var(--wobo-ink-500)"
                   strokeWidth="1.2"
                 />
               </svg>
@@ -898,7 +898,7 @@ function Titration({
                   y1={TITR_VB_H - 8}
                   x2={TITR_VB_W - 8}
                   y2={TITR_VB_H - 8}
-                  stroke="var(--clss-ink-300)"
+                  stroke="var(--wobo-ink-300)"
                   strokeWidth="0.8"
                 />
                 <line
@@ -906,7 +906,7 @@ function Titration({
                   y1="8"
                   x2="8"
                   y2={TITR_VB_H - 8}
-                  stroke="var(--clss-ink-300)"
+                  stroke="var(--wobo-ink-300)"
                   strokeWidth="0.8"
                 />
                 {/* pH 7 guide */}
@@ -915,7 +915,7 @@ function Titration({
                   y1={TITR_VB_H - 8 - (7 / 14) * (TITR_VB_H - 16)}
                   x2={TITR_VB_W - 8}
                   y2={TITR_VB_H - 8 - (7 / 14) * (TITR_VB_H - 16)}
-                  stroke="var(--clss-ink-300)"
+                  stroke="var(--wobo-ink-300)"
                   strokeWidth="0.5"
                   strokeDasharray="2 2"
                 />
@@ -946,11 +946,11 @@ function Titration({
                   y={TITR_VB_H - 11}
                   fontSize="6"
                   textAnchor="end"
-                  fill="var(--clss-ink-300)"
+                  fill="var(--wobo-ink-300)"
                 >
                   mL
                 </text>
-                <text x="11" y="14" fontSize="6" fill="var(--clss-ink-300)">
+                <text x="11" y="14" fontSize="6" fill="var(--wobo-ink-300)">
                   pH
                 </text>
               </svg>
@@ -968,7 +968,7 @@ function Titration({
             { label: 'equivalence', value: `${equivMl.toFixed(1)} mL` },
           ].map((r) => (
             <div key={r.label} style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>{r.label}</span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)' }}>{r.label}</span>
               <AnimatePresence mode="popLayout" initial={false}>
                 <motion.span
                   key={r.value}
@@ -979,7 +979,7 @@ function Titration({
                   style={{
                     fontSize: '1.15rem',
                     fontWeight: 560,
-                    color: past ? hue : 'var(--clss-ink-900)',
+                    color: past ? hue : 'var(--wobo-ink-900)',
                     fontVariantNumeric: 'tabular-nums',
                   }}
                 >
@@ -995,7 +995,7 @@ function Titration({
             ...lead,
             borderLeft: `2px solid ${hue}`,
             paddingLeft: 14,
-            color: 'var(--clss-ink-900)',
+            color: 'var(--wobo-ink-900)',
           }}
         >
           {past
@@ -1103,8 +1103,8 @@ function Structure({ spec, hue }: { spec: ChemStructureSpec; hue: string }) {
                 style={{ maxWidth: '100%' }}
               />
             ) : failed ? (
-              <div style={{ textAlign: 'center', color: 'var(--clss-ink-700)' }}>
-                <div style={{ fontSize: '1.1rem', fontWeight: 560, color: 'var(--clss-ink-900)' }}>
+              <div style={{ textAlign: 'center', color: 'var(--wobo-ink-700)' }}>
+                <div style={{ fontSize: '1.1rem', fontWeight: 560, color: 'var(--wobo-ink-900)' }}>
                   {spec.label ?? 'molecule'}
                 </div>
                 <div style={{ ...whisper, marginTop: 6 }}>SMILES · {spec.smiles}</div>
@@ -1192,12 +1192,12 @@ function Molecule3D({ spec, hue }: { spec: ChemMolecule3DSpec; hue: string }) {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: 'var(--clss-ink-700)',
+                  color: 'var(--wobo-ink-700)',
                 }}
               >
                 <div style={{ textAlign: 'center' }}>
                   <div
-                    style={{ fontSize: '1.1rem', fontWeight: 560, color: 'var(--clss-ink-900)' }}
+                    style={{ fontSize: '1.1rem', fontWeight: 560, color: 'var(--wobo-ink-900)' }}
                   >
                     {spec.label ?? 'molecule'}
                   </div>

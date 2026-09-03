@@ -8,7 +8,7 @@
  * appears only where mastery is real: ignited sigils and the earned stretch of each filament.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import {
@@ -53,7 +53,7 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
   const [hover, setHover] = useState(false);
   const [bridge, setBridge] = useState<'idle' | 'composing' | BridgePlan>('idle');
   const p = completed.has(topic.id) ? 1 : (topicProgress[topic.id] ?? 0);
-  const fillTint = p >= 0.7 ? 'var(--clss-feedback-correctSoft)' : 'rgba(178,106,0,0.12)';
+  const fillTint = p >= 0.7 ? 'var(--wobo-feedback-correctSoft)' : 'rgba(178,106,0,0.12)';
 
   const mastered = completed.has(topic.id);
   const unmet = mastered ? [] : unmetPrereqs(topic, completed);
@@ -85,10 +85,10 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
       return;
     }
     if (downloading) return; // already on its way — the row shows where it stands in line
-    enqueueDownload(topic.id, topic.name); // first tap (or after a slip) → she starts composing
+    enqueueDownload(topic.id, topic.name); // first tap (or after a slip) → Wobo starts composing
   };
 
-  // bridge me there: she composes a lesson that travels only over mastered ground
+  // bridge me there: Wobo composes a lesson that travels only over mastered ground
   const requestBridge = async () => {
     setBridge('composing');
     sdk.events.record('create.request.submitted.v1', {
@@ -117,11 +117,11 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
             p > 0
               ? `linear-gradient(90deg, ${fillTint} ${p * 100}%, transparent ${p * 100}%)`
               : hover
-                ? 'var(--clss-ink-100)'
+                ? 'var(--wobo-ink-100)'
                 : 'transparent',
           border: hover
-            ? '0.5px solid var(--clss-ink-300)'
-            : '0.5px solid var(--clss-hairline-on-paper)',
+            ? '0.5px solid var(--wobo-ink-300)'
+            : '0.5px solid var(--wobo-hairline-on-paper)',
           borderRadius: 3,
           padding: '12px 12px',
           cursor: 'pointer',
@@ -147,15 +147,15 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
           <TopicSigil id={topic.id} size={36} mastered={mastered} hue={hueForTopic(topic.id)} />
         </span>
         <span style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, flex: 1 }}>
-          <span style={{ fontSize: '0.98rem', fontWeight: 550, color: 'var(--clss-ink-900)' }}>
+          <span style={{ fontSize: '0.98rem', fontWeight: 550, color: 'var(--wobo-ink-900)' }}>
             {topic.name}
           </span>
-          <span style={{ fontSize: '0.82rem', color: 'var(--clss-ink-500)', lineHeight: 1.5 }}>
+          <span style={{ fontSize: '0.82rem', color: 'var(--wobo-ink-500)', lineHeight: 1.5 }}>
             {mastered
               ? 'you own this — walk it again anytime, just for the joy of it'
               : downloading
                 ? position > 1
-                  ? `${position - 1} ahead in line — she composes one at a time`
+                  ? `${position - 1} ahead in line — Wobo composes one at a time`
                   : 'wobo is composing this for you — it will land on its own'
                 : ready
                   ? 'ready when you are — tap to dive in'
@@ -232,11 +232,11 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
           <span
             style={{
               flexShrink: 0,
-              border: '0.5px solid var(--clss-hairline-on-paper-strong)',
+              border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
               borderRadius: 3,
               padding: '4px 10px',
               fontSize: '0.75rem',
-              color: 'var(--clss-ink-500)',
+              color: 'var(--wobo-ink-500)',
               whiteSpace: 'nowrap',
             }}
           >
@@ -251,7 +251,7 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
               gap: 7,
               fontSize: '0.75rem',
               fontWeight: 600,
-              color: 'var(--clss-ink-500)',
+              color: 'var(--wobo-ink-500)',
               whiteSpace: 'nowrap',
             }}
           >
@@ -285,17 +285,17 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
             <ChevronIcon size={13} />
           </span>
         ) : slipped ? (
-          <span style={{ flexShrink: 0, fontSize: '0.75rem', color: 'var(--clss-ink-500)' }}>
+          <span style={{ flexShrink: 0, fontSize: '0.75rem', color: 'var(--wobo-ink-500)' }}>
             retry
           </span>
         ) : (
-          <span style={{ flexShrink: 0, color: 'var(--clss-ink-300)' }}>
+          <span style={{ flexShrink: 0, color: 'var(--wobo-ink-300)' }}>
             <ChevronIcon size={14} />
           </span>
         )}
       </motion.button>
 
-      {/* she composes on the page — Composing-style skeleton lines while the learner stays here */}
+      {/* Wobo composes on the page — Composing-style skeleton lines while the learner stays here */}
       <AnimatePresence initial={false}>
         {downloading && (
           <motion.div
@@ -327,7 +327,7 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
                   style={{
                     height: 9,
                     width: w,
-                    background: 'var(--clss-tonal)',
+                    background: 'var(--wobo-tonal)',
                     borderRadius: 3,
                   }}
                 />
@@ -351,14 +351,14 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
               style={{
                 margin: '2px 4px 12px',
                 padding: '14px 16px',
-                border: '0.5px solid var(--clss-hairline-on-paper)',
+                border: '0.5px solid var(--wobo-hairline-on-paper)',
                 borderRadius: 3,
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 12,
               }}
             >
-              <span style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', lineHeight: 1.55 }}>
+              <span style={{ fontSize: '0.88rem', color: 'var(--wobo-ink-700)', lineHeight: 1.55 }}>
                 this builds on {unmetNames} — take those first, or proceed anyway
               </span>
               {bridge === 'idle' && (
@@ -382,8 +382,8 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
                 </span>
               )}
               {bridge === 'composing' && (
-                <span style={{ fontSize: '0.85rem', color: 'var(--clss-ink-500)' }}>
-                  she is composing your bridge — only over ground you already own
+                <span style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)' }}>
+                  Wobo is composing your bridge — only over ground you already own
                 </span>
               )}
               {typeof bridge === 'object' && (
@@ -393,7 +393,7 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
                   transition={{ duration: 0.35, ease: [0.2, 0, 0, 1] }}
                   style={{ display: 'flex', flexDirection: 'column', gap: 10 }}
                 >
-                  <span style={{ fontSize: '0.78rem', color: 'var(--clss-ink-500)' }}>
+                  <span style={{ fontSize: '0.78rem', color: 'var(--wobo-ink-500)' }}>
                     {bridge.seeded
                       ? 'the bridge, honestly outlined — every stone is already yours'
                       : 'the bridge, composed and checked'}
@@ -404,14 +404,14 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
                         key={step}
                         style={{
                           fontSize: '0.88rem',
-                          color: 'var(--clss-ink-900)',
+                          color: 'var(--wobo-ink-900)',
                           lineHeight: 1.5,
                         }}
                       >
                         <span
                           style={{
                             fontVariantNumeric: 'tabular-nums',
-                            color: 'var(--clss-ink-300)',
+                            color: 'var(--wobo-ink-300)',
                             marginRight: 8,
                           }}
                         >
@@ -445,7 +445,7 @@ function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone:
 function Filament({ done, total, hue }: { done: number; total: number; hue: string }) {
   // composed-on-open chapters have no stops yet — a single faint endowed thread stands in
   if (total <= 0) {
-    return <div style={{ height: 2, background: 'var(--clss-hairline-on-paper)' }} />;
+    return <div style={{ height: 2, background: 'var(--wobo-hairline-on-paper)' }} />;
   }
   const lit = Math.min(done, total);
   const frontier = lit - 1; // index of the last-lit stop (−1 when nothing is done)
@@ -461,7 +461,7 @@ function Filament({ done, total, hue }: { done: number; total: number; hue: stri
           right: 3,
           top: '50%',
           height: 1.5,
-          background: 'var(--clss-hairline-on-paper)',
+          background: 'var(--wobo-hairline-on-paper)',
           transform: 'translateY(-50%)',
         }}
       />
@@ -528,8 +528,8 @@ function Filament({ done, total, hue }: { done: number; total: number; hue: stri
                   width: on ? 7 : 5,
                   height: on ? 7 : 5,
                   borderRadius: 999,
-                  background: on ? hue : 'var(--clss-paper)',
-                  border: on ? 'none' : '0.5px solid var(--clss-hairline-on-paper-strong)',
+                  background: on ? hue : 'var(--wobo-paper)',
+                  border: on ? 'none' : '0.5px solid var(--wobo-hairline-on-paper-strong)',
                 }}
               />
             </span>
@@ -556,7 +556,7 @@ function ChapterRow({
   const { completed } = useProgress();
   const total = chapter.topics.length;
   const done = chapter.topics.filter((t) => completed.has(t.id)).length;
-  // Each chapter is its own target: she opens one on request, points at the one they mean, and
+  // Each chapter is its own target: Wobo opens one on request, points at the one they mean, and
   // anchors ink to the row rather than to the list it happens to be in.
   const rowRef = useRegisterTarget<HTMLDivElement>(`chapter-${chapter.id}`, {
     kind: 'chapter',
@@ -570,7 +570,7 @@ function ChapterRow({
   });
 
   return (
-    <div ref={rowRef} style={{ borderBottom: '0.5px solid var(--clss-hairline-on-paper)' }}>
+    <div ref={rowRef} style={{ borderBottom: '0.5px solid var(--wobo-hairline-on-paper)' }}>
       <button
         type="button"
         onClick={onToggle}
@@ -632,7 +632,7 @@ function ChapterRow({
             gap: 7,
           }}
         >
-          <span style={{ fontSize: '1.05rem', fontWeight: 550, color: 'var(--clss-ink-900)' }}>
+          <span style={{ fontSize: '1.05rem', fontWeight: 550, color: 'var(--wobo-ink-900)' }}>
             {chapter.name}
           </span>
           {/* the chapter's own filigree — generative, derived from its id */}
@@ -642,7 +642,7 @@ function ChapterRow({
           <span
             style={{
               fontSize: '0.78rem',
-              color: 'var(--clss-ink-500)',
+              color: 'var(--wobo-ink-500)',
               fontVariantNumeric: 'tabular-nums',
               flexShrink: 0,
             }}
@@ -653,7 +653,7 @@ function ChapterRow({
         <motion.span
           animate={{ rotate: open ? 90 : 0 }}
           transition={{ type: 'spring', stiffness: 380, damping: 26 }}
-          style={{ color: 'var(--clss-ink-300)', flexShrink: 0 }}
+          style={{ color: 'var(--wobo-ink-300)', flexShrink: 0 }}
         >
           <ChevronIcon size={14} />
         </motion.span>
@@ -690,7 +690,7 @@ function ChapterRow({
                     variants={rise}
                     style={{
                       fontSize: '0.85rem',
-                      color: 'var(--clss-ink-500)',
+                      color: 'var(--wobo-ink-500)',
                       lineHeight: 1.55,
                       padding: '4px 4px 2px',
                     }}
@@ -719,11 +719,11 @@ function ChapterRow({
                     }}
                   >
                     <span
-                      style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--clss-ink-900)' }}
+                      style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--wobo-ink-900)' }}
                     >
                       compose
                     </span>
-                    <span style={{ color: 'var(--clss-ink-300)' }}>
+                    <span style={{ color: 'var(--wobo-ink-300)' }}>
                       <ChevronIcon size={14} />
                     </span>
                   </motion.button>
@@ -780,7 +780,7 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
   const listRef = useRegisterTarget<HTMLDivElement>('subject-chapters', {
     kind: 'list',
     label: `the ${group?.name ?? subjectId} chapter list — a tap expands a chapter into its topics`,
-    // She reads the actual chapters on the page — names, topic counts, which one is open — so she
+    // Wobo reads the actual chapters on the page — names, topic counts, which one is open — so Wobo
     // points at a real chapter instead of the whole list.
     getSceneState: () => ({
       subject: group?.name ?? subjectId,
@@ -856,12 +856,12 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
               fontWeight: 650,
               letterSpacing: '-0.03em',
               lineHeight: 1.12,
-              color: 'var(--clss-ink-900)',
+              color: 'var(--wobo-ink-900)',
             }}
           >
             {group?.name ?? subjectId}
           </h1>
-          <div style={{ marginTop: 7, fontSize: '0.92rem', color: 'var(--clss-ink-500)' }}>
+          <div style={{ marginTop: 7, fontSize: '0.92rem', color: 'var(--wobo-ink-500)' }}>
             {group?.line}
           </div>
           <div style={{ marginTop: 14, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -869,11 +869,11 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
               style={{
                 padding: '5px 11px',
                 borderRadius: 3,
-                background: 'var(--clss-card)',
-                border: '0.5px solid var(--clss-hairline-on-paper)',
+                background: 'var(--wobo-card)',
+                border: '0.5px solid var(--wobo-hairline-on-paper)',
                 fontSize: '0.75rem',
                 fontWeight: 550,
-                color: 'var(--clss-ink-500)',
+                color: 'var(--wobo-ink-500)',
               }}
             >
               {boardName(loadProfile().boardId)} · {loadProfile().grade}
@@ -882,7 +882,7 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
               style={{
                 padding: '5px 11px',
                 borderRadius: 3,
-                background: 'var(--clss-card)',
+                background: 'var(--wobo-card)',
                 fontSize: '0.75rem',
                 fontWeight: 600,
                 color: tone.hue,
@@ -910,7 +910,7 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
             alignItems: 'center',
             gap: 16,
             padding: '16px 18px',
-            background: 'var(--clss-card)',
+            background: 'var(--wobo-card)',
             border: `1px solid ${hueForTopic(inFlight.topic.id)}33`,
             borderRadius: 3,
             cursor: 'pointer',
@@ -936,7 +936,7 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
                 marginTop: 4,
                 fontSize: '1.02rem',
                 fontWeight: 600,
-                color: 'var(--clss-ink-900)',
+                color: 'var(--wobo-ink-900)',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -949,7 +949,7 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
                 marginTop: 8,
                 height: 3,
                 borderRadius: 2,
-                background: 'var(--clss-tonal)',
+                background: 'var(--wobo-tonal)',
                 overflow: 'hidden',
               }}
             >
@@ -967,8 +967,8 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
               flexShrink: 0,
               padding: '9px 16px',
               borderRadius: 3,
-              background: 'var(--clss-ink)',
-              color: 'var(--clss-on-ink)',
+              background: 'var(--wobo-ink)',
+              color: 'var(--wobo-on-ink)',
               fontSize: '0.84rem',
               fontWeight: 600,
             }}
@@ -995,7 +995,7 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
             fontWeight: 600,
             letterSpacing: '0.14em',
             textTransform: 'uppercase',
-            color: 'var(--clss-ink-300)',
+            color: 'var(--wobo-ink-300)',
           }}
         >
           {view === 'adventure' ? 'the adventure' : 'the chapters'}
@@ -1008,7 +1008,7 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
             gap: 4,
             padding: 3,
             borderRadius: 3,
-            background: 'var(--clss-tonal)',
+            background: 'var(--wobo-tonal)',
           }}
         >
           {(['list', 'adventure'] as const).map((v) => {
@@ -1024,13 +1024,13 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
                   padding: '6px 14px',
                   borderRadius: 3,
                   border: 'none',
-                  background: on ? 'var(--clss-card)' : 'transparent',
-                  color: on ? 'var(--clss-ink-900)' : 'var(--clss-ink-500)',
+                  background: on ? 'var(--wobo-card)' : 'transparent',
+                  color: on ? 'var(--wobo-ink-900)' : 'var(--wobo-ink-500)',
                   fontFamily: 'inherit',
                   fontSize: '0.8rem',
                   fontWeight: on ? 600 : 450,
                   cursor: 'pointer',
-                  boxShadow: on ? '0 0 0 0.5px var(--clss-hairline-on-paper-strong)' : 'none',
+                  boxShadow: on ? '0 0 0 0.5px var(--wobo-hairline-on-paper-strong)' : 'none',
                 }}
               >
                 {v === 'list' ? 'list' : 'roadmap'}
@@ -1091,7 +1091,7 @@ export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent
                   <span
                     style={{
                       fontSize: '0.78rem',
-                      color: 'var(--clss-ink-300)',
+                      color: 'var(--wobo-ink-300)',
                       fontVariantNumeric: 'tabular-nums',
                     }}
                   >

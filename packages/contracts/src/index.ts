@@ -1,5 +1,5 @@
 /**
- * @classess/contracts — the event contract (highest-stakes seam).
+ * @wobo/contracts — the event contract (highest-stakes seam).
  *
  * TS is the source of truth. The Python services consume the mirrored JSON Schema bundle
  * emitted by `bun run codegen`. Immutable from commit 1: additive changes only.

@@ -4,7 +4,7 @@
  * classify it deterministically by keyword so the whole seam works keyless.
  *
  * Keep the keyword rules in sync with classify_intent in
- * services/gateway/src/classess_gateway/wobo.py (the server twin).
+ * services/gateway/src/wobo_gateway/wobo.py (the server twin).
  */
 
 import { CAPABILITY_IDS } from '../capabilities';
@@ -82,7 +82,7 @@ export function classifyLocal(text: string, nodeName?: string): LocalClassificat
     }
   }
 
-  // action — she does something in the product, through the governed registry
+  // action — Wobo does something in the product, through the governed registry
   if (t.includes('parent') && /\b(note|update|digest|tell|message)\b/.test(t)) {
     return {
       path: 'action',
@@ -155,7 +155,7 @@ export function classifyLocal(text: string, nodeName?: string): LocalClassificat
     }
   }
 
-  // create — real artifacts she MAKES in the thread (family C). These sit on the component path.
+  // create — real artifacts Wobo MAKES in the thread (family C). These sit on the component path.
   // Each grabs its own subject from the tail after the trigger, since it may not use on/of/for/about.
   const grab = (re: RegExp): string => {
     const m = t.match(re);
@@ -335,13 +335,13 @@ const esc = (s: string) =>
 /**
  * The honest client-side drawing when the gateway sent no SVG. It is ink on paper, so it is drawn
  * in the theme's own colours: `currentColor` for every stroke and label (the card sets `color` from
- * the ink token) and `var(--clss-paper)` for the fills that must knock out the background. Hard
+ * the ink token) and `var(--wobo-paper)` for the fills that must knock out the background. Hard
  * `#111` on `#fff` disappeared into a dark page.
  */
 export function seedVizSvg(kind: VizKind, concept: string): string {
   const label = esc(concept.length <= 38 ? concept : `${concept.slice(0, 37)}…`);
   // var() is not honoured in a presentation attribute — the knockout fill rides an inline style.
-  const paper = 'style="fill:var(--clss-paper)"';
+  const paper = 'style="fill:var(--wobo-paper)"';
   if (kind === 'chart') {
     const bars = [46, 74, 58, 92]
       .map(

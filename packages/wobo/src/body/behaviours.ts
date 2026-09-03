@@ -1,5 +1,5 @@
 /**
- * Her fifteen behaviours — the body half of the rig. A behaviour is a short set of keyframe tracks
+ * Wobo's fifteen behaviours — the body half of the rig. A behaviour is a short set of keyframe tracks
  * over normalised time, sampled with a cosine ease so nothing snaps. Pure, so the tracks and the
  * sampler are testable without a browser.
  *
@@ -17,7 +17,7 @@ export interface BehaviourSpec {
   dy?: readonly number[];
   /** Duration in ms. */
   dur: number;
-  /** Hold the last frame instead of releasing back to the pose (shrink parks her). */
+  /** Hold the last frame instead of releasing back to the pose (shrink parks Wobo). */
   hold?: boolean;
   /** The pen is out for the length of the behaviour. */
   pen?: boolean;

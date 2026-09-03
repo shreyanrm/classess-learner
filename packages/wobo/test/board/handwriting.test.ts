@@ -130,7 +130,7 @@ describe('writing a phrase', () => {
   });
 });
 
-describe('symbols Caveat does not carry, she draws', () => {
+describe('symbols Caveat does not carry, Wobo draws', () => {
   it('knows which ones they are', () => {
     expect(isDrawnSymbol('π')).toBe(true);
     expect(isDrawnSymbol('a')).toBe(false);
@@ -165,7 +165,7 @@ describe('tex, the school subset, written by hand', () => {
     expect(laid.glyphs.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('maps Greek and relations through to her hand', () => {
+  it("maps Greek and relations through to Wobo's hand", () => {
     const laid = layoutTex(font, '\\theta \\le \\pi', [0, 0], 40);
     expect(laid.glyphs.filter((g) => g.drawn).length).toBeGreaterThanOrEqual(2);
   });
@@ -242,7 +242,7 @@ describe('a glyph Caveat does not carry is still written', () => {
     expect(advance).toBeGreaterThan(0);
   });
 
-  it('every symbol the TeX subset maps to is one she can draw', () => {
+  it('every symbol the TeX subset maps to is one Wobo can draw', () => {
     for (const ch of HAND_SYMBOLS) expect(isDrawnSymbol(ch)).toBe(true);
     for (const ch of VOCABULARY) expect(HAND_SYMBOLS).toContain(ch);
   });
@@ -285,7 +285,7 @@ describe('powers and indices in a plain written line', () => {
     expect(texPlainText('\\theta \\le 90\\degree')).toBe('θ ≤ 90°');
   });
 
-  it('writes them in her own hand when the font is there', () => {
+  it("writes them in Wobo's own hand when the font is there", () => {
     const laid = writeScripted(font, 'a^2 + b^2 = c^2', [0, 0], 40);
     expect(laid.glyphs.length).toBeGreaterThan(6);
     const tops = laid.glyphs.map((g) => g.box.y);

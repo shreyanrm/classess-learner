@@ -6,7 +6,7 @@
  * as the board fills, and the history can be scrubbed and the whole thing shared as an image.
  */
 
-import { hairline, radius } from '@classess/config';
+import { hairline, radius } from '@wobo/config';
 import { useCallback, useRef, useState } from 'react';
 import { boardFileName, exportBoardPng } from './export';
 import { BoardSurface, type BoardSurfaceProps } from './renderer';
@@ -56,13 +56,13 @@ export function WoboFullBoard(props: WoboFullBoardProps) {
   const span = Math.max(1, timeline.range.to - timeline.range.from);
 
   return (
-    <div style={{ inset: 0, position: 'absolute', background: 'var(--clss-page, #FFFFFF)' }}>
+    <div style={{ inset: 0, position: 'absolute', background: 'var(--wobo-page, #FFFFFF)' }}>
       <BoardSurface
         store={store}
         svgRef={svgRef}
         capture={capture}
         autoCamera
-        label={props.title ? `her board: ${props.title}` : 'her board'}
+        label={props.title ? `Wobo's board: ${props.title}` : "Wobo's board"}
         {...(props.targets ? { targets: props.targets } : {})}
         {...(props.focusRegions ? { focusRegions: props.focusRegions } : {})}
         {...(props.onLearnerFocus ? { onLearnerFocus: props.onLearnerFocus } : {})}
@@ -91,7 +91,7 @@ export function WoboFullBoard(props: WoboFullBoardProps) {
             step={Math.max(1, span / 400)}
             value={timeline.at}
             onChange={(e) => timeline.seek(Number(e.target.value))}
-            style={{ accentColor: 'var(--clss-ultramarine, #1F35E0)', flex: '1 1 auto' }}
+            style={{ accentColor: 'var(--wobo-ultramarine, #1F35E0)', flex: '1 1 auto' }}
           />
           <button
             type="button"
@@ -102,7 +102,7 @@ export function WoboFullBoard(props: WoboFullBoardProps) {
               background: 'transparent',
               border: `0.5px solid ${hairline.onPaper}`,
               borderRadius: radius.sm,
-              color: 'var(--clss-ink-500, #6E6E76)',
+              color: 'var(--wobo-ink-500, #6E6E76)',
               cursor: 'pointer',
               font: 'inherit',
               fontSize: 12,
@@ -121,7 +121,7 @@ export function WoboFullBoard(props: WoboFullBoardProps) {
               background: 'transparent',
               border: `0.5px solid ${hairline.onPaper}`,
               borderRadius: radius.sm,
-              color: 'var(--clss-ink-500, #6E6E76)',
+              color: 'var(--wobo-ink-500, #6E6E76)',
               cursor: busy ? 'progress' : 'pointer',
               font: 'inherit',
               fontSize: 12,

@@ -10,7 +10,7 @@
  * event log) and hands them here, so the whole digest is testable without a DOM or a network.
  */
 
-import type { MachineRoomContext } from '@classess/wobo';
+import type { MachineRoomContext } from '@wobo/wobo';
 import { levelInfo } from './progress';
 
 /** The event fields the machine room reads — a structural subset of the backbone envelope. */

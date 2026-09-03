@@ -8,7 +8,7 @@ enforce, frame by frame.
 The bar was set by a reference titration film (see `vidref-1/2/3.png`): a Class-10 chemistry piece,
 ink line-work on warm paper, a single ochre hue carrying the reagent and the data, a high-contrast
 serif narrating over instrument-style mono labels, one idea per beat, and a pH-curve "cliff" as the
-reveal. **Inspiration, never replication** (standing law): we take its principles into the Classess
+reveal. **Inspiration, never replication** (standing law): we take its principles into the Wobo
 language — pure white paper, our ink scale, our subject hues, Fraunces + JetBrains Mono — never its
 cream-and-ochre skin.
 
@@ -54,7 +54,7 @@ Total distinct things ≤ **7**. Over budget → split into two scenes or cut.
 
 ## 4. Colour — our tokens, one hit per view
 
-White paper is the ground (`#FFFFFF` / `--clss-paper`). Line-work is ink: `#0D0D10` primary strokes,
+White paper is the ground (`#FFFFFF` / `--wobo-paper`). Line-work is ink: `#0D0D10` primary strokes,
 `#6E6E76` (ink-500) for secondary lines, labels, and axes. Hairlines `rgba(13,13,16,0.10)`.
 
 **Exactly one subject hue** carries the *meaningful moving quantity* and its label — nothing else is

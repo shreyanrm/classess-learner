@@ -4,13 +4,13 @@
  * The conductor of a board turn (docs/BOARD.md §4, §5) — the one place the stream, the voice, the
  * surface choice and the interrupt meet.
  *
- * It opens the streamed turn, decides on the first object which surface she is drawing on, keeps the
+ * It opens the streamed turn, decides on the first object which surface Wobo is drawing on, keeps the
  * pen and the voice on one clock, and stops both together the instant the learner interrupts. It
  * never holds a key, a model id, or a limit: it sends a context packet through the one door and
  * renders whatever comes back through the grammar, refusing anything the schema does not recognise.
  */
 
-import { BudgetExhaustedError, SignInRequiredError } from '@classess/sdk';
+import { BudgetExhaustedError, SignInRequiredError } from '@wobo/sdk';
 import {
   type BoardEvent,
   BoardStore,
@@ -21,7 +21,7 @@ import {
   plane,
   type Rect,
   surfaceRegistry,
-} from '@classess/wobo';
+} from '@wobo/wobo';
 import { type BoardContext, type BoardDone, streamBoardTurn } from './board-stream';
 import { isLessonRoute, type Presentation, PresentationChoice } from './presentation';
 import { startUtterance, stopSpeaking, type Utterance } from './speech';
@@ -34,13 +34,13 @@ export const lessonStore = new BoardStore({ presentation: 'full' });
 export interface BoardTurnState {
   /** True while a plan is streaming or the pen is still drawing it. */
   active: boolean;
-  /** Where she is drawing right now. */
+  /** Where Wobo is drawing right now. */
   presentation: Presentation;
-  /** The plane board she is on, when the plane is the surface. */
+  /** The plane board Wobo is on, when the plane is the surface. */
   boardId: string | null;
-  /** What she asked at the end of the turn, if anything. */
+  /** What Wobo asked at the end of the turn, if anything. */
   ask: { prompt: string; targets: string[] } | null;
-  /** The object the pen stopped on when the learner cut her off. */
+  /** The object the pen stopped on when the learner cut Wobo off. */
   interruptedAt: string | null;
   /** The checks the brain reports it passed before drawing — QA and the inspector read these. */
   verified: string[];
@@ -65,22 +65,22 @@ export interface RunBoardTurn {
   route: string;
   /** The learner's word: "board", "here", "the full board". */
   override?: Presentation | null;
-  /** Where the plane slides from — her orb. */
+  /** Where the plane slides from — Wobo's orb. */
   origin?: { x: number; y: number };
   /** The lesson or topic the board belongs to; it names the export and the save. */
   title?: string;
-  /** Her spoken line, handed back so the transcript carries what she said. */
+  /** Wobo's spoken line, handed back so the transcript carries what Wobo said. */
   onSay?: (text: string) => void;
   /** An action frame — the caller runs it through the permission ladder. */
   onAction?: (action: unknown) => void;
   /** A component or visualisation the ordinary turn would have attached. */
   onCard?: (card: unknown) => void;
-  /** She asked the learner something and is waiting for them. */
+  /** Wobo asked the learner something and is waiting for them. */
   onAsk?: (prompt: string, targets: string[]) => void;
 }
 
 export interface BoardTurnOutcome {
-  /** Everything she said, in order — one line for the transcript. */
+  /** Everything Wobo said, in order — one line for the transcript. */
   said: string;
   /** True when `done` landed; false when the learner or the network cut it short. */
   completed: boolean;
@@ -103,7 +103,7 @@ class BoardConductor {
   private choice = new PresentationChoice();
   /** The BOARD surface's store. Screen-anchored marks always go to `screenStore` instead. */
   private store: BoardStore = screenStore;
-  /** The instant the voice zeroed the clock, so a promoted board keeps her timing. */
+  /** The instant the voice zeroed the clock, so a promoted board keeps Wobo's timing. */
   private utteranceAt: number | null = null;
   private lastEventId: string | undefined;
 
@@ -123,7 +123,7 @@ class BoardConductor {
     return this.store;
   }
 
-  /** The board she is on, for "save to notes" and "share". */
+  /** The board Wobo is on, for "save to notes" and "share". */
   boardStore(): BoardStore {
     if (this.state.presentation === 'full') return lessonStore;
     if (this.state.presentation === 'plane' && this.state.boardId) {
@@ -132,7 +132,7 @@ class BoardConductor {
     return screenStore;
   }
 
-  /** The context the next turn carries about the board: what is on it, and where she was cut off. */
+  /** The context the next turn carries about the board: what is on it, and where Wobo was cut off. */
   boardContext(route: string, override?: Presentation | null): BoardContext {
     const drawn = this.boardStore()
       .snapshot()
@@ -146,8 +146,8 @@ class BoardConductor {
   }
 
   /**
-   * The learner cut her off (a tap, a key, a word). The pen lifts where it is and the voice stops
-   * on the same beat; what is already drawn stays, and the brain is told which object she was on.
+   * The learner cut Wobo off (a tap, a key, a word). The pen lifts where it is and the voice stops
+   * on the same beat; what is already drawn stays, and the brain is told which object Wobo was on.
    */
   interrupt(): string | null {
     if (!this.state.active && !this.utterance) return this.state.interruptedAt;
@@ -200,7 +200,7 @@ class BoardConductor {
   }
 
   /**
-   * The surface changed under a running plan: bring what is already drawn with her. The objects are
+   * The surface changed under a running plan: bring what is already drawn with Wobo. The objects are
    * semantic, so moving them is exact — nothing is re-rendered from pixels.
    */
   private promote(to: Presentation, origin?: { x: number; y: number }, title?: string): void {
@@ -230,7 +230,7 @@ class BoardConductor {
   }
 
   /**
-   * Run one board turn. Resolves when the stream closes, the plan is drawn, or the learner cuts her
+   * Run one board turn. Resolves when the stream closes, the plan is drawn, or the learner cuts Wobo
    * off — whichever comes first.
    */
   async run(options: RunBoardTurn): Promise<BoardTurnOutcome> {
@@ -240,10 +240,10 @@ class BoardConductor {
     this.controller = controller;
     const said: string[] = [];
     // speech.tsx owns the utterance clock: it zeroes the board the moment the performance opens, so
-    // every `t.start` in the plan is measured from her first breath, and the pen leads the voice by
-    // exactly the time her first syllable takes to arrive — a hand's anticipation, not a lag.
+    // every `t.start` in the plan is measured from Wobo first breath, and the pen leads the voice by
+    // exactly the time Wobo first syllable takes to arrive — a hand's anticipation, not a lag.
     const utterance = startUtterance(() => ({
-      // Both surfaces are on one clock: every `t.start` in the plan is measured from her first
+      // Both surfaces are on one clock: every `t.start` in the plan is measured from Wobo first
       // breath whether the ink lands on the screen or on the board.
       beginUtterance: (at?: number) => {
         const zero = at ?? this.store.time();
@@ -273,7 +273,7 @@ class BoardConductor {
       onAction: (action: unknown) => options.onAction?.(action),
       onAsk: (prompt: string, targets: string[]) => {
         this.store.applyEvent({ type: 'ask', prompt, targets, t: 0 } as BoardEvent);
-        // An `ask` pauses the performance and waits for the learner — so she has to actually
+        // An `ask` pauses the performance and waits for the learner — so Wobo has to actually
         // ask it out loud, on the same voice as the rest of the turn.
         utterance.say(prompt);
         options.onAsk?.(prompt, targets);
@@ -360,7 +360,7 @@ class BoardConductor {
     });
   }
 
-  /** Everything she has drawn, cleared — "wipe the board". */
+  /** Everything Wobo has drawn, cleared — "wipe the board". */
   wipe(): void {
     this.boardStore().reset();
   }
@@ -374,10 +374,10 @@ class BoardConductor {
 export const boardTurn = new BoardConductor();
 
 /**
- * The learner cut her off. `AbortController.abort()` rejects the in-flight fetch with an
+ * The learner cut Wobo off. `AbortController.abort()` rejects the in-flight fetch with an
  * `AbortError`, and BOARD.md §4 is clear that nothing about a barge-in is a failure: the pen lifts,
  * the voice stops, what is drawn stays. Reading it as an error appended "Give me a moment, then ask
- * me again." to her own half-finished sentence.
+ * me again." to Wobo's own half-finished sentence.
  */
 export function isAbort(err: unknown): boolean {
   if (err instanceof DOMException) return err.name === 'AbortError';

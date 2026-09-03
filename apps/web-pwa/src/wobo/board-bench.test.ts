@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { isDrawable, parseBoardObject } from '@classess/wobo';
+import { isDrawable, parseBoardObject } from '@wobo/wobo';
 import { GOLDEN_PYTHAGORAS, PYTHAGORAS_PLAN } from './board-bench';
 
 /**

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { type BoardObject, parseBoardObject } from '@classess/wobo';
+import { type BoardObject, parseBoardObject } from '@wobo/wobo';
 import {
   boardShapeOf,
   isLessonRoute,
@@ -52,7 +52,7 @@ describe('what belongs on a board of its own', () => {
   });
 });
 
-describe('her rule for the surface', () => {
+describe("Wobo's rule for the surface", () => {
   it('keeps a pointer or one line on the screen', () => {
     const choice = new PresentationChoice();
     expect(choice.offer(pointer('v1'))).toBe('screen');
@@ -119,7 +119,7 @@ describe('her rule for the surface', () => {
   });
 
   it('but a lesson never covers the thing a mark is about', () => {
-    // She paused the film, the learner circled the frame and asked why. The ring belongs ON the
+    // Wobo paused the film, the learner circled the frame and asked why. The ring belongs ON the
     // frame; the full board would sit over the film it is explaining (BOARD.md §11).
     const circle = new PresentationChoice({ lesson: true });
     expect(circle.offer(circled('f1ring'))).toBe('screen');
@@ -132,7 +132,7 @@ describe('her rule for the surface', () => {
     expect(onTarget.current()).toBe('full');
   });
 
-  it("the learner's word wins over her rule, in both directions", () => {
+  it("the learner's word wins over Wobo's rule, in both directions", () => {
     const here = new PresentationChoice({ override: 'screen', lesson: true });
     expect(here.offer(axis())).toBe('screen');
     const board = new PresentationChoice({ override: 'plane' });
@@ -160,7 +160,7 @@ describe("the learner's word", () => {
   });
 });
 
-describe('which turns she answers by drawing', () => {
+describe('which turns Wobo answers by drawing', () => {
   it('draws when the answer has a shape', () => {
     expect(boardShapeOf('derive the quadratic formula').board).toBe(true);
     expect(boardShapeOf('graph y = 2x + 1').board).toBe(true);
@@ -182,7 +182,7 @@ describe('which turns she answers by drawing', () => {
     expect(boardShapeOf('how are you today').board).toBe(false);
   });
   it('draws for a bare question asked with a region in hand', () => {
-    // The learner circled a frame and said "why?". They have already told her what "this" is, and
+    // The learner circled a frame and said "why?". They have already told Wobo what "this" is, and
     // the answer is a mark on it — the video case in BOARD.md §5. Without a focus the same words
     // are just a question, and a paragraph is the honest answer.
     for (const line of ['why?', 'what is this', 'explain', "i don't get it", 'huh']) {

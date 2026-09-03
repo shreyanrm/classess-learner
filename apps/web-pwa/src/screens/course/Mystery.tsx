@@ -6,7 +6,7 @@
  * Every claim here is standard, verifiable mathematics — nothing decorative, nothing invented.
  */
 
-import { useRegisterTarget, useWoboBus } from '@classess/wobo';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Sage } from '../../ui/cast';
@@ -75,7 +75,7 @@ function DaySky() {
           cx={x}
           cy={y}
           r={i === 2 ? 4 : 2.4}
-          fill={i === 2 ? GOLD : 'var(--clss-ultramarine)'}
+          fill={i === 2 ? GOLD : 'var(--wobo-ultramarine)'}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.5 + i * 0.22 }}
@@ -108,8 +108,8 @@ export function MysteryTease({
         minHeight={300}
         style={{
           background:
-            'radial-gradient(70% 60% at 30% 20%, rgba(49,72,255,0.12), transparent 65%), linear-gradient(165deg, var(--clss-card) 0%, #F3F4FC 55%, #EDEFFA 100%)',
-          border: '1px solid var(--clss-card-border)',
+            'radial-gradient(70% 60% at 30% 20%, rgba(49,72,255,0.12), transparent 65%), linear-gradient(165deg, var(--wobo-card) 0%, #F3F4FC 55%, #EDEFFA 100%)',
+          border: '1px solid var(--wobo-card-border)',
           justifyContent: 'flex-end',
           padding: '0 0 26px',
         }}
@@ -194,7 +194,7 @@ function ThrowToy() {
           gap: 10,
           fontSize: '1.15rem',
           fontWeight: 550,
-          color: 'var(--clss-ink-900)',
+          color: 'var(--wobo-ink-900)',
         }}
       >
         <span style={{ ...whisper, fontWeight: 500 }}>Drag the throw</span>
@@ -212,7 +212,7 @@ function ThrowToy() {
           y1={y}
           x2={x0 + 9 * spacing}
           y2={y}
-          stroke="var(--clss-ink-100)"
+          stroke="var(--wobo-ink-100)"
           strokeWidth={1}
         />
         {Array.from({ length: 10 }, (_, i) => (
@@ -222,8 +222,8 @@ function ThrowToy() {
             cx={x0 + i * spacing}
             cy={y}
             r={i === 0 || i === n ? 5 : 3}
-            fill={i === 0 || i === n ? 'var(--clss-ink-900)' : 'var(--clss-paper)'}
-            stroke={i <= n ? 'var(--clss-ink-900)' : 'var(--clss-ink-300)'}
+            fill={i === 0 || i === n ? 'var(--wobo-ink-900)' : 'var(--wobo-paper)'}
+            stroke={i <= n ? 'var(--wobo-ink-900)' : 'var(--wobo-ink-300)'}
             strokeWidth={1}
           />
         ))}
@@ -233,12 +233,12 @@ function ThrowToy() {
           transition={{ type: 'spring', stiffness: 220, damping: 26 }}
           d={d}
           fill="none"
-          stroke="var(--clss-ink-900)"
+          stroke="var(--wobo-ink-900)"
           strokeWidth={1.5}
           strokeDasharray="4 4"
         />
       </svg>
-      <div style={{ fontSize: '0.88rem', color: 'var(--clss-ink-700)', paddingBottom: 8 }}>
+      <div style={{ fontSize: '0.88rem', color: 'var(--wobo-ink-700)', paddingBottom: 8 }}>
         thrown on beat 0, it lands on beat {n} — jugglers simply call this throw “a {n}”.
       </div>
     </div>

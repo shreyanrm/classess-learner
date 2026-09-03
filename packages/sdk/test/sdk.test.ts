@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { ATOM_NODE_IDS } from '@classess/kgtopg-contract-seed';
+import { ATOM_NODE_IDS } from '@wobo/kgtopg-contract-seed';
 import { AuthNotEnabledError, ConsentDeniedError, createSdk, DevMockIdentity } from '../src/index';
 
 describe('identity boundary', () => {
