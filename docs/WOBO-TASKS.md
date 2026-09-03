@@ -493,6 +493,7 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 - [ ] **Owner approval** — two or three screens shown before rollout
 
 ### 7.6 Board-native content and evaluation
+- [ ] **Visual-by-default gate** — every lesson beat, practice item, hint and boss step carries at least one drawn object (board grammar) or an interactive; a text-only beat fails the golden-board suite; copy is captions, never lessons; Brilliant is the floor for craft
 - [ ] **Courses** — the course player as a full board; cards as regions; beats as board moments
 - [ ] **Practice runs** — questions asked on the board; working graded, not only the answer
 - [ ] **Mini-workbooks, flashcards, derivations, word problems** — as board idioms

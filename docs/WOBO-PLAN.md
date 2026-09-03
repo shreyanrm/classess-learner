@@ -92,6 +92,8 @@ Replaces the static catalog file and the fragile "frame" system.
 
 ## 5. Content and evaluation, board-native
 
+**Visual by default (owner law, 2026-09-03).** Pretty much everything is visual. Brilliant.org is the bar and ours is higher: their visuals are authored once for everyone; ours are drawn live, for this learner, on their own syllabus, and they can be circled, dragged and asked about. Every explanation is a board drawing, a simulation, a diagram, a graph, a construction, an animation, or an interactive; text is the caption of a visual, never the lesson. A lesson beat with no visual object is a defect, and the golden-board suite asserts that every beat carries at least one drawn object. Where a visual would not help (a definition, a name), it stays one short line beside the thing it names, never a paragraph.
+
 Courses, practice runs, mini-workbooks, flashcards, boss battles, the daily thread, XP, the knowledge twin all stay. Each becomes board-native: a quiz is Wobo asking on the board and grading the working; a boss battle is a live problem she draws and you solve on the same surface; feedback is ink on the mistake.
 
 Evaluation upgrades: free-reasoning grading of text, voice, and handwriting; the assistance ladder that visibly fades; the "I think I'm right" re-grade; the calibration harness against human-graded sets; misconception detonation from the learner's own numbers. The audit's grading bugs are fixed in Wave 3.
