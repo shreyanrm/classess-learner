@@ -12,7 +12,7 @@
  * course — invisible to the learner, never an error (CONTEXT.md §6).
  */
 
-import type { Item as WireItem } from '@classess/contracts/plexus';
+import type { ImageSpec, Item as WireItem } from '@classess/contracts/plexus';
 import { useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -47,7 +47,12 @@ import {
 } from '../../engines/PerturbationSandbox';
 import { PhysicsScene, parsePhysicsScene } from '../../engines/PhysicsScene';
 import { PodcastPlayer, type PodcastSpec, parsePodcast } from '../../engines/PodcastPlayer';
-import { parseSimSpec, SimRunner, type SimSpec, simSpecFromGateway } from '../../engines/SimRunner';
+import {
+  parseSimSpec,
+  SimRunner,
+  type SimScene,
+  simSpecFromGateway,
+} from '../../engines/SimRunner';
 import { parseSocialScene, SocialScene, type SocialSceneSpec } from '../../engines/SocialScene';
 import { parseWhatIfSpec, WhatIfNumerical, type WhatIfSpec } from '../../engines/WhatIfNumerical';
 import {
@@ -142,7 +147,22 @@ function parseActivity(c: Record<string, unknown>): CardActivity | undefined {
   return undefined;
 }
 
-interface GenCard {
+/**
+ * The contract's ImageSpec with the optional caption narrowed off null — the client's shape.
+ * `_verify_image_spec` in the gateway is the authoritative gate; this re-validates it anyway,
+ * because a card is model output and the raster request is a spend.
+ */
+type RasterSpec = Omit<ImageSpec, 'caption'> & { caption?: string };
+
+function parseImageSpec(raw: unknown): RasterSpec | undefined {
+  if (!isRecord(raw)) return undefined;
+  const subject = typeof raw.subject === 'string' ? raw.subject.trim() : '';
+  if (!subject) return undefined;
+  const caption = typeof raw.caption === 'string' ? raw.caption.trim() : '';
+  return caption ? { subject, caption } : { subject };
+}
+
+export interface GenCard {
   id: string;
   kind: CardKind;
   title: string;
@@ -153,6 +173,14 @@ interface GenCard {
   discovery?: DiscoverySpec;
   /** When present, this card renders a physics-of-understanding engine (its own shell). */
   activity?: CardActivity;
+  /**
+   * When present, this card's visual is organic or complex — a plant cell, the human body — and
+   * SVG line art cannot express it. The diagram is hydrated through the gateway's raster seam
+   * (`engine.diagram` with `raster: true` → Nano Banana, sanitized server-side and again here)
+   * rather than the line-art SVG path. The gateway falls back to SVG if the image path refuses,
+   * so the card renders either way.
+   */
+  imageSpec?: RasterSpec;
 }
 
 /** The wire Item from the generated contract, with options narrowed to the client's parsed shape. */
@@ -195,7 +223,7 @@ function parseItems(raw: unknown): GenItem[] | null {
   return items.length >= 3 ? items.slice(0, 3) : null;
 }
 
-function parseGenCourse(raw: unknown, fallbackTitle: string): GenCourse | null {
+export function parseGenCourse(raw: unknown, fallbackTitle: string): GenCourse | null {
   if (!isRecord(raw)) return null;
   const src = isRecord(raw.artifact) ? raw.artifact : raw;
   if (raw.verified === false || src.verified === false) return null;
@@ -221,6 +249,7 @@ function parseGenCourse(raw: unknown, fallbackTitle: string): GenCourse | null {
       reveal,
       discovery: parseDiscoverySpec(c.discovery) ?? undefined,
       activity: parseActivity(c),
+      imageSpec: parseImageSpec(c.imageSpec),
     });
   });
   if (cards.length < 3) return null;
@@ -363,8 +392,37 @@ export function topicNodeUuid(topicId: string): string {
 type Artifact =
   | { status: 'pending' }
   | { status: 'failed' }
-  | { status: 'ready'; kind: 'sim'; spec: SimSpec }
+  | { status: 'ready'; kind: 'sim'; spec: SimScene }
   | { status: 'ready'; kind: 'diagram'; svg: string };
+
+/**
+ * The one place a card's engine request is built — every hydration routes through it.
+ *
+ * A card that declared an `imageSpec` wants the RASTER seam rather than line art: the gateway
+ * routes `engine.diagram` + `raster: true` through Nano Banana and wraps the result as an inline
+ * `<svg><image href="data:image/png;base64,…">`, which `sanitizeSvgElement` admits (raster data
+ * URIs are on its allowlist; `data:image/svg+xml` is not). If the image path has no key or
+ * refuses, the gateway falls through to the SVG path on its own, so the card renders either way.
+ * The subject the model named is a better prompt than the card title, so it becomes the concept.
+ */
+export function engineRequest(
+  card: GenCard,
+  topic: string,
+  courseId: string,
+): { capability: 'engine.simulate' | 'engine.diagram'; payload: Record<string, unknown> } {
+  const raster = card.kind === 'diagram' ? card.imageSpec : undefined;
+  return {
+    capability: card.kind === 'sim' ? 'engine.simulate' : 'engine.diagram',
+    payload: {
+      concept: raster ? `${topic}: ${raster.subject}` : `${topic}: ${card.title}`,
+      topic,
+      brief: card.idea,
+      course_id: courseId,
+      difficulty: 'core',
+      ...(raster ? { raster: true } : {}),
+    },
+  };
+}
 
 function useArtifact(card: GenCard, topic: string, courseId: string): Artifact {
   const sdk = useSdk();
@@ -374,18 +432,9 @@ function useArtifact(card: GenCard, topic: string, courseId: string): Artifact {
     if (card.kind === 'text') return;
     let cancelled = false;
     setArtifact({ status: 'pending' });
+    const { capability, payload } = engineRequest(card, topic, courseId);
     sdk.llm
-      .invoke(
-        card.kind === 'sim' ? 'engine.simulate' : 'engine.diagram',
-        {
-          concept: `${topic}: ${card.title}`,
-          topic,
-          brief: card.idea,
-          course_id: courseId,
-          difficulty: 'core',
-        },
-        { consentTier: 'un_elevated' },
-      )
+      .invoke(capability, payload, { consentTier: 'un_elevated' })
       .then((res) => {
         if (cancelled) return;
         const body =

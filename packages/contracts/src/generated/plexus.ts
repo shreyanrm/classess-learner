@@ -26,6 +26,13 @@ export interface Card {
   wordProblem?: { [key: string]: unknown } | null;
   podcast?: { [key: string]: unknown } | null;
   arcade?: { [key: string]: unknown } | null;
+  mathScene?: { [key: string]: unknown } | null;
+  physicsScene?: { [key: string]: unknown } | null;
+  chemScene?: { [key: string]: unknown } | null;
+  bioScene?: { [key: string]: unknown } | null;
+  socialScene?: { [key: string]: unknown } | null;
+  mapScene?: { [key: string]: unknown } | null;
+  anatomyScene?: { [key: string]: unknown } | null;
 }
 
 /** engine.compose output — the primary card-spec contract. */

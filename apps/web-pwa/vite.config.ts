@@ -66,11 +66,13 @@ export default defineConfig(({ mode }) => {
           skipWaiting: true,
           clientsClaim: true,
           cleanupOutdatedCaches: true,
-          // The entry chunk is ~2.1 MB raw (~640 KB gzipped: react + framer + mafs + the non-lazy
-          // engines). It loads on first visit regardless, so precaching it is the right PWA call —
-          // raise the ceiling above workbox's 2 MiB default. Three.js/3Dmol/RDKit already lazy-split.
-          // ponytail: if the entry ever needs to shrink, code-split mafs + the CS ramp behind React.lazy.
-          maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+          // Every screen but the two that can be a FIRST paint (onboarding, home) is behind
+          // React.lazy at App.tsx's single mount point, so each route is its own chunk and a
+          // learner downloads a screen when they walk to it. Three.js/3Dmol/RDKit were already
+          // lazy. The entry that remains is react + framer + the shell + Wobo's hand, which does
+          // load on first visit regardless — so precaching it is the right PWA call. The ceiling
+          // is a little above workbox's 2 MiB default, with room for the largest lazy chunk.
+          maximumFileSizeToCacheInBytes: 2.5 * 1024 * 1024,
           // RDKit's 6.9 MB wasm is lazy-loaded only when a chem structure card renders —
           // never precache it on every visit; cache it on first real use instead.
           globIgnores: ['**/RDKit_minimal*.wasm'],
@@ -90,7 +92,10 @@ export default defineConfig(({ mode }) => {
           start_url: '/',
           scope: '/',
           display: 'standalone',
-          theme_color: '#0A0A0B',
+          // The manifest cannot carry a media query, so it names the default (light) page colour —
+          // matching background_color and the light `theme-color` tag. A dark value here painted
+          // the installed PWA's title bar black above a white app.
+          theme_color: '#FFFFFF',
           background_color: '#FFFFFF',
           lang: 'en',
           categories: ['education'],

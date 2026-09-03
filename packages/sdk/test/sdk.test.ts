@@ -35,9 +35,10 @@ describe('identity boundary', () => {
     ).rejects.toBeInstanceOf(AuthNotEnabledError);
   });
 
-  it('refuses to construct with DEV_AUTH=false (real auth is Phase 4)', () => {
-    expect(() => createSdk({ devAuth: false })).toThrow();
-  });
+  // DEV_AUTH=false is no longer refused — real auth shipped. What it still requires is env-supplied
+  // keys, and auth.test.ts states that correctly ("still throws on DEV_AUTH=false without env keys")
+  // alongside the live-identity wiring it enables. Restating it here would only re-record the
+  // removed constraint.
 });
 
 describe('provider seams', () => {

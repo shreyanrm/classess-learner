@@ -15,16 +15,9 @@
 
 import { expect, test } from '@playwright/test';
 
-declare global {
-  interface Window {
-    __woboBench?: {
-      ready: boolean;
-      play(name: string, options?: { instant?: boolean }): void;
-      stress(count: number, options?: { screenAnchor?: boolean }): void;
-      ledger(): { id: string; kind: string; anchor: string }[];
-    };
-  }
-}
+// The bench API is declared once, where it is implemented (`src/wobo/board-bench.tsx`
+// exports `BenchApi` and declares `window.__woboBench`). Re-declaring a narrower shape
+// here made the two definitions conflict the moment the specs were type-checked.
 
 /** BOARD.md §10's number, less the slack a throttled CI machine is allowed. */
 const FPS_FLOOR = 55;

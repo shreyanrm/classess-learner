@@ -7,6 +7,7 @@
  * nothing she draws is saved.
  */
 
+import { fontFamily } from '@classess/config';
 import { useReducedMotion } from '@classess/motion';
 import { plane, useWoboBus, WoboBody } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -121,6 +122,10 @@ export function WoboCompanion() {
   const [pttNote, setPttNote] = useState<string | null>(null);
   const reduced = useReducedMotion();
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  // The drawer is modal: focus lands on the composer when it opens and returns to whatever opened
+  // it when it closes.
+  const composerRef = useRef<HTMLInputElement | null>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
   // A push-to-talk exchange is spoken, not typed — but the same thread law holds, so each
   // transcribed side lands in the one chat archive (it surfaces in the thread on next load).
   const voice = useWoboVoice({
@@ -349,7 +354,37 @@ export function WoboCompanion() {
     voice.stop();
     sfx.breath(false); // a soft breath as the drawer slides shut
     setOpen(false);
+    // Focus goes back where it came from — a drawer that closes into nothing strands a keyboard
+    // learner at the top of the document.
+    const back = returnFocusRef.current;
+    returnFocusRef.current = null;
+    window.setTimeout(() => back?.focus?.(), 0);
   };
+
+  /**
+   * The drawer is a modal surface, so it owes the three things a dialog owes: focus lands inside it
+   * on open, Escape closes it, and focus returns to whatever opened it. Without these a keyboard or
+   * screen-reader learner could open her and then be nowhere.
+   */
+  // `close` reads only refs and setters, so re-binding the listener on every render of it would be
+  // churn for nothing — open IS the trigger.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: open IS the trigger
+  useEffect(() => {
+    if (!open) return;
+    returnFocusRef.current = document.activeElement as HTMLElement | null;
+    // The composer is what the drawer is FOR — focus it, not the panel.
+    const focusTimer = window.setTimeout(() => composerRef.current?.focus(), 60);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      e.preventDefault();
+      close();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.clearTimeout(focusTimer);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: length/open ARE the triggers — scroll on new turns and on expand
   useEffect(() => {
@@ -495,6 +530,9 @@ export function WoboCompanion() {
       <AnimatePresence>
         {open && (
           <motion.aside
+            role="dialog"
+            aria-modal="true"
+            aria-label="Wobo"
             initial={{ x: '104%' }}
             animate={{ x: 0 }}
             exit={{ x: '104%' }}
@@ -675,7 +713,7 @@ export function WoboCompanion() {
               {busy && !tb && (
                 <span
                   style={{
-                    fontFamily: "'Caveat', cursive",
+                    fontFamily: fontFamily.handwritten,
                     fontSize: '1.2rem',
                     color: 'var(--clss-ink-500)',
                   }}
@@ -751,6 +789,7 @@ export function WoboCompanion() {
               }}
             >
               <input
+                ref={composerRef}
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 onFocus={() => setMood('listening')}
@@ -763,7 +802,6 @@ export function WoboCompanion() {
                   padding: '10px 12px',
                   fontSize: '0.92rem',
                   fontFamily: 'inherit',
-                  outline: 'none',
                   background: 'var(--clss-paper)',
                   color: 'var(--clss-ink-900)',
                 }}

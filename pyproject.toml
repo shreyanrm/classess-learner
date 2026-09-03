@@ -22,10 +22,11 @@ exclude = ["content/catalogs", "content/cache", "content/factbase", "services/re
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-# services/render-worker is a Node/TS render service (see [tool.uv.workspace] above); its Python
-# files (the queue seam + the operator-run drain worker) are standalone scripts, not part of the
-# linted gateway codebase — excluded here for the same reason it is excluded from the uv workspace.
-extend-exclude = ["docs", ".venv", "services/render-worker"]
+# services/render-worker stays OUT of the uv workspace (no pyproject.toml — see above) but its
+# Python files are IN the lint path: `uvx ruff check services content` reaches them, so the
+# operator-run drain worker gets the same lint gate as everything else. Its TypeScript side is
+# covered by the dedicated `render-worker` job in .github/workflows/ci.yml (bun install + bun test).
+extend-exclude = ["docs", ".venv"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
@@ -47,6 +48,9 @@ select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
 # the fact-base builder and its patch script: LLM system prompts, run-command docstrings, and
 # embedded Python source strings. Same justification as content/atom/** — every other lint stays on.
 "content/factbase/**" = ["E501"]
+# the render worker's module docstrings are operator runbook prose (queue contract, the
+# "operator-run only" warning). Same justification as content/atom/** — every other lint stays on.
+"services/render-worker/**" = ["E501"]
 # GENERATED from packages/wobo/src/board/schema.ts (bun run --cwd packages/wobo
 # board:codegen). The grammar travels as one JSON literal per schema so the mirror is
 # byte-stable; formatting it by hand would be edited away on the next regeneration.

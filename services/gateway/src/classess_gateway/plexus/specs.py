@@ -34,7 +34,14 @@ Tone = Literal["ink", "muted", "hue"]
 
 
 class Spec(BaseModel):
-    """Base: forbid unmodelled fields from silently entering the *owned* part of the contract."""
+    """Base for every card-spec model.
+
+    The docstring used to claim it forbade unmodelled fields. It never did — no ``extra`` was
+    set, so Pydantic's default (``ignore``) applied and an unmodelled key was silently dropped
+    rather than refused. The claim is removed rather than enforced: engines.py is the gate that
+    decides which activity fields survive (``_CARD_ACTIVITIES``), and turning these models into
+    a second, stricter gate would reject drafts that gate already accepted.
+    """
 
     model_config = ConfigDict(populate_by_name=True)
 
@@ -157,6 +164,17 @@ class Card(Spec):
     wordProblem: dict[str, Any] | None = None
     podcast: dict[str, Any] | None = None
     arcade: dict[str, Any] | None = None
+    # The subject scenes. These are rich activities exactly like the ten above — engines.py
+    # accepts and preserves each through _CARD_ACTIVITIES, and the client parses each off a
+    # card — but they were missing here, so the generated contract described a card that could
+    # not carry any of them and every scene travelled outside the schema.
+    mathScene: dict[str, Any] | None = None
+    physicsScene: dict[str, Any] | None = None
+    chemScene: dict[str, Any] | None = None
+    bioScene: dict[str, Any] | None = None
+    socialScene: dict[str, Any] | None = None
+    mapScene: dict[str, Any] | None = None
+    anatomyScene: dict[str, Any] | None = None
 
 
 class Item(Spec):

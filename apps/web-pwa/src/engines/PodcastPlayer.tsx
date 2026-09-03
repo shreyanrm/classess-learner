@@ -23,7 +23,7 @@ import { hueForTopic } from '../ui/hues';
 import { isMuted } from '../wobo/speech';
 import { base64ToFloat32 } from '../wobo/voice';
 
-const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
+const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
 
 // --- The spec ------------------------------------------------------------------------------------
 

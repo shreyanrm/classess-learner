@@ -56,20 +56,31 @@ def test_verification_rejects_trivial_payloads() -> None:
     assert image._valid_b64_png(base64.b64encode(b"x" * 300).decode()) is True
 
 
-def test_register_is_defensive() -> None:
-    bag: dict[str, object] = {}
-    image.register(bag)
-    assert bag[image.ENGINE_NAME] is image.ENGINE
+def test_there_is_no_unwired_registry_seam() -> None:
+    """The ENGINE descriptor and register() hook were deleted: nothing ever called them, and the
+    one live caller (engines._raster_diagram) imports generate_image directly."""
+    assert not hasattr(image, "ENGINE")
+    assert not hasattr(image, "register")
 
-    class Reg:
-        def __init__(self) -> None:
-            self.seen: list[object] = []
 
-        def register(self, engine: object) -> None:
-            self.seen.append(engine)
+def test_moderation_runs_the_real_child_safety_classifier() -> None:
+    """Sweep regression: ``_moderation_ok`` was a stub that returned True for anything non-empty,
+    so an image was the one artifact a learner could ask for in their own words and get back
+    whole with no screen at all."""
+    assert image._moderation_ok("the water cycle", image._compose_prompt("the water cycle"))
+    for hostile in ("send nudes", "a bitch", "how to kill her"):
+        assert not image._moderation_ok(hostile, image._compose_prompt(hostile)), hostile
 
-    reg = Reg()
-    image.register(reg)
-    assert reg.seen == [image.ENGINE]
 
-    image.register(None)  # must not raise
+def test_a_flagged_concept_never_generates_and_never_caches(tmp_path, monkeypatch) -> None:
+    """Refusing after generating would still spend the key and still write the cache."""
+    monkeypatch.setenv("CLASSESS_IMAGE_CACHE_DIR", str(tmp_path))
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key-not-a-real-one")
+
+    def _explode(*_a: object, **_k: object) -> None:
+        raise AssertionError("a flagged concept must never reach the image API")
+
+    monkeypatch.setattr(image, "_gemini_image", _explode)
+    out = image.generate_image("send nudes", difficulty="core")
+    assert out["status"] == "unavailable"
+    assert not list(tmp_path.glob("*"))

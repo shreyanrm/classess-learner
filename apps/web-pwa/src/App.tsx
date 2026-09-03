@@ -20,21 +20,12 @@ import {
   WoboProvider,
 } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChatScreen } from './screens/ChatScreen';
-import { Course } from './screens/Course';
-import { ConceptA } from './screens/concepts/ConceptA';
-import { ConceptB } from './screens/concepts/ConceptB';
-import { ConceptC } from './screens/concepts/ConceptC';
-import { EnginesGallery } from './screens/concepts/EnginesGallery';
-import { FrameBuilding } from './screens/FrameBuilding';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+// EAGER: the only two screens that can be the FIRST paint — a fresh install opens onboarding, a
+// returning learner opens home. Everything else is behind a tap, so it is fetched when that tap
+// happens (the 2G / cheap-phone law: never make a learner download a screen they did not ask for).
 import { Home } from './screens/Home';
-import { Learn } from './screens/Learn';
 import { Onboarding } from './screens/Onboarding';
-import { Practice } from './screens/Practice';
-import { ProgressScreen } from './screens/ProgressScreen';
-import { SubjectScreen } from './screens/SubjectScreen';
-import { You } from './screens/You';
 import { boardName, loadProfile, mergeAccount } from './screens/you/profile';
 import { CommandPalette } from './shell/CommandPalette';
 import { resolveDestination } from './shell/destinations';
@@ -90,23 +81,54 @@ import { refusalLine } from './wobo/refusals';
 import { WoboStage } from './wobo/Stage';
 import { registerPerformance, SpeechNarrator, speakLine } from './wobo/speech';
 
-const LLM_MODE = (import.meta.env.VITE_LLM_MODE as 'mock' | 'live' | undefined) ?? 'mock';
-const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
+// Every VITE_ name is typed in vite-env.d.ts, so these reads need no casts and a misspelled name
+// is a compile error rather than a silent undefined.
+const LLM_MODE = import.meta.env.VITE_LLM_MODE ?? 'mock';
+const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
 // Live auth (Supabase phone-OTP + Google) only when explicitly flipped; dev mock stays the default.
-const DEV_AUTH = (import.meta.env.VITE_DEV_AUTH as string | undefined) !== 'false';
+const DEV_AUTH = import.meta.env.VITE_DEV_AUTH !== 'false';
 // Live persistence (Supabase learner_state / learner_threads / outbox) — env only, keyless => local.
-const PERSIST_MODE = (import.meta.env.VITE_PERSIST_MODE as 'local' | 'live' | undefined) ?? 'local';
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+const PERSIST_MODE = import.meta.env.VITE_PERSIST_MODE ?? 'local';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 // A pre-minted access token is a DEV convenience and a production liability: shipped in a public
 // JS bundle it is one long-lived bearer token every visitor holds, and every visitor is then the
 // same learner — one budget, one consent tier, one archive. It exists only in a dev build.
-const SUPABASE_DEV_JWT = import.meta.env.DEV
-  ? (import.meta.env.VITE_SUPABASE_DEV_JWT as string | undefined)
-  : undefined;
+const SUPABASE_DEV_JWT = import.meta.env.DEV ? import.meta.env.VITE_SUPABASE_DEV_JWT : undefined;
 if (!import.meta.env.DEV && import.meta.env.VITE_SUPABASE_DEV_JWT) {
   console.warn('VITE_SUPABASE_DEV_JWT is set in a production build and has been ignored.');
 }
+
+// LAZY: one chunk per screen, fetched on the navigation that needs it. Each of these pulls its own
+// engine tree behind it (mafs, the CS ramp, the map projections, the trophy room), which is what
+// made the eager entry chunk ~2.1 MB.
+const ChatScreen = lazy(() =>
+  import('./screens/ChatScreen').then((m) => ({ default: m.ChatScreen })),
+);
+const Course = lazy(() => import('./screens/Course').then((m) => ({ default: m.Course })));
+const EnginesGallery = lazy(() =>
+  import('./screens/concepts/EnginesGallery').then((m) => ({ default: m.EnginesGallery })),
+);
+const FrameBuilding = lazy(() =>
+  import('./screens/FrameBuilding').then((m) => ({ default: m.FrameBuilding })),
+);
+const Learn = lazy(() => import('./screens/Learn').then((m) => ({ default: m.Learn })));
+const Practice = lazy(() => import('./screens/Practice').then((m) => ({ default: m.Practice })));
+const ProgressScreen = lazy(() =>
+  import('./screens/ProgressScreen').then((m) => ({ default: m.ProgressScreen })),
+);
+const SubjectScreen = lazy(() =>
+  import('./screens/SubjectScreen').then((m) => ({ default: m.SubjectScreen })),
+);
+const You = lazy(() => import('./screens/You').then((m) => ({ default: m.You })));
+
+/**
+ * What sits in the frame while a screen's chunk arrives. Deliberately empty: the route transition
+ * is already animating, the header and Wobo are outside this boundary and never blink, and a
+ * spinner for a chunk that usually lands in a few hundred milliseconds is noise. Full height so
+ * the page does not collapse and bounce the scroll position.
+ */
+const ScreenPending = () => <div aria-busy="true" style={{ minHeight: '60vh' }} />;
 
 /** Zero-argument destinations Wobo may offer to navigate to. */
 const NAV_ROUTES: Record<string, Route> = {
@@ -207,23 +229,22 @@ function Screen() {
         // header during the crossfade. Pinned to 100% it stays a full page sliding out. No-op in flow.
         style={{ willChange: 'transform, opacity', width: '100%' }}
       >
-        {route.name === 'onboarding' && <Onboarding />}
-        {route.name === 'building' && <FrameBuilding />}
-        {route.name === 'home' && <Home />}
-        {route.name === 'chat' && <ChatScreen />}
-        {route.name === 'learn' && <Learn />}
-        {route.name === 'practice' && <Practice />}
-        {route.name === 'subject' && (
-          <SubjectScreen subjectId={route.subjectId} intent={route.intent} />
-        )}
-        {route.name === 'course' && <Course topicId={route.topicId} />}
-        {route.name === 'sandbox' && <Course topicId={route.topicId ?? ''} sandbox />}
-        {route.name === 'progress' && <ProgressScreen />}
-        {route.name === 'you' && <You />}
-        {route.name === 'concept' && route.which === 'a' && <ConceptA />}
-        {route.name === 'concept' && route.which === 'b' && <ConceptB />}
-        {route.name === 'concept' && route.which === 'c' && <ConceptC />}
-        {route.name === 'concept' && route.which === 'engines' && <EnginesGallery />}
+        <Suspense fallback={<ScreenPending />}>
+          {route.name === 'onboarding' && <Onboarding />}
+          {route.name === 'building' && <FrameBuilding />}
+          {route.name === 'home' && <Home />}
+          {route.name === 'chat' && <ChatScreen />}
+          {route.name === 'learn' && <Learn />}
+          {route.name === 'practice' && <Practice />}
+          {route.name === 'subject' && (
+            <SubjectScreen subjectId={route.subjectId} intent={route.intent} />
+          )}
+          {route.name === 'course' && <Course topicId={route.topicId} />}
+          {route.name === 'sandbox' && <Course topicId={route.topicId ?? ''} sandbox />}
+          {route.name === 'progress' && <ProgressScreen />}
+          {route.name === 'you' && <You />}
+          {route.name === 'concept' && route.which === 'engines' && <EnginesGallery />}
+        </Suspense>
       </motion.div>
     </AnimatePresence>
   );
@@ -584,6 +605,32 @@ function AppInner({ sdk }: { sdk: Sdk }) {
         await askBoard(text, shape, context);
         return;
       }
+      // Navigation on command (WOBO.md §10) — the one nav path, shared by the chat page and the
+      // drawer. Any phrasing that resolves to a place navigates directly: no approval card, a
+      // spoken + inked confirmation (SpeechNarrator voices her line), and never silence on a clear
+      // miss. It runs on the raw text and needs no model at all, so it is resolved BEFORE the
+      // gateway round-trip: "take me to practice" used to cost a full turn (and a token spend, and
+      // seconds on a 2G link) to reach an answer this function already had.
+      const nav = resolveDestination(text);
+      if (nav) {
+        say({ role: 'wobo', text: 'route' in nav ? nav.say : nav.unknown });
+        sdk.events.record('wobo.turn.assistant.v1', {
+          turn_id: crypto.randomUUID(),
+          assistance_level: 'coach',
+          hint_level: 0,
+          grounded: false, // resolved on device, from the route table — no model grounding involved
+          track: 'track_2',
+          handed_answer: false,
+        });
+        if ('route' in nav) {
+          setMood('explaining');
+          window.setTimeout(() => router.navigate(nav.route), 650);
+        } else {
+          setMood('idle');
+        }
+        return;
+      }
+
       const result = await sdk.llm.invoke('wobo.turn', woboTurnPayload(context), {
         consentTier: 'un_elevated',
       });
@@ -604,31 +651,6 @@ function AppInner({ sdk }: { sdk: Sdk }) {
           ...(s.category === 'crisis' ? { escalated_to: 'guardian' as const } : {}),
         });
       }
-      // Navigation on command (WOBO.md §10) — the one nav path, shared by the chat page and the
-      // drawer. Any phrasing that resolves to a place navigates directly: no approval card, a spoken
-      // + inked confirmation (SpeechNarrator voices her line), and never silence on a clear miss.
-      // Runs on the raw text, so it works even when the classifier would have split it into an
-      // approval-gated action or dropped it to inline.
-      const nav = resolveDestination(text);
-      if (nav) {
-        say({ role: 'wobo', text: 'route' in nav ? nav.say : nav.unknown });
-        sdk.events.record('wobo.turn.assistant.v1', {
-          turn_id: crypto.randomUUID(),
-          assistance_level: 'coach',
-          hint_level: 0,
-          grounded: Boolean(output.grounded),
-          track: result.track,
-          handed_answer: false,
-        });
-        if ('route' in nav) {
-          setMood('explaining');
-          window.setTimeout(() => router.navigate(nav.route), 650);
-        } else {
-          setMood('idle');
-        }
-        return;
-      }
-
       const actions = parseActions(output.actions ?? []);
       // Data rights (WOBO-CAPABILITIES.md family E, the forget verb): show or purge her memory,
       // grounded in the real on-device dossier — never the model's guess. Deleting is honest: she

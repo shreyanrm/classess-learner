@@ -17,6 +17,3 @@ export * from './highlight-overlay';
 export * from './identity';
 export * from './packet';
 export * from './registry';
-export * from './WoboPanel';
-export * from './WoboPresence';
-export * from './wobo-layer';

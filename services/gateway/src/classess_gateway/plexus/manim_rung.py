@@ -8,6 +8,10 @@ SMIL-on-SVG cannot carry those. This module is the ESCALATION SEAM:
   • :func:`enqueue_manim` — appends a job to ``content/cache/_manim-queue.jsonl``. REAL: the queue
     and its contract exist today.
 
+Both are CALLED: ``plexus.validate._maybe_enqueue_manim`` runs them on every real video promoted
+to canonical, beside the MP4 enqueue. (They were real and tested but callerless for four waves,
+which made the README's "the gateway flags those and enqueues them" a claim nothing exercised.)
+
 The RENDERER itself is a documented STUB: the Manim render container (a Python env with a manim
 install, headless Cairo/LaTeX) is FUTURE infra. Nothing here imports or runs manim — the gateway
 stays dependency-light. When the container lands it will drain this queue exactly as the Remotion

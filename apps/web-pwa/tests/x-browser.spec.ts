@@ -1,5 +1,5 @@
 import { expect, type Page, test } from '@playwright/test';
-import { seedOnboarded, watchConsole } from '../tests/helpers';
+import { seedOnboarded, watchConsole } from './helpers';
 
 /**
  * The cross-browser × responsive matrix. One walk covers every major surface — home, learn,

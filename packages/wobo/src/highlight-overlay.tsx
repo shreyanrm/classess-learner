@@ -82,6 +82,33 @@ function drawOn(
 }
 
 /**
+ * Index the registered targets once per overlay frame and measure each at most once.
+ *
+ * The overlay re-renders on every animation frame while ink is live. Looking each mark's target up
+ * with a linear scan over `getTargets()` and re-measuring it per mark made that O(marks × targets)
+ * of layout-forcing work sixty times a second; a worked example accumulates several marks on the
+ * same target, so the same element was measured repeatedly within a single frame.
+ */
+export function rectLookup(
+  targets: readonly { id: string; getRect: () => DOMRect | null }[],
+): (targetId: string) => DOMRect | null {
+  const byId = new Map(targets.map((t) => [t.id, t]));
+  const measured = new Map<string, DOMRect | null>();
+  return (targetId: string) => {
+    const cached = measured.get(targetId);
+    if (cached !== undefined) return cached;
+    let rect: DOMRect | null = null;
+    try {
+      rect = byId.get(targetId)?.getRect() ?? null;
+    } catch {
+      rect = null; // a target torn down mid-frame must not take the overlay with it
+    }
+    measured.set(targetId, rect);
+    return rect;
+  };
+}
+
+/**
  * WoboOverlay — the visible half of "every page is a canvas she's plugged into", drawn in her own
  * hand. Highlighter washes bloom in softly (attention, not a pen); every stroke mark DRAWS ITSELF
  * ON like a moving pen — the arrow grows along its shaft with the head arriving last, the circle
@@ -106,11 +133,8 @@ export function WoboOverlay() {
   // When she re-inks a faded set, the nonce reseeds every stroke so the redraw is genuinely fresh
   // (a new hand-drawn pass), not a pixel-identical copy of what faded.
   const reink = bus.reinkNonce ? String(bus.reinkNonce) : '';
-  const rectOf = (targetId: string): DOMRect | null =>
-    bus
-      .getTargets()
-      .find((t) => t.id === targetId)
-      ?.getRect() ?? null;
+  // One index and one measurement pass for the whole frame.
+  const rectOf = rectLookup(bus.getTargets());
 
   return (
     <div

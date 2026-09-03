@@ -389,3 +389,50 @@ def test_a_statement_with_a_region_in_hand_is_not_a_drawing_either() -> None:
         }
     }
     assert mock_board_plan(payload) is None
+
+
+def test_the_turn_never_names_a_model_of_its_own() -> None:
+    """Sweep regression: run_wobo_turn carried WOBO_PRIMARY/WOBO_ESCALATE and swapped them in
+    whenever the resolved id looked like a Track-2 slot — a second, drifted routing table (it
+    still pointed at a Claude 4 generation the registry had long moved off) that could silently
+    override the tier's decision. The registry is the only place a model is named."""
+    from classess_gateway import wobo
+
+    assert not hasattr(wobo, "WOBO_PRIMARY")
+    assert not hasattr(wobo, "WOBO_ESCALATE")
+
+    captured: dict[str, object] = {}
+
+    class _FakeLiteLLM:
+        drop_params = False
+
+        @staticmethod
+        def completion(**kwargs: object):
+            captured.update(kwargs)
+
+            class _Msg:
+                content = '{"path":"inline","say":"ok","actions":[]}'
+
+            class _Choice:
+                message = _Msg()
+
+            class _Resp:
+                choices = [_Choice()]
+                usage = None
+
+            return _Resp()
+
+    import sys
+
+    sys.modules["litellm"] = _FakeLiteLLM  # type: ignore[assignment]
+    try:
+        wobo.run_wobo_turn(
+            provider_model="classess/wobo-tutor-slm",  # the shape that used to trigger the swap
+            payload={"context": {}},
+            fallbacks=("anthropic/claude-opus-5",),
+        )
+    finally:
+        del sys.modules["litellm"]
+
+    assert captured["model"] == "classess/wobo-tutor-slm"
+    assert captured["fallbacks"] == ["anthropic/claude-opus-5"]

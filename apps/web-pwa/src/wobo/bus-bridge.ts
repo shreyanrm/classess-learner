@@ -23,7 +23,7 @@ import {
   useSurface,
   useWoboBus,
 } from '@classess/wobo';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useSyncExternalStore } from 'react';
 
 /** The registry surface a route's live targets live under. One surface per screen. */
 export const ROUTE_SURFACE_PREFIX = 'screen:';
@@ -130,8 +130,14 @@ export function surfaceFromBus(
  */
 export function useBusRegistryBridge(route: string, registry: SurfaceRegistry = surfaceRegistry) {
   const bus = useWoboBus();
-  const version = bus.targetsVersion;
-  // biome-ignore lint/correctness/useExhaustiveDependencies: targetsVersion IS the change signal
+  // Registration changes arrive as a subscription, so only this bridge re-renders when a target
+  // mounts or unmounts — not every consumer of the bus.
+  const version = useSyncExternalStore(
+    bus.subscribeToTargets,
+    bus.getTargetsVersion,
+    bus.getTargetsVersion,
+  );
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the target version IS the change signal
   const definition = useMemo(() => surfaceFromBus(route, bus.getTargets()), [route, version]);
   useSurface(definition, registry);
   // The route is set in an effect, never during render: `setRoute` fans a change to every registry

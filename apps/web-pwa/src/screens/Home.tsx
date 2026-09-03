@@ -8,10 +8,13 @@
  * the aurora doors wait at the thread's end.
  */
 
+import { fontFamily } from '@classess/config';
 import { useRegisterTarget, useWoboBus, WoboBody } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { openCommandPalette } from '../shell/CommandPalette';
+import { currentFidelity } from '../shell/resilience';
 import { useRouter } from '../shell/router';
 import { loadMind, loadProactivity, proactiveChip } from '../store/mind';
 import { useProgress } from '../store/progress';
@@ -185,8 +188,18 @@ export function Home() {
 
   // The opening — once per session, Wobo arrives before anything else exists.
   const [firstVisit] = useState(() => sessionStorage.getItem('clss-home-opened') !== '1');
-  const [landed, setLanded] = useState(!firstVisit);
-  const [greetShown, setGreetShown] = useState(!firstVisit ? 999 : 0);
+  // Family N, actually applied: a learner on a 2G-class link, with Data Saver on, or who asked the
+  // OS for less motion skips the 1.5s arrival and the letter-by-letter greeting and lands on the
+  // finished page. Grace degrades; help never does.
+  // Decided once, at mount: fidelity flipping mid-arrival would abort an animation in flight.
+  const [swoop] = useState(() => firstVisit && currentFidelity() === 'full');
+  const [landed, setLanded] = useState(!swoop);
+  const [greetShown, setGreetShown] = useState(swoop ? 0 : 999);
+  // Whether or not the arrival played, this session has now opened home — so a second visit does
+  // not replay it, and a low-fidelity first visit is still recorded.
+  useEffect(() => {
+    if (landed) sessionStorage.setItem('clss-home-opened', '1');
+  }, [landed]);
   // Identity comes from the onboarded profile — the catalog's seed learner is only a fallback.
   const greetingText = greeting(loadProfile().name);
   useEffect(() => {
@@ -260,7 +273,7 @@ export function Home() {
   // Wobo, on the journey — the Thread seats her beside the current stop.
   const woboNode = (
     <motion.div
-      initial={firstVisit ? { x: '30vw', y: '-70vh', rotate: 16, opacity: 0 } : false}
+      initial={swoop ? { x: '30vw', y: '-70vh', rotate: 16, opacity: 0 } : false}
       animate={{
         x: ['30vw', '12vw', '-2vw', '0vw'],
         y: ['-70vh', '-36vh', '-5vh', '0vh'],
@@ -268,7 +281,7 @@ export function Home() {
         opacity: [0, 1, 1, 1],
       }}
       transition={
-        firstVisit
+        swoop
           ? { duration: 1.5, times: [0, 0.45, 0.8, 1], ease: [0.3, 0.9, 0.4, 1] }
           : { duration: 0 }
       }
@@ -287,7 +300,7 @@ export function Home() {
       </motion.div>
       <div
         style={{
-          fontFamily: 'Caveat, cursive',
+          fontFamily: fontFamily.handwritten,
           fontSize: 20,
           fontWeight: 600,
           color: 'color-mix(in srgb, var(--clss-ink) 58%, transparent)',
@@ -357,7 +370,7 @@ export function Home() {
           variants={rise}
           style={{
             marginTop: 8,
-            fontFamily: 'Caveat, cursive',
+            fontFamily: fontFamily.handwritten,
             fontSize: 'clamp(19px, 1.6vw, 24px)',
             color: 'color-mix(in srgb, var(--clss-ink) 58%, transparent)',
           }}
@@ -394,7 +407,6 @@ export function Home() {
                 fontFamily: 'inherit',
                 border: '1px solid var(--clss-card-border)',
                 borderRadius: 3,
-                outline: 'none',
                 background: 'var(--clss-card)',
                 color: 'var(--clss-ink)',
                 transition: 'border-color 0.2s ease',
@@ -531,7 +543,7 @@ export function Home() {
             size="md"
             onClick={() => router.navigate({ name: 'learn' })}
             style={{ minWidth: 132 }}
-            flashDelay={firstVisit ? 1.6 : undefined}
+            flashDelay={swoop ? 1.6 : undefined}
           >
             Learn
           </AuroraButton>
@@ -539,7 +551,7 @@ export function Home() {
             size="md"
             onClick={() => router.navigate({ name: 'practice' })}
             style={{ minWidth: 132 }}
-            flashDelay={firstVisit ? 1.75 : undefined}
+            flashDelay={swoop ? 1.75 : undefined}
           >
             Practice
           </AuroraButton>
@@ -562,18 +574,38 @@ export function Home() {
         />
       </div>
 
+      {/* The palette's only entry point used to be ⌘K, which does not exist on a phone or in the
+          installed PWA. The same line is now the button that opens it. */}
       <div
         style={{
           padding: `${fluidSpace.md} 0 18px`,
-          color: 'var(--clss-ink-300)',
-          fontSize: '0.75rem',
           display: 'flex',
-          alignItems: 'center',
           justifyContent: 'center',
-          gap: 8,
         }}
       >
-        <Kbd>⌘K</Kbd> Anything, anywhere
+        <button
+          type="button"
+          onClick={openCommandPalette}
+          aria-label="Open the command palette — go anywhere, or ask anything"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            // A real touch target, not a caption: 44px is the floor a thumb needs.
+            minHeight: 44,
+            padding: '0 14px',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--clss-ink-300)',
+            fontSize: '0.75rem',
+            fontFamily: 'inherit',
+            cursor: 'pointer',
+            borderRadius: 'var(--clss-radius-sm)',
+          }}
+        >
+          <Kbd>⌘K</Kbd> Anything, anywhere
+        </button>
       </div>
     </div>
   );

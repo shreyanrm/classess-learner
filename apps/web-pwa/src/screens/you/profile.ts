@@ -9,7 +9,7 @@ import { scoped } from '../../store/scope';
 
 export const PROFILE_KEY = 'clss-learner-profile';
 export const PHOTO_KEY = 'clss-profile-photo-v1';
-export const ACTIVITY_KEY = 'clss-activity-v1';
+const ACTIVITY_KEY = 'clss-activity-v1';
 export const PARENT_KEY = 'clss-parent-link-v1';
 export const VOICE_KEY = 'clss-voice';
 export const SOUND_KEY = 'clss-ignite-sound';
@@ -138,10 +138,6 @@ export function resolveBoardId(board: string | undefined): string | undefined {
   if (!board) return undefined;
   const s = board.trim();
   return boards.find((b) => b.id === s)?.id ?? boards.find((b) => b.name === s)?.id;
-}
-
-export function boardSeeded(boardId: string): boolean {
-  return boards.find((b) => b.id === boardId)?.seeded ?? false;
 }
 
 export function loadPhoto(): string | null {

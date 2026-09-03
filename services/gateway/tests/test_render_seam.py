@@ -233,3 +233,100 @@ def test_enqueue_manim_appends_to_the_manim_queue(cache_dir, monkeypatch) -> Non
     assert rec["artifact"] == "/x.json"
     assert rec["reason"] == "proof choreography"
     assert rec["enqueuedAt"]
+
+
+# --- sweep: the Manim rung has a caller, and lint refusals are recorded ------------------
+
+
+def _manim_lines(cache_dir):
+    q = cache_dir / "_manim-queue.jsonl"
+    return [json.loads(x) for x in q.read_text().splitlines() if x.strip()] if q.exists() else []
+
+
+def test_a_manim_worthy_video_is_enqueued_on_promotion(monkeypatch, cache_dir) -> None:
+    """Sweep regression: ``needs_manim`` and ``enqueue_manim`` were real and tested but had NO
+    caller, so the escalation rung the README describes never once fired."""
+    record = _video_record()
+    record["artifact"]["scenes"][0]["narration"] = "we morph the equation term by term"
+    out = _promote_video(monkeypatch, record)
+    assert out["status"] == store.CANONICAL
+
+    jobs = _manim_lines(cache_dir)
+    assert len(jobs) == 1
+    assert jobs[0]["artifact"] == str(
+        store.artifact_path("refraction of light", "video", "core", {})
+    )
+    assert jobs[0]["concept"] == "refraction of light"
+    assert jobs[0]["reason"] and jobs[0]["enqueuedAt"]
+
+
+def test_an_ordinary_video_does_not_reach_the_manim_queue(monkeypatch, cache_dir) -> None:
+    """The rung is an escalation, not a second queue for everything."""
+    _promote_video(monkeypatch, _video_record())
+    assert _manim_lines(cache_dir) == []
+    assert len(_queue_lines(cache_dir)) == 1  # the MP4 queue is unaffected
+
+
+def test_a_manim_enqueue_failure_never_blocks_promotion(monkeypatch, cache_dir) -> None:
+    blocker = cache_dir / "manim-blocker"
+    blocker.write_text("i am a file, not a dir")
+    monkeypatch.setenv("MANIM_QUEUE_PATH", str(blocker / "q.jsonl"))
+    record = _video_record()
+    record["artifact"]["scenes"][0]["narration"] = "a geometric proof, choreographed"
+    out = _promote_video(monkeypatch, record)
+    assert out["status"] == store.CANONICAL
+
+
+def test_a_double_lint_failure_records_a_refusal_on_the_canonical(monkeypatch, cache_dir) -> None:
+    """Sweep regression: when BOTH the Opus draft and the GPT-5.5 rebuild fail the technical
+    lint, the canonical is a seed — and an unrecorded seed is retried on every single live
+    serve, buying two frontier generations per request to land on the same seed each time."""
+    from classess_gateway.plexus import engines
+
+    broken = _video_record(svg="<svg>no viewBox, will not lint</svg>")
+    # the rebuild is also broken, so the loud refuse/seed path is taken
+    monkeypatch.setattr(
+        engines,
+        "_generate_live",
+        lambda *_a, **_k: (broken["artifact"], "openai/gpt-5.6-terra", 10, False),
+    )
+    monkeypatch.setattr(
+        validate,
+        "_judge",
+        lambda *_a, **_k: {"score": 90.0, "critical": False, "weak": [], "notes": ""},
+    )
+    canonical = validate_and_promote(
+        concept="refraction of light",
+        modality="video",
+        difficulty="core",
+        scope={},
+        record=broken,
+        judge_model="anthropic/claude-opus-5",
+        escalation_model="openai/gpt-5.6-terra",
+    )
+    assert canonical["seeded"] is True
+    assert canonical["refusedAt"]
+    assert canonical["lintFailures"]["base"]["reasons"]
+    # and the record the engine reads back carries it, so the retry is short-circuited
+    cached = store.load("refraction of light", "video", "core", {})
+    assert cached is not None and cached.get("refusedAt")
+
+
+def test_a_recorded_refusal_is_not_regenerated_but_a_plain_seed_is() -> None:
+    """The short-circuit is a pause, not a grave: only a RECORDED refusal is spared, and the
+    prompt-version rule still reopens it when the doctrine that produced the failure changes."""
+    from classess_gateway.plexus.engines import is_stale
+
+    current = {"prompt_version": store.PROMPT_VERSION}
+
+    plain_seed = {"seeded": True, "artifact": {}, "provenance": current}
+    refused = {**plain_seed, "refusedAt": "2026-09-03T00:00:00+00:00"}
+
+    # an ordinary seed is still an honest floor and still retried on a live serve
+    assert is_stale(plain_seed, "video", live=True) is True
+    # the recorded double-lint refusal is not — it would buy two frontier calls for the same seed
+    assert is_stale(refused, "video", live=True) is False
+    # ...until the prompt version that produced the failure moves on
+    assert is_stale({**refused, "provenance": {"prompt_version": "plexus-v0"}}, "video", live=True)
+    # and mock mode never regenerates anything
+    assert is_stale(plain_seed, "video", live=False) is False

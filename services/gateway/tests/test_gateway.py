@@ -35,6 +35,7 @@ from classess_gateway.routing import (
     track_separation_holds,
 )
 from classess_gateway.telemetry import MetricsSink
+from fastapi.testclient import TestClient
 
 ELEVATED_ONLY = ("archetype.classify", "peakcut.evaluate")
 
@@ -402,10 +403,10 @@ def test_voice_session_is_unavailable_without_a_key(monkeypatch: pytest.MonkeyPa
     assert client.get("/v1/voice/session", headers=auth()).json() == {"mode": "unavailable"}
 
 
-def test_cors_allows_our_vercel_preview_origins_in_prod(monkeypatch: pytest.MonkeyPatch) -> None:
-    from fastapi.testclient import TestClient
-
-    monkeypatch.setenv("ENV", "prod")
+def test_cors_allows_our_vercel_preview_origins_outside_prod(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ENV", "dev")
     client = TestClient(create_app(make_gateway()))
     r = client.options(
         "/v1/capability/wobo.turn",
@@ -424,6 +425,35 @@ def test_cors_allows_our_vercel_preview_origins_in_prod(monkeypatch: pytest.Monk
         },
     )
     assert r2.status_code == 400
+
+
+def test_prod_cors_is_exactly_the_one_app_origin(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A per-deploy preview pattern is a dev convenience. Under ENV=prod the trust boundary is
+    the single APP_URL origin — anyone who can land a build on the preview pattern would
+    otherwise hold a credentialed cross-origin door into production."""
+    monkeypatch.setenv("ENV", "prod")
+    monkeypatch.setenv("SUPABASE_JWT_SECRET", "x" * 32)
+    from classess_gateway import app as app_mod
+
+    assert app_mod._preview_origin_regex() is None
+
+    client = TestClient(create_app(make_gateway()))
+    preview = client.options(
+        "/v1/capability/wobo.turn",
+        headers={
+            "origin": "https://classess-learner-abc123xyz-depl-shreyan.vercel.app",
+            "access-control-request-method": "POST",
+        },
+    )
+    assert preview.status_code == 400
+    allowed = client.options(
+        "/v1/capability/wobo.turn",
+        headers={
+            "origin": app_mod.APP_URL,
+            "access-control-request-method": "POST",
+        },
+    )
+    assert allowed.status_code == 200
 
 
 def test_voice_tts_is_503_without_a_key(monkeypatch: pytest.MonkeyPatch, auth) -> None:

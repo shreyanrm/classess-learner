@@ -14,6 +14,7 @@
  * confetti, no descent, no dust.
  */
 
+import { fontFamily } from '@classess/config';
 import { WoboBody } from '@classess/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
@@ -383,7 +384,7 @@ export function Ceremony({ award, onDismiss }: { award: TrophyAward; onDismiss: 
         </motion.div>
         <div
           style={{
-            fontFamily: "'Caveat', cursive",
+            fontFamily: fontFamily.handwritten,
             fontSize: '1.15rem',
             lineHeight: 1.35,
             color: PAPER,

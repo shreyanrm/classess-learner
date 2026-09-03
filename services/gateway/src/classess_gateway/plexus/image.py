@@ -65,13 +65,20 @@ def _compose_prompt(concept: str) -> str:
 
 
 def _moderation_ok(concept: str, prompt: str) -> bool:
-    """Moderation gate, run before serving.
+    """Moderation gate, run before generating and before serving.
 
-    ponytail: stub — allows all educational concepts, blocks only obvious empties. Route the
-    prompt through the gateway ``safety.moderate`` capability here once image moderation is
-    wired; the call site (before generate, before cache) does not change.
+    An image is the one artifact a learner can ask for in their own words and get back whole,
+    so the concept goes through the SAME deterministic child-safety classifier every other
+    learner-facing surface uses. A flagged verdict of any category refuses: nothing is
+    generated, nothing is cached, and the caller serves ``unavailable``.
     """
-    return bool(concept.strip()) and bool(prompt.strip())
+    if not concept.strip() or not prompt.strip():
+        return False
+    from classess_gateway.safety import moderate
+
+    # The composed prompt as well as the raw concept: the style suffix is ours, but screening
+    # exactly the string that would be sent is the honest check.
+    return bool(moderate(concept)["allow"]) and bool(moderate(prompt)["allow"])
 
 
 def _gemini_image(prompt: str, key: str) -> tuple[str, str] | None:
@@ -178,26 +185,8 @@ def generate_image(concept: str, *, difficulty: str = "core") -> dict[str, Any]:
     return _served(entry)
 
 
-# --- Registry entry (defensive: the Plexus engine registry is built in parallel) ----------
-ENGINE = {
-    "name": ENGINE_NAME,
-    "modality": MODALITY,
-    "model": MODEL,
-    "prompt_version": PROMPT_VERSION,
-    "generate": generate_image,
-}
-
-
-def register(registry: Any) -> None:
-    """Register this engine into a Plexus registry, whatever shape it lands as.
-
-    Supports a registry with ``.register(engine)`` or a plain dict keyed by engine name.
-    Never raises — a wiring mismatch must not crash content serving.
-    """
-    try:
-        if hasattr(registry, "register"):
-            registry.register(ENGINE)
-        else:
-            registry[ENGINE_NAME] = ENGINE
-    except Exception:  # noqa: BLE001 — registration is best-effort by contract
-        pass
+# There is no ENGINE descriptor and no register() here. There never was a Plexus engine registry
+# for them to land in: the one live caller is engines._raster_diagram, which imports
+# generate_image directly, and the two "defensive, whatever shape the registry lands as" hooks
+# had no caller in four waves. Wiring that anticipates an integration that never arrived is
+# indistinguishable from wiring that broke.

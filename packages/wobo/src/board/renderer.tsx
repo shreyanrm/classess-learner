@@ -46,7 +46,15 @@ import {
 } from './anchors';
 import { geometryOf, type ObjectGeometry } from './geometry';
 import { HAND_MASK_FACTOR, type HandFont, handFont, loadHandFont } from './handwriting';
-import { boardArea, type Camera, contentBounds, fitCamera, RESTING_CAMERA } from './layout';
+import {
+  boardArea,
+  type Camera,
+  cameraArrived,
+  contentBounds,
+  easeCamera,
+  fitCamera,
+  RESTING_CAMERA,
+} from './layout';
 import {
   dashFor,
   fadeOpacity,
@@ -865,6 +873,38 @@ export function BoardSurface(props: BoardSurfaceProps) {
     return out;
   }, [rendered, settledBuild, floatingBuilt]);
 
+  // --- Camera -----------------------------------------------------------------------------------------
+  // Bounds are taken from the two halves separately: the settled half is a memo that survives a
+  // frame, so a board of two thousand strokes is not re-measured sixty times a second.
+  const settledBounds = useMemo(
+    () =>
+      autoCamera
+        ? contentBounds(settledBuild.objects.flatMap((b) => (b.geometry ? [b.geometry.box] : [])))
+        : null,
+    [autoCamera, settledBuild],
+  );
+  const autoTarget = useMemo(() => {
+    if (!autoCamera) return null;
+    const boxes = floatingBuilt.flatMap((b) => (b.geometry ? [b.geometry.box] : []));
+    if (settledBounds) boxes.push(settledBounds);
+    return fitCamera(contentBounds(boxes, 0), frame);
+  }, [autoCamera, settledBounds, floatingBuilt, frame]);
+  // The camera GLIDES to the fit rather than snapping to it: every new object changes the box the
+  // ink has to fit into, and a hard cut on each stroke would read as the board flinching. Reduced
+  // motion goes straight there, which is the same rule the ink itself follows.
+  const shownCam = useRef<Camera | null>(null);
+  let cameraSettling = false;
+  if (autoTarget) {
+    const from = shownCam.current;
+    const next = from && !reduced ? easeCamera(from, autoTarget) : autoTarget;
+    cameraSettling = Boolean(from) && !cameraArrived(next, autoTarget);
+    shownCam.current = next;
+  } else if (shownCam.current) {
+    shownCam.current = null;
+  }
+  const effective = shownCam.current ?? camera;
+  const viewFrame: BoardFrame = { ...frame, ...effective };
+
   // --- The clock ----------------------------------------------------------------------------------------
   // One rAF loop, alive only while something is drawing or fading, or while any mark hangs off the
   // page (whose rect can move under us). It never re-renders settled ink: that layer is memoised.
@@ -878,7 +918,7 @@ export function BoardSurface(props: BoardSurfaceProps) {
   });
 
   useEffect(() => {
-    if (!animating && !hasScreenAnchor) return;
+    if (!animating && !hasScreenAnchor && !cameraSettling) return;
     let raf = 0;
     const loop = () => {
       if (hasScreenAnchor) measure();
@@ -887,26 +927,7 @@ export function BoardSurface(props: BoardSurfaceProps) {
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [animating, hasScreenAnchor, measure]);
-
-  // --- Camera -----------------------------------------------------------------------------------------
-  // Bounds are taken from the two halves separately: the settled half is a memo that survives a
-  // frame, so a board of two thousand strokes is not re-measured sixty times a second.
-  const settledBounds = useMemo(
-    () =>
-      autoCamera
-        ? contentBounds(settledBuild.objects.flatMap((b) => (b.geometry ? [b.geometry.box] : [])))
-        : null,
-    [autoCamera, settledBuild],
-  );
-  const autoCam = useMemo(() => {
-    if (!autoCamera) return null;
-    const boxes = floatingBuilt.flatMap((b) => (b.geometry ? [b.geometry.box] : []));
-    if (settledBounds) boxes.push(settledBounds);
-    return fitCamera(contentBounds(boxes, 0), frame);
-  }, [autoCamera, settledBounds, floatingBuilt, frame]);
-  const effective = autoCam ?? camera;
-  const viewFrame: BoardFrame = { ...frame, ...effective };
+  }, [animating, hasScreenAnchor, cameraSettling, measure]);
 
   // --- Paint ------------------------------------------------------------------------------------------
   // Ink that has landed and is not fading goes into one memoised layer that React skips in a single

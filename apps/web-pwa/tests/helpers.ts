@@ -40,17 +40,19 @@ export function assertNoErrors(errors: string[], info: TestInfo): void {
 
 /** Skip onboarding: mark onboarded and seed a profile before the app script runs. */
 export async function seedOnboarded(page: Page): Promise<void> {
+  // An object, not a tuple: Playwright types the argument as `string[]`, so destructuring a pair
+  // out of it hands the page two possibly-undefined keys.
   await page.addInitScript(
-    ([key, met]) => {
-      localStorage.setItem(key, '1');
-      localStorage.setItem(met, '1'); // an old friend — she never re-introduces herself
+    (keys: { onboarded: string; met: string }) => {
+      localStorage.setItem(keys.onboarded, '1');
+      localStorage.setItem(keys.met, '1'); // an old friend — she never re-introduces herself
       localStorage.setItem('clss-home-opened', '1'); // sessionStorage is per-context; set below too
       localStorage.setItem(
         'clss-learner-profile',
         JSON.stringify({ name: 'Aanya', grade: 'Class 8', boardId: 'cbse' }),
       );
     },
-    [ONBOARDED_KEY, MET_KEY],
+    { onboarded: ONBOARDED_KEY, met: MET_KEY },
   );
   // The home landing animation gates on sessionStorage; short-circuit it so the doors are live fast.
   await page.addInitScript(() => {

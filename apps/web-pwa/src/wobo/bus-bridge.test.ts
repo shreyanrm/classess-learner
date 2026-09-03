@@ -62,11 +62,13 @@ describe('the bridge from the scene bus to the registry', () => {
   });
 
   it('offers set_state only where the component accepts a tutor action, and runs it', () => {
-    let applied: Record<string, unknown> | null = null;
+    // Held in an object, not a bare `let`: TypeScript narrows a captured `let` to its initializer
+    // and the assertion below then compares against `null`, which is not a test of anything.
+    const seen: { patch: Record<string, unknown> | null } = { patch: null };
     const target = plain({
       getValidActions: () => ['flip the card'],
       applyTutorAction: (patch) => {
-        applied = patch;
+        seen.patch = patch;
       },
     });
     const actions = actionsOf(target);
@@ -74,7 +76,7 @@ describe('the bridge from the scene bus to the registry', () => {
     expect(actions?.[0]?.name).toBe('set_state');
     expect(actions?.[0]?.description).toContain('flip the card');
     actions?.[0]?.run({ flip: true });
-    expect(applied).toEqual({ flip: true });
+    expect(seen.patch).toEqual({ flip: true });
   });
 
   it('registers the whole screen, and the registry can call through it', async () => {

@@ -179,6 +179,38 @@ def reset_tokens() -> None:
         _active_tts = 0
 
 
+# The only frame kinds a browser may put on the wire to Gemini Live. The gateway sends the
+# setup itself — model, persona, transcription config — and a client-sent `setup` would replace
+# ours: a different model, a different system instruction, our key. Anything not in this set is
+# dropped rather than forwarded.
+_RELAY_FRAME_KEYS = frozenset({"realtimeInput", "clientContent", "toolResponse"})
+
+# One upstream frame is a mic chunk, not a file. Past this it is either a mistake or an attempt
+# to spend the key by the megabyte.
+_MAX_RELAY_FRAME_BYTES = int(os.getenv("VOICE_MAX_FRAME_BYTES", str(256 * 1024)))
+
+
+def relay_frame_allowed(raw: str) -> bool:
+    """May this client frame be forwarded to Gemini Live?
+
+    The relay used to pipe ``client.receive_text()`` straight upstream. That handed the browser
+    the whole BidiGenerateContent surface on OUR key: a second ``{"setup": …}`` frame re-opens
+    the session with any model and any system instruction the caller likes, which is both a
+    persona escape (Wobo's guardrails replaced mid-call, for a child, over audio) and an
+    unmetered general-purpose model. Only the three frame kinds a microphone actually needs
+    travel, and a frame carrying anything else — ``setup`` above all — is dropped.
+    """
+    if len(raw.encode("utf-8", "ignore")) > _MAX_RELAY_FRAME_BYTES:
+        return False
+    try:
+        frame = json.loads(raw)
+    except (ValueError, TypeError):
+        return False
+    if not isinstance(frame, dict) or not frame:
+        return False
+    return frame.keys() <= _RELAY_FRAME_KEYS
+
+
 def _setup_message() -> dict[str, Any]:
     return {
         "setup": {
@@ -276,7 +308,13 @@ def register_voice(app: FastAPI) -> None:
 
                 async def pump_up() -> None:
                     while True:  # ends via WebSocketDisconnect when the client hangs up
-                        await gemini.send_str(await client.receive_text())
+                        raw = await client.receive_text()
+                        # Validate before forwarding: the socket is a microphone, not an open
+                        # console on our key. A refused frame is dropped silently — a real
+                        # client never sends one, and telling a prober which frame we rejected
+                        # is free reconnaissance.
+                        if relay_frame_allowed(raw):
+                            await gemini.send_str(raw)
 
                 async def pump_down() -> None:
                     async for msg in gemini:

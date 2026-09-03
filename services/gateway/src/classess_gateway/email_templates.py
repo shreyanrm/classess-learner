@@ -17,6 +17,7 @@ import html
 import os
 from collections.abc import Callable
 from typing import Any
+from urllib.parse import urlparse
 
 # --- brand-neutral config (WOBO-PLAN §8) ----------------------------------------------
 # Every user-facing name, link base and legal footer is one environment variable, so the
@@ -33,15 +34,60 @@ POSTAL_ADDRESS = os.getenv(
 )
 
 
+# Where a link in our mail may point. /v1/email/send is an INTERNAL relay, but its shared key is
+# one leak away from being a phishing primitive: a caller who can set `cta_url` gets our domain,
+# our brand and our sending reputation carrying a button to anywhere they like. So the CTA host is
+# allowlisted at the one place every link is built. Extra hosts (a docs site, a payments partner)
+# are config, never code.
+_APP_HOST = urlparse(APP_URL).hostname or ""
+_ALLOWED_LINK_HOSTS: frozenset[str] = frozenset(
+    h
+    for h in {
+        _APP_HOST.lower(),
+        (urlparse(UNSUBSCRIBE_URL).hostname or "").lower(),
+        *(
+            h.strip().lower()
+            for h in os.getenv("EMAIL_LINK_HOSTS", "").split(",")
+            if h.strip()
+        ),
+    }
+    if h
+)
+# https, plus whatever scheme APP_URL itself uses, so a local http dev host still renders.
+_ALLOWED_LINK_SCHEMES: frozenset[str] = frozenset({"https", urlparse(APP_URL).scheme or "https"})
+
+
+def _safe_url(candidate: Any, fallback: str) -> str:
+    """``candidate`` if it is a link we are willing to sign our name to, else ``fallback``.
+
+    Rejects every non-http(s) scheme — ``javascript:``, ``data:``, ``mailto:`` — and every host
+    outside the allowlist. A caller-supplied link that fails silently becomes the safe default
+    rather than an error: mail must still go out, it just goes out pointing at us.
+    """
+    url = str(candidate or "").strip()
+    if not url:
+        return fallback
+    parsed = urlparse(url)
+    if parsed.scheme.lower() not in _ALLOWED_LINK_SCHEMES:
+        return fallback
+    if (parsed.hostname or "").lower() not in _ALLOWED_LINK_HOSTS:
+        return fallback
+    return url
+
+
 def _link(data: dict[str, Any], key: str, path: str) -> str:
-    """A link the caller may override, otherwise built from ``APP_URL``."""
-    return str(data.get(key) or f"{APP_URL}{path}")
+    """A link the caller may override, otherwise built from ``APP_URL``.
+
+    The one place every CTA — HTML button and plain-text body alike — is assembled, so the host
+    check lives here and no template can route around it.
+    """
+    return _safe_url(data.get(key), f"{APP_URL}{path}")
 
 
 def _unsubscribe(data: dict[str, Any]) -> str:
     """The recipient's own opt-out link. A per-subscriber token belongs in ``data``; the
     configured list-wide URL is the fallback."""
-    return str(data.get("unsubscribe_url") or UNSUBSCRIBE_URL)
+    return _safe_url(data.get("unsubscribe_url"), UNSUBSCRIBE_URL)
 
 
 def _postal(data: dict[str, Any]) -> str:
@@ -76,8 +122,13 @@ def _hairline() -> str:
 
 
 def _button(label: str, url: str) -> str:
-    """The one ultramarine call to action — bulletproof, with a VML fallback for Outlook."""
-    label, url = _esc(label), _esc(url, quote=True)
+    """The one ultramarine call to action — bulletproof, with a VML fallback for Outlook.
+
+    Last line of defence: the URL is re-checked here (scheme + host) before it is escaped, so a
+    future template that builds a CTA without going through ``_link`` still cannot emit a
+    ``javascript:`` href or a button pointing off our domain.
+    """
+    label, url = _esc(label), _esc(_safe_url(url, APP_URL), quote=True)
     return (
         '<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>'
         f'<td align="center" bgcolor="{ULTRA}" style="border-radius:3px;">'
@@ -230,7 +281,7 @@ def _shell(
         f'<p style="margin:0 0 6px 0;font-family:{FONT};font-size:12px;color:{FOOTER};">'
         f"{_esc(postal_address)}</p>"
         f'<p style="margin:0;font-family:{FONT};font-size:12px;color:{FOOTER};">'
-        f'<a href="{_esc(unsubscribe_url, quote=True)}" style="color:{FOOTER};'
+        f'<a href="{_esc(_safe_url(unsubscribe_url, UNSUBSCRIBE_URL), quote=True)}" style="color:{FOOTER};'
         'text-decoration:underline;">unsubscribe</a></p>'
         "</td></tr></table></td></tr></table></body></html>"
     )

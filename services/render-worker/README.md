@@ -80,8 +80,9 @@ heavy, licence-encumbered deps must never load there). `RENDER_QUEUE_PATH` overr
 Some ideas out-run self-animating SVG — an equation that **morphs** term by term, a **3D** scene, a
 geometric **proof** that choreographs itself. The gateway flags those (`plexus/manim_rung.py`:
 `needs_manim(scene_plan)`, keyword + explicit-flag heuristic) and enqueues them to
-`content/cache/_manim-queue.jsonl` (`enqueue_manim`). The **flag and the queue exist today and are
-tested**; the **Manim render container** (a Python env with a `manim` install, headless Cairo/LaTeX)
+`content/cache/_manim-queue.jsonl` (`enqueue_manim`), from `plexus/validate.py`
+(`_maybe_enqueue_manim`) on every real video promoted to canonical. The **flag, the call site and
+the queue exist today and are tested**; the **Manim render container** (a Python env with a `manim` install, headless Cairo/LaTeX)
 is **future infra** — nothing here imports or runs manim yet. When that container lands it will drain
 the manim queue exactly as this worker drains the MP4 queue.
 
@@ -124,8 +125,8 @@ services/render-worker/
     Root.tsx            # Remotion entry: registers the "Explainer" composition
     Explainer.tsx       # the composition: one Sequence per beat, SMIL-pinned SVG + mixed audio
     render.ts           # CLI: build plan → decode audio → bundle → renderMedia → manifest
-  queue.py              # stdlib render-queue seam the gateway calls (see INTEGRATION.md)
-  INTEGRATION.md        # the one gateway hook (on promote-to-canonical → enqueue_render)
+  worker.py             # stdlib drain loop: pending_jobs -> render -> append done/error status
+  INTEGRATION.md        # the one gateway hook (on promote-to-canonical -> append a queue line)
   public/               # generated: decoded audio assets Remotion serves (gitignored)
 ```
 

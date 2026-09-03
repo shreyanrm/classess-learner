@@ -20,7 +20,7 @@ import {
   SeedContentProvider,
 } from './providers';
 import { LocalStateProvider, type StateProvider, SupabaseStateProvider } from './state';
-import { SupabaseRest } from './supabase';
+import { ERASABLE_TABLES, type ErasureResult, eraseSubjectRows, SupabaseRest } from './supabase';
 
 /**
  * The assembled SDK — the one surface the app consumes. It wires the identity boundary, the KGtoPG
@@ -89,6 +89,12 @@ export interface AccountLayer {
     board?: string;
     archetype_slot?: string;
   }): Promise<void>;
+  /**
+   * Erasure (DPDP). Delete every row this account owns — learner state, threads, profile cache —
+   * so "erase and start over" reaches the server and not only this device's localStorage. Reports
+   * which tables went and which did not; nothing is claimed erased that was not.
+   */
+  eraseRemoteData(): Promise<ErasureResult>;
 }
 
 /** Never-uploaded placeholder for pre-sign-in live-mode events (RLS would reject them anyway). */
@@ -224,10 +230,10 @@ export function createSdk(overrides: Partial<SdkConfig> = {}): Sdk {
           const sub = supabaseAuth.subjectId;
           if (!sub || !accountRest) return null;
           try {
-            const row = await accountRest.selectOne(
-              'profiles_cache',
-              `subject_id=eq.${sub}&select=display_name,grade,board,archetype_slot`,
-            );
+            const row = await accountRest.selectOne('profiles_cache', {
+              match: { subject_id: sub },
+              select: 'display_name,grade,board,archetype_slot',
+            });
             return (row as CachedProfile | null) ?? null;
           } catch {
             return null; // offline or unreadable — treat as no cached profile
@@ -235,6 +241,11 @@ export function createSdk(overrides: Partial<SdkConfig> = {}): Sdk {
         },
         signInWithGoogle: (redirectTo) => supabaseAuth.auth.signInWithGoogle(redirectTo),
         signOut: () => supabaseAuth.auth.signOut(),
+        eraseRemoteData: async () => {
+          const sub = supabaseAuth.subjectId;
+          if (!sub || !accountRest) return { erased: [], failed: [...ERASABLE_TABLES] };
+          return eraseSubjectRows(accountRest, sub);
+        },
         syncProfile: async (row) => {
           const sub = supabaseAuth.subjectId;
           if (!sub || !accountRest) return;

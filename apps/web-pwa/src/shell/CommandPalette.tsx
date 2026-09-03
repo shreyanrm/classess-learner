@@ -105,6 +105,18 @@ function rank(item: Item, q: string): number {
   return Number.NEGATIVE_INFINITY;
 }
 
+/**
+ * The palette's touch door. ⌘K reaches it on a laptop; on a phone and in the installed PWA there is
+ * no keyboard, so any affordance can open it by calling this — one event, no prop threading, and
+ * the palette stays the single owner of its own open state.
+ */
+export const OPEN_PALETTE_EVENT = 'clss-open-palette';
+
+export function openCommandPalette(): void {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new Event(OPEN_PALETTE_EVENT));
+}
+
 export function CommandPalette() {
   const router = useRouter();
   const chat = useWoboChat();
@@ -161,27 +173,6 @@ export function CommandPalette() {
         hint: 'Profile & settings',
         section: 'go',
         route: { name: 'you' },
-      },
-      {
-        id: 'concept-a',
-        label: 'Concept A',
-        hint: 'Stage & rail',
-        section: 'go',
-        route: { name: 'concept', which: 'a' },
-      },
-      {
-        id: 'concept-b',
-        label: 'Concept B',
-        hint: 'The thread',
-        section: 'go',
-        route: { name: 'concept', which: 'b' },
-      },
-      {
-        id: 'concept-c',
-        label: 'Concept C',
-        hint: 'The broadsheet',
-        section: 'go',
-        route: { name: 'concept', which: 'c' },
       },
     ].map((c) => ({
       id: c.id,
@@ -404,8 +395,20 @@ export function CommandPalette() {
         setOpen(false);
       }
     };
+    // ⌘K is not an affordance on a phone or in the installed PWA — there is no keyboard to press
+    // it with. Anything on screen can open the palette by dispatching this event, so the touch
+    // entry point needs no prop drilled through the shell.
+    const onOpen = () => {
+      setOpen(true);
+      setQuery('');
+      setIndex(0);
+    };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    window.addEventListener(OPEN_PALETTE_EVENT, onOpen);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener(OPEN_PALETTE_EVENT, onOpen);
+    };
   }, []);
 
   useEffect(() => {
@@ -551,11 +554,11 @@ export function CommandPalette() {
             ref={panelRef}
             {...panelMotion}
             onClick={(e) => e.stopPropagation()}
-            role="combobox"
-            aria-expanded
-            aria-haspopup="listbox"
-            aria-controls="cmdk-list"
-            aria-activedescendant={activeId}
+            // The combobox is the INPUT, not this panel: a screen reader announces the role of the
+            // element that has focus, and focus lives in the field. The wrapper is the dialog.
+            role="dialog"
+            aria-modal="true"
+            aria-label="Command palette"
             style={{
               ...FROST,
               width: 'min(600px, 100%)',
@@ -585,6 +588,12 @@ export function CommandPalette() {
                 }
               }}
               placeholder="Where to, or what…"
+              role="combobox"
+              aria-expanded
+              aria-haspopup="listbox"
+              aria-controls="cmdk-list"
+              aria-activedescendant={activeId}
+              aria-autocomplete="list"
               aria-label="Search surfaces, subjects, and actions, or ask Wobo"
               autoComplete="off"
               spellCheck={false}
@@ -596,7 +605,6 @@ export function CommandPalette() {
                 fontFamily: 'inherit',
                 border: 'none',
                 borderBottom: '0.5px solid var(--clss-hairline-on-paper)',
-                outline: 'none',
                 background: 'transparent',
                 color: surface.ink,
               }}

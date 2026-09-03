@@ -185,3 +185,89 @@ def test_classifier_seam_is_injectable() -> None:
     )
     assert resp.model == "safety.gate"
     assert resp.output["safety"]["category"] == "moderation"
+
+
+# --- the boundary: the screen belongs to the SURFACE, not to one capability ---------------
+
+
+def test_the_crisis_screen_covers_every_learner_facing_capability() -> None:
+    """Sweep regression: the screen used to be a ``capability == "wobo.turn"`` special case, so
+    the very same sentence typed into a tutor turn, a course request or an engine concept
+    reached a frontier model unscreened. Every learner-facing capability now gates."""
+    from classess_gateway.safety import LEARNER_FACING_CAPABILITIES
+
+    gw = make_gateway()
+    resp = gw.invoke("tutor.turn", wobo_req("I want to kill myself"))
+    assert resp.model == "safety.gate"
+    assert resp.output["say"] == CRISIS_SAY
+    assert resp.output["safety"]["category"] == "crisis"
+    assert resp.output["safety"]["escalated_to"] == "guardian"
+
+    # the flat-payload capabilities: the learner's words are the concept, not a context block
+    course = gw.invoke(
+        "generate.course",
+        CapabilityRequest(
+            consent_tier=ConsentTier.UN_ELEVATED,
+            payload={"topic": "how to end my life", "difficulty": "core"},
+        ),
+    )
+    assert course.model == "safety.gate"
+    assert course.output["safety"]["category"] == "crisis"
+
+    # and the set is stated, not assumed
+    assert "wobo.turn" in LEARNER_FACING_CAPABILITIES
+    assert "tutor.turn" in LEARNER_FACING_CAPABILITIES
+    assert "engine.compose" in LEARNER_FACING_CAPABILITIES
+    # a guardian is not the child: gating an adult with the child's crisis copy would be wrong
+    assert "parent.companion.turn" not in LEARNER_FACING_CAPABILITIES
+
+
+def test_a_non_learner_facing_capability_is_not_gated() -> None:
+    """The boundary cuts both ways: safety.moderate must classify the text, never refuse it."""
+    resp = make_gateway().invoke(
+        "safety.moderate",
+        CapabilityRequest(
+            consent_tier=ConsentTier.UN_ELEVATED, payload={"text": "I want to kill myself"}
+        ),
+    )
+    assert resp.model == "safety.keyword"
+    assert resp.output["crisis"] is True
+
+
+def test_inbound_screen_reads_every_field_the_prompt_builder_reads() -> None:
+    """Sweep regression: ``inbound_text`` enumerated two keys by hand while
+    ``_build_user_prompt`` interpolated a dozen, so a crisis line typed into a canvas step, a
+    target label or a remembered fact walked straight past the screen."""
+    from classess_gateway.safety import screen_inbound
+
+    for context in (
+        {"canvas": {"equation": "I want to die", "steps": []}},
+        {"canvas": {"steps": ["2x = 4", "no reason to live"]}},
+        {"targets": [{"id": "t1", "kind": "step", "label": "I want to hurt myself"}]},
+        {"page": {"state": {"note": "she said she wants to end my life"}}},
+        {"lifetime": {"facts": ["told me they think about self harm"]}},
+    ):
+        gated = screen_inbound({"context": context})
+        assert gated is not None, context
+        assert gated["safety"]["category"] == "crisis", context
+
+
+def test_outbound_screen_covers_action_text_and_the_viz_caption() -> None:
+    """Sweep regression: only ``say`` was screened, so the model could put anything it liked on
+    the page itself — a written note, a spoken line, a diagram caption."""
+    from classess_gateway.safety import screen_outbound
+
+    clean_say = "look at the step where you moved the 3"
+    for output in (
+        {"say": clean_say, "actions": [{"type": "write", "targetId": "x", "text": "you are shit"}]},
+        {"say": clean_say, "actions": [{"type": "speak", "text": "send nudes"}]},
+        {
+            "say": clean_say,
+            "actions": [],
+            "viz": {"kind": "diagram", "spec": {"svg": "<svg/>", "caption": "porn"}},
+        },
+    ):
+        screened = screen_outbound(output)
+        assert screened["say"] == OUTBOUND_REPLACEMENT_SAY, output
+        assert screened["actions"] == []
+        assert screened["safety"]["action"] == "blocked"

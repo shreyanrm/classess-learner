@@ -4,6 +4,10 @@ import {
   armLasso,
   chipPosition,
   DEFAULT_HOTKEY,
+  FOCUS_FROST,
+  FOCUS_RING_FADE_MS,
+  FOCUS_RING_WIDTH,
+  focusRingPath,
   isTypingTarget,
   lassoArmed,
   matchesHotkey,
@@ -184,5 +188,66 @@ describe('resolving a circle against the registry', () => {
     const focus = resolveFocus({ kind: 'lasso', rect: rect(900, 900, 10, 10), registry });
     expect(focus.targetIds).toEqual([]);
     expect(focus.text).toBe('');
+  });
+});
+
+// --- Wave 5 polish: the region she circled is a ring, never a fill --------------------------------
+
+describe('the focus region is drawn as her own line round it', () => {
+  const lasso = [
+    { x: 100, y: 100 },
+    { x: 220, y: 96 },
+    { x: 240, y: 200 },
+    { x: 110, y: 210 },
+  ];
+
+  it('is a 1.5 px line with at most a 4% ultramarine frost — never a warm fill', () => {
+    expect(FOCUS_RING_WIDTH).toBe(1.5);
+    const [, r, g, b, alpha] = /rgba\((\d+),(\d+),(\d+),([\d.]+)\)/.exec(FOCUS_FROST) ?? [];
+    expect(Number(alpha)).toBeLessThanOrEqual(0.04);
+    // Ultramarine (#1F35E0): blue-dominant. A salmon fill would be red-dominant.
+    expect(Number(b)).toBeGreaterThan(Number(r));
+    expect(Number(b)).toBeGreaterThan(Number(g));
+    expect(FOCUS_FROST).toBe('rgba(31,53,224,0.04)');
+  });
+
+  it('follows the path the finger took, and closes it', () => {
+    const focus = { id: 'focus-1', rect: rect(100, 96, 140, 114), path: lasso };
+    const d = focusRingPath(focus);
+    expect(d.startsWith('M ')).toBe(true);
+    expect(d.trimEnd().endsWith('Z')).toBe(true);
+    const xs = (d.match(/-?\d+(?:\.\d+)?/g) ?? []).map(Number).filter((_, i) => i % 2 === 0);
+    // Within a wobble of the region the learner drew, not a box round the whole page.
+    expect(Math.min(...xs)).toBeGreaterThan(90);
+    expect(Math.max(...xs)).toBeLessThan(250);
+  });
+
+  it('is hand-wobbled, and the same hand every time for one region', () => {
+    const focus = { id: 'focus-1', rect: rect(100, 96, 140, 114), path: lasso };
+    expect(focusRingPath(focus)).toBe(focusRingPath(focus));
+    // A different region is a different hand.
+    expect(focusRingPath({ ...focus, id: 'focus-2' })).not.toBe(focusRingPath(focus));
+    // And it is not the bare polyline: the ink strays from the points the finger passed through.
+    expect(focusRingPath(focus)).not.toBe(pathD(lasso));
+  });
+
+  it('rings a region that never had a path — a selection, a hover', () => {
+    const d = focusRingPath({ id: 'focus-3', rect: rect(300, 300, 120, 40) });
+    expect(d.length).toBeGreaterThan(40);
+    expect(d.trimEnd().endsWith('Z')).toBe(true);
+  });
+
+  it('travels with the thing it is about', () => {
+    const focus = { id: 'focus-4', rect: rect(100, 96, 140, 114), path: lasso };
+    const still = focusRingPath(focus);
+    const moved = focusRingPath(focus, { x: 0, y: -300 });
+    expect(moved).not.toBe(still);
+    const ysOf = (d: string) =>
+      (d.match(/-?\d+(?:\.\d+)?/g) ?? []).map(Number).filter((_, i) => i % 2 === 1);
+    expect(Math.min(...ysOf(moved))).toBeCloseTo(Math.min(...ysOf(still)) - 300, 1);
+  });
+
+  it('fades after the turn rather than vanishing with it', () => {
+    expect(FOCUS_RING_FADE_MS).toBeGreaterThan(200);
   });
 });

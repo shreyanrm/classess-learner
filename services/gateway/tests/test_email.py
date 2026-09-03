@@ -283,3 +283,77 @@ def test_a_bad_token_never_turns_the_endpoint_into_a_401(monkeypatch: pytest.Mon
         headers={**INTERNAL_HEADER, "Authorization": "Bearer not-a-real-token"},
     )
     assert r.status_code == 200
+
+
+# --- sweep: the internal relay must not be a phishing primitive -------------------------
+
+
+def test_a_caller_supplied_cta_cannot_point_off_our_domain() -> None:
+    """``/v1/email/send`` carries our domain, our brand and our sending reputation. A caller who
+    can set ``cta_url`` would otherwise get a button to anywhere they like, in HTML and in the
+    plain-text body alike."""
+    from classess_gateway import email_templates as t
+
+    for hostile in (
+        "https://evil.example/collect",
+        "http://evil.example/collect",
+        "javascript:alert(1)",
+        "data:text/html,<script>alert(1)</script>",
+        "//evil.example/collect",
+    ):
+        out = t.render("course_ready", {"cta_url": hostile})
+        assert "evil.example" not in out["html"], hostile
+        assert "evil.example" not in out["text"], hostile
+        assert "javascript:" not in out["html"].lower(), hostile
+        assert "data:text/html" not in out["html"].lower(), hostile
+        # it falls back to us rather than erroring — mail still goes out
+        assert t.APP_URL in out["html"]
+
+
+def test_a_hostile_unsubscribe_url_falls_back_to_the_configured_one() -> None:
+    from classess_gateway import email_templates as t
+
+    out = t.render("course_ready", {"unsubscribe_url": "https://evil.example/u"})
+    assert "evil.example" not in out["html"]
+    assert t.UNSUBSCRIBE_URL in out["html"]
+
+
+def test_the_button_re_checks_its_url_even_when_a_template_bypasses_link() -> None:
+    """Last line of defence: a future template that builds a CTA by hand still cannot emit a
+    javascript: href."""
+    from classess_gateway import email_templates as t
+
+    assert "javascript:" not in t._button("go", "javascript:alert(1)").lower()
+    assert t.APP_URL in t._button("go", "javascript:alert(1)")
+
+
+def test_an_on_domain_cta_is_still_honoured() -> None:
+    """The allowlist is a filter, not a ban: our own links must survive it."""
+    import html
+
+    from classess_gateway import email_templates as t
+
+    mine = f"{t.APP_URL}/learn/photosynthesis?utm=abc"
+    out = t.render("course_ready", {"cta_url": mine})
+    assert html.escape(mine, quote=True) in out["html"]
+    assert mine in out["text"]
+
+
+def test_recipient_addresses_are_hashed_in_the_log(caplog) -> None:
+    """Our recipients are children and their guardians: the address never lands in a log line."""
+    import logging
+
+    from classess_gateway.email import send_email, to_hash
+
+    with caplog.at_level(logging.INFO, logger="classess.gateway.email"):
+        result = send_email("course_ready", "kid@example.test", {})
+    assert result["ok"] is True
+
+    lines = [r for r in caplog.records if hasattr(r, "fields")]
+    assert lines
+    for record in lines:
+        assert "to" not in record.fields
+        assert record.fields.get("to_hash") == to_hash("kid@example.test")
+    # normalised and non-reversible
+    assert to_hash("KID@Example.Test ") == to_hash("kid@example.test")
+    assert "kid@example.test" not in to_hash("kid@example.test")

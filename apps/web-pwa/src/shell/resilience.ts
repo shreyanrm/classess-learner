@@ -47,7 +47,7 @@ function connection(): NetworkInformation | undefined {
 }
 
 /** Snapshot the live browser signals. SSR-safe: no window → full fidelity, online. */
-export function readSignals(): EnvSignals {
+function readSignals(): EnvSignals {
   const reducedMotion =
     typeof window !== 'undefined' &&
     typeof window.matchMedia === 'function' &&

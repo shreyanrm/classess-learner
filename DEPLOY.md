@@ -148,11 +148,22 @@ One-time setup:
 vercel login
 vercel link                       # link the repo to the project
 
-# Secrets only — the non-secret flags are committed in apps/web-pwa/.env.production:
-vercel env add VITE_SUPABASE_ANON_KEY production   # publishable key, never service role
+# The production env in one step — sets VITE_SUPABASE_URL, VITE_GATEWAY_URL, VITE_DEV_AUTH,
+# VITE_PERSIST_MODE and VITE_LLM_MODE from the committed apps/web-pwa/.env.production (so the
+# project env can never drift from the runbook), and the anon key only if you pass it:
+bash scripts/set-vercel-env.sh "<supabase-anon-key>"   # publishable key, never service role
+
+# …or set the key by hand and skip the argument on later runs:
+vercel env add VITE_SUPABASE_ANON_KEY production
 
 vercel domains add learner.classess.com
 ```
+
+`scripts/set-vercel-env.sh` is committed and holds **no** credential — the anon key comes
+from `$1` (or `VITE_SUPABASE_ANON_KEY` in the environment) and every other value is read out
+of `.env.production`. It finishes with a `vercel env pull` verification that prints the flag
+values and reports the anon key only as `<set>` / `<MISSING>`. Rerun it after any change to
+`.env.production`, then redeploy.
 
 **DNS (owner action, at the domain's DNS provider):**
 
@@ -172,7 +183,7 @@ Hobby plan caps daily CLI deploys, which is why the git integration is the path)
 The one CSP lives in the root `vercel.json`:
 
 ```
-default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com; media-src 'self' data: blob:; worker-src 'self'; manifest-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://classess-learner-production.up.railway.app wss://classess-learner-production.up.railway.app https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://*.googleusercontent.com; media-src 'self' data: blob:; worker-src 'self'; manifest-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://classess-learner-production.up.railway.app wss://classess-learner-production.up.railway.app https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
 ```
 
 Why each non-obvious source is there — remove one and something breaks silently:
@@ -184,9 +195,11 @@ Why each non-obvious source is there — remove one and something breaks silentl
   own `.wasm` and package archives over `fetch`.
 - `data:` in `media-src` — generated narration and video are handed to the player as
   data URIs; without it they mute with no error.
-- `fonts.googleapis.com` (`style-src`, `connect-src`) and `fonts.gstatic.com`
-  (`font-src`, `connect-src`) — the Plus Jakarta Sans + Caveat stylesheet and its
-  font files. These must stay for the type to load.
+- **No font CDN.** Plus Jakarta Sans and Caveat are bundled (`@fontsource-variable/*`,
+  imported from `apps/web-pwa/src/main.tsx`) and served from our own origin, so
+  `font-src 'self'` is the whole story. Do not re-add `fonts.googleapis.com` /
+  `fonts.gstatic.com`: a font `<link>` is a render-blocking third-party round-trip on
+  the first paint of a cheap phone.
 - the Railway host over `https` **and** `wss` — the gateway plus the
   `/v1/voice/relay` WebSocket.
 
@@ -235,6 +248,16 @@ in-memory, so a second replica would split them. Move both to Redis before scali
 `node_modules`, `apps`, `packages`, screenshots and caches (630 MB → a few MB; the
 oversized upload is what made earlier deploys time out mid-transfer), and it excludes
 every `.env` file — the gateway takes all values from Railway service variables.
+
+**Two content files must ride along.** `content/catalogs/concepts.json` (the concept-id
+registry) and `content/factbase/facts.v1.jsonl` (the verified-fact base behind the
+correctness gate) are read at runtime, and both modules degrade *silently* when the file is
+missing — the fact-check gate simply stops gating. The Dockerfile COPYs them to
+`/app/content/...` and points `PLEXUS_CONCEPTS_PATH` / `FACTBASE_DIR` at the copies (the
+package installs non-editable, so relative discovery from `__file__` would land inside
+`/app/.venv`). Neither `.dockerignore` nor `.railwayignore` may exclude those two
+directories; only `content/cache` — written at runtime — stays out.
+`services/gateway/tests/test_deploy_config.py` fails if any of that drifts.
 
 Deploying stale code is the failure mode to watch for: if a fix does not appear,
 confirm the deploy actually rebuilt (`railway logs`) before debugging the code.

@@ -15,13 +15,58 @@ const CDN = `https://cdn.jsdelivr.net/pyodide/${PYODIDE_VERSION}/full/`;
 
 let pyodidePromise: Promise<Pyodide> | null = null;
 
+/**
+ * Cut the bridge from Python back into the page.
+ *
+ * Pyodide runs on the page's own origin, and by default it hands Python a live `js` module that IS
+ * `globalThis`: `from js import document` reaches the DOM, `js.localStorage` reaches the learner's
+ * dossier and their session token, and `js.fetch` is a same-origin request with their cookies. The
+ * code being run is typed into an editor by a child — or arrives in a generated exercise — so it
+ * must not be able to reach any of that.
+ *
+ * Two locks, because either alone is soft:
+ *  1. `jsglobals: new Map()` — the namespace `js` is built from is an empty map, not `globalThis`,
+ *     so even a re-import finds nothing to reach.
+ *  2. An import hook that refuses `js` and `pyodide_js` outright, so the failure is loud and early
+ *     ("ImportError") instead of a mysterious AttributeError three lines later.
+ *
+ * ponytail: the stronger isolation is a Web Worker (a separate global scope with no DOM at all),
+ * which is the upgrade path if the CS ramp ever needs to run untrusted code from other learners.
+ * Both locks below survive that move unchanged.
+ */
+export const ISOLATION = `
+def _install_host_bridge_guard():
+    import sys
+
+    blocked = {'js', 'pyodide_js'}
+
+    class _NoHostBridge:
+        """Refuses the modules that bridge Python back into the page."""
+
+        def find_spec(self, fullname, path=None, target=None):
+            if fullname.split('.')[0] in blocked:
+                raise ImportError(fullname + ' is not available here')
+            return None
+
+    for name in [m for m in sys.modules if m.split('.')[0] in blocked]:
+        del sys.modules[name]
+    sys.meta_path.insert(0, _NoHostBridge())
+
+_install_host_bridge_guard()
+del _install_host_bridge_guard
+`;
+
 /** Loads (once) and returns the shared Pyodide instance. The WASM is fetched lazily from the CDN. */
 export function getPyodide(): Promise<Pyodide> {
   if (!pyodidePromise) {
     pyodidePromise = (async () => {
       // A runtime URL string keeps Vite/TS from trying to resolve or bundle the module.
       const mod = await import(/* @vite-ignore */ `${CDN}pyodide.mjs`);
-      return mod.loadPyodide({ indexURL: CDN });
+      // jsglobals is the object the `js` module is a view of. An empty Map means Python's view of
+      // the page is empty — no document, no localStorage, no fetch, no cookies.
+      const py = await mod.loadPyodide({ indexURL: CDN, jsglobals: new Map() });
+      py.runPython(ISOLATION);
+      return py;
     })().catch((e) => {
       // let the next Run retry a cold load rather than latch a rejected promise forever
       pyodidePromise = null;

@@ -422,10 +422,10 @@ export class SupabaseStateProvider extends LocalStateProvider {
   override async hydrate(): Promise<LearnerState> {
     const local = this.loadCache();
     try {
-      const row = await this.rest.selectOne(
-        'learner_state',
-        `subject_id=eq.${this.subjectId}&select=*`,
-      );
+      const row = await this.rest.selectOne('learner_state', {
+        match: { subject_id: this.subjectId },
+        select: '*',
+      });
       const merged = row ? mergeLearnerState(local, stateFromRow(row)) : local;
       super.save(merged);
       await this.upsertState(merged);
@@ -446,17 +446,17 @@ export class SupabaseStateProvider extends LocalStateProvider {
 
   /** The thread row, falling back to its pre-rebrand id so an existing account keeps its history. */
   private async selectThreadRow(thread: string): Promise<Record<string, unknown> | null> {
-    const row = await this.rest.selectOne(
-      'learner_threads',
-      `subject_id=eq.${this.subjectId}&thread=eq.${thread}&select=*`,
-    );
+    const row = await this.rest.selectOne('learner_threads', {
+      match: { subject_id: this.subjectId, thread },
+      select: '*',
+    });
     if (row) return row;
     const legacy = LEGACY_THREAD_IDS[thread];
     if (!legacy) return null;
-    return this.rest.selectOne(
-      'learner_threads',
-      `subject_id=eq.${this.subjectId}&thread=eq.${legacy}&select=*`,
-    );
+    return this.rest.selectOne('learner_threads', {
+      match: { subject_id: this.subjectId, thread: legacy },
+      select: '*',
+    });
   }
 
   override async hydrateThread(thread: string): Promise<ThreadSnapshot | null> {

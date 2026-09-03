@@ -38,7 +38,7 @@ export type Route =
   | { name: 'sandbox'; topicId?: string }
   | { name: 'progress' }
   | { name: 'you' }
-  | { name: 'concept'; which: 'a' | 'b' | 'c' | 'engines' };
+  | { name: 'concept'; which: 'engines' };
 
 const HOME: Route = { name: 'home' };
 
@@ -73,7 +73,9 @@ const PLAIN_ROUTES = new Set([
 ]);
 
 const INTENTS = new Set(['learn', 'practice']);
-const CONCEPTS = new Set(['a', 'b', 'c', 'engines']);
+// The A/B/C design prototypes are gone (Home is Concept B, productionised); the engine gallery is
+// the only /concept address left, and an old bookmark to /concept/a now falls through to home.
+const CONCEPTS = new Set(['engines']);
 
 /** The route a path addresses, or null when the path is not one of ours. */
 export function pathToRoute(path: string): Route | null {
@@ -106,7 +108,7 @@ export function pathToRoute(path: string): Route | null {
   if (head === 'concept') {
     const which = rest[0];
     if (!which || rest.length !== 1 || !CONCEPTS.has(which)) return null;
-    return { name: 'concept', which: which as 'a' | 'b' | 'c' | 'engines' };
+    return { name: 'concept', which: 'engines' };
   }
   return null;
 }

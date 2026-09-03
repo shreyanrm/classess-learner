@@ -11,6 +11,9 @@ const PORT = 5199;
 
 export default defineConfig({
   testDir: './tests',
+  // The cross-browser matrix lives beside the journey specs but is a separate suite with its own
+  // config, port and engines (tests/x-browser.config.ts) — `test:e2e` must not pull it in.
+  testIgnore: ['x-browser.spec.ts'],
   fullyParallel: false,
   workers: 1,
   forbidOnly: !!process.env.CI,

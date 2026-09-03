@@ -32,6 +32,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
 import { CardBody, cardTitle, lead, Scrubber, Stage, whisper } from '../screens/course/shared';
 import { sfx } from '../ui/sound';
+import { SafeSvg } from './DiagramView';
 
 // --- the spec (discriminated by `kind`) -----------------------------------------------------------
 
@@ -242,6 +243,23 @@ export function isBalanced(
   return true;
 }
 
+/**
+ * Well-formedness gate for a model-supplied SMILES, mirroring the gateway's `valid_smiles`
+ * (services/gateway/.../plexus/chem.py): allowed characters only, and a length bound.
+ *
+ * RDKit is a WASM parser handed a string the model wrote. Refusing anything outside the SMILES
+ * alphabet before it gets there keeps the renderer's input inside the shape it documents, and the
+ * bound stops a pathological string from being the thing the tab spends its frame budget on.
+ */
+const SMILES_ALLOWED = /^[A-Za-z0-9()[\]=#\-+@%./\\:]+$/;
+const SMILES_MAX = 300;
+
+export function validSmiles(raw: unknown): boolean {
+  if (typeof raw !== 'string') return false;
+  const s = raw.trim();
+  return s.length > 0 && s.length <= SMILES_MAX && SMILES_ALLOWED.test(s);
+}
+
 function parseTerm(raw: unknown): ChemTerm | null {
   if (!isRecord(raw) || !str(raw.formula)) return null;
   if (parseFormula(raw.formula) === null) return null;
@@ -307,7 +325,7 @@ export function parseChemScene(raw: unknown): ChemSceneSpec | null {
   }
 
   if (kind === 'structure') {
-    if (!str(src.smiles)) return null;
+    if (!str(src.smiles) || !validSmiles(src.smiles)) return null;
     return {
       kind: 'structure',
       id,
@@ -1076,9 +1094,14 @@ function Structure({ spec, hue }: { spec: ChemStructureSpec; hue: string }) {
             }}
           >
             {svg ? (
-              // RDKit emits a self-contained inline <svg>; it is library output, not model text
-              // biome-ignore lint/security/noDangerouslySetInnerHtml: RDKit-js library SVG output
-              <div style={{ maxWidth: '100%' }} dangerouslySetInnerHTML={{ __html: svg }} />
+              // RDKit's output is a string built from a MODEL-SUPPLIED SMILES, so it goes through
+              // the same parse-and-sanitize door as every other generated SVG (SafeSvg): the DOM
+              // tree is adopted from a DOMParser root, never injected as HTML.
+              <SafeSvg
+                svg={svg}
+                label={`the 2D structure of ${spec.label ?? spec.smiles}`}
+                style={{ maxWidth: '100%' }}
+              />
             ) : failed ? (
               <div style={{ textAlign: 'center', color: 'var(--clss-ink-700)' }}>
                 <div style={{ fontSize: '1.1rem', fontWeight: 560, color: 'var(--clss-ink-900)' }}>

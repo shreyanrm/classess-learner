@@ -13,15 +13,9 @@
 
 import { expect, type Page, test } from '@playwright/test';
 
-declare global {
-  interface Window {
-    __woboBench?: {
-      ready: boolean;
-      play(name: string, options?: { instant?: boolean }): void;
-      ledger(): { id: string; kind: string; anchor: string }[];
-    };
-  }
-}
+// The bench API is declared once, where it is implemented (`src/wobo/board-bench.tsx`
+// exports `BenchApi` and declares `window.__woboBench`). Re-declaring a narrower shape
+// here made the two definitions conflict the moment the specs were type-checked.
 
 async function playInstantly(page: Page, name: string): Promise<void> {
   await page.goto(`/board-bench.html#board-bench/${name}/instant`);

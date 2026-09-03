@@ -115,7 +115,9 @@ export const chrome = {
   onInk: '#FFFFFF',
   inkHover: '#26272C',
   inkSoft: '#5C5E66',
-  inkFaint: '#989AA4',
+  // inkFaint carries real informational text (captions, meta, hints), so it must clear WCAG AA
+  // (4.5:1) on paper — it is the ink[300] whisper value, not a decorative grey.
+  inkFaint: ink[300],
   faint: '#B9BBC6',
   /** Soft pointer spotlight on cards — a dark wash on paper, a light glow on graphite. */
   spotlight: 'rgba(18,19,22,0.05)',
@@ -143,7 +145,8 @@ export const dark: Record<string, string> = {
   '--clss-on-ink': '#17181C',
   '--clss-ink-hover': '#E4E5EA',
   '--clss-ink-soft': '#B4B6BF',
-  '--clss-ink-faint': '#7A7D88',
+  // AA on graphite — the same whisper value as --clss-ink-300 below (4.97:1 on #17181C).
+  '--clss-ink-faint': '#868790',
   '--clss-faint': '#585A63',
   // token ink scale (inverts: darkest → lightest)
   '--clss-ink-900': '#F2F2F5',
@@ -208,10 +211,19 @@ export const space = {
 } as const;
 
 // --- Type: Google Sans Flex for all product UI. Caveat only as Wobo's sparse hand. ---------------
+/**
+ * The stacks. Google Sans Flex leads (DECISIONS.md: drop the licensed file into
+ * `apps/web-pwa/public/fonts/` and it activates with no code change); until then the bundled
+ * @fontsource-variable faces carry it — `… Variable` is the family name a variable @fontsource
+ * package registers, with the static family kept after it so an already-installed system copy
+ * still resolves. Every face is served from our own origin; nothing here reaches a font CDN.
+ */
 export const fontFamily = {
-  display: "'Google Sans Flex', 'Google Sans Text', 'Plus Jakarta Sans', system-ui, sans-serif",
-  system: "'Google Sans Flex', 'Google Sans Text', 'Plus Jakarta Sans', system-ui, sans-serif",
-  handwritten: "'Caveat', cursive",
+  display:
+    "'Google Sans Flex', 'Google Sans Text', 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif",
+  system:
+    "'Google Sans Flex', 'Google Sans Text', 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif",
+  handwritten: "'Caveat Variable', 'Caveat', cursive",
 } as const;
 
 /** Fluid type scale (clamp). Sentence case everywhere; generous line-height. */

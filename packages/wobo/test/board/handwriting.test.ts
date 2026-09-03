@@ -3,16 +3,21 @@ import {
   fallbackLines,
   flattenContours,
   glyphAt,
+  HAND_SYMBOLS,
   type HandFont,
   handFont,
+  hasScripts,
   isDrawnSymbol,
   layoutTex,
   measureText,
   orderContours,
   parseHandFont,
+  scriptText,
   setHandFont,
   startNearTopLeft,
+  texPlainText,
   wrapText,
+  writeScripted,
   writeText,
 } from '../../src/board/handwriting';
 import type { BoardPoint } from '../../src/board/schema';
@@ -186,5 +191,106 @@ describe('the fallback when the font never arrives', () => {
     const lines = fallbackLines('the two small squares fill the big one exactly', 20);
     expect(lines.length).toBeGreaterThan(1);
     for (const line of lines) expect(line.length).toBeLessThanOrEqual(24);
+  });
+});
+
+// --- Wave 5 polish: every symbol in the pipelines' vocabulary renders ------------------------------
+
+/** A font that carries nothing at all — every glyph misses, so only the hand's own paths remain. */
+const EMPTY_FONT: HandFont = {
+  unitsPerEm: 1000,
+  charToGlyph: () => ({
+    index: 0,
+    advanceWidth: 500,
+    getPath: () => ({ commands: [], toPathData: () => '' }),
+  }),
+};
+
+describe('a glyph Caveat does not carry is still written', () => {
+  /** The vocabulary the TeX subset and the domain pipelines can put on a board. */
+  const VOCABULARY = [
+    'Ω',
+    '→',
+    '≤',
+    '≥',
+    '≠',
+    '×',
+    '·',
+    '°',
+    'π',
+    'θ',
+    'Δ',
+    'α',
+    'β',
+    'γ',
+    'Σ',
+    '√',
+    '∫',
+    '∞',
+    '÷',
+    '±',
+    '≈',
+  ];
+
+  it.each(VOCABULARY)('draws %s by hand, with real strokes', (ch) => {
+    const { glyph, advance } = glyphAt(EMPTY_FONT, ch, 40, [0, 100]);
+    expect(isDrawnSymbol(ch)).toBe(true);
+    expect(glyph).not.toBeNull();
+    expect(glyph?.trace.length ?? 0).toBeGreaterThan(0);
+    expect(glyph?.trace.every((t) => t.length > 0)).toBe(true);
+    expect(glyph?.drawn).toBe(true);
+    expect(advance).toBeGreaterThan(0);
+  });
+
+  it('every symbol the TeX subset maps to is one she can draw', () => {
+    for (const ch of HAND_SYMBOLS) expect(isDrawnSymbol(ch)).toBe(true);
+    for (const ch of VOCABULARY) expect(HAND_SYMBOLS).toContain(ch);
+  });
+
+  it('a character with no outline and no hand is still SOMETHING, never nothing', () => {
+    const { glyph, advance } = glyphAt(EMPTY_FONT, '字', 40, [0, 100]);
+    expect(glyph).not.toBeNull();
+    expect(glyph?.trace.length ?? 0).toBeGreaterThan(0);
+    expect(advance).toBeGreaterThan(0);
+  });
+
+  it('measures a line of symbols the same width it writes it', () => {
+    const line = 'θ ≤ 90°';
+    const measured = measureText(EMPTY_FONT, line, 40);
+    const written = writeText(EMPTY_FONT, line, [0, 0], { size: 40 });
+    expect(measured).toBeCloseTo(written.width, 3);
+  });
+});
+
+describe('powers and indices in a plain written line', () => {
+  it('spots the lines that carry them', () => {
+    expect(hasScripts('a^2 + b^2 = c^2')).toBe(true);
+    expect(hasScripts('x_1')).toBe(true);
+    expect(hasScripts('so c = 5')).toBe(false);
+  });
+
+  it('raises a power and drops an index', () => {
+    expect(scriptText('a^2 + b^2 = c^2')).toBe('a² + b² = c²');
+    expect(scriptText('x_1')).toBe('x₁');
+    expect(scriptText('v_x^2')).toBe('vₓ²');
+    expect(scriptText('CO_2')).toBe('CO₂');
+  });
+
+  it('leaves a group alone when any of it has no raised form', () => {
+    expect(scriptText('e^{kt}')).toBe('e^{kt}');
+  });
+
+  it('turns an equation into the plain line it degrades to', () => {
+    expect(texPlainText('a^2 + b^2 = c^2')).toBe('a² + b² = c²');
+    expect(texPlainText('\\theta \\le 90\\degree')).toBe('θ ≤ 90°');
+  });
+
+  it('writes them in her own hand when the font is there', () => {
+    const laid = writeScripted(font, 'a^2 + b^2 = c^2', [0, 0], 40);
+    expect(laid.glyphs.length).toBeGreaterThan(6);
+    const tops = laid.glyphs.map((g) => g.box.y);
+    // The raised twos ride above the letters they belong to.
+    expect(Math.min(...tops)).toBeLessThan(Math.max(...tops));
+    expect(laid.length).toBeGreaterThan(0);
   });
 });

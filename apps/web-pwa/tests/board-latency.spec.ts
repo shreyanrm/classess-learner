@@ -16,20 +16,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expect, test } from '@playwright/test';
 
-declare global {
-  interface Window {
-    __woboBench?: {
-      names: string[];
-      play(name: string, options?: { instant?: boolean }): void;
-      ready: boolean;
-      firstStrokeMs: number | null;
-      firstMarkFromLoadMs: number | null;
-      ledger(): { id: string; kind: string; anchor: string }[];
-      refused(): string[];
-      current: string | null;
-    };
-  }
-}
+// The bench API is declared once, where it is implemented (`src/wobo/board-bench.tsx`
+// exports `BenchApi` and declares `window.__woboBench`). Re-declaring a narrower shape
+// here made the two definitions conflict the moment the specs were type-checked.
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const GOLDENS = join(HERE, '../src/wobo/goldens');

@@ -6,6 +6,7 @@
  * who learns beside you, the note home, the plan, and three quiet dials at the end.
  */
 
+import { fontFamily } from '@classess/config';
 import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -34,6 +35,7 @@ import {
   saveProactivity,
 } from '../store/mind';
 import { FREEZE_BUDGET, levelInfo, useProgress } from '../store/progress';
+import { inviteLink, referralCode } from '../store/referral';
 import { forgetScope } from '../store/scope';
 import { useSdk } from '../store/sdk';
 import { LevelBadge } from '../ui/AppHeader';
@@ -113,7 +115,7 @@ const PLAN_JEWEL_CSS = `
 }
 [data-theme="dark"] .plan-jewel::before { opacity: 0.78; }
 .plan-forever {
-  font-family: 'Caveat', cursive;
+  font-family: ${fontFamily.handwritten};
   font-size: 1.4rem;
   font-weight: 600;
   line-height: 1;
@@ -821,11 +823,12 @@ export function You() {
   // --- invites -----------------------------------------------------------
   const [copied, setCopied] = useState<'friend' | 'parent' | null>(null);
   const copyInvite = (kind: 'friend' | 'parent') => {
-    const via = profile.name.toLowerCase().replace(/\s+/g, '-');
     // Brand-neutral by construction (WOBO-PLAN §8): the invite points at wherever this app is
     // actually served, so the domain is one env change and never a name baked into a screen.
-    const origin = (import.meta.env.VITE_APP_URL as string | undefined) || window.location.origin;
-    const link = `${origin}/join?via=${encodeURIComponent(via)}&as=${kind}`;
+    // The `via` parameter is an opaque code, never the learner's name — an invite gets forwarded,
+    // and a minor's name must not travel with it.
+    const origin = import.meta.env.VITE_APP_URL || window.location.origin;
+    const link = inviteLink(origin, kind, referralCode());
     navigator.clipboard.writeText(link).catch(() => {
       // clipboard unavailable — the invitation still stands
     });
@@ -926,15 +929,29 @@ export function You() {
   };
   // Additive sign-in from You — a local learner keeps everything and gains a cross-device identity.
   const signInGoogle = () => void account?.signInWithGoogle(window.location.origin);
+  const [erasing, setErasing] = useState(false);
+  /**
+   * Erase, for real. Clearing localStorage only hides a minor's record from this device; the rows
+   * under their subject id — state, threads, the profile cache — stay on the server. So the server
+   * goes FIRST (while the session token still exists), and the device is cleared after, whether or
+   * not the network cooperated. An offline erase still empties the device, and the account rows are
+   * reachable again from any signed-in device.
+   */
   const startOver = () => {
-    const keys: string[] = [];
-    for (let i = 0; i < localStorage.length; i += 1) {
-      const k = localStorage.key(i);
-      if (k?.startsWith('clss-')) keys.push(k);
-    }
-    for (const k of keys) localStorage.removeItem(k);
-    // ONBOARDED_KEY is gone — the app reopens on onboarding, genuinely fresh.
-    window.location.reload();
+    if (erasing) return;
+    setErasing(true);
+    const clearDevice = () => {
+      const keys: string[] = [];
+      for (let i = 0; i < localStorage.length; i += 1) {
+        const k = localStorage.key(i);
+        if (k?.startsWith('clss-')) keys.push(k);
+      }
+      for (const k of keys) localStorage.removeItem(k);
+      // ONBOARDED_KEY is gone — the app reopens on onboarding, genuinely fresh.
+      window.location.reload();
+    };
+    const remote = account?.eraseRemoteData() ?? Promise.resolve(null);
+    void remote.catch(() => null).then(clearDevice);
   };
 
   // --- Wobo reads this page ---------------------------------------------
@@ -1890,12 +1907,17 @@ export function You() {
                     style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
                   >
                     <div style={bodyLine}>
-                      this clears your name, photo, progress, and settings from this device. it
-                      cannot be undone.
+                      this deletes your name, photo, progress, and settings — from this device and
+                      from your account on our servers. it cannot be undone.
                     </div>
                     <div style={{ display: 'flex', gap: 10 }}>
-                      <MagneticButton size="sm" variant="quiet" onClick={startOver}>
-                        erase and start over
+                      <MagneticButton
+                        size="sm"
+                        variant="quiet"
+                        onClick={startOver}
+                        disabled={erasing}
+                      >
+                        {erasing ? 'erasing…' : 'erase and start over'}
                       </MagneticButton>
                       <MagneticButton
                         size="sm"

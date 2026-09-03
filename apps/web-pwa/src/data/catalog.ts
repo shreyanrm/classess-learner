@@ -845,14 +845,11 @@ const class8Science: Chapter[] = [
 const ofSubject = (chapters: Chapter[], subjectId: string): Chapter[] =>
   chapters.filter((c) => c.subjectId === subjectId).map((c, i) => ({ ...c, index: i + 1 }));
 
-export const physicsChapters: Chapter[] = ofSubject(class8Science, 'physics');
-export const chemistryChapters: Chapter[] = ofSubject(class8Science, 'chemistry');
-export const biologyChapters: Chapter[] = ofSubject(class8Science, 'biology');
-/** @deprecated pre-split alias — the canonical six own the catalog now. */
-export const scienceChapters: Chapter[] = class8Science;
-
+const physicsChapters: Chapter[] = ofSubject(class8Science, 'physics');
+const chemistryChapters: Chapter[] = ofSubject(class8Science, 'chemistry');
+const biologyChapters: Chapter[] = ofSubject(class8Science, 'biology');
 /** CBSE Class 8 — Computer Science (the SUBJECTS.md ramp: blocks → patterns → the web). */
-export const csChapters: Chapter[] = [
+const csChapters: Chapter[] = [
   {
     id: 'cs1',
     subjectId: 'cs',
@@ -933,7 +930,7 @@ export const csChapters: Chapter[] = [
 ];
 
 /** CBSE Class 8 — Social Science (History · Geography · Civics). */
-export const socialChapters: Chapter[] = [
+const socialChapters: Chapter[] = [
   {
     id: 'h1',
     subjectId: 'social',
@@ -1797,7 +1794,7 @@ export const biologyChapters10: Chapter[] = ofSubject(class10Science, 'biology')
 export const scienceChapters10: Chapter[] = class10Science;
 
 /** CBSE Class 10 — Computer Science (the SUBJECTS.md ramp: Parsons Python → algorithms → AI). */
-export const csChapters10: Chapter[] = [
+const csChapters10: Chapter[] = [
   {
     id: 'x10-cs1',
     subjectId: 'cs',
@@ -2371,7 +2368,7 @@ const door = (id: string, name?: string): DisplaySubject => {
 };
 
 /** How this board, at this grade, clubs and names the canonical six. */
-export function displaySubjectsFor(boardId: string, grade: string): DisplaySubject[] {
+function displaySubjectsFor(boardId: string, grade: string): DisplaySubject[] {
   const g = Number.parseInt(grade.replace(/\D+/g, ''), 10) || 8;
   // ICSE examines the sciences as separate papers; senior secondary splits them everywhere.
   const splitSciences = boardId === 'icse' || g >= 11;

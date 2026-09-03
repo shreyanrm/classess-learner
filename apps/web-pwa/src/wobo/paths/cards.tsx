@@ -187,7 +187,6 @@ function QuizCard({ items }: { items: QuizItem[] }) {
               padding: '10px 12px',
               fontSize: '0.92rem',
               fontFamily: 'inherit',
-              outline: 'none',
               color: 'var(--clss-ink-900)',
               background: 'var(--clss-card)',
               borderRadius: 'var(--clss-radius-sm)',

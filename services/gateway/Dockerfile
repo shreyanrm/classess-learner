@@ -27,9 +27,27 @@ FROM python:3.12-slim-bookworm
 RUN useradd --create-home --uid 10001 gateway
 WORKDIR /app
 COPY --from=build --chown=gateway:gateway /app/.venv /app/.venv
+
+# Read-only content the gateway needs at RUNTIME. Without these two files the concept
+# registry falls back to pure derivation and the correctness fact-check gate silently
+# no-ops in production (both are written to degrade quietly when the data is absent),
+# so they must ship in the image, not just exist in the repo.
+#   content/catalogs/concepts.json  -> plexus/store.py   (concept-id overrides)
+#   content/factbase/facts.v*.jsonl -> plexus/factcheck.py (verified-fact gate)
+# Only these two paths are copied; the rest of content/catalogs is board data the WEB app
+# imports at build time and the gateway never reads.
+COPY --chown=gateway:gateway content/catalogs/concepts.json /app/content/catalogs/
+COPY --chown=gateway:gateway content/factbase/facts.v1.jsonl /app/content/factbase/
+
+# The package is installed NON-EDITABLE, so it lives under /app/.venv/lib/... — relative
+# path discovery from __file__ would walk up inside the venv, not to /app. These two
+# env overrides (the same ones both modules already honour) point at the copies above,
+# so discovery is explicit instead of depending on the install layout.
 ENV PATH="/app/.venv/bin:$PATH" \
     PLEXUS_CACHE_DIR=/home/gateway/cache \
-    CLASSESS_IMAGE_CACHE_DIR=/home/gateway/cache/images
+    CLASSESS_IMAGE_CACHE_DIR=/home/gateway/cache/images \
+    PLEXUS_CONCEPTS_PATH=/app/content/catalogs/concepts.json \
+    FACTBASE_DIR=/app/content/factbase
 USER gateway
 EXPOSE 8081
 

@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'bun:test';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { resolveDestination } from '../src/shell/destinations';
 
 /** Extract the resolved route name (or a tag) so a table stays readable. */
@@ -62,5 +64,33 @@ describe('resolveDestination — she navigates on command', () => {
   it('unknown destination is spoken, never silent', () => {
     const r = resolveDestination('take me to narnia');
     expect(r && 'unknown' in r).toBe(true);
+  });
+});
+
+/**
+ * A nav intent must be answered from the device, before anything is asked of the gateway. On a 2G
+ * link "take me to practice" spent a whole model round-trip reaching a route this table already
+ * knew — and cost tokens to do it.
+ */
+describe('nav intents are resolved before the gateway round-trip', () => {
+  const app = readFileSync(join(import.meta.dir, '..', 'src', 'App.tsx'), 'utf8');
+  const askBody = app.slice(app.indexOf('const ask = async (text: string)'));
+
+  it('resolves the destination above the llm.invoke call in ask()', () => {
+    const nav = askBody.indexOf('resolveDestination(text)');
+    const invoke = askBody.indexOf("sdk.llm.invoke('wobo.turn'");
+    expect(nav).toBeGreaterThan(-1);
+    expect(invoke).toBeGreaterThan(-1);
+    expect(nav).toBeLessThan(invoke);
+  });
+
+  it('returns early on a hit, so the turn never reaches the model', () => {
+    const nav = askBody.indexOf('const nav = resolveDestination(text);');
+    const invoke = askBody.indexOf("sdk.llm.invoke('wobo.turn'");
+    expect(askBody.slice(nav, invoke)).toContain('return;');
+  });
+
+  it('resolves exactly one nav path — there is no second, later copy', () => {
+    expect(app.split('resolveDestination(text)')).toHaveLength(2);
   });
 });

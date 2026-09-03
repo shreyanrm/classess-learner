@@ -1,3 +1,8 @@
+// The two faces, bundled and served from this origin — no Google Fonts round-trip on first paint
+// (the stack law: everything ships locally). Variable files: one request each, every weight.
+import '@fontsource-variable/caveat';
+import '@fontsource-variable/plus-jakarta-sans';
+import { fontFamily } from '@classess/config';
 import { cssVariables } from '@classess/config/css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -19,7 +24,7 @@ html, body { margin: 0; }
    All auto-height choreography is framer-motion, which never needs it. */
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'Google Sans Flex', 'Google Sans Text', 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: ${fontFamily.system};
   color: var(--clss-ink-900);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;

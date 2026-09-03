@@ -31,7 +31,7 @@ export interface WoboVoice {
   stop: () => void;
 }
 
-const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
+const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
 
 /** The relay frames we care about: her audio, transcripts, and control signals. */
 interface LiveServerMessage {

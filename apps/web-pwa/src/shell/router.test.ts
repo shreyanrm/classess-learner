@@ -17,9 +17,6 @@ const EVERY_ROUTE: Route[] = [
   { name: 'sandbox', topicId: 'm2-1' },
   { name: 'progress' },
   { name: 'you' },
-  { name: 'concept', which: 'a' },
-  { name: 'concept', which: 'b' },
-  { name: 'concept', which: 'c' },
   { name: 'concept', which: 'engines' },
 ];
 
@@ -56,6 +53,9 @@ describe('routes have addresses', () => {
       '/subject/math', // no intent
       '/subject/math/dance', // not an intent
       '/concept/z',
+      '/concept/a', // the deleted design prototypes — an old bookmark lands home, not on nothing
+      '/concept/b',
+      '/concept/c',
       '/you/settings',
     ]) {
       expect(pathToRoute(path)).toBeNull();

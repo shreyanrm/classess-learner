@@ -251,7 +251,18 @@ def _promote_after_lint_failure(
             **record,
             "status": store.CANONICAL,
             "artifact": seed_artifact,
-            "seeded": True,  # an honest floor, not a ceiling: live mode retries the real thing
+            "seeded": True,  # an honest floor, not a ceiling
+            # A seed is normally retried on the next live serve. This one must NOT be: TWO
+            # frontier models have already failed the technical lint on this exact concept at
+            # this prompt version, so an unrecorded refusal meant every single request paid for
+            # a fresh Opus draft plus a fresh GPT-5.5 rebuild and landed on the same seed. The
+            # refusal is recorded here and engines.py reads it (the prompt_version staleness
+            # rule still forces a retry once the doctrine that produced the failure changes).
+            "refusedAt": now,
+            "lintFailures": {
+                "base": {"model": base_model, "reasons": base_reasons[:12]},
+                "rebuild": {"model": alt_model, "reasons": alt_reasons[:12]},
+            },
             "provenance": {
                 **record.get("provenance", {}),
                 "model": "seed",
@@ -363,15 +374,44 @@ def _enqueue_video_render(artifact_path: Path, artifact: Any) -> None:
         logger.warning("validate: render enqueue failed — promotion unaffected", exc_info=True)
 
 
+def _maybe_enqueue_manim(
+    artifact_path: Path, artifact: Any, concept: str, difficulty: str
+) -> None:
+    """Flag and enqueue the films SVG cannot carry (owner's Manim escalation law).
+
+    ``needs_manim`` and the manim queue were real and tested but had NO caller, so the escalation
+    rung the README describes never fired. It fires here, next to the MP4 enqueue, on exactly the
+    same trigger: a real video promoted to canonical. The queue is drained by future container
+    infra — enqueueing now means the backlog is real the day it lands, and the flag stops being a
+    claim nothing exercises. Best-effort: a queue write may never break a promotion.
+    """
+    try:
+        from classess_gateway.plexus.manim_rung import enqueue_manim, needs_manim
+
+        if not needs_manim(artifact):
+            return
+        enqueue_manim(
+            {
+                "artifact": str(artifact_path),
+                "concept": concept,
+                "difficulty": difficulty,
+                "reason": "scene plan needs a real animation engine (manim_rung.needs_manim)",
+            }
+        )
+    except Exception:  # a queue write must never break a promotion — log and move on
+        logger.warning("validate: manim enqueue failed — promotion unaffected", exc_info=True)
+
+
 def _maybe_enqueue_render(
     concept: str, modality: str, difficulty: str, scope: dict[str, str], canonical: dict[str, Any]
 ) -> None:
-    """Enqueue an MP4 render iff a real (non-seed) VIDEO artifact was promoted to canonical."""
+    """Enqueue an MP4 render iff a real (non-seed) VIDEO artifact was promoted to canonical, and
+    the Manim escalation rung alongside it when the scene plan is too intricate for SVG."""
     if modality != "video" or canonical.get("seeded"):
         return
-    _enqueue_video_render(
-        store.artifact_path(concept, modality, difficulty, scope), canonical.get("artifact")
-    )
+    artifact_path = store.artifact_path(concept, modality, difficulty, scope)
+    _enqueue_video_render(artifact_path, canonical.get("artifact"))
+    _maybe_enqueue_manim(artifact_path, canonical.get("artifact"), concept, difficulty)
 
 
 def validate_and_promote(

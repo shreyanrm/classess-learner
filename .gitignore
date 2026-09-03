@@ -75,5 +75,9 @@ content/cache/
 /*.jpg
 /*.mp4
 
-# local env-flipping helpers
+# local env-flipping helpers — one-off, machine-local scripts stay out of the repo.
+# scripts/set-vercel-env.sh is the EXCEPTION: it is the committed Vercel production-env
+# procedure DEPLOY.md §1 points at, and it holds no credential (the anon key arrives as an
+# argument; every other value is read from apps/web-pwa/.env.production).
 scripts/*-env.sh
+!scripts/set-vercel-env.sh

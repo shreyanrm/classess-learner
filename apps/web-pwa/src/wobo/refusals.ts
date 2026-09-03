@@ -8,6 +8,7 @@
  */
 
 import { BudgetExhaustedError, GATEWAY_COPY, SignInRequiredError } from '@classess/sdk';
+import { WOBBLY_LINE } from '../shell/resilience';
 
 export interface Refusal {
   /** The line she says. Already in her voice. Empty means she says nothing — see `isBargeIn`. */
@@ -37,6 +38,19 @@ export function isBargeIn(err: unknown): boolean {
   );
 }
 
+/**
+ * True when the request never reached the gateway at all — a dropped link, DNS, a captive portal,
+ * a tunnel. `fetch` rejects these as a TypeError with a browser-specific message, which is the only
+ * thing that distinguishes them from a real failure.
+ *
+ * It matters because family N (the struggler on 2G) says the dead-end rule applies here: a stall on
+ * the way out is not "something went wrong", it is the network being the network, and she says so.
+ */
+export function isNetworkError(err: unknown): boolean {
+  if (!(err instanceof TypeError)) return false;
+  return /fetch|network|connection|load failed/i.test(err.message);
+}
+
 /** Turn whatever a turn threw into the one line she says about it. */
 export function refusalLine(err: unknown): Refusal {
   // She says nothing at all when she was interrupted; an empty line is never spoken or written.
@@ -52,5 +66,7 @@ export function refusalLine(err: unknown): Refusal {
       signIn: false,
     };
   }
+  // The link wobbled — her own line for it (resilience.ts), not the generic trouble line.
+  if (isNetworkError(err)) return { text: WOBBLY_LINE, signIn: false };
   return { text: GATEWAY_COPY.trouble, signIn: false };
 }

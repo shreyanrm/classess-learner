@@ -12,8 +12,10 @@ packages
 platform
 docs
 infra
+# content/catalogs and content/factbase STAY in the context: the Dockerfile COPYs
+# concepts.json (plexus/store.py concept registry) and facts.v*.jsonl (the correctness
+# fact-check gate) into the image. Only the runtime-written artifact cache is excluded.
 content/cache
-content/catalogs
 .playwright-mcp
 *.png
 *.jpeg

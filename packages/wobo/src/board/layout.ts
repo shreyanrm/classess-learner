@@ -10,7 +10,7 @@
  */
 
 import { type BoardFrame, type BoardRect, boardHeight, boxesOverlap, unionBox } from './anchors';
-import { BOARD_UNITS } from './schema';
+import { type AnchorAt, BOARD_UNITS } from './schema';
 
 /** The clear space a label keeps from what it names, in board units. */
 export const LABEL_MARGIN = 10;
@@ -86,6 +86,53 @@ export function placeLabel(
 }
 
 /**
+ * Place a label on the side the anchor NAMED, rather than on the first side that happens to be
+ * free.
+ *
+ * `{object: "cell", at: "bottom"}` is not a hint — it is the tutor saying "write this under it".
+ * BOARD.md §3 makes `at` part of the anchor, so a note asking for `bottom` and landing beside the
+ * shape is the anchor being ignored. Under and over are left-aligned to the box (a caption reads
+ * from the same margin as the thing it captions); beside is centred on it. If the named side is
+ * occupied the note moves FURTHER along that side, never round to another one.
+ */
+export function placeLabelAt(
+  anchor: BoardRect,
+  size: Size,
+  at: AnchorAt | undefined,
+  occupied: BoardRect[] = [],
+  margin = LABEL_MARGIN,
+): BoardRect | null {
+  if (at === undefined || at === 'center') return null;
+  if (Array.isArray(at)) {
+    // A fraction pair names a point on the box: the note hangs off it, top-left at that point.
+    const [fx, fy] = at;
+    return { x: anchor.x + anchor.w * fx, y: anchor.y + anchor.h * fy + margin, ...size };
+  }
+  const midY = anchor.y + anchor.h / 2 - size.h / 2;
+  const right = anchor.x + anchor.w - size.w;
+  const below = anchor.y + anchor.h + margin;
+  const above = anchor.y - margin - size.h;
+  const placed: Record<string, BoardRect> = {
+    bottom: { x: anchor.x, y: below, ...size },
+    bottomLeft: { x: anchor.x, y: below, ...size },
+    bottomRight: { x: right, y: below, ...size },
+    top: { x: anchor.x, y: above, ...size },
+    topLeft: { x: anchor.x, y: above, ...size },
+    topRight: { x: right, y: above, ...size },
+    left: { x: anchor.x - margin - size.w, y: midY, ...size },
+    right: { x: anchor.x + anchor.w + margin, y: midY, ...size },
+  };
+  const box = placed[at];
+  if (!box) return null;
+  // Clear of anything already down, moving along the side it was asked for.
+  const step = at.startsWith('top') ? -(size.h + margin) : size.h + margin;
+  const out = { ...box };
+  let guard = 0;
+  while (clashes(out, occupied, margin * 0.5) && guard++ < 60) out.y += step;
+  return out;
+}
+
+/**
  * Nudge already-sized boxes apart, keeping their reading order. Each box moves down (never up, so
  * a derivation stays in the order it was written) until it clears everything placed before it.
  */
@@ -147,25 +194,95 @@ export interface Camera {
 export const RESTING_CAMERA: Camera = { zoom: 1, panX: 0, panY: 0 };
 
 /**
- * The camera that shows `bounds` on this surface. She never zooms in past life size — a board that
- * is half full stays half full rather than blowing one line up to fill the screen — and it only
- * pans as far as it has to. This is the auto-scroll-and-zoom of a board that is filling up.
+ * How much of the surface the drawn objects should fill once the camera has settled, and the band
+ * either side of it the fit is allowed to land in.
+ *
+ * BOARD.md §5 says the plane is where a derivation or a diagram from scratch goes; §11 says a
+ * plane that hides the thing it explains kills it — and a plane that shows three objects at a
+ * fifth of its own box is the same failure from the other end. The camera therefore FITS the ink,
+ * with a real margin: it fills `CAMERA_FILL` of the limiting dimension, which leaves an eighth of
+ * the box clear on each side, and the aspect ratio is untouched because the zoom is one number.
+ */
+export const CAMERA_FILL = 0.78;
+export const CAMERA_FILL_MIN = 0.7;
+export const CAMERA_FILL_MAX = 0.85;
+/**
+ * Never blow one small mark up past this. Four is where a single 25-unit written word still reads
+ * as writing on a board rather than as a poster of itself, and it is high enough that three
+ * ordinary objects reach the fill band instead of sitting at a fifth of the box.
+ */
+export const CAMERA_MAX_ZOOM = 4;
+/** Never shrink the ink past this; beyond it the board scrolls instead. */
+export const CAMERA_MIN_ZOOM = 0.35;
+
+const clamp = (n: number, lo: number, hi: number): number => (n < lo ? lo : n > hi ? hi : n);
+
+/**
+ * The camera that shows `bounds` on this surface: the ink fitted to the box with margins, centred,
+ * aspect kept. It zooms IN on a board with a little on it and OUT on one that has outgrown the
+ * view, and because it is recomputed from the live content bounds every frame, the move from one
+ * to the other is the animation — the camera follows the ink as it grows.
  */
 export function fitCamera(
   bounds: BoardRect | null,
   frame: BoardFrame,
-  opts?: { minZoom?: number },
+  opts?: { minZoom?: number; maxZoom?: number; fill?: number },
 ): Camera {
   if (!bounds) return RESTING_CAMERA;
   const viewH = boardHeight({ ...frame, zoom: 1 });
-  const minZoom = opts?.minZoom ?? 0.35;
-  const needed = Math.min(BOARD_UNITS / Math.max(bounds.w, 1), viewH / Math.max(bounds.h, 1));
-  const zoom = Math.max(minZoom, Math.min(1, needed));
+  const fill = clamp(opts?.fill ?? CAMERA_FILL, CAMERA_FILL_MIN, CAMERA_FILL_MAX);
+  const minZoom = opts?.minZoom ?? CAMERA_MIN_ZOOM;
+  const maxZoom = opts?.maxZoom ?? CAMERA_MAX_ZOOM;
+  // One zoom for both axes: the aspect ratio of what she drew is never squashed to fit.
+  const needed = Math.min(
+    (BOARD_UNITS * fill) / Math.max(bounds.w, 1),
+    (viewH * fill) / Math.max(bounds.h, 1),
+  );
+  const zoom = clamp(needed, minZoom, maxZoom);
   const shownW = BOARD_UNITS / zoom;
   const shownH = viewH / zoom;
-  const panX = bounds.w >= shownW ? bounds.x : bounds.x - (shownW - bounds.w) / 2;
-  const panY = bounds.h >= shownH ? bounds.y : bounds.y - (shownH - bounds.h) / 2;
-  return { zoom, panX, panY };
+  // Centred on the ink, whether it is smaller than the view or larger than it.
+  return {
+    zoom,
+    panX: bounds.x - (shownW - bounds.w) / 2,
+    panY: bounds.y - (shownH - bounds.h) / 2,
+  };
+}
+
+/** How much of the remaining distance the camera closes each frame — a glide, not a cut. */
+export const CAMERA_EASE = 0.16;
+
+/**
+ * One frame of the camera's move toward the fit. Exponential, so it leaves fast and arrives slowly,
+ * which is how a board's own view behaves when someone leans in.
+ */
+export function easeCamera(from: Camera, to: Camera, ease = CAMERA_EASE): Camera {
+  const k = clamp(ease, 0, 1);
+  return {
+    zoom: from.zoom + (to.zoom - from.zoom) * k,
+    panX: from.panX + (to.panX - from.panX) * k,
+    panY: from.panY + (to.panY - from.panY) * k,
+  };
+}
+
+/** True when the glide is close enough to stop asking for frames. */
+export function cameraArrived(now: Camera, to: Camera): boolean {
+  return (
+    Math.abs(now.zoom - to.zoom) < 0.002 &&
+    Math.abs(now.panX - to.panX) < 0.5 &&
+    Math.abs(now.panY - to.panY) < 0.5
+  );
+}
+
+/** The board-unit window this camera shows — what the fit is measured against. */
+export function cameraBox(camera: Camera, frame: BoardFrame): BoardRect {
+  const viewH = boardHeight({ ...frame, zoom: 1 });
+  return {
+    x: camera.panX,
+    y: camera.panY,
+    w: BOARD_UNITS / camera.zoom,
+    h: viewH / camera.zoom,
+  };
 }
 
 /** True when the ink has outgrown the resting view and the camera has to move. */

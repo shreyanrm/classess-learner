@@ -180,7 +180,16 @@ export interface WoboBus {
   // perception (read)
   assembleContext(): WoboAssembledContext;
   getTargets(): AnnotatableTarget[];
-  targetsVersion: number;
+  /**
+   * Registration changes as a subscription, not a state field. Targets mount and unmount constantly
+   * (every card, step and control on a screen), and holding that count in bus state re-rendered the
+   * whole consumer tree on each one. Subscribers pair this with `getTargetsVersion` —
+   * `useSyncExternalStore(subscribeToTargets, getTargetsVersion)` — so only the components that
+   * actually care about the target list wake up. Returns an unsubscribe.
+   */
+  subscribeToTargets(listener: () => void): () => void;
+  /** Monotonic registration counter — the `useSyncExternalStore` snapshot for `subscribeToTargets`. */
+  getTargetsVersion(): number;
   /**
    * Drive a registered scene through its applyTutorAction seam (the setState action). Returns true
    * when the target exists and accepts tutor actions.
@@ -270,6 +279,56 @@ export function resolveCanvasSlot(
   return {};
 }
 
+/**
+ * The registered-target store. Registration is a SUBSCRIPTION, not React state: targets mount and
+ * unmount constantly (every card, step, control and engine on a screen), and a version held in bus
+ * state pushed each one through the bus memo and re-rendered every consumer of it. Consumers that
+ * genuinely care about the target list pair `subscribe` with `getVersion` through
+ * `useSyncExternalStore`, so only they wake up.
+ */
+export interface TargetStore {
+  register(target: AnnotatableTarget): () => void;
+  get(id: string): AnnotatableTarget | undefined;
+  getTargets(): AnnotatableTarget[];
+  subscribe(listener: () => void): () => void;
+  getVersion(): number;
+}
+
+export function createTargetStore(): TargetStore {
+  const targets = new Map<string, AnnotatableTarget>();
+  const listeners = new Set<() => void>();
+  let version = 0;
+  const bump = () => {
+    version += 1;
+    // Copy first: a listener may unsubscribe itself while being notified.
+    for (const listener of [...listeners]) listener();
+  };
+  return {
+    register(target) {
+      targets.set(target.id, target);
+      bump();
+      let live = true;
+      return () => {
+        // Idempotent, and it never evicts a same-id target that replaced this one (a remount
+        // registers the new element before the old one's cleanup runs).
+        if (!live) return;
+        live = false;
+        if (targets.get(target.id) === target) targets.delete(target.id);
+        bump();
+      };
+    },
+    get: (id) => targets.get(id),
+    getTargets: () => Array.from(targets.values()),
+    subscribe(listener) {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+    getVersion: () => version,
+  };
+}
+
 const BusContext = createContext<WoboBus | null>(null);
 
 export function useWoboBus(): WoboBus {
@@ -336,21 +395,22 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
   const lastMarksRef = useRef<MarkSet>(emptyMarks());
   const [pendingOffer, setPendingOffer] = useState<ConsequentialAction | null>(null);
 
-  const targetsRef = useRef<Map<string, AnnotatableTarget>>(new Map());
-  const [targetsVersion, setTargetsVersion] = useState(0);
+  const storeRef = useRef<TargetStore | null>(null);
+  storeRef.current ??= createTargetStore();
+  const store = storeRef.current;
   const handlersRef = useRef<WoboHandlers | undefined>(handlers);
   handlersRef.current = handlers;
 
-  const registerTarget = useCallback((target: AnnotatableTarget) => {
-    targetsRef.current.set(target.id, target);
-    setTargetsVersion((v) => v + 1);
-    return () => {
-      targetsRef.current.delete(target.id);
-      setTargetsVersion((v) => v + 1);
-    };
-  }, []);
-
-  const getTargets = useCallback(() => Array.from(targetsRef.current.values()), []);
+  const registerTarget = useCallback(
+    (target: AnnotatableTarget) => store.register(target),
+    [store],
+  );
+  const subscribeToTargets = useCallback(
+    (listener: () => void) => store.subscribe(listener),
+    [store],
+  );
+  const getTargetsVersion = useCallback(() => store.getVersion(), [store]);
+  const getTargets = useCallback(() => store.getTargets(), [store]);
 
   const assembleContext = useCallback(
     (): WoboAssembledContext => ({
@@ -382,12 +442,15 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
     [getTargets],
   );
 
-  const applyTutorAction = useCallback((targetId: string, patch: Record<string, unknown>) => {
-    const target = targetsRef.current.get(targetId);
-    if (!target?.applyTutorAction) return false;
-    target.applyTutorAction(patch);
-    return true;
-  }, []);
+  const applyTutorAction = useCallback(
+    (targetId: string, patch: Record<string, unknown>) => {
+      const target = store.get(targetId);
+      if (!target?.applyTutorAction) return false;
+      target.applyTutorAction(patch);
+      return true;
+    },
+    [store],
+  );
 
   const clearMarks = useCallback(() => {
     setHighlights([]);
@@ -398,11 +461,14 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
   }, []);
 
   // Point her body at the target she's inking so she leans/gazes toward the board (realism detail).
-  const focusOnTarget = useCallback((targetId: string | undefined) => {
-    if (!targetId) return;
-    const rect = targetsRef.current.get(targetId)?.getRect();
-    if (rect) setFocusPoint({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
-  }, []);
+  const focusOnTarget = useCallback(
+    (targetId: string | undefined) => {
+      if (!targetId) return;
+      const rect = store.get(targetId)?.getRect();
+      if (rect) setFocusPoint({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+    },
+    [store],
+  );
 
   // Arm the residue-clear timer to fire once the last live mark has died. Accumulating: a later
   // beat only ever EXTENDS the deadline, never cuts an earlier beat's ink short.
@@ -563,7 +629,8 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
       publishMachine,
       assembleContext,
       getTargets,
-      targetsVersion,
+      subscribeToTargets,
+      getTargetsVersion,
       applyTutorAction,
       mood,
       highlights,
@@ -592,7 +659,8 @@ export function WoboProvider({ children, handlers }: WoboProviderProps) {
       publishMachine,
       assembleContext,
       getTargets,
-      targetsVersion,
+      subscribeToTargets,
+      getTargetsVersion,
       applyTutorAction,
       mood,
       highlights,

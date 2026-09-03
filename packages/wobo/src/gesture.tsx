@@ -55,6 +55,7 @@ import {
   simplifyPath,
   textOfTargets,
 } from './focus';
+import { inkRng } from './freehand';
 import { type Rect, type SurfaceRegistry, surfaceRegistry } from './registry';
 
 // --- The hotkey ----------------------------------------------------------------------------------
@@ -215,6 +216,82 @@ const DRIFT_PX = 8;
 const CHIP_WIDTH = 168;
 const CHIP_HEIGHT = 30;
 
+/**
+ * The region the learner circled, drawn the way BOARD.md §8 describes it: her own line round it,
+ * not a colour poured over it.
+ *
+ * A 1.5 px ultramarine ring on the path the finger actually took, hand-wobbled so it reads as ink
+ * rather than as a selection rectangle, and inside it at most a 4% ultramarine frost — enough that
+ * the region is legible as a region, faint enough that every word under it is still readable. A
+ * warm fill was the failure this replaced: a salmon blob over the content, which hides the thing it
+ * is about, the one thing §11 says kills the board.
+ */
+export const FOCUS_RING_WIDTH = 1.5;
+export const FOCUS_FROST = 'rgba(31,53,224,0.04)';
+/** The ring outlives the gesture and fades once the turn that used it is over. */
+export const FOCUS_RING_FADE_MS = 420;
+/** How far the ring's ink strays from the path the finger took, in px. */
+const RING_WOBBLE = 1.1;
+/** The clear air the ring keeps off a region that has no path of its own (a text selection). */
+const RING_PAD = 8;
+
+/**
+ * The ring, as a closed path in viewport pixels: the lasso's own points when there are some, and a
+ * hand-drawn loop round the region otherwise. `shift` is how far the thing has travelled since the
+ * gesture was made (BOARD.md §3 — an anchor is re-resolved, never frozen).
+ */
+export function focusRingPath(
+  focus: Pick<FocusObject, 'id' | 'rect'> & { path?: readonly Point[] },
+  shift: Point = { x: 0, y: 0 },
+): string {
+  const rng = inkRng(focus.id, 'focus-ring', 'ultramarine');
+  const source =
+    focus.path && focus.path.length >= 3
+      ? focus.path.map((p) => ({ x: p.x + shift.x, y: p.y + shift.y }))
+      : loopAroundRect(focus.rect, shift, rng);
+  return closedInk(source, rng);
+}
+
+/** A hand's loop round a region that never had a path — a selection, a hover, the hotkey. */
+function loopAroundRect(rect: Rect, shift: Point, rng: () => number): Point[] {
+  const cx = rect.x + rect.width / 2 + shift.x;
+  const cy = rect.y + rect.height / 2 + shift.y;
+  const rx = rect.width / 2 + RING_PAD;
+  const ry = rect.height / 2 + RING_PAD;
+  const start = rng() * Math.PI * 2;
+  const steps = 30;
+  const out: Point[] = [];
+  for (let i = 0; i < steps; i += 1) {
+    const a = start + (i / steps) * Math.PI * 2;
+    out.push({ x: cx + Math.cos(a) * rx, y: cy + Math.sin(a) * ry });
+  }
+  return out;
+}
+
+/**
+ * A closed, smoothed, gently wobbled path through these points. The wobble is seeded on the focus
+ * id, so the same region redraws identically rather than shimmering on every scroll frame.
+ */
+function closedInk(points: readonly Point[], rng: () => number): string {
+  if (points.length < 3) return '';
+  const wobbled = points.map((p) => ({
+    x: p.x + (rng() * 2 - 1) * RING_WOBBLE,
+    y: p.y + (rng() * 2 - 1) * RING_WOBBLE,
+  }));
+  const n = wobbled.length;
+  const at = (i: number): Point => wobbled[((i % n) + n) % n] as Point;
+  const mid = (a: Point, b: Point): Point => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
+  const r = (v: number): number => Math.round(v * 10) / 10;
+  const first = mid(at(0), at(1));
+  let d = `M ${r(first.x)} ${r(first.y)}`;
+  for (let i = 1; i <= n; i += 1) {
+    const control = at(i);
+    const end = mid(at(i), at(i + 1));
+    d += ` Q ${r(control.x)} ${r(control.y)} ${r(end.x)} ${r(end.y)}`;
+  }
+  return `${d} Z`;
+}
+
 export function GestureLayer(props: GestureLayerProps): ReactElement | null {
   const {
     onFocus,
@@ -232,6 +309,9 @@ export function GestureLayer(props: GestureLayerProps): ReactElement | null {
 
   const [focus, setFocus] = useState<FocusObject | null>(null);
   const [trace, setTrace] = useState<Point[] | null>(null);
+  // The ring outlives the focus by one fade: the mark she drew round the thing does not vanish the
+  // instant the turn that used it closes, it goes the way ink goes.
+  const [ring, setRing] = useState<{ focus: FocusObject; endedAt: number | null } | null>(null);
   const reduced = useReducedMotion();
   const isArmed = useSyncExternalStore(subscribeArmed, lassoArmed, () => false);
 
@@ -242,16 +322,27 @@ export function GestureLayer(props: GestureLayerProps): ReactElement | null {
 
   const publish = useCallback((next: FocusObject) => {
     setFocus(next);
+    setRing({ focus: next, endedAt: null });
     handlers.current.onFocus?.(next);
   }, []);
 
   const clear = useCallback(() => {
     setTrace(null);
+    setRing((current) =>
+      current && current.endedAt === null ? { ...current, endedAt: Date.now() } : current,
+    );
     setFocus((current) => {
       if (current) handlers.current.onClear?.();
       return null;
     });
   }, []);
+
+  // Once the ring has faded it leaves the DOM; until then it is still ink on the page.
+  useEffect(() => {
+    if (!ring || ring.endedAt === null) return;
+    const timer = setTimeout(() => setRing(null), FOCUS_RING_FADE_MS);
+    return () => clearTimeout(timer);
+  }, [ring]);
 
   // --- pointer gestures --------------------------------------------------------------------------
   useEffect(() => {
@@ -499,7 +590,7 @@ export function GestureLayer(props: GestureLayerProps): ReactElement | null {
   // thing it was about scrolled away — the visible half of a `{focus}` anchor that floats.
   const [layoutTick, setLayoutTick] = useState(0);
   useEffect(() => {
-    if (!focus || typeof window === 'undefined') return;
+    if ((!focus && !ring) || typeof window === 'undefined') return;
     const moved = () => setLayoutTick((n) => (n + 1) % 1_000_000);
     window.addEventListener('scroll', moved, { capture: true, passive: true });
     window.addEventListener('resize', moved, { passive: true });
@@ -507,18 +598,34 @@ export function GestureLayer(props: GestureLayerProps): ReactElement | null {
       window.removeEventListener('scroll', moved, { capture: true } as EventListenerOptions);
       window.removeEventListener('resize', moved);
     };
-  }, [focus]);
+  }, [focus, ring]);
+
+  const liveRectOf = useCallback(
+    (of: FocusObject): Rect =>
+      focusRectNow(of, {
+        target: (id) => registry.getTarget(id)?.rect() ?? null,
+        scroll: pageScroll(),
+      }),
+    [registry],
+  );
 
   const chipAt = useMemo(() => {
     void layoutTick;
     if (!focus) return null;
-    return chipPosition(
-      focusRectNow(focus, {
-        target: (id) => registry.getTarget(id)?.rect() ?? null,
-        scroll: pageScroll(),
-      }),
-    );
-  }, [focus, registry, layoutTick]);
+    return chipPosition(liveRectOf(focus));
+  }, [focus, liveRectOf, layoutTick]);
+
+  // The ring travels with what it is about: the shift is how far the region has moved since the
+  // gesture, exactly the delta the chip is positioned by.
+  const ringD = useMemo(() => {
+    void layoutTick;
+    if (!ring) return null;
+    const now = liveRectOf(ring.focus);
+    return focusRingPath(ring.focus, {
+      x: now.x - ring.focus.rect.x,
+      y: now.y - ring.focus.rect.y,
+    });
+  }, [ring, liveRectOf, layoutTick]);
   if (!enabled) return null;
 
   return (
@@ -546,10 +653,35 @@ export function GestureLayer(props: GestureLayerProps): ReactElement | null {
             d={traceD}
             fill="none"
             stroke={ultramarine}
-            strokeWidth={2}
+            strokeWidth={FOCUS_RING_WIDTH}
             strokeLinecap="round"
             strokeLinejoin="round"
             opacity={0.85}
+          />
+        </svg>
+      ) : null}
+
+      {ringD ? (
+        <svg
+          aria-hidden="true"
+          width="100%"
+          height="100%"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            pointerEvents: 'none',
+            opacity: ring?.endedAt === null ? 1 : 0,
+            transition: reduced ? 'none' : `opacity ${FOCUS_RING_FADE_MS}ms linear`,
+          }}
+        >
+          <title>the region you circled</title>
+          <path
+            d={ringD}
+            fill={FOCUS_FROST}
+            stroke={ultramarine}
+            strokeWidth={FOCUS_RING_WIDTH}
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </svg>
       ) : null}

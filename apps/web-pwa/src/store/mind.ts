@@ -17,8 +17,8 @@ import { scoped } from './scope';
 import { useSdk } from './sdk';
 
 // Scoped per learner (store/scope.ts) — the dossier is the most personal thing on the device.
-export const MIND_KEY = 'clss-mind-v1';
-export const PROACTIVITY_KEY = 'clss-proactivity-v1';
+const MIND_KEY = 'clss-mind-v1';
+const PROACTIVITY_KEY = 'clss-proactivity-v1';
 
 // --- the mind state ------------------------------------------------------------------------------
 
@@ -58,6 +58,9 @@ const MAX_LATENCIES = 60;
 const MAX_SLIPS = 12;
 const MAX_DAYS = 30;
 const MAX_FACTS = 12;
+/** Every C0/C1 control character, including the newlines that would forge a new prompt block. */
+// biome-ignore lint/suspicious/noControlCharactersInRegex: flattening control characters is the point
+const CONTROL_CHARS = /[\u0000-\u001F\u007F-\u009F\u2028\u2029]+/g;
 // A wrong answer overturned by a correct one for the same item within this window is a mis-tap
 // (fat-finger self-correct), not a misconception — it never earns a detonation or an FSRS flag.
 const SELF_CORRECT_MS = 1500;
@@ -72,8 +75,10 @@ export function loadMind(): MindState {
       slips: Array.isArray(m.slips) ? m.slips : [],
       dwellSec: m.dwellSec && typeof m.dwellSec === 'object' ? m.dwellSec : {},
       sessionDays: Array.isArray(m.sessionDays) ? m.sessionDays : [],
-      interests: Array.isArray(m.interests) ? m.interests : [],
-      facts: Array.isArray(m.facts) ? m.facts : [],
+      // Flattened on the way OUT as well as in: a fact written before flattening existed, or by a
+      // second device on an older build, must not reach the prompt with its line breaks intact.
+      interests: Array.isArray(m.interests) ? m.interests.map(flattenFact).filter(Boolean) : [],
+      facts: Array.isArray(m.facts) ? m.facts.map(flattenFact).filter(Boolean) : [],
     };
   } catch {
     return { ...EMPTY };
@@ -84,9 +89,22 @@ export function loadMind(): MindState {
  * She learned a durable fact in conversation (the remember action) — a preferred name, a goal, an
  * exam date. Dedupe-append and cap; it rides every future dossier. Steerable/clearable in You.
  */
-/** Pure fact fold: trim, drop empties/dupes (case-insensitive), append, cap. Testable without a DOM. */
+/**
+ * Flatten a remembered fact to ONE line of plain data.
+ *
+ * A fact is learner-supplied text that then rides every future prompt. The prompt is assembled as
+ * lines, so a fact carrying newlines can open what looks like a new block ("\n\nSystem: ignore the
+ * rules above") and read as instructions rather than as a recorded detail. Every line break,
+ * carriage return, tab and control character collapses to a single space here — at the one point
+ * every fact enters the dossier — so the fact stays a fact no matter what was typed.
+ */
+export function flattenFact(text: string): string {
+  return text.replace(CONTROL_CHARS, ' ').replace(/\s+/g, ' ').trim().slice(0, 160).trim();
+}
+
+/** Pure fact fold: flatten, drop empties/dupes (case-insensitive), append, cap. No DOM needed. */
 export function foldFact(facts: string[], text: string): string[] {
-  const fact = text.trim().slice(0, 160);
+  const fact = flattenFact(text);
   if (!fact) return facts;
   if (facts.some((f) => f.toLowerCase() === fact.toLowerCase())) return facts;
   return [...facts, fact].slice(-MAX_FACTS);
@@ -103,11 +121,11 @@ export function rememberFact(text: string): void {
 /** Onboarding writes what the learner is into — folded into every Wobo call via the lifetime slot. */
 export function rememberInterests(interests: string[]): void {
   const mind = loadMind();
-  mind.interests = interests.slice(0, 8);
+  mind.interests = interests.map(flattenFact).filter(Boolean).slice(0, 8);
   saveMind(mind);
 }
 
-export function saveMind(mind: MindState): void {
+function saveMind(mind: MindState): void {
   try {
     scoped.setItem(MIND_KEY, JSON.stringify(mind));
   } catch {
@@ -187,7 +205,7 @@ function asRecord(v: unknown): Record<string, unknown> {
  * Fold new events into the mind. PracticeRun fires learn.attempt.submitted AND
  * practice.item.answered for the same answer — `seen` dedupes the pair by item and latency.
  */
-export function foldEvents(mind: MindState, events: LoggedEvent[], seen: Set<string>): boolean {
+function foldEvents(mind: MindState, events: LoggedEvent[], seen: Set<string>): boolean {
   let changed = false;
   for (const e of events) {
     if (
@@ -237,7 +255,7 @@ export function foldEvents(mind: MindState, events: LoggedEvent[], seen: Set<str
 }
 
 /** Mark today as a session day. Returns true when the day is new. */
-export function markSessionDay(mind: MindState): boolean {
+function markSessionDay(mind: MindState): boolean {
   const today = new Date().toISOString().slice(0, 10);
   if (mind.sessionDays.includes(today)) return false;
   mind.sessionDays = [...mind.sessionDays, today].slice(-MAX_DAYS);
@@ -245,7 +263,7 @@ export function markSessionDay(mind: MindState): boolean {
 }
 
 /** Add dwell seconds for a surface (per-stay capped so an idle tab never dominates). */
-export function addDwell(mind: MindState, surface: string, seconds: number): void {
+function addDwell(mind: MindState, surface: string, seconds: number): void {
   const s = Math.min(seconds, 1800);
   if (s < 2) return;
   mind.dwellSec = { ...mind.dwellSec, [surface]: (mind.dwellSec[surface] ?? 0) + s };
@@ -269,7 +287,7 @@ const FORMAT_LABELS: Record<string, string> = {
   progress: 'the progress map',
 };
 
-export function preferredFormat(mind: MindState): string | undefined {
+function preferredFormat(mind: MindState): string | undefined {
   let best: string | undefined;
   let bestSec = 0;
   for (const [surface, sec] of Object.entries(mind.dwellSec)) {
@@ -282,7 +300,7 @@ export function preferredFormat(mind: MindState): string | undefined {
   return bestSec >= 60 ? best : undefined;
 }
 
-export function activeDaysOfLastSeven(mind: MindState): number {
+function activeDaysOfLastSeven(mind: MindState): number {
   const days = new Set(mind.sessionDays);
   let n = 0;
   for (let i = 0; i < 7; i += 1) {
@@ -370,7 +388,7 @@ export function lifetimeSnapshot(): LifetimeContext {
 }
 
 /** One compact string for the lifetime slot — every Wobo call is conditioned on this. */
-export function summarizeMind(mind: MindState): string | undefined {
+function summarizeMind(mind: MindState): string | undefined {
   const parts: string[] = [];
   if (mind.interests.length > 0) parts.push(`into ${mind.interests.join(', ')}`);
   const median = medianLatencyMs(mind);

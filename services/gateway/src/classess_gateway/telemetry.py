@@ -8,6 +8,7 @@ exporter (feeding the cost dashboard) replaces the sink later.
 from __future__ import annotations
 
 import logging
+from collections import deque
 from dataclasses import asdict, dataclass
 from typing import Any
 
@@ -24,11 +25,18 @@ class TelemetryEvent:
     cache_hit: bool
 
 
-class MetricsSink:
-    """In-memory sink. Holds events for inspection in dev and assertions in tests."""
+# One process serves every learner for as long as it lives, so an unbounded list here is a slow
+# leak: the sink exists for dev inspection and test assertions, and a window of the most recent
+# events answers both. The durable record is the structured log line emit() writes.
+MAX_RETAINED_EVENTS = 1000
 
-    def __init__(self) -> None:
-        self.events: list[TelemetryEvent] = []
+
+class MetricsSink:
+    """In-memory sink. Holds the last :data:`MAX_RETAINED_EVENTS` events for inspection in dev
+    and assertions in tests; older ones fall off the back rather than accumulating forever."""
+
+    def __init__(self, maxlen: int = MAX_RETAINED_EVENTS) -> None:
+        self.events: deque[TelemetryEvent] = deque(maxlen=maxlen)
 
     def record(self, event: TelemetryEvent) -> None:
         self.events.append(event)

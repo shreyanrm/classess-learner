@@ -2031,6 +2031,38 @@ def _spawn_validation(
     threading.Thread(target=_run_once, daemon=True, name=f"validate-{modality}").start()
 
 
+def is_stale(cached: dict[str, Any], modality: str, *, live: bool) -> bool:
+    """Must this cache-hit be regenerated instead of served?
+
+    Pulled out of run_engine so the decision is testable on its own: it is the difference
+    between serving a cached artifact for free and paying a frontier model on every request.
+    """
+    artifact = cached.get("artifact")
+    # compose grew workbook + boss; a pre-upgrade cache record regenerates instead of serving
+    if modality == "compose" and not (
+        isinstance(artifact, dict) and "workbook" in artifact and "boss" in artifact
+    ):
+        return True
+    # pre-upgrade diagrams without an xmlns never render in the browser — regenerate
+    if modality == "diagram" and not (isinstance(artifact, str) and "xmlns" in artifact):
+        return True
+    if not live:
+        return False
+    # generated under an older composer prompt: the current doctrine (visual law, fact base,
+    # activity schemas) supersedes it — regenerate on first live serve; the version ledger
+    # retains the old artifact, so nothing is lost. This runs BEFORE the refusal check, so a
+    # doctrine change always reopens a refused concept.
+    if cached.get("provenance", {}).get("prompt_version") != store.PROMPT_VERSION:
+        return True
+    # A cached seed is an honest floor, not a ceiling: live mode retries the real thing —
+    # UNLESS the seed is a RECORDED LINT REFUSAL (validate._promote_after_lint_failure), where
+    # the Opus draft AND the GPT-5.5 rebuild both already failed the deterministic lint at THIS
+    # prompt version. Retrying that bought two frontier generations on every single request and
+    # landed on the same seed each time. A pause, not a grave: the prompt_version rule above
+    # reopens it the moment the doctrine that produced the failure changes.
+    return bool(cached.get("seeded")) and not cached.get("refusedAt")
+
+
 def run_engine(
     *,
     capability: str,
@@ -2061,32 +2093,20 @@ def run_engine(
     scope = _scope(payload)
 
     cached = store.load(concept, modality, difficulty, scope)
-    if cached is not None and cached.get("verified"):
-        artifact = cached.get("artifact")
-        # compose grew workbook + boss; a pre-upgrade cache record regenerates instead of serving
-        stale = modality == "compose" and not (
-            isinstance(artifact, dict) and "workbook" in artifact and "boss" in artifact
-        )
-        # pre-upgrade diagrams without an xmlns never render in the browser — regenerate
-        if modality == "diagram" and not (isinstance(artifact, str) and "xmlns" in artifact):
-            stale = True
-        # a cached seed is an honest floor, not a ceiling: live mode retries the real thing
-        if live and cached.get("seeded"):
-            stale = True
-        # generated under an older composer prompt: the current doctrine (visual law, fact base,
-        # activity schemas) supersedes it — regenerate on first live serve; the version ledger
-        # retains the old artifact, so nothing is lost
-        if live and cached.get("provenance", {}).get("prompt_version") != store.PROMPT_VERSION:
-            stale = True
-        if not stale:
-            # Prefer canonical; serve provisional without blocking. A live provisional cache-hit
-            # means the original validation thread never finished (e.g. the process restarted) —
-            # re-arm the gate so it still promotes to canonical, once. (validate is idempotent.)
-            if live and store.status(cached) == store.PROVISIONAL and not cached.get("seeded"):
-                _spawn_validation(cached, concept, modality, difficulty, scope, fallbacks)
-            model = cached.get("provenance", {}).get("model")
-            rendered = _rendered_url(concept, modality, difficulty, scope)
-            return ProviderResponse(output=_public(cached, rendered), tokens=0, model=model)
+    servable = (
+        cached is not None
+        and cached.get("verified")
+        and not is_stale(cached, modality, live=live)
+    )
+    if cached is not None and servable:
+        # Prefer canonical; serve provisional without blocking. A live provisional cache-hit
+        # means the original validation thread never finished (e.g. the process restarted) —
+        # re-arm the gate so it still promotes to canonical, once. (validate is idempotent.)
+        if live and store.status(cached) == store.PROVISIONAL and not cached.get("seeded"):
+            _spawn_validation(cached, concept, modality, difficulty, scope, fallbacks)
+        model = cached.get("provenance", {}).get("model")
+        rendered = _rendered_url(concept, modality, difficulty, scope)
+        return ProviderResponse(output=_public(cached, rendered), tokens=0, model=model)
 
     # Cache miss: a real generation. Hold the learner's slot for its whole duration (one at a time).
     with _generation_slot(subject):

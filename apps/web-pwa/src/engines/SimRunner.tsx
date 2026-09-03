@@ -8,6 +8,7 @@
  * Expressions are evaluated by a tiny arithmetic parser — never eval, never Function.
  */
 
+import type { SimSpec as WireSimSpec } from '@classess/contracts/plexus';
 import { useRegisterTarget, useWoboBus } from '@classess/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
@@ -15,7 +16,17 @@ import { equationType, lead, Scrubber, whisper } from '../screens/course/shared'
 
 // --- The sim-spec ---------------------------------------------------------------------------------
 
-export interface SimParam {
+/**
+ * The RENDER model, which is not the wire model.
+ *
+ * `SimSpec` in `@classess/contracts/plexus` is the one definition of what engine.simulate sends:
+ * `{params:[{name,min,max,default,unit}], formula, outputs: string[], breakpoints:[{param,at,why}],
+ * layout}`. What this component runs is a different thing — solved expressions, ids and labels,
+ * comparison operators — so it carries its own names. Two shapes with the same name in two files
+ * was the drift; `SimSpec` now means the contract, everywhere, and `simSpecFromGateway` is the one
+ * adapter between them (type-checked against the contract, so a wire change breaks it here).
+ */
+export interface SimSceneParam {
   id: string;
   label: string;
   min: number;
@@ -24,7 +35,7 @@ export interface SimParam {
   unit?: string;
 }
 
-export interface SimOutput {
+export interface SimSceneOutput {
   id: string;
   label: string;
   /** Arithmetic over the param ids, e.g. "V / R" — evaluated by the safe parser below. */
@@ -32,7 +43,7 @@ export interface SimOutput {
   unit?: string;
 }
 
-export interface SimBreakpoint {
+export interface SimSceneBreakpoint {
   param: string;
   op: '<' | '<=' | '==' | '>=' | '>';
   value: number;
@@ -40,16 +51,16 @@ export interface SimBreakpoint {
   note: string;
 }
 
-export interface SimSpec {
+export interface SimScene {
   id: string;
   nodeId?: string;
   title: string;
   /** The law on display, e.g. "V = I·R". */
   law?: string;
   caption?: string;
-  params: SimParam[];
-  outputs: SimOutput[];
-  breakpoints?: SimBreakpoint[];
+  params: SimSceneParam[];
+  outputs: SimSceneOutput[];
+  breakpoints?: SimSceneBreakpoint[];
 }
 
 // --- Safe expression evaluation (no eval — a small recursive-descent parser) -----------------------
@@ -191,7 +202,7 @@ const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'obj
 /** Param ids must be plain identifiers (they appear in expressions) — nothing exotic gets through. */
 const IDENT_RE = /^[A-Za-z_][A-Za-z0-9_]*$/;
 
-function parseParam(raw: unknown): SimParam | null {
+function parseParam(raw: unknown): SimSceneParam | null {
   if (!isRecord(raw)) return null;
   const { id, label, min, max, initial, unit } = raw;
   if (typeof id !== 'string' || !IDENT_RE.test(id) || typeof label !== 'string') return null;
@@ -212,16 +223,16 @@ function parseParam(raw: unknown): SimParam | null {
  * an expression the parser cannot prove runnable never reaches the learner (refusal is invisible;
  * the caller falls back to the seed journey).
  */
-export function parseSimSpec(raw: unknown): SimSpec | null {
+export function parseSimSpec(raw: unknown): SimScene | null {
   if (!isRecord(raw)) return null;
   const src = isRecord(raw.spec) ? raw.spec : raw;
   if (src.verified === false) return null;
   const params = (Array.isArray(src.params) ? src.params : [])
     .map(parseParam)
-    .filter((p): p is SimParam => p !== null);
+    .filter((p): p is SimSceneParam => p !== null);
   if (params.length === 0 || params.length > 5) return null;
   const vars = Object.fromEntries(params.map((p) => [p.id, p.initial]));
-  const outputs = (Array.isArray(src.outputs) ? src.outputs : []).flatMap((o): SimOutput[] => {
+  const outputs = (Array.isArray(src.outputs) ? src.outputs : []).flatMap((o): SimSceneOutput[] => {
     if (!isRecord(o)) return [];
     const { id, label, expr, unit } = o;
     if (typeof id !== 'string' || typeof label !== 'string' || typeof expr !== 'string') return [];
@@ -230,7 +241,7 @@ export function parseSimSpec(raw: unknown): SimSpec | null {
   });
   if (outputs.length === 0) return null;
   const breakpoints = (Array.isArray(src.breakpoints) ? src.breakpoints : []).flatMap(
-    (b): SimBreakpoint[] => {
+    (b): SimSceneBreakpoint[] => {
       if (!isRecord(b)) return [];
       const { param, op, value, note } = b;
       if (typeof param !== 'string' || !params.some((p) => p.id === param)) return [];
@@ -254,12 +265,14 @@ export function parseSimSpec(raw: unknown): SimSpec | null {
 /**
  * Adapts the gateway engine.simulate artifact (CAS-verified server-side:
  * `{params:[{name,min,max,default,unit}], formula:"V = I*R", outputs:["V"],
- * breakpoints:[{param,at,why}], layout}`) into a runnable SimSpec. The formula must be in
+ * breakpoints:[{param,at,why}], layout}`) into a runnable SimScene. The formula must be in
  * solved form `OUT = expr(params)` — anything else is refused and the caller falls back.
  */
-export function simSpecFromGateway(raw: unknown, title: string): SimSpec | null {
+export function simSpecFromGateway(raw: unknown, title: string): SimScene | null {
   if (!isRecord(raw)) return null;
-  const src = isRecord(raw.artifact) ? raw.artifact : raw;
+  // The envelope the plexus serve path wraps an artifact in; `raw` may be either.
+  const src = (isRecord(raw.artifact) ? raw.artifact : raw) as Partial<WireSimSpec> &
+    Record<string, unknown>;
   const formula = typeof src.formula === 'string' ? src.formula : '';
   const sides = formula.split('=');
   if (sides.length !== 2) return null;
@@ -271,7 +284,7 @@ export function simSpecFromGateway(raw: unknown, title: string): SimSpec | null 
   if (!out || !lhs || !rhs) return null;
   const expr = lhs === out ? rhs : rhs === out ? lhs : null;
   if (!expr) return null;
-  const params = (Array.isArray(src.params) ? src.params : []).flatMap((p) => {
+  const params = (Array.isArray(src.params) ? src.params : []).flatMap((p: unknown) => {
     if (!isRecord(p) || typeof p.name !== 'string') return [];
     return [
       {
@@ -284,20 +297,22 @@ export function simSpecFromGateway(raw: unknown, title: string): SimSpec | null 
       },
     ];
   });
-  const breakpoints = (Array.isArray(src.breakpoints) ? src.breakpoints : []).flatMap((b) => {
-    if (!isRecord(b) || typeof b.param !== 'string' || typeof b.at !== 'number') return [];
-    const start = params.find((p) => p.id === b.param);
-    const initial = typeof start?.initial === 'number' ? start.initial : 0;
-    return [
-      {
-        param: b.param,
-        // the note surfaces when the learner pushes the param past the named edge
-        op: b.at <= initial ? '<=' : '>=',
-        value: b.at,
-        note: String(b.why ?? ''),
-      },
-    ];
-  });
+  const breakpoints = (Array.isArray(src.breakpoints) ? src.breakpoints : []).flatMap(
+    (b: unknown) => {
+      if (!isRecord(b) || typeof b.param !== 'string' || typeof b.at !== 'number') return [];
+      const start = params.find((p) => p.id === b.param);
+      const initial = typeof start?.initial === 'number' ? start.initial : 0;
+      return [
+        {
+          param: b.param,
+          // the note surfaces when the learner pushes the param past the named edge
+          op: b.at <= initial ? '<=' : '>=',
+          value: b.at,
+          note: String(b.why ?? ''),
+        },
+      ];
+    },
+  );
   return parseSimSpec({
     id: typeof src.id === 'string' ? src.id : 'gateway-sim',
     title,
@@ -308,7 +323,7 @@ export function simSpecFromGateway(raw: unknown, title: string): SimSpec | null 
   });
 }
 
-function holds(bp: SimBreakpoint, values: Record<string, number>): boolean {
+function holds(bp: SimSceneBreakpoint, values: Record<string, number>): boolean {
   const v = values[bp.param];
   if (v === undefined) return false;
   switch (bp.op) {
@@ -345,7 +360,7 @@ function LiveNumber({ children }: { children: string }) {
   );
 }
 
-export function SimRunner({ spec }: { spec: SimSpec }) {
+export function SimRunner({ spec }: { spec: SimScene }) {
   const bus = useWoboBus();
   const [values, setValues] = useState<Record<string, number>>(() =>
     Object.fromEntries(spec.params.map((p) => [p.id, p.initial])),

@@ -278,8 +278,11 @@ export function glyphAt(
   const drawn = SYMBOL_GLYPHS[ch];
   if (drawn) return drawn(size, origin);
   const g = font.charToGlyph(ch);
-  const advance = ((g.advanceWidth ?? font.unitsPerEm * 0.5) / font.unitsPerEm) * size;
-  if (!g || g.index === 0 || ch === ' ') return { glyph: null, advance };
+  const advance = ((g?.advanceWidth ?? font.unitsPerEm * 0.5) / font.unitsPerEm) * size;
+  if (ch === ' ') return { glyph: null, advance };
+  // Caveat has no outline for it and no hand here draws it: fall back to a drawn placeholder so
+  // the character is written as SOMETHING. A missing relation in an equation is not a small loss.
+  if (!g || g.index === 0) return MISSING_GLYPH(size, origin);
   const path = g.getPath(origin[0], origin[1], size);
   const contours = orderContours(flattenContours(path, size), size);
   const trace = contours.map((c) => {
@@ -453,7 +456,133 @@ const SYMBOL_GLYPHS: Record<string, SymbolBuilder> = {
       [0.5, 0.3],
     ],
   ]),
+  // The relations, the operators and the units a school board actually writes. Caveat carries none
+  // of them, and a glyph Caveat does not carry used to render as NOTHING — an equation quietly
+  // missing its own relation, which is worse than a refusal because it still looks like an answer.
+  Ω: symbol(0.9, [
+    [
+      [0.04, 0.02],
+      [0.26, 0.04],
+      [0.16, 0.24],
+      [0.08, 0.52],
+      [0.22, 0.8],
+      [0.46, 0.88],
+      [0.7, 0.8],
+      [0.82, 0.52],
+      [0.74, 0.24],
+      [0.64, 0.04],
+      [0.86, 0.02],
+    ],
+  ]),
+  '×': symbol(0.66, [
+    [
+      [0.08, 0.6],
+      [0.58, 0.12],
+    ],
+    [
+      [0.58, 0.6],
+      [0.08, 0.12],
+    ],
+  ]),
+  '÷': symbol(0.72, [
+    [
+      [0.06, 0.34],
+      [0.66, 0.34],
+    ],
+    ellipseStroke(0.36, 0.56, 0.055, 0.055, 10),
+    ellipseStroke(0.36, 0.12, 0.055, 0.055, 10),
+  ]),
+  '·': symbol(0.32, [ellipseStroke(0.16, 0.3, 0.055, 0.055, 10)]),
+  '±': symbol(0.7, [
+    [
+      [0.34, 0.72],
+      [0.34, 0.26],
+    ],
+    [
+      [0.08, 0.49],
+      [0.6, 0.49],
+    ],
+    [
+      [0.06, 0.06],
+      [0.62, 0.06],
+    ],
+  ]),
+  '≤': symbol(0.76, [
+    [
+      [0.64, 0.72],
+      [0.08, 0.42],
+      [0.64, 0.12],
+    ],
+    [
+      [0.08, 0.02],
+      [0.66, 0.02],
+    ],
+  ]),
+  '≥': symbol(0.76, [
+    [
+      [0.1, 0.72],
+      [0.66, 0.42],
+      [0.1, 0.12],
+    ],
+    [
+      [0.08, 0.02],
+      [0.66, 0.02],
+    ],
+  ]),
+  '≠': symbol(0.74, [
+    [
+      [0.06, 0.46],
+      [0.66, 0.46],
+    ],
+    [
+      [0.06, 0.22],
+      [0.66, 0.22],
+    ],
+    [
+      [0.52, 0.66],
+      [0.2, 0.02],
+    ],
+  ]),
+  '≈': symbol(0.7, [
+    [
+      [0.06, 0.5],
+      [0.2, 0.6],
+      [0.36, 0.4],
+      [0.52, 0.5],
+    ],
+    [
+      [0.06, 0.24],
+      [0.2, 0.34],
+      [0.36, 0.14],
+      [0.52, 0.24],
+    ],
+  ]),
+  '°': symbol(0.4, [ellipseStroke(0.2, 0.74, 0.13, 0.13, 14)]),
 };
+
+/**
+ * Every symbol she draws by hand rather than reading out of Caveat — the vocabulary the domain
+ * pipelines and the TeX subset can put on a board. A test walks this list, so a symbol added to
+ * `TEX_SYMBOLS` without a hand to draw it fails there rather than on a learner's board.
+ */
+export const HAND_SYMBOLS: string[] = Object.keys(SYMBOL_GLYPHS);
+
+/**
+ * The last resort: a character Caveat has no glyph for and this file has no hand for.
+ *
+ * BOARD.md §11 — ink that never lands is a board that lies. Rather than drop such a character
+ * silently, the pen draws a small hollow box in its place at x-height: visibly a symbol she could
+ * not write, which is honest, and which the vocabulary test above exists to keep rare.
+ */
+const MISSING_GLYPH: SymbolBuilder = symbol(0.6, [
+  [
+    [0.08, 0.06],
+    [0.5, 0.06],
+    [0.5, 0.6],
+    [0.08, 0.6],
+    [0.08, 0.06],
+  ],
+]);
 
 /** True when this character is one she draws by hand rather than one Caveat carries. */
 export function isDrawnSymbol(ch: string): boolean {
@@ -472,6 +601,7 @@ function advanceOf(font: HandFont, ch: string, size: number): number {
   const drawn = SYMBOL_GLYPHS[ch];
   if (drawn) return drawn(size, [0, 0]).advance;
   const g = font.charToGlyph(ch);
+  if (ch !== ' ' && (!g || g.index === 0)) return MISSING_GLYPH(size, [0, 0]).advance;
   return ((g?.advanceWidth ?? font.unitsPerEm * 0.5) / font.unitsPerEm) * size;
 }
 
@@ -555,6 +685,8 @@ const TEX_SYMBOLS: Record<string, string> = {
   beta: 'β',
   gamma: 'γ',
   Delta: 'Δ',
+  Omega: 'Ω',
+  ohm: 'Ω',
   Sigma: 'Σ',
   sum: 'Σ',
   int: '∫',
@@ -843,6 +975,127 @@ export function layoutTex(
     height: box.ascent + box.descent,
     size,
     length,
+  };
+}
+
+// --- Powers and indices in a plain written line ---------------------------------------------------
+
+/**
+ * A written line may carry TeX's own shorthand for a power or an index — `a^2`, `x_1`, and whole
+ * equations like `a^2 + b^2 = c^2`. She writes those as a mathematician does: the 2 raised and
+ * small, the 1 dropped and small. A board that writes the caret instead has written the SOURCE of
+ * the maths rather than the maths, which is the "slideshow, not a teacher" of BOARD.md §11.
+ */
+const SCRIPT_MARKS = /[\^_]/;
+
+/** True when this line has a power or an index in it and belongs in the script layout. */
+export function hasScripts(text: string): boolean {
+  return SCRIPT_MARKS.test(text);
+}
+
+const SUPERSCRIPTS: Record<string, string> = {
+  '0': '\u2070',
+  '1': '\u00B9',
+  '2': '\u00B2',
+  '3': '\u00B3',
+  '4': '\u2074',
+  '5': '\u2075',
+  '6': '\u2076',
+  '7': '\u2077',
+  '8': '\u2078',
+  '9': '\u2079',
+  '+': '\u207A',
+  '-': '\u207B',
+  '=': '\u207C',
+  '(': '\u207D',
+  ')': '\u207E',
+  n: '\u207F',
+  i: '\u2071',
+};
+
+const SUBSCRIPTS: Record<string, string> = {
+  '0': '\u2080',
+  '1': '\u2081',
+  '2': '\u2082',
+  '3': '\u2083',
+  '4': '\u2084',
+  '5': '\u2085',
+  '6': '\u2086',
+  '7': '\u2087',
+  '8': '\u2088',
+  '9': '\u2089',
+  '+': '\u208A',
+  '-': '\u208B',
+  '=': '\u208C',
+  '(': '\u208D',
+  ')': '\u208E',
+  a: '\u2090',
+  e: '\u2091',
+  i: '\u1D62',
+  j: '\u2C7C',
+  o: '\u2092',
+  x: '\u2093',
+  n: '\u2099',
+  m: '\u2098',
+  t: '\u209C',
+  r: '\u1D63',
+};
+
+const SCRIPT_GROUP = /([\^_])(?:\{([^}]*)\}|(\S))/g;
+
+/**
+ * The same line with its powers and indices as real characters — `a^2` becomes `a\u00B2`,
+ * `x_1` becomes `x\u2081`. This is the NO-FONT path: when Caveat never arrived the renderer reveals
+ * plain type, and plain type must still read as maths. A group with any character that has no
+ * raised or dropped form is left exactly as it was written rather than half-converted.
+ */
+export function scriptText(text: string): string {
+  return text.replace(SCRIPT_GROUP, (whole, mark: string, braced?: string, bare?: string) => {
+    const body = braced ?? bare ?? '';
+    const table = mark === '^' ? SUPERSCRIPTS : SUBSCRIPTS;
+    let out = '';
+    for (const ch of body) {
+      const mapped = table[ch];
+      if (mapped === undefined) return whole;
+      out += mapped;
+    }
+    return out || whole;
+  });
+}
+
+/**
+ * An equation as the plain line it degrades to when there is no font: `\\frac`\u2019s braces gone, every
+ * `\\name` replaced by the symbol it means, powers and indices raised and dropped. This is what the
+ * header of a golden board shows when Caveat has not loaded, and it must never show carets.
+ */
+export function texPlainText(tex: string): string {
+  const named = tex.replace(/\\([a-zA-Z]+)/g, (_whole, name: string) => {
+    const mapped = TEX_SYMBOLS[name];
+    if (mapped !== undefined) return mapped;
+    return TEX_WORDS.has(name) ? name : '';
+  });
+  return scriptText(named.replace(/[{}]/g, '').replace(/\s+/g, ' ').trim());
+}
+
+/**
+ * A written line laid out with its powers and indices raised and dropped, in her own hand. The TeX
+ * subset is already the machinery for that, and `write` text is a legal member of it: plain
+ * characters pass straight through, `^` and `_` become real scripts.
+ */
+export function writeScripted(
+  font: HandFont,
+  text: string,
+  origin: BoardPoint,
+  size: number,
+): HandText & { rules: Stroke[] } {
+  const laid = layoutTex(font, text, origin, size);
+  return {
+    glyphs: laid.glyphs,
+    rules: laid.rules,
+    width: laid.width,
+    height: laid.height,
+    size,
+    length: laid.length,
   };
 }
 

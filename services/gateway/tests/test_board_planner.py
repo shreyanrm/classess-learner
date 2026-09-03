@@ -12,6 +12,7 @@ from classess_gateway.board.planner import (
     Surface,
     TooMuchAtOnce,
     choose_presentation,
+    is_lesson,
     plan_board,
 )
 
@@ -82,9 +83,7 @@ def test_a_shape_whose_target_vanished_is_re_anchored_to_board_space_never_float
 def test_an_object_anchor_may_name_something_already_on_the_board() -> None:
     obj = {"id": "m1", "kind": "underline", "anchor": {"object": "v1"}}
     assert plan_board({"objects": [obj]}, context=TARGETS).objects == []
-    kept = plan_board(
-        {"objects": [obj]}, context=TARGETS, board_context={"drawn": ["v1"]}
-    ).objects
+    kept = plan_board({"objects": [obj]}, context=TARGETS, board_context={"drawn": ["v1"]}).objects
     assert [o["id"] for o in kept] == ["m1"]
 
 
@@ -171,6 +170,26 @@ def test_a_lesson_gets_the_full_board() -> None:
     assert plan.presentation == "full"
 
 
+def test_the_bare_route_the_client_publishes_is_a_lesson() -> None:
+    """`context-bus.tsx` publishes `page.route` as a bare word — "course", not "/course/atoms" —
+    and the web app's own `isLessonRoute` reads exactly that. Matching only on "/course" meant no
+    route the client actually sends was ever a lesson."""
+    plan = plan_board(
+        {"objects": [mark("m1")]},
+        context={**TARGETS, "page": {"route": "course"}},
+    )
+    assert plan.presentation == "full"
+
+    assert is_lesson({"page": {"route": "course"}}, {}) is True
+    assert is_lesson({"page": {"route": "sandbox"}}, {}) is True
+    assert is_lesson({"page": {"route": "Course"}}, {}) is True
+    assert is_lesson({"page": {"route": "/course/atoms"}}, {}) is True
+    assert is_lesson({"page": {"route": "home"}}, {}) is False
+    assert is_lesson({}, {}) is False
+    # The conductor's own flag still wins, whatever the route says.
+    assert is_lesson({"page": {"route": "home"}}, {"lesson": True}) is True
+
+
 def test_the_learner_word_overrides_her_rule() -> None:
     plan = plan_board(
         {"objects": [mark("m1")], "presentation": "screen"},
@@ -208,8 +227,10 @@ def test_an_interrupted_turn_is_carried_into_the_next_plan() -> None:
 
 def test_an_ask_only_names_targets_that_exist() -> None:
     plan = plan_board(
-        {"objects": [mark("m1")], "ask": {"prompt": "Which side does it move to?",
-                                          "targets": ["m1", "ghost"]}},
+        {
+            "objects": [mark("m1")],
+            "ask": {"prompt": "Which side does it move to?", "targets": ["m1", "ghost"]},
+        },
         context=TARGETS,
     )
     assert plan.ask == {"prompt": "Which side does it move to?", "targets": ["m1"]}

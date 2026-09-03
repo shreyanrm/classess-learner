@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 import { BudgetExhaustedError, SignInRequiredError } from '@classess/sdk';
-import { friendlyTime, isBargeIn, refusalLine } from './refusals';
+import { WOBBLY_LINE } from '../shell/resilience';
+import { friendlyTime, isBargeIn, isNetworkError, refusalLine } from './refusals';
 
 describe('what she says when the brain says no', () => {
   it('401: asks them to sign in, and the app takes them to her sign-in beat', () => {
@@ -78,5 +79,41 @@ describe('barging in', () => {
     expect(isBargeIn(new DOMException('aborted', 'AbortError'))).toBe(true);
     expect(isBargeIn(new Error('socket hang up'))).toBe(false);
     expect(isBargeIn(null)).toBe(false);
+  });
+});
+
+/**
+ * Family N's dead-end rule: a link that wobbled is not "something went wrong". `resilience.ts`
+ * already had her line for it; nothing said it, so a 2G stall reached the learner as the generic
+ * trouble copy.
+ */
+describe('a network stall gets her own line', () => {
+  const stalls = [
+    new TypeError('Failed to fetch'), // Chrome
+    new TypeError('NetworkError when attempting to fetch resource.'), // Firefox
+    new TypeError('Load failed'), // Safari
+    new TypeError('The network connection was lost.'),
+  ];
+
+  it('recognises a fetch that never reached the gateway', () => {
+    for (const err of stalls) expect(isNetworkError(err)).toBe(true);
+  });
+
+  it('says the wobbly line, and never asks the learner to sign in for it', () => {
+    for (const err of stalls) {
+      expect(refusalLine(err)).toEqual({ text: WOBBLY_LINE, signIn: false });
+    }
+  });
+
+  it('is not fooled by an ordinary error, or by a barge-in', () => {
+    expect(isNetworkError(new Error('Failed to fetch'))).toBe(false); // not a TypeError
+    expect(isNetworkError(new TypeError('x is not a function'))).toBe(false);
+    expect(isNetworkError(null)).toBe(false);
+    expect(refusalLine(new DOMException('aborted', 'AbortError')).text).toBe('');
+  });
+
+  it('leaves the two real refusals alone', () => {
+    expect(refusalLine(new SignInRequiredError()).signIn).toBe(true);
+    expect(refusalLine(new Error('socket hang up')).text).not.toBe(WOBBLY_LINE);
   });
 });

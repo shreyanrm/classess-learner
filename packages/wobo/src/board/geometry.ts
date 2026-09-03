@@ -20,13 +20,17 @@ import {
   glyphAt,
   type HandFont,
   type HandGlyph,
+  hasScripts,
   layoutTex,
   measureText,
+  scriptText,
+  texPlainText,
+  writeScripted,
   writeText,
 } from './handwriting';
-import { LABEL_MARGIN, placeLabel } from './layout';
+import { LABEL_MARGIN, placeLabel, placeLabelAt } from './layout';
 import { fillStroke, penRng, penStroke, polylineLength, ruledStroke, type Stroke } from './pen';
-import type { BoardObject, BoardPoint } from './schema';
+import type { AnchorAt, BoardObject, BoardPoint } from './schema';
 
 /** Everything the renderer needs to paint one object. */
 export interface ObjectGeometry {
@@ -105,6 +109,35 @@ function arrowHead(tip: BoardPoint, dir: BoardPoint, len: number): Stroke {
   };
 }
 
+/** The clear air an arrowhead keeps off the thing it points at, in board units (BOARD.md §7). */
+export const ARROW_GAP = 6;
+
+/**
+ * The point on `box`'s outline facing `towards`, backed off by `gap`.
+ *
+ * A zero-size box (a bare board coordinate) has no outline, so it is its own answer — an arrow to
+ * a point lands on the point. Otherwise the ray from the box's centre towards `towards` is
+ * intersected with the box's own sides; a `towards` inside the box degrades to the centre rather
+ * than dividing by zero.
+ */
+export function edgePoint(box: BoardRect, towards: BoardPoint, gap = ARROW_GAP): BoardPoint {
+  const cx = box.x + box.w / 2;
+  const cy = box.y + box.h / 2;
+  if (box.w <= 0 && box.h <= 0) return [box.x, box.y];
+  const dx = towards[0] - cx;
+  const dy = towards[1] - cy;
+  const len = Math.hypot(dx, dy);
+  if (len < 1e-6) return [cx, cy];
+  const ux = dx / len;
+  const uy = dy / len;
+  // How far along the ray the box's own outline is: the nearer of the two side crossings.
+  const tx = Math.abs(ux) > 1e-6 ? box.w / 2 / Math.abs(ux) : Number.POSITIVE_INFINITY;
+  const ty = Math.abs(uy) > 1e-6 ? box.h / 2 / Math.abs(uy) : Number.POSITIVE_INFINITY;
+  // Never reach past the thing pointing at it, and never fall back inside the box.
+  const reach = Math.max(0, Math.min(Math.min(tx, ty) + gap, len));
+  return [cx + ux * reach, cy + uy * reach];
+}
+
 function unit(from: BoardPoint, to: BoardPoint): BoardPoint {
   const dx = to[0] - from[0];
   const dy = to[1] - from[1];
@@ -130,53 +163,83 @@ function loopAround(box: BoardRect, rng: () => number): Stroke {
   return penStroke(pts, rng, { wobble: 1.6, anticipation: 0.004, overshoot: 0 });
 }
 
-/** Written text, placed and measured. Returns nothing drawable when the font never arrived. */
+/**
+ * Written text, placed and measured. Returns nothing drawable when the font never arrived.
+ *
+ * A line carrying `^` or `_` — `a^2`, `x_1`, `a^2 + b^2 = c^2` — is written as MATHS, not as its
+ * source: the script layout raises the power and drops the index in her own hand, and the no-font
+ * fallback shows the real characters (a², x₁) rather than the carets she never says out loud.
+ */
 function written(
   ctx: BuildContext,
   text: string,
   origin: BoardPoint,
   size: number,
   maxWidth?: number,
-): { glyphs: HandGlyph[]; box: BoardRect; lines: string[]; lineHeight: number } {
+): {
+  glyphs: HandGlyph[];
+  strokes: Stroke[];
+  box: BoardRect;
+  lines: string[];
+  lineHeight: number;
+} {
   const lineHeight = size * 1.22;
+  const scripted = hasScripts(text);
   if (!ctx.font) {
-    const lines = text.split('\n');
+    const plain = scripted ? scriptText(text) : text;
+    const lines = plain.split('\n');
     const approx = Math.max(...lines.map((l) => l.length)) * size * 0.42;
     return {
       glyphs: [],
+      strokes: [],
       box: { x: origin[0], y: origin[1], w: approx, h: lines.length * lineHeight },
       lines,
+      lineHeight,
+    };
+  }
+  if (scripted) {
+    const laid = writeScripted(ctx.font, text, origin, size);
+    return {
+      glyphs: laid.glyphs,
+      strokes: laid.rules,
+      box: { x: origin[0], y: origin[1], w: laid.width, h: laid.height },
+      lines: [scriptText(text)],
       lineHeight,
     };
   }
   const laid = writeText(ctx.font, text, origin, { size, maxWidth, lineHeight });
   return {
     glyphs: laid.glyphs,
+    strokes: [],
     box: { x: origin[0], y: origin[1], w: laid.width, h: laid.height },
     lines: [text],
     lineHeight,
   };
 }
 
-/** Where a written note goes when it hangs off something: beside it, in free space, with a margin. */
+/**
+ * Where a written note goes when it hangs off something.
+ *
+ * When the anchor NAMED a side — `{object: "cell", at: "bottom"}` — that side is the answer: under
+ * the box, left-aligned to it. Only an anchor that named nothing gets the search for the first
+ * free side. Either way it keeps a real margin and never lands on the thing it names.
+ */
 function notePlacement(
   ctx: BuildContext,
   anchorBox: BoardRect,
   text: string,
   size: number,
   maxWidth?: number,
+  at?: AnchorAt,
 ): BoardPoint {
   if (anchorBox.w === 0 && anchorBox.h === 0) return [anchorBox.x, anchorBox.y];
   const width = ctx.font
     ? Math.min(measureText(ctx.font, text, size), maxWidth ?? Number.POSITIVE_INFINITY)
     : text.length * size * 0.42;
-  const placed = placeLabel(
-    anchorBox,
-    { w: width, h: size * 1.22 },
-    ctx.occupied ?? [],
-    undefined,
-    LABEL_MARGIN,
-  );
+  const box = { w: width, h: size * 1.22 };
+  const asked = placeLabelAt(anchorBox, box, at, ctx.occupied ?? [], LABEL_MARGIN);
+  if (asked) return [asked.x, asked.y];
+  const placed = placeLabel(anchorBox, box, ctx.occupied ?? [], undefined, LABEL_MARGIN);
   return [placed.x, placed.y];
 }
 
@@ -258,11 +321,17 @@ export function geometryOf(object: BoardObject, ctx: BuildContext): ObjectGeomet
       };
     }
     case 'arrow': {
-      const tip: BoardPoint = p;
       const start = object.from ? resolveAnchorBox(object.from, ctx) : null;
-      const from: BoardPoint = start
-        ? pointOn(start, object.from && 'at' in object.from ? object.from.at : undefined)
-        : [p[0] - 120, p[1] - 80];
+      const fromAt = object.from && 'at' in object.from ? object.from.at : undefined;
+      const rawFrom: BoardPoint = start ? pointOn(start, fromAt) : [p[0] - 120, p[1] - 80];
+      // An arrow POINTS AT a thing; it does not run through it. The head stops on the outline of
+      // the box it is about, with a hand's gap, and the tail leaves the outline of what it came
+      // from — so a food web reads as arrows BETWEEN words rather than lines struck through them.
+      // An `at` that named a point is that point, exactly: the tutor already chose where to land.
+      const tip: BoardPoint =
+        at === undefined ? edgePoint(anchorBox, rawFrom, ARROW_GAP) : (p as BoardPoint);
+      const from: BoardPoint =
+        start && fromAt === undefined ? edgePoint(start, tip, ARROW_GAP) : rawFrom;
       const bow = object.curve ?? 0;
       const mid: BoardPoint = [
         (from[0] + tip[0]) / 2 - (tip[1] - from[1]) * bow * 0.2,
@@ -349,10 +418,10 @@ export function geometryOf(object: BoardObject, ctx: BuildContext): ObjectGeomet
     case 'number': {
       const label = formatQuantity(object.value, object.precision, object.unit);
       const full = object.label ? `${object.label} ${label}` : label;
-      const origin = notePlacement(ctx, anchorBox, full, WRITE_SIZE);
+      const origin = notePlacement(ctx, anchorBox, full, WRITE_SIZE, undefined, at);
       const w = written(ctx, full, origin, WRITE_SIZE);
       return {
-        strokes: [],
+        strokes: w.strokes,
         glyphs: w.glyphs,
         size: WRITE_SIZE,
         text: {
@@ -363,33 +432,33 @@ export function geometryOf(object: BoardObject, ctx: BuildContext): ObjectGeomet
           lineHeight: w.lineHeight,
         },
         box: w.box,
-        length: totalLength([], w.glyphs),
+        length: totalLength(w.strokes, w.glyphs),
       };
     }
     case 'write': {
       const size = object.size ?? WRITE_SIZE;
-      const origin = notePlacement(ctx, anchorBox, object.text, size, object.maxWidth);
+      const origin = notePlacement(ctx, anchorBox, object.text, size, object.maxWidth, at);
       const w = written(ctx, object.text, origin, size, object.maxWidth);
       return {
-        strokes: [],
+        strokes: w.strokes,
         glyphs: w.glyphs,
         size,
         text: { lines: w.lines, x: origin[0], y: origin[1], size, lineHeight: w.lineHeight },
         box: w.box,
-        length: totalLength([], w.glyphs),
+        length: totalLength(w.strokes, w.glyphs),
       };
     }
     case 'label': {
       const size = object.size ?? LABEL_SIZE;
-      const origin = notePlacement(ctx, anchorBox, object.text, size);
+      const origin = notePlacement(ctx, anchorBox, object.text, size, undefined, at);
       const w = written(ctx, object.text, origin, size);
       return {
-        strokes: [],
+        strokes: w.strokes,
         glyphs: w.glyphs,
         size,
         text: { lines: w.lines, x: origin[0], y: origin[1], size, lineHeight: w.lineHeight },
         box: w.box,
-        length: totalLength([], w.glyphs),
+        length: totalLength(w.strokes, w.glyphs),
       };
     }
     case 'erase': {
@@ -607,12 +676,15 @@ export function geometryOf(object: BoardObject, ctx: BuildContext): ObjectGeomet
     case 'tex': {
       const size = object.size ?? WRITE_SIZE;
       if (!ctx.font) {
-        const approx = object.tex.length * size * 0.4;
+        // No Caveat: she still shows the EQUATION, with its powers and indices as real characters
+        // (a² + b² = c²), never the TeX source she would never say out loud.
+        const plain = texPlainText(object.tex);
+        const approx = plain.length * size * 0.4;
         return {
           strokes: [],
           glyphs: [],
           size,
-          text: { lines: [object.tex], x: p[0], y: p[1], size, lineHeight: size * 1.3 },
+          text: { lines: [plain], x: p[0], y: p[1], size, lineHeight: size * 1.3 },
           box: { x: p[0], y: p[1], w: approx, h: size * 1.4 },
           length: 0,
         };

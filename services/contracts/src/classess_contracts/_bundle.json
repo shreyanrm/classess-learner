@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "generated_by": "@classess/contracts codegen (do not edit by hand)",
   "version": "v1",
   "envelope": {
@@ -14,7 +14,8 @@
         "type": "string"
       },
       "occurred_at": {
-        "type": "string"
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
       },
       "actor": {
         "type": "object",
@@ -1048,7 +1049,8 @@
           "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
         },
         "due_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "stability": {
           "type": "number"
@@ -1738,10 +1740,12 @@
           "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
         },
         "period_start": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "period_end": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "channel": {
           "type": "string",
@@ -1922,7 +1926,8 @@
           "const": "identity.subject.created.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -2075,7 +2080,8 @@
           "const": "session.started.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -2217,7 +2223,8 @@
           "const": "session.ended.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -2355,7 +2362,8 @@
           "const": "onboarding.step.completed.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -2507,7 +2515,8 @@
           "const": "onboarding.goal.set.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -2650,7 +2659,8 @@
           "const": "onboarding.diagnostic.answered.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -2912,7 +2922,8 @@
           "const": "learn.node.entered.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -3065,7 +3076,8 @@
           "const": "learn.opener.posed.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -3221,7 +3233,8 @@
           "const": "learn.attempt.submitted.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -3492,7 +3505,8 @@
           "const": "learn.reveal.shown.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -3650,7 +3664,8 @@
           "const": "learn.modality.switched.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -3819,7 +3834,8 @@
           "const": "learn.node.completed.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -3973,7 +3989,8 @@
           "const": "practice.item.served.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -4127,7 +4144,8 @@
           "const": "practice.item.answered.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -4385,7 +4403,8 @@
           "const": "practice.retrieval.scheduled.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -4486,7 +4505,8 @@
               "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
             },
             "due_at": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
             },
             "stability": {
               "type": "number"
@@ -4531,7 +4551,8 @@
           "const": "evidence.recorded.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -4738,7 +4759,8 @@
           "const": "mastery.band.changed.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -4904,7 +4926,8 @@
           "const": "wobo.opened.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -5039,7 +5062,8 @@
           "const": "wobo.turn.user.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -5185,7 +5209,8 @@
           "const": "wobo.turn.assistant.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -5360,7 +5385,8 @@
           "const": "wobo.hint.escalated.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -5508,7 +5534,8 @@
           "const": "wobo.perceived.work.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -5651,7 +5678,8 @@
           "const": "wobo.offer.outcome.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -5800,7 +5828,8 @@
           "const": "create.request.submitted.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -5945,7 +5974,8 @@
           "const": "create.course.compiled.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -6099,7 +6129,8 @@
           "const": "create.node.mapped.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -6248,7 +6279,8 @@
           "const": "meter.session.opened.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -6387,7 +6419,8 @@
           "const": "meter.budget.consumed.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -6534,7 +6567,8 @@
           "const": "meter.peak.detected.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -6674,7 +6708,8 @@
           "const": "conversion.moment.shown.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -6824,7 +6859,8 @@
           "const": "conversion.completed.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -6970,7 +7006,8 @@
           "const": "parent.linked.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -7113,7 +7150,8 @@
           "const": "parent.digest.sent.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -7210,10 +7248,12 @@
               "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
             },
             "period_start": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
             },
             "period_end": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
             },
             "channel": {
               "type": "string",
@@ -7266,7 +7306,8 @@
           "const": "parent.query.asked.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -7407,7 +7448,8 @@
           "const": "twin.query.asked.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -7552,7 +7594,8 @@
           "const": "safety.flag.raised.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",
@@ -7713,7 +7756,8 @@
           "const": "integrity.signal.recorded.v1"
         },
         "occurred_at": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "actor": {
           "type": "object",

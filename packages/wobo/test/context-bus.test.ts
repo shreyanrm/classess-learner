@@ -1,8 +1,20 @@
 import { describe, expect, it } from 'bun:test';
 import type { ActiveHighlight } from '../src/actions';
-import { addMarks, emptyMarks, resolveCanvasSlot } from '../src/context-bus';
+import {
+  type AnnotatableTarget,
+  addMarks,
+  createTargetStore,
+  emptyMarks,
+  resolveCanvasSlot,
+} from '../src/context-bus';
 
 const mark = (id: string) => ({ targetId: id, level: 'primary' }) as unknown as ActiveHighlight;
+const t = (id: string): AnnotatableTarget => ({
+  id,
+  kind: 'step',
+  label: id,
+  getRect: () => null,
+});
 
 describe('the redrawable mark set is scoped to one turn', () => {
   it('accumulates across the beats of a turn', () => {
@@ -46,5 +58,47 @@ describe('the canvas slot is owned by the surface that published it', () => {
       'MathScene',
     );
     expect(slot).toEqual({});
+  });
+});
+
+describe('registration is a subscription, not bus state', () => {
+  it('notifies subscribers and bumps a version on mount and unmount', () => {
+    const store = createTargetStore();
+    const seen: number[] = [];
+    const stop = store.subscribe(() => seen.push(store.getVersion()));
+
+    const drop = store.register(t('step-1'));
+    expect(store.getTargets().map((x) => x.id)).toEqual(['step-1']);
+    drop();
+    expect(store.getTargets()).toHaveLength(0);
+    expect(seen).toEqual([1, 2]);
+
+    stop();
+    store.register(t('step-2'));
+    expect(seen).toEqual([1, 2]); // an unsubscribed consumer no longer wakes up
+    expect(store.getVersion()).toBe(3);
+  });
+
+  it('an unmount cleanup is idempotent and never evicts the target that replaced it', () => {
+    const store = createTargetStore();
+    const drop = store.register(t('card'));
+    const replacement = t('card'); // a remount registers before the old cleanup runs
+    store.register(replacement);
+    drop();
+    drop();
+    expect(store.getTargets()).toEqual([replacement]);
+    expect(store.get('card')).toBe(replacement);
+  });
+
+  it('lets a listener unsubscribe itself while being notified', () => {
+    const store = createTargetStore();
+    let hits = 0;
+    const stop = store.subscribe(() => {
+      hits += 1;
+      stop();
+    });
+    store.register(t('a'));
+    store.register(t('b'));
+    expect(hits).toBe(1);
   });
 });

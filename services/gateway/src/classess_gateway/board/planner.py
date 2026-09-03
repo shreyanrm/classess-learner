@@ -131,9 +131,38 @@ class Surface:
             if isinstance(item, dict) and item.get("id"):
                 focuses.add(str(item["id"]))
         drawn = {str(o) for o in (boardctx.get("drawn") or []) if str(o).strip()}
-        route = str((context.get("page") or {}).get("route") or "")
-        lesson = bool(boardctx.get("lesson")) or "/course" in route or "/lesson" in route
-        return cls(frozenset(targets), frozenset(focuses), frozenset(drawn), lesson)
+        return cls(
+            frozenset(targets),
+            frozenset(focuses),
+            frozenset(drawn),
+            is_lesson(context, boardctx),
+        )
+
+
+#: Routes where the board IS the screen (BOARD.md §5). The client publishes the bare route name —
+#: `page.route == "course"` — through the context bus (`context-bus.tsx`), and the web app's own
+#: `isLessonRoute` reads exactly these words. Matching on "/course" instead meant no route the
+#: client actually sends was ever a lesson, so every lesson turn fell through to the plane and the
+#: full board never arrived.
+LESSON_ROUTES = frozenset({"course", "sandbox", "lesson"})
+
+
+def is_lesson(context: dict[str, Any], board_context: dict[str, Any]) -> bool:
+    """True when this turn is inside a lesson, whichever way the client says so.
+
+    The board context's own flag wins (the conductor sets it from `isLessonRoute`); otherwise the
+    route is read, as a bare word first and as a path second, so a deep link like
+    ``/course/algebra`` is a lesson too.
+    """
+    if bool(board_context.get("lesson")):
+        return True
+    route = str((context.get("page") or {}).get("route") or "").strip().lower()
+    if not route:
+        return False
+    if route in LESSON_ROUTES:
+        return True
+    head = route.lstrip("/").split("/", 1)[0].split("?", 1)[0]
+    return head in LESSON_ROUTES
 
 
 def _simplify(intent: dict[str, Any]) -> dict[str, Any] | None:

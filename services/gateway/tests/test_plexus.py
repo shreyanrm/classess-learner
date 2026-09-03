@@ -1145,6 +1145,56 @@ def test_sanitizer_allows_data_image_and_extracts_from_prose() -> None:
     assert "data:image/png" in clean
 
 
+def test_sanitizer_removes_set_and_url_targeting_animations() -> None:
+    """Sweep regression: ``<set>`` and ``<animate>`` rewrite an attribute AFTER the attribute pass
+    has cleared it, which made the href check decorative."""
+    dirty = (
+        '<svg viewBox="0 0 10 10">'
+        '<a href="#ok"><set attributeName="href" to="javascript:alert(1)"/></a>'
+        '<image href="#ok"><animate attributeName="xlink:href" to="javascript:alert(2)"/></image>'
+        '<rect><animateTransform attributeName="transform" to="rotate(90)"/></rect>'
+        "</svg>"
+    )
+    clean = sanitize_svg(dirty)
+    assert clean is not None
+    lowered = clean.lower()
+    assert "<set" not in lowered
+    assert "<animate " not in lowered and "<animate>" not in lowered
+    assert "javascript:" not in lowered
+    # a legitimate transform animation is untouched — this is a filter, not a ban
+    assert "animatetransform" in lowered
+
+
+def test_sanitizer_holds_src_and_xlink_href_to_the_same_rule() -> None:
+    """``href`` alone was checked, so ``src`` and the xlink spelling walked straight through."""
+    dirty = (
+        '<svg viewBox="0 0 10 10" xmlns:xlink="http://www.w3.org/1999/xlink">'
+        '<image src="https://evil.example/x.png"/>'
+        '<image xlink:href="https://evil.example/y.png"/>'
+        '<image href="data:image/png;base64,AAAA"/>'
+        "</svg>"
+    )
+    clean = sanitize_svg(dirty)
+    assert clean is not None
+    assert "evil.example" not in clean
+    assert "data:image/png" in clean  # the allowed one survives
+
+
+def test_sanitizer_always_emits_the_svg_namespace() -> None:
+    """Sweep regression: a fragment parsed WITHOUT an xmlns serialized without one, and a
+    namespace-less <svg> is inert in a browser — every sanitized diagram rendered blank and the
+    cache treated it as permanently stale."""
+    clean = sanitize_svg('<svg viewBox="0 0 10 10"><rect width="5" height="5"/></svg>')
+    assert clean is not None
+    assert "http://www.w3.org/2000/svg" in clean
+    # already-namespaced input keeps exactly one declaration
+    already = sanitize_svg(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><rect/></svg>'
+    )
+    assert already is not None
+    assert already.count("http://www.w3.org/2000/svg") == 1
+
+
 # --- Wave 3: cache writes are atomic, migration is idempotent --------------------------
 
 

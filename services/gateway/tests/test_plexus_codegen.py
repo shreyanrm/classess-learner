@@ -48,3 +48,27 @@ def test_check_mode_passes_against_the_committed_schema() -> None:
         assert codegen.main() == 0
     finally:
         sys.argv = argv
+
+
+def test_the_card_contract_carries_every_activity_the_engine_accepts() -> None:
+    """Sweep regression: seven subject-scene activities (mathScene, physicsScene, chemScene,
+    bioScene, socialScene, mapScene, anatomyScene) were accepted and preserved by
+    ``engines._CARD_ACTIVITIES`` but absent from ``Card``, so the generated contract described a
+    card that could not carry any of them and every scene travelled outside the schema."""
+    from classess_gateway.plexus.engines import _CARD_ACTIVITIES
+    from classess_gateway.plexus.specs import Card
+
+    missing = set(_CARD_ACTIVITIES) - set(Card.model_fields)
+    assert not missing, f"Card is missing activity fields the engine accepts: {sorted(missing)}"
+
+    card_props = codegen.build_schema()["$defs"]["Card"]["properties"]
+    for name in _CARD_ACTIVITIES:
+        assert name in card_props, f"{name} missing from the emitted Card schema"
+
+
+def test_the_spec_base_does_not_claim_a_strictness_it_lacks() -> None:
+    """Its docstring used to promise it forbade unmodelled fields; no ``extra`` was ever set."""
+    from classess_gateway.plexus.specs import Spec
+
+    assert Spec.model_config.get("extra") in (None, "ignore")
+    assert "forbid" not in (Spec.__doc__ or "").lower() or "never did" in (Spec.__doc__ or "")

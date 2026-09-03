@@ -17,6 +17,7 @@ proxy IP is no longer one bucket for every learner on the platform.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
@@ -53,8 +54,11 @@ from classess_gateway.registry import (
 from classess_gateway.routing import resolve, resolve_any
 from classess_gateway.safety import (
     DEFAULT_CLASSIFIER,
+    LEARNER_FACING_CAPABILITIES,
     SafetyClassifier,
     moderate,
+    screen_inbound,
+    screen_outbound,
     screen_wobo_inbound,
     screen_wobo_outbound,
 )
@@ -137,6 +141,15 @@ def _cors_origins() -> list[str]:
     if os.getenv("ENV", "dev").lower() == "prod":
         return [APP_URL]
     return [APP_URL, *_DEV_ORIGINS]
+
+
+def _preview_origin_regex() -> str | None:
+    """The per-deploy preview pattern — outside prod only.
+
+    Read at app build time (not import time) so ENV set by the host is honoured."""
+    if os.getenv("ENV", "dev").lower() == "prod":
+        return None
+    return _PREVIEW_ORIGIN_REGEX
 
 
 class ConsentDenied(Exception):
@@ -247,14 +260,22 @@ class Gateway:
                 output=output,
             )
 
-        # Inbound safety on Wobo's free-text surface (WOBO.md §11): a crisis or moderation hit
-        # never reaches a model — she answers with the calm supportive line herself.
-        if capability == "wobo.turn":
-            gated = screen_wobo_inbound(request.payload, self.classifier)
+        # Inbound safety on EVERY learner-facing surface (WOBO.md §11): a crisis or moderation
+        # hit never reaches a model — she answers with the calm supportive line herself. This
+        # used to be a `capability == "wobo.turn"` special case, which meant the very same
+        # sentence typed into a course request, a graded attempt or an engine concept went
+        # straight to a frontier model unscreened. The set lives in safety.py.
+        if capability in LEARNER_FACING_CAPABILITIES:
+            gated = screen_inbound(request.payload, self.classifier)
             if gated is not None:
                 logger.warning(
-                    "wobo turn gated by safety",
-                    extra={"fields": {"category": gated["safety"]["category"]}},
+                    "turn gated by safety",
+                    extra={
+                        "fields": {
+                            "capability": capability,
+                            "category": gated["safety"]["category"],
+                        }
+                    },
                 )
                 emit(
                     self.sink,
@@ -302,9 +323,11 @@ class Gateway:
         latency_ms = (time.perf_counter() - start) * 1000
 
         output = result.output
-        # Outbound safety: whatever the model wants Wobo to say is screened before serving.
-        if capability == "wobo.turn":
-            output = screen_wobo_outbound(output, self.classifier)
+        # Outbound safety: whatever the model wants to put in front of the learner — the spoken
+        # line, the text of every overlay action and the visualization caption — is screened
+        # before serving, on every learner-facing capability rather than on wobo.turn alone.
+        if capability in LEARNER_FACING_CAPABILITIES:
+            output = screen_outbound(output, self.classifier)
 
         # The model that actually answered: a provider reports it when a fallback took over (e.g. a
         # Track-2 placeholder that failed over to the frontier), else the policy's primary. The
@@ -367,6 +390,21 @@ def _client_ip(request: Request) -> str:
             if hops:
                 return hops[-1]
     return request.client.host if request.client else "unknown"
+
+
+# The salt makes the log fingerprint unlinkable across deployments and un-reversible by anyone
+# who merely holds the log: without it, a blake2b of an IPv4 address is a 4-billion-entry
+# rainbow table away from the address itself.
+_IP_LOG_SALT = os.getenv("IP_LOG_SALT", "").encode() or os.urandom(16)
+
+
+def _ip_fingerprint(ip: str) -> str:
+    """A stable, salted, non-reversible stand-in for a client address.
+
+    Our learners are minors, so the raw address never lands in a log line: rate-limit forensics
+    and abuse correlation only ever need "same caller or not", which a keyed digest answers.
+    """
+    return hashlib.blake2b(ip.encode(), key=_IP_LOG_SALT[:64], digest_size=8).hexdigest()
 
 
 def _too_large(request: Request) -> bool:
@@ -583,7 +621,13 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
         bucket = (key, window)
         with hits_lock:
             if len(hits) > 4096:
-                hits.clear()  # ponytail: cheap prune; worst case one window over-admits
+                # Prune by EXPIRY, never wholesale. Clearing the map at the size cap handed
+                # every caller in the current window a fresh counter, so a flood of distinct
+                # keys was itself the way past the limit. Only buckets from a window that has
+                # already closed are dropped; live counters survive the prune.
+                expired = [b for b in hits if b[1] < window]
+                for b in expired:
+                    del hits[b]
             hits[bucket] = hits.get(bucket, 0) + 1
             return hits[bucket] > ceiling
 
@@ -593,7 +637,7 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
     ) -> Response:
         started = time.perf_counter()
         path = request.url.path
-        ip = request.client.host if request.client else "unknown"
+        ip_hash = _ip_fingerprint(_client_ip(request))
         principal: Principal | None = None
         refused: AuthError | None = None
 
@@ -656,7 +700,7 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
                         "method": request.method,
                         "path": path,
                         "status": response.status_code,
-                        "ip": ip,
+                        "ip_hash": ip_hash,
                         "subject": principal.subject if principal else None,
                         "duration_ms": round((time.perf_counter() - started) * 1000, 1),
                     }
@@ -670,7 +714,10 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=_cors_origins(),
-        allow_origin_regex=_PREVIEW_ORIGIN_REGEX,
+        # Preview origins are a DEV convenience. In prod the trust boundary is exactly the one
+        # origin _cors_origins() returns: a pattern that matches any ephemeral deploy host is a
+        # standing invitation for anyone who can land a build on that pattern.
+        allow_origin_regex=_preview_origin_regex(),
         allow_methods=["*"],
         allow_headers=["*"],
     )

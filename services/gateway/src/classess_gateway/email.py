@@ -16,6 +16,7 @@ consent tier is NEVER read from the request body — it is derived server-side f
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
@@ -30,6 +31,16 @@ from pydantic import BaseModel, Field
 from classess_gateway.email_templates import KINDS, render
 
 logger = logging.getLogger("classess.gateway.email")
+
+
+def to_hash(address: str) -> str:
+    """A stable, non-reversible stand-in for a recipient address, for logs.
+
+    Our recipients are children and their guardians, so the address itself never lands in a log
+    line: every question a log answers about a send — did this one go twice, which recipient did
+    these three failures share — is answered by "same address or not", which a digest gives.
+    """
+    return hashlib.sha256(address.strip().lower().encode()).hexdigest()[:16]
 
 # Brand-neutral by config (WOBO-PLAN §8): the sender is one environment variable, so the domain
 # swap is a deploy change, not a code change.
@@ -100,7 +111,14 @@ def send_email(
         # console (default): render is proven, nothing sent — the structured line is the proof.
         logger.info(
             "email rendered (console mode, not sent)",
-            extra={"fields": {"kind": kind, "to": to, "subject": email["subject"], "mode": mode}},
+            extra={
+                "fields": {
+                    "kind": kind,
+                    "to_hash": to_hash(to),
+                    "subject": email["subject"],
+                    "mode": mode,
+                }
+            },
         )
         return {"ok": True, "mode": mode, "subject": email["subject"]}
 
@@ -134,18 +152,27 @@ def send_email(
         detail = exc.read().decode(errors="replace")[:300]
         logger.warning(
             "email send failed (http)",
-            extra={"fields": {"kind": kind, "to": to, "status": exc.code, "detail": detail}},
+            extra={
+                "fields": {
+                    "kind": kind,
+                    "to_hash": to_hash(to),
+                    "status": exc.code,
+                    "detail": detail,
+                }
+            },
         )
         return {"ok": False, "mode": mode, "error": "send_failed", "status": exc.code}
     except (urllib.error.URLError, TimeoutError, ValueError, OSError) as exc:
         logger.warning(
-            "email send failed", extra={"fields": {"kind": kind, "to": to, "error": str(exc)}}
+            "email send failed",
+            extra={"fields": {"kind": kind, "to_hash": to_hash(to), "error": str(exc)}},
         )
         return {"ok": False, "mode": mode, "error": "send_failed"}
 
     email_id = result.get("id")
     logger.info(
-        "email sent", extra={"fields": {"kind": kind, "to": to, "id": email_id, "mode": mode}}
+        "email sent",
+        extra={"fields": {"kind": kind, "to_hash": to_hash(to), "id": email_id, "mode": mode}},
     )
     return {"ok": True, "mode": mode, "id": email_id}
 

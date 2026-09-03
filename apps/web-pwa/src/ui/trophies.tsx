@@ -10,6 +10,7 @@
  * ceremony overlay.
  */
 
+import { fontFamily } from '@classess/config';
 import { motion } from 'framer-motion';
 import { type CSSProperties, useId } from 'react';
 
@@ -116,7 +117,7 @@ function Plate({ uid, tier, text }: { uid: string; tier: MetalTier; text: string
         strokeWidth={0.6}
       />
       {text && (
-        <g fontFamily="'Caveat', cursive" fontWeight={600} textAnchor="middle">
+        <g fontFamily={fontFamily.handwritten} fontWeight={600} textAnchor="middle">
           {/* the lit twin, offset — the engraved-into-metal depth */}
           <text x={50} y={116.4} fontSize={11} fill="#FFFFFF" fillOpacity={0.28}>
             {text}

@@ -21,27 +21,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expect, type Page, test } from '@playwright/test';
 
-/** The bench's console API (`src/wobo/board-bench.tsx`), as the page exposes it. */
-interface BenchLedgerRow {
-  id: string;
-  kind: string;
-  anchor: string;
-  owner?: string;
-  verified?: boolean;
-}
-declare global {
-  interface Window {
-    __woboBench?: {
-      names: string[];
-      play(name: string, options?: { instant?: boolean }): void;
-      ready: boolean;
-      firstStrokeMs: number | null;
-      ledger(): BenchLedgerRow[];
-      refused(): string[];
-      current: string | null;
-    };
-  }
-}
+// The bench API is declared once, where it is implemented (`src/wobo/board-bench.tsx`
+// exports `BenchApi` and declares `window.__woboBench`). Re-declaring a narrower shape
+// here made the two definitions conflict the moment the specs were type-checked.
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const GOLDENS = join(HERE, '../src/wobo/goldens');
@@ -252,7 +234,9 @@ test.describe('the golden boards', () => {
 });
 
 test.describe('the hand under reduced motion', () => {
-  test.use({ reducedMotion: 'reduce' });
+  // Playwright 1.58 carries reducedMotion inside contextOptions; the bare key was not a test
+  // option at all, so the whole describe ran with motion ON and asserted nothing about §7.
+  test.use({ contextOptions: { reducedMotion: 'reduce' } });
 
   test('everything still lands, in the same order', async ({ page }) => {
     const board = golden('pythagoras');

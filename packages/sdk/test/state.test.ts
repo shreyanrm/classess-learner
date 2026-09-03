@@ -14,6 +14,7 @@ import {
   SupabaseStateProvider,
   type ThreadSnapshot,
 } from '../src/state';
+import type { RestFilter } from '../src/supabase';
 
 function state(partial: Partial<LearnerState>): LearnerState {
   return { ...emptyLearnerState(), ...partial };
@@ -270,11 +271,11 @@ describe('SupabaseStateProvider hydration', () => {
   });
 
   it("falls back to the pre-rebrand 'vidya' thread row when no 'wobo' row exists yet", async () => {
-    const queries: string[] = [];
+    const queries: RestFilter[] = [];
     const rest = {
-      selectOne: async (_table: string, query: string) => {
-        queries.push(query);
-        if (query.includes('thread=eq.vidya')) {
+      selectOne: async (_table: string, filter: RestFilter) => {
+        queries.push(filter);
+        if (filter.match.thread === 'vidya') {
           return {
             subject_id: SUBJECT,
             thread: 'vidya',
@@ -293,7 +294,7 @@ describe('SupabaseStateProvider hydration', () => {
       1,
     ).hydrateThread('wobo');
     expect(merged?.turns).toEqual([{ id: 'a', role: 'wobo', text: 'from before the rename' }]);
-    expect(queries.some((q) => q.includes('thread=eq.wobo'))).toBe(true);
+    expect(queries.some((q) => q.match.thread === 'wobo')).toBe(true);
   });
 });
 

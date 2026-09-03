@@ -17,6 +17,63 @@ export interface SupabaseRestConfig {
   accessToken?: string | (() => string | undefined);
 }
 
+/**
+ * A structured PostgREST filter. Callers name columns and values; the URL is assembled — and
+ * encoded — in exactly one place, so no caller can interpolate a value carrying `&`, `#` or a
+ * PostgREST operator into the query string. Every entry is an equality match (`col=eq.value`),
+ * which is the only operator this client needs.
+ */
+export interface RestFilter {
+  /** column → value, matched with `eq.`. */
+  match: Record<string, string>;
+  /** The `select=` list; `*` when omitted. */
+  select?: string;
+}
+
+/** Turn a structured filter into an encoded query string. Exported for the encoding tests. */
+export function restQuery(filter: RestFilter, extra?: Record<string, string>): string {
+  const params = new URLSearchParams();
+  for (const [column, value] of Object.entries(filter.match)) params.append(column, `eq.${value}`);
+  if (filter.select !== undefined) params.set('select', filter.select);
+  for (const [k, v] of Object.entries(extra ?? {})) params.set(k, v);
+  return params.toString();
+}
+
+/**
+ * Every table that holds a learner's own rows, keyed by `subject_id`. Erasure walks this list, so
+ * a new learner-owned table is erased by adding it here and nowhere else.
+ */
+export const ERASABLE_TABLES = ['learner_state', 'learner_threads', 'profiles_cache'] as const;
+
+/** What an erasure did — reported, never swallowed, so the learner can be told the truth. */
+export interface ErasureResult {
+  erased: string[];
+  failed: string[];
+}
+
+/**
+ * Server-side erasure of one subject's data (DPDP: a minor's record must be deletable, not merely
+ * hidden by clearing localStorage). Every table is attempted even when one fails, so a single
+ * offline table cannot leave the rest behind.
+ */
+export async function eraseSubjectRows(
+  rest: Pick<SupabaseRest, 'delete'>,
+  subjectId: string,
+  tables: readonly string[] = ERASABLE_TABLES,
+): Promise<ErasureResult> {
+  const result: ErasureResult = { erased: [], failed: [] };
+  if (!subjectId) return { erased: [], failed: [...tables] };
+  for (const table of tables) {
+    try {
+      await rest.delete(table, { match: { subject_id: subjectId } });
+      result.erased.push(table);
+    } catch {
+      result.failed.push(table);
+    }
+  }
+  return result;
+}
+
 export class SupabaseRest {
   constructor(private readonly cfg: SupabaseRestConfig) {}
 
@@ -43,8 +100,9 @@ export class SupabaseRest {
     return res.status === 204 ? null : res.json();
   }
 
-  async selectOne(table: string, query: string): Promise<Record<string, unknown> | null> {
-    const res = await fetch(`${this.cfg.url}/rest/v1/${table}?${query}&limit=1`, {
+  async selectOne(table: string, filter: RestFilter): Promise<Record<string, unknown> | null> {
+    const query = restQuery({ select: '*', ...filter }, { limit: '1' });
+    const res = await fetch(`${this.cfg.url}/rest/v1/${table}?${query}`, {
       headers: this.headers('accept-profile'),
     });
     if (!res.ok) throw new Error(`supabase select ${table} failed: ${res.status}`);
@@ -52,8 +110,26 @@ export class SupabaseRest {
     return rows[0] ?? null;
   }
 
+  /**
+   * Erasure. RLS keys every row to auth.uid(), so a DELETE can only ever reach the caller's own
+   * rows — but the filter is still named explicitly, and a filter-less delete is refused outright
+   * rather than being sent as a whole-table wipe.
+   */
+  async delete(table: string, filter: RestFilter): Promise<void> {
+    if (Object.keys(filter.match).length === 0) {
+      throw new Error(`supabase delete ${table} refused: a delete must name a filter`);
+    }
+    const query = restQuery({ match: filter.match });
+    const res = await fetch(`${this.cfg.url}/rest/v1/${table}?${query}`, {
+      method: 'DELETE',
+      headers: { ...this.headers('content-profile'), prefer: 'return=minimal' },
+    });
+    if (!res.ok) throw new Error(`supabase delete ${table} failed: ${res.status}`);
+  }
+
   async upsert(table: string, row: Record<string, unknown>, onConflict: string): Promise<void> {
-    const res = await fetch(`${this.cfg.url}/rest/v1/${table}?on_conflict=${onConflict}`, {
+    const conflict = new URLSearchParams({ on_conflict: onConflict }).toString();
+    const res = await fetch(`${this.cfg.url}/rest/v1/${table}?${conflict}`, {
       method: 'POST',
       headers: {
         ...this.headers('content-profile'),

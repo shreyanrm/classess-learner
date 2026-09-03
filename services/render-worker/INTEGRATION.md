@@ -8,42 +8,37 @@ deps live only here). The seam is exactly one call, plus a worker that drains a 
 When a **video** artifact is promoted to canonical, enqueue a render. That promotion happens in
 `services/gateway/src/classess_gateway/plexus/validate.py`, in `validate_and_promote(...)`.
 
-**Implemented** (2026-07-07): the gateway takes the blessed "simplest" option below — it appends the
-JSONL line **itself** (pure stdlib, `_enqueue_video_render` / `_maybe_enqueue_render`) after each
-canonical video save, rather than importing this package. The job carries a `sceneSpecHash`
-(a gateway-side content fingerprint) so the append is **idempotent per film among pending jobs** and
-best-effort (a queue-write failure never blocks the promotion). A seeded honest-floor video is not
-enqueued. The reference shape stays:
+**Implemented** (2026-07-07): the gateway appends the JSONL line **itself** (pure stdlib,
+`_enqueue_video_render` / `_maybe_enqueue_render`) after each canonical video save, rather than
+importing this package. The job carries a `sceneSpecHash` (a gateway-side content fingerprint) so
+the append is **idempotent per film among pending jobs** and best-effort (a queue-write failure
+never blocks the promotion). A seeded honest-floor video is not enqueued.
 
-```python
-store.save(concept, modality, difficulty, canonical, scope)   # existing
-# --- render seam (implemented in validate.py) ---
-if modality == "video" and not canonical.get("seeded"):
-    from classess_render_worker.queue import enqueue_render   # or import by path; see note
-    enqueue_render(store.artifact_path(concept, modality, difficulty, scope))
-```
-
-`store.artifact_path(concept, "video", difficulty, scope)` already returns the canonical JSON path
+`store.artifact_path(concept, "video", difficulty, scope)` returns the canonical JSON path
 (`content/cache/video/<slug>--<difficulty>--<hash>.json`). That path is the whole job.
 
-> Note: this package is intentionally **not** a Python package on the gateway's path. Wire it by
-> adding `services/render-worker` to the gateway's `sys.path`, or copy `queue.py` next to the
-> gateway, or (simplest) have the gateway append the same JSONL line itself — the format is
-> `{"artifact": <path>, "out": null, "enqueuedAt": <iso>}`. The queue file is the contract, not the
-> import.
+> Note: this package is intentionally **not** a Python package on the gateway's path, and it
+> deliberately ships no enqueue helper for the gateway to import. **The queue file is the
+> contract, not an import** — the line format is
+> `{"artifact": <path>, "out": null, "sceneSpecHash": <hash>, "enqueuedAt": <iso>}`.
 
-Do not add Remotion or any render dependency to the gateway. The enqueue side is pure stdlib
-(`queue.py`).
+Do not add Remotion or any render dependency to the gateway. The enqueue side is pure stdlib on
+the gateway's own side of the seam.
 
 ## The queue
 
-`queue.py` is the whole queue: an append-only JSONL at
-`content/cache/_render-queue.jsonl` (override with `RENDER_QUEUE_PATH`).
+The queue is an append-only JSONL at `content/cache/_render-queue.jsonl` (override with
+`RENDER_QUEUE_PATH`). **Append-only is the whole design.** There used to be a second, unused
+`queue.py` here whose `drain()` read the file and then truncated it — which silently destroyed
+every job appended between the read and the write, and contradicted the retention law the worker
+actually follows. It was deleted; `worker.py` is the only reader.
 
-- `enqueue_render(artifact_path, out=None)` — appends one job. Safe to call on every promotion;
-  the worker dedupes by scene-spec hash and reuses an existing MP4 (reuse economy), so a re-promote
-  is nearly free.
-- `drain()` — reads and clears the queue, returning pending jobs.
+- The producer (the gateway) appends one job line per canonical video save. Safe on every
+  promotion: the worker dedupes by scene-spec hash and reuses an existing MP4 (reuse economy), so
+  a re-promote is nearly free.
+- The consumer (`worker.py`) reads the whole file, takes `pending_jobs(...)` — the specs with no
+  later `done`/`error` status line — and **appends** its own status lines. It never rewrites or
+  truncates the file, so a concurrent append can never be lost.
 
 ## The worker (drains the queue)
 

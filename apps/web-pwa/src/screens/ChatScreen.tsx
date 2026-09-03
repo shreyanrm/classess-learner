@@ -337,7 +337,6 @@ export function ChatScreen() {
               fontFamily: 'inherit',
               border: '1px solid var(--clss-card-border)',
               borderRadius: 3,
-              outline: 'none',
               background: 'var(--clss-card)',
               color: 'var(--clss-ink)',
               transition: 'border-color 0.2s ease',

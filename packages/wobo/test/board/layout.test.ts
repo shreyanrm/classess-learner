@@ -3,6 +3,11 @@ import { boxesOverlap, frameOf } from '../../src/board/anchors';
 import {
   avoidCollisions,
   boardArea,
+  CAMERA_FILL_MAX,
+  CAMERA_FILL_MIN,
+  CAMERA_MAX_ZOOM,
+  CAMERA_MIN_ZOOM,
+  cameraBox,
   contentBounds,
   fitCamera,
   flowRows,
@@ -77,16 +82,59 @@ describe('the camera follows the ink', () => {
     expect(fitCamera(null, frame)).toEqual({ zoom: 1, panX: 0, panY: 0 });
   });
 
-  it('never zooms past life size for a half-empty board', () => {
-    const bounds = contentBounds([{ x: 100, y: 100, w: 200, h: 100 }]);
-    expect(fitCamera(bounds, frame).zoom).toBe(1);
+  /** How much of the visible box the ink actually fills, on its limiting axis. */
+  const fillOf = (bounds: { x: number; y: number; w: number; h: number }) => {
+    const cam = fitCamera(bounds, frame);
+    const view = cameraBox(cam, frame);
+    return { cam, view, fill: Math.max(bounds.w / view.w, bounds.h / view.h) };
+  };
+
+  it('fits three objects to the box instead of leaving them at a fifth of it', () => {
+    // Three small marks in one corner — the failure this replaced showed them at ~0.2 of the box.
+    const bounds = contentBounds([
+      { x: 100, y: 100, w: 60, h: 30 },
+      { x: 180, y: 100, w: 60, h: 30 },
+      { x: 100, y: 150, w: 140, h: 30 },
+    ]) as { x: number; y: number; w: number; h: number };
+    const { cam, fill } = fillOf(bounds);
+    expect(cam.zoom).toBeGreaterThan(1);
+    expect(fill).toBeGreaterThanOrEqual(CAMERA_FILL_MIN);
+    expect(fill).toBeLessThanOrEqual(CAMERA_FILL_MAX);
+  });
+
+  it('centres the ink in the box it shows', () => {
+    const bounds = { x: 120, y: 90, w: 240, h: 120 };
+    const { cam, view } = fillOf(bounds);
+    expect(view.x + view.w / 2).toBeCloseTo(bounds.x + bounds.w / 2, 6);
+    expect(view.y + view.h / 2).toBeCloseTo(bounds.y + bounds.h / 2, 6);
+    expect(cam.zoom).toBeLessThanOrEqual(CAMERA_MAX_ZOOM);
+  });
+
+  it('keeps the aspect: one zoom for both axes, whatever the shape of the ink', () => {
+    const wide = fitCamera({ x: 0, y: 0, w: 600, h: 40 }, frame);
+    const tall = fitCamera({ x: 0, y: 0, w: 40, h: 400 }, frame);
+    for (const cam of [wide, tall]) {
+      const view = cameraBox(cam, frame);
+      // The window keeps the surface's own aspect — nothing is stretched to make the ink fit.
+      expect(view.w / view.h).toBeCloseTo(1000 / 620, 6);
+    }
+  });
+
+  it('grows the camera as the ink grows, one board at a time', () => {
+    const zooms = [
+      fitCamera({ x: 400, y: 300, w: 80, h: 40 }, frame).zoom,
+      fitCamera({ x: 400, y: 300, w: 300, h: 160 }, frame).zoom,
+      fitCamera({ x: 400, y: 300, w: 700, h: 420 }, frame).zoom,
+    ];
+    expect(zooms[0]).toBeGreaterThan(zooms[1] as number);
+    expect(zooms[1]).toBeGreaterThan(zooms[2] as number);
   });
 
   it('zooms out when the ink has outgrown the view', () => {
     const bounds = contentBounds([{ x: 0, y: 0, w: 2000, h: 300 }]);
     const cam = fitCamera(bounds, frame);
     expect(cam.zoom).toBeLessThan(1);
-    expect(cam.zoom).toBeGreaterThanOrEqual(0.35);
+    expect(cam.zoom).toBeGreaterThanOrEqual(CAMERA_MIN_ZOOM);
   });
 
   it('knows when it has to move at all', () => {

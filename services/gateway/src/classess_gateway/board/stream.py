@@ -49,6 +49,11 @@ MIN_SENTENCE_MS = 320
 #: which is the law, and late enough that it reads as a hand rather than a paste.
 INK_LEAD_MS = 120
 
+#: The grammar's own default drawing time for an object that asked for none.
+DEFAULT_INK_MS = 240
+#: However crowded the board, a mark never draws faster than a hand can move.
+MIN_INK_MS = 240
+
 MAX_SENTENCES = 10
 #: A finished turn is kept this long so a dropped connection can resume it without paying again.
 TURN_TTL_S = 180.0
@@ -147,39 +152,77 @@ def sentence_clock(parts: list[str]) -> list[tuple[int, int]]:
     return clock
 
 
-def _beat_start(obj: dict[str, Any], clock: list[tuple[int, int]]) -> int | None:
-    """The timestamp an object asked for by naming a sentence, or None if it named none."""
+def _beat_slot(obj: dict[str, Any], clock: list[tuple[int, int]]) -> tuple[int, int] | None:
+    """The ``(start, dur)`` an object asked for by naming a sentence, or None if it named none.
+
+    The prompt the model is given (``wobo.py``) says exactly two things, and this is the half that
+    makes them true:
+
+    * ``{"with": n}`` — *land it as you BEGIN that sentence*: the pen touches down on the first
+      syllable of sentence *n* and takes whatever time the object itself asked for.
+    * ``{"after": n}`` — *land it as you finish it*: the pen touches down on the first syllable of
+      sentence *n* and the last stroke arrives on its full stop. The object is FINISHED as she
+      finishes the sentence, which is what "land it" means.
+
+    ``after`` used to START the object when the sentence ended, which put the ink a whole sentence
+    behind the word it belonged to — "ink that lands after the word", BOARD.md §11's own example of
+    what kills the board.
+    """
     meta = obj.get("meta")
     beat = meta.get("beat") if isinstance(meta, dict) else None
     if not isinstance(beat, dict) or not clock:
         return None
+    own = int((obj.get("t") or {}).get("dur") or DEFAULT_INK_MS)
     if isinstance(beat.get("with"), int):
         index = max(0, min(len(clock) - 1, beat["with"]))
-        return clock[index][0]
+        return clock[index][0], own
     if isinstance(beat.get("after"), int):
         index = max(0, min(len(clock) - 1, beat["after"]))
-        return clock[index][0] + clock[index][1]
+        return clock[index][0], max(own, clock[index][1])
     return None
 
 
-def _ink_clock(objects: list[dict[str, Any]], clock: list[tuple[int, int]]) -> list[int]:
-    """When each object starts drawing, re-based so the first stroke beats the first full stop."""
+def _ink_clock(
+    objects: list[dict[str, Any]], clock: list[tuple[int, int]]
+) -> list[tuple[int, int]]:
+    """``(start, dur)`` for each object: beats honoured, the rest spread across her whole line.
+
+    An object that named no beat used to inherit the planner's cumulative schedule, whose default
+    is 240 ms an object — so a twelve-object board finished drawing itself in under three seconds
+    and then sat there while she talked over it for fifteen. The hand draws THROUGH the utterance
+    instead: the unbeaten objects are laid out evenly from the lead-in to her last full stop, each
+    taking its own slice, in the order the planner put them in.
+    """
     if not objects:
         return []
     starts = [int((o.get("t") or {}).get("start") or 0) for o in objects]
+    durations = [int((o.get("t") or {}).get("dur") or DEFAULT_INK_MS) for o in objects]
     origin = min(starts)
     first_end = (clock[0][0] + clock[0][1]) if clock else INK_LEAD_MS + 1
     lead = min(INK_LEAD_MS, max(0, first_end - 1))
-    out: list[int] = []
-    for obj, start in zip(objects, starts, strict=True):
-        asked = _beat_start(obj, clock)
-        out.append(asked if asked is not None else lead + (start - origin))
+    spoken = (clock[-1][0] + clock[-1][1]) if clock else 0
+
+    slots: list[tuple[int, int] | None] = [_beat_slot(o, clock) for o in objects]
+    free = [i for i, slot in enumerate(slots) if slot is None]
+    span = spoken - lead
+    if clock and free and span > 0:
+        # Evenly across what is left of her line — one slice each, in the planner's order.
+        step = span / len(free)
+        for place, index in enumerate(free):
+            start = lead + int(round(place * step))
+            slots[index] = (start, max(durations[index], MIN_INK_MS, int(round(step))))
+    else:
+        for index in free:
+            slots[index] = (lead + (starts[index] - origin), durations[index])
+
+    out = [slot for slot in slots if slot is not None]
     # The law, enforced rather than assumed: something is on the board before she finishes her
     # first sentence, whatever the plan or the beats asked for. Only the EARLIEST stroke is pulled
     # forward — shifting the whole plan would drag every other mark off the word it belongs to,
     # and the choreography is the point of the beats.
-    if out and min(out) >= first_end:
-        out[out.index(min(out))] = lead
+    if out and min(start for start, _ in out) >= first_end:
+        first = min(range(len(out)), key=lambda i: out[i][0])
+        out[first] = (lead, out[first][1])
     return out
 
 
@@ -195,18 +238,16 @@ def build_events(
     """
     parts = sentences(plan.say)
     clock = sentence_clock(parts)
-    starts = _ink_clock(plan.objects, clock)
+    paced = _ink_clock(plan.objects, clock)
 
     staged: list[tuple[int, int, str, dict[str, Any]]] = []
     for order, (part, (start, duration)) in enumerate(zip(parts, clock, strict=True)):
         staged.append((start, order, "say", {"text": part, "dur": duration}))
-    for order, (obj, start) in enumerate(zip(plan.objects, starts, strict=True)):
-        drawn = {**obj, "t": {"start": start, "dur": int((obj.get("t") or {}).get("dur") or 240)}}
+    for order, (obj, (start, dur)) in enumerate(zip(plan.objects, paced, strict=True)):
+        drawn = {**obj, "t": {"start": start, "dur": dur}}
         staged.append((start, 1000 + order, "ink", {"object": drawn}))
 
-    tail = max([s + d for s, d in clock] + [s + int((o.get("t") or {}).get("dur") or 0)
-                                            for o, s in zip(plan.objects, starts, strict=True)]
-               + [0])
+    tail = max([s + d for s, d in clock] + [s + d for s, d in paced] + [0])
     for order, action in enumerate(actions or []):
         if isinstance(action, dict):
             staged.append((tail, 5000 + order, "action", {"action": action}))
@@ -218,8 +259,7 @@ def build_events(
 
     staged.sort(key=lambda row: (row[0], row[1]))
     events = [
-        Event(seq=i, type=kind, t=t, data=data)
-        for i, (t, _order, kind, data) in enumerate(staged)
+        Event(seq=i, type=kind, t=t, data=data) for i, (t, _order, kind, data) in enumerate(staged)
     ]
     events.append(
         Event(

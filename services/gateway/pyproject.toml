@@ -4,7 +4,14 @@ version = "0.0.0"
 description = "Classess model gateway — the single entry for all model calls (capability registry, two-track routing, three-tier cost economy)."
 requires-python = ">=3.12"
 dependencies = [
-    "classess-contracts",
+    # The live voice relay (voice.py) imports aiohttp for its two upstream websockets. It
+    # arrived transitively via litellm; declared here so a litellm dependency change cannot
+    # silently break the voice path.
+    "aiohttp>=3.9",
+    # classess-contracts is NOT declared here: no gateway module imports it. The event contract
+    # is validated where events are written — the client's SDK against @classess/contracts — and
+    # the gateway has no server-side ingest point to validate at. It still resolves into the
+    # image transitively through classess-verifier, so the mirror is there the day one appears.
     "classess-verifier",
     "fastapi>=0.115",
     "litellm>=1.50",
@@ -23,5 +30,4 @@ build-backend = "hatchling.build"
 packages = ["src/classess_gateway"]
 
 [tool.uv.sources]
-classess-contracts = { workspace = true }
 classess-verifier = { workspace = true }

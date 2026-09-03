@@ -25,6 +25,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useFidelity } from '../shell/resilience';
 import { sfx } from './sound';
 
 // --- The surface language (cool neutrals) ----------------------------------------------------------
@@ -193,8 +194,15 @@ export function usePointerTilt(range = 6) {
   const x = useSpring(mx, { stiffness: 120, damping: 18 });
   const y = useSpring(my, { stiffness: 120, damping: 18 });
   const reduced = useReducedMotion() ?? false;
+  // Family N: a continuous pointer-driven spring is exactly the grace a 2G-class link and a Data
+  // Saver phone cannot afford. Reduced motion already turned it off; low fidelity does now too.
+  const lowFi = useFidelity() === 'low';
   useEffect(() => {
-    if (reduced || (typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches))
+    if (
+      reduced ||
+      lowFi ||
+      (typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches)
+    )
       return;
     const on = (e: PointerEvent) => {
       const cx = window.innerWidth / 2;
@@ -204,7 +212,7 @@ export function usePointerTilt(range = 6) {
     };
     window.addEventListener('pointermove', on, { passive: true });
     return () => window.removeEventListener('pointermove', on);
-  }, [mx, my, range, reduced]);
+  }, [mx, my, range, reduced, lowFi]);
   return { x, y };
 }
 

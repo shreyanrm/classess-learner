@@ -25,7 +25,7 @@ import { base64ToFloat32 } from './voice';
 // on screen carry the turn and any gate waiting on us releases on its own clock.
 const TTS_TIMEOUT_MS = 8000;
 
-const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL as string | undefined;
+const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
 const MUTE_KEY = 'clss-voice-muted-v1';
 const MUTE_EVENT = 'clss-mute-changed';
 

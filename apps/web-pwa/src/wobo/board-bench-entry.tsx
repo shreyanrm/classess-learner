@@ -9,6 +9,9 @@
  * fixtures it pulls in never reach a bundle a learner downloads.
  */
 
+import '@fontsource-variable/caveat';
+import '@fontsource-variable/plus-jakarta-sans';
+import { fontFamily } from '@classess/config';
 import { cssVariables } from '@classess/config/css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -21,7 +24,7 @@ if (!document.getElementById(STYLE_ID)) {
   style.textContent = `${cssVariables()}
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--clss-page); color: var(--clss-ink-900); }
-body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+body { font-family: ${fontFamily.system}; }
 `;
   document.head.appendChild(style);
 }

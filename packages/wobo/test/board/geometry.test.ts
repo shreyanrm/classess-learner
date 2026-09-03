@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'bun:test';
 import { type AnchorContext, type BoardRect, frameOf } from '../../src/board/anchors';
-import { formatQuantity, geometryOf } from '../../src/board/geometry';
+import { ARROW_GAP, edgePoint, formatQuantity, geometryOf } from '../../src/board/geometry';
 import { type HandFont, parseHandFont } from '../../src/board/handwriting';
 import type { BoardObject } from '../../src/board/schema';
 
@@ -277,3 +277,150 @@ describe('controls carry their own hit area and variable', () => {
     }
   });
 });
+
+// --- Wave 5 polish: arrows stop at the outline, notes obey the side they were given ---------------
+
+describe('an arrow points AT a thing, never through it', () => {
+  it('lands on the edge of the target box with a hand’s gap, not on its centre', () => {
+    const g = geometryOf(
+      { id: 'a1', kind: 'arrow', anchor: { object: 'hawk' }, from: { object: 'snake' } },
+      ctx({
+        objectBox: (id: string) =>
+          ({
+            hawk: { x: 600, y: 100, w: 120, h: 40 },
+            snake: { x: 600, y: 400, w: 120, h: 40 },
+          })[id] ?? null,
+      }),
+    );
+    expect(g).not.toBeNull();
+    const tip = tipOf(g?.strokes[1]?.d ?? '');
+    const hawk = { x: 600, y: 100, w: 120, h: 40 };
+    // Below the box (the arrow comes from underneath), off its bottom edge by ARROW_GAP.
+    expect(tip[1]).toBeCloseTo(hawk.y + hawk.h + ARROW_GAP, 4);
+    expect(tip[1]).toBeGreaterThan(hawk.y + hawk.h);
+    // Nowhere near the centre it used to drive through.
+    expect(Math.abs(tip[1] - (hawk.y + hawk.h / 2))).toBeGreaterThan(ARROW_GAP);
+  });
+
+  it('leaves the outline of what it came from too', () => {
+    const g = geometryOf(
+      { id: 'a2', kind: 'arrow', anchor: { object: 'hawk' }, from: { object: 'snake' } },
+      ctx({
+        objectBox: (id: string) =>
+          ({
+            hawk: { x: 600, y: 100, w: 120, h: 40 },
+            snake: { x: 600, y: 400, w: 120, h: 40 },
+          })[id] ?? null,
+      }),
+    );
+    const tail = firstPointOf(g?.strokes[0]?.d ?? '');
+    // Above the snake's box by the gap — the tail starts outside the word it leaves.
+    expect(tail[1]).toBeLessThan(400);
+    expect(400 - tail[1]).toBeLessThan(ARROW_GAP + 12); // ±the pen's own anticipation
+  });
+
+  it('honours an `at` the tutor named, exactly', () => {
+    const box = { x: 600, y: 100, w: 120, h: 40 };
+    const g = geometryOf(
+      {
+        id: 'a3',
+        kind: 'arrow',
+        anchor: { object: 'hawk', at: 'left' },
+        from: { board: [100, 120] },
+      },
+      ctx({ objectBox: (id: string) => (id === 'hawk' ? box : null) }),
+    );
+    const tip = tipOf(g?.strokes[1]?.d ?? '');
+    expect(tip[0]).toBeCloseTo(box.x, 4);
+    expect(tip[1]).toBeCloseTo(box.y + box.h / 2, 4);
+  });
+
+  it('the edge point of a bare board coordinate is the coordinate itself', () => {
+    expect(edgePoint({ x: 40, y: 60, w: 0, h: 0 }, [500, 500])).toEqual([40, 60]);
+  });
+});
+
+describe('a note anchored to a side lands on that side', () => {
+  const box = { x: 300, y: 200, w: 160, h: 60 };
+  const withBox = () => ctx({ objectBox: (id: string) => (id === 'cell' ? box : null) });
+
+  it('{object, at:"bottom"} lands below the box, left-aligned to it', () => {
+    const g = geometryOf(
+      { id: 'n1', kind: 'label', anchor: { object: 'cell', at: 'bottom' }, text: 'nucleus' },
+      withBox(),
+    );
+    expect(g).not.toBeNull();
+    expect(g?.box.x).toBeCloseTo(box.x, 4); // left-aligned, not beside
+    expect(g?.box.y).toBeGreaterThanOrEqual(box.y + box.h);
+  });
+
+  it('{object, at:"top"} lands above it, still left-aligned', () => {
+    const g = geometryOf(
+      { id: 'n2', kind: 'label', anchor: { object: 'cell', at: 'top' }, text: 'nucleus' },
+      withBox(),
+    );
+    expect(g?.box.x).toBeCloseTo(box.x, 4);
+    expect((g?.box.y ?? 0) + (g?.box.h ?? 0)).toBeLessThanOrEqual(box.y + 0.001);
+  });
+
+  it('an anchor that named no side still finds free space beside the thing', () => {
+    const g = geometryOf(
+      { id: 'n3', kind: 'label', anchor: { object: 'cell' }, text: 'nucleus' },
+      withBox(),
+    );
+    expect(g?.box.x).toBeGreaterThan(box.x + box.w);
+  });
+});
+
+describe('a written line writes its powers and indices, never its carets', () => {
+  it('writes a^2 as maths: no caret glyph, the 2 raised and small', () => {
+    const g = geometryOf(
+      { id: 'w1', kind: 'write', anchor: { board: [100, 100] }, text: 'a^2 + b^2 = c^2', size: 40 },
+      ctx(),
+    );
+    expect(g).not.toBeNull();
+    expect(g?.text?.lines[0]).toBe('a² + b² = c²');
+    expect(g?.text?.lines[0]).not.toContain('^');
+    if (font) {
+      // The raised 2 sits above the baseline of the a it belongs to.
+      const boxes = (g?.glyphs ?? []).map((gl) => gl.box);
+      const tops = boxes.map((b) => b.y);
+      expect(Math.min(...tops)).toBeLessThan(Math.max(...tops)); // some glyphs ride higher
+    }
+  });
+
+  it('writes x_1 with the index dropped', () => {
+    const g = geometryOf(
+      { id: 'w2', kind: 'write', anchor: { board: [100, 100] }, text: 'x_1', size: 40 },
+      ctx(),
+    );
+    expect(g?.text?.lines[0]).toBe('x₁');
+  });
+
+  it('a tex header with no font shows the equation, not the source', () => {
+    const g = geometryOf(
+      { id: 't1', kind: 'tex', anchor: { board: [100, 100] }, tex: 'a^2 + b^2 = c^2', size: 40 },
+      ctx({ font: null }),
+    );
+    expect(g?.text?.lines[0]).toBe('a² + b² = c²');
+  });
+
+  it('leaves a line alone when the group has no raised form', () => {
+    const g = geometryOf(
+      { id: 'w3', kind: 'write', anchor: { board: [100, 100] }, text: 'e^{kt}' },
+      ctx({ font: null }),
+    );
+    expect(g?.text?.lines[0]).toBe('e^{kt}');
+  });
+});
+
+/** The last point of an arrowhead path `M .. L tip L ..` — the tip is the middle vertex. */
+function tipOf(d: string): [number, number] {
+  const nums = d.match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
+  return [nums[2] ?? 0, nums[3] ?? 0];
+}
+
+function firstPointOf(d: string): [number, number] {
+  const nums = d.match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
+  return [nums[0] ?? 0, nums[1] ?? 0];
+}

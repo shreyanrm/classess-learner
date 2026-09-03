@@ -1,5 +1,6 @@
 # Railway build context = repo root (the gateway Dockerfile builds from here). The image only
-# COPYs pyproject.toml, uv.lock, services/*/{pyproject,src}, content/atom/pyproject.toml — so
+# COPYs pyproject.toml, uv.lock, services/*/{pyproject,src}, content/atom/pyproject.toml and the
+# two runtime content files (content/catalogs/concepts.json, content/factbase/facts.v1.jsonl) — so
 # everything else is dead upload weight. Excluding it drops the upload from ~630 MB to a few MB
 # (the reason `railway up` was timing out mid-upload).
 
@@ -12,6 +13,7 @@
 # --- Weight ---
 node_modules
 **/node_modules
+**/__pycache__
 .git
 **/dist
 .vercel
@@ -19,7 +21,8 @@ node_modules
 apps
 packages
 content/cache
-content/catalogs
+# content/catalogs + content/factbase ride along on purpose (~2.7 MB): the gateway image
+# COPYs concepts.json and facts.v*.jsonl out of them. Only the runtime cache is excluded.
 .playwright-mcp
 *.png
 *.log

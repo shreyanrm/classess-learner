@@ -485,7 +485,7 @@ function LabelView({
                   setSel(p.id);
                 }
               }}
-              style={{ cursor: graded ? 'default' : 'pointer', outline: 'none' }}
+              style={{ cursor: graded ? 'default' : 'pointer' }}
             >
               <circle
                 cx={p.x}

@@ -144,21 +144,115 @@ def _gated_output(verdict: SafetyVerdict) -> dict[str, Any]:
     }
 
 
+# Every capability a CHILD types into and reads back. The screen belongs to the surface, not to
+# one route: a learner in crisis who phrases it as "make me a course on ..." reaches a model on
+# any of these, and each answers them in their own words. Kept beside the classifier so adding a
+# learner-facing capability is one line here rather than a second special case in the app.
+# parent.companion.turn is deliberately absent — a guardian is not the child, and gating an adult
+# with the child's crisis copy would be wrong.
+LEARNER_FACING_CAPABILITIES: frozenset[str] = frozenset(
+    {
+        "wobo.turn",
+        "tutor.turn",
+        "grade.attempt",
+        "generate.opener",
+        "generate.course",
+        "twin.query",
+        "verify.math",
+        "engine.compose",
+        "engine.simulate",
+        "engine.diagram",
+        "engine.video",
+    }
+)
+
+# The free-text payload keys the prompt builders actually read (wobo._build_user_prompt and
+# providers._*_prompt). Enumerating them by hand missed everything but turn.*, so a crisis line
+# typed into a canvas step, a target label or a remembered fact went straight to a model.
+_TOP_LEVEL_TEXT_KEYS: tuple[str, ...] = (
+    "prompt",
+    "question",
+    "equation",
+    "answer",
+    "attempt",
+    "goal",
+    "concept",
+    "topic",
+    "input",
+    "text",
+    "query",
+)
+
+
+def _walk_text(value: Any, out: list[str], depth: int = 0) -> None:
+    """Every string reachable inside a payload fragment, bounded so a deep body cannot spin."""
+    if depth > 6:
+        return
+    if isinstance(value, str):
+        if value:
+            out.append(value)
+    elif isinstance(value, dict):
+        for v in list(value.values())[:64]:
+            _walk_text(v, out, depth + 1)
+    elif isinstance(value, (list, tuple)):
+        for v in list(value)[:64]:
+            _walk_text(v, out, depth + 1)
+
+
 def inbound_text(payload: dict[str, Any]) -> str:
-    """The learner's words inside a wobo.turn payload — last input plus the recent window."""
+    """Every learner-authored string the prompt builder will read.
+
+    This walks the SAME keys ``_build_user_prompt`` consumes — canvas.equation, canvas.steps[],
+    targets[].label, page.state, lifetime.facts[] and turn.* — plus the flat text keys the
+    non-Wobo capability prompts read. Screening a hand-picked pair of keys while interpolating a
+    dozen meant the screen could be walked around by typing somewhere else on the page.
+    """
+    parts: list[str] = []
+    for key in _TOP_LEVEL_TEXT_KEYS:
+        v = payload.get(key)
+        if isinstance(v, str) and v:
+            parts.append(v)
+
     context = payload.get("context") or {}
+    if not isinstance(context, dict):
+        return "\n".join(parts)
+
     turn = context.get("turn") or {}
-    parts = [str(turn.get("lastUserInput") or "")]
-    for r in turn.get("recentTurns") or []:
-        if isinstance(r, dict) and r.get("role") == "user":
-            parts.append(str(r.get("text") or ""))
+    if isinstance(turn, dict):
+        parts.append(str(turn.get("lastUserInput") or ""))
+        for r in turn.get("recentTurns") or []:
+            if isinstance(r, dict) and r.get("role") == "user":
+                parts.append(str(r.get("text") or ""))
+
+    canvas = context.get("canvas") or {}
+    if isinstance(canvas, dict):
+        parts.append(str(canvas.get("equation") or ""))
+        for step in (canvas.get("steps") or [])[:64]:
+            parts.append(str(step or ""))
+
+    for t in (context.get("targets") or [])[:64]:
+        if isinstance(t, dict):
+            parts.append(str(t.get("label") or ""))
+
+    page = context.get("page") or {}
+    if isinstance(page, dict):
+        _walk_text(page.get("state"), parts)
+
+    lifetime = context.get("lifetime") or {}
+    if isinstance(lifetime, dict):
+        # Remembered facts are replayed into the prompt on EVERY later turn, so one unscreened
+        # fact is a permanent injection. Screen them the same as anything else the learner typed.
+        for f in (lifetime.get("facts") or [])[:64]:
+            parts.append(str(f or ""))
+        parts.append(str(lifetime.get("twinSummary") or ""))
+
     return "\n".join(p for p in parts if p)
 
 
-def screen_wobo_inbound(
+def screen_inbound(
     payload: dict[str, Any], classifier: SafetyClassifier = DEFAULT_CLASSIFIER
 ) -> dict[str, Any] | None:
-    """Screen the learner's message. Returns a full replacement output when the turn must not
+    """Screen the learner's words. Returns a full replacement output when the turn must not
     reach a model (crisis or moderation), else None."""
     verdict = classifier.classify(inbound_text(payload))
     if not verdict.flagged:
@@ -166,11 +260,37 @@ def screen_wobo_inbound(
     return _gated_output(verdict)
 
 
-def screen_wobo_outbound(
+# The text fields an overlay action can carry — everything a model can put in front of the child
+# that is NOT the `say` line. Screening only `say` left the page itself unscreened.
+_ACTION_TEXT_KEYS: tuple[str, ...] = ("text", "why", "target", "label", "caption")
+
+
+def _outbound_text(output: dict[str, Any]) -> str:
+    """Everything the model wants the learner to see or hear this turn."""
+    parts: list[str] = [str(output.get("say") or "")]
+    for action in output.get("actions") or []:
+        if isinstance(action, dict):
+            for key in _ACTION_TEXT_KEYS:
+                v = action.get(key)
+                if isinstance(v, str) and v:
+                    parts.append(v)
+    viz = output.get("viz")
+    if isinstance(viz, dict):
+        spec = viz.get("spec")
+        if isinstance(spec, dict):
+            parts.append(str(spec.get("caption") or ""))
+    return "\n".join(p for p in parts if p)
+
+
+def screen_outbound(
     output: dict[str, Any], classifier: SafetyClassifier = DEFAULT_CLASSIFIER
 ) -> dict[str, Any]:
-    """Screen what the model wants to say. A flagged reply is replaced, never served."""
-    verdict = classifier.classify(str(output.get("say") or ""))
+    """Screen what the model wants to put in front of the learner — the spoken line, the text of
+    every overlay action (say/speak/write/remember/forget…) and the visualization caption. A
+    flagged turn is replaced and its actions dropped, never served."""
+    if not isinstance(output, dict):
+        return output
+    verdict = classifier.classify(_outbound_text(output))
     if not verdict.flagged:
         return output
     return {
@@ -179,6 +299,11 @@ def screen_wobo_outbound(
         "actions": [],
         "safety": _safety_block(verdict, "blocked"),
     }
+
+
+# The pre-rename names, kept so no caller has to change in the same commit as the behaviour.
+screen_wobo_inbound = screen_inbound
+screen_wobo_outbound = screen_outbound
 
 
 def moderate(text: str, classifier: SafetyClassifier = DEFAULT_CLASSIFIER) -> dict[str, Any]:

@@ -65,14 +65,6 @@ function persist(next: ForgedWorkbook[]): void {
   if (typeof window !== 'undefined') window.dispatchEvent(new Event(EVT));
 }
 
-export function getForged(): ForgedWorkbook[] {
-  return items;
-}
-
-export function getForge(id: string): ForgedWorkbook | undefined {
-  return items.find((w) => w.id === id);
-}
-
 /** Bind a workbook — it enters the queue as `building`. Returns its id. */
 export function createForge(config: {
   title: string;
