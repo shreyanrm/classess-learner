@@ -523,6 +523,44 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 - [ ] **Integrity layer** — fraud checks on referrals and sponsored seats
 - [ ] **Compliance rails** — marketing consent lives with the parent for minors; DPDP-clean; no dark patterns in cancel flows; every message has an off switch
 
+
+### 7.9 Answering is doing (Brilliant floor, our bar)
+- [ ] **Answer kinds** — brain chooses per item from: shade regions, place/drag points, slider, order/match, number pad, expression keyboard (fractions, roots, powers), draw a line/angle on the board, circle the part, choose among visuals; no text multiple-choice where a visual act exists; each kind has keyboard + screen-reader path, "Start over", one primary "Check"
+- [ ] **Placement uses the same kinds** — onboarding's diagnostic is visual and interactive with finished-page spacing (owner law 2026-09-03); no form-looking test
+- [ ] **State at a glance** — frame hairline + Wobo's expression change for right/wrong/thinking; tick/wobble drawn by her hand; never a colour flood; no exclamation marks
+- [ ] **Hand-held explanations** — wrong → "Not quite, that's okay" + Get help / Try again; Socratic question; "Why was my answer wrong?" chip; reveal after two misses with "Want to learn why?"; step-wise with small choice buttons; every step draws on the actual control (ring, arrow, written equation)
+- [ ] **Never lose progress** — every step saved; leaving says "Leave for now? Your place is saved."; no threat dialogs
+
+### 7.10 Loader, flags, help, settings
+- [ ] **Loader is the character** — pen line becomes the page's first hairline, body settles into the orb; <1 s; reduced-motion variant
+- [ ] **Flag anything** — flag on every content unit; our own screenshot; annotation with her ink (pen, circle, rect, blur); type (bug/question/improvement); description; voice flag via Wobo; `learner.flags` table + owner email digest; thank-you and fixed-note to learner
+- [ ] **Help centre** — searchable; three groups (Wobo basics, product features, boards and curriculum); illustrated articles written for Wobo; Wobo answers help grounded on this content first
+- [ ] **Settings** — Account (name, email verified/primary, add email, password, delete account, export data), Plan, Preferences (appearance auto/light/dark, reduce motion on/off/auto, narration toggle, sound effects toggle, voice and accent, language, email notifications by category), Parent link, Privacy and consent
+
+### 7.11 Plans, checkout, gifts (under §14)
+- [ ] **Benefits table** free vs plus with ticks and crosses; honest wording
+- [ ] **Three cards** monthly / annual (strike-through, "most popular") / family (seats); billing footnote (one payment, renews, cancel anytime, turn off auto-renew in settings)
+- [ ] **Checkout** — Apple Pay / Google Pay / card, country; two explicit consent checkboxes (terms+privacy; recurring-charge disclosure naming amount, renewal and cancellation)
+- [ ] **Allowance widget** — "turns left today" with real reset time; per-feature moments ("on Plus") that never block the free path
+- [ ] **Gift page** — hero, two gift cards, why people gift (real quotes only once we have them; empty state until then), great-gift-for cards, benefits table, subject paths preview, footer CTA
+
+### 7.12 Home, courses, progress, about
+- [ ] **Ask box is Wobo** — clarifying chips + recommended card from the brain against the learner's syllabus; attach PDF/image with the safety line ("never share pictures of people or personal information")
+- [ ] **Course card** — level, lesson list with state, Start; paths banded by the learner's class with progress and favourites
+- [ ] **You page** — week/month/year; "This week" in Wobo's voice; activity snapshot; drawn charts; learning strengths as behaviour-based praise (resilience, initiative, curiosity, consistency); parent link shares read-only
+- [ ] **About page** — mission, how Wobo teaches (drawn live), what we cover (the boards), our promises, legal set; live concept-graph drawing
+
+### 7.13 Rebrand everywhere + white-label (plan §17)
+- [ ] **Accounts** — GitHub repo → wobo (done by orchestrator 2026-09-03 if rename succeeded; see git remote); Vercel project → wobo; Railway project + service → wobo; Supabase project "Wobo" (done); OAuth app names; email sender name
+- [ ] **Code names** — `@classess/*` → `@wobo/*`; `classess_gateway` → `wobo_gateway`; env prefixes; storage keys `clss-*` → `wobo-*` with migration; SW cache names; CSS prefixes; test fixtures; docs
+- [ ] **Nothing leaks** — no provider/model/vendor name in any response, error, client-visible header/log, bundle string, email, or legal page beyond generic "third-party AI and infrastructure providers"; strip `server`/`x-powered-by`; generic error bodies; OpenAPI off; production source maps off; grep gate in CI for provider names in built assets and templates
+- [ ] **Domain wave** — custom domain for web, api and mail; database host proxied through our domain or fronted by a CDN; until then hosting and database hosts are visible in the network tab (owner informed)
+
+### 7.14 Device agnostic + handcrafted (plan §18)
+- [ ] **Three-width proofs** — every screen proven at 360 / 820 / 1440 in both themes; touch, mouse, stylus, keyboard; portrait and landscape on tablet; screen reader path; reduced motion
+- [ ] **Board on small screens** — plane as sheet, lasso by finger, hold-to-talk as long press; ink scales with the target
+- [ ] **Handcrafted default** — her hand, their name, their syllabus, their pace on every page; copy audit for template smell; no generic empty states
+
 ## Wave 8 — Platforms and launch
 
 - [ ] **Capacitor project** replacing the empty Expo workspace; iOS and Android; phones and tablets
