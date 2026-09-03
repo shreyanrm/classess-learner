@@ -292,6 +292,11 @@ class InMemoryPreferencesStore:
             self.rows[learner_id] = stored
             return stored
 
+    def forget(self, learner_id: str) -> int:
+        """The erase path (:mod:`wobo_gateway.memory`): the family's row, gone. 1 or 0."""
+        with self._lock:
+            return 1 if self.rows.pop(learner_id, None) is not None else 0
+
 
 Request = Callable[..., Any]
 

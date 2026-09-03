@@ -1,18 +1,14 @@
 [
-  {
-    "title": "Wave 7c \u00b7 the landing port (against v7)",
-    "detail": "Opus workers port the v7 prototype into the app on GSAP and Lenis; an adversarial visual gate at three widths."
-  },
-  {
-    "title": "App reference screens \u00b7 Fable's hand",
-    "detail": "Home, Learn, Lesson, Practice, You in the bold-ink law, both themes. These become the re-skin wave's brief."
-  },
-  {
-    "title": "Site pages \u00b7 Fable's hand, done as prototypes",
-    "detail": "Security and trust, Meet Wobo, For parents, For students, How it works, Subjects. Each pitches its own way; all in design/prototypes/site-*.html and ~/Documents/wobo-design-2026-09-02/."
-  },
-  {
-    "title": "Queued \u00b7 the re-skin wave",
-    "detail": "Every app screen to the five reference screens, every public page to the six prototypes, once 7c and 5b land."
-  }
+ {
+  "title": "Wave 8a \u00b7 the re-skin",
+  "detail": "A component kit from DESIGN.md; Home, Learn, Lesson, Practice, You ported to the five reference screens; the site shell and every public page to the eight prototypes; the six pitch pages built verbatim. Gate: three widths, both themes, brand gates, an adversarial visual QA against the frames."
+ },
+ {
+  "title": "Wave 8d \u00b7 the front-door seams",
+  "detail": "An unauthenticated, budgeted Ask Wobo endpoint grounded in the help articles; the parent link (invite email, accept, decline, revoke) the Sunday note already expects; erase-everything now covers mail preferences and parent links."
+ },
+ {
+  "title": "Landed and pushed \u00b7 commit 4b4cdb8",
+  "detail": "Wave 5b (board seams), Wave 7c (landing v7 in the app, Poppins and Caveat self-hosted), Wave 8b (hospitality mail), and every Fable prototype."
+ }
 ]

@@ -71,6 +71,8 @@ _ALLOWED_LINK_HOSTS: frozenset[str] = frozenset(
         (urlparse(PREFERENCES_URL).hostname or "").lower(),
         # the signed one-click stop link lives on the gateway origin (hospitality/tokens.py)
         (urlparse(stop_url()).hostname or "").lower(),
+        # so do the parent's accept and decline pages (parents.py), whatever MAIL_STOP_URL says
+        (urlparse(os.getenv("GATEWAY_URL") or "https://api.heywobo.com").hostname or "").lower(),
         *(
             h.strip().lower()
             for h in os.getenv("EMAIL_LINK_HOSTS", "").split(",")
@@ -1221,6 +1223,136 @@ def wish(data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+# --- the parent invite, on the same paper (docs/copy/emails/parent-link-invite.md) -------------
+def parent_route_url(action: str) -> str:
+    """Where the parent's own links point: the gateway's accept and decline pages, which need no
+    login (parents.py). Without a token either one is a plain page that says the link did not
+    work and never a 404 — the same posture as the stop route."""
+    gateway = (os.getenv("GATEWAY_URL") or "https://api.heywobo.com").rstrip("/")
+    return f"{gateway}/v1/parent/{action}"
+
+
+_NOT_GIVEN: tuple[str, ...] = (
+    "Their conversations with me.",
+    "A list of their wrong answers.",
+    "A note when they are online.",
+    "Anything that lets you set targets for them.",
+)
+
+
+def parent_invite(data: dict[str, Any]) -> dict[str, Any]:
+    """05 · The parent invite, to the parent, the moment a learner types their address.
+
+    Account mail, sent once: no dial and no List-Unsubscribe header, because there is no list —
+    nothing else ever comes unless the parent says yes on the accept page, and "Not me" is the
+    parent's way out with no login (``decline_url``, signed and single-use, parents.py). No plan
+    pitch, nothing that implies the learner is behind (the spec's rules). The learner is named,
+    and where a pronoun is unavoidable it is "they": we do not know, and §20's plain English is
+    everyone's rule.
+    """
+    given = str(data.get("learner_name") or "").strip()
+    # The fallback is capitalised only where it opens a sentence or the subject line.
+    name = given or "A learner"
+    named = given or "a learner"
+    stamp = str(data.get("stamp") or "Just now")
+    accept = _safe_url(data.get("accept_url"), parent_route_url("accept"))
+    decline = _safe_url(data.get("decline_url"), parent_route_url("decline"))
+
+    greeting = f"Hello. I’m {APP_NAME}."
+    asked = (
+        f"{name} learns with me, on their own school syllabus, and asked me to send you their "
+        "Sunday notes."
+    )
+    what = (
+        f"Once a week you get one page: what {named} studied, what they cracked, and one thing "
+        "they drew. It takes about a minute to read."
+    )
+    window = "It is a window into the work, not a monitor."
+    why = (
+        f"You got this once because {named} typed your address. Nothing else comes unless you "
+        "say yes on the next page, and every Sunday note carries a link that stops them."
+    )
+
+    rows = _hand_head(stamp)
+    rows += (
+        '<tr><td style="padding:32px 32px 0">'
+        f'<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:{_NAVY};border-radius:22px"><tr><td style="padding:30px 28px">'
+        '<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>'
+        '<td style="vertical-align:middle">'
+        f'<div style="font:600 34px/1.05 {_HAND_CURSIVE};color:{_MARIGOLD}">{_esc(greeting)}</div>'
+        f'<div style="font:400 15px/1.55 {_HAND};color:rgba(250,247,240,.78);margin-top:12px">{_esc(asked)}</div>'
+        "</td>"
+        '<td width="110" align="right" style="vertical-align:middle">'
+        '<table role="presentation" cellspacing="0" cellpadding="0"><tr>'
+        '<td style="width:96px;height:96px;border-radius:48px;background:#F3F0E8;text-align:center;vertical-align:middle">'
+        '<span style="display:inline-block;width:64px;height:28px;border-radius:14px;background:#0F1226;position:relative;top:2px;text-align:center">'
+        '<span style="display:inline-block;width:14px;height:14px;border-radius:7px;background:#7C8CFF;margin:7px 5px 0"></span>'
+        '<span style="display:inline-block;width:14px;height:14px;border-radius:7px;background:#7C8CFF;margin:7px 5px 0"></span>'
+        "</span></td></tr></table>"
+        "</td></tr></table></td></tr></table></td></tr>"
+    )
+    rows += (
+        '<tr><td style="padding:26px 32px 0">'
+        f'<div style="font:400 16px/1.55 {_HAND};color:{_NAVY}">{_esc(what)}</div>'
+        "</td></tr>"
+    )
+    not_given = "".join(
+        f'<tr><td style="padding:6px 0;font:400 14px/1.5 {_HAND};color:{_MUTED}">{_esc(line)}</td></tr>'
+        for line in _NOT_GIVEN
+    )
+    rows += (
+        '<tr><td style="padding:22px 32px 0">'
+        f'<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:{_TONAL};border-radius:18px"><tr><td style="padding:20px 22px">'
+        f'<div style="font:500 12px/1 {_HAND};letter-spacing:2px;text-transform:uppercase;color:{_QUIET}">What you will not get</div>'
+        f'<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:8px">{not_given}</table>'
+        f'<div style="font:600 15px/1.5 {_HAND};color:{_NAVY};margin-top:10px">{_esc(window)}</div>'
+        "</td></tr></table></td></tr>"
+    )
+    rows += (
+        '<tr><td style="padding:24px 32px 0">'
+        '<table role="presentation" cellspacing="0" cellpadding="0"><tr>'
+        f'<td style="background:{_NAVY};border-radius:12px"><a href="{_esc(accept, quote=True)}" style="display:inline-block;padding:14px 22px;font:500 15px/1 {_HAND};color:{_PAPER};text-decoration:none">See how it works</a></td>'
+        f'<td style="padding-left:10px"><a href="{_esc(decline, quote=True)}" style="display:inline-block;padding:14px 20px;font:500 15px/1 {_HAND};color:{_NAVY};text-decoration:none;background:{_TONAL};border-radius:12px">Not me</a></td>'
+        "</tr></table></td></tr>"
+    )
+    rows += _hand_foot(
+        f"{_esc(why)} " f'<a href="{_esc(decline, quote=True)}" {_HAND_FOOT_LINK}>Not me</a>',
+        f'<a href="{_esc(_privacy_url(), quote=True)}" {_HAND_FOOT_LINK}>Privacy</a> &middot; '
+        f'<a href="{_esc(_trust_url(), quote=True)}" {_HAND_FOOT_LINK}>Security and trust</a>',
+        _postal(data),
+    )
+
+    subject = f"{name} asked me to send you their Sunday notes"
+    preheader = "One page a week. No dashboard, nothing to check daily."
+    text = "\n".join(
+        [
+            greeting,
+            "",
+            asked,
+            "",
+            what,
+            "",
+            "What you will not get",
+            *(f"- {line}" for line in _NOT_GIVEN),
+            window,
+            "",
+            f"See how it works: {accept}",
+            f"Not me: {decline}",
+            "",
+            why,
+            f"{APP_NAME} · {_APP_HOST} · Privacy: {_privacy_url()}",
+            _postal(data),
+        ]
+    )
+    return {
+        "subject": subject,
+        "preheader": preheader,
+        "html": _hand_doc(preheader=preheader, rows=rows),
+        "text": text,
+        "headers": {},
+    }
+
+
 # --- registry -------------------------------------------------------------------------
 TEMPLATES: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
     "account_created": account_created,
@@ -1237,13 +1369,18 @@ TEMPLATES: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
     "welcome": welcome,
     "win": win,
     "wish": wish,
+    "parent_invite": parent_invite,
 }
 
 KINDS = tuple(TEMPLATES)
 
-# The three drawn by hand (design/email-v1.html) and the wish drawn on the same paper; the rest
-# share the ultramarine shell.
+# The three drawn by hand (design/email-v1.html) and the wish drawn on the same paper: the
+# hospitality mail, every one of which carries an off switch (email.py holds a live send of these
+# until a signed stop link rides along). The rest share the ultramarine shell.
 HAND_KINDS = frozenset({"sunday_note", "welcome", "win", "wish"})
+# Everything drawn on the paper — the four above and the parent invite, which is account mail
+# sent once with "Not me" as its way out rather than a list to unsubscribe from.
+PAPER_KINDS = HAND_KINDS | {"parent_invite"}
 
 
 def render(kind: str, data: dict[str, Any] | None = None) -> dict[str, Any]:

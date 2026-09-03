@@ -104,8 +104,8 @@ export default defineConfig(({ mode }) => {
           // The manifest cannot carry a media query, so it names the default (light) page colour —
           // matching background_color and the light `theme-color` tag. A dark value here painted
           // the installed PWA's title bar black above a white app.
-          theme_color: '#FFFFFF',
-          background_color: '#FFFFFF',
+          theme_color: '#FAF7F0',
+          background_color: '#FAF7F0',
           lang: 'en',
           categories: ['education'],
           icons: [

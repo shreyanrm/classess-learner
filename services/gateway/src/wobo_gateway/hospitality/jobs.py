@@ -153,43 +153,37 @@ def _postgrest(table: str, query: dict[str, str]) -> list[dict[str, Any]] | None
     return [row for row in rows if isinstance(row, dict)] if isinstance(rows, list) else None
 
 
-def _first(row: dict[str, Any], *columns: str) -> Any:
-    for column in columns:
-        if row.get(column) is not None:
-            return row[column]
-    return None
-
-
-class PostgrestFamilies:
-    """The parent links as the platform stores them (``HOSPITALITY_PARENT_LINKS_TABLE``, default
-    ``parent_links`` in the ``learner`` schema). Column names are read tolerantly, because the
-    table is another wave's to shape; a link with no address or no learner is not a family."""
+class LinkedFamilies:
+    """The parent links as the gateway writes them: the ``linked`` rows of
+    ``learner.parent_links`` (migration 0011, :mod:`wobo_gateway.parents`), read through the same
+    store seam the routes use — the project over PostgREST, or the in-memory store of a local
+    run. A link is a family only while it holds an address; the Sunday switch is the family's
+    dial in the mail preferences, which :func:`run_sunday` reads for every family, so every link
+    starts with it on. A link's zone is the fallback when the family's dials carry none."""
 
     def linked_families(self) -> Iterable[Family]:
-        table = os.getenv("HOSPITALITY_PARENT_LINKS_TABLE", "parent_links")
-        rows = _postgrest(table, {"select": "*", "limit": "5000"}) or []
-        out: list[Family] = []
-        for row in rows:
-            learner = _first(row, "learner_id", "subject_id")
-            email = _first(row, "parent_email", "email")
-            if not learner or not email or "@" not in str(email):
-                continue
-            switch = _first(row, "sunday_note", "weekly_note", "weekly_summaries")
-            if row.get("revoked_at") or row.get("active") is False:
-                continue
-            out.append(
-                Family(
-                    learner_id=str(learner),
-                    learner_name=str(_first(row, "learner_name", "name") or ""),
-                    parent_email=str(email),
-                    timezone=str(_first(row, "timezone", "tz") or ""),
-                    sunday_note=switch is not False,
-                    parent_name=str(row.get("parent_name") or ""),
-                    unsubscribe_url=str(row.get("unsubscribe_url") or ""),
-                    preferences_url=str(row.get("preferences_url") or ""),
-                )
+        from wobo_gateway import parents
+
+        try:
+            links = parents.get_store().linked()
+        except parents.StoreUnavailable:
+            logger.warning("hospitality: parent links unavailable, nobody is due")
+            return []
+        return [
+            Family(
+                learner_id=link.learner_id,
+                learner_name=link.learner_name or "",
+                parent_email=link.parent_email or "",
+                timezone=link.timezone or "",
+                unsubscribe_url=link.unsubscribe_url or "",
             )
-        return out
+            for link in links
+            if link.parent_email and "@" in link.parent_email and link.learner_id
+        ]
+
+
+# The cron doors' tests patch this name; the store behind it is whatever is configured.
+PostgrestFamilies = LinkedFamilies
 
 
 # --- the week -------------------------------------------------------------------------

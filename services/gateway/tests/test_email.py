@@ -11,10 +11,10 @@ import pytest
 from wobo_gateway import email as email_mod
 from wobo_gateway.app import create_app
 from wobo_gateway.email import MailLog, idempotency_key, mail_log, send_email
-from wobo_gateway.email_templates import HAND_KINDS, KINDS, render
+from wobo_gateway.email_templates import HAND_KINDS, KINDS, PAPER_KINDS, render
 from wobo_gateway.hospitality.tokens import stop_link
 
-SHELL_KINDS = tuple(k for k in KINDS if k not in HAND_KINDS)
+SHELL_KINDS = tuple(k for k in KINDS if k not in PAPER_KINDS)
 
 INTERNAL_HEADER = {"X-Wobo-Internal": "test-internal-key"}
 
@@ -74,22 +74,27 @@ def test_the_footer_carries_a_real_opt_out_and_postal_address(
         if kind == "welcome":
             # account mail is not switchable (docs/copy/emails): it links the settings instead
             assert 'href="https://example.test/you"' in html
+        elif kind == "parent_invite":
+            # sent once, to a parent with no account: "Not me" is the way out, on our own route
+            assert 'href="https://api.example.test/v1/parent/decline"' in html
         else:
             # the list-wide fallback is our own stop route — a page, never a 404
             assert 'href="https://api.example.test/v1/mail/stop"' in html
         assert "12 Example Road, Bengaluru 560001, India" in html
         assert "{{" not in html and "placeholder" not in html
-        # a per-recipient opt-out token overrides the list-wide URL
+        # a per-recipient token overrides the list-wide URL
         one = templates.render(
             kind,
             {
                 "unsubscribe_url": "https://example.test/u/tok3n",
                 "preferences_url": "https://example.test/p/tok3n",
+                "decline_url": "https://example.test/d/tok3n",
             },
         )["html"]
         assert (
             'href="https://example.test/u/tok3n"' in one
             or 'href="https://example.test/p/tok3n"' in one
+            or 'href="https://example.test/d/tok3n"' in one
         )
     finally:
         monkeypatch.undo()  # the reload below must see the ORIGINAL environment
@@ -113,10 +118,12 @@ def test_every_link_follows_APP_URL(monkeypatch: pytest.MonkeyPatch) -> None:
         importlib.reload(templates)
 
 
-def test_there_are_fourteen_templates() -> None:
-    """Ten on the shell, three drawn by hand, and the wish on the same paper."""
-    assert len(KINDS) == 14
+def test_there_are_fifteen_templates() -> None:
+    """Ten on the shell, three drawn by hand, the wish on the same paper, and the parent invite
+    on that paper too — account mail, so not one of the hand kinds that need a stop link."""
+    assert len(KINDS) == 15
     assert {"sunday_note", "welcome", "win", "wish"} == HAND_KINDS
+    assert HAND_KINDS | {"parent_invite"} == PAPER_KINDS
 
 
 def test_copy_stays_in_voice_no_emoji_no_exclamation() -> None:

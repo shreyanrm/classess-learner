@@ -33,6 +33,9 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from wobo_gateway import budget, consent
+from wobo_gateway.ask_public import LIMITED_PATHS as ASK_LIMITED_PATHS
+from wobo_gateway.ask_public import OPEN_PATHS as ASK_OPEN_PATHS
+from wobo_gateway.ask_public import register_public_ask
 from wobo_gateway.auth import (
     AuthError,
     Principal,
@@ -45,6 +48,9 @@ from wobo_gateway.cache import CacheBackend, CacheEntry, InMemoryCache, cache_ke
 from wobo_gateway.email import register_email
 from wobo_gateway.hospitality.api import register_mail_preferences
 from wobo_gateway.hospitality.jobs import welcome_after_first_meeting
+from wobo_gateway.parents import LIMITED_PATHS as PARENT_LIMITED_PATHS
+from wobo_gateway.parents import OPEN_PATHS as PARENT_OPEN_PATHS
+from wobo_gateway.parents import register_parent_links
 from wobo_gateway.providers import Provider, build_provider
 from wobo_gateway.registry import (
     ConsentTier,
@@ -372,7 +378,11 @@ def build_gateway() -> Gateway:
 # "you may only mail your own address" rule has a subject to check against instead of None.
 # The one-click mail stop is open on purpose: it is reached from a mail footer with no session,
 # and its signed token (hospitality/tokens.py) is the only authority it needs.
-_OPEN_PATHS = frozenset({"/healthz", "/v1/mail/stop"})
+# The public site's Ask Wobo box is open too (ask_public.py): a visitor with no account asks,
+# and its own per-client allowance is the door.
+# The parent's accept and decline pages are open for the same reason as the stop link: a signed,
+# single-use token from the invite mail is their only authority (parents.py).
+_OPEN_PATHS = frozenset({"/healthz", "/v1/mail/stop", *ASK_OPEN_PATHS, *PARENT_OPEN_PATHS})
 # Authenticated when we can, never refused here: the route itself is the door (internal key).
 # The two cron doors (hospitality/jobs.py: the Sunday note, the festival wishes) share that key
 # and that posture.
@@ -695,6 +705,11 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
             # design — both are bounded per caller (the stop link on the stranger's dial).
             or path == "/v1/me/mail-preferences"
             or path == "/v1/mail/stop"
+            # The public Ask Wobo box: open, and bounded per address on the stranger's dial before
+            # its own per-browser allowance (ask_public.py) is even consulted.
+            or path in ASK_LIMITED_PATHS
+            # The parent link: an invite sends mail, the parent's pages are unauthenticated.
+            or path in PARENT_LIMITED_PATHS
             or path in _SOFT_AUTH_PATHS
         )
         oversized = _too_large(request)
@@ -1007,6 +1022,8 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
     register_voice(app)
     register_email(app)
     register_mail_preferences(app)
+    register_parent_links(app)
+    register_public_ask(app, gw)
 
     return app
 

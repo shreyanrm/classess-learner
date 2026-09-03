@@ -25,9 +25,18 @@ SSE = {"Accept": "text/event-stream"}
 
 
 @pytest.fixture(autouse=True)
-def _clean(tmp_path: Any, monkeypatch: pytest.MonkeyPatch) -> None:
+def _clean(tmp_path: Any, monkeypatch: pytest.MonkeyPatch) -> Any:
+    from wobo_gateway import parents
+    from wobo_gateway.hospitality import preferences as prefs_mod
+
     monkeypatch.setenv("PLEXUS_CACHE_DIR", str(tmp_path))
     stream.reset()
+    # the hospitality stores start empty and in memory, and never leak into the next test
+    prefs_mod.set_store(prefs_mod.InMemoryPreferencesStore())
+    parents.set_store(parents.InMemoryParentLinkStore())
+    yield
+    prefs_mod.set_store(None)
+    parents.set_store(None)
 
 
 @pytest.fixture
@@ -38,9 +47,19 @@ def client() -> TestClient:
 class FakeStore:
     """One learner's rows in the brain's durable store, over the same PostgREST seam."""
 
-    def __init__(self, mind: dict[str, Any] | None = None, threads: int = 1) -> None:
+    def __init__(
+        self,
+        mind: dict[str, Any] | None = None,
+        threads: int = 1,
+        *,
+        prefs: int = 1,
+        links: int = 1,
+    ) -> None:
         self.mind = mind if mind is not None else {"facts": ["plays cricket", "exam friday"]}
         self.threads = threads
+        # the hospitality rows (0010, 0011): the family's mail dials and the parent link
+        self.prefs = prefs
+        self.links = links
         self.calls: list[tuple[str, str, Any]] = []
         self.refuse: set[str] = set()
 
@@ -69,8 +88,13 @@ class FakeStore:
             self.mind = dict(body or {}).get("mind", {})
             return []
         if method == "DELETE":
-            rows = [{"id": n} for n in range(self.threads)]
-            self.threads = 0
+            attr = {
+                "learner_threads": "threads",
+                "mail_preferences": "prefs",
+                "parent_links": "links",
+            }[table]
+            rows = [{"id": n} for n in range(getattr(self, attr))]
+            setattr(self, attr, 0)
             return rows
         return []
 
@@ -99,27 +123,34 @@ def test_the_facts_and_the_twin_summary_leave_the_brain(
     assert body["erased"]["facts"] == 2
     assert body["erased"]["twin_summary"] is True
     assert body["erased"]["threads"] == 1
+    # the family's mail dials and the parent link — with the parent's address on it — go too
+    assert body["erased"]["mail_preferences"] == 1 and body["erased"]["parent_links"] == 1
     assert body["durable"] is True and body["failed"] == []
     # the snapshot the twin summary is derived from is empty afterwards, and the row survives:
     # progress is not memory, so the erase patches the mind and never deletes the learner's record
     assert store.mind == {}
-    assert [c[0] for c in store.calls] == ["GET", "PATCH", "DELETE"]
-    assert all("learner_state" in c[1] or "learner_threads" in c[1] for c in store.calls)
+    assert store.prefs == 0 and store.links == 0
+    assert [c[0] for c in store.calls] == ["GET", "PATCH", "DELETE", "DELETE", "DELETE"]
+    tables = {c[1].split("/rest/v1/")[1].split("?")[0] for c in store.calls}
+    assert tables == {"learner_state", "learner_threads", "mail_preferences", "parent_links"}
 
 
 def test_a_learner_with_nothing_remembered_is_told_the_truth(
     client: TestClient, auth, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """Nothing to forget is not a failure, and it is not a fib either: zero, and no patch."""
-    store = FakeStore(mind={}, threads=0).install(monkeypatch)
+    store = FakeStore(mind={}, threads=0, prefs=0, links=0).install(monkeypatch)
     body = erase(client, auth()).json()
     assert body["erased"] == {
         "facts": 0,
         "twin_summary": False,
         "threads": 0,
         "boards": 0,
+        "mail_preferences": 0,
+        "parent_links": 0,
     }
-    assert [c[0] for c in store.calls] == ["GET", "DELETE"]  # nothing to empty, so nothing written
+    # nothing to empty, so nothing written; the deletes are still attempted, and count zero
+    assert [c[0] for c in store.calls] == ["GET", "DELETE", "DELETE", "DELETE"]
 
 
 def test_the_erase_only_ever_names_the_learner_who_asked(
@@ -131,7 +162,10 @@ def test_the_erase_only_ever_names_the_learner_who_asked(
     erase(client, auth("learner-alpha"))
     assert store.calls
     for _method, url, _body in store.calls:
-        assert "subject_id=eq.learner-alpha" in url
+        table = url.split("/rest/v1/")[1].split("?")[0]
+        # the hospitality tables (0010, 0011) name the learner `learner_id`; the rest `subject_id`
+        column = "learner_id" if table in {"mail_preferences", "parent_links"} else "subject_id"
+        assert f"{column}=eq.learner-alpha" in url, url
         assert "learner-under-test" not in url
 
 
@@ -199,6 +233,48 @@ def test_a_store_that_refused_is_named_and_the_answer_is_not_ok(
     assert body["erased"]["facts"] == 2  # what DID leave is still reported
     for provider in ("supabase", "postgrest", "claude", "gemini", "openai"):
         assert provider not in json.dumps(body).lower()
+    # the same honesty for the parent link: a refused delete there is named, and the rest is
+    # still reported as what it is
+    store = FakeStore().install(monkeypatch)
+    store.refuse = {"parent_links"}
+    res = erase(client, auth())
+    assert res.status_code == 502
+    body = res.json()
+    assert body["failed"] == ["parent_links"]
+    assert body["erased"]["mail_preferences"] == 1 and body["erased"]["parent_links"] == 0
+
+
+def test_the_parent_link_and_the_mail_dials_held_in_process_go_too(
+    client: TestClient, auth
+) -> None:
+    """A run without a project keeps the hospitality rows in memory (``…_STORE=memory``). Forgetting
+    a learner empties those as well, counts them, and leaves another learner's alone."""
+    from datetime import UTC, datetime
+
+    from wobo_gateway import parents
+    from wobo_gateway.hospitality import preferences as prefs_mod
+
+    dials, links = prefs_mod.get_store(), parents.get_store()
+    for learner in ("learner-under-test", "someone-else"):
+        dials.put(learner, prefs_mod.MailPreferences(country="IN"))
+        links.insert(
+            parents.ParentLink(
+                id=f"link-{learner}",
+                learner_id=learner,
+                parent_email_hash="0" * 64,
+                parent_email="parent@example.test",
+                learner_name="A",
+                timezone=None,
+                status="linked",
+                invited_at=datetime.now(UTC),
+                linked_at=datetime.now(UTC),
+            )
+        )
+    body = erase(client, auth()).json()
+    assert body["durable"] is False and body["failed"] == []
+    assert body["erased"]["mail_preferences"] == 1 and body["erased"]["parent_links"] == 1
+    assert dials.get("learner-under-test") is None and links.latest("learner-under-test") is None
+    assert dials.get("someone-else") is not None and links.latest("someone-else") is not None
 
 
 def test_with_no_durable_store_the_answer_says_so(client: TestClient, auth) -> None:

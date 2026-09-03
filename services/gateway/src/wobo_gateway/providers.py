@@ -173,6 +173,11 @@ class MockProvider:
             from wobo_gateway.wobo import mock_wobo_turn
 
             return ProviderResponse(output=mock_wobo_turn(payload), tokens=(seed % 500) + 1)
+        if capability == "help.answer":
+            # the public Ask Wobo box, keyless: the best article's own first line
+            from wobo_gateway.ask_public import mock_help_answer
+
+            return ProviderResponse(output=mock_help_answer(payload), tokens=0)
         return ProviderResponse(output=_shape(capability, seed), tokens=(seed % 500) + 1)
 
 
@@ -393,6 +398,19 @@ class LiveProvider:
             from wobo_gateway.wobo import run_wobo_turn
 
             output, tokens = run_wobo_turn(
+                provider_model=provider_model,
+                payload=payload,
+                fallbacks=fallbacks,
+                timeout_s=timeout_s,
+            )
+            return ProviderResponse(output=output, tokens=tokens)
+
+        # The public Ask Wobo box: grounded on the help articles the payload names, under its own
+        # system prompt (ask_public.HELP_SYSTEM), never the generic tutor prompt below.
+        if capability == "help.answer":
+            from wobo_gateway.ask_public import run_help_answer
+
+            output, tokens = run_help_answer(
                 provider_model=provider_model,
                 payload=payload,
                 fallbacks=fallbacks,

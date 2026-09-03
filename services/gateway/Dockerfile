@@ -41,6 +41,10 @@ COPY --chown=gateway:gateway content/factbase/facts.v1.jsonl /app/content/factba
 #   content/hospitality/festivals.json -> hospitality/festivals.py (the festival wishes;
 #   absent, the rule engine sends nothing and says so in the log)
 COPY --chown=gateway:gateway content/hospitality/festivals.json /app/content/hospitality/
+#   docs/copy/help-centre/**, docs/copy/about.md -> ask_public.py (the public Ask Wobo's
+#   grounded index; absent, every question gets the honest 'I don't know that one' line)
+COPY --chown=gateway:gateway docs/copy/help-centre /app/content/copy/help-centre
+COPY --chown=gateway:gateway docs/copy/about.md /app/content/copy/
 
 # The package is installed NON-EDITABLE, so it lives under /app/.venv/lib/... — relative
 # path discovery from __file__ would walk up inside the venv, not to /app. These two
@@ -51,7 +55,8 @@ ENV PATH="/app/.venv/bin:$PATH" \
     WOBO_IMAGE_CACHE_DIR=/home/gateway/cache/images \
     PLEXUS_CONCEPTS_PATH=/app/content/catalogs/concepts.json \
     FACTBASE_DIR=/app/content/factbase \
-    WOBO_HOSPITALITY_CONTENT=/app/content/hospitality
+    WOBO_HOSPITALITY_CONTENT=/app/content/hospitality \
+    WOBO_HELP_CONTENT=/app/content/copy
 USER gateway
 EXPOSE 8081
 

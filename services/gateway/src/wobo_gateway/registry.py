@@ -159,6 +159,18 @@ _POLICIES: dict[str, RoutingPolicy] = {
             cost_ceiling=0.005,
             elevated_only=True,
         ),
+        # The public site's Ask Wobo box (SITE.md §2; ask_public.py). Unauthenticated visitors,
+        # answered from the help articles alone, so it sits on the cheapest tier with a short
+        # ceiling — and it is exact-cached on purpose: the same question over the same articles
+        # is the same answer for every visitor, and a cache hit costs the door nothing.
+        _policy(
+            "help.answer",
+            Tier.TINY,
+            CacheTier.EXACT,
+            max_latency_ms=4000,
+            cost_ceiling=0.003,
+            max_tokens=220,
+        ),
         # --- generate: the cheapest model that passes verification -----------------------
         # The cost rule (owner, 2026-09-02): board plans, lessons and storyboards run on the
         # generate tier by default and escalate ONE rung only on a verifier or second-opinion
@@ -258,6 +270,7 @@ EXPECTED_CAPABILITIES: tuple[str, ...] = (
     "curriculum.own.confirm",
     "curriculum.own.publish",
     "curriculum.own.offer",
+    "help.answer",
 )
 
 

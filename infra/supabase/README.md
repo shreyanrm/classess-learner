@@ -28,6 +28,9 @@ client query. There are no cross-schema foreign keys; canonical references are o
 | `0007_learner_state_streaks.sql` | streak columns on `learner_state` |
 | `0008_curriculum.sql` | the `curriculum` schema (CURRICULUM.md §10): `frameworks`, `versions`, `nodes`, `provenance`, `concept_map`, `overlays`, `pins`, `discovery_jobs`, `review_queue`; published versions immutable by trigger; RLS read-only for learners, writes service-role; PostgREST exposure of `curriculum` |
 | `0009_curriculum_review_offers.sql` | `review_queue` can hold an offered syllabus (`kind`, `framework_id`, `offered_by_hash`, `note`, `payload`); the normalised discovery key documented on `discovery_jobs.level` / `.subject` |
+| `0010_hospitality.sql` | `learner.mail_preferences` (WOBO-PLAN §14.1): the family's mail dials, chosen festival calendars, locality as codes, the opt-out stamp; RLS own-row, no client delete |
+| `0011_parent_links.sql` | `learner.parent_links` (WOBO-PLAN §14): one invited or linked parent per learner; the address in the clear while active and emptied on revoke, a keyed digest beside it, the single-use invite token's digest; RLS own-row, client update limited to `learner_name`/`timezone` by column grant, no client delete. Applied 2026-09-03 via MCP |
+| `0012_parent_links_expired.sql` | applied 2026-09-04 via MCP: `revoked_by` learns `'expired'` — an invite nobody answered inside `PARENT_INVITE_DAYS` reads as expired on the You screen, and a fresh invite revokes it as `expired` instead of answering 409 |
 
 ## RLS
 

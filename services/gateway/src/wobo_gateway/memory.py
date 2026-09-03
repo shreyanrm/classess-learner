@@ -4,8 +4,10 @@ The memory page has always been able to clear the device: ``forget_all`` calls `
 and the dossier is gone from that phone. Nothing propagated. The brain kept its own copy — the
 mind snapshot the learner's devices reconcile through (``learner.learner_state.mind``: the facts
 Wobo was told and everything the twin summary is derived from), the conversation it caches per
-learner (``learner.learner_threads``), and the generations it holds keyed to that learner (the
-board turns still inside the resume window). A memory a learner cannot reach is not their memory,
+learner (``learner.learner_threads``), the generations it holds keyed to that learner (the
+board turns still inside the resume window), and — since the hospitality wave — the family's mail
+dials (``learner.mail_preferences``) and the parent link with the parent's address on it
+(``learner.parent_links``). A memory a learner cannot reach is not their memory,
 so this module is the other half of the promise Wobo makes in their own words: "the app purges the
 real memory and confirms exactly what left; never claim to have forgotten something you did not."
 
@@ -47,6 +49,12 @@ _SCHEMA = "learner"
 _STATE_TABLE = "learner_state"
 _THREADS_TABLE = "learner_threads"
 _ID_COLUMN = "subject_id"
+#: The hospitality tables (migrations 0010 and 0011) name the learner ``learner_id``. Both are
+#: deleted outright: the family's mail dials and chosen calendars, and the parent link with the
+#: address on it — a learner who asks to be forgotten takes their parent's address with them.
+_PREFERENCES_TABLE = "mail_preferences"
+_PARENT_LINKS_TABLE = "parent_links"
+_LEARNER_COLUMN = "learner_id"
 
 #: A subject reaches a PostgREST filter, so it is checked before it is interpolated. Supabase
 #: subjects are uuids; the dev seam's are short slugs. Anything else is refused outright rather
@@ -66,6 +74,10 @@ class Erasure:
     threads: int = 0
     #: Cached generations keyed to this learner: board turns still inside the resume window.
     boards: int = 0
+    #: The family's mail dials, chosen calendars and locality (``learner.mail_preferences``).
+    mail_preferences: int = 0
+    #: The parent link, with the parent's address on it (``learner.parent_links``).
+    parent_links: int = 0
     #: True when a durable store was configured and answered. False means device-side only.
     durable: bool = False
     #: Stores that refused. Non-empty means the learner has NOT been fully forgotten.
@@ -78,6 +90,8 @@ class Erasure:
                 "twin_summary": self.twin_summary,
                 "threads": self.threads,
                 "boards": self.boards,
+                "mail_preferences": self.mail_preferences,
+                "parent_links": self.parent_links,
             },
             "durable": self.durable,
             "failed": list(self.failed),
@@ -93,8 +107,10 @@ def configured() -> tuple[str, str] | None:
     return base.rstrip("/"), key
 
 
-def _url(base: str, table: str, subject: str, *, select: str | None = None) -> str:
-    query: dict[str, str] = {_ID_COLUMN: f"eq.{subject}"}
+def _url(
+    base: str, table: str, subject: str, *, select: str | None = None, column: str = _ID_COLUMN
+) -> str:
+    query: dict[str, str] = {column: f"eq.{subject}"}
     if select:
         query["select"] = select
         query["limit"] = "1"
@@ -181,7 +197,39 @@ def erase_durable(subject: str) -> Erasure:
         logger.warning("memory: thread erase failed", extra={"fields": {"error": str(exc)}})
         out.failed.append(_THREADS_TABLE)
 
+    # The hospitality rows: the mail dials and the parent link. Deleted, not patched — there is
+    # no progress on these rows to keep, and the parent's address must not outlive the learner
+    # who typed it.
+    hospitality = ((_PREFERENCES_TABLE, "mail_preferences"), (_PARENT_LINKS_TABLE, "parent_links"))
+    for table, attr in hospitality:
+        try:
+            rows = _request(
+                _url(base, table, subject, column=_LEARNER_COLUMN), key, "DELETE", want_rows=True
+            )
+            setattr(out, attr, len(rows) if isinstance(rows, list) else 0)
+        except _NETWORK_ERRORS as exc:
+            logger.warning(f"memory: {attr} erase failed", extra={"fields": {"error": str(exc)}})
+            out.failed.append(table)
+
     return out
+
+
+def _forget_in_process(subject: str) -> tuple[int, int]:
+    """The in-memory hospitality stores (a run without a project, or ``…_STORE=memory``): the
+    same rows, held in this process instead of the project, forgotten here. Counts, so the
+    answer is still the truth when there is no durable store at all."""
+    from wobo_gateway import parents
+    from wobo_gateway.hospitality import preferences as prefs_mod
+
+    dials = prefs_mod.get_store()
+    links = parents.get_store()
+    prefs_gone = (
+        dials.forget(subject) if isinstance(dials, prefs_mod.InMemoryPreferencesStore) else 0
+    )
+    links_gone = (
+        links.forget(subject) if isinstance(links, parents.InMemoryParentLinkStore) else 0
+    )
+    return prefs_gone, links_gone
 
 
 def erase(subject: str, *, meter_key: str) -> Erasure:
@@ -195,6 +243,9 @@ def erase(subject: str, *, meter_key: str) -> Erasure:
     from wobo_gateway.board import stream as board_stream
 
     out = erase_durable(subject)
+    prefs_gone, links_gone = _forget_in_process(subject)
+    out.mail_preferences += prefs_gone
+    out.parent_links += links_gone
     # Cached generations keyed to this learner: the board turns still replayable in the resume
     # window carry the learner's own words and Wobo's answer to them.
     out.boards = board_stream.forget(meter_key)
