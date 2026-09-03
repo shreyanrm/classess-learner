@@ -1,0 +1,328 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 12",
+  "level_order": 12,
+  "subject": "Biology",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "cbse-1112-biology",
+      "title": "Biology, Classes XI and XII, Secondary Curriculum Part 2, 2026-27",
+      "publisher": "Central Board of Secondary Education",
+      "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Biology_SecP2_2026-27.pdf",
+      "media_type": "application/pdf",
+      "pages": 15,
+      "bytes": 414058,
+      "fetched_at": "2026-09-03T07:03:56Z",
+      "document_sha256": "3a5767515b41b12b9356151e759beba48bb15a1b711b96c321fa273a7fa7a6ee",
+      "extracted_text_sha256": "65c2a52b533286a61f302ca4124b4341f2ceda2f4e16366f88d1afb435458ef2",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-biology",
+        "page": 9,
+        "section": "Unit VI"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 9,
+            "section": "Unit VI: Reproduction, chapter 1"
+          },
+          "chapter_number": 1,
+          "contents": "Flower structure; development of male and female gametophytes; pollination - types, agencies and examples; out breeding devices; pollen-pistil interaction; double fertilization; post fertilization events - development of endosperm and embryo, development of seed and formation of fruit; special modes- apomixis, parthenocarpy, polyembryony; Significance of seed dispersal and fruit formation.",
+          "order": 1,
+          "name": "Sexual Reproduction in Flowering Plants",
+          "id": "n_f44a6b88448537a7",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 9,
+            "section": "Unit VI: Reproduction, chapter 2"
+          },
+          "chapter_number": 2,
+          "contents": "Male and female reproductive systems; microscopic anatomy of testis and ovary; gametogenesis -spermatogenesis and oogenesis; menstrual cycle; fertilisation, embryo development upto blastocyst formation, implantation; pregnancy and placenta formation (elementary idea); parturition (elementary idea); lactation (elementary idea).",
+          "order": 2,
+          "name": "Human Reproduction",
+          "id": "n_a644ea1f6f71e0f9",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 9,
+            "section": "Unit VI: Reproduction, chapter 3"
+          },
+          "chapter_number": 3,
+          "contents": "Need for reproductive health and prevention of Sexually Transmitted Diseases (STDs); birth control - need and methods, contraception and medical termination of pregnancy (MTP); amniocentesis; infertility and assisted reproductive technologies - IVF, ZIFT, GIFT (elementary idea for general awareness).",
+          "order": 3,
+          "name": "Reproductive Health",
+          "id": "n_cd7464fb601f0ad0",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "VI",
+      "marks": 16,
+      "order": 1,
+      "name": "Reproduction",
+      "id": "n_1d84c108cf2adb87",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-biology",
+        "page": 9,
+        "section": "Unit VII"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 10,
+            "section": "Unit VII: Genetics and Evolution, chapter 4"
+          },
+          "chapter_number": 4,
+          "contents": "Heredity and variation: Mendelian inheritance; deviations from Mendelism – incomplete dominance, co-dominance, multiple alleles and inheritance of blood groups, pleiotropy; elementary idea of polygenic inheritance; chromosome theory of inheritance; chromosomes and genes; Sex determination - in humans, birds and honey bee; linkage and crossing over; sex linked inheritance - haemophilia, colour blindness; Mendelian disorders in humans - thalassemia; chromosomal disorders in humans; Down's syndrome, Turner's and Klinefelter's syndromes.",
+          "order": 1,
+          "name": "Principles of Inheritance and Variation",
+          "id": "n_7657058821afe004",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 10,
+            "section": "Unit VII: Genetics and Evolution, chapter 5"
+          },
+          "chapter_number": 5,
+          "contents": "Search for genetic material and DNA as genetic material; Structure of DNA and RNA; DNA packaging; DNA replication; Central Dogma; transcription, genetic code, translation; gene expression and regulation - lac operon; Genome, Human and rice genome projects; DNA fingerprinting.",
+          "order": 2,
+          "name": "Molecular Basis of Inheritance",
+          "id": "n_8f10968a46bbc4cd",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 10,
+            "section": "Unit VII: Genetics and Evolution, chapter 6"
+          },
+          "chapter_number": 6,
+          "contents": "Origin of life; biological evolution and evidences for biological evolution (paleontology, comparative anatomy, embryology and molecular evidences); Darwin's contribution, modern synthetic theory of evolution; mechanism of evolution - variation (mutation and recombination) and natural selection with examples, types of natural selection; Gene flow and genetic drift; Hardy- Weinberg's principle; adaptive radiation; human evolution.",
+          "order": 3,
+          "name": "Evolution",
+          "id": "n_c50d296ba455d90a",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "VII",
+      "marks": 20,
+      "order": 2,
+      "name": "Genetics and Evolution",
+      "id": "n_89b6e9ddcd890141",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-biology",
+        "page": 10,
+        "section": "Unit VIII"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 10,
+            "section": "Unit VIII: Biology and Human Welfare, chapter 7"
+          },
+          "chapter_number": 7,
+          "contents": "Pathogens; parasites causing human diseases (malaria, dengue, chikungunya, filariasis, ascariasis, typhoid, pneumonia, common cold, amoebiasis, ring worm) and their control; Basic concepts of immunology - vaccines; cancer, HIV and AIDS; Adolescence - drug and alcohol abuse.",
+          "order": 1,
+          "name": "Human Health and Diseases",
+          "id": "n_c145399b7d243e97",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 10,
+            "section": "Unit VIII: Biology and Human Welfare, chapter 8"
+          },
+          "chapter_number": 8,
+          "contents": "Microbes in food processing, industrial production, sewage treatment, energy generation and microbes as bio-control agents and bio-fertilizers. Antibiotics; production and judicious use.",
+          "order": 2,
+          "name": "Microbes in Human Welfare",
+          "id": "n_2b780ac3505eca1d",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "VIII",
+      "marks": 12,
+      "order": 3,
+      "name": "Biology and Human Welfare",
+      "id": "n_d402518f871a65a8",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-biology",
+        "page": 10,
+        "section": "Unit IX"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 10,
+            "section": "Unit IX: Biotechnology and its Applications, chapter 9"
+          },
+          "chapter_number": 9,
+          "contents": "Genetic Engineering (Recombinant DNA Technology).",
+          "order": 1,
+          "name": "Biotechnology - Principles and Processes",
+          "id": "n_fabae45c217a9bd5",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 10,
+            "section": "Unit IX: Biotechnology and its Applications, chapter 10"
+          },
+          "chapter_number": 10,
+          "contents": "Application of biotechnology in health and agriculture: Human insulin and vaccine production, stem cell technology, gene therapy; genetically modified organisms - Bt crops; transgenic animals; biosafety issues, biopiracy and patents.",
+          "order": 2,
+          "name": "Biotechnology and its Applications",
+          "id": "n_6bf3d2321039ffa3",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "IX",
+      "marks": 12,
+      "order": 4,
+      "name": "Biotechnology and its Applications",
+      "id": "n_c2d1275932245a97",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-biology",
+        "page": 11,
+        "section": "Unit X"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 11,
+            "section": "Unit X: Ecology and Environment, chapter 11"
+          },
+          "chapter_number": 11,
+          "contents": "Population interactions - mutualism, competition, predation, parasitism; population attributes - growth, birth rate and death rate, age distribution.",
+          "order": 1,
+          "name": "Organisms and Populations",
+          "id": "n_439b1957ff174185",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 11,
+            "section": "Unit X: Ecology and Environment, chapter 12"
+          },
+          "chapter_number": 12,
+          "contents": "Ecosystems: Patterns, components; productivity and decomposition; energy flow; pyramids of number, biomass, energy.",
+          "order": 2,
+          "name": "Ecosystem",
+          "id": "n_0c163dcfa0c4d264",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 11,
+            "section": "Unit X: Ecology and Environment, chapter 13"
+          },
+          "chapter_number": 13,
+          "contents": "Biodiversity-Concept, patterns, importance; loss of biodiversity; biodiversity conservation; hotspots, endangered organisms, extinction, Red Data Book, Sacred Groves, biosphere reserves, national parks, wildlife, sanctuaries and Ramsar sites. The following topics are included in the syllabus but will be assessed only formatively to reinforce understanding without adding to summative assessments. The reduces academic stress while ensuring meaningful learning. Schools can integrate these with existing chapters as they align well. Relevant NCERT textual material is enclosed for reference. Environmental Issues (available as a part of CBSE Reading Material): Air pollution and its control, Water pollution and its control, Solid Wastes, Agro-chemicals and their effects, Radioactive wastes, Greenhouse effect and global warming, Ozone depletion in the stratosphere, Degradation by improper resource utilization and maintenance, deforestation.",
+          "order": 3,
+          "name": "Biodiversity and its Conservation",
+          "id": "n_5e0971c5272e8f79",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "X",
+      "marks": 10,
+      "order": 5,
+      "name": "Ecology and Environment",
+      "id": "n_4a16023b9bbad328",
+      "aliases": []
+    }
+  ],
+  "note": "Units and marks are the course structure table; topics are the document's own chapters, each carrying the contents stated for it verbatim."
+}

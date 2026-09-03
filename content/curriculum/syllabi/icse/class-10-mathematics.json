@@ -1,0 +1,165 @@
+{
+  "framework_id": "icse",
+  "framework_name": "Indian Certificate of Secondary Education (CISCE)",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cisce.org/",
+  "aliases": [
+    "ICSE",
+    "CISCE",
+    "Council for the Indian School Certificate Examinations"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    9,
+    10
+  ],
+  "version": "2026-27",
+  "exam_year": 2027,
+  "level": "Class 10",
+  "level_order": 10,
+  "subject": "Mathematics",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "icse-maths",
+      "title": "Mathematics (51), ICSE examination year 2027",
+      "publisher": "Council for the Indian School Certificate Examinations",
+      "url": "https://cisce.org/wp-content/uploads/2025/03/9.-Mathematics.pdf",
+      "media_type": "application/pdf",
+      "pages": 13,
+      "bytes": 3779431,
+      "fetched_at": "2026-09-03T07:29:47Z",
+      "document_sha256": "08b64aa3b4a5ff2b818bb2a92d4459c0a64c99622e2422fec6f26d90d97c7d16",
+      "extracted_text_sha256": "bdaea2e8021cd4fafd534503627f11127477e9b1ccd3d02e59f3b94ce4d45f0a",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "icse-maths",
+        "page": 8,
+        "section": "Class X, section 1"
+      },
+      "topics": null,
+      "unit_number": 1,
+      "order": 1,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Commercial Mathematics",
+      "id": "n_a2570af9031f9e1c",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-maths",
+        "page": 8,
+        "section": "Class X, section 2"
+      },
+      "topics": null,
+      "unit_number": 2,
+      "order": 2,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Algebra",
+      "id": "n_f82ff7c350580ee9",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-maths",
+        "page": 9,
+        "section": "Class X, section 3"
+      },
+      "topics": null,
+      "unit_number": 3,
+      "order": 3,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Geometry",
+      "id": "n_9a1621cacca6fe28",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-maths",
+        "page": 10,
+        "section": "Class X, section 4"
+      },
+      "topics": null,
+      "unit_number": 4,
+      "contents": "Area and volume of solids – Cylinder, Cone and Sphere. 7. Three-dimensional solids - right circular cylinder, right circular cone and sphere: Area (total surface and curved surface) and Volume. Direct application problems including cost, Inner and Outer volume and melting and recasting method to find the volume or surface area of a new solid. Combination of solids included. Note: Problems on Frustum are not included. Trigonometry (a) Using Identities to solve/prove simple algebraic trigonometric expressions sin2 A + cos2 A = 1 1 + tan2 A = sec2A 1+cot2A = cosec2A; 0 ≤ A ≤ 90° (b) Heights and distances: Solving 2-D problems involving angles of elevation and depression using trigonometric tables. Note: Cases involving more than two right angled triangles excluded. Statistics Statistics – basic concepts, Mean, Median, Mode. Histograms and Ogive. (a) Computation of: • Measures of Central Tendency: Mean, median, mode for raw and arrayed data. Mean*, median class and modal class for grouped data. (both continuous and discontinuous). * Mean by all 3 methods included: Direct : Σfx Σf Σfd Short-cut : A+ where d = x − A Σf Step-deviation: A + Σft × i where t = x − A Σf i (b) Graphical Representation. Histograms and Less than Ogive. • Finding the mode from the histogram, the upper quartile, lower Quartile and median etc. from the ogive. • Calculation of inter Quartile range. Probability Random experiments, Sample space, Events, definition of probability, Simple problems on single events. SI UNITS, SIGNS, SYMBOLS AND ABBREVIATIONS (1) Agreed conventions (a) Units may be written in full or using the agreed symbols, but no other abbreviation may be used. (b) The letter ‘s’ is never added to symbols to indicate the plural form. (c) A full stop is not written after symbols for units unless it occurs at the end of a sentence. (d) When unit symbols are combined as a quotient, e.g., metre per second, it is recommended that it should be written as m/s, or as m s-1. (e) Three decimal signs are in common international use: the full point, the mid-point and the comma. Since the full point is sometimes used for multiplication and the comma for spacing digits in large numbers, it is recommended that the mid-point be used for decimals. (2) Names and symbols In general Implies that ⇒ is logically equivalent to ⇔ Identically equal to ≡ is approximately equal to >> In set language Belongs to ∈ does not belong to ∉ is equivalent to ↔ is not equivalent to ↔ union ∪ intersection ∩ universal set ξ is contained in ⊂ natural (counting) Ν the empty set ø numbers whole numbers W integers Ζ real numbers R In measures Kilometre km Metre m Centimetre cm Millimetre mm Kilogram kg Gram g Litre L Centilitre cL square kilometre km2 Square meter m2 square centimetre cm2 Hectare ha cubic metre m3 Cubic centimetre cm3 kilometres per hour km/h Metres per second m/s INTERNAL ASSESSMENT The minimum number of assignments: Two assignments as prescribed by the teacher. Suggested Assignments • Comparative newspaper coverage of different items. • Survey of various types of Bank accounts, rates of interest offered. • Planning a home budget. • Conduct a survey in your locality to study the mode of conveyance / Price of various essential commodities / favourite sports. Represent the data using a bar graph / histogram and estimate the mode. • To use a newspaper to study and report on shares and dividends. • Set up a dropper with ink in it vertical at a height say 20 cm above a horizontally placed sheet of plain paper. Release one ink drop; observe the pattern, if any, on the paper. Vary the vertical distance and repeat. Discover any pattern of relationship between the vertical height and the ink drop observed. • You are provided (or you construct a model as shown) - three vertical sticks (size of a pencil) stuck to a horizontal board. You should also have discs of varying sizes with holes (like a doughnut). Start with one disc; place it on (in) stick A. Transfer it to another stick (B or C); this is one move (m). Now try with two discs placed in A such that the large disc is below, and the smaller disc is above (number of discs = n=2 now). Now transfer them one at a time in B or C to obtain similar situation (larger disc below). How many moves? Try with more discs (n = 1, 2, 3, etc.) and generalise. A B C • The board has some holes to hold marbles, red on one side and blue on the other. Start with one pair. Interchange the positions by making one move at a time. A marble can jump over another to fill the hole behind. The move (m) equal 3. Try with 2 (n=2) and more. Find the relationship between n and m. Red Blue • Take a square sheet of paper of side 10 cm. Four small squares are to be cut from the corners of the square sheet and then the paper folded at the cuts to form an open box. What should be the size of the squares cut so that the volume of the open box is maximum? • Take an open box, four sets of marbles (ensuring that marbles in each set are of the same size) and some water. By placing the marbles and water in the box, attempt to answer the question: do larger marbles or smaller marbles occupy more volume in a given space? • An eccentric artist says that the best paintings have the same area as their perimeter (numerically). Let us not argue whether such sizes increase the viewer’s appreciation, but only try and find what sides (in integers only) a rectangle must have if its area and perimeter are to be equal (Note: there are only two such rectangles). • Find by construction the centre of a circle, using only a 60-30 setsquare and a pencil. • Various types of “cryptarithm”. EVALUATION The assignments/project work are to be evaluated by the subject teacher and by an External Examiner. (The External Examiner may be a teacher nominated by the Head of the school, who could be from the faculty, but not teaching the subject in the section/class. For example, a teacher of Mathematics of Class VIII may be deputed to be an External Examiner for Class X, Mathematics projects.) The Internal Examiner and the External Examiner will assess the assignments independently. Award of Marks (20 Marks) Subject Teacher (Internal Examiner) 10 marks External Examiner 10 marks The total marks obtained out of 20 are to be sent to CISCE by the Head of the school. The Head of the school will be responsible for the online entry of marks on CISCE’s CAREERS portal by the due date. INTERNAL ASSESSMENT IN MATHEMATICS - GUIDELINES FOR MARKING WITH GRADES Criteria Preparation Concepts Computation Grade I Exhibits and Admirable use of Careful and selects a well- mathematical concepts accurate work with defined problem. and methods and appropriate Appropriate use exhibits competency in computation, of techniques. using extensive range of construction and mathematical measurement with techniques. correct units. Grade II Exhibits and Appropriate use of Commits negligible selects routine mathematical concepts errors in approach. and methods and shows computation, Fairly good adequate competency in construction and techniques. using limited range of measurement. techniques. Grade III Exhibits and Uses appropriate Commits a few selects trivial mathematical concepts errors in problems. and shows competency computation, Satisfactory in using limited range construction and techniques. of techniques. measurement. Grade IV Exhibits and Uses inappropriate Commits many selects an mathematical concepts mistakes in insignificant for the assignment. computation, problem. construction and Uses some measurement. unsuitable techniques. Grade V Exhibits and Not able to use Inaccurate selects a mathematical concepts. computation, completely construction and irrelevant measurement. problem. Uses unsuitable techniques. Presentation Understanding Marks Presents well stated Shows strong personal 4 marks for conclusions; uses contribution; each effective mathematical demonstrate knowledge criterion language, symbols, and understanding of conventions, tables, assignment and can diagrams, graphs, etc. apply the same in different situations. Some statements of Neat with average 3 marks for conclusions; uses amount of help; each appropriate math assignment shows criterion language, learning of mathematics symbols, conventions, with a limited ability to tables, diagrams, use it. graphs, etc. Assignment is Lack of ability to 2 marks for presentable though it is conclude without help; each disorganized in some shows some learning of criterion places. mathematics with a limited ability to use it. Presentation made is Lack of ability to 1 mark for somewhat disorganized conclude even with each and untidy. considerable help; criterion assignment contributes to mathematical learning to a certain extent. Presentation made is Assignment does not 0 mark completely contribute to disorganized, untidy mathematical learning and poor. and lacks practical applicability.",
+      "order": 4,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Mensuration",
+      "id": "n_908972c399a60dc8",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-maths",
+        "page": 9,
+        "section": "Class X, section 5"
+      },
+      "topics": null,
+      "unit_number": 5,
+      "order": 5,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Trigonometry",
+      "id": "n_00984940cd6c5b0f",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-maths",
+        "page": 10,
+        "section": "Class X, section 6"
+      },
+      "topics": null,
+      "unit_number": 6,
+      "order": 6,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Statistics",
+      "id": "n_6a09b729ad48e059",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-maths",
+        "page": 10,
+        "section": "Class X, section 7"
+      },
+      "topics": null,
+      "unit_number": 7,
+      "order": 7,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Probability",
+      "id": "n_d82728a8b796f61f",
+      "aliases": []
+    }
+  ],
+  "note": "The unit list and the unit order below are read off the CISCE booklet for this subject and were checked by hand against it. The topic layer that an earlier pass derived from the booklet's two-column layout has been withdrawn: the re-flow keyed off line position rather than the booklet's own bracketed sub-headings, which truncated topic titles mid-phrase and filed topics under the wrong unit. Nothing from that layer is kept, and no topic list is asserted here. Next step: re-derive the topics from the booklet's bracket structure, then have a second reader confirm the unit to topic mapping before anything is promoted."
+}

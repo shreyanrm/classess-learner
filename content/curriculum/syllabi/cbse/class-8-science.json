@@ -1,0 +1,254 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 8",
+  "level_order": 8,
+  "subject": "Science",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "ncert-8-curiosity",
+      "title": "Curiosity, textbook of Science for Grade 8 (prelims)",
+      "publisher": "National Council of Educational Research and Training",
+      "url": "https://ncert.nic.in/textbook/pdf/hecu1ps.pdf",
+      "media_type": "application/pdf",
+      "pages": 20,
+      "bytes": 3676711,
+      "fetched_at": "2026-09-03T07:07:29Z",
+      "document_sha256": "cf752771b28a3328bf37ec768907ed0f46d2a2507a77803222b435c651830955",
+      "extracted_text_sha256": "cc82551ec802d164ff2db9359f95e615e1f9377222219ba07d2c022704bae3f0",
+      "extraction": "python standard library extractor (zlib inflate over PDF content streams)"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "ncert-8-curiosity",
+        "page": 19,
+        "section": "Contents"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-8-curiosity",
+            "page": 19,
+            "section": "Contents, chapter 1"
+          },
+          "chapter_number": 1,
+          "order": 1,
+          "name": "Exploring the Investigative World of Science",
+          "id": "n_53caf80d50f994cc",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-curiosity",
+            "page": 19,
+            "section": "Contents, chapter 2"
+          },
+          "chapter_number": 2,
+          "order": 2,
+          "name": "The Invisible Living World: Beyond Our Naked Eye",
+          "id": "n_fab6be30a75c3ab3",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-curiosity",
+            "page": 19,
+            "section": "Contents, chapter 3"
+          },
+          "chapter_number": 3,
+          "order": 3,
+          "name": "Health: The Ultimate Treasure",
+          "id": "n_f06d9f01da55c42f",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-curiosity",
+            "page": 19,
+            "section": "Contents, chapter 4"
+          },
+          "chapter_number": 4,
+          "order": 4,
+          "name": "Electricity: Magnetic and Heating Effects",
+          "id": "n_8cfe38b8e8a873ba",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-curiosity",
+            "page": 19,
+            "section": "Contents, chapter 5"
+          },
+          "chapter_number": 5,
+          "order": 5,
+          "name": "Exploring Forces",
+          "id": "n_37165cbd0a0344cc",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-curiosity",
+            "page": 19,
+            "section": "Contents, chapter 6"
+          },
+          "chapter_number": 6,
+          "order": 6,
+          "name": "Pressure, Winds, Storms, and Cyclones",
+          "id": "n_b16fef4439868f20",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-curiosity",
+            "page": 19,
+            "section": "Contents, chapter 7"
+          },
+          "chapter_number": 7,
+          "order": 7,
+          "name": "Particulate Nature of Matter",
+          "id": "n_2318f8da24852b67",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-curiosity",
+            "page": 19,
+            "section": "Contents, chapter 8"
+          },
+          "chapter_number": 8,
+          "order": 8,
+          "name": "Nature of Matter: Elements, Compounds, and Mixtures",
+          "id": "n_d9c12fe3baad081f",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-curiosity",
+            "page": 19,
+            "section": "Contents, chapter 9"
+          },
+          "chapter_number": 9,
+          "order": 9,
+          "name": "The Amazing World of Solutes, Solvents, and Solutions",
+          "id": "n_47c6a2dfc065ed58",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-curiosity",
+            "page": 19,
+            "section": "Contents, chapter 10"
+          },
+          "chapter_number": 10,
+          "order": 10,
+          "name": "Light: Mirrors and Lenses",
+          "id": "n_a3e2734a628f9cf1",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-curiosity",
+            "page": 19,
+            "section": "Contents, chapter 11"
+          },
+          "chapter_number": 11,
+          "order": 11,
+          "name": "Keeping Time with the Skies",
+          "id": "n_233f81a63f538014",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-curiosity",
+            "page": 19,
+            "section": "Contents, chapter 12"
+          },
+          "chapter_number": 12,
+          "order": 12,
+          "name": "How Nature Works in Harmony",
+          "id": "n_5c4cec6b95088a68",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-curiosity",
+            "page": 19,
+            "section": "Contents, chapter 13"
+          },
+          "chapter_number": 13,
+          "order": 13,
+          "name": "Our Home: Earth, a Unique Life Sustaining Planet",
+          "id": "n_dd2f8a12c8e2d10d",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Curiosity, Grade 8",
+      "order": 1,
+      "name": "Curiosity, Grade 8",
+      "id": "n_1361a43ba484744a",
+      "aliases": []
+    }
+  ],
+  "note": "CBSE publishes a curriculum document only for the secondary stage (classes IX to XII). For the middle stage it prescribes the NCERT textbooks, so the structure below is the structure of the prescribed NCERT book: units are the book's own parts or themes and topics are its chapters, read off the Contents page of the book's official prelims PDF on ncert.nic.in. A Contents page states no learning objectives, so none are recorded."
+}

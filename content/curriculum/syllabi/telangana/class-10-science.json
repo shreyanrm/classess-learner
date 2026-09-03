@@ -1,0 +1,76 @@
+{
+  "framework_id": "telangana",
+  "framework_name": "Board of Secondary Education, Telangana",
+  "framework_kind": "state",
+  "country": "IN",
+  "region": "Telangana",
+  "official_site": "https://bse.telangana.gov.in/",
+  "aliases": [
+    "Telangana State Board",
+    "TS SSC",
+    "BSE Telangana"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "version": "2026-27",
+  "level": "Class 10",
+  "level_order": 10,
+  "subject": "Science",
+  "status": "provisional",
+  "read_off_source": false,
+  "discovery_state": "blocked",
+  "blocker": "browser_required",
+  "provenance": {
+    "extractor": null,
+    "verifier": null,
+    "checks_passed": [
+      "stored_negative_result_has_a_blocker_code"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "ts-scert-home",
+      "title": "State Council of Educational Research and Training, Telangana - site index",
+      "publisher": "State Council of Educational Research and Training, Telangana",
+      "url": "https://scert.telangana.gov.in/",
+      "media_type": "text/html",
+      "pages": null,
+      "bytes": 699006,
+      "fetched_at": "2026-09-03T07:48:06Z",
+      "document_sha256": "3c050da99f15d0b4a2526f22175cb52d315e58f9264a47f422119356501814a5",
+      "extracted_text_sha256": "3e9d5aa4a6b35354d6b213bf5b91f4c189a8d3392813d1a2a2092d6c84237ae3",
+      "extraction": "python standard library tag strip"
+    },
+    {
+      "id": "ts-bse-home",
+      "title": "Board of Secondary Education, Telangana - site index",
+      "publisher": "Board of Secondary Education, Telangana",
+      "url": "https://bse.telangana.gov.in/",
+      "media_type": "text/html",
+      "pages": null,
+      "bytes": 41971,
+      "fetched_at": "2026-09-03T07:48:06Z",
+      "document_sha256": "f718254abf82365719e02b5f6cc69524a096c258d7c1816a5de50e19c2433f48",
+      "extracted_text_sha256": "42d157bc70cf48ff968bace46566c7670328f4bf6464f09d5af1fd487a859d0d",
+      "extraction": "python standard library tag strip"
+    }
+  ],
+  "units": null,
+  "note": "The SCERT Telangana syllabus and e-textbook pages are served from an ASP.NET form whose links carry an encrypted query parameter and require a live session, so the syllabus documents behind them cannot be fetched with a plain request. The site index was fetched and is recorded below as evidence of the attempt. Next step: run the discovery job (docs/CURRICULUM.md section 4) with a browser-capable fetcher against the portal recorded below, then extract the chapter list from the prescribed textbook's own contents page, the way the CBSE middle-stage files here do."
+}

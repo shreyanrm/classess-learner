@@ -1,0 +1,513 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 9",
+  "level_order": 9,
+  "subject": "Science",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "cbse-9-science",
+      "title": "Science, Class IX, Secondary Curriculum Part 1, 2026-27",
+      "publisher": "Central Board of Secondary Education",
+      "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/ScienceSt_SecP1_2026-27.pdf",
+      "media_type": "application/pdf",
+      "pages": 20,
+      "bytes": 378470,
+      "fetched_at": "2026-09-03T07:03:41Z",
+      "document_sha256": "ab19589aede5ad8b0b2f87964914c1a55a987f39032903871baa973c02ed6e24",
+      "extracted_text_sha256": "6adb14e8a75b9b090240e3853008c98d8f35006c4e20395948990726190e485e",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "cbse-9-science",
+        "page": 4,
+        "section": "Course structure Class IX, unit 1"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Differentiate between plant and animal cell, prokaryote and eukaryote",
+            "Describe the structural and functional features of cells",
+            "Explain the role of cells in the structure and functions of organisms",
+            "Explain activities inside the cell and its interactions with the environment",
+            "Demonstrate osmosis in cells",
+            "Prepare slides to observe cell structure",
+            "Differentiate between diffusion and osmosis",
+            "Explain the role of cell division mitosis and meiosis in creating similarities and variations",
+            "Identify and describe the role of biomolecules in the structure and function of cell",
+            "Cite case study related to the use of science in human life, for example, Leigh Syndrome and mitochondrial dysfunction",
+            "Apply learning of a structure and function of muscles cells or joints in dance form and/or sports",
+            "Discuss significant contributions of India, for example, Professor Arun Kumar Sharma for his work on chromosomes and methods for its studies",
+            "Recognise that the cell is a structural unit of life and functional unit of life processes",
+            "Pose questions, such as — Can we create artificial cell which behaves exactly like a natural living cell?",
+            "Exhibit creativity and design models using low cost or no-cost eco-friendly material to study structure and functions of cell and cell organelles",
+            "Carry out an experiment to understand the osmosis",
+            "Analyze result and present finding using scientific terms"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-science",
+            "page": 4,
+            "section": "Cell"
+          },
+          "chapter_number": 2,
+          "order": 1,
+          "name": "Cell",
+          "id": "n_07800e7baa2c19a8",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Differentiate between plant and animal tissues; meristematic and permanent tissues; simple and complex tissues; parenchyma, collenchyma and sclerenchyma; xylem and phloem; striated smooth and cardiac muscles",
+            "Different types of joints",
+            "Relate the structure of the different types of tissues with their functions",
+            "Explain the role of various types of tissues in plants and animals",
+            "Describe the level of organisation in a multicellular organism",
+            "Establish the correlation between different tissues l, for fitness, for example, role of muscles, cartilage and bones in facilitating movement",
+            "Explain the importance of yoga exercises for physical agility and in maintaining the correct posture",
+            "Discuss significant contributions of India, for example, Professor Sipra Guha Mukherjee and Professor S.C. Maheshwari for their significant contribution in the plant cell and tissue culture research in India",
+            "Discuss the techniques and medical recommendations in recovery from muscular injuries",
+            "Carry out an experiment to understand the growth in plant due to apical meristem",
+            "Represent data in multiple modes, including appropriate figures, tables, graphs, or digital formats, interpret and draw inferences from the data",
+            "Analyse results and present findings using scientific terms",
+            "Communicate findings and conclusions effectively, such as those from experiments, activities, or projects, both orally and in written form"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-science",
+            "page": 5,
+            "section": "Tissues"
+          },
+          "chapter_number": 3,
+          "order": 2,
+          "name": "Tissues",
+          "id": "n_9849786e1432c4d7",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Analyse the interactions between members of different groups of organisms, such as plants and pollinators",
+            "Compare asexual and sexual reproduction",
+            "Describe male and female reproductive organs in plants and animals",
+            "Differentiate between ovule and seed; ovary and fruit",
+            "Explain pollination and fertilisation",
+            "Explain how variations are introduced by sexual reproduction",
+            "Identify and explain the role of biotic and abiotic agents in seed dispersal and pollination",
+            "Illustrate the structure of male and female reproductive units or systems in plants and animals",
+            "Recognise the significance of contraceptive devices for population control and health including reproductive health",
+            "Describe the contribution of India to the understanding of human anatomy",
+            "Discuss significant contributions of India, for example, Professor Panchanan Maheshwari for laying the foundation of plant cell and tissue culture research in India",
+            "Recognise the importance of improvements in medical field for assisted reproductive technologies",
+            "Pose questions, such as — How do heavy metals harm reproductive organs? Can extreme heat affect fertility?"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-science",
+            "page": 6,
+            "section": "Reproduction"
+          },
+          "chapter_number": 11,
+          "order": 3,
+          "name": "Reproduction",
+          "id": "n_b5647cdad2655276",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Distinguish organisms based on certain characteristics, such as number of cells present, cellular organisation and mode of nutrition",
+            "Classify various organisms in groups, such as five kingdoms, on the basis of their cellular organisation and ecological role",
+            "Describe the significance and rules of binomial nomenclature",
+            "Apply binomial nomenclature on some common organisms in their surroundings -2.8",
+            "Analyse the interactions between members of different groups of organisms, such as lichens",
+            "Discuss ecological role of diverse organisms",
+            "Recognise three domains of classification of organisms on molecular basis"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-science",
+            "page": 7,
+            "section": "Diversity"
+          },
+          "chapter_number": 12,
+          "order": 4,
+          "name": "Diversity",
+          "id": "n_a4f76a57623e8e56",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 27,
+      "order": 1,
+      "name": "World of Living",
+      "id": "n_7247dcfe7daa3efa",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-science",
+        "page": 4,
+        "section": "Course structure Class IX, unit 2"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Explain the scientific principles behind different e separation techniques",
+            "Apply the knowledge of homogeneous and e heterogeneous mixtures in daily life",
+            "Define and calculate the concentration of solutions s using mass by mass percentage, mass by volume percentage, volume by volume percentage of",
+            "Analyse graphs of solubility and explain how the ng solubility of substances changes with temperature",
+            "Use scientific conventions and standard units to express concentrations",
+            "Handle common laboratory chemicals and apparatus safely nd",
+            "Relate separation techniques with practices observed in the local environment",
+            "Draw labelled diagrams or flow charts of separation techniques",
+            "Display awareness about the societal impact of chemistry in making life healthier, cleaner and sustainable",
+            "Correlate the phenomenon used in centrifugation to the spinning dance",
+            "Describe the cultural practices, like traditional methods of distillation",
+            "Display awareness about the contributions of Indian scientists, such as Dilip Mahalanabis",
+            "Demonstrate the use of small-scale or micro-scale experiments, such as crystallisation of copper sulfate, as an alternative to traditional methods",
+            "Poses question, such as — Can we create artificial blood that works just as real blood for all patients?",
+            "Exhibit creativity and work collaboratively in groups to create models of apparatus used for separating mixtures, such as a paperfuge and a distillation unit, using eco-friendly materials",
+            "Formulate hypotheses about scientific phenomena based on prior knowledge and understanding of scientific concepts, and predict the results of an experiment or investigation based on their hypotheses",
+            "Accurately use scientific instruments, apparatus and chemicals to collect data",
+            "Analyse results and findings using scientific terms",
+            "Represent findings in multiple modes, including appropriate figures, tables, graphs, or digital formats, and interpret and draw inferences from the findings",
+            "Communicate findings and conclusions effectively, such as those from experiments, activities or projects, both orally and in written form"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-science",
+            "page": 8,
+            "section": "Exploring Mixtures and their Separation"
+          },
+          "chapter_number": 5,
+          "order": 1,
+          "name": "Exploring Mixtures and their Separation",
+          "id": "n_c442f61826cf810b",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Differentiate between subatomic particles (electrons, protons, and neutrons) based on their charge, and position in the atom",
+            "Illustrate how electrons are distributed in different energy levels, such as K, L, M, N ... or by numbers , n = 1, 2, 3, 4",
+            "Explain valence electrons, valency, atomic number, atomic mass, isotopes, and isobars s",
+            "Calculate the number of electrons, protons, and neutrons of an element using its atomic and mass numbers",
+            "Interpret data, such as atomic mass, maximum e number of electrons in a shell, and valency to classify elements accurately",
+            "Use scientific conventions as per international standards, such as notations for electron, proton, neutron, unified atomic mass unit (u), and distribution of electrons in various shells, such as K, L, M, N …",
+            "Recognise and accurately apply the chemical symbols for the first eighteen elements according to IUPAC",
+            "Draw labelled diagrams of various atomic models, such as Thomson’s model, Rutherford’s model and Bohr’s model",
+            "Create and present a role play, stage play, or story of ‘Journey Inside the Atom’ to display awareness about the contributions of key scientists in the discovery and development of atomic structure",
+            "Display awareness about the role of Indian scientists and their contributions to atomic science for peaceful purposes and explore how their works influenced India’s scientific development",
+            "Display awareness about the societal impact of science in making life healthier, like the use of various isotopes in medicines to treat different diseases, and atomic energy in power generation",
+            "Design and develop games that utilise atomic number, mass number, and subatomic particle clues to accurately predict and identify elements",
+            "Display awareness about the contributions of the ancient Indian philosopher, Acharya Kanad’s idea of indivisible particles (Parmanu)",
+            "Describe the use of the atomic mass unit (u) to measure the mass of atoms as per IUPAC recommendations",
+            "Describe scientific discoveries that explain how the structure of the atom has evolved over time through various atomic models proposed by different scientists -7.2",
+            "Pose question, such as — is it possible to completely understand everything that happens inside an atom?",
+            "Exhibit creativity and work collaboratively in groups to design different models of atoms",
+            "Formulate hypotheses about scientific phenomena by applying prior knowledge and understanding of scientific concepts, and predict the results of data based on the hypotheses",
+            "Analyse results and present findings using scientific terms",
+            "Correlate the results and conclusions of different models of atomic structure",
+            "Represent data in multiple modes, including appropriate figures, tables, graphs or digital formats, and interpret and draw inferences from the data",
+            "Communicate findings and conclusions effectively, such as those from experiments, activities or projects, both orally and in written form"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-science",
+            "page": 9,
+            "section": "Structure of an Atom"
+          },
+          "chapter_number": 8,
+          "order": 2,
+          "name": "Structure of an Atom",
+          "id": "n_d1b8794a8094e2b6",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Display awareness about the scientific discoveries, such as the contributions of Antoine Lavoisier, Joseph Proust, and John Dalton",
+            "Handle common laboratory chemicals and apparatus safely",
+            "Draw diagrams of electron dot structures of atoms and molecules",
+            "Describe how atoms and molecules can lead to beneficial applications, such as medicine, energy and peaceful use of atomic science",
+            "Relate atomic bonding to social bonding",
+            "Design educational games to write chemical formulae using symbols",
+            "Display awareness about the contributions of Indian scientists in promoting the peaceful use of atomic energy and the traditional use of the red pigment ‘cinnabar’ obtained from rocks",
+            "Describe the basic concepts that matter are made of particles; elements combine in fixed ratios to form compounds; the law of conservation of mass; and different types of bonding (ionic and covalent)",
+            "Pose question, such as — Are there any chemical changes that do not obey the law of conservation of mass?",
+            "Exhibit creativity and work collaboratively in groups to construct simple models of compounds",
+            "Formulate hypotheses about scientific phenomena by applying prior knowledge and understanding of scientific concepts and laws, and predict the results of data based on the hypotheses",
+            "Accurately use scientific instruments, apparatus and chemicals to collect data",
+            "Analyse results and findings using scientific terms",
+            "Represent data in multiple modes, including appropriate figures, tables, graphs or digital formats",
+            "Communicate findings and conclusions effectively, such as those from experiments, activities or projects, both orally and in written form"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-science",
+            "page": 11,
+            "section": "Atoms and Molecules"
+          },
+          "chapter_number": 9,
+          "order": 3,
+          "name": "Atoms and Molecules",
+          "id": "n_bb0ffb51e1f4a757",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 25,
+      "order": 2,
+      "name": "Matter - Its Nature and Behaviour",
+      "id": "n_a846773d6d5ec8e8",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-science",
+        "page": 4,
+        "section": "Course structure Class IX, unit 3"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Differentiate between distance travelled and displacement, and speed and velocity for objects moving in a straight line",
+            "Define displacement, velocity, acceleration, and uniform circular motion",
+            "Express displacement, velocity, acceleration in appropriate SI units",
+            "Plot and interpret position-time graphs and velocity-time graphs to describe the motion of an object moving in a straight line in one direction (with constant velocity and constant acceleration)",
+            "Calculate average velocity from position-time graph, displacement and average acceleration from velocity-time graph",
+            "Derive kinematic equations for motion in a straight line with constant acceleration by graphical method",
+            "Calculate values of unknown physical quantities from the given physical quantities, using kinematic equations",
+            "Derive the expression of speed for uniform circular motion",
+            "Analyse real-life events and phenomena, and identify the key factors that influence their Behaviour",
+            "Formulate hypotheses about scientific phenomena based on prior knowledge and understanding of scientific concepts, theories, laws, and principles",
+            "Predict about the outcome of an experiment or investigation based on their hypotheses",
+            "Identify the variables that are relevant to a scientific investigation and determine how to control or manipulate them",
+            "Accurately use scientific instruments and equipment to collect data",
+            "Represent data in multiple modes, including tables, graphs and visual representations, and interpret and draw inferences from the data",
+            "Communicate their findings using scientific terminology and effectively communicate their conclusions to others"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-science",
+            "page": 14,
+            "section": "Motion"
+          },
+          "chapter_number": 4,
+          "order": 1,
+          "name": "Motion",
+          "id": "n_a981c530eeaecf11",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Explain that force has magnitude as well as direction",
+            "Identify situations in which balanced and unbalanced forces are acting on an object",
+            "Explain the role of friction on the motion of objects",
+            "Recognise that for an object moving with constant velocity, the net force is zero, whereas a change in velocity (acceleration) is caused by a force",
+            "State and explain Newton’s first law of motion",
+            "State and explain Newton’s second law in terms of mass and acceleration",
+            "Calculate force using mathematical expression of Newton’s second law of motion",
+            "Define SI unit of force",
+            "State and explain Newton’s third law of motion",
+            "Apply Newton’s laws of motion to explain everyday life events",
+            "Analyse real-life events and phenomena, and identify the key factors that influence their behaviour",
+            "Develop a model to represent real-life event",
+            "Use models to manipulate variables and predict results",
+            "Formulate hypotheses about scientific phenomena based on prior knowledge and understanding of scientific concepts, theories, laws, and principles",
+            "Predict about the outcome of an experiment or investigation based on their hypotheses",
+            "Identify the variables that are relevant to a scientific investigation and determine how to control or manipulate them",
+            "Accurately use scientific instruments and equipment to collect data",
+            "Represent data in multiple modes, including tables, graphs and visual representations, and interpret and draw inferences from the data",
+            "Communicate their findings using scientific terminology and effectively communicate their conclusions to others"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-science",
+            "page": 15,
+            "section": "Force and Laws of Motion"
+          },
+          "chapter_number": 6,
+          "order": 2,
+          "name": "Force and Laws of Motion",
+          "id": "n_0b96b43d88b2ae78",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Define work done by a constant force and its SI unit",
+            "Calculate work done by a force using mathematical expression",
+            "State work-energy theorem",
+            "Explain the concept of energy and state its SI unit",
+            "Name forms of energy and identify their interconversion in surroundings (elementary idea)",
+            "Define kinetic energy of a moving object and derive its mathematical expression",
+            "Define potential energy for an object raised to a height and derive its mathematical expression",
+            "Calculate kinetic and potential energy using mathematical expressions",
+            "Explain conversion between potential energy and kinetic energy (for the case of an object under free fall)",
+            "State the law of conservation of energy",
+            "Define power and its unit",
+            "Calculate power using its mathematical expression",
+            "Identify different simple machines (pulley, inclined plane and lever)",
+            "Define mechanical advantage and calculate its value for simple machine",
+            "Demonstrate and explain mechanical advantage of simple machines their conclusions to others",
+            "Analyse real-life events and phenomena, and identify the key factors that influence their behaviour",
+            "Develop model to represent real-life event",
+            "Use models to manipulate variables and predict results",
+            "Formulate hypotheses about scientific phenomena based on prior knowledge and understanding of scientific concepts, theories, laws, and principles",
+            "Predict about the outcome of an experiment or investigation based on their hypotheses",
+            "Identify the variables that are relevant to a scientific investigation and determine how to control or manipulate them",
+            "Accurately use scientific instruments and equipment to collect data",
+            "Represent data in multiple modes, including tables, graphs and visual representations, and interpret and draw inferences from the data",
+            "Communicate their findings using scientific terminology and effectively communicate their conclusions to others"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-science",
+            "page": 16,
+            "section": "Work, Energy and Simple Machines"
+          },
+          "chapter_number": 7,
+          "order": 3,
+          "name": "Work, Energy and Simple Machines",
+          "id": "n_9fdc3f55f3c3549b",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Demonstrate the production of sound in multiple ways (through vibration of strings, membranes, air columns) using materials in surroundings",
+            "Explain that sound is produced by vibrations",
+            "Demonstrate that sound can travel through different mediums (air, solid and liquid)",
+            "Describe that sound needs a medium for propagation",
+            "Explain that sound travels as a longitudinal wave",
+            "Describe the characteristics of sound waves the (wavelength, frequency, time period, amplitude, intensity and speed)",
+            "Analyse graphs representing sound",
+            "Write relationship between time period and frequency of sound wave",
+            "Derive mathematical expression for speed of sound",
+            "Calculate speed of sound using its mathematical expression",
+            "Explain human perception of sound in terms of audible range, loudness and pitch of sound",
+            "Describe reflection of sound, and apply it to echo and reverberations in surroundings",
+            "Explain the use of sound waves for echolocation",
+            "Describe music in terms of characteristics of sound waves, such as loudness and pitch",
+            "Name historical buildings designed for echoes, such as whispering gallery of Gol Gumbaz",
+            "Display awareness about Sir C.V. Raman",
+            "Analyse real-life events and phenomena, and identify the key factors that influence their behaviour",
+            "Develop model to represent real-life event",
+            "Use models to manipulate variables and predict results",
+            "Formulate hypotheses about scientific phenomena based on prior knowledge and understanding of scientific concepts, theories, laws, and principles",
+            "Predict about the outcome of an experiment or investigation based on their hypotheses",
+            "Identify the variables that are relevant to a scientific investigation and determine how to control or manipulate them",
+            "Accurately use scientific instruments and equipment to collect data",
+            "Represent data in multiple modes, including tables, graphs and visual representations, and interpret and draw inferences from the data",
+            "Communicate their findings using scientific terminology and effectively communicate their conclusions to others"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-science",
+            "page": 17,
+            "section": "Sound"
+          },
+          "chapter_number": 10,
+          "order": 4,
+          "name": "Sound",
+          "id": "n_fbe4fc81516e3ce8",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 23,
+      "order": 3,
+      "name": "Motion, Force, Work and Sound",
+      "id": "n_db0f7c6c8aec108d",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-science",
+        "page": 4,
+        "section": "Course structure Class IX, unit 4"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Explain the nature of solar radiation",
+            "Explain that solar radiation is an electromagnetic waves having different Frequencies",
+            "Explain how heat from the Sun warms the Earth’s surface differently based on the shape, latitude and tilt of the Earth",
+            "Explain the interaction of solar radiation with the Earth’s surface and relate the differential heating of the Earth’s surface with the atmospheric phenomena, such as air movement, evaporation, etc., and describe phenomena like mountain, valley, sea and land breezes",
+            "Describe how the latitude and tilt of the Earth, and absorption and reflection of solar radiation by different surfaces cause differential heating of the Earth’s surface",
+            "Identify various components of the Earth that interact with solar energy",
+            "Explain the role of the atmosphere in influencing weather and climate on the Earth",
+            "Identify the reflectivity of different materials through reliable scientific sources, such as the internet and books",
+            "Describe how elements like carbon, nitrogen, oxygen and water are recycled between biotic and abiotic environments",
+            "Explain biogeochemical cycles, and the roles of biogeochemical cycles in circulating matter and energy continuously between the non-living environment (abiotic) and living (biotic) organisms, making nutrients available, and maintaining environmental balance",
+            "Reflect the changing nature of Earth’s environment through our traditional knowledge",
+            "Pose questions, such as — What will happen if there is no differential heating of the Earth?",
+            "Draw flow charts, concept maps for biogeochemical cycles, differential heating of the Earth’s surface and Electromagnetic spectrum",
+            "Formulate hypotheses about scientific phenomena based on prior knowledge and understanding of differential heating of the Earth and biogeochemical cycle",
+            "Predict the results of an experiment or investigation based on their hypotheses",
+            "Communicate findings and conclusions effectively, such as those from experiments, activities or projects, both orally and in written form"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-science",
+            "page": 12,
+            "section": "Earth as a System: Energy, Matter & Life"
+          },
+          "chapter_number": 13,
+          "order": 1,
+          "name": "Earth as a System: Energy, Matter & Life",
+          "id": "n_3152602344bb6c72",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 5,
+      "order": 4,
+      "name": "Earth as a system",
+      "id": "n_2e60bf0203a76e52",
+      "aliases": []
+    }
+  ],
+  "note": "The course structure on page 4 names four units and lists the chapters in each by NCERT chapter number only. Those numbers are resolved to chapter titles by the document's own list of experiments (pages 19 and 20), which labels every experiment with both its chapter number and its subject matter; chapters 8 and 13 follow by elimination inside their stated units. Objectives are each chapter's stated learning outcomes, verbatim."
+}

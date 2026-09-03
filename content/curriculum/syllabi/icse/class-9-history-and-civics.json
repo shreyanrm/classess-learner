@@ -1,0 +1,232 @@
+{
+  "framework_id": "icse",
+  "framework_name": "Indian Certificate of Secondary Education (CISCE)",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cisce.org/",
+  "aliases": [
+    "ICSE",
+    "CISCE",
+    "Council for the Indian School Certificate Examinations"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    9,
+    10
+  ],
+  "version": "2026-27",
+  "exam_year": 2028,
+  "level": "Class 9",
+  "level_order": 9,
+  "subject": "History and Civics",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "icse-history-civics",
+      "title": "History & Civics (53), ICSE examination year 2027",
+      "publisher": "Council for the Indian School Certificate Examinations",
+      "url": "https://cisce.org/wp-content/uploads/2025/03/ICSE-History-Civics.pdf",
+      "media_type": "application/pdf",
+      "pages": 9,
+      "bytes": 3168202,
+      "fetched_at": "2026-09-03T07:29:51Z",
+      "document_sha256": "f7dcdfe81603436b4fd34a01cfc817010bbb0a931487951beb915597b9c14dac",
+      "extracted_text_sha256": "2a472a7f3ed3822ca9199cf5ab5d7dd951f9b0038c8d21cb46e8de58e48b2a76",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 4,
+        "section": "Class IX, section 1"
+      },
+      "topics": null,
+      "unit_number": 1,
+      "contents": "Definition of Constitution - date of adoption, date 2. of enforcement and its significance. Features: Single Citizenship, Universal Adult Franchise, Fundamental Rights and Fundamental Duties, Directive Principles of State Policy (meaning), Difference between Fundamental Rights and Directive Principles, Meaning of a Welfare State.",
+      "order": 1,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Civics: Our Constitution",
+      "id": "n_dc90273e6346c5d0",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 4,
+        "section": "Class IX, section 2"
+      },
+      "topics": null,
+      "unit_number": 2,
+      "contents": "Meaning; Composition and functions of Election Commission of India; Direct and Indirect election; General election; Mid-term election and By-election.",
+      "order": 2,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Civics: Elections",
+      "id": "n_0fd1d67e0f230bbf",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 4,
+        "section": "Class IX, section 3"
+      },
+      "topics": null,
+      "unit_number": 3,
+      "contents": "The Legislative Assembly and the Legislative 3. Council. Meaning of Unicameral and Bicameral not eligible to offer History, Civics and To awaken a desirable understanding in pupils of the various streams which have contributed to the development and growth of the Indian nation and its civilisation and culture. To develop a world historical perspective of the contributions made by various cultures to the total heritage of mankind. Legislatures, term, composition, qualification for membership, powers and functions. SECTION B: HISTORY The Harappan Civilisation Sources: Great Bath, Citadel, seals, bearded man, dancing girl, dockyard, granaries, script. Urban planning, trade, art & craft, and its decline. The Vedic Period Sources: Names of the four Vedas and importance of epics. Early Vedic Period- Social Organisation- Family, Position of the king; Rig Vedic Assemblies- Sabha, Samiti, Vidhatha. Brief comparative study of the position of women in Early and Later Vedic society. A brief comparison between the economy of Early and Later Vedic Period. The four class divisions, the four Ashramas and the education system. Jainism and Buddhism Sources: Angas, Tripitikas and Jatakas (brief mention). Causes for their rise in the 6th century B.C. Doctrines- Jainism-Tri-ratnas, Karma, Equality, Moksha Buddhism- The Four Noble truths, The Eight-fold path, Nirvana.",
+      "order": 3,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Civics: The State Legislatures",
+      "id": "n_2c72baf07b20437c",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 4,
+        "section": "Class IX, section 4"
+      },
+      "topics": null,
+      "unit_number": 4,
+      "order": 4,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "History: The Harappan Civilisation",
+      "id": "n_b894ad597b1caf45",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 4,
+        "section": "Class IX, section 5"
+      },
+      "topics": null,
+      "unit_number": 5,
+      "order": 5,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "History: The Vedic Period",
+      "id": "n_90c2d8227b8dc4c1",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 4,
+        "section": "Class IX, section 6"
+      },
+      "topics": null,
+      "unit_number": 6,
+      "order": 6,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "History: Jainism and Buddhism",
+      "id": "n_8eb01ff497f2a3c0",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 5,
+        "section": "Class IX, section 7"
+      },
+      "topics": null,
+      "unit_number": 7,
+      "contents": "Sources: Arthashastra, Indika, Ashokan Edicts, Sanchi Stupa. Names of the kings in chronological order and administration; Ashoka’s Dhamma - Principles and Impact",
+      "order": 7,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "History: The Mauryan Empire",
+      "id": "n_862979947d727111",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 5,
+        "section": "Class IX, section 8"
+      },
+      "topics": null,
+      "unit_number": 8,
+      "contents": "Sources: Tirukkural and Megaliths. Society – Position of women Economy - Agriculture and Trade",
+      "order": 8,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "History: The Sangam Age",
+      "id": "n_27e509a59100d590",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 5,
+        "section": "Class IX, section 9"
+      },
+      "topics": null,
+      "unit_number": 9,
+      "contents": "Sources: Account of Fa-hien; Allahabad Pillar Inscription. Names of the kings in chronological order; administration; Contribution to the fields of Education (Nalanda University), Science (Aryabhatta), Sushrutha (medicine) and Culture (works of Kalidasa, Deogarh temple).",
+      "order": 9,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "History: The Age of the Guptas",
+      "id": "n_a0aa2039ae080e9d",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 5,
+        "section": "Class IX, section 10"
+      },
+      "topics": null,
+      "unit_number": 10,
+      "contents": "(a) The Cholas Sources: Inscriptions; Brihadishwara Temple. Names of the kings in chronological order and administration; Chola art. (b) The Delhi Sultanate Sources: Inscriptions; Qutab Minar. Names of the dynasties in chronological order Alauddin Khilji – Market Regulations, Deccan Expedition, Measures against nobility, Military reforms, Revenue reforms Muhammad Bin Tughlaq-Transfer of capital, Token Currency, Taxation in Doab, Plan of conquests. (c) The Mughal Empire Sources: Ain-i-Akbari, Taj Mahal, Jama Masjid and Red Fort. Names of the kings in chronological order. Babur- The three battles waged to consolidate his empire. Akbar-Rajput Policy, Steps towards integration, social and educational reforms, mansabdari system. (d) Composite Culture Factors responsible for composite culture, principles of the Bhakti and Sufi movement impact of composite culture, impact of the Bhakti Movement, the Sufi Movement and Christian missionaries.",
+      "order": 10,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "History: Medieval India",
+      "id": "n_c588d9c457752232",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 5,
+        "section": "Class IX, section 11"
+      },
+      "topics": null,
+      "unit_number": 11,
+      "contents": "(a) Renaissance Definition, causes (capture of Constantinople, decline of Feudalism, new trade routes, spirit of enquiry and invention of the printing press) and impact on art, literature and science (Leonardo Da Vinci, William Shakespeare and Copernicus). Consequences of Renaissance. (b) Reformation Meaning, Causes of reformation (dissatisfaction with the practices of the Catholic Church and new learning); Martin Luther’s contribution, Counter Reformation. (c) Industrial Revolution Definition of the term. Causes of Industrial Revolution, meaning of capitalism and causes for the rise of capitalism, meaning of socialism and causes for the rise of socialism. INTERNAL ASSESSMENT Any one project/assignment related to the syllabus. Suggested Assignments • ‘The Indian constitution protects the rights of children, women, minorities and weaker sections.’ Elaborate on the basis of a case study. • ‘Fundamental Duties complement Fundamental Rights.’ Illustrate with the help of a Power Point Presentation. • Highlight the civic issues of your locality and what suggestions would you offer to address them. • Visit a museum or local site of historical importance and discuss its significance. • Discuss the art and architectural features of any of these monuments: Buddhist Caves, Ajanta; Iron Pillar, Mehrauli; Gol Gumbaz, Bijapur; Mattancherry Synagogue, Cochin; Kamakhya Temple, Guwahati; St. Thomas Basilica, Chennai; Tower of Silence, Mumbai. • Make a pictorial presentation of inventions and innovations as a result of the Industrial Revolution.  Make a comparative study of the Harappan and the Mesopotamian Civilisations.",
+      "order": 11,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "History: The Modern Age in Europe",
+      "id": "n_9145297a6c56dd14",
+      "aliases": []
+    }
+  ],
+  "note": "The unit list and the unit order below are read off the CISCE booklet for this subject and were checked by hand against it. The topic layer that an earlier pass derived from the booklet's two-column layout has been withdrawn: the re-flow keyed off line position rather than the booklet's own bracketed sub-headings, which truncated topic titles mid-phrase and filed topics under the wrong unit. Nothing from that layer is kept, and no topic list is asserted here. Next step: re-derive the topics from the booklet's bracket structure, then have a second reader confirm the unit to topic mapping before anything is promoted."
+}

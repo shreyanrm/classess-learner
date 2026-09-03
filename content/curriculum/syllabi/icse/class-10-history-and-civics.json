@@ -1,0 +1,153 @@
+{
+  "framework_id": "icse",
+  "framework_name": "Indian Certificate of Secondary Education (CISCE)",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cisce.org/",
+  "aliases": [
+    "ICSE",
+    "CISCE",
+    "Council for the Indian School Certificate Examinations"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    9,
+    10
+  ],
+  "version": "2026-27",
+  "exam_year": 2027,
+  "level": "Class 10",
+  "level_order": 10,
+  "subject": "History and Civics",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "icse-history-civics",
+      "title": "History & Civics (53), ICSE examination year 2027",
+      "publisher": "Council for the Indian School Certificate Examinations",
+      "url": "https://cisce.org/wp-content/uploads/2025/03/ICSE-History-Civics.pdf",
+      "media_type": "application/pdf",
+      "pages": 9,
+      "bytes": 3168202,
+      "fetched_at": "2026-09-03T07:29:51Z",
+      "document_sha256": "f7dcdfe81603436b4fd34a01cfc817010bbb0a931487951beb915597b9c14dac",
+      "extracted_text_sha256": "2a472a7f3ed3822ca9199cf5ab5d7dd951f9b0038c8d21cb46e8de58e48b2a76",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 6,
+        "section": "Class X, section 1"
+      },
+      "topics": null,
+      "unit_number": 1,
+      "order": 1,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Civics: The Union Legislature",
+      "id": "n_445fb75c9ba88943",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 6,
+        "section": "Class X, section 2"
+      },
+      "topics": null,
+      "unit_number": 2,
+      "contents": "(a) The President: Qualifications for election, composition of Electoral College, reason for indirect election, term of office, procedure for impeachment. Powers (executive, legislative, financial, judicial, discretionary and emergency)- any two effects of each emergency). (b) The Vice-President: Qualifications for election, removal, term of office and powers. (c) Prime Minister and Council of Ministers: Appointment, formation of Council of Ministers, tenure, functions - policy making, administrative, legislative, financial, emergency. Position and powers of the Prime Minister. Collective and individual responsibility of the members of the Cabinet. Distinction between the Council of Ministers and the Cabinet.",
+      "order": 2,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Civics: The Union Executive",
+      "id": "n_478f9afaf6c0f951",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 6,
+        "section": "Class X, section 3"
+      },
+      "topics": null,
+      "unit_number": 3,
+      "contents": "(a) The Supreme Court: Composition, qualifications of judges, appointment, independence of judiciary from the control of executive and legislature; Jurisdiction and functions: Independence of Judiciary, Original, Appellate, Advisory, Revisory, Judicial Review and Court of Record. Enforcement of Fundamental Rights and Writs. (b) The High Courts: Composition, qualifications of judges, appointment; Jurisdiction and functions: Original, Appellate, Revisory, Judicial Review and Court of Record. Enforcement of Fundamental Rights and Writs. (c) Subordinate Courts: Distinction between Court of the District Judge and Sessions Court. Lok Adalats: meaning and advantages. SECTION B: HISTORY The Indian National Movement (1857 - 1917) (a) The First War of Independence, 1857 Only the causes (political, socio-religious, economic and military) and consequences – (Only changes in the administration, Queen Victoria’s Proclamation, Relation with Princely states and Changes in the Army) will be tested. [The events, however, need to be mentioned in order to maintain continuity and for a more comprehensive understanding.] (b) Factors leading to the growth of Nationalism – economic exploitation, repressive colonial policies, socio-religious reform movements (any two contributions of Raja Rammohan Roy, Jyotiba Phule, Swami Dayananda Saraswathi and Swami Vivekananda) and role of the Press. Foundation of the Indian National Congress - The year of formation and name of the Founder Immediate objectives of the Indian National Congress - the first two sessions and their Presidents should be mentioned. (c) First Phase of the Indian National Movement (1885-1907) - objectives and methods of struggle of the Early Nationalists. Any two contributions of Dadabhai Naoroji, Surendranath Banerjee and Gopal Krishna Gokhale. Second Phase of the Indian National Movement (1905-1916) - Brief mention of the causes of the Partition of Bengal and its perspective by the Nationalists. Reasons for Surat Split of 1907; objectives and methods of struggle of Assertive Nationalists. Any two contributions of Bal Gangadhar Tilak, Bipin Chandra Pal and Lala Lajpat Rai. The Muslim League; Year of formation, Factors leading to the formation of the Muslim League and its objectives. The Lucknow Pact - 1916. Signatories of the Pact and its impact.",
+      "order": 3,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Civics: The Judiciary",
+      "id": "n_58a1716f2a66e732",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 6,
+        "section": "Class X, section 4"
+      },
+      "topics": null,
+      "unit_number": 4,
+      "order": 4,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "History: The Indian National Movement (1857 - 1917)",
+      "id": "n_9cd0f8dd9b301900",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 7,
+        "section": "Class X, section 5"
+      },
+      "topics": null,
+      "unit_number": 5,
+      "contents": "1947) (a) Mahatma Gandhi - Non-Cooperation Movement : causes (Khilafat Movement, Rowlatt Act, Jallianwala Bagh Tragedy), programme and suspension – Chauri Chaura incident and impact of the Movement; the Civil Disobedience Movement: causes (reaction to the Simon Commission (clauses will not be tested) Declaration of Poorna Swaraj at the Lahore Session of 1929), Dandi March, programme and impact of the Movement, Gandhi-Irwin Pact and the Second Round Table Conference; Reason for renewal of the Civil Disobedience Movement the Quit India Movement: causes (failure of the Cripps Mission (clauses will not be tested), Japanese threat), Quit India Resolution and the significance of the Movement. (b) Forward Bloc (objectives) and INA (name of the founder objectives and contribution of Subhas Chandra Bose). (c) Independence and Partition of India – Cabinet Mission Plan (clauses only); Mountbatten Plan (clauses and its acceptance); and the Indian Independence Act of 1947 (clauses only).",
+      "order": 5,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "History: Mass Phase of the National Movement (1915-1947)",
+      "id": "n_6c2a290a5e02ff2b",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-history-civics",
+        "page": 7,
+        "section": "Class X, section 6"
+      },
+      "topics": null,
+      "unit_number": 6,
+      "contents": "(a) The First World War Causes (Nationalism and Imperialism, Armament Race, division of Europe and Sarajevo crisis) and Results (Treaty of Versailles, formation of League of Nations, Objectives of the League of Nations). (b) Rise of Dictatorships Causes for the rise of Fascism in Italy and the rise of Nazism in Germany. Similarity between the ideologies of Fascism and Nazism. (c) The Second World War Causes (Dissatisfaction with the Treaty of Versailles, Rise of Fascism and Nazism, Policy of Appeasement, the Japanese invasion of China, Failure of the League of Nations and Hitler’s invasion of Poland). Brief mention of the attack on Pearl Harbour and bombing of Hiroshima and Nagasaki. Consequences (Defeat of Axis Powers, Formation of the United Nations and Cold War). Cold War - meaning, NATO and WARSAW (Only meaning). (d) United Nations (i) The objectives of the U.N. The composition and functions of the General Assembly, the Security Council, and the International Court of Justice. Major agencies of the United Nations: UNICEF, WHO and UNESCO – headquarters and functions only. (ii) Universal Declaration of Human Rights – (Only meaning) (e) Non-Aligned Movement Brief meaning; objectives; Panchsheel- only meaning, principles need to be taught only for understanding and not for testing; role of Jawaharlal Nehru; Names of the architects of NAM. INTERNAL ASSESSMENT Any one project/assignment related to the syllabus. Suggested Assignments • Compare the Parliamentary and Presidential forms of Government with reference to India and the U.S.A. • Conduct a mock Court and record the proceedings. • Present a life sketch and contributions of any one of the following Presidents of India – • Dr. Rajendra Prasad, Dr. S. Radhakrishnan and Dr. A.P.J. Abdul Kalam (or any other). • Present a book review of any one of the following works: Dadabhai Naoroji’s ‘Poverty and un- British rule in India’, Gandhi’s ‘The Story of my Experiments with Truth’, Nehru’s ‘Discovery of India’, Bhagat Singh’s ‘Why I am an Atheist’, Vijayalakshmi Pandit’s ‘The Scope of Happiness: A Personal Memoir’, Abdul Kalam’s ‘Wings of Fire’ or any other relevant book. • Discuss the relevance of any one of the following films to understand the history of 20th Century Europe: The Book Thief, Schindler’s List, Escape to Victory, The Boy in Striped Pyjamas, Life is Beautiful, The Sound of Music, Gandhi (Richard Attenborough), Sardar (Ketan Mehta), Netaji Subhas Chandra Bose - The Forgotten Hero (Shyam Benegal) or any other relevant book. • Make an illustrative study of the life and work of Subhash Chandra Bose. • Make an illustrative study of the life and work of any three national leaders, between 1857 and 1914 and describe their contributions to the Nation. • Highlight the work and achievements of any one Nobel Laureate - Malala Yousafzai or Kailash Satyarthi. • Make a presentation on the influence of Gandhian principles on Martin Luther King / Nelson Mandela. • Prepare a report on the contributions of any one of the following agencies of the United Nations – UNESCO / WHO / UNICEF / ILO / UNDP / FAO. • Present a case study of any recent human rights violations and redressal mechanisms available to prevent such instances in the future. EVALUATION The assignments/project work is to be evaluated by the subject teacher and by an External Examiner. (The External Examiner may be a teacher nominated by the Head of the School, who could be from the faculty, but not teaching the subject in the section/class. For example, a teacher of History of Class VIII may be deputed to be an External Examiner for Class X, History projects.) The Internal Examiner and the External Examiner will assess the assignments independently. Award of Marks (20 Marks) Subject Teacher (Internal Examiner) 10 marks External Examiner 10 marks The total marks obtained out of 20 are to be sent to CISCE by the Head of the School. The Head of the school will be responsible for the online entry of marks on CISCE’s CAREERS portal by the due date. INTERNAL ASSESSMENT IN HISTORY & CIVICS - GUIDELINES FOR MARKING WITH GRADES Grade Preparation/ Information Concepts Research I  Follows instructions  A good deal of  Good understanding of  with understanding. relevant matter. historical concepts -  Masters research  Uses wide range of sequence/reconstruction-  techniques easily. sources. causes and  Reference work is consequences-continuity orderly. and change  Empathy. II  Follows instructions  Selects matter relevant  Understanding of  but needs a little help to context. concepts is adequate. in research techniques.  Limited use of  Reference notes quite references/ sources. orderly.  III  Follows instructions  Relevant matter but  Displays limited use of  but needs constant limited reference concepts. guidance. work.  Reference notes at  Matter is sketchy. times disorderly. IV  Struggles with  Hardly any reference  Minimal competency in  research methods and material. concepts. needs constant  Use of irrelevant  A few of the required guidance. matter. concepts.   Reference notes  Matter is sketchy. copied without reference to keywords. V  Cannot follow  No reference  Unable to demonstrate  instructions. work/copied from concepts.  Works ‘blindly’ other textbooks/ without reference to sketchy matter. keywords. Thinking Skills Presentation Marks Different interpretations  Matter presented is clear 4 of evidence. and is in coherent form Can draw Inferences/ (sub-headings, sections, deductions/ chapters etc.) conclusions.  Work is neat and tidy and not over elaborate. Limited / Single  Matter is presented in 3 interpretation of coherent form but not evidence with some organized into sections examples. etc. Some inferences/  Presentation neat and conclusions are drawn. tidy but not elaborate. Few examples /single  Work is presented in an 2 example to support orderly way, but not reasoning. organized into sections.  Over use of ‘cosmetics’ to hide lack of substance.  Work is quite neatly presented. Finds it difficult to  Matter presented in a 1 make conclusions/ confused way at times deductions/ inferences. (no sub-headings, No examples to support chapters, etc.) reasoning.  Tendency to copy from reference books.  Use of “cosmetics” to hide lack of substance. Unable to make  Matter presented in an 0 inferences/ deductions incoherent/ disorganized or come to any way. conclusions.  Copied from textbooks “blindly”.  Use of “cosmetics” to hide lack of substance.  Untidy work.",
+      "order": 6,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "History: The Contemporary World",
+      "id": "n_728f10c2b58085ed",
+      "aliases": []
+    }
+  ],
+  "note": "The unit list and the unit order below are read off the CISCE booklet for this subject and were checked by hand against it. The topic layer that an earlier pass derived from the booklet's two-column layout has been withdrawn: the re-flow keyed off line position rather than the booklet's own bracketed sub-headings, which truncated topic titles mid-phrase and filed topics under the wrong unit. Nothing from that layer is kept, and no topic list is asserted here. Next step: re-derive the topics from the booklet's bracket structure, then have a second reader confirm the unit to topic mapping before anything is promoted."
+}

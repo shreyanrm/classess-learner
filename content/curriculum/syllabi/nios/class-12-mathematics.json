@@ -1,0 +1,698 @@
+{
+  "framework_id": "nios",
+  "framework_name": "National Institute of Open Schooling",
+  "framework_kind": "open",
+  "country": "IN",
+  "official_site": "https://nios.ac.in/",
+  "aliases": [
+    "NIOS",
+    "Open school"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    10,
+    12
+  ],
+  "version": "2023",
+  "applies_to": "2026-27",
+  "level": "Class 12",
+  "level_order": 12,
+  "stage": "senior secondary",
+  "subject": "Mathematics",
+  "course_code": "311",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "nios-bif-311",
+      "title": "Bifurcation of syllabus, Mathematics (311), NIOS senior secondary course",
+      "publisher": "National Institute of Open Schooling",
+      "url": "https://nios.ac.in/media/documents/Course_Bifurcation_2023/12th/311Bifurcation.pdf",
+      "media_type": "application/pdf",
+      "pages": 2,
+      "bytes": 451609,
+      "fetched_at": "2026-09-03T07:40:33Z",
+      "document_sha256": "9277951767337f561e8bf72ec9aa2479ab8341b50a93f98531b286ab35dca1c9",
+      "extracted_text_sha256": "b3f6c391c4b80a083e81ad61c0150a60c04ec4bd5c1f3d51fa8b503e845d7f58",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "nios-bif-311",
+        "page": 1,
+        "section": "Module I"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module I: Sets, Relations and Functions"
+          },
+          "lesson_number": 1,
+          "order": 1,
+          "name": "Sets",
+          "id": "n_293c0346be6d282f",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module I: Sets, Relations and Functions"
+          },
+          "lesson_number": 2,
+          "order": 2,
+          "name": "Relations and Functions-I",
+          "id": "n_86d53b5694e5c89c",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module I: Sets, Relations and Functions"
+          },
+          "lesson_number": 3,
+          "order": 3,
+          "name": "Trigonometric Functions-I",
+          "id": "n_75173f4b0b62c8f6",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module I: Sets, Relations and Functions"
+          },
+          "lesson_number": 4,
+          "order": 4,
+          "name": "Trigonometric Functions-II",
+          "id": "n_6fbbc5f16f38e043",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module I: Sets, Relations and Functions"
+          },
+          "lesson_number": 5,
+          "order": 5,
+          "name": "Relation between Sides and Angles of A triangle",
+          "id": "n_bc89e2541ca78f2d",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "I",
+      "order": 1,
+      "name": "Sets, Relations and Functions",
+      "id": "n_9833f4112aff15da",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "nios-bif-311",
+        "page": 1,
+        "section": "Module LL"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module LL: Sequences and Series"
+          },
+          "lesson_number": 6,
+          "order": 1,
+          "name": "Sequences and Series",
+          "id": "n_17b271c683a9c3d1",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module LL: Sequences and Series"
+          },
+          "lesson_number": 7,
+          "order": 2,
+          "name": "Some Special Sequences",
+          "id": "n_a14973fb9d50fb91",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "LL",
+      "order": 2,
+      "name": "Sequences and Series",
+      "id": "n_444a32cfd8ace628",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "nios-bif-311",
+        "page": 1,
+        "section": "Module III"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module III: Algebra-I"
+          },
+          "lesson_number": 8,
+          "order": 1,
+          "name": "Complex Numbers",
+          "id": "n_b70f6d64ab472993",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module III: Algebra-I"
+          },
+          "lesson_number": 9,
+          "order": 2,
+          "name": "Quadratic Equations and Linear Inequalities",
+          "id": "n_aa76d38dbb9778fa",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module III: Algebra-I"
+          },
+          "lesson_number": 10,
+          "order": 3,
+          "name": "Principle of Mathematical Induction",
+          "id": "n_fb754f428d0002ab",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module III: Algebra-I"
+          },
+          "lesson_number": 11,
+          "order": 4,
+          "name": "Permutations and Combinations",
+          "id": "n_c8f7da376d152aab",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module III: Algebra-I"
+          },
+          "lesson_number": 12,
+          "order": 5,
+          "name": "Binomial Theorem",
+          "id": "n_30aafaee610b0851",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "III",
+      "order": 3,
+      "name": "Algebra-I",
+      "id": "n_e2d18741d65abafb",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "nios-bif-311",
+        "page": 1,
+        "section": "Module IV"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module IV: Co-ordinate Geometry"
+          },
+          "lesson_number": 13,
+          "order": 1,
+          "name": "Cartesian System of Rectangular Co-ordinates",
+          "id": "n_38b8c6ccd6d98f0a",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module IV: Co-ordinate Geometry"
+          },
+          "lesson_number": 14,
+          "order": 2,
+          "name": "Straight Lines",
+          "id": "n_01a6fc414fd8c0bc",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module IV: Co-ordinate Geometry"
+          },
+          "lesson_number": 15,
+          "order": 3,
+          "name": "Circles",
+          "id": "n_00ed42e0c3ee66d6",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module IV: Co-ordinate Geometry"
+          },
+          "lesson_number": 16,
+          "order": 4,
+          "name": "Conic Sections",
+          "id": "n_66d68d9239c9a74b",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "IV",
+      "order": 4,
+      "name": "Co-ordinate Geometry",
+      "id": "n_eba9eb21d708f37f",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "nios-bif-311",
+        "page": 1,
+        "section": "Module V"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module V: Statistics and Probability"
+          },
+          "lesson_number": 17,
+          "order": 1,
+          "name": "Measures of Dispersion",
+          "id": "n_bfe947a732fca836",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module V: Statistics and Probability"
+          },
+          "lesson_number": 18,
+          "order": 2,
+          "name": "Random Experiments and Events",
+          "id": "n_972cc9384b26657f",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module V: Statistics and Probability"
+          },
+          "lesson_number": 19,
+          "order": 3,
+          "name": "Probability",
+          "id": "n_68ee348ee7e39afb",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "V",
+      "order": 5,
+      "name": "Statistics and Probability",
+      "id": "n_7503a1cc5e4fc3a9",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "nios-bif-311",
+        "page": 1,
+        "section": "Module VI"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module VI: Algebra-II"
+          },
+          "lesson_number": 20,
+          "order": 1,
+          "name": "Matrices",
+          "id": "n_aa9cb7c599456e80",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module VI: Algebra-II"
+          },
+          "lesson_number": 21,
+          "order": 2,
+          "name": "Determinants",
+          "id": "n_56e85cc029d8f4cc",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module VI: Algebra-II"
+          },
+          "lesson_number": 22,
+          "order": 3,
+          "name": "Inverse of a Matrix and its Applications",
+          "id": "n_a1a20a9037fbf419",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "VI",
+      "order": 6,
+      "name": "Algebra-II",
+      "id": "n_f727c8d2cac27944",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "nios-bif-311",
+        "page": 1,
+        "section": "Module VII"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module VII: Relations and Functions"
+          },
+          "lesson_number": 23,
+          "order": 1,
+          "name": "Relations and Functions-II",
+          "id": "n_f261a39139820040",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module VII: Relations and Functions"
+          },
+          "lesson_number": 24,
+          "order": 2,
+          "name": "Inverse Trigonometric Functions",
+          "id": "n_f9044c7489df9c15",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "VII",
+      "order": 7,
+      "name": "Relations and Functions",
+      "id": "n_6a9c5238998781e3",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "nios-bif-311",
+        "page": 1,
+        "section": "Module VIII"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module VIII: Calculus"
+          },
+          "lesson_number": 25,
+          "order": 1,
+          "name": "Limits and Continuity",
+          "id": "n_bd95d9127901ada8",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module VIII: Calculus"
+          },
+          "lesson_number": 26,
+          "order": 2,
+          "name": "Differentiation",
+          "id": "n_758e62016b5dddb1",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module VIII: Calculus"
+          },
+          "lesson_number": 27,
+          "order": 3,
+          "name": "Differentiation of Trigonometric functions",
+          "id": "n_b297307018155f01",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module VIII: Calculus"
+          },
+          "lesson_number": 28,
+          "order": 4,
+          "name": "Differentiation of Exponential and Logarithmic functions",
+          "id": "n_2b88d0dcd6cf3e0c",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module VIII: Calculus"
+          },
+          "lesson_number": 29,
+          "order": 5,
+          "name": "Application of Derivatives",
+          "id": "n_2392e1fca830fb8c",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module VIII: Calculus"
+          },
+          "lesson_number": 30,
+          "order": 6,
+          "name": "Integration",
+          "id": "n_10b45867794bb00e",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module VIII: Calculus"
+          },
+          "lesson_number": 31,
+          "order": 7,
+          "name": "Definite Integrals",
+          "id": "n_05cdf1cbc71bad2d",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module VIII: Calculus"
+          },
+          "lesson_number": 32,
+          "order": 8,
+          "name": "Differential Equations",
+          "id": "n_2af08551eb6adac4",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "VIII",
+      "order": 8,
+      "name": "Calculus",
+      "id": "n_826611160f271eaa",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "nios-bif-311",
+        "page": 1,
+        "section": "Module IX"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module IX: Vectors and Three Dimensional Geometry"
+          },
+          "lesson_number": 33,
+          "order": 1,
+          "name": "Introduction to Three Dimensional Geometry",
+          "id": "n_a62bf1190051264a",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module IX: Vectors and Three Dimensional Geometry"
+          },
+          "lesson_number": 34,
+          "order": 2,
+          "name": "Vectors",
+          "id": "n_88d6de9d360f28d8",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module IX: Vectors and Three Dimensional Geometry"
+          },
+          "lesson_number": 35,
+          "order": 3,
+          "name": "Plane",
+          "id": "n_a8969008ae460265",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module IX: Vectors and Three Dimensional Geometry"
+          },
+          "lesson_number": 36,
+          "order": 4,
+          "name": "Straight Line",
+          "id": "n_a617f28e0b9a0eb2",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "IX",
+      "order": 9,
+      "name": "Vectors and Three Dimensional Geometry",
+      "id": "n_426cdbc0664abb07",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "nios-bif-311",
+        "page": 1,
+        "section": "Module X"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module X: Linear Programming and Mathematical Reasoning"
+          },
+          "lesson_number": 37,
+          "order": 1,
+          "name": "Linear Programming",
+          "id": "n_1cbe45391cb9c76f",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-311",
+            "page": 1,
+            "section": "Module X: Linear Programming and Mathematical Reasoning"
+          },
+          "lesson_number": 38,
+          "order": 2,
+          "name": "Mathematical Reasoning",
+          "id": "n_2e380dffea820552",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "X",
+      "order": 10,
+      "name": "Linear Programming and Mathematical Reasoning",
+      "id": "n_4b1552945c8deec9",
+      "aliases": []
+    }
+  ],
+  "note": "NIOS states its syllabus as a bifurcation table: one row per module, with that module's lessons split between the tutor-marked assignment (40 per cent) and the public examination (60 per cent). Units here are the modules and topics are the lessons, merged back into lesson order. NIOS runs a course, not a class-by-class syllabus; the secondary course is equivalent to class 10 and the senior secondary course to class 12. Version note: the bifurcation document NIOS publishes is the 2023 edition, which is the edition still in force; this file is stamped version 2023 and applies_to 2026-27 rather than claiming a 2026-27 document that does not exist."
+}

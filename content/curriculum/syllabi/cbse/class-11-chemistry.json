@@ -1,0 +1,1018 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 11",
+  "level_order": 11,
+  "subject": "Chemistry",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "cbse-1112-chemistry",
+      "title": "Chemistry, Classes XI and XII, Secondary Curriculum Part 2, 2026-27",
+      "publisher": "Central Board of Secondary Education",
+      "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Chemistry_SecP2_2026-27.pdf",
+      "media_type": "application/pdf",
+      "pages": 15,
+      "bytes": 639598,
+      "fetched_at": "2026-09-03T07:03:55Z",
+      "document_sha256": "5610f09d357d3ccc9a7b39fc29cb7b1f4530847753783b16c72fff691acd2418",
+      "extracted_text_sha256": "b01124de4aeb9871bc94cac10d9e46d346a0813b19d0e38077ad5fc2c7aab6c7",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 2,
+        "section": "Unit 1"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 1: Some Basic Concepts of Chemistry"
+          },
+          "order": 1,
+          "name": "Importance of Chemistry",
+          "id": "n_430247e0d653f9f2",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 1: Some Basic Concepts of Chemistry"
+          },
+          "order": 2,
+          "name": "Nature of Matter",
+          "id": "n_16068228960bea72",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 1: Some Basic Concepts of Chemistry"
+          },
+          "order": 3,
+          "name": "Properties of Matter and their Measurement",
+          "id": "n_bef361cbd352d08a",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 1: Some Basic Concepts of Chemistry"
+          },
+          "order": 4,
+          "name": "Uncertainty in Measurement",
+          "id": "n_a29b70b46b0eb776",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 1: Some Basic Concepts of Chemistry"
+          },
+          "order": 5,
+          "name": "Laws of Chemical Combination",
+          "id": "n_ade9adaac4f54f6b",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 1: Some Basic Concepts of Chemistry"
+          },
+          "order": 6,
+          "name": "Dalton's Atomic Theory",
+          "id": "n_8dd33b09a8b973aa",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 1: Some Basic Concepts of Chemistry"
+          },
+          "order": 7,
+          "name": "Atomic and Molecular Masses",
+          "id": "n_ecfcf0872a3786c0",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 1: Some Basic Concepts of Chemistry"
+          },
+          "order": 8,
+          "name": "Mole Concept and Molar Masses",
+          "id": "n_3dd03ba1dd3eb494",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 1: Some Basic Concepts of Chemistry"
+          },
+          "order": 9,
+          "name": "Percentage Composition",
+          "id": "n_70833497e6497108",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 1: Some Basic Concepts of Chemistry"
+          },
+          "order": 10,
+          "name": "Stoichiometry and Stoichiometric Calculations",
+          "id": "n_1d3e1fac0c08af5a",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "1",
+      "contents": "Importance of Chemistry, Nature of Matter, Properties of Matter and their Measurement, Uncertainty in Measurement, Laws of Chemical Combination, Dalton's Atomic Theory, Atomic and Molecular Masses, Mole Concept and Molar Masses, Percentage Composition, Stoichiometry and Stoichiometric Calculations.",
+      "marks": 7,
+      "order": 1,
+      "name": "Some Basic Concepts of Chemistry",
+      "id": "n_70ebf733ea09b1cd",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 2,
+        "section": "Unit 2"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 2: Structure of Atom"
+          },
+          "order": 1,
+          "name": "Discovery of Sub-atomic Particles",
+          "id": "n_a4ebee4a98e13ed9",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 2: Structure of Atom"
+          },
+          "order": 2,
+          "name": "Atomic Models",
+          "id": "n_b33b0dbabcb98941",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 2: Structure of Atom"
+          },
+          "order": 3,
+          "name": "Developments Leading to the Bohr’s Model of Atom",
+          "id": "n_a5fd36b9c45a02e6",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 2: Structure of Atom"
+          },
+          "order": 4,
+          "name": "Bohr’s Model for Hydrogen Atom",
+          "id": "n_a871bee312a46ce5",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 2: Structure of Atom"
+          },
+          "order": 5,
+          "name": "Towards Quantum Mechanical Model of the Atom",
+          "id": "n_22fe1c3abdec0760",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 2: Structure of Atom"
+          },
+          "order": 6,
+          "name": "Quantum Mechanical Model of Atom",
+          "id": "n_f41744cf08db18b8",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "2",
+      "contents": "Discovery of Sub-atomic Particles, Atomic Models, Developments Leading to the Bohr’s Model of Atom, Bohr’s Model for Hydrogen Atom, Towards Quantum Mechanical Model of the Atom, Quantum Mechanical Model of Atom.",
+      "marks": 9,
+      "order": 2,
+      "name": "Structure of Atom",
+      "id": "n_6900b51afa03ec41",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 2,
+        "section": "Unit 3"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 3: Classification of Elements and Periodicity in Properties"
+          },
+          "order": 1,
+          "name": "Why we Need to Classify Elements? Genesis of Periodic Classification",
+          "id": "n_6524f82f26016cfd",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 3: Classification of Elements and Periodicity in Properties"
+          },
+          "order": 2,
+          "name": "Modern Periodic Law and the Present Form of Periodic Table",
+          "id": "n_e5aeedccde530226",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 3: Classification of Elements and Periodicity in Properties"
+          },
+          "order": 3,
+          "name": "Nomenclature of Elements with Atomic Number > 100",
+          "id": "n_4149f3d32dccc8b4",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 3: Classification of Elements and Periodicity in Properties"
+          },
+          "order": 4,
+          "name": "Electronic Configuration of Elements and the Periodic Table",
+          "id": "n_51d6d0058abe0d8f",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 3: Classification of Elements and Periodicity in Properties"
+          },
+          "order": 5,
+          "name": "Electronic Configuration of Elements and Types of Elements: s-, p-, d-, f- Blocks",
+          "id": "n_152323b81b2ca8e4",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 3: Classification of Elements and Periodicity in Properties"
+          },
+          "order": 6,
+          "name": "Periodic Trends in Properties of Elements",
+          "id": "n_2bd9b6c8993e70eb",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "3",
+      "contents": "Why we Need to Classify Elements? Genesis of Periodic Classification, Modern Periodic Law and the Present Form of Periodic Table, Nomenclature of Elements with Atomic Number > 100, Electronic Configuration of Elements and the Periodic Table, Electronic Configuration of Elements and Types of Elements: s-, p-, d-, f- Blocks, Periodic Trends in Properties of Elements.",
+      "marks": 6,
+      "order": 3,
+      "name": "Classification of Elements and Periodicity in Properties",
+      "id": "n_9f9d9a6a8ec530d0",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 2,
+        "section": "Unit 4"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 4: Chemical Bonding and Molecular Structure"
+          },
+          "order": 1,
+          "name": "Kossel-Lewis Approach to Chemical Bonding",
+          "id": "n_f7ae35e1ad4ff832",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 4: Chemical Bonding and Molecular Structure"
+          },
+          "order": 2,
+          "name": "Ionic or Electrovalent Bond",
+          "id": "n_271ed030f1861088",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 4: Chemical Bonding and Molecular Structure"
+          },
+          "order": 3,
+          "name": "Bond Parameters",
+          "id": "n_cb2d8e4e6d29ebe4",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 4: Chemical Bonding and Molecular Structure"
+          },
+          "order": 4,
+          "name": "The Valence Shell Electron Pair Repulsion (VSEPR) Theory",
+          "id": "n_d7a9b32a143ddfdc",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 4: Chemical Bonding and Molecular Structure"
+          },
+          "order": 5,
+          "name": "Valence Bond Theory",
+          "id": "n_65aab18b41bb45db",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 4: Chemical Bonding and Molecular Structure"
+          },
+          "order": 6,
+          "name": "Hybridisation, Molecular Orbital Theory",
+          "id": "n_e5afab961ae224df",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 4: Chemical Bonding and Molecular Structure"
+          },
+          "order": 7,
+          "name": "Bonding in Some Homonuclear Diatomic Molecules",
+          "id": "n_2f1481d877e5ad5a",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 4: Chemical Bonding and Molecular Structure"
+          },
+          "order": 8,
+          "name": "Hydrogen Bonding",
+          "id": "n_1cd177e2e3b4cd46",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "4",
+      "contents": "Kossel-Lewis Approach to Chemical Bonding, Ionic or Electrovalent Bond, Bond Parameters, The Valence Shell Electron Pair Repulsion (VSEPR) Theory, Valence Bond Theory, Hybridisation, Molecular Orbital Theory, Bonding in Some Homonuclear Diatomic Molecules, Hydrogen Bonding.",
+      "marks": 7,
+      "order": 4,
+      "name": "Chemical Bonding and Molecular Structure",
+      "id": "n_d535372b9e641008",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 2,
+        "section": "Unit 5"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 5: Thermodynamics"
+          },
+          "order": 1,
+          "name": "Thermodynamic Terms",
+          "id": "n_32f79eb68eca0d66",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 5: Thermodynamics"
+          },
+          "order": 2,
+          "name": "Applications, Measurement of ∆U and ∆H: Calorimetry",
+          "id": "n_68fa6aeb438b0a29",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 5: Thermodynamics"
+          },
+          "order": 3,
+          "name": "Enthalpy Change, and ∆H of a Reaction – Reaction Enthalpy",
+          "id": "n_b6b06dd729bf0d2d",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 5: Thermodynamics"
+          },
+          "order": 4,
+          "name": "Enthalpies for Different Types of Reactions",
+          "id": "n_aa96fcbcd2cd49a1",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 2,
+            "section": "Unit 5: Thermodynamics"
+          },
+          "order": 5,
+          "name": "Spontaneity, Gibbs Energy Change and Equilibrium",
+          "id": "n_c314b7ceebeece5b",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "5",
+      "contents": "Thermodynamic Terms, Applications, Measurement of ∆U and ∆H: Calorimetry, Enthalpy Change, and ∆H of a Reaction – Reaction Enthalpy, Enthalpies for Different Types of Reactions, Spontaneity, Gibbs Energy Change and Equilibrium.",
+      "marks": 9,
+      "order": 5,
+      "name": "Thermodynamics",
+      "id": "n_7cad654cda0ce7fc",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 3,
+        "section": "Unit 6"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 6: Equilibrium"
+          },
+          "order": 1,
+          "name": "Equilibrium in Physical Processes",
+          "id": "n_4f9693edbcf7f0e9",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 6: Equilibrium"
+          },
+          "order": 2,
+          "name": "Equilibrium in Chemical Processes – Dynamic Equilibrium",
+          "id": "n_5387e6781d106899",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 6: Equilibrium"
+          },
+          "order": 3,
+          "name": "Law of Chemical Equilibrium and Equilibrium Constant",
+          "id": "n_2258e3b4a20b247b",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 6: Equilibrium"
+          },
+          "order": 4,
+          "name": "Homogeneous Equilibria",
+          "id": "n_d1ea0b82af2a4d42",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 6: Equilibrium"
+          },
+          "order": 5,
+          "name": "Heterogeneous Equilibria",
+          "id": "n_5b54ef195e4d3c80",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 6: Equilibrium"
+          },
+          "order": 6,
+          "name": "Applications of Equilibrium Constants",
+          "id": "n_fd2d52a675c6213c",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 6: Equilibrium"
+          },
+          "order": 7,
+          "name": "Relationship between Equilibrium Constant K",
+          "id": "n_34900db9f80964b1",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 6: Equilibrium"
+          },
+          "order": 8,
+          "name": "Reaction Quotient Q and Gibbs Energy G",
+          "id": "n_f25c608c62d80716",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 6: Equilibrium"
+          },
+          "order": 9,
+          "name": "Factors Affecting Equilibria",
+          "id": "n_89008421be274a6e",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 6: Equilibrium"
+          },
+          "order": 10,
+          "name": "Ionic Equilibrium in Solution",
+          "id": "n_a8c4fbd1ebb19af9",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 6: Equilibrium"
+          },
+          "order": 11,
+          "name": "Acids, Bases and Salts",
+          "id": "n_c4d458ad0b92c3a1",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 6: Equilibrium"
+          },
+          "order": 12,
+          "name": "Ionization of Acids and Bases",
+          "id": "n_c3c0b38fdf69005f",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 6: Equilibrium"
+          },
+          "order": 13,
+          "name": "Buffer Solutions",
+          "id": "n_1a3b51a60769cae6",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 6: Equilibrium"
+          },
+          "order": 14,
+          "name": "Solubility Equilibria of Sparingly Soluble Salts",
+          "id": "n_823b2b48a796da6a",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "6",
+      "contents": "Equilibrium in Physical Processes, Equilibrium in Chemical Processes – Dynamic Equilibrium, Law of Chemical Equilibrium and Equilibrium Constant, Homogeneous Equilibria, Heterogeneous Equilibria, Applications of Equilibrium Constants, Relationship between Equilibrium Constant K, Reaction Quotient Q and Gibbs Energy G, Factors Affecting Equilibria, Ionic Equilibrium in Solution, Acids, Bases and Salts, Ionization of Acids and Bases, Buffer Solutions, Solubility Equilibria of Sparingly Soluble Salts.",
+      "marks": 7,
+      "order": 6,
+      "name": "Equilibrium",
+      "id": "n_c5697a05111dbfef",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 3,
+        "section": "Unit 7"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 7: Redox Reactions"
+          },
+          "order": 1,
+          "name": "Classical Idea of Redox Reactions – Oxidation and Reduction Reactions",
+          "id": "n_4ff9ab73e3dad946",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 7: Redox Reactions"
+          },
+          "order": 2,
+          "name": "Redox Reactions in Terms of Electron Transfer Reactions",
+          "id": "n_da65d060bd84e45c",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 7: Redox Reactions"
+          },
+          "order": 3,
+          "name": "Oxidation Number",
+          "id": "n_87a1f2b318c4c6eb",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 7: Redox Reactions"
+          },
+          "order": 4,
+          "name": "Redox Reactions and Electrode Processes",
+          "id": "n_f42e7b08c2da19d9",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "7",
+      "contents": "Classical Idea of Redox Reactions – Oxidation and Reduction Reactions, Redox Reactions in Terms of Electron Transfer Reactions, Oxidation Number, Redox Reactions and Electrode Processes.",
+      "marks": 4,
+      "order": 7,
+      "name": "Redox Reactions",
+      "id": "n_3f07795957f6d5b5",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 3,
+        "section": "Unit 8"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 8: Organic Chemistry – Some Basic Principles and Techniques"
+          },
+          "order": 1,
+          "name": "General Introduction",
+          "id": "n_99b87d1a9b399a4c",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 8: Organic Chemistry – Some Basic Principles and Techniques"
+          },
+          "order": 2,
+          "name": "Tetravalence of Carbon: Shapes of Organic Compounds",
+          "id": "n_8ae1fcc2981ee02e",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 8: Organic Chemistry – Some Basic Principles and Techniques"
+          },
+          "order": 3,
+          "name": "Structural Representations of Organic Compounds",
+          "id": "n_ef0e7b169b00ca24",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 8: Organic Chemistry – Some Basic Principles and Techniques"
+          },
+          "order": 4,
+          "name": "Classification of Organic Compounds",
+          "id": "n_e92addf40363522a",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 8: Organic Chemistry – Some Basic Principles and Techniques"
+          },
+          "order": 5,
+          "name": "Nomenclature of Organic Compounds",
+          "id": "n_fc94d07ca5c202c1",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 8: Organic Chemistry – Some Basic Principles and Techniques"
+          },
+          "order": 6,
+          "name": "Isomerism, Fundamental Concepts in Organic Reaction Mechanism",
+          "id": "n_70a9e1d3fad8a1e4",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 8: Organic Chemistry – Some Basic Principles and Techniques"
+          },
+          "order": 7,
+          "name": "Methods of Purification of Organic Compounds",
+          "id": "n_91a43e697b70c15c",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 8: Organic Chemistry – Some Basic Principles and Techniques"
+          },
+          "order": 8,
+          "name": "Qualitative Analysis of Organic Compounds",
+          "id": "n_c42981d3ef76ba84",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 8: Organic Chemistry – Some Basic Principles and Techniques"
+          },
+          "order": 9,
+          "name": "Quantitative Analysis",
+          "id": "n_43088d0fe7954f72",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "8",
+      "contents": "General Introduction, Tetravalence of Carbon: Shapes of Organic Compounds, Structural Representations of Organic Compounds, Classification of Organic Compounds, Nomenclature of Organic Compounds, Isomerism, Fundamental Concepts in Organic Reaction Mechanism, Methods of Purification of Organic Compounds, Qualitative Analysis of Organic Compounds, Quantitative Analysis",
+      "marks": 11,
+      "order": 8,
+      "name": "Organic Chemistry – Some Basic Principles and Techniques",
+      "id": "n_f974d46832ad653d",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 3,
+        "section": "Unit 9"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 9: Hydrocarbons"
+          },
+          "order": 1,
+          "name": "Classification, Alkanes",
+          "id": "n_7a3d50f1d8452561",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 9: Hydrocarbons"
+          },
+          "order": 2,
+          "name": "Alkenes, Alkynes",
+          "id": "n_50b60903c69ba55a",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 9: Hydrocarbons"
+          },
+          "order": 3,
+          "name": "Aromatic Hydrocarbon",
+          "id": "n_90d7f110b367f5a3",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 3,
+            "section": "Unit 9: Hydrocarbons"
+          },
+          "order": 4,
+          "name": "Carcinogenic and Toxicity",
+          "id": "n_dbe5c010ab3a2d9c",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "9",
+      "contents": "Classification, Alkanes, Alkenes, Alkynes, Aromatic Hydrocarbon, Carcinogenic and Toxicity. Note: The following topics are included in the syllabus but will be assessed only formatively to reinforce understanding without adding to summative assessments. This reduces academic stress while ensuring meaningful learning. Schools can integrate these with existing chapters as they align well. Relevant NCERT textual material is enclosed for reference. 1. s & p Block Elements Electronic configuration, atomic & Ionic radii, Ionization Enthalpy, Hydration Enthalpy and general trends in physical and chemical properties of s and p block elements across the periods and down the groups; unique behavior of the first element in each group. 2. The Gaseous State Qualitative treatment of Gas laws, Ideal gas equation and deviations from it.",
+      "marks": 10,
+      "order": 9,
+      "notes_from_document": [
+        "Note: The following topics are included in the syllabus but will be assessed only formatively to reinforce understanding without adding to summative assessments",
+        "This reduces academic stress while ensuring meaningful learning",
+        "Schools can integrate these with existing chapters as they align well",
+        "Relevant NCERT textual material is enclosed for reference. 1. s & p Block Elements Electronic configuration, atomic & Ionic radii",
+        "Ionization Enthalpy",
+        "Hydration Enthalpy and general trends in physical and chemical properties of s and block elements across the periods and down the groups",
+        "unique behavior of the first element in each group. 2. The Gaseous State Qualitative treatment of Gas laws",
+        "Ideal gas equation and deviations from it",
+        "PRACTICAL Evaluation Scheme for Examination Marks Volumetric Analysis 08 Salt Analysis 08 Content Based Experiment 06 Project Work 04 Class record and viva 04"
+      ],
+      "name": "Hydrocarbons",
+      "id": "n_21f672d9fed296f1",
+      "aliases": []
+    }
+  ],
+  "note": "Units and marks are the course structure table; the unit contents are the document's own prose. Where a unit's contents are stated as one run of prose, the topics below are that prose split at its own commas, semicolons and full stops; every topic string is verbatim, only the boundaries are ours, and the unit keeps the untouched prose in `contents`."
+}

@@ -1,0 +1,398 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 10",
+  "level_order": 10,
+  "subject": "Science",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "cbse-10-science",
+      "title": "Science, Class X, Secondary Curriculum Part 1, 2026-27",
+      "publisher": "Central Board of Secondary Education",
+      "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/Science_SecP1_2026-27.pdf",
+      "media_type": "application/pdf",
+      "pages": 9,
+      "bytes": 279280,
+      "fetched_at": "2026-09-03T07:03:45Z",
+      "document_sha256": "1bec4a9e44452b22c9d422d8cb528b4de30598f56c243461845165771df7bc37",
+      "extracted_text_sha256": "7ddd5c3c038f3b60ba51ffd6f1364d881d248ecd5060b572b53f4000decaf8c1",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "cbse-10-science",
+        "page": 6,
+        "section": "Course structure Class X, unit 1"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 6,
+            "section": "Unit 1: Chemical Substances - Nature and Behaviour"
+          },
+          "contents": "Chemical reactions, Chemical equation, Balanced chemical equation, types of chemical reactions: combination, decomposition, displacement, double displacement, precipitation, endothermic exothermic reactions, oxidation and reduction.",
+          "order": 1,
+          "name": "Chemical Reactions and Equations",
+          "id": "n_11d821c2d5075849",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 6,
+            "section": "Unit 1: Chemical Substances - Nature and Behaviour"
+          },
+          "contents": "Döbereiner's Triads, Newlands' Law of Octaves, Mendeléev's Periodic Table, Modern Periodic Table and the Modern, Metallic and Non-metallic Properties.",
+          "assessment": "Stated in the document as included in the syllabus but assessed only formatively, not in the year-end examination.",
+          "order": 2,
+          "name": "Periodic Classification of Elements",
+          "id": "n_f4d4c5b8d1ba1352",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 6,
+            "section": "Unit 1: Chemical Substances - Nature and Behaviour"
+          },
+          "contents": "Acids and Bases - definitions in terms of furnishing of H+ and OH- ions, identification using indicators, chemical properties, examples and uses, neutralization, concept of pH scale (Definition relating to logarithm not required), importance of pH in everyday life; preparation and uses of Sodium Hydroxide, Bleaching Powder, Baking soda, Washing soda and Plaster of Paris.",
+          "assessment": "Stated in the document as included in the syllabus but assessed only formatively, not in the year-end examination.",
+          "order": 3,
+          "name": "Acids, Bases and Salts",
+          "id": "n_f3feb0b35940bbb8",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 6,
+            "section": "Unit 1: Chemical Substances - Nature and Behaviour"
+          },
+          "contents": "Properties of metals and non-metals; Reactivity series; Formation and properties of ionic compounds; Basic metallurgical processes; Corrosion and its prevention.",
+          "order": 4,
+          "name": "Metals and Non-metals",
+          "id": "n_e379790e3b7fb0a1",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 6,
+            "section": "Unit 1: Chemical Substances - Nature and Behaviour"
+          },
+          "contents": "Covalent bonds - formation and properties of covalent compounds, Versatile nature of carbon, Hydrocarbons - saturated and unsaturated Homologous series. Nomenclature of alkanes, alkenes, alkyne and carbon compounds containing functional groups (halogens, alcohol, ketones, aldehydes). Chemical properties of carbon compounds (combustion, oxidation, addition and substitution reaction). Ethanol and Ethanoic acid (only properties and uses), soaps and detergents.",
+          "order": 5,
+          "name": "Carbon and its Compounds",
+          "id": "n_62061da996e3a5ea",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 25,
+      "theme": "Materials",
+      "order": 1,
+      "name": "Chemical Substances - Nature and Behaviour",
+      "id": "n_6e4412bc05161bb3",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-10-science",
+        "page": 6,
+        "section": "Course structure Class X, unit 2"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 6,
+            "section": "Unit 2: World of Living"
+          },
+          "contents": "'Living Being'. Basic concept of nutrition, respiration, transport and excretion in plants and animals.",
+          "order": 1,
+          "name": "Life processes",
+          "id": "n_33ce0a714bd21730",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 6,
+            "section": "Unit 2: World of Living"
+          },
+          "contents": "Tropic movements in plants; Introduction of plant hormones; Control and co-ordination in animals: Nervous system; Voluntary, involuntary and reflex action; Chemical co-ordination: animal hormones.",
+          "order": 2,
+          "name": "Control and co-ordination in animals and plants",
+          "id": "n_bc49670adb76f74a",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 6,
+            "section": "Unit 2: World of Living"
+          },
+          "contents": "Reproduction in animals and plants (asexual and sexual) reproductive health - need and methods of family planning. Safe sex vs HIV/AIDS. Child bearing and women's health.",
+          "order": 3,
+          "name": "Reproduction",
+          "id": "n_ca30ca4334bff015",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 6,
+            "section": "Unit 2: World of Living"
+          },
+          "contents": "Heredity; Mendel's contribution - Laws for inheritance of traits: Sex determination; brief introduction.",
+          "order": 4,
+          "name": "Heredity",
+          "id": "n_7550d50bf5207a47",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 6,
+            "section": "Unit 2: World of Living"
+          },
+          "contents": "Acquired and Inherited Traits, Speciation, Evolution and Classification, Tracing Evolutionary Relationships, Fossils, Evolution by Stages, Human Evolution.",
+          "assessment": "Stated in the document as included in the syllabus but assessed only formatively, not in the year-end examination.",
+          "order": 5,
+          "name": "Evolution",
+          "id": "n_11a664892d2ee399",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 25,
+      "theme": "The World of the Living",
+      "order": 2,
+      "name": "World of Living",
+      "id": "n_77dc6f806ec5c487",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-10-science",
+        "page": 6,
+        "section": "Course structure Class X, unit 3"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 7,
+            "section": "Unit 3: Natural Phenomena"
+          },
+          "contents": "Images formed by spherical mirrors, centre of curvature, principal axis, principal focus, focal length, mirror formula (Derivation not required), magnification.",
+          "order": 1,
+          "name": "Reflection of light by curved surfaces",
+          "id": "n_268a1edb9f0bae97",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 7,
+            "section": "Unit 3: Natural Phenomena"
+          },
+          "contents": "Laws of refraction, refractive index.",
+          "order": 2,
+          "name": "Refraction",
+          "id": "n_4e792530bd22a809",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 7,
+            "section": "Unit 3: Natural Phenomena"
+          },
+          "contents": "Image formed by spherical lenses; Lens formula (Derivation not required); Magnification. Power of a lens.",
+          "order": 3,
+          "name": "Refraction of light by spherical lens",
+          "id": "n_652865b33a82d929",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 7,
+            "section": "Unit 3: Natural Phenomena"
+          },
+          "contents": "Defects of vision and their corrections, applications of spherical mirrors and lenses.",
+          "assessment": "Stated in the document as included in the syllabus but assessed only formatively, not in the year-end examination.",
+          "order": 4,
+          "name": "Functioning of a lens in human eye",
+          "id": "n_e52d0dc69343dc20",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 7,
+            "section": "Unit 3: Natural Phenomena"
+          },
+          "contents": "Dispersion of light, scattering of light, applications in daily life (excluding colour of the sun at sunrise and sunset).",
+          "assessment": "Stated in the document as included in the syllabus but assessed only formatively, not in the year-end examination.",
+          "order": 5,
+          "name": "Refraction of light through a prism",
+          "id": "n_e6820a0a50ff0031",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 12,
+      "theme": "Natural Phenomena",
+      "order": 3,
+      "name": "Natural Phenomena",
+      "id": "n_a1d5e02faa3f7011",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-10-science",
+        "page": 6,
+        "section": "Course structure Class X, unit 4"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 7,
+            "section": "Unit 4: Effects of Current"
+          },
+          "contents": "Electric current, potential difference and electric current. Ohm's law; Resistance, Resistivity, Factors on which the resistance of a conductor depends. Series combination of resistors, parallel combination of resistors and its applications in daily life. Heating effect of electric current and its applications in daily life. Electric power, Interrelation between P, V, I and R.",
+          "order": 1,
+          "name": "Electric current",
+          "id": "n_0891815c2e28d027",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 7,
+            "section": "Unit 4: Effects of Current"
+          },
+          "contents": "Magnetic field, field lines, field due to a current carrying conductor, field due to current carrying coil or solenoid; Force on current carrying conductor, Fleming's Left Hand Rule, Direct current. Alternating current: frequency of AC. Advantage of AC over DC. Domestic electric circuits.",
+          "order": 2,
+          "name": "Magnetic effects of current",
+          "id": "n_fe1e3f5b6c58d599",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 7,
+            "section": "Unit 4: Effects of Current"
+          },
+          "assessment": "Stated in the document as included in the syllabus but assessed only formatively, not in the year-end examination.",
+          "order": 3,
+          "name": "Motor, Electromagnetic Induction, Electric Generator",
+          "id": "n_43f8f669ece38e22",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 13,
+      "theme": "How Things Work",
+      "order": 4,
+      "name": "Effects of Current",
+      "id": "n_1138c0413fc13b23",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-10-science",
+        "page": 6,
+        "section": "Course structure Class X, unit 5"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-10-science",
+            "page": 8,
+            "section": "Unit 5: Natural Resources"
+          },
+          "contents": "Eco-system, Environmental problems, Ozone depletion, waste production and their solutions. Biodegradable and non-biodegradable substances.",
+          "order": 1,
+          "name": "Our environment",
+          "id": "n_6ccddbbc0589ba53",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 5,
+      "theme": "Natural Resources",
+      "order": 5,
+      "name": "Natural Resources",
+      "id": "n_90af6689c0632be8",
+      "aliases": []
+    }
+  ],
+  "note": "Units, themes and marks are the course structure on page 6; topics and their contents are the syllabus prose on pages 6 to 8, verbatim. The document states curricular goals and competencies for the whole subject (pages 2 to 5) rather than per topic, so no per-topic objectives are recorded. Topics marked with `assessment` are stated to be assessed formatively only."
+}

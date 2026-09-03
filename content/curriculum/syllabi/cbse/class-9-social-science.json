@@ -1,0 +1,1217 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 9",
+  "level_order": 9,
+  "subject": "Social Science",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "cbse-9-social",
+      "title": "Social Science, Class IX, Secondary Curriculum Part 1, 2026-27",
+      "publisher": "Central Board of Secondary Education",
+      "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/SocialScience_SecP1IX_2026-27.pdf",
+      "media_type": "application/pdf",
+      "pages": 14,
+      "bytes": 332616,
+      "fetched_at": "2026-09-03T07:03:42Z",
+      "document_sha256": "c81d9237b8e74d462e57776e162d534ff04feff27ed72eb236621361a9061735",
+      "extracted_text_sha256": "e1e86e07ac2130e96749ed5ebd6559b690bd391cf20d1cdf6ef1419ad2ee78c7",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "cbse-9-social",
+        "page": 8,
+        "section": "Course outline, Part 1, theme 1"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 8,
+            "section": "Course outline, Part 1, theme 1, outline and concepts"
+          },
+          "order": 1,
+          "name": "Meaning, scope and relevance of Social Science",
+          "id": "n_af3f263d3e16b421",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 8,
+            "section": "Course outline, Part 1, theme 1, outline and concepts"
+          },
+          "order": 2,
+          "name": "Understanding Social Science from an Indian perspective",
+          "id": "n_4692f1171512d997",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "part": "Part 1",
+      "theme_number": 1,
+      "instructional_hours": 4,
+      "order": 1,
+      "name": "Understanding Social Science",
+      "id": "n_2de5e46eb58b5ec2",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-social",
+        "page": 8,
+        "section": "Course outline, Part 1, theme 2"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 8,
+            "section": "Course outline, Part 1, theme 2, outline and concepts"
+          },
+          "order": 1,
+          "name": "Theory of plate tectonics",
+          "id": "n_c674ee5387b0bed6",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 8,
+            "section": "Course outline, Part 1, theme 2, outline and concepts"
+          },
+          "order": 2,
+          "name": "Interior of the Earth",
+          "id": "n_0d5d0a7d3b29197d",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 8,
+            "section": "Course outline, Part 1, theme 2, outline and concepts"
+          },
+          "order": 3,
+          "name": "Role of weathering and erosion; agents of gradation - river, waves and currents, wind, glaciers, and underground water",
+          "id": "n_60adb237f2572306",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 8,
+            "section": "Course outline, Part 1, theme 2, outline and concepts"
+          },
+          "order": 4,
+          "name": "Landforms and disasters: earthquakes, landslides, avalanches, Glacial Lake Outburst Flood (GLOF) and duststroms",
+          "id": "n_0413f6f877c49807",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "part": "Part 1",
+      "theme_number": 2,
+      "instructional_hours": 8,
+      "order": 2,
+      "name": "Shaping of the Earth's Surface",
+      "id": "n_df8bf336c97d1252",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-social",
+        "page": 8,
+        "section": "Course outline, Part 1, theme 3"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 8,
+            "section": "Course outline, Part 1, theme 3, outline and concepts"
+          },
+          "order": 1,
+          "name": "Structure and composition; elements of weather and climate",
+          "id": "n_81f4c85e0cce3f45",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 8,
+            "section": "Course outline, Part 1, theme 3, outline and concepts"
+          },
+          "order": 2,
+          "name": "Seasons of India and monsoons",
+          "id": "n_269e7fe1fb79ba0b",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 8,
+            "section": "Course outline, Part 1, theme 3, outline and concepts"
+          },
+          "order": 3,
+          "name": "Climate change",
+          "id": "n_7e86d9ef71adf346",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 8,
+            "section": "Course outline, Part 1, theme 3, outline and concepts"
+          },
+          "order": 4,
+          "name": "Floods",
+          "id": "n_eb99dc0cb545cc09",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 8,
+            "section": "Course outline, Part 1, theme 3, outline and concepts"
+          },
+          "order": 5,
+          "name": "Carbon footprint",
+          "id": "n_9ecbe0f7065536a3",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "part": "Part 1",
+      "theme_number": 3,
+      "instructional_hours": 7,
+      "order": 3,
+      "name": "Atmosphere and Climate",
+      "id": "n_fe329f8f55c7ad05",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-social",
+        "page": 9,
+        "section": "Course outline, Part 1, theme 4"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 9,
+            "section": "Course outline, Part 1, theme 4, outline and concepts"
+          },
+          "order": 1,
+          "name": "Cultural development from 2 million years ago",
+          "id": "n_391b2b4663a70e8b",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 9,
+            "section": "Course outline, Part 1, theme 4, outline and concepts"
+          },
+          "order": 2,
+          "name": "Early human history, periodisation: Archaeological ages",
+          "id": "n_460e54922beb7737",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 9,
+            "section": "Course outline, Part 1, theme 4, outline and concepts"
+          },
+          "order": 3,
+          "name": "Who are human ancestors?",
+          "id": "n_0e512c686076d0a3",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 9,
+            "section": "Course outline, Part 1, theme 4, outline and concepts"
+          },
+          "order": 4,
+          "name": "Palaeolithic hunter-gatherers and use of stone tools",
+          "id": "n_d363e735a4f89aaa",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 9,
+            "section": "Course outline, Part 1, theme 4, outline and concepts"
+          },
+          "order": 5,
+          "name": "Mesolithic transition to food production: Mesolithic sites and tools",
+          "id": "n_ac6809e9e6fca466",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 9,
+            "section": "Course outline, Part 1, theme 4, outline and concepts"
+          },
+          "order": 6,
+          "name": "Neolithic and the beginning of farming: Neolithic revolution, domestication of plants and animals",
+          "id": "n_7b247401eef17bfe",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 9,
+            "section": "Course outline, Part 1, theme 4, outline and concepts"
+          },
+          "order": 7,
+          "name": "Harappan and contemporary cultures",
+          "id": "n_25db88be52bb2644",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 9,
+            "section": "Course outline, Part 1, theme 4, outline and concepts"
+          },
+          "order": 8,
+          "name": "Mesopotamian, egyptian, and chinese civilisation",
+          "id": "n_806dd0c7b309fbf8",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "part": "Part 1",
+      "theme_number": 4,
+      "instructional_hours": 9,
+      "order": 4,
+      "name": "Early Humans and Beginning of Civilisation",
+      "id": "n_a7184d9b3004e9c5",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-social",
+        "page": 9,
+        "section": "Course outline, Part 1, theme 5"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 9,
+            "section": "Course outline, Part 1, theme 5, outline and concepts"
+          },
+          "order": 1,
+          "name": "Vedic Age - geography; texts; rituals; political institutions, and social order",
+          "id": "n_1b4168485363aa2f",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 9,
+            "section": "Course outline, Part 1, theme 5, outline and concepts"
+          },
+          "order": 2,
+          "name": "Administrative structure of early empires",
+          "id": "n_3508f62841b00dc5",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 9,
+            "section": "Course outline, Part 1, theme 5, outline and concepts"
+          },
+          "order": 3,
+          "name": "Quest for knowledge - educational heritage, institutions, knowledge traditions, and cultural practices",
+          "id": "n_a3678b7fc9528569",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 9,
+            "section": "Course outline, Part 1, theme 5, outline and concepts"
+          },
+          "order": 4,
+          "name": "Traders and trade routes, guilds and merchants, crafts and industries",
+          "id": "n_2217e7c0b6319b8d",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "part": "Part 1",
+      "theme_number": 5,
+      "instructional_hours": 9,
+      "order": 5,
+      "name": "State and Society (upto 1000 CE)",
+      "id": "n_574f1cb86cdaf04e",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-social",
+        "page": 10,
+        "section": "Course outline, Part 1, theme 6"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 10,
+            "section": "Course outline, Part 1, theme 6, outline and concepts"
+          },
+          "order": 1,
+          "name": "Meaning features and types of democracy",
+          "id": "n_3234ba24611afc63",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 10,
+            "section": "Course outline, Part 1, theme 6, outline and concepts"
+          },
+          "order": 2,
+          "name": "Roots of democracy in India",
+          "id": "n_4eb910f93ac2024a",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 10,
+            "section": "Course outline, Part 1, theme 6, outline and concepts"
+          },
+          "order": 3,
+          "name": "Challenges to democracy in India",
+          "id": "n_7fe885de790874df",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 10,
+            "section": "Course outline, Part 1, theme 6, outline and concepts"
+          },
+          "order": 4,
+          "name": "Democratic systems in the world",
+          "id": "n_3f36e83e9634d653",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "part": "Part 1",
+      "theme_number": 6,
+      "instructional_hours": 9,
+      "order": 6,
+      "name": "Democracy",
+      "id": "n_f3564aeab840d682",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-social",
+        "page": 10,
+        "section": "Course outline, Part 1, theme 7"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 10,
+            "section": "Course outline, Part 1, theme 7, outline and concepts"
+          },
+          "order": 1,
+          "name": "Factors of importance of elections",
+          "id": "n_b7073378b8bb7089",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 10,
+            "section": "Course outline, Part 1, theme 7, outline and concepts"
+          },
+          "order": 2,
+          "name": "Electoral systems",
+          "id": "n_45ed94a4f04a8052",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 10,
+            "section": "Course outline, Part 1, theme 7, outline and concepts"
+          },
+          "order": 3,
+          "name": "Delimitation Commission",
+          "id": "n_7d7f00438b97621b",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 10,
+            "section": "Course outline, Part 1, theme 7, outline and concepts"
+          },
+          "order": 4,
+          "name": "Election Commission of India and its role",
+          "id": "n_10f66bbbff49a8dd",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 10,
+            "section": "Course outline, Part 1, theme 7, outline and concepts"
+          },
+          "order": 5,
+          "name": "Constituency, electoral rolls, enumerators",
+          "id": "n_aff14bcfe2059546",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 10,
+            "section": "Course outline, Part 1, theme 7, outline and concepts"
+          },
+          "order": 6,
+          "name": "Party system in India",
+          "id": "n_ea32e0d5d62a3186",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "part": "Part 1",
+      "theme_number": 7,
+      "instructional_hours": 9,
+      "order": 7,
+      "name": "Elections",
+      "id": "n_cbeb729b188fd5d0",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-social",
+        "page": 10,
+        "section": "Course outline, Part 1, theme 8"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 10,
+            "section": "Course outline, Part 1, theme 8, outline and concepts"
+          },
+          "order": 1,
+          "name": "Scarcity of resources, opportunity cost and the need for making choice. What do economists do?",
+          "id": "n_4769472a82574ac9",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 10,
+            "section": "Course outline, Part 1, theme 8, outline and concepts"
+          },
+          "order": 2,
+          "name": "What to produce, how to produce, and for whom to produce?",
+          "id": "n_d25c6d50f4612750",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 10,
+            "section": "Course outline, Part 1, theme 8, outline and concepts"
+          },
+          "order": 3,
+          "name": "Difference between market, centrally planned, and mixed economic systems",
+          "id": "n_a7bd81d4ec2dc9c1",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 10,
+            "section": "Course outline, Part 1, theme 8, outline and concepts"
+          },
+          "order": 4,
+          "name": "Welfare economy",
+          "id": "n_2c3a85eeee1cfb1a",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "part": "Part 1",
+      "theme_number": 8,
+      "instructional_hours": 7,
+      "order": 8,
+      "name": "Building Blocks in Economics",
+      "id": "n_15b97700d60e0f91",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-social",
+        "page": 11,
+        "section": "Course outline, Part 1, theme 9"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 11,
+            "section": "Course outline, Part 1, theme 9, outline and concepts"
+          },
+          "order": 1,
+          "name": "Laws of demand and supply",
+          "id": "n_ae8538a4b3185c79",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 11,
+            "section": "Course outline, Part 1, theme 9, outline and concepts"
+          },
+          "order": 2,
+          "name": "Real-world deviations from textbook theory, such as in case of necessities, luxury goods, perishable items, and expectations",
+          "id": "n_e2ff39e4b2f0c073",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 11,
+            "section": "Course outline, Part 1, theme 9, outline and concepts"
+          },
+          "order": 3,
+          "name": "Some related concepts - price ceilings and market failures (externalities, information asymmetry, public goods)",
+          "id": "n_2b25525cb9bc1879",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "part": "Part 1",
+      "theme_number": 9,
+      "instructional_hours": 8,
+      "order": 9,
+      "name": "The Price Puzzle: What Drives the Market",
+      "id": "n_f6e102149e5864d3",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-social",
+        "page": 11,
+        "section": "Course outline, Part 2, theme 1"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 11,
+            "section": "Course outline, Part 2, theme 1, outline and concepts"
+          },
+          "order": 1,
+          "name": "Introduction to ocean relief, movement of ocean water - waves, tides and currents",
+          "id": "n_a0dc23250ce1bf30",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 11,
+            "section": "Course outline, Part 2, theme 1, outline and concepts"
+          },
+          "order": 2,
+          "name": "Marine resources and their significance; open seas, navigation, fishing, and livelihood concerns and challenges",
+          "id": "n_f4098806ccead524",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 11,
+            "section": "Course outline, Part 2, theme 1, outline and concepts"
+          },
+          "order": 3,
+          "name": "Cyclones and Tsunamis - early warning systems",
+          "id": "n_2a1d62c5727b61a6",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 11,
+            "section": "Course outline, Part 2, theme 1, outline and concepts"
+          },
+          "order": 4,
+          "name": "International maritime rules and regulations",
+          "id": "n_47e377bfbf1b3db4",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "part": "Part 2",
+      "theme_number": 1,
+      "instructional_hours": 7,
+      "order": 10,
+      "name": "Oceans and Life",
+      "id": "n_994334d0477692d8",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-social",
+        "page": 12,
+        "section": "Course outline, Part 2, theme 2"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 12,
+            "section": "Course outline, Part 2, theme 2, outline and concepts"
+          },
+          "order": 1,
+          "name": "Biomes: Distribution and characteristics; biosphere reserves in India",
+          "id": "n_24b20f251231eb9c",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 12,
+            "section": "Course outline, Part 2, theme 2, outline and concepts"
+          },
+          "order": 2,
+          "name": "Forest and ecotourism; forest dwellers, their livelihoods, and challenges",
+          "id": "n_52849926397440d8",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 12,
+            "section": "Course outline, Part 2, theme 2, outline and concepts"
+          },
+          "order": 3,
+          "name": "Forest and wildlife conservation",
+          "id": "n_e6aa3b8c61b40474",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 12,
+            "section": "Course outline, Part 2, theme 2, outline and concepts"
+          },
+          "order": 4,
+          "name": "Government efforts to support forest dwellers",
+          "id": "n_ad75e795bfde3196",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "part": "Part 2",
+      "theme_number": 2,
+      "instructional_hours": 7,
+      "order": 11,
+      "name": "Life on Earth",
+      "id": "n_7e30e8dcf0d595e7",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-social",
+        "page": 12,
+        "section": "Course outline, Part 2, theme 3"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 12,
+            "section": "Course outline, Part 2, theme 3, outline and concepts"
+          },
+          "order": 1,
+          "name": "Safeguarding sovereignty: resistance, alliances and confederacies",
+          "id": "n_6d7cf4dac14c352c",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 12,
+            "section": "Course outline, Part 2, theme 3, outline and concepts"
+          },
+          "order": 2,
+          "name": "Development of art and architecture, languages and literature",
+          "id": "n_6d4de61b7df715b1",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 12,
+            "section": "Course outline, Part 2, theme 3, outline and concepts"
+          },
+          "order": 3,
+          "name": "The Bhakti tradition",
+          "id": "n_5f8e814dd2d2bbb3",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 12,
+            "section": "Course outline, Part 2, theme 3, outline and concepts"
+          },
+          "order": 4,
+          "name": "Forts and fortifications",
+          "id": "n_2514deaf092980e3",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 12,
+            "section": "Course outline, Part 2, theme 3, outline and concepts"
+          },
+          "order": 5,
+          "name": "Expansion of Indian economy and state",
+          "id": "n_0fd9e01dfd877192",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "part": "Part 2",
+      "theme_number": 3,
+      "instructional_hours": 9,
+      "order": 12,
+      "name": "Resistance and Resilience (1000 ce - 1700 ce)",
+      "source_title": "Resistance and Resilience (1000 CE - 1700 CE)",
+      "id": "n_24982a4b8b46787d",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-social",
+        "page": 12,
+        "section": "Course outline, Part 2, theme 4"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 12,
+            "section": "Course outline, Part 2, theme 4, outline and concepts"
+          },
+          "order": 1,
+          "name": "Trade and commerce - trade with Mesopotamia, Greece, Roman Empire, China and Southeast Asia",
+          "id": "n_de859defbb4a1ed8",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 12,
+            "section": "Course outline, Part 2, theme 4, outline and concepts"
+          },
+          "order": 2,
+          "name": "Cultural Connections - Interactions with Greece and Rome, Central Asia, China, and Influence on South East Asia",
+          "id": "n_c66d4226c91222b8",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 12,
+            "section": "Course outline, Part 2, theme 4, outline and concepts"
+          },
+          "order": 3,
+          "name": "Indian Knowledge Systems - Medicine, Mathematics and Astronomy, Medicine, Religion",
+          "id": "n_bb0d1956592e9350",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "part": "Part 2",
+      "theme_number": 4,
+      "instructional_hours": 8,
+      "order": 13,
+      "name": "India and the World-I (1900 bce - 1200 ce)",
+      "source_title": "India and the World-I (1900 BCE - 1200 CE)",
+      "id": "n_f7655ada0df88551",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-social",
+        "page": 13,
+        "section": "Course outline, Part 2, theme 5"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 5, outline and concepts"
+          },
+          "order": 1,
+          "name": "The Roots of Authority: in Kautilya and shukraniti - danda and relationship with nyaya and bala; the types of nyaya and bala",
+          "id": "n_2838ca14342f4232",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 5, outline and concepts"
+          },
+          "order": 2,
+          "name": "Constitutional status of justice and security since ancient times",
+          "id": "n_349cb47a36be1a3c",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 5, outline and concepts"
+          },
+          "order": 3,
+          "name": "Links the role of citizens with the elections and the democratic institutions",
+          "id": "n_474b1975763cd6f2",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 5, outline and concepts"
+          },
+          "order": 4,
+          "name": "Types of authority - functional, sensitive, and welfare-oriented",
+          "id": "n_a7d2bda35e1c70fa",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "part": "Part 2",
+      "theme_number": 5,
+      "instructional_hours": 10,
+      "order": 14,
+      "name": "Authority",
+      "id": "n_165344afaacf1d54",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-social",
+        "page": 13,
+        "section": "Course outline, Part 2, theme 6"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 6, outline and concepts"
+          },
+          "order": 1,
+          "name": "What is entrepreneurship and explain the resources required to start a business",
+          "id": "n_a0ab8d6d73bb9554",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 6, outline and concepts"
+          },
+          "order": 2,
+          "name": "Case studies of successful entrepreneurs",
+          "id": "n_73d1902c07c85e8c",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 6, outline and concepts"
+          },
+          "order": 3,
+          "name": "Creative destruction with examples",
+          "id": "n_4f1580e269094755",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 6, outline and concepts"
+          },
+          "order": 4,
+          "name": "Start-up ecosystem in India",
+          "id": "n_b88bd44809a1a65b",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 6, outline and concepts"
+          },
+          "order": 5,
+          "name": "Make in India initiative, role of MSMEs and the unorganised sector in India's economic growth",
+          "id": "n_2c76a7816cafe6f0",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 6, outline and concepts"
+          },
+          "order": 6,
+          "name": "Stages of starting and executing a business idea through a business plan",
+          "id": "n_11f8f9a7f3c2e8d7",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 6, outline and concepts"
+          },
+          "order": 7,
+          "name": "Some basic accounting concepts",
+          "id": "n_9af6ae47ce8927a0",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "part": "Part 2",
+      "theme_number": 6,
+      "instructional_hours": 8,
+      "order": 15,
+      "name": "From Ideas to Startups",
+      "id": "n_264a43fd49ce3eac",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-social",
+        "page": 13,
+        "section": "Course outline, Part 2, theme 7"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 7, outline and concepts"
+          },
+          "order": 1,
+          "name": "Relevance of personal financial management in daily life",
+          "id": "n_f8915d5b1e86d9c5",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 7, outline and concepts"
+          },
+          "order": 2,
+          "name": "Inflation and its impact on purchasing power",
+          "id": "n_4b27d8110a08cc48",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 7, outline and concepts"
+          },
+          "order": 3,
+          "name": "Simple vs. compound interest rate",
+          "id": "n_e8d421d898a730a8",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 7, outline and concepts"
+          },
+          "order": 4,
+          "name": "Budgeting",
+          "id": "n_4750d75035fe4bf5",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 7, outline and concepts"
+          },
+          "order": 5,
+          "name": "Various savings and investment options like fixed deposit, stocks, bonds, mutual funds, etc",
+          "id": "n_6c83f815f2737077",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 7, outline and concepts"
+          },
+          "order": 6,
+          "name": "Risk and insurance",
+          "id": "n_16dbbbf7243f98f3",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-9-social",
+            "page": 13,
+            "section": "Course outline, Part 2, theme 7, outline and concepts"
+          },
+          "order": 7,
+          "name": "Personal income tax",
+          "id": "n_8e387e93c76e9c62",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "part": "Part 2",
+      "theme_number": 7,
+      "instructional_hours": 6,
+      "order": 16,
+      "name": "Smart Ways to Manage Your Finances",
+      "id": "n_2b63d5159154ae5d",
+      "aliases": []
+    }
+  ],
+  "note": "Units are the course-outline themes with the document's own instructional-hour allocation; topics are each theme's 'outline and concepts' entries. The document also states learning outcomes and competencies for every theme, in a parallel column of the same table (pages 8 to 14); they are not transcribed here because the two columns interleave in the extracted text and could not be separated without loss. The document notes on page 14 that the course structure will be provided later."
+}

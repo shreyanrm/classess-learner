@@ -1,0 +1,587 @@
+{
+  "schema_version": "1.0.0",
+  "file": "school-calendar.json",
+  "purpose": "Per board: when the academic year starts, when terms break, when board exams run, and when results land. Wobo uses this to know what season a learner is in before Wobo says anything.",
+  "built_on": "2026-09-03",
+  "years_covered": ["2026", "2027"],
+  "law": "Nothing in this file is invented. A date we could not read from an official source is null. A null means fetch it, not guess it. Anything marked provisional or tentative by the issuing authority carries that word here. No non-null date may cite a source registered as retrieved: not_retrieved; such a source may only carry nulls and re-anchor instructions.",
+  "field_docs": "README.md",
+  "sources": {
+    "cbse_newsonair_2026": {
+      "publisher": "Prasar Bharati, News Services Division, All India Radio",
+      "document": "CBSE releases tentative date sheets for Class 10 and 12 boards from 17 February",
+      "url": "https://www.newsonair.gov.in/cbse-releases-tentative-date-sheets-for-class-10-12-boards-from-feb-17",
+      "retrieved": "headline_only",
+      "fetched_on": "2026-09-03",
+      "caveat": "cbse.gov.in refused automated retrieval at build time. The window below is corroborated across reporting of the 30 October 2025 date sheet release, but the date sheet PDF itself was not read. Re-anchor to cbse.gov.in."
+    },
+    "cbse_official": {
+      "publisher": "Central Board of Secondary Education, India",
+      "document": "Date sheets, academic calendar and results",
+      "url": "https://www.cbse.gov.in/",
+      "results_url": "https://results.cbse.nic.in/",
+      "retrieved": "not_retrieved",
+      "fetched_on": "2026-09-03",
+      "caveat": "HTTP 403 to automated fetch."
+    },
+    "cisce_official": {
+      "publisher": "Council for the Indian School Certificate Examinations, India",
+      "document": "ICSE and ISC examination timetables for 2026, released 13 November 2025",
+      "url": "https://www.cisce.org/",
+      "retrieved": "not_retrieved",
+      "fetched_on": "2026-09-03",
+      "caveat": "Registered as the re-anchor target only. It carries no date in this file. The 2026 windows now cite the reporting they actually came from."
+    },
+    "cisce_timetable_2026_reported": {
+      "publisher": "ALLEN news desk, India",
+      "document": "CISCE exams 2026: ICSE 10th and ISC 12th timetable released",
+      "url": "https://news.allen.in/cisce-exams-2026-icse-10th-and-isc-12th-timetable-released/",
+      "retrieved": "summary",
+      "fetched_on": "2026-09-03",
+      "caveat": "A report of the timetable the council released on 13 November 2025, not the timetable itself. It gives the outer window, 12 February to 6 April 2026, and says subject dates run from 17 February. The council's own PDF was not read, so these windows are reported, not official."
+    },
+    "cbse_results_2026_reported": {
+      "publisher": "Careers360, India",
+      "document": "CBSE class 10th 12th board result 2026",
+      "url": "https://school.careers360.com/boards/cbse/cbse-10th-12th-result-date-2026",
+      "retrieved": "summary",
+      "fetched_on": "2026-09-03",
+      "caveat": "A results-tracking page, not the board. It gives 15 April, 18 July and 13 May 2026, and one paragraph on the same page names 15 May as an alternate for the class 12 day. Re-anchor to results.cbse.nic.in before acting on any of them."
+    },
+    "hkdse_timetable_2026_mirror": {
+      "publisher": "chemistryhk.com, Hong Kong, mirroring the Hong Kong Examinations and Assessment Authority",
+      "document": "Examination timetable for 2026 HKDSE, revised on 31 October 2025",
+      "url": "https://www.chemistryhk.com/dse/DSE%20Timetable/2026_DSE_Timetable.pdf",
+      "retrieved": "full",
+      "fetched_on": "2026-09-03",
+      "caveat": "Read in full. A third-party mirror of the authority's finalised timetable, carrying the authority's own revision line of 31 October 2025 but no circular reference number, so the dates below are reported rather than official_reported. The authority's own site refused automated retrieval."
+    },
+    "nsc_za_timetable_2026_reported": {
+      "publisher": "Student Daily, South Africa",
+      "document": "NSC final exam timetable 2026: full October and November matric timetable",
+      "url": "https://studentdaily.co.za/nsc-final-exam-timetable-2026-pdf-download-full-october-november-matric-timetable/",
+      "retrieved": "full",
+      "fetched_on": "2026-09-03",
+      "caveat": "Reproduces the department's October and November 2026 timetable, released February 2026, including the practical windows and the Life Orientation task dates. The department's own PDF was not read, so these windows are reported."
+    },
+    "aqa_key_dates": {
+      "publisher": "AQA, England",
+      "document": "Key dates calendars for summer 2026 and for November 2026, January and summer 2027",
+      "url": "https://www.aqa.org.uk/exams-administration/dates-and-timetables",
+      "retrieved": "partial",
+      "fetched_on": "2026-09-03",
+      "caveat": "The page lists the calendars as PDFs; the PDFs were not read. Summer 2026 dates below come from the widely published JCQ common timetable."
+    },
+    "cambridge_help_2026": {
+      "publisher": "Cambridge International",
+      "document": "When will June 2026 results be released",
+      "url": "https://help.cambridgeinternational.org/hc/en-gb/articles/29567611785234-When-will-June-2026-results-be-released",
+      "retrieved": "headline_only",
+      "fetched_on": "2026-09-03",
+      "caveat": "HTTP 403 to automated fetch; the article's own summary supplied the two release dates."
+    },
+    "ib_results_2026": {
+      "publisher": "International Baccalaureate Organization",
+      "document": "The IB prepares to release Diploma Programme and Career-related Programme student examination results",
+      "url": "https://ibo.org/news/news-about-the-ib/the-ib-prepares-to-release-diploma-programme-dp-and-career-related-programme-cp-student-examination-results/",
+      "retrieved": "summary",
+      "fetched_on": "2026-09-03"
+    },
+    "collegeboard_2026": {
+      "publisher": "College Board, United States",
+      "document": "2026 AP Exam dates",
+      "url": "https://apstudents.collegeboard.org/ap-exams-what-to-know/past-exam-dates/2026",
+      "retrieved": "summary",
+      "fetched_on": "2026-09-03"
+    },
+    "collegeboard_2027": {
+      "publisher": "College Board, United States",
+      "document": "2027 AP Exam dates",
+      "url": "https://apcentral.collegeboard.org/exam-administration-ordering-scores/exam-dates",
+      "retrieved": "full",
+      "fetched_on": "2026-09-03"
+    },
+    "moe_sg_exams": {
+      "publisher": "Government of Singapore, Ministry of Education",
+      "document": "National examinations dates",
+      "url": "https://www.moe.gov.sg/national-exams-dates",
+      "retrieved": "full",
+      "fetched_on": "2026-09-03",
+      "caveat": "The ministry marks every results release date as tentative. That word is carried through here."
+    },
+    "seab_sg": {
+      "publisher": "Singapore Examinations and Assessment Board",
+      "document": "Examination timetables",
+      "url": "https://www.seab.gov.sg/",
+      "retrieved": "not_retrieved",
+      "fetched_on": "2026-09-03",
+      "caveat": "Paper-level timetables live here and were not read."
+    },
+    "hkeaa_timetable_2026": {
+      "publisher": "Hong Kong Examinations and Assessment Authority",
+      "document": "HKDSE finalised examination timetable for the 2026 examination",
+      "url": "https://www.hkeaa.edu.hk/DocLibrary/Circulars/HKDSE/HKDSE_Finalised_Examination_Timetable_for_2026_Examination.pdf",
+      "retrieved": "not_retrieved",
+      "fetched_on": "2026-09-03",
+      "caveat": "Located but not read; the authority's site refused automated retrieval. It carries no date in this file. The 2026 window now cites a full read of a mirror of this same timetable."
+    },
+    "hkeaa_results_2026": {
+      "publisher": "Hong Kong Examinations and Assessment Authority",
+      "document": "2026 HKDSE arrangements for release of results, press release of 8 July 2026",
+      "url": "https://www.hkeaa.edu.hk/DocLibrary/Media/PR/PR_20260708_HKDSE_RR_Arrangement_en.pdf",
+      "retrieved": "headline_only",
+      "fetched_on": "2026-09-03"
+    },
+    "dbe_za_results": {
+      "publisher": "Department of Basic Education, South Africa",
+      "document": "Release of NSC examination results",
+      "url": "https://www.education.gov.za/Curriculum/NationalSeniorCertificate(NSC)Examinations/ReleaseofNSCExamsResults.aspx",
+      "retrieved": "not_retrieved",
+      "fetched_on": "2026-09-03"
+    },
+    "dbe_za_timetable": {
+      "publisher": "Department of Basic Education, South Africa",
+      "document": "NSC October and November 2026 examination timetable",
+      "url": "https://www.education.gov.za/",
+      "retrieved": "not_retrieved",
+      "fetched_on": "2026-09-03",
+      "caveat": "Registered as the re-anchor target only. It carries no date in this file. The 2026 windows now cite the reporting they actually came from."
+    }
+  },
+  "boards": [
+    {
+      "id": "cbse",
+      "name": "Central Board of Secondary Education",
+      "country": "IN",
+      "official_site": "https://www.cbse.gov.in/",
+      "academic_year": {
+        "starts": "April",
+        "ends": "March",
+        "note": "The session runs April to March. Individual schools set their own first day, usually the first or second week of April.",
+        "confidence": "conventional"
+      },
+      "term_breaks": [
+        {"name": "Summer break", "window": "Mid-May to end of June, longer in the north, shorter in the south", "dates": {"2026": null, "2027": null}, "confidence": "conventional", "note": "Set by each school and by state heat advisories, not by the board."},
+        {"name": "Autumn festival break", "window": "Around Dussehra and Diwali", "dates": {"2026": null, "2027": null}, "confidence": "conventional", "note": "Length varies by region. See the Navratri and Diwali entries in festivals.json for the anchor dates."},
+        {"name": "Winter break", "window": "Late December to early January in northern schools", "dates": {"2026": null, "2027": null}, "confidence": "conventional"}
+      ],
+      "board_exam_windows": {
+        "2026": [
+          {"level": "Class 10", "starts": "2026-02-17", "ends": "2026-03-10", "confidence": "reported", "source": "cbse_newsonair_2026", "note": "From reporting of the 30 October 2025 date sheet release. The date sheet itself was not read, and no reference number is recorded, so this is reported, not official_reported."},
+          {"level": "Class 10, phase 2", "starts": null, "ends": null, "confidence": "unverified", "source": "cbse_official", "note": "2026 was the first year of the two-phase Class 10 examination. The phase 2 window was not read."},
+          {"level": "Class 12", "starts": "2026-02-17", "ends": "2026-04-09", "confidence": "reported", "source": "cbse_newsonair_2026"}
+        ],
+        "2027": [
+          {"level": "Class 10", "starts": null, "ends": null, "confidence": "unverified", "source": "cbse_official", "note": "The 2027 date sheet is normally released around late October 2026 and did not exist at build time."},
+          {"level": "Class 12", "starts": null, "ends": null, "confidence": "unverified", "source": "cbse_official"}
+        ]
+      },
+      "result_days": {
+        "2026": [
+          {"level": "Class 10", "date": "2026-04-15", "confidence": "reported", "source": "cbse_results_2026_reported"},
+          {"level": "Class 10, phase 2", "date": "2026-07-18", "confidence": "reported", "source": "cbse_results_2026_reported"},
+          {"level": "Class 12", "date": "2026-05-13", "confidence": "reported", "source": "cbse_results_2026_reported", "note": "The same page names 15 May as an alternate. Treat the day as reported until the board's own notice is read."}
+        ],
+        "2027": [
+          {"level": "Class 10", "date": null, "confidence": "unverified", "source": "cbse_official"},
+          {"level": "Class 12", "date": null, "confidence": "unverified", "source": "cbse_official"}
+        ]
+      },
+      "pre_board_window": "Late November to January, set by each school.",
+      "notes": "The board fixes the exam dates; everything else in a CBSE school's year is set by the school. Papers start at 10:30 IST."
+    },
+    {
+      "id": "cisce",
+      "name": "Council for the Indian School Certificate Examinations",
+      "country": "IN",
+      "official_site": "https://www.cisce.org/",
+      "academic_year": {"starts": "April", "ends": "March", "note": "Same April to March session as CBSE.", "confidence": "conventional"},
+      "term_breaks": [
+        {"name": "Summer break", "window": "Mid-May to end of June", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "Puja or Dussehra break", "window": "October, longest in eastern India", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "Winter break", "window": "Late December", "dates": {"2026": null, "2027": null}, "confidence": "conventional"}
+      ],
+      "board_exam_windows": {
+        "2026": [
+          {"level": "ICSE, Class 10", "starts": "2026-02-17", "ends": "2026-03-30", "confidence": "reported", "source": "cisce_timetable_2026_reported", "note": "The report confirms the 17 February start. The 30 March end comes from the same reporting and was not read from the council's timetable."},
+          {"level": "ISC, Class 12", "starts": "2026-02-12", "ends": "2026-04-06", "confidence": "reported", "source": "cisce_timetable_2026_reported"}
+        ],
+        "2027": [
+          {"level": "ICSE, Class 10", "starts": null, "ends": null, "confidence": "unverified", "source": "cisce_official"},
+          {"level": "ISC, Class 12", "starts": null, "ends": null, "confidence": "unverified", "source": "cisce_official"}
+        ]
+      },
+      "result_days": {
+        "2026": [
+          {"level": "ICSE, Class 10", "date": null, "confidence": "unverified", "source": "cisce_official", "note": "Declared in the April to May window. The exact day was not read."},
+          {"level": "ISC, Class 12", "date": null, "confidence": "unverified", "source": "cisce_official"}
+        ],
+        "2027": [
+          {"level": "ICSE, Class 10", "date": null, "confidence": "unverified", "source": "cisce_official"},
+          {"level": "ISC, Class 12", "date": null, "confidence": "unverified", "source": "cisce_official"}
+        ]
+      },
+      "pre_board_window": "December to January, set by each school.",
+      "notes": "The 2026 timetables were released on 13 November 2025."
+    },
+    {
+      "id": "state_boards_in",
+      "name": "Indian state boards",
+      "country": "IN",
+      "official_site": null,
+      "academic_year": {"starts": "April", "ends": "March", "note": "Kerala and a few others start in June. Every state sets its own.", "confidence": "conventional"},
+      "term_breaks": [{"name": "Varies by state", "window": null, "dates": {"2026": null, "2027": null}, "confidence": "unverified"}],
+      "board_exam_windows": {
+        "2026": [{"level": "Class 10 and Class 12", "starts": null, "ends": null, "confidence": "unverified", "source": null, "note": "Broadly February to April, differing by state. Each state board publishes its own timetable."}],
+        "2027": [{"level": "Class 10 and Class 12", "starts": null, "ends": null, "confidence": "unverified", "source": null}]
+      },
+      "result_days": {"2026": [{"level": "all", "date": null, "confidence": "unverified", "source": null}], "2027": [{"level": "all", "date": null, "confidence": "unverified", "source": null}]},
+      "pre_board_window": "December to January.",
+      "notes": "A placeholder so the shape exists. Each state board must be added separately with its own official site, as the curriculum registry in docs/CURRICULUM.md describes. Nothing here is filled by assumption."
+    },
+    {
+      "id": "cambridge_international",
+      "name": "Cambridge International",
+      "country": "GB",
+      "official_site": "https://www.cambridgeinternational.org/",
+      "academic_year": {"starts": null, "ends": null, "note": "Cambridge sets exam series, not an academic year. Schools following it run on their own country's year.", "confidence": "official_reported"},
+      "term_breaks": [{"name": "Set by the school, not the board", "window": null, "dates": {"2026": null, "2027": null}, "confidence": "conventional"}],
+      "board_exam_windows": {
+        "2026": [
+          {"level": "June series, IGCSE, O Level, AS and A Level", "starts": "2026-04-24", "ends": "2026-06-09", "confidence": "reported", "source": "cambridge_help_2026", "note": "The series window is reported, not read from the timetable. The results dates below were confirmed by Cambridge's own help article."},
+          {"level": "November series", "starts": null, "ends": null, "confidence": "unverified", "source": null}
+        ],
+        "2027": [
+          {"level": "June series", "starts": null, "ends": null, "confidence": "unverified", "source": null},
+          {"level": "November series", "starts": null, "ends": null, "confidence": "unverified", "source": null}
+        ]
+      },
+      "result_days": {
+        "2026": [
+          {"level": "AS and A Level, AICE", "date": "2026-08-11", "time": "05:00 UTC", "confidence": "reported", "source": "cambridge_help_2026"},
+          {"level": "IGCSE and O Level", "date": "2026-08-18", "time": "05:00 UTC", "confidence": "reported", "source": "cambridge_help_2026"}
+        ],
+        "2027": [
+          {"level": "AS and A Level", "date": null, "confidence": "unverified", "source": null},
+          {"level": "IGCSE and O Level", "date": null, "confidence": "unverified", "source": null}
+        ]
+      },
+      "pre_board_window": "Mocks January to February for the June series.",
+      "notes": "AS and A Level results are released a week before IGCSE so university confirmation can run first."
+    },
+    {
+      "id": "ib_dp",
+      "name": "International Baccalaureate Diploma and Career-related Programmes",
+      "country": "INTL",
+      "official_site": "https://www.ibo.org/",
+      "academic_year": {"starts": null, "ends": null, "note": "Two sessions a year. Northern-hemisphere schools sit the May session, southern-hemisphere schools the November session.", "confidence": "official"},
+      "term_breaks": [{"name": "Set by the school, not the organisation", "window": null, "dates": {"2026": null, "2027": null}, "confidence": "conventional"}],
+      "board_exam_windows": {
+        "2026": [
+          {"level": "May session", "starts": "2026-04-24", "ends": "2026-05-20", "confidence": "reported", "source": "ib_results_2026", "note": "No examinations on 1 May. The cited document is a results-release announcement and carries no timetable, so this window is reported, not official_reported. The two results dates below are the part that document does support."},
+          {"level": "November session", "starts": null, "ends": null, "confidence": "unverified", "source": null}
+        ],
+        "2027": [
+          {"level": "May session", "starts": null, "ends": null, "confidence": "unverified", "source": null},
+          {"level": "November session", "starts": null, "ends": null, "confidence": "unverified", "source": null}
+        ]
+      },
+      "result_days": {
+        "2026": [
+          {"level": "May session, schools", "date": "2026-07-05", "time": "12:00 UTC, released in staggered fifteen-minute intervals by time zone", "confidence": "official", "source": "ib_results_2026"},
+          {"level": "May session, students", "date": "2026-07-06", "time": "12:00 UTC", "confidence": "official", "source": "ib_results_2026"},
+          {"level": "November session", "date": null, "confidence": "unverified", "source": null}
+        ],
+        "2027": [
+          {"level": "May session", "date": null, "confidence": "unverified", "source": null},
+          {"level": "November session", "date": null, "confidence": "unverified", "source": null}
+        ]
+      },
+      "pre_board_window": "Mocks February to March for the May session.",
+      "notes": "Over 209,000 candidates received May 2026 results on 6 July 2026."
+    },
+    {
+      "id": "uk_gcse_alevel",
+      "name": "GCSE and A level",
+      "country": "GB",
+      "official_site": "https://www.jcq.org.uk/",
+      "academic_year": {
+        "starts": "Early September",
+        "ends": "Late July",
+        "note": "Three terms, each split by a half-term break. Exact dates are set by each local authority and academy trust, not nationally, so they are null here.",
+        "confidence": "conventional"
+      },
+      "term_breaks": [
+        {"name": "October half term", "window": "Last week of October", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "Christmas break", "window": "Roughly two weeks from just before Christmas", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "February half term", "window": "Mid-February", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "Easter break", "window": "Roughly two weeks around Easter", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "May half term", "window": "The week of the spring bank holiday", "dates": {"2026": "week of 2026-05-25", "2027": "week of 2027-05-31"}, "confidence": "derived", "note": "Anchored to the spring bank holiday in festivals.json."},
+        {"name": "Summer break", "window": "Late July to early September", "dates": {"2026": null, "2027": null}, "confidence": "conventional"}
+      ],
+      "board_exam_windows": {
+        "2026": [
+          {"level": "GCSE", "starts": "2026-05-07", "ends": "2026-06-17", "contingency_day": "2026-06-24", "confidence": "reported", "source": "aqa_key_dates", "note": "The first common-timetable GCSE paper is 7 May; the window formally opens on 4 May. Candidates must stay available to the contingency day."},
+          {"level": "A level", "starts": "2026-05-11", "ends": "2026-06-23", "contingency_day": "2026-06-24", "confidence": "reported", "source": "aqa_key_dates"}
+        ],
+        "2027": [
+          {"level": "GCSE", "starts": null, "ends": null, "contingency_day": null, "confidence": "unverified", "source": "aqa_key_dates", "note": "Published in the AQA key dates calendar for November 2026, January and summer 2027, which was not read."},
+          {"level": "A level", "starts": null, "ends": null, "contingency_day": null, "confidence": "unverified", "source": "aqa_key_dates"}
+        ]
+      },
+      "result_days": {
+        "2026": [
+          {"level": "A level", "date": "2026-08-13", "confidence": "reported", "source": "aqa_key_dates"},
+          {"level": "GCSE", "date": "2026-08-20", "confidence": "reported", "source": "aqa_key_dates"}
+        ],
+        "2027": [
+          {"level": "A level", "date": null, "confidence": "unverified", "source": "aqa_key_dates"},
+          {"level": "GCSE", "date": null, "confidence": "unverified", "source": "aqa_key_dates"}
+        ]
+      },
+      "pre_board_window": "Mocks in November and December, and again in February and March.",
+      "notes": "A level and GCSE results days are the two loudest days in the English school year. The contingency day is a real constraint on family travel and should be treated as part of the exam window."
+    },
+    {
+      "id": "ap_us",
+      "name": "Advanced Placement",
+      "country": "US",
+      "official_site": "https://apcentral.collegeboard.org/",
+      "academic_year": {
+        "starts": "Mid-August to early September",
+        "ends": "Late May to mid-June",
+        "note": "Set by each school district. There is no national school calendar in the United States.",
+        "confidence": "conventional"
+      },
+      "term_breaks": [
+        {"name": "Thanksgiving break", "window": "The week of Thanksgiving in many districts", "dates": {"2026": "week of 2026-11-26", "2027": "week of 2027-11-25"}, "confidence": "derived"},
+        {"name": "Winter break", "window": "Roughly two weeks from just before Christmas", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "Spring break", "window": "One week between March and April, district by district", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "Summer break", "window": "Late May or June to August", "dates": {"2026": null, "2027": null}, "confidence": "conventional"}
+      ],
+      "board_exam_windows": {
+        "2026": [
+          {"level": "AP Exams, main administration", "starts": "2026-05-04", "ends": "2026-05-15", "confidence": "official_reported", "source": "collegeboard_2026", "note": "Two full weeks, 4 to 8 May and 11 to 15 May."},
+          {"level": "AP Exams, late testing", "starts": "2026-05-18", "ends": "2026-05-22", "confidence": "official_reported", "source": "collegeboard_2026"}
+        ],
+        "2027": [
+          {"level": "AP Exams, main administration", "starts": "2027-05-03", "ends": "2027-05-14", "confidence": "official", "source": "collegeboard_2027", "note": "Two full weeks, 3 to 7 May and 10 to 14 May."},
+          {"level": "AP Exams, late testing", "starts": "2027-05-17", "ends": "2027-05-21", "confidence": "official", "source": "collegeboard_2027"}
+        ]
+      },
+      "result_days": {
+        "2026": [{"level": "AP scores", "date": null, "confidence": "unverified", "source": "collegeboard_2026", "note": "Released in early to mid-July on a rolling basis. The exact 2026 day was not read."}],
+        "2027": [{"level": "AP scores", "date": null, "confidence": "unverified", "source": "collegeboard_2027"}]
+      },
+      "pre_board_window": "Practice exams March to April.",
+      "notes": "Digital portfolio deadlines are part of the pressure: 30 April 2026 and 30 April 2027 for Computer Science Principles, Seminar, Research and world languages, and 8 May 2026 and 7 May 2027 for Art and Design. May 2027 is the first administration of the AP Career Kickstart exams."
+    },
+    {
+      "id": "singapore_national",
+      "name": "Singapore national examinations",
+      "country": "SG",
+      "official_site": "https://www.moe.gov.sg/national-exams-dates",
+      "academic_year": {
+        "starts": "Early January",
+        "ends": "Mid-November",
+        "note": "Four terms in two semesters, with a break between each.",
+        "confidence": "conventional"
+      },
+      "term_breaks": [
+        {"name": "March break", "window": "One week in mid-March", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "Mid-year break", "window": "Late May to late June", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "September break", "window": "One week in early September", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "Year-end break", "window": "Mid-November to end of December", "dates": {"2026": null, "2027": null}, "confidence": "conventional"}
+      ],
+      "board_exam_windows": {
+        "2026": [
+          {"level": "PSLE oral", "starts": "2026-08-12", "ends": "2026-08-13", "confidence": "reported", "source": "moe_sg_exams"},
+          {"level": "PSLE listening comprehension", "starts": "2026-09-15", "ends": "2026-09-15", "confidence": "reported", "source": "moe_sg_exams"},
+          {"level": "PSLE written", "starts": "2026-09-24", "ends": "2026-09-30", "confidence": "reported", "source": "moe_sg_exams"},
+          {"level": "GCE O Level, main written", "starts": "2026-10-19", "ends": "2026-11-10", "confidence": "reported", "source": "moe_sg_exams", "note": "Early papers begin 2 June 2026."},
+          {"level": "GCE N Level", "starts": null, "ends": null, "confidence": "unverified", "source": "seab_sg"},
+          {"level": "GCE A Level", "starts": null, "ends": null, "confidence": "unverified", "source": "seab_sg"}
+        ],
+        "2027": [
+          {"level": "PSLE", "starts": null, "ends": null, "confidence": "unverified", "source": "seab_sg"},
+          {"level": "GCE O Level", "starts": null, "ends": null, "confidence": "unverified", "source": "seab_sg"},
+          {"level": "GCE N Level", "starts": null, "ends": null, "confidence": "unverified", "source": "seab_sg"},
+          {"level": "GCE A Level", "starts": null, "ends": null, "confidence": "unverified", "source": "seab_sg"}
+        ]
+      },
+      "result_days": {
+        "2026": [
+          {"level": "PSLE", "date": "2026-11-24", "window_end": "2026-11-25", "confidence": "official", "source": "moe_sg_exams", "note": "The ministry marks this tentative."},
+          {"level": "GCE N Level", "date": "2026-12-17", "window_end": "2026-12-21", "confidence": "official", "source": "moe_sg_exams", "note": "Tentative."}
+        ],
+        "2027": [
+          {"level": "GCE O Level, for the 2026 sitting", "date": "2027-01-13", "window_end": "2027-01-15", "confidence": "official", "source": "moe_sg_exams", "note": "Tentative."},
+          {"level": "GCE A Level, for the 2026 sitting", "date": "2027-02-19", "window_end": "2027-02-23", "confidence": "official", "source": "moe_sg_exams", "note": "Tentative."}
+        ]
+      },
+      "pre_board_window": "Preliminary examinations August to September.",
+      "notes": "Results dates are given by the ministry as a two-or-three-day window and are explicitly tentative until close to the day. Wobo must repeat the word tentative rather than promising a date. Private candidate registration for the 2026 year-end examinations ran 7 to 20 April 2026."
+    },
+    {
+      "id": "hkdse",
+      "name": "Hong Kong Diploma of Secondary Education",
+      "country": "HK",
+      "official_site": "https://www.hkeaa.edu.hk/en/hkdse/",
+      "academic_year": {"starts": "Early September", "ends": "Mid-July", "note": "Two terms.", "confidence": "conventional"},
+      "term_breaks": [
+        {"name": "Lunar new year break", "window": "Around lunar new year", "dates": {"2026": "2026-02-17 to 2026-02-19", "2027": "2027-02-06 to 2027-02-09"}, "confidence": "derived", "note": "Anchored to the general holidays in festivals.json; schools usually add days around them."},
+        {"name": "Easter break", "window": "Around Easter", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "Summer break", "window": "July to August", "dates": {"2026": null, "2027": null}, "confidence": "conventional"}
+      ],
+      "board_exam_windows": {
+        "2026": [{"level": "HKDSE written examinations", "starts": "2026-04-08", "ends": "2026-05-05", "confidence": "reported", "source": "hkdse_timetable_2026_mirror", "note": "Visual Arts opens the sitting on 8 April. Core subjects 9 to 14 April. The last scheduled papers are Music on 5 May; 6 May is held in reserve, and 1 May is Labour Day with no papers. Practical and oral components run earlier: Physical Education late February to late March, Music early to mid March, English speaking 10 to 19 March."}],
+        "2027": [{"level": "HKDSE written examinations", "starts": null, "ends": null, "confidence": "unverified", "source": null}]
+      },
+      "result_days": {
+        "2026": [{"level": "HKDSE, categories A, B and C", "date": "2026-07-15", "confidence": "reported", "source": "hkeaa_results_2026", "note": "School results notices collectable from 07:00; SMS from 09:00."}],
+        "2027": [{"level": "HKDSE", "date": null, "confidence": "unverified", "source": null}]
+      },
+      "pre_board_window": "Mock examinations January to February.",
+      "notes": ""
+    },
+    {
+      "id": "nsc_za",
+      "name": "National Senior Certificate",
+      "country": "ZA",
+      "official_site": "https://www.education.gov.za/",
+      "academic_year": {"starts": "Mid-January", "ends": "Early December", "note": "Four terms.", "confidence": "conventional"},
+      "term_breaks": [
+        {"name": "Autumn break", "window": "Around Easter", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "Winter break", "window": "Late June to mid-July", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "Spring break", "window": "Late September to early October", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "Summer break", "window": "December to mid-January", "dates": {"2026": null, "2027": null}, "confidence": "conventional"}
+      ],
+      "board_exam_windows": {
+        "2026": [
+          {"level": "NSC final examinations", "starts": "2026-10-13", "ends": "2026-11-27", "confidence": "reported", "source": "nsc_za_timetable_2026_reported", "note": "Written papers open on 13 October with Computer Applications Technology paper 1. 12 October carries only the Life Orientation rewrite. Three non-examination days fall on 3 to 5 November."},
+          {"level": "Life Orientation common assessment task", "starts": "2026-09-01", "ends": "2026-09-01", "confidence": "reported", "source": "nsc_za_timetable_2026_reported", "note": "The rewrite sitting is 12 October."},
+          {"level": "Performing Arts practicals", "starts": "2026-08-03", "ends": "2026-10-09", "confidence": "reported", "source": "nsc_za_timetable_2026_reported"},
+          {"level": "Visual Arts and Design practicals", "starts": "2026-09-14", "ends": "2026-10-13", "confidence": "reported", "source": "nsc_za_timetable_2026_reported"}
+        ],
+        "2027": [{"level": "NSC final examinations", "starts": null, "ends": null, "confidence": "unverified", "source": "dbe_za_timetable"}]
+      },
+      "result_days": {
+        "2026": [{"level": "NSC", "date": null, "confidence": "unverified", "source": "dbe_za_results", "note": "The 2026 cohort's results fall in January 2027. The date had not been announced at build time."}],
+        "2027": [{"level": "NSC, for the 2026 sitting", "date": null, "confidence": "unverified", "source": "dbe_za_results"}]
+      },
+      "pre_board_window": "Preliminary examinations in September.",
+      "notes": "Morning papers start at 09:00 and afternoon papers at 14:00. Matric results are a national news event, which makes the days around them the wrong time for any marketing."
+    },
+    {
+      "id": "australia_senior",
+      "name": "Australian senior secondary certificates",
+      "country": "AU",
+      "official_site": null,
+      "academic_year": {"starts": "Late January or early February", "ends": "Early to mid-December", "note": "Four terms. Each state sets its own dates.", "confidence": "conventional"},
+      "term_breaks": [{"name": "Term breaks", "window": "April, June to July, September to October, and a long December to January summer break", "dates": {"2026": null, "2027": null}, "confidence": "conventional"}],
+      "board_exam_windows": {
+        "2026": [{"level": "HSC, VCE and equivalents", "starts": null, "ends": null, "confidence": "unverified", "source": null, "note": "Broadly October to November, set separately by NESA in New South Wales, the VCAA in Victoria and each other state authority."}],
+        "2027": [{"level": "HSC, VCE and equivalents", "starts": null, "ends": null, "confidence": "unverified", "source": null}]
+      },
+      "result_days": {"2026": [{"level": "ATAR and certificates", "date": null, "confidence": "unverified", "source": null}], "2027": [{"level": "ATAR and certificates", "date": null, "confidence": "unverified", "source": null}]},
+      "pre_board_window": "Trial examinations in August and September.",
+      "notes": "The southern-hemisphere year runs opposite to India, the UK and the US. Nothing here is filled in until each state authority is fetched."
+    },
+    {
+      "id": "canada_provincial",
+      "name": "Canadian provincial school systems",
+      "country": "CA",
+      "official_site": null,
+      "academic_year": {"starts": "Early September", "ends": "Late June", "note": "Set by each province and school board.", "confidence": "conventional"},
+      "term_breaks": [
+        {"name": "Winter break", "window": "Roughly two weeks from just before Christmas", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "March break", "window": "One week in March", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "Summer break", "window": "Late June to early September", "dates": {"2026": null, "2027": null}, "confidence": "conventional"}
+      ],
+      "board_exam_windows": {
+        "2026": [{"level": "Provincial diploma and departmental examinations", "starts": null, "ends": null, "confidence": "unverified", "source": null, "note": "Alberta diploma examinations, Quebec ministry examinations and others each run their own January and June sittings."}],
+        "2027": [{"level": "Provincial diploma and departmental examinations", "starts": null, "ends": null, "confidence": "unverified", "source": null}]
+      },
+      "result_days": {"2026": [{"level": "all", "date": null, "confidence": "unverified", "source": null}], "2027": [{"level": "all", "date": null, "confidence": "unverified", "source": null}]},
+      "pre_board_window": null,
+      "notes": "There is no national Canadian board. Add provinces individually."
+    },
+    {
+      "id": "uae_schools",
+      "name": "Schools in the United Arab Emirates and the Gulf",
+      "country": "AE",
+      "official_site": "https://www.moe.gov.ae/",
+      "academic_year": {"starts": "Late August", "ends": "Early July", "note": "Three terms. Schools run CBSE, ICSE, British, IB and American curricula, each keeping its own board's exam dates while following the local term calendar.", "confidence": "conventional"},
+      "term_breaks": [
+        {"name": "Autumn break", "window": "Around late October", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "Winter break", "window": "Mid-December to early January", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "Spring break", "window": "Around late March", "dates": {"2026": null, "2027": null}, "confidence": "conventional"},
+        {"name": "Summer break", "window": "July and August", "dates": {"2026": null, "2027": null}, "confidence": "conventional"}
+      ],
+      "board_exam_windows": {"2026": [{"level": "Follows the learner's own board", "starts": null, "ends": null, "confidence": "unverified", "source": null}], "2027": [{"level": "Follows the learner's own board", "starts": null, "ends": null, "confidence": "unverified", "source": null}]},
+      "result_days": {"2026": [{"level": "Follows the learner's own board", "date": null, "confidence": "unverified", "source": null}], "2027": [{"level": "Follows the learner's own board", "date": null, "confidence": "unverified", "source": null}]},
+      "pre_board_window": null,
+      "notes": "This entry exists because a large share of our Indian-diaspora learners are in Gulf schools. Their exam dates come from CBSE, CISCE, Cambridge or the IB; their term breaks and their festivals come from here. The unified Ministry of Education academic calendar for public schools was not fetched and every date is null."
+    },
+    {
+      "id": "np_neb",
+      "name": "National Examination Board, Nepal",
+      "country": "NP",
+      "official_site": "https://www.neb.gov.np/",
+      "academic_year": {"starts": "Baishakh, mid-April", "ends": "Chaitra, mid-April", "note": "The school year follows the Bikram Sambat calendar.", "confidence": "conventional"},
+      "term_breaks": [{"name": "Dashain and Tihar break", "window": "Two to three weeks in October and November", "dates": {"2026": "2026-10-17 to 2026-11-11", "2027": null}, "confidence": "derived", "note": "Bracketed from the Dashain and Tihar entries in festivals.json. The school break is longer than the public holiday."}],
+      "board_exam_windows": {
+        "2026": [{"level": "SEE and Grade 12", "starts": null, "ends": null, "confidence": "unverified", "source": null, "note": "SEE is broadly in Chaitra, that is March to April."}],
+        "2027": [{"level": "SEE and Grade 12", "starts": null, "ends": null, "confidence": "unverified", "source": null}]
+      },
+      "result_days": {"2026": [{"level": "all", "date": null, "confidence": "unverified", "source": null}], "2027": [{"level": "all", "date": null, "confidence": "unverified", "source": null}]},
+      "pre_board_window": "Pre-board examinations in Falgun.",
+      "notes": ""
+    },
+    {
+      "id": "lk_doe",
+      "name": "Department of Examinations, Sri Lanka",
+      "country": "LK",
+      "official_site": "https://www.doenets.lk/",
+      "academic_year": {"starts": "January", "ends": "December", "note": "Three terms.", "confidence": "conventional"},
+      "term_breaks": [{"name": "Term breaks", "window": "April around the new year, August, and December", "dates": {"2026": null, "2027": null}, "confidence": "conventional"}],
+      "board_exam_windows": {
+        "2026": [{"level": "G.C.E. Ordinary Level and Advanced Level", "starts": null, "ends": null, "confidence": "unverified", "source": null}],
+        "2027": [{"level": "G.C.E. Ordinary Level and Advanced Level", "starts": null, "ends": null, "confidence": "unverified", "source": null}]
+      },
+      "result_days": {"2026": [{"level": "all", "date": null, "confidence": "unverified", "source": null}], "2027": [{"level": "all", "date": null, "confidence": "unverified", "source": null}]},
+      "pre_board_window": null,
+      "notes": "Nothing was retrievable for Sri Lanka at build time, examinations or holidays. Treat the whole country as unverified until doenets.lk and the holidays gazette are read."
+    },
+    {
+      "id": "bd_boards",
+      "name": "Bangladesh education boards",
+      "country": "BD",
+      "official_site": "https://www.educationboard.gov.bd/",
+      "academic_year": {"starts": "January", "ends": "December", "confidence": "conventional"},
+      "term_breaks": [{"name": "Term breaks", "window": "Around Ramadan and Eid, and in December", "dates": {"2026": null, "2027": null}, "confidence": "conventional"}],
+      "board_exam_windows": {
+        "2026": [{"level": "SSC and HSC", "starts": null, "ends": null, "confidence": "unverified", "source": null, "note": "SSC broadly February to March, HSC broadly June to August. Not read."}],
+        "2027": [{"level": "SSC and HSC", "starts": null, "ends": null, "confidence": "unverified", "source": null}]
+      },
+      "result_days": {"2026": [{"level": "all", "date": null, "confidence": "unverified", "source": null}], "2027": [{"level": "all", "date": null, "confidence": "unverified", "source": null}]},
+      "pre_board_window": "Test examinations set by each school.",
+      "notes": ""
+    },
+    {
+      "id": "pk_bise",
+      "name": "Pakistan Boards of Intermediate and Secondary Education",
+      "country": "PK",
+      "official_site": null,
+      "academic_year": {"starts": "April in Punjab and Sindh, August in some other regions", "ends": "March", "note": "Varies by province.", "confidence": "conventional"},
+      "term_breaks": [{"name": "Summer break", "window": "June to August", "dates": {"2026": null, "2027": null}, "confidence": "conventional"}, {"name": "Winter break", "window": "Late December to early January in the north", "dates": {"2026": null, "2027": null}, "confidence": "conventional"}],
+      "board_exam_windows": {
+        "2026": [{"level": "Matric and Intermediate", "starts": null, "ends": null, "confidence": "unverified", "source": null, "note": "Broadly March to June, each of the many regional boards on its own timetable."}],
+        "2027": [{"level": "Matric and Intermediate", "starts": null, "ends": null, "confidence": "unverified", "source": null}]
+      },
+      "result_days": {"2026": [{"level": "all", "date": null, "confidence": "unverified", "source": null}], "2027": [{"level": "all", "date": null, "confidence": "unverified", "source": null}]},
+      "pre_board_window": "Send-up examinations January to February.",
+      "notes": "There is no single national board. Each BISE must be added separately."
+    }
+  ]
+}

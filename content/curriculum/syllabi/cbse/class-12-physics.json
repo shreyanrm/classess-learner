@@ -1,0 +1,398 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 12",
+  "level_order": 12,
+  "subject": "Physics",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "cbse-1112-physics",
+      "title": "Physics, Classes XI and XII, Secondary Curriculum Part 2, 2026-27",
+      "publisher": "Central Board of Secondary Education",
+      "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Physics_SecP2_2026-27.pdf",
+      "media_type": "application/pdf",
+      "pages": 23,
+      "bytes": 345709,
+      "fetched_at": "2026-09-03T07:03:52Z",
+      "document_sha256": "9e32271cf5a86caa605cffe2a4b5e19710abc3d3a8715ef725ba78cd94caf1f7",
+      "extracted_text_sha256": "b3940858d98c94b881d00e480b42f2f6294679072119a9e881a01d43179df300",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 12,
+        "section": "Course structure Class 12, Unit I"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 13,
+            "section": "Unit I: Electrostatics, chapter 1"
+          },
+          "chapter_number": 1,
+          "contents": "Electric charges, Conservation of charge, Coulomb's law-force between two- point charges, forces between multiple charges; superposition principle and continuous charge distribution. Electric field, electric field due to a point charge, electric field lines, electric dipole, electric field due to a dipole, torque on a dipole in uniform electric field. Electric flux, statement of Gauss's theorem and its applications to find field due to infinitely long straight wire, uniformly charged infinite plane sheet and uniformly charged thin spherical shell (field inside and outside).",
+          "order": 1,
+          "name": "Electric Charges and Fields",
+          "id": "n_da90171fce1c3904",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 13,
+            "section": "Unit I: Electrostatics, chapter 2"
+          },
+          "chapter_number": 2,
+          "contents": "Electric potential, potential difference, electric potential due to a point charge, a dipole and system of charges; equipotential surfaces, electrical potential energy of a system of two-point charges and of electric dipole in an electrostatic field. Conductors and insulators, free charges and bound charges inside a conductor. Dielectrics and electric polarization, capacitors and capacitance, combination of capacitors in series and in parallel, capacitance of a parallel plate capacitor with and without dielectric medium between the plates, energy stored in a capacitor (no derivation, formulae only).",
+          "order": 2,
+          "name": "Electrostatic Potential and Capacitance",
+          "id": "n_d025fe8d98059523",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "I",
+      "marks": 16,
+      "order": 1,
+      "name": "Electrostatics",
+      "id": "n_56b996bcb90b8bcf",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 12,
+        "section": "Course structure Class 12, Unit II"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 13,
+            "section": "Unit II: Current Electricity, chapter 3"
+          },
+          "chapter_number": 3,
+          "contents": "Electric current, flow of electric charges in a metallic conductor, drift velocity, mobility and their relation with electric current; Ohm's law, V-I characteristics (linear and non-linear), electrical energy and power, electrical resistivity and conductivity, temperature dependence of resistance, Internal resistance of a cell, potential difference and emf of a cell, combination of cells in series and in parallel, Kirchhoff's rules, Wheatstone bridge.",
+          "order": 1,
+          "name": "Current Electricity",
+          "id": "n_c41f0ba4dadbe518",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "II",
+      "order": 2,
+      "name": "Current Electricity",
+      "id": "n_dc5a4a4b77c2de54",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 12,
+        "section": "Course structure Class 12, Unit III"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 13,
+            "section": "Unit III: Magnetic Effects of Current and Magnetism, chapter 4"
+          },
+          "chapter_number": 4,
+          "contents": "Concept of magnetic field, Oersted's experiment. Biot - Savart law and its application to current carrying circular loop. Ampere's law and its applications to infinitely long straight wire. Straight solenoid (only qualitative treatment), force on a moving charge in uniform magnetic and electric fields. Force on a current-carrying conductor in a uniform magnetic field, force between two parallel current-carrying conductors-definition of ampere, torque experienced by a current loop in uniform magnetic field; Current loop as a magnetic dipole and its magnetic dipole moment, moving coil galvanometer- its current sensitivity and conversion to ammeter and voltmeter.",
+          "order": 1,
+          "name": "Moving Charges and Magnetism",
+          "id": "n_f8353356155eae6f",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 14,
+            "section": "Unit III: Magnetic Effects of Current and Magnetism, chapter 5"
+          },
+          "chapter_number": 5,
+          "contents": "Bar magnet, bar magnet as an equivalent solenoid (qualitative treatment only), magnetic field intensity due to a magnetic dipole (bar magnet) along its axis and perpendicular to its axis (qualitative treatment only), torque on a magnetic dipole (bar magnet) in a uniform magnetic field (qualitative treatment only), magnetic field lines. Magnetic properties of materials- Para-, dia- and ferro – magnetic substances with examples, Magnetization of materials, effect of temperature on magnetic properties.",
+          "order": 2,
+          "name": "Magnetism and Matter",
+          "id": "n_fe1e85a1f25c13b2",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "III",
+      "marks": 17,
+      "order": 3,
+      "name": "Magnetic Effects of Current and Magnetism",
+      "id": "n_9726c99193d4d988",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 12,
+        "section": "Course structure Class 12, Unit IV"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 14,
+            "section": "Unit IV: Electromagnetic Induction and Alternating Currents, chapter 6"
+          },
+          "chapter_number": 6,
+          "contents": "Electromagnetic induction; Faraday's laws, induced EMF and current; Lenz's Law, Self and mutual induction.",
+          "order": 1,
+          "name": "Electromagnetic Induction",
+          "id": "n_a3f9f618096b8131",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 14,
+            "section": "Unit IV: Electromagnetic Induction and Alternating Currents, chapter 7"
+          },
+          "chapter_number": 7,
+          "contents": "Alternating currents, peak and RMS value of alternating current/voltage; reactance and impedance; LCR series circuit (phasors only), resonance, power in AC circuits, power factor, wattless current. AC generator, Transformer.",
+          "order": 2,
+          "name": "Alternating Current",
+          "id": "n_ffe97ac93ea43c96",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "IV",
+      "order": 4,
+      "name": "Electromagnetic Induction and Alternating Currents",
+      "id": "n_651096e6f469ddbf",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 12,
+        "section": "Course structure Class 12, Unit V"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 14,
+            "section": "Unit V: Electromagnetic Waves, chapter 8"
+          },
+          "chapter_number": 8,
+          "contents": "Basic idea of displacement current, Electromagnetic waves, their characteristics, their transverse nature (qualitative idea only). Electromagnetic spectrum (radio waves, microwaves, infrared, visible, ultraviolet, X-rays, gamma rays) including elementary facts about their uses.",
+          "order": 1,
+          "name": "Electromagnetic Waves",
+          "id": "n_746540101138b6bd",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "V",
+      "order": 5,
+      "name": "Electromagnetic Waves",
+      "id": "n_5aa57fc96e450249",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 12,
+        "section": "Course structure Class 12, Unit VI"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 15,
+            "section": "Unit VI: Optics, chapter 9"
+          },
+          "chapter_number": 9,
+          "contents": "Ray Optics: Reflection of light, spherical mirrors, mirror formula, refraction of light, total internal reflection and optical fibers, refraction at spherical surfaces, lenses, thin lens formula, lens maker’s formula, magnification, power of a lens, combination of thin lenses in contact, refraction of light through a prism. Optical instruments: Microscopes and astronomical telescopes (reflecting and refracting) and their magnifying powers.",
+          "order": 1,
+          "name": "Ray Optics and Optical Instruments",
+          "id": "n_85c701e1ecc78f42",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 15,
+            "section": "Unit VI: Optics, chapter 10"
+          },
+          "chapter_number": 10,
+          "contents": "Wave optics: Wave front and Huygen’s principle, reflection and refraction of plane wave at a plane surface using wave fronts. Proof of laws of reflection and refraction using Huygen’s principle. Interference, Young's double slit experiment and expression for fringe width (No derivation final expression only), coherent sources and sustained interference of light, diffraction due to a single slit, width of central maxima (qualitative treatment only).",
+          "order": 2,
+          "name": "Wave Optics",
+          "id": "n_61f22f7b3548acb8",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "VI",
+      "marks": 18,
+      "order": 6,
+      "name": "Optics",
+      "id": "n_73c29857356601b8",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 12,
+        "section": "Course structure Class 12, Unit VII"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 15,
+            "section": "Unit VII: Dual Nature of Radiation and Matter, chapter 11"
+          },
+          "chapter_number": 11,
+          "contents": "Dual nature of radiation, Photoelectric effect, Hertz and Lenard's observations; Einstein's photoelectric equation-particle nature of light. Experimental study of photoelectric effect Matter waves-wave nature of particles, de-Broglie relation.",
+          "order": 1,
+          "name": "Dual Nature of Radiation and Matter",
+          "id": "n_069f19fd1b4ce6c4",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "VII",
+      "order": 7,
+      "name": "Dual Nature of Radiation and Matter",
+      "id": "n_2dc3acbe42e76285",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 12,
+        "section": "Course structure Class 12, Unit VIII"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 15,
+            "section": "Unit VIII: Atoms and Nuclei, chapter 12"
+          },
+          "chapter_number": 12,
+          "contents": "Alpha-particle scattering experiment; Rutherford's model of atom; Bohr model of hydrogen atom, Expression for radius of nth possible orbit, velocity and energy of electron in nth orbit, hydrogen line spectra (qualitative treatment only).",
+          "order": 1,
+          "name": "Atoms",
+          "id": "n_cde9a09be1e2e76c",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 15,
+            "section": "Unit VIII: Atoms and Nuclei, chapter 13"
+          },
+          "chapter_number": 13,
+          "contents": "Composition and size of nucleus, nuclear force Mass-energy relation, mass defect; binding energy per nucleon and its variation with mass number; nuclear fission, nuclear fusion.",
+          "order": 2,
+          "name": "Nuclei",
+          "id": "n_6907ea75dca6b524",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "VIII",
+      "marks": 12,
+      "order": 8,
+      "name": "Atoms and Nuclei",
+      "id": "n_88ad73a8d5c3110e",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 12,
+        "section": "Course structure Class 12, Unit IX"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 16,
+            "section": "Unit IX: Electronic Devices, chapter 14"
+          },
+          "chapter_number": 14,
+          "contents": "Energy bands in conductors, semiconductors and insulators (qualitative ideas only) Intrinsic and extrinsic semiconductors- p and n type, p-n junction Semiconductor diode - I-V characteristics in forward and reverse bias, application of junction diode -diode as a rectifier.",
+          "order": 1,
+          "name": "Semiconductor Electronics: Materials, Devices and Simple Circuits",
+          "id": "n_9a26beeb738c8a19",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "IX",
+      "marks": 7,
+      "order": 9,
+      "name": "Electronic Devices",
+      "id": "n_a75bb32596953d51",
+      "aliases": []
+    }
+  ],
+  "note": "Units and chapters are the course structure table; each chapter carries the detailed contents the document states for it. The document assigns marks to groups of units rather than to every unit, so marks are recorded only where the table puts a figure on that unit's own row. Where a unit's contents are stated as one run of prose, the topics below are that prose split at its own commas, semicolons and full stops; every topic string is verbatim, only the boundaries are ours, and the unit keeps the untouched prose in `contents`."
+}

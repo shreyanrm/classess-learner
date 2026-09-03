@@ -1,0 +1,210 @@
+{
+  "framework_id": "isc",
+  "framework_name": "Indian School Certificate (CISCE)",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cisce.org/",
+  "aliases": [
+    "ISC",
+    "CISCE",
+    "Council for the Indian School Certificate Examinations"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "exam_year": 2028,
+  "level": "Class 11",
+  "level_order": 11,
+  "subject": "Physics",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "isc-physics",
+      "title": "Physics, ISC examination year 2027",
+      "publisher": "Council for the Indian School Certificate Examinations",
+      "url": "https://cisce.org/wp-content/uploads/2026/02/ISC-2027-Physics.pdf",
+      "media_type": "application/pdf",
+      "pages": 27,
+      "bytes": 3376583,
+      "fetched_at": "2026-09-03T07:29:54Z",
+      "document_sha256": "18d4fc0f33ff9b5a5cdb575ec92190f3a32bbd4d69931566adff3de32792a6d2",
+      "extracted_text_sha256": "6c3dc56c10960f6ec5fa449b5a70e019f33ab1221b8b90cea7034c217e27c344",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 5,
+        "section": "Class XI, section 1"
+      },
+      "topics": null,
+      "unit_number": 1,
+      "contents": "2. Kinematics 23 Marks",
+      "order": 1,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Physical World and Measurement",
+      "id": "n_a0573dec45f007b9",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 5,
+        "section": "Class XI, section 2"
+      },
+      "topics": null,
+      "unit_number": 2,
+      "order": 2,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Kinematics",
+      "id": "n_30a4c8c8a0472eea",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 6,
+        "section": "Class XI, section 3"
+      },
+      "topics": null,
+      "unit_number": 3,
+      "order": 3,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Laws of Motion",
+      "id": "n_dcd3a41c4879ddd5",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 7,
+        "section": "Class XI, section 4"
+      },
+      "topics": null,
+      "unit_number": 4,
+      "order": 4,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Work, Power and Energy",
+      "id": "n_17a9d815ffbef8db",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 8,
+        "section": "Class XI, section 5"
+      },
+      "topics": null,
+      "unit_number": 5,
+      "order": 5,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Motion of System of Particles and Rigid Body",
+      "id": "n_b8cefb7931f74228",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 8,
+        "section": "Class XI, section 6"
+      },
+      "topics": null,
+      "unit_number": 6,
+      "order": 6,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Gravitation",
+      "id": "n_20f57fa485be8e4d",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 9,
+        "section": "Class XI, section 7"
+      },
+      "topics": null,
+      "unit_number": 7,
+      "order": 7,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Properties of Bulk Matter",
+      "id": "n_e724eac39db0283e",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 10,
+        "section": "Class XI, section 8"
+      },
+      "topics": null,
+      "unit_number": 8,
+      "order": 8,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Heat and Thermodynamics",
+      "id": "n_e22b83aae00e6851",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 10,
+        "section": "Class XI, section 9"
+      },
+      "topics": null,
+      "unit_number": 9,
+      "order": 9,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Behaviour of Perfect Gases and Kinetic Theory of Gases",
+      "id": "n_6c60d7f703afaab5",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 12,
+        "section": "Class XI, section 10"
+      },
+      "topics": null,
+      "unit_number": 10,
+      "order": 10,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Oscillations and Waves",
+      "id": "n_b58bb551100037f7",
+      "aliases": []
+    }
+  ],
+  "note": "The unit list and the unit order below are read off the CISCE booklet for this subject and were checked by hand against it. The topic layer that an earlier pass derived from the booklet's two-column layout has been withdrawn: the re-flow keyed off line position rather than the booklet's own bracketed sub-headings, which truncated topic titles mid-phrase and filed topics under the wrong unit. Nothing from that layer is kept, and no topic list is asserted here. Next step: re-derive the topics from the booklet's bracket structure, then have a second reader confirm the unit to topic mapping before anything is promoted."
+}

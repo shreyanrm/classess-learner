@@ -1,0 +1,412 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 11",
+  "level_order": 11,
+  "subject": "Biology",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "cbse-1112-biology",
+      "title": "Biology, Classes XI and XII, Secondary Curriculum Part 2, 2026-27",
+      "publisher": "Central Board of Secondary Education",
+      "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Biology_SecP2_2026-27.pdf",
+      "media_type": "application/pdf",
+      "pages": 15,
+      "bytes": 414058,
+      "fetched_at": "2026-09-03T07:03:56Z",
+      "document_sha256": "3a5767515b41b12b9356151e759beba48bb15a1b711b96c321fa273a7fa7a6ee",
+      "extracted_text_sha256": "65c2a52b533286a61f302ca4124b4341f2ceda2f4e16366f88d1afb435458ef2",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-biology",
+        "page": 3,
+        "section": "Unit I"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 3,
+            "section": "Unit I: Diversity of Living Organisms, chapter 1"
+          },
+          "chapter_number": 1,
+          "contents": "Biodiversity; Need for classification; three domains of life; taxonomy and systematics; concept of species and taxonomical hierarchy; binomial nomenclature",
+          "order": 1,
+          "name": "The Living World",
+          "id": "n_608567495b9c2892",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 3,
+            "section": "Unit I: Diversity of Living Organisms, chapter 2"
+          },
+          "chapter_number": 2,
+          "contents": "Five kingdom classification; Salient features and classification of Monera, Protista and Fungi into major groups; Lichens, Viruses and Viroids.",
+          "order": 2,
+          "name": "Biological Classification",
+          "id": "n_d64429f310d19543",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 3,
+            "section": "Unit I: Diversity of Living Organisms, chapter 3"
+          },
+          "chapter_number": 3,
+          "contents": "Classification of plants into major groups; Salient and distinguishing features and a few examples of Algae, Bryophyta, Pteridophyta, Gymnospermae and Angiosperms.",
+          "order": 3,
+          "name": "Plant Kingdom",
+          "id": "n_b9c52050bb758683",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 3,
+            "section": "Unit I: Diversity of Living Organisms, chapter 4"
+          },
+          "chapter_number": 4,
+          "contents": "Salient features and classification of animals, non-chordates up to phyla level and chordates upto class level (salient features and at a few examples of each category). (No live animals or specimen should be displayed.)",
+          "order": 4,
+          "name": "Animal Kingdom",
+          "id": "n_31f03db0cf6b9f0d",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "I",
+      "marks": 15,
+      "order": 1,
+      "name": "Diversity of Living Organisms",
+      "id": "n_de2691ac7baa4f99",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-biology",
+        "page": 3,
+        "section": "Unit II"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 3,
+            "section": "Unit II: Structural Organization in Plants and Animals, chapter 5"
+          },
+          "chapter_number": 5,
+          "contents": "Morphology of different parts of flowering plants: root, stem, leaf, inflorescence, flower, fruit and seed. Description of family Solanaceae",
+          "order": 1,
+          "name": "Morphology of Flowering Plants",
+          "id": "n_3ffb952781997432",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 3,
+            "section": "Unit II: Structural Organization in Plants and Animals, chapter 6"
+          },
+          "chapter_number": 6,
+          "contents": "Anatomy and functions of tissue systems in dicots and monocots.",
+          "order": 2,
+          "name": "Anatomy of Flowering Plants",
+          "id": "n_e8b95e76bf5edb7a",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 4,
+            "section": "Unit II: Structural Organization in Plants and Animals, chapter 7"
+          },
+          "chapter_number": 7,
+          "contents": "Morphology, Anatomy and functions of different systems (digestive, circulatory, respiratory, nervous and reproductive) of frog.",
+          "order": 3,
+          "name": "Structural Organisation in Animals",
+          "id": "n_c10c36c713657c81",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "II",
+      "marks": 10,
+      "order": 2,
+      "name": "Structural Organization in Plants and Animals",
+      "id": "n_635da2694f586b99",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-biology",
+        "page": 4,
+        "section": "Unit III"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 4,
+            "section": "Unit III: Cell: Structure and Function, chapter 8"
+          },
+          "chapter_number": 8,
+          "contents": "Cell theory and cell as the basic unit of life, structure of prokaryotic and eukaryotic cells; Plant cell and animal cell; cell envelope; cell membrane, cell wall; cell organelles - structure and function; endomembrane system, endoplasmic reticulum, golgi bodies, lysosomes, vacuoles, mitochondria, ribosomes, plastids, microbodies; cytoskeleton, cilia, flagella, centrioles (ultrastructure and function); nucleus.",
+          "order": 1,
+          "name": "Cell-The Unit of Life",
+          "id": "n_a08d2f4c90a5b7d6",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 4,
+            "section": "Unit III: Cell: Structure and Function, chapter 9"
+          },
+          "chapter_number": 9,
+          "contents": "Chemical constituents of living cells: biomolecules, structure and function of proteins, carbohydrates, lipids, and nucleic acids; Enzyme - types, properties, enzyme action. (Topics excluded: Nature of Bond Linking Monomers in a Polymer, Dynamic State of Body Constituents Concept of Metabolism, Metabolic Basis of Living, The Living State)",
+          "order": 2,
+          "name": "Biomolecules",
+          "id": "n_f8bc0c558c2e9bd5",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 4,
+            "section": "Unit III: Cell: Structure and Function, chapter 10"
+          },
+          "chapter_number": 10,
+          "contents": "Cell cycle, mitosis, meiosis and their significance",
+          "order": 3,
+          "name": "Cell Cycle and Cell Division",
+          "id": "n_255e6c0f5a945036",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "III",
+      "marks": 15,
+      "order": 3,
+      "name": "Cell: Structure and Function",
+      "id": "n_3d7342f0ff9b9d38",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-biology",
+        "page": 4,
+        "section": "Unit IV"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 4,
+            "section": "Unit IV: Plant Physiology, chapter 11"
+          },
+          "chapter_number": 11,
+          "contents": "Photosynthesis as a means of autotrophic nutrition; site of photosynthesis, pigments involved in photosynthesis (elementary idea); photochemical and biosynthetic phases of photosynthesis; cyclic and non-cyclic photophosphorylation; chemiosmotic hypothesis; photorespiration; C3 and C4 pathways; factors affecting photosynthesis.",
+          "order": 1,
+          "name": "Photosynthesis in Higher Plants",
+          "id": "n_fc9f05849fa5889e",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 4,
+            "section": "Unit IV: Plant Physiology, chapter 12"
+          },
+          "chapter_number": 12,
+          "contents": "Exchange of gases; cellular respiration - glycolysis, fermentation (anaerobic), TCA cycle and electron transport system (aerobic); energy relations - number of ATP molecules generated; amphibolic pathways; respiratory quotient.",
+          "order": 2,
+          "name": "Respiration in Plants",
+          "id": "n_572e3e8fa590e150",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 4,
+            "section": "Unit IV: Plant Physiology, chapter 13"
+          },
+          "chapter_number": 13,
+          "contents": "Seed germination; phases of plant growth and plant growth rate; conditions of growth; differentiation, dedifferentiation and redifferentiation; sequence of developmental processes in a plant cell; plant growth regulators - auxin, gibberellin, cytokinin, ethylene, ABA.",
+          "order": 3,
+          "name": "Plant - Growth and Development",
+          "id": "n_f8701894451afdcd",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "IV",
+      "marks": 12,
+      "order": 4,
+      "name": "Plant Physiology",
+      "id": "n_fa732bacd8a682c9",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-biology",
+        "page": 4,
+        "section": "Unit V"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 5,
+            "section": "Unit V: Human Physiology, chapter 14"
+          },
+          "chapter_number": 14,
+          "contents": "Respiratory organs in animals (recall only); Respiratory system in humans; mechanism of breathing and its regulation in humans - exchange of gases, transport of gases and regulation of respiration, respiratory volume; disorders related to respiration - asthma, emphysema, occupational respiratory disorders.",
+          "order": 1,
+          "name": "Breathing and Exchange of Gases",
+          "id": "n_743c99d2d4dc8bc8",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 5,
+            "section": "Unit V: Human Physiology, chapter 15"
+          },
+          "chapter_number": 15,
+          "contents": "Composition of blood, blood groups, coagulation of blood; composition of lymph and its function; human circulatory system - Structure of human heart and blood vessels; cardiac cycle, cardiac output, ECG; double circulation; regulation of cardiac activity; disorders of circulatory system - hypertension, coronary artery disease, angina pectoris, heart failure.",
+          "order": 2,
+          "name": "Body Fluids and Circulation",
+          "id": "n_baebe9514a024c06",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 5,
+            "section": "Unit V: Human Physiology, chapter 16"
+          },
+          "chapter_number": 16,
+          "contents": "Modes of excretion - ammonotelism, ureotelism, uricotelism; human excretory system – structure and function; urine formation, osmoregulation; regulation of kidney function - renin - angiotensin, atrial natriuretic factor, ADH and diabetes insipidus; role of other organs in excretion; disorders - uremia, renal failure, renal calculi, nephritis; dialysis and artificial kidney, kidney transplant.",
+          "order": 3,
+          "name": "Excretory Products and their Elimination",
+          "id": "n_6b641fc55c0153de",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 5,
+            "section": "Unit V: Human Physiology, chapter 17"
+          },
+          "chapter_number": 17,
+          "contents": "Types of movement - ciliary, flagellar, muscular; skeletal muscle, contractile proteins and muscle contraction; skeletal system and its functions; joints; disorders of muscular and skeletal systems - myasthenia gravis, tetany, muscular dystrophy, arthritis, osteoporosis, gout.",
+          "order": 4,
+          "name": "Locomotion and Movement",
+          "id": "n_717a86e2bafa8238",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 5,
+            "section": "Unit V: Human Physiology, chapter 18"
+          },
+          "chapter_number": 18,
+          "contents": "Neuron and nerves; Nervous system in humans - central nervous system; peripheral nervous system and visceral nervous system; generation and conduction of nerve impulse",
+          "order": 5,
+          "name": "Neural Control and Coordination",
+          "id": "n_22b8066644e684ef",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-biology",
+            "page": 5,
+            "section": "Unit V: Human Physiology, chapter 19"
+          },
+          "chapter_number": 19,
+          "contents": "Endocrine glands and hormones; human endocrine system - hypothalamus, pituitary, pineal, thyroid, parathyroid, adrenal, pancreas, gonads; mechanism of hormone action (elementary idea); role of hormones as messengers and regulators, hypo - and hyperactivity and related disorders; dwarfism, acromegaly, cretinism, goiter, exophthalmic goitre, diabetes, Addison's disease. The following topics are included in the syllabus but will be assessed only formatively to reinforce understanding without adding to summative assessments. The reduces academic stress while ensuring meaningful learning. Schools can integrate these with existing chapters as they align well. Relevant NCERT textual material is enclosed for reference. Digestion and Absorption (Please Refer to CBSE Reading Material) Alimentary canal and digestive glands, role of digestive enzymes and gastrointestinal hormones; Peristalsis, digestion, absorption and assimilation of proteins, carbohydrates and fats; calorific values of proteins, carbohydrates and fats; egestion; nutritional and digestive disorders - PEM, indigestion, constipation, vomiting, jaundice, diarrhea.",
+          "order": 6,
+          "name": "Chemical Coordination and Integration",
+          "id": "n_b5b4e70da5c9ce3b",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "V",
+      "marks": 18,
+      "order": 5,
+      "name": "Human Physiology",
+      "id": "n_dc0550717b702d4f",
+      "aliases": []
+    }
+  ],
+  "note": "Units and marks are the course structure table; topics are the document's own chapters, each carrying the contents stated for it verbatim."
+}

@@ -1,0 +1,167 @@
+{
+  "framework_id": "isc",
+  "framework_name": "Indian School Certificate (CISCE)",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cisce.org/",
+  "aliases": [
+    "ISC",
+    "CISCE",
+    "Council for the Indian School Certificate Examinations"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "exam_year": 2027,
+  "level": "Class 12",
+  "level_order": 12,
+  "subject": "Mathematics",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "isc-maths",
+      "title": "Mathematics, ISC examination year 2027",
+      "publisher": "Council for the Indian School Certificate Examinations",
+      "url": "https://cisce.org/wp-content/uploads/2025/04/17.-ISC-Mathematics.pdf",
+      "media_type": "application/pdf",
+      "pages": 18,
+      "bytes": 6566001,
+      "fetched_at": "2026-09-03T07:29:54Z",
+      "document_sha256": "fe272b0fbf5e1ef1df1a5a8ae269bc3ffad18905107c3e9678143a6754e8d9a5",
+      "extracted_text_sha256": "59bb6cf0036fdd7671b1a50046144ef6837c9787563344562733285c1fc7fd45",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "isc-maths",
+        "page": 11,
+        "section": "Class XII, section 1"
+      },
+      "topics": null,
+      "unit_number": 1,
+      "order": 1,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Relations and Functions",
+      "id": "n_1578eafda17e37b9",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-maths",
+        "page": 12,
+        "section": "Class XII, section 2"
+      },
+      "topics": null,
+      "unit_number": 2,
+      "order": 2,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Algebra",
+      "id": "n_5cb22c27caa959a2",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-maths",
+        "page": 13,
+        "section": "Class XII, section 3"
+      },
+      "topics": null,
+      "unit_number": 3,
+      "order": 3,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Calculus",
+      "id": "n_8f73218e75eafd13",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-maths",
+        "page": 15,
+        "section": "Class XII, section 4"
+      },
+      "topics": null,
+      "unit_number": 4,
+      "contents": "Vectors and scalars, magnitude and direction of a vector. Direction cosines and direction ratios of a vector. Types of vectors (equal, unit, zero, parallel and collinear vectors), position vector of a point, negative of a vector, components of a vector, addition of vectors, multiplication of a vector by a scalar, position vector of a point dividing a line segment in a given ratio. Definition, Geometrical Interpretation, properties and application of scalar (dot) product of vectors, vector (cross) product of vectors. - As directed line segments. - Magnitude and direction of a vector. - Types: equal vectors, unit vectors, zero vector. - Position vector. - Components of a vector. - Vectors in two and three dimensions. - iˆ, ˆj , kˆ as unit vectors along the x, y and the z axes; expressing a vector in terms of the unit vectors. - Operations: Sum and Difference of vectors; scalar multiplication of a vector. - Section formula. - Scalar (dot) product of vectors and its geometrical significance. - Scalar and vector projection. - Cross product and its geometrical significance. Its properties - area of a triangle, area of parallelogram, collinear vectors. NOTE: Proofs of geometrical theorems by using Vector algebra are excluded. Three - dimensional Geometry Direction cosines and direction ratios of a line joining two points. Cartesian equation and vector equation of a line, coplanar and skew lines, shortest distance between two lines. Cartesian and vector equation of a plane. Angle between (i) two lines, (ii) two planes, (iii) a line and a plane. Distance of a point from a plane. - Equation of x-axis, y-axis, z axis and lines parallel to them. - Equation of xy - plane, yz – plane, zx – plane. - Direction cosines, direction ratios. - Angle between two lines in terms of direction cosines /direction ratios. - Condition for lines to be perpendicular/ parallel. • Lines - Cartesian and vector equations of a line through one and two points. - Coplanar and skew lines. - Conditions for intersection of two lines. - Distance of a point from a line. - Shortest distance between two lines. • Planes - Cartesian and vector equation of a plane. - Direction ratios of the normal to the plane. - One point form. - Normal form. - Intercept form. - Distance of a point from a plane. - Intersection of the line and plane. - Angle between two planes, a line and a plane.",
+      "order": 4,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Vector Algebra",
+      "id": "n_784358166667c54f",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-maths",
+        "page": 15,
+        "section": "Class XII, section 5"
+      },
+      "topics": null,
+      "unit_number": 5,
+      "order": 5,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Three - dimensional Geometry",
+      "id": "n_5a57432df5cb51e5",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-maths",
+        "page": 16,
+        "section": "Class XII, section 6"
+      },
+      "topics": null,
+      "unit_number": 6,
+      "contents": "Introduction, related terminology such as constraints, objective function, optimization, different types of linear programming (L.P.) problems, mathematical formulation of L.P. problems, graphical method of solution for problems in two variables, feasible and infeasible regions (bounded and unbounded), feasible and infeasible solutions, optimal feasible solutions (up to three non-trivial constraints). Introduction, definition of related terminology such as constraints, objective function, optimization, advantages of linear programming; limitations of linear programming; application areas of linear programming; different types of linear programming (L.P.) problems, mathematical formulation of L.P problems, graphical method of solution for problems in two variables, feasible (bounded/ unbounded) and infeasible regions, feasible and infeasible solutions, optimum feasible solution(may/may not exists).",
+      "order": 6,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Linear Programming",
+      "id": "n_51b82bbbcf507e8b",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-maths",
+        "page": 16,
+        "section": "Class XII, section 7"
+      },
+      "topics": null,
+      "unit_number": 7,
+      "contents": "Conditional probability, multiplication theorem on probability, independent events, total probability, Bayes’ theorem, Random variable and its probability distribution, mean of r a n d o m variable. - Independent and dependent events conditional events. - Laws of Probability, addition theorem, multiplication theorem, conditional probability. - Theorem of Total Probability. - Baye’s theorem. - Theoretical probability distribution, probability distribution function; mean of random variable. PAPER II PROJECT WORK – 20 Marks Candidates will be expected to have completed two projects. The project work will be assessed by the subject teacher and a Visiting Examiner appointed locally and approved by the Council. Mark allocation for each Project [10 marks]: Overall format 1 mark Content 4 marks Findings 2 marks Viva-voce based on the Project 3 marks Total 10 marks List of suggested assignments for Project Work:",
+      "order": 7,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Probability",
+      "id": "n_49bc8225ceefc0d9",
+      "aliases": []
+    }
+  ],
+  "note": "The unit list and the unit order below are read off the CISCE booklet for this subject and were checked by hand against it. The topic layer that an earlier pass derived from the booklet's two-column layout has been withdrawn: the re-flow keyed off line position rather than the booklet's own bracketed sub-headings, which truncated topic titles mid-phrase and filed topics under the wrong unit. Nothing from that layer is kept, and no topic list is asserted here. Next step: re-derive the topics from the booklet's bracket structure, then have a second reader confirm the unit to topic mapping before anything is promoted."
+}

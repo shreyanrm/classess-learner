@@ -1,0 +1,414 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 10",
+  "level_order": 10,
+  "subject": "Social Science",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "cbse-10-social",
+      "title": "Social Science (087), Class X, 2026-27",
+      "publisher": "Central Board of Secondary Education",
+      "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/SocialScience_SecP1X_2026-27.pdf",
+      "media_type": "application/pdf",
+      "pages": 17,
+      "bytes": 524927,
+      "fetched_at": "2026-09-03T07:03:50Z",
+      "document_sha256": "99d21fd5e2fdddb990797eec5450c31098438c6a7ecc4406fce401e5e88083eb",
+      "extracted_text_sha256": "151a2f9cb801ea5a6ca1ef7f30e150866c12397634513ee6d9983f9003fb3b7f",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "cbse-10-social",
+        "page": 1,
+        "section": "Course structure"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 1,
+            "section": "Course structure, History (India and the Contemporary World-II)"
+          },
+          "chapter_number": "I",
+          "section": "I. Events and processes",
+          "order": 1,
+          "name": "The Rise of Nationalism in Europe",
+          "id": "n_5e2cd51ee72cec5e",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 1,
+            "section": "Course structure, History (India and the Contemporary World-II)"
+          },
+          "chapter_number": "II",
+          "section": "I. Events and processes",
+          "order": 2,
+          "name": "Nationalism in India",
+          "id": "n_4abe207594f24f9e",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 1,
+            "section": "Course structure, History (India and the Contemporary World-II)"
+          },
+          "chapter_number": "III",
+          "section": "II. Livelihoods, Economies and Societies",
+          "assessment": "Subtopics 1 to 1.3, Pre Modern World to Conquest, disease and trade, are evaluated in the board examination; subtopics 2 to 4.4 are an interdisciplinary project assessed internally for 5 marks.",
+          "order": 3,
+          "name": "The Making of a Global World",
+          "id": "n_9704d8531e07757a",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 1,
+            "section": "Course structure, History (India and the Contemporary World-II)"
+          },
+          "chapter_number": "IV",
+          "section": "II. Livelihoods, Economies and Societies",
+          "assessment": "To be assessed as part of Periodic Assessment only.",
+          "order": 4,
+          "name": "The Age of Industrialisation",
+          "id": "n_2e68cdd09b84a47e",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 1,
+            "section": "Course structure, History (India and the Contemporary World-II)"
+          },
+          "chapter_number": "V",
+          "section": "III. Everyday Life, Culture and politics",
+          "order": 5,
+          "name": "Print Culture and the Modern world",
+          "id": "n_e7f515a8701627dc",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 20,
+      "order": 1,
+      "name": "History (India and the Contemporary World-II)",
+      "id": "n_982f9e1db695fd1f",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-10-social",
+        "page": 1,
+        "section": "Course structure"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 1,
+            "section": "Course structure, Geography (Contemporary India-II)"
+          },
+          "chapter_number": "1",
+          "order": 1,
+          "name": "Resources and Development",
+          "id": "n_36f174ccea419ce5",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 1,
+            "section": "Course structure, Geography (Contemporary India-II)"
+          },
+          "chapter_number": "2",
+          "order": 2,
+          "name": "Forest and Wildlife Resources",
+          "id": "n_89e7d3afe11d56b2",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 1,
+            "section": "Course structure, Geography (Contemporary India-II)"
+          },
+          "chapter_number": "3",
+          "order": 3,
+          "name": "Water resources",
+          "id": "n_9c6589a94f431939",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 1,
+            "section": "Course structure, Geography (Contemporary India-II)"
+          },
+          "chapter_number": "4",
+          "order": 4,
+          "name": "Agriculture",
+          "id": "n_8dddc77f1bad18ae",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 1,
+            "section": "Course structure, Geography (Contemporary India-II)"
+          },
+          "chapter_number": "5",
+          "order": 5,
+          "name": "Minerals and energy Resources",
+          "id": "n_0c8cd00eff54159c",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 1,
+            "section": "Course structure, Geography (Contemporary India-II)"
+          },
+          "chapter_number": "6",
+          "order": 6,
+          "name": "Manufacturing Industries",
+          "id": "n_c2f6bfd555e75e43",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 1,
+            "section": "Course structure, Geography (Contemporary India-II)"
+          },
+          "chapter_number": "7",
+          "assessment": "Only map pointing to be evaluated in the board examination.",
+          "order": 7,
+          "name": "Lifelines of National Economy",
+          "id": "n_3ebc530741c966b8",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 20,
+      "order": 2,
+      "name": "Geography (Contemporary India-II)",
+      "id": "n_639ed64c1c7bf003",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-10-social",
+        "page": 2,
+        "section": "Course structure"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 2,
+            "section": "Course structure, Political Science (Democratic Politics-II)"
+          },
+          "chapter_number": "1",
+          "section": "I",
+          "order": 1,
+          "name": "Power-sharing",
+          "id": "n_26cc4b2c6d381532",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 2,
+            "section": "Course structure, Political Science (Democratic Politics-II)"
+          },
+          "chapter_number": "2",
+          "section": "I",
+          "order": 2,
+          "name": "Federalism",
+          "id": "n_6fe4e6fe5afd21e2",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 2,
+            "section": "Course structure, Political Science (Democratic Politics-II)"
+          },
+          "chapter_number": "3",
+          "section": "II",
+          "order": 3,
+          "name": "Gender, Religion and Caste",
+          "id": "n_5f4b714bde1ec6a2",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 2,
+            "section": "Course structure, Political Science (Democratic Politics-II)"
+          },
+          "chapter_number": "4",
+          "section": "III",
+          "order": 4,
+          "name": "Political Parties",
+          "id": "n_930e405944e4d31a",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 2,
+            "section": "Course structure, Political Science (Democratic Politics-II)"
+          },
+          "chapter_number": "5",
+          "section": "IV",
+          "order": 5,
+          "name": "Outcomes of Democracy",
+          "id": "n_b0912932c132c5eb",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 20,
+      "order": 3,
+      "name": "Political Science (Democratic Politics-II)",
+      "id": "n_66ebf6944cd73c5d",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-10-social",
+        "page": 2,
+        "section": "Course structure"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 2,
+            "section": "Course structure, Economics (Understanding Economic Development)"
+          },
+          "chapter_number": "1",
+          "order": 1,
+          "name": "Development",
+          "id": "n_a7db0d71a1c61376",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 2,
+            "section": "Course structure, Economics (Understanding Economic Development)"
+          },
+          "chapter_number": "2",
+          "order": 2,
+          "name": "Sectors of the Indian Economy",
+          "id": "n_cf87bb4ff8923bb1",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 2,
+            "section": "Course structure, Economics (Understanding Economic Development)"
+          },
+          "chapter_number": "3",
+          "order": 3,
+          "name": "Money and Credit",
+          "id": "n_04ad742d105b880e",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-10-social",
+            "page": 2,
+            "section": "Course structure, Economics (Understanding Economic Development)"
+          },
+          "chapter_number": "4",
+          "assessment": "What is Globalisation? and Factors that have enabled Globalisation are evaluated in the board examination; Production across the countries, Chinese toys in India, World Trade Organisation and The Struggle for a Fair Globalisation are an interdisciplinary project assessed internally for 5 marks.",
+          "order": 4,
+          "name": "Globalisation and the Indian Economy",
+          "id": "n_f71ab5026adf8d6e",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 20,
+      "order": 4,
+      "name": "Economics (Understanding Economic Development)",
+      "id": "n_1455d818ac21e95a",
+      "aliases": []
+    }
+  ],
+  "note": "Units are the four disciplines of the course structure with their prescribed NCERT book, topics are the prescribed chapters, and the marks are the document's own. Each unit carries 20 marks, of which History and Geography include map pointing (18 + 2 and 17 + 3). The document states no per-chapter learning objectives."
+}

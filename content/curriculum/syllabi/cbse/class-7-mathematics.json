@@ -1,0 +1,307 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 7",
+  "level_order": 7,
+  "subject": "Mathematics",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "ncert-7-ganita1",
+      "title": "Ganita Prakash, textbook of Mathematics for Grade 7, Part 1 (prelims)",
+      "publisher": "National Council of Educational Research and Training",
+      "url": "https://ncert.nic.in/textbook/pdf/gegp1ps.pdf",
+      "media_type": "application/pdf",
+      "pages": 18,
+      "bytes": 2727751,
+      "fetched_at": "2026-09-03T07:05:53Z",
+      "document_sha256": "d05d0fe3524eaa7727683387787f04c84f3d444e9f6b4b44819b97a6ee023d2c",
+      "extracted_text_sha256": "2d111ddfcd42c4d25c128878b8be5a1f3f827587d04ae0048bf1cd6988fe06a3",
+      "extraction": "python standard library extractor (zlib inflate over PDF content streams)"
+    },
+    {
+      "id": "ncert-7-ganita2",
+      "title": "Ganita Prakash, textbook of Mathematics for Grade 7, Part 2 (prelims)",
+      "publisher": "National Council of Educational Research and Training",
+      "url": "https://ncert.nic.in/textbook/pdf/gegp2ps.pdf",
+      "media_type": "application/pdf",
+      "pages": 18,
+      "bytes": 2830369,
+      "fetched_at": "2026-09-03T07:05:58Z",
+      "document_sha256": "59a3b897ce08f71605805ee73ecbfeef126a930bc0d9a3716d15e9dcf2c430aa",
+      "extracted_text_sha256": "8f09dfaebd5fa005bc50d76b65414a00cd4020def02cd5e47305237c51abcadf",
+      "extraction": "python standard library extractor (zlib inflate over PDF content streams)"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "ncert-7-ganita1",
+        "page": 17,
+        "section": "Contents"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-7-ganita1",
+            "page": 17,
+            "section": "Contents, chapter 1"
+          },
+          "chapter_number": 1,
+          "order": 1,
+          "name": "Large Numbers Around Us",
+          "id": "n_95040e878a248695",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-ganita1",
+            "page": 17,
+            "section": "Contents, chapter 2"
+          },
+          "chapter_number": 2,
+          "order": 2,
+          "name": "Arithmetic Expressions",
+          "id": "n_57a3a33bc6a002fa",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-ganita1",
+            "page": 17,
+            "section": "Contents, chapter 3"
+          },
+          "chapter_number": 3,
+          "order": 3,
+          "name": "A Peek Beyond the Point",
+          "id": "n_a1b3297455abd207",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-ganita1",
+            "page": 17,
+            "section": "Contents, chapter 4"
+          },
+          "chapter_number": 4,
+          "order": 4,
+          "name": "Expressions using Letter-Numbers",
+          "id": "n_ad52a6b56643dc5d",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-ganita1",
+            "page": 17,
+            "section": "Contents, chapter 5"
+          },
+          "chapter_number": 5,
+          "order": 5,
+          "name": "Parallel and Intersecting Lines",
+          "id": "n_fea79f7bc23990a3",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-ganita1",
+            "page": 17,
+            "section": "Contents, chapter 6"
+          },
+          "chapter_number": 6,
+          "order": 6,
+          "name": "Number Play",
+          "id": "n_aa0601a536e79e15",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-ganita1",
+            "page": 17,
+            "section": "Contents, chapter 7"
+          },
+          "chapter_number": 7,
+          "order": 7,
+          "name": "A Tale of Three Intersecting Lines",
+          "id": "n_6508d8df894f5b5c",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-ganita1",
+            "page": 17,
+            "section": "Contents, chapter 8"
+          },
+          "chapter_number": 8,
+          "order": 8,
+          "name": "Working with Fractions",
+          "id": "n_9eb060fd76500dc1",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Ganita Prakash, Grade 7, Part 1",
+      "order": 1,
+      "name": "Ganita Prakash, Grade 7, Part 1",
+      "id": "n_43f37780e911b100",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "ncert-7-ganita2",
+        "page": 17,
+        "section": "Contents"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-7-ganita2",
+            "page": 17,
+            "section": "Contents, chapter 1"
+          },
+          "chapter_number": 1,
+          "order": 1,
+          "name": "Geometric Twins",
+          "id": "n_805640356bcc2a64",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-ganita2",
+            "page": 17,
+            "section": "Contents, chapter 2"
+          },
+          "chapter_number": 2,
+          "order": 2,
+          "name": "Operations with Integers",
+          "id": "n_4bd675a06d4ba686",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-ganita2",
+            "page": 17,
+            "section": "Contents, chapter 3"
+          },
+          "chapter_number": 3,
+          "order": 3,
+          "name": "Finding Common Ground",
+          "id": "n_8f2d97d2ecee0407",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-ganita2",
+            "page": 17,
+            "section": "Contents, chapter 4"
+          },
+          "chapter_number": 4,
+          "order": 4,
+          "name": "Another Peek Beyond the Point",
+          "id": "n_0fdd01be711a82d6",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-ganita2",
+            "page": 17,
+            "section": "Contents, chapter 5"
+          },
+          "chapter_number": 5,
+          "order": 5,
+          "name": "Connecting the Dots",
+          "id": "n_00b8a12d9732eca3",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-ganita2",
+            "page": 17,
+            "section": "Contents, chapter 6"
+          },
+          "chapter_number": 6,
+          "order": 6,
+          "name": "Constructions and Tilings",
+          "id": "n_4f918f071102240d",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-ganita2",
+            "page": 17,
+            "section": "Contents, chapter 7"
+          },
+          "chapter_number": 7,
+          "order": 7,
+          "name": "Finding the Unknown",
+          "id": "n_c2435f36a066b4be",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Ganita Prakash, Grade 7, Part 2",
+      "order": 2,
+      "name": "Ganita Prakash, Grade 7, Part 2",
+      "id": "n_d1969313389e28dc",
+      "aliases": []
+    }
+  ],
+  "note": "CBSE publishes a curriculum document only for the secondary stage (classes IX to XII). For the middle stage it prescribes the NCERT textbooks, so the structure below is the structure of the prescribed NCERT book: units are the book's own parts or themes and topics are its chapters, read off the Contents page of the book's official prelims PDF on ncert.nic.in. A Contents page states no learning objectives, so none are recorded."
+}

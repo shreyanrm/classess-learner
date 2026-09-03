@@ -1,0 +1,343 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 12",
+  "level_order": 12,
+  "subject": "Mathematics",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "cbse-1112-maths",
+      "title": "Mathematics, Classes XI and XII, Secondary Curriculum Part 2, 2026-27",
+      "publisher": "Central Board of Secondary Education",
+      "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Maths_SecP2_2026-27.pdf",
+      "media_type": "application/pdf",
+      "pages": 12,
+      "bytes": 452732,
+      "fetched_at": "2026-09-03T07:03:57Z",
+      "document_sha256": "5bf4105d4076189fe00b879fd6d41ffadec87a894a078a7fb912b2f219769572",
+      "extracted_text_sha256": "f1055537cc1310356d9249f9b9aa92578aa4efacfa133d8dbe05311c2805db2b",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-maths",
+        "page": 7,
+        "section": "Unit I"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-maths",
+            "page": 7,
+            "section": "Unit I: Relations and Functions, chapter 1"
+          },
+          "chapter_number": 1,
+          "contents": "Types of relations: reflexive, symmetric, transitive and equivalence relations. One to one and onto functions.",
+          "order": 1,
+          "name": "Relations and Functions",
+          "id": "n_0bee026fdfd5560f",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-maths",
+            "page": 7,
+            "section": "Unit I: Relations and Functions, chapter 2"
+          },
+          "chapter_number": 2,
+          "contents": "Definition, range, domain, principal value branch. Graphs of inverse trigonometric functions.",
+          "order": 2,
+          "name": "Inverse Trigonometric Functions",
+          "id": "n_88aca601129609b6",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "I",
+      "marks": 8,
+      "order": 1,
+      "name": "Relations and Functions",
+      "id": "n_6f065dac9869f2ea",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-maths",
+        "page": 7,
+        "section": "Unit II"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-maths",
+            "page": 7,
+            "section": "Unit II: Algebra, chapter 1"
+          },
+          "chapter_number": 1,
+          "contents": "Concept, notation, order, equality, types of matrices, zero and identity matrix, transpose of a matrix, symmetric and skew symmetric matrices. Operations on matrices: Addition and multiplication and multiplication with a scalar. Simple properties of addition, multiplication and scalar multiplication. Non- commutativity of multiplication of matrices and existence of non- zero matrices whose product is the zero matrix (restrict to square matrices of order 2). Invertible matrices and proof of the uniqueness of inverse, if it exists; (Here all matrices will have real entries).",
+          "order": 1,
+          "name": "Matrices",
+          "id": "n_44b9b8c58d2baa9d",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-maths",
+            "page": 7,
+            "section": "Unit II: Algebra, chapter 2"
+          },
+          "chapter_number": 2,
+          "contents": "Determinant of a square matrix (up to 3 x 3 matrices), minors, co-factors and applications of determinants in finding the area of a triangle. Adjoint and inverse of a square matrix. Consistency, inconsistency and number of solutions of system of linear equations by examples, solving system of linear equations in two or three variables (having unique solution) using inverse of a matrix.",
+          "order": 2,
+          "name": "Determinants",
+          "id": "n_43b636e5664fd623",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "II",
+      "marks": 10,
+      "order": 2,
+      "name": "Algebra",
+      "id": "n_e73f7d52af74c7e4",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-maths",
+        "page": 7,
+        "section": "Unit III"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-maths",
+            "page": 8,
+            "section": "Unit III: Calculus, chapter 1"
+          },
+          "chapter_number": 1,
+          "contents": "Continuity and differentiability, chain rule, derivative of composite functions, derivatives of inverse trigonometric functions like sin−1 𝑥, cos−1 𝑥 and tan−1 𝑥, derivative of implicit functions. Concept of exponential and logarithmic functions. Derivatives of logarithmic and exponential functions. Logarithmic differentiation, derivative of functions expressed in parametric forms. Second order derivatives.",
+          "order": 1,
+          "name": "Continuity and Differentiability",
+          "id": "n_44c3f5c1d65df648",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-maths",
+            "page": 8,
+            "section": "Unit III: Calculus, chapter 2"
+          },
+          "chapter_number": 2,
+          "contents": "Applications of derivatives: rate of change of quantities, increasing/decreasing functions, maxima and minima (first derivative test motivated geometrically and second derivative test given as a provable tool). Simple problems (that illustrate basic principles and understanding of the subject as well as real- life situations).",
+          "order": 2,
+          "name": "Applications of Derivatives",
+          "id": "n_3b4f2327e7436e73",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-maths",
+            "page": 8,
+            "section": "Unit III: Calculus, chapter 3"
+          },
+          "chapter_number": 3,
+          "contents": "Integration as inverse process of differentiation. Integration of a variety of functions by substitution, by partial fractions and by parts, Evaluation of simple integrals of the following types and problems based on them. 𝒅𝒙 𝒅𝒙 𝒅𝒙 𝒅𝒙 𝒅𝒙 𝒑𝒙+𝒒 ∫ 𝒙𝟐 ±𝒂𝟐 , ∫ √ 𝟐 ,∫ ,∫ 𝒂𝒙𝟐 +𝒃𝒙+𝒄 ,∫ ,∫ 𝒂𝒙𝟐 +𝒃𝒙+𝒄 𝒅𝒙, 𝒙 ±𝒂𝟐 √𝒂𝟐 −𝒙𝟐 √𝒂𝒙𝟐 +𝒃𝒙+𝒄 𝒑𝒙+𝒒 ∫√ 𝒅𝒙, ∫ √𝒂𝟐 ± 𝒙𝟐 𝒅𝒙 , ∫ √𝒙𝟐 − 𝒂𝟐 𝒅𝒙 , ∫ √𝒂𝒙𝟐 + 𝒃𝒙 + 𝒄 𝒅𝒙 𝒂𝒙𝟐 +𝒃𝒙+𝒄 Fundamental Theorem of Calculus (without proof). Basic properties of definite integrals and evaluation of definite integrals.",
+          "order": 3,
+          "name": "Integrals",
+          "id": "n_d195482459f0fd56",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-maths",
+            "page": 8,
+            "section": "Unit III: Calculus, chapter 4"
+          },
+          "chapter_number": 4,
+          "contents": "Applications in finding the area under simple curves, especially lines, circles/ parabolas/ellipses (in standard form only)",
+          "order": 4,
+          "name": "Application of the Integrals",
+          "id": "n_1e637532ba01e31a",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-maths",
+            "page": 8,
+            "section": "Unit III: Calculus, chapter 5"
+          },
+          "chapter_number": 5,
+          "contents": "Definition, order and degree, general and particular solutions of a differential equation. Solution of differential equations by method of separation of variables, solutions of homogeneous differential equations of first order and first degree. Solutions of linear differential equation of the type: 𝑑𝑦 + 𝑝𝑦 = 𝑞, where 𝑝 and 𝑞 are functions of 𝑥 or constants. 𝑑𝑥 𝑑𝑥 + 𝑝𝑥 = 𝑞, where 𝑝 and 𝑞 are functions of 𝑦 or constants. 𝑑𝑦",
+          "order": 5,
+          "name": "Differential Equations",
+          "id": "n_b90049e8e9ab424d",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "III",
+      "marks": 35,
+      "order": 3,
+      "name": "Calculus",
+      "id": "n_8ea0386d75e9e657",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-maths",
+        "page": 8,
+        "section": "Unit IV"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-maths",
+            "page": 9,
+            "section": "Unit IV: Vectors and Three-dimensional Geometry, chapter 1"
+          },
+          "chapter_number": 1,
+          "contents": "Vectors and scalars, magnitude and direction of a vector. Direction cosines and direction ratios of a vector. Types of vectors (equal, unit, zero, parallel and collinear vectors), position vector of a point, negative of a vector, components of a vector, addition of vectors, multiplication of a vector by a scalar, position vector of a point dividing a line segment in a given ratio. Definition, Geometrical Interpretation, properties and application of scalar (dot) product of vectors, vector (cross) product of vectors.",
+          "order": 1,
+          "name": "Vectors",
+          "id": "n_ab77fcab8ce06c76",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-maths",
+            "page": 9,
+            "section": "Unit IV: Vectors and Three-dimensional Geometry, chapter 2"
+          },
+          "chapter_number": 2,
+          "contents": "Direction cosines and direction ratios of a line joining two points. Cartesian equation and vector equation of a line, skew lines, shortest distance between two lines. Angle between two lines.",
+          "order": 2,
+          "name": "Three-dimensional Geometry",
+          "id": "n_1e8f09d74baa4f96",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "IV",
+      "marks": 14,
+      "order": 4,
+      "name": "Vectors and Three-dimensional Geometry",
+      "id": "n_b8a0b2bffd4fbb50",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-maths",
+        "page": 9,
+        "section": "Unit V"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-maths",
+            "page": 9,
+            "section": "Unit V: Linear Programming Problem, chapter 1"
+          },
+          "chapter_number": 1,
+          "contents": "Introduction, related terminology such as constraints, objective function, optimization, graphical method of solution for problems in two variables, feasible and infeasible regions (bounded or unbounded), feasible and infeasible solutions, optimal feasible solutions (up to three non-trivial constraints).",
+          "order": 1,
+          "name": "Linear Programming",
+          "id": "n_933e04966808bd84",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "V",
+      "marks": 5,
+      "order": 5,
+      "name": "Linear Programming Problem",
+      "id": "n_5bf5db90e893edd8",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-maths",
+        "page": 9,
+        "section": "Unit VI"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-maths",
+            "page": 9,
+            "section": "Unit VI: Probability, chapter 1"
+          },
+          "chapter_number": 1,
+          "contents": "Conditional probability, multiplication theorem on probability, independent events, total probability, Bayes’ theorem.",
+          "order": 1,
+          "name": "Probability",
+          "id": "n_5f8f2c1c3185ab1c",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "VI",
+      "marks": 8,
+      "order": 6,
+      "name": "Probability",
+      "id": "n_582e337e61d3fe32",
+      "aliases": []
+    }
+  ],
+  "note": "Units and marks are the course structure table; topics are the document's own numbered chapters, each carrying the contents stated for it verbatim. The Class XI table carries the board's note that there is no chapter-wise weightage inside a unit."
+}

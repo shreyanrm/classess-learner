@@ -1,0 +1,532 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 9",
+  "level_order": 9,
+  "subject": "Mathematics",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "cbse-9-maths",
+      "title": "Mathematics, Class IX, Secondary Curriculum Part 1, 2026-27",
+      "publisher": "Central Board of Secondary Education",
+      "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/Maths_SecP1IX_2026-27.pdf",
+      "media_type": "application/pdf",
+      "pages": 13,
+      "bytes": 572533,
+      "fetched_at": "2026-09-03T07:03:39Z",
+      "document_sha256": "932ea66d6fbfcefce8182f28ab921c886187f5dea674321088b5c7230bbe6c32",
+      "extracted_text_sha256": "f1f5166995b9d421e59ecd78d0dfd00d904d90859da52c48ff7d1a2c3955b6a5",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "cbse-9-maths",
+        "page": 4,
+        "section": "Course structure Class IX, unit 1"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Understand the concept of a rational number",
+            "Represent rational numbers on the number line",
+            "Understand the properties of rational numbers",
+            "Explain the concept of density of rational numbers",
+            "Compute decimal representation of rational numbers",
+            "Understand the concept of irrational numbers",
+            "Prove the irrationality",
+            "Construct the square root spiral",
+            "Apply computational thinking to represent rational and irrational numbers through algorithms and visual models, generate decimal expansions systematically, and reason about numbers using step-by-step logical procedures."
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-maths",
+            "page": 4,
+            "section": "Unit 1, chapter Number System"
+          },
+          "order": 1,
+          "name": "Number System",
+          "id": "n_b424712d02d3f7be",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 7,
+      "periods": 12,
+      "order": 1,
+      "name": "Number System",
+      "id": "n_153ec8cbc610a9a2",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-maths",
+        "page": 4,
+        "section": "Course structure Class IX, unit 2"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Understand the meaning of an algebraic expression",
+            "Define a polynomial",
+            "Identify the degree, terms and coefficients of terms in a polynomial",
+            "Model linear growth and decay using linear polynomials",
+            "Explain and identify patterns in linear relationships",
+            "Identify the slope and y-intercept of a linear equation in two variables",
+            "Graph a linear equation in two variables",
+            "Use computational thinking to identify patterns, construct linear expressions, and systematically represent and analyse linear relationships using equations and graphs"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-maths",
+            "page": 5,
+            "section": "Unit 2, chapter Introduction to Polynomials"
+          },
+          "order": 1,
+          "name": "Introduction to Polynomials",
+          "id": "n_ffef04eaf70050f2",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Understand the concept of a sequence of numbers",
+            "Identify the pattern in a sequence and predict the next few terms",
+            "Determine the recursive and explicit rules for different sequences",
+            "Obtain the terms of sequence given its recursive and explicit rule",
+            "Identify Arithmetic Progressions (AP)",
+            "Determine the nth term of an AP",
+            "Visualise an AP graphically",
+            "Identify Geometric Progressions (GP)",
+            "Determine the nth term of a GP",
+            "Visualise a GP graphically",
+            "Analyse attributes of fractals using GP",
+            "Solve the Tower of Hanoi puzzle",
+            "Use computational thinking to identify patterns, write step-by-step rules, and model patterns in sequences and progressions"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-maths",
+            "page": 5,
+            "section": "Unit 2, chapter Sequences and Progressions"
+          },
+          "order": 2,
+          "name": "Sequences and Progressions",
+          "id": "n_f37cf86fe5855de8",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Visualise algebraic identities using geometric models",
+            "Determine the factors of algebraic expressions using identities",
+            "Interpret factors of quadratic expressions through geometric models",
+            "Find simplified versions of rational expressions",
+            "Use computational thinking strategies, such as decomposition and step-by-step procedures to visualise algebraic identities, factor expressions, and simplify rational expressions"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-maths",
+            "page": 5,
+            "section": "Unit 2, chapter Exploring Algebraic Identities"
+          },
+          "order": 3,
+          "name": "Exploring Algebraic Identities",
+          "id": "n_b34fe1bcdc649182",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Understand the concept of a linear equation in two variables",
+            "Graph a pair of linear equations",
+            "Solve a pair of linear equations graphically",
+            "Solve a pair of linear equations through the methods of substitution and elimination",
+            "Determine the nature of solutions of a pair of linear equations",
+            "Model and solve contextualised problems using a pair of linear equations and draw conclusions",
+            "Model daily-life phenomena using representations, such as graphs, tables, and equations",
+            "Use computational thinking to systematically represent, solve, and interpret pairs of linear equations through graphs, tables, and step-by-step procedures."
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-maths",
+            "page": 6,
+            "section": "Unit 2, chapter Linear Equations in Two Variables"
+          },
+          "order": 4,
+          "name": "Linear Equations in Two Variables",
+          "id": "n_f7f762ae2b49dfde",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 20,
+      "periods": 66,
+      "order": 2,
+      "name": "Algebra",
+      "id": "n_08142941fd142dbe",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-maths",
+        "page": 4,
+        "section": "Course structure Class IX, unit 3"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Specify locations and the position of one point relative to another point using coordinates",
+            "Represent a floor plan on a grid using coordinates",
+            "Compute the distance between two points using coordinates",
+            "Determine whether three points lie in a straight line using coordinates",
+            "Compute the position of the midpoint of a line segment using coordinates",
+            "Check whether a triangle is right-angled using coordinates",
+            "Apply computational thinking to model situations on the coordinate plane and verify geometric properties through systematic reasoning."
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-maths",
+            "page": 7,
+            "section": "Unit 3, chapter Coordinate Geometry"
+          },
+          "order": 1,
+          "name": "Coordinate Geometry",
+          "id": "n_612212f0e92b74d7",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 4,
+      "periods": 6,
+      "order": 3,
+      "name": "Coordinate Geometry",
+      "id": "n_be248d842c463765",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-maths",
+        "page": 4,
+        "section": "Course structure Class IX, unit 4"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Describe how geometry grew from the practical needs ancient civilisations",
+            "Describe contributions of India, Egypt and Greece to the development of geometric ideas",
+            "Understand the role of definitions, axioms, and postulates",
+            "Explain that there are elements of plane geometry (point, line, surface) for which we have an intuitive sense",
+            "State the 5 postulates of Euclidean geometry",
+            "Define parallelism of straight lines",
+            "Explain the construction of a square as given in the Sulbasutras",
+            "Justify simple constructions using the axioms"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-maths",
+            "page": 7,
+            "section": "Unit 4, chapter Introduction to Euclid's Geometry: Axioms and Postulates"
+          },
+          "order": 1,
+          "name": "Introduction to Euclid's Geometry: Axioms and Postulates",
+          "id": "n_1a9c3d01b08d5dbc",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Explain the notion of an angle",
+            "Explain the notion of a ray",
+            "Explain that angles are formed between two rays with a common starting point",
+            "State that a straight angle equals two right angles and measures 180° while a right angle measures 90°",
+            "Classify angles as acute, right, obtuse, or reflex",
+            "Define parallelism",
+            "State and apply the linear pair theorem and its converse",
+            "Follow proof by contradiction in geometry",
+            "Prove that vertically opposite angles are equal",
+            "Identify corresponding, alternate, and interior angles",
+            "Explain transitivity of parallelism",
+            "Explain why a triangle must have at least two acute angles; why it cannot have two obtuse angles, or all three angles less than 60°",
+            "Apply computational thinking to analyse geometric ideas by breaking constructions into ordered steps, using axioms and postulates as rules, and justifying geometric results through logical step-by-step reasoning"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-maths",
+            "page": 7,
+            "section": "Unit 4, chapter Lines and Angles"
+          },
+          "order": 2,
+          "name": "Lines and Angles",
+          "id": "n_e49fb79f035ba4ff",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Explain that a triangle is rigid, unlike a quadrilateral",
+            "Identify uses of triangle rigidity",
+            "Explain why triangles give strength and stability to structures",
+            "Describe what it means for two triangles to be congruent",
+            "Identify correspondence between the vertices, sides, and angles of two congruent triangles",
+            "Use the SAS congruence axiom",
+            "Use the SSS congruence condition",
+            "Use the ASA congruence condition",
+            "Use the RHS congruence condition",
+            "Use the AAS congruence condition",
+            "Prove the basic properties of isosceles triangles",
+            "Explain the notion of a proposition",
+            "Explain the notion of converse of a proposition",
+            "Identify the converse of a given proposition",
+            "Explain that not all converses are true; use counter examples to show that some converses are false",
+            "Explain why SSA is not, in general, a valid congruence condition",
+            "Identify the situations where SSA is a valid congruence condition",
+            "Justify the role of diagram accuracy"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-maths",
+            "page": 8,
+            "section": "Unit 4, chapter Triangles - Congruence Theorems"
+          },
+          "order": 3,
+          "name": "Triangles - Congruence Theorems",
+          "id": "n_67b49353040f3abc",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Frame a precise definition of a 4-gon",
+            "Prove various characterisations of a parallelogram",
+            "Prove the midpoint theorem",
+            "Prove a converse of the midpoint theorem",
+            "Prove that the medians of a triangle are concurrent and each median is divided in the ratio 2:1 at the point of concurrence",
+            "Prove that the 4-gon formed by joining the midpoints of a given 4-gon is a parallelogram",
+            "Find the coordinates of the midpoint of a line segment given its end points and find the coordinates of the fourth vertex of a parallelogram given the other three",
+            "Understand reflection and rotation symmetries of 4-gons",
+            "Understand how any 4-gon can tile a plane",
+            "Practice forming logical converses of statements and asking questions guided by converses of theorems",
+            "Engage in drawing, measurement and paper manipulation activities to discover geometric patterns involving triangles and 4-gons"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-maths",
+            "page": 9,
+            "section": "Unit 4, chapter 4-gons (Quadrilaterals)"
+          },
+          "order": 4,
+          "name": "4-gons (Quadrilaterals)",
+          "id": "n_ab83ece04a34f2da",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "State the definition of a circle",
+            "Explain the meanings of the terms ‘chord’, ‘diameter’, ‘radius’, ‘arc’, ‘segment’, and ‘sector’",
+            "Explain why there exists a unique circle through three non-collinear points",
+            "Construct the circumcircle and circumcentre of a triangle",
+            "Describe the location of the circumcentre for acute, obtuse, and right-angled triangles",
+            "Explain what ‘angle subtended by an arc at the centre’ means",
+            "Explain why ‘equal chords subtend equal angles at the centre’",
+            "Explain why ‘chords that subtend equal angles at the centre are equal’",
+            "Explain why ‘the line from the centre of a circle to the midpoint of a chord is perpendicular to the chord’",
+            "Explain why ‘a perpendicular from the centre to a chord bisects the chord’",
+            "State the relationship between length of a chord and its distance from the centre of the circle",
+            "Explain why ‘equal chords are equidistant from the centre (and conversely)’",
+            "Explain why ‘among unequal chords, the longer chord is closer to the centre’",
+            "Explain why ‘the diameter is the longest chord’",
+            "Explain why ‘the angle subtended by an arc at the centre is double the angle subtended by the arc at any point on the remaining part of the circle’",
+            "Explain why ‘angles in the same segment of a circle are equal’",
+            "Explain why ‘the angle in a semicircle is a right angle’",
+            "Determine when four given points are concyclic",
+            "Explain why ‘a quadrilateral with supplementary opposite angles is cyclic, and conversely’",
+            "Explain how circular wheels have influenced transport, farming, building, and technology",
+            "Identify cultural motifs involving circles, for example, the Dharmachakra, Ashoka Chakra, Sudarshan Chakra",
+            "Use computational thinking to break down circle-related problems, apply geometric rules step-by-step, and verify properties of figures, such as chords, angles, and cyclic quadrilaterals through systematic reasoning."
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-maths",
+            "page": 9,
+            "section": "Unit 4, chapter Circles"
+          },
+          "order": 5,
+          "name": "Circles",
+          "id": "n_36d84ece6f2c0a95",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 25,
+      "periods": 69,
+      "order": 4,
+      "name": "Geometry",
+      "id": "n_44105bf3d505834c",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-maths",
+        "page": 4,
+        "section": "Course structure Class IX, unit 5"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Define perimeter as the length around the boundary of any shape",
+            "Explain that the circumference-to-diameter ratio is constant for all circles",
+            "List historical approximations to π (from Archimedes, Aryabhata, and Zu Chongzhi)",
+            "Compute the circumference of a circle and the length of an arc",
+            "Apply ideas of circle perimeter and arc-length to real-world contexts",
+            "Explain why a median of a triangle divides it into two triangles of equal area",
+            "Use Heron’s formula to compute the area of a triangle from its sides",
+            "Explain the classical problem of ‘squaring’ a given shape",
+            "Explain how ancient civilisations approximated the area of a circle",
+            "Compute the area of a circle using the formula",
+            "Explain and use the formula for area of a sector of a circle",
+            "Solve problems on areas of sectors and segments of circles",
+            "State Brahmagupta’s formula for the area of a cyclic quadrilateral in terms of its sides",
+            "Explain why Heron’s formula is a ‘special case’ of Brahmagupta’s formula",
+            "Explain the notion of ‘special case’ and ‘generalisation’ in mathematics",
+            "Use computational thinking to break down shapes, apply step-by-step methods to calculate perimeter and area, recognise patterns across formulae, and understand generalisation and special cases in geometry"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-maths",
+            "page": 10,
+            "section": "Unit 5, chapter Area and Perimeter"
+          },
+          "order": 1,
+          "name": "Area and Perimeter",
+          "id": "n_3f3df0a6d9eb38fe",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Recognise cuboids and cubes in real-life situations",
+            "Compute the surface area and volume of a cuboid",
+            "Explain how a cube is a ‘special case’ of a cuboid",
+            "Describe a right circular cylinder using its radius and height",
+            "Compute the surface area and volume of a cylinder",
+            "Recognise cones in daily life, and describe them using radius and height",
+            "Compute the surface area and volume of a cone",
+            "Recognise a pyramid, and identify its base and apex",
+            "Compute the surface area and volume of a pyramid",
+            "Recognise spheres in real-life situations",
+            "Compute the surface area and volume of a sphere",
+            "Use computational thinking to systematically calculate, and compare surface areas and volumes of 3-D shapes by varying dimensions and analysing patterns."
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-maths",
+            "page": 11,
+            "section": "Unit 5, chapter Surface Area and Volume"
+          },
+          "order": 2,
+          "name": "Surface Area and Volume",
+          "id": "n_124548f4ebb725d9",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 14,
+      "periods": 27,
+      "order": 5,
+      "name": "Mensuration",
+      "id": "n_8125f59e1fa557bd",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-9-maths",
+        "page": 4,
+        "section": "Course structure Class IX, unit 6"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Collect, organise, visualise and interpret data to answer a statistical investigative question",
+            "Compute and apply weighted average in different settings",
+            "Read and interpret stacked bar graphs and 100% stacked bar graphs",
+            "Apply computational thinking strategies to analyse real-life data, create appropriate graphical representations, and interpret mean, median and mode for decision-making"
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-maths",
+            "page": 12,
+            "section": "Unit 6, chapter Statistics"
+          },
+          "order": 1,
+          "name": "Statistics",
+          "id": "n_1fe9f273213dc5dd",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Understand the concept of randomness",
+            "Describe the likelihood of an event using the probability scale",
+            "Estimate the empirical probability of the occurrence of an event by analysing statistical data",
+            "Define theoretical probability of an event",
+            "Apply the definition of theoretical probability to compute the probability of an event",
+            "Compute probability of events with the help of tree diagrams and tables",
+            "Use computational thinking strategies, such as pattern recognition and simulation, to model random experiments and estimate probabilities."
+          ],
+          "source_ref": {
+            "document_id": "cbse-9-maths",
+            "page": 12,
+            "section": "Unit 6, chapter Introduction to Probability"
+          },
+          "order": 2,
+          "name": "Introduction to Probability",
+          "id": "n_4f538aaf2d5737be",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 10,
+      "periods": 24,
+      "order": 6,
+      "name": "Statistics and Probability",
+      "id": "n_ade261f5becd9daa",
+      "aliases": []
+    }
+  ],
+  "note": "Units, chapters and marks are the course structure on page 4; the objectives under each chapter are that chapter's 'the student will be able to' list, verbatim."
+}

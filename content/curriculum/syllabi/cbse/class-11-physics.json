@@ -1,0 +1,411 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 11",
+  "level_order": 11,
+  "subject": "Physics",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "cbse-1112-physics",
+      "title": "Physics, Classes XI and XII, Secondary Curriculum Part 2, 2026-27",
+      "publisher": "Central Board of Secondary Education",
+      "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Physics_SecP2_2026-27.pdf",
+      "media_type": "application/pdf",
+      "pages": 23,
+      "bytes": 345709,
+      "fetched_at": "2026-09-03T07:03:52Z",
+      "document_sha256": "9e32271cf5a86caa605cffe2a4b5e19710abc3d3a8715ef725ba78cd94caf1f7",
+      "extracted_text_sha256": "b3940858d98c94b881d00e480b42f2f6294679072119a9e881a01d43179df300",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 2,
+        "section": "Course structure Class 11, Unit I"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 3,
+            "section": "Unit I: Physical World and Measurement, chapter 1"
+          },
+          "chapter_number": 1,
+          "contents": "Need for measurement: Units of measurement; systems of units; SI units, fundamental and derived units. significant figures, Determining the uncertainty in result. Dimensions of physical quantities, dimensional analysis and its applications.",
+          "order": 1,
+          "name": "Units and Measurements",
+          "id": "n_6defdf99afd68400",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "I",
+      "order": 1,
+      "name": "Physical World and Measurement",
+      "id": "n_be781db7f7788eac",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 2,
+        "section": "Course structure Class 11, Unit II"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 3,
+            "section": "Unit II: Kinematics, chapter 2"
+          },
+          "chapter_number": 2,
+          "contents": "Frame of reference, Motion in a straight line, Elementary concepts of differentiation and integration for describing motion, uniform and non- uniform motion, average speed and average velocity and instantaneous velocity, uniformly accelerated motion, velocity - time and position-time graphs. Relations for uniformly accelerated motion (graphical and calculus treatment).",
+          "order": 1,
+          "name": "Motion in a Straight Line",
+          "id": "n_d49da8d0eccfa388",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 3,
+            "section": "Unit II: Kinematics, chapter 3"
+          },
+          "chapter_number": 3,
+          "contents": "Scalar and vector quantities; position and displacement vectors, general vectors and their notations; equality of vectors, multiplication of vectors by a real number; addition and subtraction of vectors, Unit vector; resolution of a vector in a plane, rectangular components, Scalar and Vector product of vectors. Motion in a plane, cases of uniform velocity and uniform acceleration- projectile motion, uniform circular motion.",
+          "order": 2,
+          "name": "Motion in a Plane",
+          "id": "n_c0c70de2c314f30f",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "II",
+      "marks": 23,
+      "order": 2,
+      "name": "Kinematics",
+      "id": "n_1192c65d70e950f4",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 2,
+        "section": "Course structure Class 11, Unit III"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 3,
+            "section": "Unit III: Laws of Motion, chapter 4"
+          },
+          "chapter_number": 4,
+          "contents": "Intuitive concept of force, Inertia, Newton's first law of motion; momentum and Newton's second law of motion; impulse; Newton's third law of motion. Law of conservation of linear momentum and its applications. Equilibrium of concurrent forces, Static and kinetic friction, laws of friction, rolling friction, lubrication. Dynamics of uniform circular motion: Centripetal force, examples of circular motion (vehicle on a level circular road, vehicle on a banked road).",
+          "order": 1,
+          "name": "Laws of Motion",
+          "id": "n_13d8f4eca6fbd878",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "III",
+      "order": 3,
+      "name": "Laws of Motion",
+      "id": "n_4d90d3f40cca3cb5",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 2,
+        "section": "Course structure Class 11, Unit IV"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 4,
+            "section": "Unit IV: Work, Energy and Power, chapter 5"
+          },
+          "chapter_number": 5,
+          "contents": "Work done by a constant force and a variable force; kinetic energy, work- energy theorem, power. Notion of potential energy, potential energy of a spring, conservative forces: non-conservative forces, motion in a vertical circle; elastic and inelastic collisions in one and two dimensions.",
+          "order": 1,
+          "name": "Work, Energy and Power",
+          "id": "n_8c3a0395a7fbc870",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "IV",
+      "order": 4,
+      "name": "Work, Energy and Power",
+      "id": "n_be24b34d86f4aee0",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 2,
+        "section": "Course structure Class 11, Unit V"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 4,
+            "section": "Unit V: Motion of System of Particles and Rigid Body, chapter 6"
+          },
+          "chapter_number": 6,
+          "contents": "Centre of mass of a two-particle system, momentum conservation and Centre of mass motion. Centre of mass of a rigid body; centre of mass of a uniform rod. Moment of a force, torque, angular momentum, law of conservation of angular momentum and its applications. Equilibrium of rigid bodies, rigid body rotation and equations of rotational motion, comparison of linear and rotational motions. Moment of inertia, radius of gyration, values of moments of inertia for simple geometrical objects (no derivation).",
+          "order": 1,
+          "name": "System of Particles and Rotational Motion",
+          "id": "n_d1f7c43f6cf581a1",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "V",
+      "marks": 17,
+      "order": 5,
+      "name": "Motion of System of Particles and Rigid Body",
+      "id": "n_e97794a81cf56e8c",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 2,
+        "section": "Course structure Class 11, Unit VI"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 4,
+            "section": "Unit VI: Gravitation, chapter 7"
+          },
+          "chapter_number": 7,
+          "contents": "Kepler's laws of planetary motion, universal law of gravitation. Acceleration due to gravity and its variation with altitude and depth. Gravitational potential energy and gravitational potential, escape speed, orbital velocity of a satellite, energy of an orbiting satellite.",
+          "order": 1,
+          "name": "Gravitation",
+          "id": "n_5401b5241a907432",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "VI",
+      "order": 6,
+      "name": "Gravitation",
+      "id": "n_c8cb39d1c10af788",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 2,
+        "section": "Course structure Class 11, Unit VII"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 4,
+            "section": "Unit VII: Properties of Bulk Matter, chapter 8"
+          },
+          "chapter_number": 8,
+          "contents": "Elasticity, Stress-strain relationship, Hooke's law, Young’s modulus, bulk modulus, shear modulus of rigidity (qualitative idea only), Poisson's ratio; elastic energy. Application of elastic behavior of materials (qualitative idea only).",
+          "order": 1,
+          "name": "Mechanical Properties of Solids",
+          "id": "n_20536a8976154ef0",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 4,
+            "section": "Unit VII: Properties of Bulk Matter, chapter 9"
+          },
+          "chapter_number": 9,
+          "contents": "Pressure due to a fluid column; Pascal's law and its applications (hydraulic lift and hydraulic brakes), effect of gravity on fluid pressure. Viscosity, Stokes' law, terminal velocity, streamline and turbulent flow, critical velocity, Bernoulli's theorem and its simple applications (Torricelli's law and Dynamic lift). Surface energy and surface tension, angle of contact, excess of pressure across a curved surface, application of surface tension ideas to drops, bubbles and capillary rise.",
+          "order": 2,
+          "name": "Mechanical Properties of Fluids",
+          "id": "n_5d67160db4160d41",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 5,
+            "section": "Unit VII: Properties of Bulk Matter, chapter 10"
+          },
+          "chapter_number": 10,
+          "contents": "Heat, temperature, thermal expansion; thermal expansion of solids, liquids and gases, anomalous expansion of water; specific heat capacity; Cp, Cv - calorimetry; change of state - latent heat capacity. Heat transfer-conduction, convection and radiation, thermal conductivity, qualitative ideas of Blackbody radiation, Wein's displacement Law, Stefan's law.",
+          "order": 3,
+          "name": "Thermal Properties of Matter",
+          "id": "n_9344e27c9d1e2aa9",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "VII",
+      "order": 7,
+      "name": "Properties of Bulk Matter",
+      "id": "n_fa5acea06d15ee50",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 2,
+        "section": "Course structure Class 11, Unit VIII"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 5,
+            "section": "Unit VIII: Thermodynamics, chapter 11"
+          },
+          "chapter_number": 11,
+          "contents": "Thermal equilibrium and definition of temperature, zeroth law of thermodynamics, heat, work and internal energy. First law of thermodynamics, Second law of thermodynamics: Thermodynamic state variable and equation of state. Change of condition of gaseous state - isothermal, adiabatic, reversible, irreversible, and cyclic processes.",
+          "order": 1,
+          "name": "Thermodynamics",
+          "id": "n_1c0b89a8128e0a14",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "VIII",
+      "marks": 20,
+      "order": 8,
+      "name": "Thermodynamics",
+      "id": "n_96a8333cf5ac1f31",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 2,
+        "section": "Course structure Class 11, Unit IX"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 5,
+            "section": "Unit IX: Behaviour of Perfect Gases and Kinetic Theory of Gases, chapter 12"
+          },
+          "chapter_number": 12,
+          "contents": "Equation of state of a perfect gas, work done in compressing a gas. Kinetic theory of gases - assumptions, concept of pressure. Kinetic interpretation of temperature; rms speed of gas molecules; degrees of freedom, law of equi-partition of energy (statement only) and application to specific heat capacities of gases; concept of mean free path, Avogadro's number.",
+          "order": 1,
+          "name": "Kinetic Theory",
+          "id": "n_3ef66c7118a0cdd3",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "IX",
+      "order": 9,
+      "name": "Behaviour of Perfect Gases and Kinetic Theory of Gases",
+      "id": "n_fa149b2873a37a93",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-physics",
+        "page": 2,
+        "section": "Course structure Class 11, Unit X"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 6,
+            "section": "Unit X: Oscillations and Waves, chapter 13"
+          },
+          "chapter_number": 13,
+          "contents": "Periodic motion - time period, frequency, displacement as a function of time, periodic functions and their applications. Simple harmonic motion (S.H.M), uniform circular motion and its equations of motion; phase; oscillations of a loaded spring- restoring force and force constant; energy in S.H.M. Kinetic and potential energies; simple pendulum derivation of expression for its time period.",
+          "order": 1,
+          "name": "Oscillations",
+          "id": "n_a18380dcf948ad62",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-physics",
+            "page": 6,
+            "section": "Unit X: Oscillations and Waves, chapter 14"
+          },
+          "chapter_number": 14,
+          "contents": "Wave motion: Transverse and longitudinal waves, speed of travelling wave, displacement relation for a progressive wave, principle of superposition of waves, reflection of waves, standing waves in strings and organ pipes, fundamental mode and harmonics, Beats.",
+          "order": 2,
+          "name": "Waves",
+          "id": "n_9510a3a5c14cb2df",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "X",
+      "marks": 10,
+      "order": 10,
+      "name": "Oscillations and Waves",
+      "id": "n_f5449b6aa966f646",
+      "aliases": []
+    }
+  ],
+  "note": "Units and chapters are the course structure table; each chapter carries the detailed contents the document states for it. The document assigns marks to groups of units rather than to every unit, so marks are recorded only where the table puts a figure on that unit's own row. Where a unit's contents are stated as one run of prose, the topics below are that prose split at its own commas, semicolons and full stops; every topic string is verbatim, only the boundaries are ours, and the unit keeps the untouched prose in `contents`."
+}

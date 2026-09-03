@@ -1,0 +1,64 @@
+{
+  "framework_id": "maharashtra",
+  "framework_name": "Maharashtra State Board of Secondary and Higher Secondary Education",
+  "framework_kind": "state",
+  "country": "IN",
+  "region": "Maharashtra",
+  "official_site": "https://ebalbharati.in/",
+  "aliases": [
+    "Maharashtra State Board",
+    "MSBSHSE",
+    "SSC Maharashtra",
+    "Balbharati"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "version": "2026-27",
+  "level": "Class 6",
+  "level_order": 6,
+  "subject": "Science",
+  "status": "provisional",
+  "read_off_source": false,
+  "discovery_state": "blocked",
+  "blocker": "browser_required",
+  "provenance": {
+    "extractor": null,
+    "verifier": null,
+    "checks_passed": [
+      "stored_negative_result_has_a_blocker_code"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "mh-balbharati-home",
+      "title": "Maharashtra State Bureau of Textbook Production and Curriculum Research (Balbharati) - site index",
+      "publisher": "Maharashtra State Bureau of Textbook Production and Curriculum Research",
+      "url": "https://ebalbharati.in/",
+      "media_type": "text/html",
+      "pages": null,
+      "bytes": 36384,
+      "fetched_at": "2026-09-03T07:49:22Z",
+      "document_sha256": "275404a187d8a26d92aa3b77e66205bf6d5b23156f33f762c2211befcf341881",
+      "extracted_text_sha256": "96e17a648ca3aa39b812cad6bdcd7964c10d35aad46cdbc388df2a58e2610510",
+      "extraction": "python standard library tag strip"
+    }
+  ],
+  "units": null,
+  "note": "Balbharati's e-book library (books.ebalbharati.in) is an ASP.NET application that serves every book through a postback rather than a link, so no textbook or syllabus document could be fetched with a plain request. The Balbharati site index was fetched and is recorded below. Next step: run the discovery job (docs/CURRICULUM.md section 4) with a browser-capable fetcher against the portal recorded below, then extract the chapter list from the prescribed textbook's own contents page, the way the CBSE middle-stage files here do."
+}

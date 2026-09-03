@@ -1,0 +1,241 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 6",
+  "level_order": 6,
+  "subject": "Science",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "ncert-6-curiosity",
+      "title": "Curiosity, textbook of Science for Grade 6 (prelims)",
+      "publisher": "National Council of Educational Research and Training",
+      "url": "https://ncert.nic.in/textbook/pdf/fecu1ps.pdf",
+      "media_type": "application/pdf",
+      "pages": 18,
+      "bytes": 3089282,
+      "fetched_at": "2026-09-03T07:05:10Z",
+      "document_sha256": "0f143518474320c83059c0ca2036cf292e7a3f8a460c1c1c22719de193a0a058",
+      "extracted_text_sha256": "a1f7d697cabf32277d26f03df383a935f2afb47c5c745c26f0b025f47996c90e",
+      "extraction": "python standard library extractor (zlib inflate over PDF content streams)"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "ncert-6-curiosity",
+        "page": 17,
+        "section": "Contents"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-6-curiosity",
+            "page": 17,
+            "section": "Contents, chapter 1"
+          },
+          "chapter_number": 1,
+          "order": 1,
+          "name": "The Wonderful World of Science",
+          "id": "n_775a8dc2810191eb",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-curiosity",
+            "page": 17,
+            "section": "Contents, chapter 2"
+          },
+          "chapter_number": 2,
+          "order": 2,
+          "name": "Diversity in the Living World",
+          "id": "n_f149f000cb60f609",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-curiosity",
+            "page": 17,
+            "section": "Contents, chapter 3"
+          },
+          "chapter_number": 3,
+          "order": 3,
+          "name": "Mindful Eating: A Path to a Healthy Body",
+          "id": "n_420f53a13c8d64e1",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-curiosity",
+            "page": 17,
+            "section": "Contents, chapter 4"
+          },
+          "chapter_number": 4,
+          "order": 4,
+          "name": "Exploring Magnets",
+          "id": "n_46b14927ca91304a",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-curiosity",
+            "page": 17,
+            "section": "Contents, chapter 5"
+          },
+          "chapter_number": 5,
+          "order": 5,
+          "name": "Measurement of Length and Motion",
+          "id": "n_7469db05ffb0cc1d",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-curiosity",
+            "page": 17,
+            "section": "Contents, chapter 6"
+          },
+          "chapter_number": 6,
+          "order": 6,
+          "name": "Materials Around Us",
+          "id": "n_a5ec395ea2f3ea0f",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-curiosity",
+            "page": 17,
+            "section": "Contents, chapter 7"
+          },
+          "chapter_number": 7,
+          "order": 7,
+          "name": "Temperature and its Measurement",
+          "id": "n_bfb564abae1fed37",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-curiosity",
+            "page": 17,
+            "section": "Contents, chapter 8"
+          },
+          "chapter_number": 8,
+          "order": 8,
+          "name": "A Journey through States of Water",
+          "id": "n_0951afeae9596a60",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-curiosity",
+            "page": 17,
+            "section": "Contents, chapter 9"
+          },
+          "chapter_number": 9,
+          "order": 9,
+          "name": "Methods of Separation in Everyday Life",
+          "id": "n_819e7686b76f77bb",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-curiosity",
+            "page": 17,
+            "section": "Contents, chapter 10"
+          },
+          "chapter_number": 10,
+          "order": 10,
+          "name": "Living Creatures: Exploring their Characteristics",
+          "id": "n_3011ccc98de01a45",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-curiosity",
+            "page": 17,
+            "section": "Contents, chapter 11"
+          },
+          "chapter_number": 11,
+          "order": 11,
+          "name": "Nature's Treasures",
+          "id": "n_60ee6b31cd53d903",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-curiosity",
+            "page": 17,
+            "section": "Contents, chapter 12"
+          },
+          "chapter_number": 12,
+          "order": 12,
+          "name": "Beyond Earth",
+          "id": "n_fd9e755ec62173b0",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Curiosity, Grade 6",
+      "order": 1,
+      "name": "Curiosity, Grade 6",
+      "id": "n_63297adce2fe842e",
+      "aliases": []
+    }
+  ],
+  "note": "CBSE publishes a curriculum document only for the secondary stage (classes IX to XII). For the middle stage it prescribes the NCERT textbooks, so the structure below is the structure of the prescribed NCERT book: units are the book's own parts or themes and topics are its chapters, read off the Contents page of the book's official prelims PDF on ncert.nic.in. A Contents page states no learning objectives, so none are recorded."
+}

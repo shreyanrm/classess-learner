@@ -1,0 +1,1869 @@
+{
+  "schema_version": "1.0.0",
+  "file": "festivals.json",
+  "purpose": "The hospitality calendar. What the families around a Wobo learner celebrate, when, and how Wobo should greet them.",
+  "built_on": "2026-09-03",
+  "years_covered": [2026, 2027],
+  "voice_rules": {
+    "reference": "DESIGN.md, docs/WOBO-PLAN.md sections 15 and 19",
+    "rules": [
+      "Sentence case. No emoji. No exclamation marks.",
+      "One line. Warm and short, never effusive.",
+      "Wobo speaks as I. Wobo has no gender; use the name, or they and them when a pronoun is unavoidable.",
+      "Use the learner's name at most once. {name} is the placeholder.",
+      "A greeting is a greeting. It never carries an offer, a streak reminder, or a call to action.",
+      "Greet only when the learner's own profile says the festival is theirs, or when they told us. Never guess from a country."
+    ]
+  },
+  "confidence_vocabulary": {
+    "official": "Read verbatim from a government or examination-board document fetched for this file.",
+    "official_reported": "From an official document reproduced by a third party because the issuing site did not serve it; the document's own reference number is recorded.",
+    "derived": "Computed from an official date already in this file, by a stated arithmetic rule.",
+    "conventional": "Fixed by long-standing convention on a Gregorian date; no official document was fetched.",
+    "unverified": "Named here so the calendar knows the occasion exists, but the date could not be sourced. The date is null. Never fill it by guessing."
+  },
+  "date_entry_fields": {
+    "date": "The Gregorian date of the occasion itself, or null when it could not be sourced.",
+    "end": "The last date of a multi-day occasion, or null.",
+    "scope": "Country or subdivision code the entry applies to, or all.",
+    "label": "What this particular date is called, when a festival's dates are not interchangeable.",
+    "greet": "Required on every date entry. true means Wobo may send a greeting on this date. false means the date is recorded for closure and scheduling purposes only and no greeting is ever sent from it. There is no default: an entry with no greet field must be treated as false.",
+    "greeting": "Optional. The exact line to send for this date entry. When present it overrides greeting_style.example.",
+    "source": "Key into sources, or null when the date rests on convention alone.",
+    "confidence": "One of the confidence vocabulary terms.",
+    "note": "Anything a consumer needs in order not to misuse the entry."
+  },
+  "greeting_protocol": {
+    "fallback": "greeting_style.example is a fallback, never a schedule. It is sent only for a date entry whose greet is true and which carries no greeting of its own. A festival whose example is null is never greeted from any of its dates.",
+    "ranges": "A date entry with an end greets on the first day only.",
+    "dedupe": "One greeting per learner per day. Where two greetable entries fall on the same date and cover the same learner, the festival the learner's own profile names wins; where both or neither are named, the more specific label wins. Naraka Chaturdasi on 8 November 2026 is marked greet false for exactly this reason, because Diwali carries that day.",
+    "confirmation": "A festival carrying requires_same_day_confirmation may never be used to schedule anything, whatever the confidence on its dates. Those dates move with the moon. Wobo greets only once a same-day confirmation flag is set."
+  },
+  "sources": {
+    "in_dopt_2026": {
+      "publisher": "Government of India, Ministry of Personnel, Public Grievances and Pensions, Department of Personnel and Training",
+      "document": "Office Memorandum F.No.12/2/2023-JCA dated 3 July 2025, Holidays to be observed in Central Government Offices during the year 2026, Annexure I (gazetted) and Annexure II (restricted)",
+      "url": "https://dopt.gov.in/sites/default/files/Holidays%20to%20be%20observed%20in%20Central%20Government%20Offices%20during%20the%20year%202026.pdf",
+      "retrieved": "full",
+      "fetched_on": "2026-09-03"
+    },
+    "in_dopt_2027": {
+      "publisher": "Government of India, Ministry of Personnel, Public Grievances and Pensions, Department of Personnel and Training",
+      "document": "Office Memorandum F.No.12/2/2023-JCA dated 16 July 2026, Holidays to be observed in Central Government Offices during the year 2027, Annexure I (gazetted) and Annexure II (restricted)",
+      "url": "https://www.staffnews.in/2026/07/list-of-holidays-2027-to-be-observed-in-central-government-offices.html",
+      "document_scan_url": "https://www.staffnews.in/wp-content/uploads/2026/07/Holiday-list-2027.pdf",
+      "retrieved": "full",
+      "fetched_on": "2026-09-03",
+      "caveat": "The signed Office Memorandum was read in full. It was served from a third-party mirror because dopt.gov.in did not return the 2027 file at build time. Re-anchor to the dopt.gov.in URL when it appears."
+    },
+    "uk_gov_bank_holidays": {
+      "publisher": "Government of the United Kingdom",
+      "document": "UK bank holidays, England and Wales, Scotland, Northern Ireland",
+      "url": "https://www.gov.uk/bank-holidays",
+      "retrieved": "full",
+      "fetched_on": "2026-09-03"
+    },
+    "us_opm_holidays": {
+      "publisher": "United States Office of Personnel Management",
+      "document": "Federal holidays",
+      "url": "https://www.opm.gov/policy-data-oversight/pay-leave/federal-holidays/",
+      "retrieved": "full",
+      "fetched_on": "2026-09-03"
+    },
+    "ca_cra_holidays": {
+      "publisher": "Government of Canada, Canada Revenue Agency",
+      "document": "Public holidays",
+      "url": "https://www.canada.ca/en/revenue-agency/services/tax/public-holidays.html",
+      "retrieved": "partial",
+      "fetched_on": "2026-09-03",
+      "caveat": "2026 listed. 2027 not published on the page at build time. Provincial and territorial holidays are set separately by each province."
+    },
+    "au_nsw_holidays": {
+      "publisher": "Government of New South Wales, Australia",
+      "document": "NSW public holidays",
+      "url": "https://www.nsw.gov.au/about-nsw/public-holidays",
+      "retrieved": "full",
+      "fetched_on": "2026-09-03"
+    },
+    "au_fairwork": {
+      "publisher": "Australian Government, Fair Work Ombudsman",
+      "document": "Public holidays, 2026 and 2027, by state and territory",
+      "url": "https://www.fairwork.gov.au/employment-conditions/public-holidays",
+      "retrieved": "not_retrieved",
+      "fetched_on": "2026-09-03",
+      "caveat": "The page timed out repeatedly at build time. State-specific Australian holidays other than New South Wales are therefore unverified here."
+    },
+    "sg_mom_holidays": {
+      "publisher": "Government of Singapore, Ministry of Manpower",
+      "document": "Public holidays",
+      "url": "https://www.mom.gov.sg/employment-practices/public-holidays",
+      "retrieved": "full",
+      "fetched_on": "2026-09-03"
+    },
+    "hk_gov_2026": {
+      "publisher": "Government of the Hong Kong Special Administrative Region",
+      "document": "General holidays for 2026",
+      "url": "https://www.gov.hk/en/about/abouthk/holiday/2026.htm",
+      "retrieved": "full",
+      "fetched_on": "2026-09-03"
+    },
+    "hk_gov_2027": {
+      "publisher": "Government of the Hong Kong Special Administrative Region",
+      "document": "General holidays for 2027",
+      "url": "https://www.gov.hk/en/about/abouthk/holiday/2027.htm",
+      "retrieved": "full",
+      "fetched_on": "2026-09-03"
+    },
+    "za_gov_holidays": {
+      "publisher": "Government of South Africa",
+      "document": "Public holidays, Public Holidays Act No. 36 of 1994",
+      "url": "https://www.gov.za/about-sa/public-holidays",
+      "retrieved": "full",
+      "fetched_on": "2026-09-03"
+    },
+    "ae_u_ae_holidays": {
+      "publisher": "Government of the United Arab Emirates",
+      "document": "Public holidays, under Cabinet Resolution No. 27 of 2024 concerning public holidays in the State",
+      "url": "https://u.ae/en/information-and-services/public-holidays-and-religious-affairs/public-holidays",
+      "retrieved": "full",
+      "fetched_on": "2026-09-03",
+      "caveat": "The official page states the Hijri rule for each holiday, not Gregorian dates. Islamic dates are settled by moon sighting and confirmed by the Cabinet each year."
+    },
+    "ae_mohre_2026": {
+      "publisher": "United Arab Emirates, Ministry of Human Resources and Emiratisation",
+      "document": "Announcement of the 1 January 2026 paid public holiday for the private sector",
+      "url": "https://www.mohre.gov.ae/en/media-center/news/12/12/2025/thursday-1-january-2026-announced-as-a-paid-public-holiday-for-the-private-sector",
+      "retrieved": "headline_only",
+      "fetched_on": "2026-09-03"
+    },
+    "pk_cabinet_2026": {
+      "publisher": "Government of Pakistan, Cabinet Secretariat, Cabinet Division",
+      "document": "Circular F.No. 10-1/2025-Min-II dated 19 January 2026, Public and Optional Holidays for the year 2026",
+      "url": "https://cabinet.gov.pk/SiteImage/Misc/files/Holidays/2026/Public-Holidays-2026.pdf",
+      "retrieved": "full",
+      "fetched_on": "2026-09-03"
+    },
+    "np_moha_2083": {
+      "publisher": "Government of Nepal, Ministry of Home Affairs",
+      "document": "Nepal Gazette notice of 18 Falgun 2082, public holidays for the year 2083 B.S. (14 April 2026 to 13 April 2027)",
+      "url": "https://in.nepalembassy.gov.np/content/236/embassy-holidays-2083/",
+      "retrieved": "not_retrieved",
+      "fetched_on": "2026-09-03",
+      "caveat": "The notice is referenced by the Embassy of Nepal but the list itself did not render. It carries no date in this file: the Dashain, Tihar and new-year dates now cite the reporting they came from. Everything else for Nepal is null here."
+    },
+    "lk_gazette_2438_22": {
+      "publisher": "Government of Sri Lanka, Ministry of Public Administration, Home Affairs, Provincial Councils and Local Government",
+      "document": "Extraordinary Gazette No. 2438/22 of 27 May 2025, Public and Bank Holidays for 2026, under section 4 of the Holidays Act No. 29 of 1971",
+      "url": "https://www.documents.gov.lk/",
+      "retrieved": "not_retrieved",
+      "fetched_on": "2026-09-03",
+      "caveat": "The gazette PDF was not served at build time. It carries no date in this file. Independence Day, which is fixed by statute, is recorded as conventional with no source. Every Poya day and every movable date is null until the gazette is read."
+    },
+    "bd_mopa_2026": {
+      "publisher": "Government of Bangladesh, Ministry of Public Administration",
+      "document": "Public holiday list for 2026",
+      "url": "https://mopa.gov.bd/",
+      "retrieved": "not_retrieved",
+      "fetched_on": "2026-09-03",
+      "caveat": "The ministry notification was not served at build time, and the embassy mirror failed TLS verification. It carries no date in this file. The two fixed statutory national days are recorded as conventional with no source."
+    },
+    "np_holidays_2083_reported": {
+      "publisher": "Educate Nepal",
+      "document": "List of public holidays for 2083 B.S. (2026 to 2027) in Nepal, reporting the Ministry of Home Affairs gazette notice of 18 Falgun 2082",
+      "url": "https://blog.educatenepal.com/2026/03/list-of-public-holidays-for-2083-bs.html",
+      "retrieved": "summary",
+      "fetched_on": "2026-09-03",
+      "caveat": "A report of the gazette, not the gazette. It gives the Bikram Sambat ranges and only one Gregorian anchor, 1 Baishakh 2083 as 14 April 2026. The Dashain and Tihar Gregorian dates below are converted from those ranges by counting days from Ashoj 31, 2083, which falls on 17 October 2026. Re-anchor to the gazette."
+    },
+    "hebcal_5787": {
+      "publisher": "Hebcal, the standard arithmetic Hebrew calendar computation used by Jewish community calendars",
+      "document": "Jewish holidays 2026 to 2027, Hebrew year 5787",
+      "url": "https://www.hebcal.com/holidays/2026-2027",
+      "retrieved": "summary",
+      "fetched_on": "2026-09-03",
+      "caveat": "Named as the computation source. Hebrew dates begin at sunset on the evening before the Gregorian date recorded here."
+    }
+  },
+  "quiet_days": {
+    "rule": "On a quiet day Wobo sends nothing that markets, celebrates, or nudges. No offers, no streak notices, no lifecycle email, no push, no share prompts. The product stays open and calm. If the learner opens it, Wobo works as normal and says nothing about the day unless asked.",
+    "scoping": "A quiet day is scoped to the country or community it belongs to, never applied globally.",
+    "precedence": "A quiet day silences the marketing and lifecycle engine. It does not silence a greeting that a date entry marks greet true. Where a quiet day and a greetable festival share a date and a country, the greeting is sent, alone, and nothing else is: no offer, no streak, no push, no share prompt. Where the festival's own date entry is greet false, nothing at all is sent. 24 November 2026 is the case this rule exists for: Guru Nanak Jayanti is greeted and Guru Tegh Bahadur's martyrdom keeps the rest of the day empty.",
+    "days": [
+      {"id": "in-martyrs-day", "name": "Martyrs' Day", "countries": ["IN"], "dates": {"2026": ["2026-01-30"], "2027": ["2027-01-30"]}, "reason": "The anniversary of Mahatma Gandhi's assassination. Two minutes' silence is observed nationally.", "confidence": "conventional", "source": null},
+      {"id": "in-shaheed-diwas-march", "name": "Shaheed Diwas", "countries": ["IN"], "dates": {"2026": ["2026-03-23"], "2027": ["2027-03-23"]}, "reason": "Commemorates the 1931 executions of Bhagat Singh, Sukhdev and Rajguru.", "confidence": "conventional", "source": null},
+      {"id": "ashura", "name": "Muharram, the day of Ashura", "countries": ["IN", "PK", "BD", "AE", "GCC", "LK"], "dates": {"2026": ["2026-06-26"], "2027": ["2027-06-16"]}, "reason": "A day of mourning in Shia Islam. It is a public holiday in several countries, and it is never a day to wish anyone well or to run an offer.", "confidence": "official", "source": "in_dopt_2026"},
+      {"id": "chehlum", "name": "Chehlum, Arbaeen", "countries": ["PK", "IN"], "dates": {"2026": ["2026-08-04"], "2027": [null]}, "reason": "Forty days after Ashura. A mourning observance.", "confidence": "official", "source": "pk_cabinet_2026"},
+      {"id": "guru-tegh-bahadur-martyrdom", "name": "Guru Tegh Bahadur's martyrdom day", "countries": ["IN"], "dates": {"2026": ["2026-11-24"], "2027": ["2027-11-24"]}, "reason": "A day of remembrance in Sikh tradition, not a celebration.", "confidence": "official", "source": "in_dopt_2026"},
+      {"id": "good-friday-solemn", "name": "Good Friday", "countries": ["IN", "GB", "US", "CA", "AU", "SG", "HK", "ZA", "LK", "PK"], "dates": {"2026": ["2026-04-03"], "2027": ["2027-03-26"]}, "reason": "Solemn, not festive. Greet at Easter, never on Good Friday.", "confidence": "official", "source": "uk_gov_bank_holidays"},
+      {"id": "yom-kippur", "name": "Yom Kippur", "countries": ["US", "GB", "CA", "AU", "ZA"], "dates": {"2026": ["2026-09-21"], "2027": ["2027-10-11"]}, "reason": "A fast day of atonement. Nothing is sent.", "confidence": "derived", "source": "hebcal_5787"},
+      {"id": "us-memorial-day", "name": "Memorial Day", "countries": ["US"], "dates": {"2026": ["2026-05-25"], "2027": ["2027-05-31"]}, "reason": "Remembrance of the war dead.", "confidence": "official", "source": "us_opm_holidays"},
+      {"id": "us-september-11", "name": "Patriot Day", "countries": ["US"], "dates": {"2026": ["2026-09-11"], "2027": ["2027-09-11"]}, "reason": "A national day of remembrance.", "confidence": "conventional", "source": null},
+      {"id": "uk-remembrance", "name": "Remembrance Sunday and Armistice Day", "countries": ["GB"], "dates": {"2026": ["2026-11-08", "2026-11-11"], "2027": ["2027-11-11", "2027-11-14"]}, "reason": "Two minutes' silence is observed. Remembrance Sunday is the second Sunday in November.", "confidence": "derived", "source": null},
+      {"id": "ca-remembrance-day", "name": "Remembrance Day", "countries": ["CA"], "dates": {"2026": ["2026-11-11"], "2027": ["2027-11-11"]}, "reason": "Remembrance of the war dead.", "confidence": "official", "source": "ca_cra_holidays"},
+      {"id": "ca-truth-and-reconciliation", "name": "National Day for Truth and Reconciliation", "countries": ["CA"], "dates": {"2026": ["2026-09-30"], "2027": ["2027-09-30"]}, "reason": "Honours the children who never returned from residential schools. Sombre by design.", "confidence": "official", "source": "ca_cra_holidays"},
+      {"id": "au-anzac-day", "name": "Anzac Day", "countries": ["AU", "NZ"], "dates": {"2026": ["2026-04-25"], "2027": ["2027-04-25"]}, "reason": "Commemoration of those who served and died. The dawn service is the day's centre.", "confidence": "official", "source": "au_nsw_holidays"},
+      {"id": "za-human-rights-day", "name": "Human Rights Day", "countries": ["ZA"], "dates": {"2026": ["2026-03-21"], "2027": ["2027-03-22"]}, "reason": "Marks the Sharpeville massacre. Commemorative, not festive. The 2027 date is the Monday observance because 21 March falls on a Sunday.", "confidence": "official", "source": "za_gov_holidays"},
+      {"id": "bd-shaheed-dibas", "name": "Shaheed Dibas and International Mother Language Day", "countries": ["BD"], "dates": {"2026": ["2026-02-21"], "2027": ["2027-02-21"]}, "reason": "Mourning for the language movement martyrs of 1952. The day begins at midnight with a barefoot procession.", "confidence": "conventional", "source": null},
+      {"id": "np-martyrs-day", "name": "Martyrs' Day, Sahid Diwas", "countries": ["NP"], "dates": {"2026": [null], "2027": [null]}, "reason": "A national day of mourning in Nepal, on 16 Magh in the Bikram Sambat calendar.", "confidence": "unverified", "source": "np_moha_2083"},
+      {"id": "lk-national-war-heroes", "name": "Remembrance observances in Sri Lanka", "countries": ["LK"], "dates": {"2026": [null], "2027": [null]}, "reason": "Sri Lanka observes remembrance days in May that are sensitive across communities. Dates unverified.", "confidence": "unverified", "source": "lk_gazette_2438_22"},
+      {"id": "qingming-chongyang", "name": "Ching Ming and Chung Yeung", "countries": ["HK", "CN", "SG"], "dates": {"2026": ["2026-04-05", "2026-10-18"], "2027": ["2027-04-05", "2027-10-08"]}, "reason": "Grave-sweeping days. Families remember their dead. Quiet, not celebratory.", "confidence": "official", "source": "hk_gov_2026"},
+      {"id": "ramadan-restraint", "requires_same_day_confirmation": true, "name": "Ramadan", "countries": ["IN", "PK", "BD", "AE", "GCC", "GB", "SG", "MY", "LK"], "dates": {"2026": ["2026-02-18"], "2027": [null]}, "reason": "Not a mourning period, and not a quiet day in the strict sense. It is a restraint window: no food or feasting imagery, no daytime celebration framing, no offer that trades on urgency. The 2026 start is the date the Government of Pakistan named as 1 Ramadan 1447 for the Zakat deduction, subject to the moon.", "confidence": "official", "source": "pk_cabinet_2026"}
+    ]
+  },
+  "exam_season_hints": {
+    "note": "Timing guidance for the marketing and lifecycle engine, and for Wobo's own tone. During an exam window Wobo does not celebrate, does not run share loops, and does not start a new course unprompted. Board-by-board dates live in school-calendar.json. Anything null there is null here, and each confidence here is the weakest confidence among the rows it summarises, never stronger.",
+    "boards": {
+      "australia_senior": {
+        "board": "Australian senior secondary certificates, HSC, VCE and equivalents",
+        "pre_board_window": "Trial examinations August to September.",
+        "board_exam_window": "Broadly October to November. Unverified.",
+        "results_window": "Mid-December. Unverified.",
+        "quiet_from": "Two weeks before the first paper.",
+        "confidence": "unverified"
+      },
+      "canada_provincial": {
+        "board": "Canadian provincial school systems",
+        "pre_board_window": "Set by each province.",
+        "board_exam_window": "January and June sittings in provinces that run them. Unverified.",
+        "results_window": "Unverified.",
+        "quiet_from": "Two weeks before the first paper.",
+        "confidence": "unverified"
+      },
+      "uae_schools": {
+        "board": "Schools in the United Arab Emirates and the Gulf",
+        "pre_board_window": "Follows the learner's own board.",
+        "board_exam_window": "Follows the learner's own board, on the local term calendar.",
+        "results_window": "Follows the learner's own board.",
+        "quiet_from": "Two weeks before the first paper.",
+        "confidence": "unverified"
+      },
+      "cbse": {
+        "board": "Central Board of Secondary Education, India",
+        "pre_board_window": "Late November to January, set by each school, not by the board.",
+        "board_exam_window": "Mid-February to early April. Class 10 typically finishes in March; Class 12 runs later.",
+        "results_window": "Mid-April for Class 10, mid-May for Class 12, based on 2026.",
+        "quiet_from": "Two weeks before the first paper.",
+        "confidence": "reported"
+      },
+      "cisce": {
+        "board": "Council for the Indian School Certificate Examinations, India",
+        "pre_board_window": "December to January, set by each school.",
+        "board_exam_window": "ISC from mid-February to early April. ICSE from mid-February to end of March.",
+        "results_window": "April to May.",
+        "quiet_from": "Two weeks before the first paper.",
+        "confidence": "reported"
+      },
+      "state_boards_in": {
+        "board": "Indian state boards",
+        "pre_board_window": "December to January.",
+        "board_exam_window": "February to April, varying by state.",
+        "results_window": "April to June, varying by state.",
+        "quiet_from": "Two weeks before the first paper.",
+        "confidence": "unverified"
+      },
+      "cambridge_international": {
+        "board": "Cambridge International, IGCSE, O Level, AS and A Level",
+        "pre_board_window": "Mock exams January to February for the June series.",
+        "board_exam_window": "June series roughly late April to mid-June. November series October to November.",
+        "results_window": "AS and A Level in mid-August, IGCSE and O Level a week later. November series results in January.",
+        "quiet_from": "Two weeks before the first paper.",
+        "confidence": "reported"
+      },
+      "ib_dp": {
+        "board": "International Baccalaureate Diploma and Career-related Programmes",
+        "pre_board_window": "Mock exams February to March for the May session.",
+        "board_exam_window": "May session late April to late May. November session October to November.",
+        "results_window": "Early July for the May session, early January for the November session.",
+        "quiet_from": "Two weeks before the first paper.",
+        "confidence": "reported"
+      },
+      "uk_gcse_alevel": {
+        "board": "GCSE and A level in England, Wales and Northern Ireland",
+        "pre_board_window": "Mock exams November to December and February to March.",
+        "board_exam_window": "Early May to late June, with a national contingency day at the end.",
+        "results_window": "A level results in mid-August, GCSE results the following week.",
+        "quiet_from": "Two weeks before the first paper.",
+        "confidence": "reported"
+      },
+      "ap_us": {
+        "board": "Advanced Placement, College Board, United States",
+        "pre_board_window": "Practice exams March to April.",
+        "board_exam_window": "The first two full weeks of May, with a late-testing week after.",
+        "results_window": "Early to mid-July.",
+        "quiet_from": "One week before the first exam.",
+        "confidence": "official_reported"
+      },
+      "singapore_national": {
+        "board": "Singapore national examinations, PSLE and GCE N, O and A Level",
+        "pre_board_window": "Preliminary examinations August to September.",
+        "board_exam_window": "PSLE written papers late September. GCE written papers October to November.",
+        "results_window": "PSLE late November, N Level December, O Level mid-January, A Level late February.",
+        "quiet_from": "Two weeks before the first paper.",
+        "confidence": "reported"
+      },
+      "hkdse": {
+        "board": "Hong Kong Diploma of Secondary Education",
+        "pre_board_window": "Mock exams January to February.",
+        "board_exam_window": "April to early May.",
+        "results_window": "Mid-July.",
+        "quiet_from": "Two weeks before the first paper.",
+        "confidence": "reported"
+      },
+      "nsc_za": {
+        "board": "National Senior Certificate, South Africa",
+        "pre_board_window": "Preliminary examinations September.",
+        "board_exam_window": "Mid-October to late November.",
+        "results_window": "January of the following year.",
+        "quiet_from": "Two weeks before the first paper.",
+        "confidence": "reported"
+      },
+      "pk_bise": {
+        "board": "Pakistan Boards of Intermediate and Secondary Education",
+        "pre_board_window": "Send-up examinations January to February.",
+        "board_exam_window": "Matric and Intermediate examinations broadly March to June, varying by board.",
+        "results_window": "July to September, varying by board.",
+        "quiet_from": "Two weeks before the first paper.",
+        "confidence": "unverified"
+      },
+      "bd_boards": {
+        "board": "Bangladesh education boards, SSC and HSC",
+        "pre_board_window": "Test examinations set by each school.",
+        "board_exam_window": "SSC broadly February to March, HSC broadly June to August.",
+        "results_window": "Varies. Unverified.",
+        "quiet_from": "Two weeks before the first paper.",
+        "confidence": "unverified"
+      },
+      "np_neb": {
+        "board": "Secondary Education Examination and Grade 12 board, Nepal",
+        "pre_board_window": "Pre-board examinations Falgun.",
+        "board_exam_window": "SEE broadly in Chaitra, that is March to April.",
+        "results_window": "Varies. Unverified.",
+        "quiet_from": "Two weeks before the first paper.",
+        "confidence": "unverified"
+      },
+      "lk_doe": {
+        "board": "Sri Lanka G.C.E. Ordinary Level and Advanced Level",
+        "pre_board_window": "Term tests set by each school.",
+        "board_exam_window": "Unverified.",
+        "results_window": "Unverified.",
+        "quiet_from": "Two weeks before the first paper.",
+        "confidence": "unverified"
+      }
+    }
+  },
+  "festivals": [
+    {
+      "id": "new-year-gregorian",
+      "name": "New Year's Day",
+      "aliases": ["Gregorian New Year", "1 January"],
+      "tradition": "secular",
+      "countries": ["IN", "AE", "GCC", "GB", "US", "CA", "AU", "SG", "HK", "ZA", "NP", "LK", "BD", "PK"],
+      "regions": [],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Happy new year, {name}. I am glad we get another year of this.",
+        "note": "Warm, not grand. No resolutions talk, no goal setting, no year-in-review upsell."
+      },
+      "dates": {
+        "2026": [{"date": "2026-01-01", "end": null, "scope": "all", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-01-01", "end": null, "scope": "all", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "A restricted holiday in Indian central government offices, a bank holiday in Pakistan, a public holiday almost everywhere else."
+    },
+    {
+      "id": "hazrat-ali-birthday",
+      "name": "Hazrat Ali's birthday",
+      "aliases": ["Yaum-e-Ali", "Hazarat Ali's Birthday"],
+      "tradition": "muslim",
+      "countries": ["IN"],
+      "regions": [],
+      "calendar": "islamic",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Warm wishes on Hazrat Ali's birthday, {name}.",
+        "note": "Observed mainly by Shia families. Greet only where the learner has told us."
+      },
+      "dates": {
+        "2026": [{"date": "2026-01-03", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}, {"date": "2026-12-23", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-12-12", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "Falls twice in the 2026 Gregorian year because 13 Rajab occurs in January and again in December."
+    },
+    {
+      "id": "lohri",
+      "name": "Lohri",
+      "aliases": [],
+      "tradition": "sikh",
+      "countries": ["IN"],
+      "regions": ["Punjab", "Haryana", "Himachal Pradesh", "Delhi", "Chandigarh", "Jammu"],
+      "calendar": "solar",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Happy Lohri, {name}. I hope the fire is warm and the peanuts hold out.",
+        "note": "Playful is right for Lohri. Still no exclamation marks."
+      },
+      "dates": {
+        "2026": [{"date": "2026-01-13", "end": null, "scope": "IN", "greet": true, "source": null, "confidence": "conventional"}],
+        "2027": [{"date": "2027-01-13", "end": null, "scope": "IN", "greet": true, "source": null, "confidence": "conventional"}]
+      },
+      "notes": "Not on the central government list. Fixed by convention on 13 January, occasionally 14 January. Verify against a Punjab state holiday notification before using it in an outbound message."
+    },
+    {
+      "id": "makar-sankranti",
+      "name": "Makar Sankranti",
+      "aliases": ["Maghi", "Magha Bihu", "Uttarayan", "Poush Sankranti", "Khichdi"],
+      "tradition": "hindu",
+      "countries": ["IN", "NP"],
+      "regions": ["Gujarat", "Maharashtra", "Rajasthan", "Uttar Pradesh", "Bihar", "Karnataka", "Assam", "West Bengal"],
+      "calendar": "solar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Happy Makar Sankranti, {name}. May your kite stay up longer than everyone else's.",
+        "note": "In Gujarat the kite is the whole festival. In Assam it is the feast. Let the region choose the image."
+      },
+      "dates": {
+        "2026": [{"date": "2026-01-14", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-01-14", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "Listed as Makar Sankranti and Magha Bihu on the central government restricted-holiday list in both years."
+    },
+    {
+      "id": "pongal",
+      "name": "Pongal",
+      "aliases": ["Thai Pongal", "Tamil harvest festival"],
+      "tradition": "hindu",
+      "countries": ["IN", "LK", "SG", "MY"],
+      "regions": ["Tamil Nadu", "Puducherry"],
+      "calendar": "solar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Happy Pongal, {name}. I hope the pot boils over exactly the way it should.",
+        "note": "The pot boiling over is the good omen. Use it, do not explain it."
+      },
+      "dates": {
+        "2026": [{"date": "2026-01-14", "end": "2026-01-17", "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-01-15", "end": "2027-01-18", "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "Four days: Bhogi, Thai Pongal, Mattu Pongal, Kaanum Pongal. The central government list names only the first day. The end dates here are that first day plus three, which is the standard span; treat the later days as derived. Sri Lanka's Thai Pongal date is unverified, see the Sri Lanka gaps note."
+    },
+    {
+      "id": "guru-gobind-singh-jayanti",
+      "name": "Guru Gobind Singh's birthday",
+      "aliases": ["Prakash Parv"],
+      "tradition": "sikh",
+      "countries": ["IN"],
+      "regions": ["Punjab", "Haryana", "Delhi", "Chandigarh"],
+      "calendar": "lunisolar",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Wishing you a peaceful Prakash Parv, {name}.",
+        "note": "Reverent rather than festive."
+      },
+      "dates": {
+        "2026": [{"date": null, "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "unverified"}],
+        "2027": [{"date": "2027-01-15", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "Not on the 2026 central government restricted list, so 2026 is null here. Do not fill it from a panchang without a state notification."
+    },
+    {
+      "id": "republic-day-india",
+      "name": "Republic Day",
+      "aliases": [],
+      "tradition": "civic",
+      "countries": ["IN"],
+      "regions": [],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Happy Republic Day, {name}.",
+        "note": "Short. Civic days do not need warmth turned up."
+      },
+      "dates": {
+        "2026": [{"date": "2026-01-26", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-01-26", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "A gazetted national holiday. Schools hold flag hoisting in the morning."
+    },
+    {
+      "id": "vasant-panchami",
+      "name": "Vasant Panchami",
+      "aliases": ["Basant Panchami", "Sri Panchami", "Saraswati Puja"],
+      "tradition": "hindu",
+      "countries": ["IN", "NP", "BD"],
+      "regions": ["West Bengal", "Bihar", "Odisha", "Uttar Pradesh", "Punjab"],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Happy Saraswati Puja, {name}. A good day to be a student.",
+        "note": "This is the one festival that belongs to learning. Wobo may say so, once, without turning it into a lesson pitch."
+      },
+      "dates": {
+        "2026": [{"date": "2026-01-23", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-02-11", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "Saraswati Puja in Bengal, Bihar and Odisha; Basant Panchami in the north. In Bengali schools children write their first letters on this day."
+    },
+    {
+      "id": "guru-ravidas-jayanti",
+      "name": "Guru Ravidas's birthday",
+      "aliases": [],
+      "tradition": "hindu",
+      "countries": ["IN"],
+      "regions": ["Punjab", "Uttar Pradesh"],
+      "calendar": "lunisolar",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {"example": "Warm wishes on Guru Ravidas Jayanti, {name}.", "note": "Plain and respectful."},
+      "dates": {
+        "2026": [{"date": "2026-02-01", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-02-20", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": ""
+    },
+    {
+      "id": "maha-shivratri",
+      "name": "Maha Shivratri",
+      "aliases": ["Shivratri", "Maha Shivaratri"],
+      "tradition": "hindu",
+      "countries": ["IN", "NP"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "A peaceful Maha Shivratri to you, {name}.",
+        "note": "Many families fast and stay up through the night. Keep it calm, and do not send anything late at night."
+      },
+      "dates": {
+        "2026": [{"date": "2026-02-15", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-03-06", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "Also a public holiday in Nepal, where the date is set by the Ministry of Home Affairs gazette."
+    },
+    {
+      "id": "shivaji-jayanti",
+      "name": "Shiv Jayanti",
+      "aliases": ["Shivaji Jayanti"],
+      "tradition": "civic",
+      "countries": ["IN"],
+      "regions": ["Maharashtra"],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Wishing you a good Shiv Jayanti, {name}.", "note": "State-scoped. Maharashtra only."},
+      "dates": {
+        "2026": [{"date": "2026-02-19", "end": null, "scope": "IN-MH", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-02-19", "end": null, "scope": "IN-MH", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": ""
+    },
+    {
+      "id": "holika-dahan",
+      "name": "Holika Dahan",
+      "aliases": ["Chhoti Holi", "Dolyatra", "Dulhandi"],
+      "tradition": "hindu",
+      "countries": ["IN", "NP"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Holika Dahan, {name}. The colours come tomorrow.", "note": "The bonfire night before Holi."},
+      "dates": {
+        "2026": [{"date": "2026-03-03", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-03-22", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "The central list pairs Holika Dahan with Dolyatra on the same day."
+    },
+    {
+      "id": "holi",
+      "name": "Holi",
+      "aliases": ["Rangwali Holi", "Dhulandi", "Phagwah", "Fagu Purnima"],
+      "tradition": "hindu",
+      "countries": ["IN", "NP", "PK", "GB", "US", "CA", "AU", "AE"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Happy Holi, {name}. I hope you get someone before they get you.",
+        "note": "Holi is the one day the voice can be mischievous. Still no emoji, still no exclamation marks."
+      },
+      "dates": {
+        "2026": [{"date": "2026-03-04", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}, {"date": "2026-03-04", "end": null, "scope": "PK", "greet": true, "source": "pk_cabinet_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-03-23", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "A gazetted holiday in India in both years. An optional holiday in Pakistan, where the Cabinet Division lists Dulhandi on 3 March 2026 and Holi on 4 March 2026. Diaspora communities in the UK, US, Canada, Australia and the UAE celebrate on the nearest weekend, which is not modelled here."
+    },
+    {
+      "id": "chaitra-sukladi",
+      "name": "Chaitra Sukladi, Ugadi, Gudi Padwa and Cheti Chand",
+      "aliases": ["Ugadi", "Yugadi", "Gudi Padwa", "Cheti Chand", "Navreh", "Sajibu Cheiraoba"],
+      "tradition": "hindu",
+      "countries": ["IN"],
+      "regions": ["Maharashtra", "Karnataka", "Andhra Pradesh", "Telangana", "Goa", "Sindhi communities", "Jammu and Kashmir", "Manipur"],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Happy Ugadi, {name}. A new year, and the neem with the jaggery.",
+        "note": "Use the learner's own regional name for the day. Ugadi in the Telugu and Kannada south, Gudi Padwa in Maharashtra, Cheti Chand for Sindhi families."
+      },
+      "dates": {
+        "2026": [{"date": "2026-03-19", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-04-07", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "The same lunar day carries a different name in each region. It also opens Chaitra Navratri."
+    },
+    {
+      "id": "nowruz",
+      "name": "Nowruz",
+      "aliases": ["Navroz", "Jamshedi Navroz", "Persian new year"],
+      "tradition": "parsi",
+      "countries": ["IN", "AE", "GCC"],
+      "regions": ["Parsi and Irani communities", "Ismaili communities"],
+      "calendar": "solar",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {"example": "Navroz Mubarak, {name}.", "note": "Two words is enough. It is the customary greeting."},
+      "dates": {
+        "2026": [{"date": null, "end": null, "scope": "IN", "greet": true, "source": null, "confidence": "unverified"}],
+        "2027": [{"date": null, "end": null, "scope": "IN", "greet": true, "source": null, "confidence": "unverified"}]
+      },
+      "notes": "Falls on the March equinox as reckoned in Tehran, which can be 20 or 21 March. Not on the Indian central government list. Left null rather than guessed. The Parsi Shahenshahi new year, which most Indian Parsi families keep, is a separate entry, parsi-new-year."
+    },
+    {
+      "id": "jamat-ul-vida",
+      "requires_same_day_confirmation": true,
+      "name": "Jamat-ul-Vida",
+      "aliases": ["Alvida Jumma"],
+      "tradition": "muslim",
+      "countries": ["IN"],
+      "regions": [],
+      "calendar": "islamic",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {"example": "Wishing you a blessed Jamat-ul-Vida, {name}.", "note": "The last Friday of Ramadan. Restrained, and no food imagery."},
+      "dates": {
+        "2026": [{"date": "2026-03-20", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-03-05", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": ""
+    },
+    {
+      "id": "eid-al-fitr",
+      "requires_same_day_confirmation": true,
+      "name": "Eid al-Fitr",
+      "aliases": ["Id-ul-Fitr", "Eid ul-Fitr", "Hari Raya Puasa", "Hari Raya Aidilfitri", "Ramzan Eid", "Id-Ul-Fitr"],
+      "tradition": "muslim",
+      "countries": ["IN", "PK", "BD", "AE", "GCC", "SG", "MY", "LK", "GB", "US", "CA", "AU", "ZA", "HK", "NP"],
+      "regions": [],
+      "calendar": "islamic",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Eid Mubarak, {name}. I hope the house is full today.",
+        "note": "Eid Mubarak is the greeting; do not translate it. In Singapore and Malaysia use Selamat Hari Raya. Never send it before the moon is confirmed."
+      },
+      "dates": {
+        "2026": [
+          {"date": "2026-03-21", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"},
+          {"date": "2026-03-21", "end": "2026-03-23", "scope": "PK", "greet": true, "source": "pk_cabinet_2026", "confidence": "official"},
+          {"date": "2026-03-19", "end": "2026-03-21", "scope": "AE", "greet": true, "source": "ae_u_ae_holidays", "confidence": "official_reported"},
+          {"date": "2026-03-21", "end": null, "scope": "SG", "greet": true, "source": "sg_mom_holidays", "confidence": "official"}
+        ],
+        "2027": [
+          {"date": "2027-03-10", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"},
+          {"date": "2027-03-10", "end": null, "scope": "SG", "greet": true, "source": "sg_mom_holidays", "confidence": "official"}
+        ]
+      },
+      "notes": "Every Islamic date here is subject to moon sighting. India's central government reserves the right to move Id-ul-Fitr, Id-ul-Zuha, Muharram and Id-e-Milad at short notice on the sighting; the UAE dates are Cabinet-set with a fourth day added if Ramadan runs thirty days; Pakistan's are marked in the Cabinet circular as anticipated and subject to the appearance of the moon. Wobo must never send an Eid greeting on a scheduled date alone. It waits for a same-day confirmation flag."
+    },
+    {
+      "id": "ram-navami",
+      "name": "Ram Navami",
+      "aliases": [],
+      "tradition": "hindu",
+      "countries": ["IN"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Ram Navami, {name}.", "note": "Plain."},
+      "dates": {
+        "2026": [{"date": "2026-03-26", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-04-15", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "Closes Chaitra Navratri."
+    },
+    {
+      "id": "mahavir-jayanti",
+      "name": "Mahavir Jayanti",
+      "aliases": [],
+      "tradition": "jain",
+      "countries": ["IN"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Wishing you a peaceful Mahavir Jayanti, {name}.", "note": "Quiet in tone. Jain observance is reflective, not festive."},
+      "dates": {
+        "2026": [{"date": "2026-03-31", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-04-19", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "A gazetted holiday in India."
+    },
+    {
+      "id": "good-friday",
+      "name": "Good Friday",
+      "aliases": [],
+      "tradition": "christian",
+      "countries": ["IN", "GB", "CA", "AU", "SG", "HK", "ZA", "LK", "PK", "NP"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": true,
+      "greeting_style": {
+        "example": null,
+        "note": "There is no greeting for Good Friday. It is solemn. Wobo sends nothing and waits for Easter."
+      },
+      "dates": {
+        "2026": [{"date": "2026-04-03", "end": null, "scope": "GB", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"}, {"date": "2026-04-03", "end": null, "scope": "all", "greet": false, "source": null, "confidence": "conventional"}],
+        "2027": [{"date": "2027-03-26", "end": null, "scope": "GB", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"}, {"date": "2027-03-26", "end": null, "scope": "all", "greet": false, "source": null, "confidence": "conventional"}]
+      },
+      "notes": "Confirmed identically by the UK, India, Singapore, Hong Kong and Pakistan lists for both years. Not a US federal holiday."
+    },
+    {
+      "id": "easter",
+      "name": "Easter",
+      "aliases": ["Easter Sunday", "Easter Monday", "Family Day"],
+      "tradition": "christian",
+      "countries": ["IN", "GB", "US", "CA", "AU", "HK", "ZA", "SG", "PK"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Easter, {name}. I hope it is a slow, good day.", "note": "Gentle. Not a party greeting."},
+      "dates": {
+        "2026": [
+          {"date": "2026-04-05", "end": "2026-04-06", "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}, {"date": "2026-04-05", "end": "2026-04-06", "scope": "all", "greet": true, "source": null, "confidence": "conventional"},
+          {"date": "2026-04-06", "end": null, "scope": "ZA", "label": "Family Day", "greet": false, "source": "za_gov_holidays", "confidence": "official", "note": "The Easter greeting goes on the Sunday. The Monday is a day off."}
+        ],
+        "2027": [
+          {"date": "2027-03-28", "end": "2027-03-29", "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}, {"date": "2027-03-28", "end": "2027-03-29", "scope": "all", "greet": true, "source": null, "confidence": "conventional"}
+        ]
+      },
+      "notes": "Easter Sunday then Easter Monday. Easter Monday is a bank holiday in England, Wales and Northern Ireland but not in Scotland. South Africa calls the Monday Family Day. Hong Kong keeps the Saturday after Good Friday as well."
+    },
+    {
+      "id": "vaisakhi",
+      "name": "Vaisakhi, Vishu, Puthandu and Bohag Bihu",
+      "aliases": ["Baisakhi", "Vishu", "Puthandu", "Tamil New Year", "Meshadi", "Bohag Bihu", "Rongali Bihu", "Pana Sankranti", "Sinhala and Tamil New Year"],
+      "tradition": "hindu",
+      "countries": ["IN", "LK", "NP", "GB", "CA", "US"],
+      "regions": ["Punjab", "Kerala", "Tamil Nadu", "Assam", "Odisha", "West Bengal"],
+      "calendar": "solar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Happy Vishu, {name}. I hope the first thing you saw this morning was a good one.",
+        "note": "Name the day the way the learner's family does. Vaisakhi in Punjab, Vishu in Kerala with the Vishukkani, Puthandu in Tamil Nadu, Bihu in Assam."
+      },
+      "dates": {
+        "2026": [
+          {"date": "2026-04-14", "end": null, "scope": "IN", "label": "Vaisakhi, Vishu, Meshadi, Tamil New Year", "greet": true, "source": "in_dopt_2026", "confidence": "official", "note": "Name the day the way the family does. The fallback greeting is the Kerala one."},
+          {"date": "2026-04-15", "end": null, "scope": "IN", "label": "Vaisakhadi in Bengal, Bohag Bihu in Assam", "greet": true, "greeting": "Happy Bohag Bihu, {name}. I hope the new year opens gently.", "source": "in_dopt_2026", "confidence": "official", "note": "Poila Boishakh in Bengal and Bohag Bihu in Assam. This is not Vishu."},
+          {"date": "2026-04-14", "end": null, "scope": "PK", "label": "Baisakhi", "greet": true, "greeting": "Happy Baisakhi, {name}.", "source": "pk_cabinet_2026", "confidence": "official"}
+        ],
+        "2027": [
+          {"date": "2027-04-14", "end": null, "scope": "IN", "label": "Vaisakhi, Vishu, Meshadi, Tamil New Year", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported", "note": "Name the day the way the family does. The fallback greeting is the Kerala one."},
+          {"date": "2027-04-15", "end": null, "scope": "IN", "label": "Vaisakhadi in Bengal, Bohag Bihu in Assam", "greet": true, "greeting": "Happy Bohag Bihu, {name}. I hope the new year opens gently.", "source": "in_dopt_2027", "confidence": "official_reported", "note": "Poila Boishakh in Bengal and Bohag Bihu in Assam. This is not Vishu."}
+        ]
+      },
+      "notes": "One solar moment, many names. Sri Lanka's Sinhala and Tamil New Year falls in the same window on 13 and 14 April, but the Sri Lankan dates are unverified here. Nepal's new year, 1 Baishakh 2083, fell on 14 April 2026."
+    },
+    {
+      "id": "pohela-boishakh",
+      "name": "Pohela Boishakh",
+      "aliases": ["Bengali new year", "Poila Baishakh", "Noboborsho"],
+      "tradition": "secular",
+      "countries": ["BD", "IN"],
+      "regions": ["Bangladesh", "West Bengal", "Tripura"],
+      "calendar": "solar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Shubho Noboborsho, {name}.", "note": "The Bengali greeting is the right one. Do not translate it."},
+      "dates": {
+        "2026": [{"date": null, "end": null, "scope": "BD", "greet": true, "source": "bd_mopa_2026", "confidence": "unverified"}, {"date": "2026-04-15", "end": null, "scope": "IN-WB", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": null, "end": null, "scope": "BD", "greet": true, "source": "bd_mopa_2026", "confidence": "unverified"}, {"date": "2027-04-15", "end": null, "scope": "IN-WB", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "Bangladesh fixes 1 Boishakh to 14 April by the revised Bangla Academy calendar, while West Bengal keeps the traditional reckoning, which is why the Indian date is 15 April in both years. The Bangladeshi date is left null until the Ministry of Public Administration list is read."
+    },
+    {
+      "id": "rabindra-jayanti",
+      "name": "Rabindranath Tagore's birthday",
+      "aliases": ["Rabindra Jayanti", "Pochishe Boishakh"],
+      "tradition": "secular",
+      "countries": ["IN", "BD"],
+      "regions": ["West Bengal", "Tripura"],
+      "calendar": "gregorian",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Rabindra Jayanti, {name}.", "note": "A literary day. Schools in Bengal hold recitations."},
+      "dates": {
+        "2026": [{"date": "2026-05-09", "end": null, "scope": "IN-WB", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-05-09", "end": null, "scope": "IN-WB", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": ""
+    },
+    {
+      "id": "buddha-purnima",
+      "name": "Buddha Purnima and Vesak",
+      "aliases": ["Vesak", "Wesak", "Buddha Jayanti", "Vesak Day", "Vesak Full Moon Poya"],
+      "tradition": "buddhist",
+      "countries": ["IN", "NP", "LK", "SG", "HK", "MY"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "A peaceful Vesak to you, {name}.", "note": "Calm and still. Vesak is not a party."},
+      "dates": {
+        "2026": [
+          {"date": "2026-05-01", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"},
+          {"date": "2026-05-31", "end": null, "scope": "SG", "greet": true, "source": "sg_mom_holidays", "confidence": "official"},
+          {"date": "2026-05-24", "end": null, "scope": "HK", "label": "Buddha's Birthday, holiday observed 25 May", "greet": true, "source": "hk_gov_2026", "confidence": "derived"},
+          {"date": null, "end": null, "scope": "LK", "greet": true, "source": "lk_gazette_2438_22", "confidence": "unverified"}
+        ],
+        "2027": [
+          {"date": "2027-05-20", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"},
+          {"date": "2027-05-20", "end": null, "scope": "SG", "greet": true, "source": "sg_mom_holidays", "confidence": "official"},
+          {"date": "2027-05-13", "end": null, "scope": "HK", "label": "Buddha's Birthday", "greet": true, "source": "hk_gov_2027", "confidence": "official"}
+        ]
+      },
+      "notes": "The reckonings genuinely differ. India and Singapore agree in 2027 on 20 May but not in 2026, where India keeps 1 May and Singapore 31 May. Hong Kong's official list gives the day following Buddha's Birthday as the 2026 holiday because 24 May is a Sunday; the festival day itself is derived as 24 May. Sri Lanka's Vesak Poya is left null because secondary reports conflicted and the gazette could not be read. Never assume one date across countries."
+    },
+    {
+      "id": "eid-al-adha",
+      "requires_same_day_confirmation": true,
+      "name": "Eid al-Adha",
+      "aliases": ["Id-ul-Zuha", "Bakrid", "Bakra Eid", "Hari Raya Haji", "Eid ul-Azha", "Id-Ul-Alha", "Qurbani Eid"],
+      "tradition": "muslim",
+      "countries": ["IN", "PK", "BD", "AE", "GCC", "SG", "MY", "LK", "GB", "US", "CA", "AU", "ZA", "NP"],
+      "regions": [],
+      "calendar": "islamic",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Eid Mubarak, {name}. I hope the day is generous to you.",
+        "note": "Same greeting as Eid al-Fitr. In Singapore and Malaysia, Selamat Hari Raya Haji. Arafah Day, the day before, is for standing and prayer, so send nothing then."
+      },
+      "dates": {
+        "2026": [
+          {"date": "2026-05-27", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"},
+          {"date": "2026-05-27", "end": "2026-05-29", "scope": "PK", "greet": true, "source": "pk_cabinet_2026", "confidence": "official"},
+          {"date": "2026-05-26", "end": null, "scope": "AE", "label": "Arafah Day", "greet": false, "source": "ae_u_ae_holidays", "confidence": "official_reported", "note": "Arafah Day is for standing and prayer. Nothing is sent. The Eid greeting goes on the entry below."}, {"date": "2026-05-27", "end": "2026-05-29", "scope": "AE", "label": "Eid al-Adha", "greet": true, "source": "ae_u_ae_holidays", "confidence": "official_reported"},
+          {"date": "2026-05-27", "end": null, "scope": "SG", "greet": true, "source": "sg_mom_holidays", "confidence": "official"}
+        ],
+        "2027": [
+          {"date": "2027-05-17", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"},
+          {"date": "2027-05-17", "end": null, "scope": "SG", "greet": true, "source": "sg_mom_holidays", "confidence": "official"}
+        ]
+      },
+      "notes": "Moon-sighting rules identical to Eid al-Fitr. The Pakistan Cabinet circular marks 27 to 29 May 2026 as 10 Zil Haj 1447 and the two days after."
+    },
+    {
+      "id": "islamic-new-year",
+      "requires_same_day_confirmation": true,
+      "name": "Islamic new year",
+      "aliases": ["Hijri new year", "1 Muharram", "Awal Muharram", "Ras as-Sanah al-Hijriyah"],
+      "tradition": "muslim",
+      "countries": ["AE", "GCC", "MY", "SG", "IN", "PK", "BD"],
+      "regions": [],
+      "calendar": "islamic",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "A blessed new year to you, {name}.",
+        "note": "Muted. The Hijri new year opens the month of Muharram, which turns to mourning within days. No celebration language."
+      },
+      "dates": {
+        "2026": [{"date": "2026-06-17", "end": null, "scope": "AE", "greet": true, "source": "in_dopt_2026", "confidence": "derived"}],
+        "2027": [{"date": "2027-06-07", "end": null, "scope": "AE", "greet": true, "source": "in_dopt_2027", "confidence": "derived"}]
+      },
+      "notes": "Derived, not read from a list: 1 Muharram is nine days before the day of Ashura, which the Indian central government fixes at 26 June 2026 and 16 June 2027. A UAE public holiday under Cabinet Resolution No. 27 of 2024, subject to moon sighting. Not a public holiday in India."
+    },
+    {
+      "id": "muharram-ashura",
+      "requires_same_day_confirmation": true,
+      "name": "Muharram, the day of Ashura",
+      "aliases": ["Ashura", "Youm-e-Ashura", "Muharram"],
+      "tradition": "muslim",
+      "countries": ["IN", "PK", "BD", "AE", "GCC", "LK"],
+      "regions": [],
+      "calendar": "islamic",
+      "school_holiday": true,
+      "quiet_day": true,
+      "greeting_style": {
+        "example": null,
+        "note": "There is no greeting. Ashura is mourning. Wobo sends nothing, and if the learner mentions it, Wobo answers plainly and does not wish them well."
+      },
+      "dates": {
+        "2026": [
+          {"date": "2026-06-26", "end": null, "scope": "IN", "greet": false, "source": "in_dopt_2026", "confidence": "official"},
+          {"date": "2026-06-24", "end": "2026-06-25", "scope": "PK", "label": "9 and 10 Muharram 1448", "greet": false, "source": "pk_cabinet_2026", "confidence": "official"}
+        ],
+        "2027": [{"date": "2027-06-16", "end": null, "scope": "IN", "greet": false, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "India and Pakistan differ by a day or two because each follows its own sighting. Both are official."
+    },
+    {
+      "id": "rath-yatra",
+      "name": "Rath Yatra",
+      "aliases": ["Jagannath Rath Yatra"],
+      "tradition": "hindu",
+      "countries": ["IN"],
+      "regions": ["Odisha", "West Bengal"],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Rath Yatra, {name}.", "note": "Odisha above all."},
+      "dates": {
+        "2026": [{"date": "2026-07-16", "end": null, "scope": "IN-OD", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-07-05", "end": null, "scope": "IN-OD", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": ""
+    },
+    {
+      "id": "parsi-new-year",
+      "name": "Parsi new year",
+      "aliases": ["Pateti", "Navroz", "Shahenshahi Navroz", "Nauraj"],
+      "tradition": "parsi",
+      "countries": ["IN", "PK"],
+      "regions": ["Maharashtra", "Gujarat", "Parsi communities"],
+      "calendar": "other",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {"example": "Navroz Mubarak, {name}.", "note": "The customary greeting, unchanged."},
+      "dates": {
+        "2026": [{"date": "2026-08-15", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}, {"date": "2026-08-15", "end": null, "scope": "PK", "greet": true, "source": "pk_cabinet_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-08-15", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "The Shahenshahi reckoning most Indian Parsi families keep, which drifts and currently sits in August. Distinct from Jamshedi Navroz at the March equinox."
+    },
+    {
+      "id": "independence-day-india",
+      "name": "Independence Day",
+      "aliases": [],
+      "tradition": "civic",
+      "countries": ["IN"],
+      "regions": [],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Independence Day, {name}.", "note": "Short."},
+      "dates": {
+        "2026": [{"date": "2026-08-15", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-08-15", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "In 2027 it coincides with Milad-un-Nabi and with the Parsi new year on the central list."
+    },
+    {
+      "id": "milad-un-nabi",
+      "requires_same_day_confirmation": true,
+      "name": "Milad-un-Nabi",
+      "aliases": ["Id-e-Milad", "Eid Milad-un-Nabi", "Mawlid", "Prophet Mohammed's birthday", "Barawafat"],
+      "tradition": "muslim",
+      "countries": ["IN", "PK", "BD", "AE", "GCC", "LK", "MY"],
+      "regions": [],
+      "calendar": "islamic",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Wishing you a blessed Milad-un-Nabi, {name}.", "note": "Reverent, not festive. Observance varies widely between communities, so greet only where the learner has told us."},
+      "dates": {
+        "2026": [
+          {"date": "2026-08-26", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"},
+          {"date": "2026-08-25", "end": null, "scope": "PK", "label": "12 Rabi-ul-Awwal 1448", "greet": true, "source": "pk_cabinet_2026", "confidence": "official"},
+          {"date": "2026-08-28", "end": null, "scope": "AE", "greet": true, "source": "ae_u_ae_holidays", "confidence": "official_reported"}
+        ],
+        "2027": [{"date": "2027-08-15", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "Three countries, three dates in 2026, all official. Always use the learner's country."
+    },
+    {
+      "id": "onam",
+      "name": "Onam",
+      "aliases": ["Thiru Onam", "Thiruvonam"],
+      "tradition": "hindu",
+      "countries": ["IN", "AE", "GCC", "SG"],
+      "regions": ["Kerala", "Malayali communities"],
+      "calendar": "solar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Happy Onam, {name}. I hope the sadya is enormous.",
+        "note": "Onam belongs to Malayali families wherever they live, which for Wobo means Kerala, the Gulf and Singapore too."
+      },
+      "dates": {
+        "2026": [{"date": "2026-08-26", "end": null, "scope": "IN-KL", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-09-12", "end": null, "scope": "IN-KL", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "The central list names Thiru Onam, the main day. Kerala schools close for roughly a week around it; the state holiday list, not this file, has that window."
+    },
+    {
+      "id": "raksha-bandhan",
+      "name": "Raksha Bandhan",
+      "aliases": ["Rakhi"],
+      "tradition": "hindu",
+      "countries": ["IN", "NP", "AE", "GB", "US", "CA", "AU"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Raksha Bandhan, {name}.", "note": "Never assume the learner has a sibling. Keep the wish about the day, not about a brother or a sister."},
+      "dates": {
+        "2026": [{"date": "2026-08-28", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-08-17", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": ""
+    },
+    {
+      "id": "janmashtami",
+      "name": "Janmashtami",
+      "aliases": ["Krishna Janmashtami", "Gokulashtami", "Krishna Janam Ashtami"],
+      "tradition": "hindu",
+      "countries": ["IN", "NP", "PK", "BD"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Janmashtami, {name}.", "note": "Families fast until midnight. Nothing after nine in the evening."},
+      "dates": {
+        "2026": [{"date": "2026-09-04", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}, {"date": "2026-09-04", "end": null, "scope": "PK", "greet": true, "source": "pk_cabinet_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-08-25", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "Listed as Janmashtami (Vaishnava) on the central government list."
+    },
+    {
+      "id": "ganesh-chaturthi",
+      "name": "Ganesh Chaturthi",
+      "aliases": ["Vinayaka Chaturthi", "Ganeshotsav"],
+      "tradition": "hindu",
+      "countries": ["IN", "AE", "GB", "US"],
+      "regions": ["Maharashtra", "Goa", "Karnataka", "Telangana", "Andhra Pradesh"],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Happy Ganesh Chaturthi, {name}. Ganpati bappa morya.",
+        "note": "The Marathi phrase is the whole greeting for Maharashtra families. Use it there and nowhere else."
+      },
+      "dates": {
+        "2026": [{"date": "2026-09-14", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-09-04", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "The festival runs ten days to Anant Chaturdashi. Only the first day is on the central list."
+    },
+    {
+      "id": "navratri-durga-puja-dussehra",
+      "name": "Navratri, Durga Puja and Dussehra",
+      "aliases": ["Sharad Navratri", "Durga Puja", "Pujo", "Dasara", "Vijaya Dashami", "Bathukamma", "Golu", "Garba"],
+      "tradition": "hindu",
+      "countries": ["IN", "NP", "BD", "GB", "US", "CA", "AU", "AE", "SG"],
+      "regions": ["West Bengal", "Gujarat", "Karnataka", "Tamil Nadu", "Telangana", "Odisha", "Assam", "Tripura"],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Shubho Bijoya, {name}. I hope the week was as good as it looked.",
+        "note": "The greeting changes completely by region. Shubho Sharodiya at the start and Shubho Bijoya at the end for Bengali families; happy Navratri and happy garba in Gujarat; happy Dasara in Karnataka and the south; happy Dussehra in the north. Never send the Bengali one to a Gujarati family."
+      },
+      "dates": {
+        "2026": [
+          {"date": "2026-10-18", "end": null, "scope": "IN", "label": "Saptami", "greet": true, "greeting": "Shubho Sharodiya, {name}. I hope the pandals are worth the queue.", "source": "in_dopt_2026", "confidence": "official"},
+          {"date": "2026-10-19", "end": null, "scope": "IN", "label": "Maha Ashtami", "greet": false, "source": "in_dopt_2026", "confidence": "official", "note": "Recorded so the break is known. The wish goes on Saptami and again on Dashami, not on the days between."},
+          {"date": "2026-10-20", "end": null, "scope": "IN", "label": "Maha Navami and Vijaya Dashami", "greet": true, "source": "in_dopt_2026", "confidence": "official"}
+        ],
+        "2027": [
+          {"date": "2027-10-06", "end": null, "scope": "IN", "label": "Saptami", "greet": true, "greeting": "Shubho Sharodiya, {name}. I hope the pandals are worth the queue.", "source": "in_dopt_2027", "confidence": "official_reported"},
+          {"date": "2027-10-07", "end": null, "scope": "IN", "label": "Maha Ashtami", "greet": false, "source": "in_dopt_2027", "confidence": "official_reported", "note": "Recorded so the break is known. The wish goes on Saptami and again on Dashami, not on the days between."},
+          {"date": "2027-10-08", "end": null, "scope": "IN", "label": "Maha Navami", "greet": false, "source": "in_dopt_2027", "confidence": "official_reported", "note": "Recorded so the break is known. The wish goes on Saptami and again on Dashami, not on the days between."},
+          {"date": "2027-10-09", "end": null, "scope": "IN", "label": "Vijaya Dashami", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}
+        ]
+      },
+      "notes": "Only the days the central government fixes are recorded. The nine nights of Navratri begin about a week before Saptami, but the first day is not on the list and is deliberately not computed here. In 2026 the government put Maha Navami and Dussehra on the same day, 20 October; in 2027 they fall on consecutive days. This is the longest school break of the autumn in eastern and northern India."
+    },
+    {
+      "id": "gandhi-jayanti",
+      "name": "Gandhi Jayanti",
+      "aliases": ["Mahatma Gandhi's birthday"],
+      "tradition": "civic",
+      "countries": ["IN"],
+      "regions": [],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Wishing you a good Gandhi Jayanti, {name}.", "note": "Sober. It is a birthday, but a national one. Distinct from Martyrs' Day on 30 January, which is a quiet day."},
+      "dates": {
+        "2026": [{"date": "2026-10-02", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-10-02", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": ""
+    },
+    {
+      "id": "valmiki-jayanti",
+      "name": "Maharishi Valmiki's birthday",
+      "aliases": ["Valmiki Jayanti", "Pargat Diwas"],
+      "tradition": "hindu",
+      "countries": ["IN"],
+      "regions": ["Punjab", "Haryana", "Delhi", "Uttar Pradesh"],
+      "calendar": "lunisolar",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {"example": "Warm wishes on Valmiki Jayanti, {name}.", "note": "Plain."},
+      "dates": {
+        "2026": [{"date": "2026-10-26", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-10-15", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": ""
+    },
+    {
+      "id": "karwa-chauth",
+      "name": "Karwa Chauth",
+      "aliases": ["Karaka Chaturthi"],
+      "tradition": "hindu",
+      "countries": ["IN"],
+      "regions": ["Punjab", "Haryana", "Delhi", "Uttar Pradesh", "Rajasthan", "Madhya Pradesh"],
+      "calendar": "lunisolar",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": null,
+        "note": "An adults' fast. Wobo does not greet a school-age learner for it. It is here so the calendar knows the household will be busy in the evening and so nothing lands at moonrise."
+      },
+      "dates": {
+        "2026": [{"date": "2026-10-29", "end": null, "scope": "IN", "greet": false, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-10-18", "end": null, "scope": "IN", "greet": false, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "Kept in the calendar for scheduling, not for greeting."
+    },
+    {
+      "id": "diwali",
+      "name": "Diwali",
+      "aliases": ["Deepavali", "Deepawali", "Divali", "Tihar", "Bandi Chhor Divas"],
+      "tradition": "hindu",
+      "countries": ["IN", "NP", "LK", "SG", "MY", "GB", "US", "CA", "AU", "AE", "ZA", "HK"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Happy Diwali, {name}. I hope the house is full of light tonight.",
+        "note": "The biggest greeting of the year for most of our learners. One line, warm, and nothing attached to it. For Sikh families the day is Bandi Chhor Divas; name it that way where we know."
+      },
+      "dates": {
+        "2026": [
+          {"date": "2026-11-08", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"},
+          {"date": "2026-11-09", "end": null, "scope": "PK", "greet": true, "source": "pk_cabinet_2026", "confidence": "official"},
+          {"date": "2026-11-08", "end": null, "scope": "SG", "greet": true, "source": "sg_mom_holidays", "confidence": "official"}
+        ],
+        "2027": [
+          {"date": "2027-10-29", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"},
+          {"date": "2027-10-28", "end": null, "scope": "SG", "greet": true, "source": "sg_mom_holidays", "confidence": "official"}
+        ]
+      },
+      "notes": "The 2026 memorandum notes that Diwali falls on Sunday 8 November 2026 and that some states observe Naraka Chaturdasi instead. Singapore and India diverge by a day in 2027. Diwali is a school holiday across northern and western India for roughly a week, and a single day in most other countries."
+    },
+    {
+      "id": "naraka-chaturdasi",
+      "name": "Naraka Chaturdasi",
+      "aliases": ["Choti Diwali", "Kali Chaudas", "Roop Chaudas"],
+      "tradition": "hindu",
+      "countries": ["IN"],
+      "regions": ["Maharashtra", "Goa", "Karnataka", "Tamil Nadu", "Gujarat"],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Naraka Chaturdasi, {name}.", "note": "In the south this, not the next day, is the main Deepavali. Follow the learner's state."},
+      "dates": {
+        "2026": [{"date": "2026-11-08", "end": null, "scope": "IN", "greet": false, "source": "in_dopt_2026", "confidence": "official", "note": "8 November 2026 is Diwali as well. One greeting only, and Diwali carries it."}],
+        "2027": [{"date": "2027-10-28", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "The 2026 list places Naraka Chaturdasi and Diwali on the same date, 8 November, and paragraph 6 of the memorandum explains that states may take the Diwali holiday on Naraka Chaturdasi day instead."
+    },
+    {
+      "id": "govardhan-puja",
+      "name": "Govardhan Puja",
+      "aliases": ["Annakut", "Padwa", "Bali Pratipada"],
+      "tradition": "hindu",
+      "countries": ["IN"],
+      "regions": ["Uttar Pradesh", "Gujarat", "Maharashtra", "Rajasthan"],
+      "calendar": "lunisolar",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Govardhan Puja, {name}.", "note": "For Gujarati families this day is also the new year. Say Saal Mubarak where we know that."},
+      "dates": {
+        "2026": [{"date": "2026-11-09", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-10-30", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": ""
+    },
+    {
+      "id": "bhai-dooj",
+      "name": "Bhai Dooj",
+      "aliases": ["Bhai Duj", "Bhau Beej", "Bhai Phonta", "Bhai Tika"],
+      "tradition": "hindu",
+      "countries": ["IN", "NP"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Bhai Dooj, {name}.", "note": "As with Rakhi, never assume a sibling."},
+      "dates": {
+        "2026": [{"date": "2026-11-11", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-10-31", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "Called Bhai Tika in Nepal, where it closes Tihar."
+    },
+    {
+      "id": "chhath-puja",
+      "name": "Chhath Puja",
+      "aliases": ["Surya Shashthi", "Pratihar Shashthi", "Dala Chhath"],
+      "tradition": "hindu",
+      "countries": ["IN", "NP"],
+      "regions": ["Bihar", "Jharkhand", "Uttar Pradesh", "West Bengal", "Delhi"],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Happy Chhath, {name}. I hope the river is calm at sunrise.",
+        "note": "A four-day fast ending at sunrise. Nothing before dawn and nothing at dusk on the offering days."
+      },
+      "dates": {
+        "2026": [{"date": "2026-11-15", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-11-04", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "The central list names the Shashthi day. The observance runs two days either side of it."
+    },
+    {
+      "id": "guru-nanak-jayanti",
+      "name": "Guru Nanak's birthday",
+      "aliases": ["Gurpurab", "Guru Nanak Jayanti", "Prakash Utsav"],
+      "tradition": "sikh",
+      "countries": ["IN", "PK", "GB", "CA", "US", "AU"],
+      "regions": ["Punjab", "Delhi", "Haryana", "Chandigarh"],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Gurpurab, {name}.", "note": "Gurpurab is what families say. Use it."},
+      "dates": {
+        "2026": [{"date": "2026-11-24", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2026", "confidence": "official"}, {"date": "2026-11-24", "end": null, "scope": "PK", "greet": true, "source": "pk_cabinet_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-11-14", "end": null, "scope": "IN", "greet": true, "source": "in_dopt_2027", "confidence": "official_reported"}]
+      },
+      "notes": "A gazetted holiday in India. An optional holiday in Pakistan, where Nankana Sahib draws pilgrims. In 2026 it falls on 24 November, the same day as Guru Tegh Bahadur's martyrdom, which is a quiet day. The precedence rule in quiet_days settles it: the Gurpurab greeting is sent and nothing else is."
+    },
+    {
+      "id": "christmas",
+      "name": "Christmas",
+      "aliases": ["Christmas Day", "Bara Din", "Nathal"],
+      "tradition": "christian",
+      "countries": ["IN", "GB", "US", "CA", "AU", "SG", "HK", "ZA", "LK", "PK", "BD", "AE", "NP"],
+      "regions": [],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Happy Christmas, {name}. I hope the day is a slow one.",
+        "note": "Say happy Christmas, not merry, to keep the voice consistent. Christmas Eve matters more than Christmas Day in Goa, Kerala and much of Latin Christian practice."
+      },
+      "dates": {
+        "2026": [{"date": "2026-12-24", "end": null, "scope": "IN", "label": "Christmas Eve, a restricted holiday", "greet": false, "source": "in_dopt_2026", "confidence": "official", "note": "Recorded because Indian offices and many schools keep it. The greeting goes on 25 December."}, {"date": "2026-12-25", "end": null, "scope": "all", "label": "Christmas Day", "greet": true, "source": null, "confidence": "conventional"}],
+        "2027": [{"date": "2027-12-24", "end": null, "scope": "IN", "label": "Christmas Eve, a restricted holiday", "greet": false, "source": "in_dopt_2027", "confidence": "official_reported", "note": "Recorded because Indian offices and many schools keep it. The greeting goes on 25 December."}, {"date": "2027-12-25", "end": null, "scope": "all", "label": "Christmas Day", "greet": true, "source": null, "confidence": "conventional"}, {"date": "2027-12-27", "end": null, "scope": "HK", "label": "The first weekday after Christmas Day, a general holiday", "greet": false, "source": "hk_gov_2027", "confidence": "official", "note": "A substitute day off. The greeting went on 25 December."}]
+      },
+      "notes": "Christmas Eve is a restricted holiday in India. Boxing Day, 26 December, is a bank holiday in the UK, Canada, Australia, Hong Kong and South Africa, where it is the Day of Goodwill, and a Christian community holiday in Pakistan. In 2027 the UK moves both Christmas and Boxing Day to Monday 27 and Tuesday 28 December, and the US observes Christmas on Friday 24 December."
+    },
+    {
+      "id": "lunar-new-year",
+      "name": "Lunar new year",
+      "aliases": ["Chinese new year", "Spring Festival", "Tet", "Seollal", "Nong Li Xin Nian"],
+      "tradition": "chinese",
+      "countries": ["HK", "SG", "MY", "GB", "US", "CA", "AU", "ZA"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {
+        "example": "Happy lunar new year, {name}. I hope the year is a kind one.",
+        "note": "Gong hei fat choy in Cantonese Hong Kong, gong xi fa cai in Mandarin. Use the family's own language where we know it, and say lunar new year rather than Chinese new year when the learner is Korean or Vietnamese."
+      },
+      "dates": {
+        "2026": [
+          {"date": "2026-02-17", "end": "2026-02-19", "scope": "HK", "greet": true, "source": "hk_gov_2026", "confidence": "official"},
+          {"date": "2026-02-17", "end": "2026-02-18", "scope": "SG", "greet": true, "source": "sg_mom_holidays", "confidence": "official"}
+        ],
+        "2027": [
+          {"date": "2027-02-06", "end": "2027-02-09", "scope": "HK", "greet": true, "source": "hk_gov_2027", "confidence": "official"},
+          {"date": "2027-02-06", "end": "2027-02-07", "scope": "SG", "greet": true, "source": "sg_mom_holidays", "confidence": "official"}
+        ]
+      },
+      "notes": "Hong Kong's 2027 list substitutes the fourth day of the lunar new year for the second, which falls on a Sunday, so the official days are 6, 8 and 9 February. Singapore keeps two days in both years. The fifteen days to Chap Goh Meh matter to many families even when only the first days are holidays."
+    },
+    {
+      "id": "ching-ming",
+      "name": "Ching Ming",
+      "aliases": ["Qingming", "tomb-sweeping day"],
+      "tradition": "chinese",
+      "countries": ["HK", "CN", "SG", "MY"],
+      "regions": [],
+      "calendar": "solar",
+      "school_holiday": true,
+      "quiet_day": true,
+      "greeting_style": {"example": null, "note": "No greeting. Families visit graves. Wobo says nothing."},
+      "dates": {
+        "2026": [{"date": "2026-04-05", "end": null, "scope": "HK", "label": "holiday observed 6 April", "greet": false, "source": "hk_gov_2026", "confidence": "derived"}],
+        "2027": [{"date": "2027-04-05", "end": null, "scope": "HK", "greet": false, "source": "hk_gov_2027", "confidence": "official"}]
+      },
+      "notes": "Hong Kong's 2026 list gazettes the day following Ching Ming, 6 April, as the general holiday because 5 April is a Sunday. The festival date is derived by subtracting one day from the gazetted holiday, the same rule as Mid-Autumn."
+    },
+    {
+      "id": "dragon-boat-festival",
+      "name": "Dragon Boat Festival",
+      "aliases": ["Tuen Ng", "Duanwu"],
+      "tradition": "chinese",
+      "countries": ["HK", "CN", "SG", "MY"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Tuen Ng, {name}. I hope there are enough rice dumplings to go around.", "note": "The zongzi is the image everyone shares."},
+      "dates": {
+        "2026": [{"date": "2026-06-19", "end": null, "scope": "HK", "greet": true, "source": "hk_gov_2026", "confidence": "official"}],
+        "2027": [{"date": "2027-06-09", "end": null, "scope": "HK", "greet": true, "source": "hk_gov_2027", "confidence": "official"}]
+      },
+      "notes": ""
+    },
+    {
+      "id": "mid-autumn-festival",
+      "name": "Mid-Autumn Festival",
+      "aliases": ["Mooncake festival", "Zhongqiu"],
+      "tradition": "chinese",
+      "countries": ["HK", "CN", "SG", "MY", "GB", "US", "CA", "AU"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Mid-Autumn, {name}. I hope you get the good mooncake.", "note": "Light and family-shaped. Lanterns and the full moon."},
+      "dates": {
+        "2026": [{"date": "2026-09-25", "end": null, "scope": "HK", "label": "holiday observed the day after, 26 September", "greet": true, "source": "hk_gov_2026", "confidence": "derived"}],
+        "2027": [{"date": "2027-09-15", "end": null, "scope": "HK", "label": "holiday observed the day after, 16 September", "greet": true, "source": "hk_gov_2027", "confidence": "derived"}]
+      },
+      "notes": "Hong Kong gazettes the day following Mid-Autumn as the holiday, because the festival itself is an evening. The festival dates here are derived by subtracting one day from the gazetted holiday."
+    },
+    {
+      "id": "chung-yeung",
+      "name": "Chung Yeung Festival",
+      "aliases": ["Double Ninth", "Chongyang"],
+      "tradition": "chinese",
+      "countries": ["HK", "CN"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": true,
+      "greeting_style": {"example": null, "note": "Grave-sweeping again, and a day for the elderly. No greeting."},
+      "dates": {
+        "2026": [{"date": "2026-10-18", "end": null, "scope": "HK", "label": "holiday observed 19 October", "greet": false, "source": "hk_gov_2026", "confidence": "derived"}],
+        "2027": [{"date": "2027-10-08", "end": null, "scope": "HK", "greet": false, "source": "hk_gov_2027", "confidence": "official"}]
+      },
+      "notes": "Hong Kong's 2026 list gazettes the day following Chung Yeung, 19 October, as the general holiday because 18 October is a Sunday. The 2026 festival date is derived by subtracting one day, the same rule as Mid-Autumn and Ching Ming."
+    },
+    {
+      "id": "rosh-hashanah",
+      "name": "Rosh Hashanah",
+      "aliases": ["Jewish new year"],
+      "tradition": "jewish",
+      "countries": ["US", "GB", "CA", "AU", "ZA"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {"example": "Shanah tovah, {name}.", "note": "The customary greeting. Two words, and nothing after them."},
+      "dates": {
+        "2026": [{"date": "2026-09-12", "end": "2026-09-13", "scope": "all", "greet": true, "source": "hebcal_5787", "confidence": "derived"}],
+        "2027": [{"date": "2027-10-02", "end": "2027-10-03", "scope": "all", "greet": true, "source": "hebcal_5787", "confidence": "derived"}]
+      },
+      "notes": "Hebrew days begin at sunset the evening before, so 2026 begins at sunset on 11 September and 2027 at sunset on 1 October. Send nothing after sunset on the eve."
+    },
+    {
+      "id": "yom-kippur",
+      "name": "Yom Kippur",
+      "aliases": ["Day of Atonement"],
+      "tradition": "jewish",
+      "countries": ["US", "GB", "CA", "AU", "ZA"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": false,
+      "quiet_day": true,
+      "greeting_style": {"example": null, "note": "No wish. If anything is said before it, it is said on the eve, and it is not a celebration."},
+      "dates": {
+        "2026": [{"date": "2026-09-21", "end": null, "scope": "all", "greet": false, "source": "hebcal_5787", "confidence": "derived"}],
+        "2027": [{"date": "2027-10-11", "end": null, "scope": "all", "greet": false, "source": "hebcal_5787", "confidence": "derived"}]
+      },
+      "notes": "A full fast. Nothing is sent from sunset on the eve to nightfall on the day."
+    },
+    {
+      "id": "hanukkah",
+      "name": "Hanukkah",
+      "aliases": ["Chanukah", "festival of lights"],
+      "tradition": "jewish",
+      "countries": ["US", "GB", "CA", "AU", "ZA"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Hanukkah, {name}.", "note": "Eight nights. Greet on the first, not every night."},
+      "dates": {
+        "2026": [{"date": "2026-12-04", "end": "2026-12-12", "scope": "all", "greet": true, "source": "hebcal_5787", "confidence": "derived"}],
+        "2027": [{"date": null, "end": null, "scope": "all", "greet": true, "source": "hebcal_5787", "confidence": "unverified"}]
+      },
+      "notes": "The 2026 span begins at sunset on 4 December. The 2027 dates were not read and are left null."
+    },
+    {
+      "id": "passover",
+      "name": "Passover",
+      "aliases": ["Pesach"],
+      "tradition": "jewish",
+      "countries": ["US", "GB", "CA", "AU", "ZA"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {"example": "Chag sameach, {name}.", "note": "The customary greeting for the festival."},
+      "dates": {
+        "2026": [{"date": null, "end": null, "scope": "all", "greet": true, "source": "hebcal_5787", "confidence": "unverified"}],
+        "2027": [{"date": "2027-04-22", "end": "2027-04-29", "scope": "all", "greet": true, "source": "hebcal_5787", "confidence": "derived"}]
+      },
+      "notes": "The 2027 festival begins at sundown on 21 April. The 2026 dates were not read and are left null."
+    },
+    {
+      "id": "uk-bank-holidays",
+      "name": "United Kingdom bank holidays",
+      "aliases": ["Early May bank holiday", "Spring bank holiday", "Summer bank holiday", "St Andrew's Day", "St Patrick's Day", "Battle of the Boyne", "2 January"],
+      "tradition": "civic",
+      "countries": ["GB"],
+      "regions": ["England and Wales", "Scotland", "Northern Ireland"],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": null, "note": "Bank holidays are days off, not occasions. Wobo does not greet them. They are here so nothing is scheduled on them and so a long weekend is recognised as one."},
+      "dates": {
+        "2026": [
+          {"date": "2026-05-04", "end": null, "scope": "GB", "label": "Early May bank holiday", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"},
+          {"date": "2026-05-25", "end": null, "scope": "GB", "label": "Spring bank holiday", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"},
+          {"date": "2026-08-31", "end": null, "scope": "GB-EAW", "label": "Summer bank holiday, England, Wales and Northern Ireland", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"},
+          {"date": "2026-06-15", "end": null, "scope": "GB-SCT", "label": "World Cup bank holiday", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"}, {"date": "2026-08-03", "end": null, "scope": "GB-SCT", "label": "Summer bank holiday, Scotland", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"},
+          {"date": "2026-01-02", "end": null, "scope": "GB-SCT", "label": "2 January", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"},
+          {"date": "2026-11-30", "end": null, "scope": "GB-SCT", "label": "St Andrew's Day", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"},
+          {"date": "2026-03-17", "end": null, "scope": "GB-NIR", "label": "St Patrick's Day", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"},
+          {"date": "2026-07-13", "end": null, "scope": "GB-NIR", "label": "Battle of the Boyne, substitute day", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"},
+          {"date": "2026-12-28", "end": null, "scope": "GB", "label": "Boxing Day, substitute day", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"}
+        ],
+        "2027": [
+          {"date": "2027-05-03", "end": null, "scope": "GB", "label": "Early May bank holiday", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"},
+          {"date": "2027-05-31", "end": null, "scope": "GB", "label": "Spring bank holiday", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"},
+          {"date": "2027-08-30", "end": null, "scope": "GB-EAW", "label": "Summer bank holiday, England, Wales and Northern Ireland", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"},
+          {"date": "2027-08-02", "end": null, "scope": "GB-SCT", "label": "Summer bank holiday, Scotland", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"},
+          {"date": "2027-01-04", "end": null, "scope": "GB-SCT", "label": "2 January, substitute day", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"},
+          {"date": "2027-11-30", "end": null, "scope": "GB-SCT", "label": "St Andrew's Day", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"},
+          {"date": "2027-03-17", "end": null, "scope": "GB-NIR", "label": "St Patrick's Day", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"},
+          {"date": "2027-07-12", "end": null, "scope": "GB-NIR", "label": "Battle of the Boyne", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"},
+          {"date": "2027-12-27", "end": "2027-12-28", "scope": "GB", "label": "Christmas Day and Boxing Day, substitute days", "greet": false, "source": "uk_gov_bank_holidays", "confidence": "official"}
+        ]
+      },
+      "notes": "Scotland does not keep Easter Monday. The May and spring bank holidays anchor the half-term breaks that matter for exam revision."
+    },
+    {
+      "id": "us-federal-holidays",
+      "name": "United States federal holidays",
+      "aliases": ["Martin Luther King Jr. Day", "Presidents' Day", "Memorial Day", "Juneteenth", "Labor Day", "Columbus Day", "Veterans Day"],
+      "tradition": "civic",
+      "countries": ["US"],
+      "regions": [],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": null, "note": "Wobo does not greet federal holidays. They are recorded so nothing is scheduled and so long weekends are known. Memorial Day and Patriot Day are quiet days, listed separately."},
+      "dates": {
+        "2026": [
+          {"date": "2026-01-19", "end": null, "scope": "US", "label": "Birthday of Martin Luther King, Jr.", "greet": false, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2026-02-16", "end": null, "scope": "US", "label": "Washington's Birthday", "greet": false, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2026-05-25", "end": null, "scope": "US", "label": "Memorial Day", "greet": false, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2026-06-19", "end": null, "scope": "US", "label": "Juneteenth", "greet": false, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2026-07-03", "end": null, "scope": "US", "label": "Independence Day, observed", "greet": false, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2026-09-07", "end": null, "scope": "US", "label": "Labor Day", "greet": false, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2026-10-12", "end": null, "scope": "US", "label": "Columbus Day", "greet": false, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2026-11-11", "end": null, "scope": "US", "label": "Veterans Day", "greet": false, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2026-12-25", "end": null, "scope": "US", "label": "Christmas Day", "greet": false, "source": "us_opm_holidays", "confidence": "official"}
+        ],
+        "2027": [
+          {"date": "2027-01-18", "end": null, "scope": "US", "label": "Birthday of Martin Luther King, Jr.", "greet": false, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2027-02-15", "end": null, "scope": "US", "label": "Washington's Birthday", "greet": false, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2027-05-31", "end": null, "scope": "US", "label": "Memorial Day", "greet": false, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2027-06-18", "end": null, "scope": "US", "label": "Juneteenth, observed", "greet": false, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2027-07-05", "end": null, "scope": "US", "label": "Independence Day, observed", "greet": false, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2027-09-06", "end": null, "scope": "US", "label": "Labor Day", "greet": false, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2027-10-11", "end": null, "scope": "US", "label": "Columbus Day", "greet": false, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2027-11-11", "end": null, "scope": "US", "label": "Veterans Day", "greet": false, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2027-12-24", "end": null, "scope": "US", "label": "Christmas Day, observed", "greet": false, "source": "us_opm_holidays", "confidence": "official"}
+        ]
+      },
+      "notes": "The actual Independence Day is 4 July in both years; the dates above are the federal observances."
+    },
+    {
+      "id": "thanksgiving",
+      "name": "Thanksgiving",
+      "aliases": [],
+      "tradition": "secular",
+      "countries": ["US", "CA"],
+      "regions": [],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Thanksgiving, {name}. I hope the table is loud.", "note": "The one American day worth a greeting, because it is about the household. Canada keeps its own in October."},
+      "dates": {
+        "2026": [
+          {"date": "2026-11-26", "end": null, "scope": "US", "greet": true, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": "2026-10-12", "end": null, "scope": "CA", "greet": true, "source": "ca_cra_holidays", "confidence": "official"}
+        ],
+        "2027": [
+          {"date": "2027-11-25", "end": null, "scope": "US", "greet": true, "source": "us_opm_holidays", "confidence": "official"},
+          {"date": null, "end": null, "scope": "CA", "greet": true, "source": "ca_cra_holidays", "confidence": "unverified"}
+        ]
+      },
+      "notes": "US schools close for the whole week in many districts. Canada's 2027 date was not published on the source page and is left null."
+    },
+    {
+      "id": "halloween",
+      "name": "Halloween",
+      "aliases": [],
+      "tradition": "secular",
+      "countries": ["US", "CA", "GB", "AU", "SG", "HK", "AE"],
+      "regions": [],
+      "calendar": "gregorian",
+      "school_holiday": false,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Halloween, {name}. I hope the costume is a good one.", "note": "Light. Children care about this one even where it is not a holiday."},
+      "dates": {
+        "2026": [{"date": "2026-10-31", "end": null, "scope": "all", "greet": true, "source": null, "confidence": "conventional"}],
+        "2027": [{"date": "2027-10-31", "end": null, "scope": "all", "greet": true, "source": null, "confidence": "conventional"}]
+      },
+      "notes": "Not a public holiday anywhere in our list. Fixed date."
+    },
+    {
+      "id": "canada-holidays",
+      "name": "Canada public holidays",
+      "aliases": ["Victoria Day", "Canada Day", "Civic Holiday", "Saint-Jean-Baptiste Day"],
+      "tradition": "civic",
+      "countries": ["CA"],
+      "regions": ["Quebec"],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Canada Day, {name}.", "note": "Only Canada Day earns a greeting. The rest are days off."},
+      "dates": {
+        "2026": [
+          {"date": "2026-05-18", "end": null, "scope": "CA", "label": "Victoria Day", "greet": false, "source": "ca_cra_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2026-06-24", "end": null, "scope": "CA-QC", "label": "Saint-Jean-Baptiste Day", "greet": false, "source": "ca_cra_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2026-07-01", "end": null, "scope": "CA", "label": "Canada Day", "greet": true, "source": "ca_cra_holidays", "confidence": "official"},
+          {"date": "2026-08-03", "end": null, "scope": "CA", "label": "Civic Holiday, outside Quebec", "greet": false, "source": "ca_cra_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2026-09-07", "end": null, "scope": "CA", "label": "Labour Day", "greet": false, "source": "ca_cra_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2026-12-26", "end": null, "scope": "CA", "label": "Boxing Day", "greet": false, "source": "ca_cra_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."}
+        ],
+        "2027": [{"date": null, "end": null, "scope": "CA", "greet": false, "source": "ca_cra_holidays", "confidence": "unverified", "note": "Recorded as a public holiday. Not greeted."}]
+      },
+      "notes": "Provinces and territories add their own. The 2027 list was not published on the source page at build time and is left null."
+    },
+    {
+      "id": "australia-holidays",
+      "name": "Australia public holidays",
+      "aliases": ["Australia Day", "King's Birthday", "Labour Day", "Bank Holiday"],
+      "tradition": "civic",
+      "countries": ["AU"],
+      "regions": ["New South Wales"],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": null, "note": "Wobo does not greet Australian public holidays. Australia Day is contested and is deliberately not greeted."},
+      "dates": {
+        "2026": [
+          {"date": "2026-01-26", "end": null, "scope": "AU", "label": "Australia Day", "greet": false, "source": "au_nsw_holidays", "confidence": "official"},
+          {"date": "2026-04-04", "end": "2026-04-06", "scope": "AU-NSW", "label": "Easter Saturday to Easter Monday", "greet": false, "source": "au_nsw_holidays", "confidence": "official"},
+          {"date": "2026-04-25", "end": null, "scope": "AU", "label": "Anzac Day, additional day 27 April in New South Wales", "greet": false, "source": "au_nsw_holidays", "confidence": "official"},
+          {"date": "2026-06-08", "end": null, "scope": "AU-NSW", "label": "King's Birthday", "greet": false, "source": "au_nsw_holidays", "confidence": "official"},
+          {"date": "2026-08-03", "end": null, "scope": "AU-NSW", "label": "Bank Holiday", "greet": false, "source": "au_nsw_holidays", "confidence": "official"},
+          {"date": "2026-10-05", "end": null, "scope": "AU-NSW", "label": "Labour Day", "greet": false, "source": "au_nsw_holidays", "confidence": "official"},
+          {"date": "2026-12-25", "end": "2026-12-28", "scope": "AU-NSW", "label": "Christmas Day, Boxing Day and the additional Monday", "greet": false, "source": "au_nsw_holidays", "confidence": "official"}
+        ],
+        "2027": [
+          {"date": "2027-01-26", "end": null, "scope": "AU", "label": "Australia Day", "greet": false, "source": "au_nsw_holidays", "confidence": "official"},
+          {"date": "2027-03-27", "end": "2027-03-29", "scope": "AU-NSW", "label": "Easter Saturday to Easter Monday", "greet": false, "source": "au_nsw_holidays", "confidence": "official"},
+          {"date": "2027-04-25", "end": "2027-04-26", "scope": "AU", "label": "Anzac Day and the additional Monday", "greet": false, "source": "au_nsw_holidays", "confidence": "official"},
+          {"date": "2027-06-14", "end": null, "scope": "AU-NSW", "label": "King's Birthday", "greet": false, "source": "au_nsw_holidays", "confidence": "official"},
+          {"date": "2027-08-02", "end": null, "scope": "AU-NSW", "label": "Bank Holiday", "greet": false, "source": "au_nsw_holidays", "confidence": "official"},
+          {"date": "2027-10-04", "end": null, "scope": "AU-NSW", "label": "Labour Day", "greet": false, "source": "au_nsw_holidays", "confidence": "official"},
+          {"date": "2027-12-25", "end": "2027-12-28", "scope": "AU-NSW", "label": "Christmas Day, Boxing Day and the additional days", "greet": false, "source": "au_nsw_holidays", "confidence": "official"}
+        ]
+      },
+      "notes": "Only New South Wales is verified. Victoria's AFL Grand Final Friday and Melbourne Cup Day, Western Australia Day, the Northern Territory Picnic Day, Canberra Day and the state Labour Days all differ and are not recorded here. Fetch the Fair Work Ombudsman list before using Australian state dates in anything outbound."
+    },
+    {
+      "id": "south-africa-holidays",
+      "name": "South Africa public holidays",
+      "aliases": ["Freedom Day", "Youth Day", "National Women's Day", "Heritage Day", "Day of Reconciliation", "Day of Goodwill"],
+      "tradition": "civic",
+      "countries": ["ZA"],
+      "regions": [],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Heritage Day, {name}.", "note": "Heritage Day is the one that families celebrate. Human Rights Day and the Day of Reconciliation are commemorative and are not greeted."},
+      "dates": {
+        "2026": [
+          {"date": "2026-03-21", "end": null, "scope": "ZA", "label": "Human Rights Day", "greet": false, "source": "za_gov_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."}, {"date": "2026-04-27", "end": null, "scope": "ZA", "label": "Freedom Day", "greet": false, "source": "za_gov_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2026-05-01", "end": null, "scope": "ZA", "label": "Workers' Day", "greet": false, "source": "za_gov_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2026-06-16", "end": null, "scope": "ZA", "label": "Youth Day", "greet": false, "source": "za_gov_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2026-08-10", "end": null, "scope": "ZA", "label": "National Women's Day, observed, because 9 August is a Sunday", "greet": false, "source": "za_gov_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2026-09-24", "end": null, "scope": "ZA", "label": "Heritage Day", "greet": true, "source": "za_gov_holidays", "confidence": "official"},
+          {"date": "2026-12-16", "end": null, "scope": "ZA", "label": "Day of Reconciliation", "greet": false, "source": "za_gov_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2026-12-26", "end": null, "scope": "ZA", "label": "Day of Goodwill", "greet": false, "source": "za_gov_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."}
+        ],
+        "2027": [
+          {"date": "2027-03-22", "end": null, "scope": "ZA", "label": "Human Rights Day, observed", "greet": false, "source": "za_gov_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2027-04-27", "end": null, "scope": "ZA", "label": "Freedom Day", "greet": false, "source": "za_gov_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2027-05-01", "end": null, "scope": "ZA", "label": "Workers' Day", "greet": false, "source": "za_gov_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2027-06-16", "end": null, "scope": "ZA", "label": "Youth Day", "greet": false, "source": "za_gov_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2027-08-09", "end": null, "scope": "ZA", "label": "National Women's Day", "greet": false, "source": "za_gov_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2027-09-24", "end": null, "scope": "ZA", "label": "Heritage Day", "greet": true, "source": "za_gov_holidays", "confidence": "official"},
+          {"date": "2027-12-16", "end": null, "scope": "ZA", "label": "Day of Reconciliation", "greet": false, "source": "za_gov_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2027-12-26", "end": null, "scope": "ZA", "label": "Day of Goodwill", "greet": false, "source": "za_gov_holidays", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."}
+        ]
+      },
+      "notes": "Under the Public Holidays Act No. 36 of 1994, a public holiday falling on a Sunday moves to the Monday. That rule produced the 2026 Women's Day and 2027 Human Rights Day observances above."
+    },
+    {
+      "id": "singapore-national-day",
+      "name": "Singapore National Day",
+      "aliases": [],
+      "tradition": "civic",
+      "countries": ["SG"],
+      "regions": [],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy National Day, {name}.", "note": "Short."},
+      "dates": {
+        "2026": [{"date": "2026-08-09", "end": null, "scope": "SG", "greet": true, "source": "sg_mom_holidays", "confidence": "official"}],
+        "2027": [{"date": "2027-08-09", "end": null, "scope": "SG", "greet": true, "source": "sg_mom_holidays", "confidence": "official"}]
+      },
+      "notes": ""
+    },
+    {
+      "id": "hong-kong-civic-days",
+      "name": "Hong Kong civic holidays",
+      "aliases": ["HKSAR Establishment Day", "National Day", "Labour Day"],
+      "tradition": "civic",
+      "countries": ["HK"],
+      "regions": [],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": null, "note": "Days off, not occasions. Not greeted."},
+      "dates": {
+        "2026": [
+          {"date": "2026-05-01", "end": null, "scope": "HK", "label": "Labour Day", "greet": false, "source": "hk_gov_2026", "confidence": "official"},
+          {"date": "2026-07-01", "end": null, "scope": "HK", "label": "HKSAR Establishment Day", "greet": false, "source": "hk_gov_2026", "confidence": "official"},
+          {"date": "2026-10-01", "end": null, "scope": "HK", "label": "National Day", "greet": false, "source": "hk_gov_2026", "confidence": "official"}
+        ],
+        "2027": [
+          {"date": "2027-05-01", "end": null, "scope": "HK", "label": "Labour Day", "greet": false, "source": "hk_gov_2027", "confidence": "official"},
+          {"date": "2027-07-01", "end": null, "scope": "HK", "label": "HKSAR Establishment Day", "greet": false, "source": "hk_gov_2027", "confidence": "official"},
+          {"date": "2027-10-01", "end": null, "scope": "HK", "label": "National Day", "greet": false, "source": "hk_gov_2027", "confidence": "official"}
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "id": "uae-national-day",
+      "name": "UAE National Day",
+      "aliases": ["Eid Al Etihad", "Union Day"],
+      "tradition": "civic",
+      "countries": ["AE"],
+      "regions": [],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy National Day, {name}.", "note": "Two days, and the country decorates for a week. Greet on the first."},
+      "dates": {
+        "2026": [{"date": "2026-12-02", "end": "2026-12-03", "scope": "AE", "greet": true, "source": "ae_u_ae_holidays", "confidence": "official"}],
+        "2027": [{"date": "2027-12-02", "end": "2027-12-03", "scope": "AE", "greet": true, "source": "ae_u_ae_holidays", "confidence": "official"}]
+      },
+      "notes": "Fixed by Cabinet Resolution No. 27 of 2024. Not transferable if it falls on a weekend."
+    },
+    {
+      "id": "gcc-national-days",
+      "name": "Gulf national days",
+      "aliases": ["Saudi National Day", "Qatar National Day", "Kuwait National Day", "Bahrain National Day", "Oman National Day"],
+      "tradition": "civic",
+      "countries": ["GCC"],
+      "regions": ["Saudi Arabia", "Qatar", "Kuwait", "Bahrain", "Oman"],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy National Day, {name}.", "note": "Name the country's own day, never a generic Gulf greeting."},
+      "dates": {
+        "2026": [
+          {"date": "2026-02-25", "end": null, "scope": "KW", "label": "Kuwait National Day", "greet": true, "greeting": "Happy Kuwait National Day, {name}.", "source": null, "confidence": "conventional"},
+          {"date": "2026-09-23", "end": null, "scope": "SA", "label": "Saudi National Day", "greet": true, "greeting": "Happy Saudi National Day, {name}.", "source": null, "confidence": "conventional"},
+          {"date": "2026-11-18", "end": null, "scope": "OM", "label": "Oman National Day", "greet": true, "greeting": "Happy Oman National Day, {name}.", "source": null, "confidence": "conventional"},
+          {"date": "2026-12-16", "end": "2026-12-17", "scope": "BH", "label": "Bahrain National Day", "greet": true, "greeting": "Happy Bahrain National Day, {name}.", "source": null, "confidence": "conventional"},
+          {"date": "2026-12-18", "end": null, "scope": "QA", "label": "Qatar National Day", "greet": true, "greeting": "Happy Qatar National Day, {name}.", "source": null, "confidence": "conventional"}
+        ],
+        "2027": [
+          {"date": "2027-02-25", "end": null, "scope": "KW", "label": "Kuwait National Day", "greet": true, "greeting": "Happy Kuwait National Day, {name}.", "source": null, "confidence": "conventional"},
+          {"date": "2027-09-23", "end": null, "scope": "SA", "label": "Saudi National Day", "greet": true, "greeting": "Happy Saudi National Day, {name}.", "source": null, "confidence": "conventional"},
+          {"date": "2027-11-18", "end": null, "scope": "OM", "label": "Oman National Day", "greet": true, "greeting": "Happy Oman National Day, {name}.", "source": null, "confidence": "conventional"},
+          {"date": "2027-12-16", "end": "2027-12-17", "scope": "BH", "label": "Bahrain National Day", "greet": true, "greeting": "Happy Bahrain National Day, {name}.", "source": null, "confidence": "conventional"},
+          {"date": "2027-12-18", "end": null, "scope": "QA", "label": "Qatar National Day", "greet": true, "greeting": "Happy Qatar National Day, {name}.", "source": null, "confidence": "conventional"}
+        ]
+      },
+      "notes": "Fixed Gregorian national days, recorded from convention because no single official GCC list was fetched. Kuwait keeps 26 February as Liberation Day as well. Verify against each country's own government portal before anything outbound. All Islamic holidays in these countries follow the Eid, Muharram and Milad entries."
+    },
+    {
+      "id": "dashain",
+      "name": "Dashain",
+      "aliases": ["Bada Dashain", "Vijaya Dashami in Nepal"],
+      "tradition": "hindu",
+      "countries": ["NP"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Dashain, {name}. I hope the tika lasts all week.", "note": "The longest holiday of the Nepali year. Schools close for two to three weeks."},
+      "dates": {
+        "2026": [{"date": "2026-10-17", "end": "2026-10-23", "scope": "NP", "label": "Ashoj 31 to Kartik 6, 2083", "greet": true, "source": "np_holidays_2083_reported", "confidence": "reported", "note": "Ashoj 2083 runs to 31 days, so Kartik 1 is 18 October and Kartik 6 is 23 October."}],
+        "2027": [{"date": null, "end": null, "scope": "NP", "greet": true, "source": "np_moha_2083", "confidence": "unverified"}]
+      },
+      "notes": "The Ministry of Home Affairs gazette of 18 Falgun 2082 declared the Dashain holiday as Ashoj 31 to Kartik 6. The gazette itself was not retrievable, so this is reported rather than read, and the Gregorian dates are counted from the one anchor the report gives. The 2027 dates fall in the 2084 B.S. gazette, which is not yet published."
+    },
+    {
+      "id": "tihar",
+      "name": "Tihar",
+      "aliases": ["Deepawali in Nepal", "Yamapanchak", "Laxmi Puja", "Bhai Tika"],
+      "tradition": "hindu",
+      "countries": ["NP"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Tihar, {name}. I hope the lights go all the way down the street.", "note": "Five days, one for the crow, the dog, the cow, the self and the sibling."},
+      "dates": {
+        "2026": [{"date": "2026-11-08", "end": "2026-11-12", "scope": "NP", "label": "Kartik 22 to Kartik 26, 2083", "greet": true, "source": "np_holidays_2083_reported", "confidence": "reported", "note": "Counted from Kartik 1 on 18 October 2026."}],
+        "2027": [{"date": null, "end": null, "scope": "NP", "greet": true, "source": "np_moha_2083", "confidence": "unverified"}]
+      },
+      "notes": "Same caveat as Dashain."
+    },
+    {
+      "id": "nepal-new-year",
+      "name": "Nepali new year",
+      "aliases": ["Nava Barsha", "1 Baishakh"],
+      "tradition": "secular",
+      "countries": ["NP"],
+      "regions": [],
+      "calendar": "solar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy new year, {name}. Nayaa barsha ko shubhakamana.", "note": "The Nepali phrase is worth keeping."},
+      "dates": {
+        "2026": [{"date": "2026-04-14", "end": null, "scope": "NP", "label": "1 Baishakh 2083", "greet": true, "source": "np_holidays_2083_reported", "confidence": "reported"}],
+        "2027": [{"date": null, "end": null, "scope": "NP", "greet": true, "source": "np_moha_2083", "confidence": "unverified"}]
+      },
+      "notes": "The Bikram Sambat year 2083 began on 14 April 2026 and ends on 13 April 2027."
+    },
+    {
+      "id": "sri-lanka-observances",
+      "name": "Sri Lanka observances",
+      "aliases": ["Poya days", "Independence Day", "Sinhala and Tamil New Year"],
+      "tradition": "multi",
+      "countries": ["LK"],
+      "regions": [],
+      "calendar": "lunisolar",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy new year, {name}. Suba aluth avuruddak wewa.", "note": "The Sinhala and Tamil New Year in April is the big household one. Poya days are quiet and religious, not greeted."},
+      "dates": {
+        "2026": [
+          {"date": "2026-02-04", "end": null, "scope": "LK", "label": "Independence Day", "greet": true, "greeting": "Happy Independence Day, {name}.", "source": null, "confidence": "conventional", "note": "Fixed by statute on 4 February. Recorded from convention, because the 2026 gazette was not served. Confirm against the gazette before anything outbound."},
+          {"date": null, "end": null, "scope": "LK", "label": "Sinhala and Tamil New Year", "greet": true, "source": "lk_gazette_2438_22", "confidence": "unverified", "note": "The example greeting belongs to this entry alone."},
+          {"date": null, "end": null, "scope": "LK", "label": "Poya days, thirteen or fourteen full-moon days across the year", "greet": false, "source": "lk_gazette_2438_22", "confidence": "unverified", "note": "Poya days are religious and quiet. Never greeted."}
+        ],
+        "2027": [{"date": null, "end": null, "scope": "LK", "greet": false, "source": "lk_gazette_2438_22", "confidence": "unverified"}]
+      },
+      "notes": "Sri Lanka is the largest gap in this file. Extraordinary Gazette No. 2438/22 of 27 May 2025 declares the 2026 public and bank holidays, including every Poya day, and it was not served at build time. Only Independence Day on 4 February, which is fixed by statute, is recorded. Read the gazette before Wobo says anything to a Sri Lankan family about a date."
+    },
+    {
+      "id": "bangladesh-national-days",
+      "name": "Bangladesh national days",
+      "aliases": ["Independence Day", "Victory Day"],
+      "tradition": "civic",
+      "countries": ["BD"],
+      "regions": [],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Victory Day, {name}.", "note": "Shaheed Dibas on 21 February is a mourning day and is listed under quiet days, not here."},
+      "dates": {
+        "2026": [
+          {"date": "2026-03-26", "end": null, "scope": "BD", "label": "Independence Day", "greet": true, "greeting": "Happy Independence Day, {name}.", "source": null, "confidence": "conventional", "note": "A fixed statutory date recorded from convention, because the ministry list was not served."},
+          {"date": "2026-12-16", "end": null, "scope": "BD", "label": "Victory Day", "greet": true, "source": null, "confidence": "conventional", "note": "A fixed statutory date recorded from convention, because the ministry list was not served."}
+        ],
+        "2027": [
+          {"date": "2027-03-26", "end": null, "scope": "BD", "label": "Independence Day", "greet": true, "greeting": "Happy Independence Day, {name}.", "source": null, "confidence": "conventional", "note": "A fixed statutory date recorded from convention, because the ministry list was not served."},
+          {"date": "2027-12-16", "end": null, "scope": "BD", "label": "Victory Day", "greet": true, "source": null, "confidence": "conventional", "note": "A fixed statutory date recorded from convention, because the ministry list was not served."}
+        ]
+      },
+      "notes": "Fixed statutory dates. The Ministry of Public Administration list for 2026, which carries the movable Islamic and Hindu dates and the Eid spans of five and six days, was not retrievable and is the second-largest gap in this file."
+    },
+    {
+      "id": "pakistan-national-days",
+      "name": "Pakistan national days",
+      "aliases": ["Kashmir Day", "Pakistan Day", "Youm-e-Takbeer", "Independence Day", "Allama Iqbal Day", "Quaid-e-Azam Day"],
+      "tradition": "civic",
+      "countries": ["PK"],
+      "regions": [],
+      "calendar": "gregorian",
+      "school_holiday": true,
+      "quiet_day": false,
+      "greeting_style": {"example": "Happy Independence Day, {name}.", "note": "Kashmir Day is a solidarity day, not a celebration, and is not greeted."},
+      "dates": {
+        "2026": [
+          {"date": "2026-02-05", "end": null, "scope": "PK", "label": "Kashmir Day", "greet": false, "source": "pk_cabinet_2026", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2026-03-23", "end": null, "scope": "PK", "label": "Pakistan Day", "greet": false, "source": "pk_cabinet_2026", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2026-05-01", "end": null, "scope": "PK", "label": "Labour Day", "greet": false, "source": "pk_cabinet_2026", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2026-05-28", "end": null, "scope": "PK", "label": "Youm-e-Takbeer", "greet": false, "source": "pk_cabinet_2026", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2026-08-14", "end": null, "scope": "PK", "label": "Independence Day", "greet": true, "source": "pk_cabinet_2026", "confidence": "official"},
+          {"date": "2026-11-09", "end": null, "scope": "PK", "label": "Allama Iqbal Day", "greet": false, "source": "pk_cabinet_2026", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2026-12-25", "end": null, "scope": "PK", "label": "Quaid-e-Azam Day and Christmas", "greet": false, "source": "pk_cabinet_2026", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."},
+          {"date": "2026-12-26", "end": null, "scope": "PK", "label": "Day after Christmas, for Christians", "greet": false, "source": "pk_cabinet_2026", "confidence": "official", "note": "Recorded as a public holiday. Not greeted."}
+        ],
+        "2027": [{"date": null, "end": null, "scope": "PK", "greet": false, "source": "pk_cabinet_2026", "confidence": "unverified", "note": "Recorded as a public holiday. Not greeted."}]
+      },
+      "notes": "From Cabinet Division circular F.No. 10-1/2025-Min-II of 19 January 2026. The 2027 circular is issued each January and does not yet exist."
+    }
+  ]
+}

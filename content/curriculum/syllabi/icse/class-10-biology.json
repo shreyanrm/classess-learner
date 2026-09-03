@@ -1,0 +1,149 @@
+{
+  "framework_id": "icse",
+  "framework_name": "Indian Certificate of Secondary Education (CISCE)",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cisce.org/",
+  "aliases": [
+    "ICSE",
+    "CISCE",
+    "Council for the Indian School Certificate Examinations"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    9,
+    10
+  ],
+  "version": "2026-27",
+  "exam_year": 2027,
+  "level": "Class 10",
+  "level_order": 10,
+  "subject": "Biology",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "icse-biology",
+      "title": "Biology (52), ICSE examination year 2027",
+      "publisher": "Council for the Indian School Certificate Examinations",
+      "url": "https://cisce.org/wp-content/uploads/2025/03/12.-Biology.pdf",
+      "media_type": "application/pdf",
+      "pages": 13,
+      "bytes": 3718583,
+      "fetched_at": "2026-09-03T07:29:50Z",
+      "document_sha256": "f804154ed40b35394d85cc25ca59fb2d47089a5e3ba5fe6cfc74759173ab694f",
+      "extracted_text_sha256": "9ad2906c8e9f4661fc8f8003920ee8c5560eb75de89e56788abcef31e3b9b395",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "icse-biology",
+        "page": 8,
+        "section": "Class X, section 1"
+      },
+      "topics": null,
+      "unit_number": 1,
+      "order": 1,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Basic Biology",
+      "id": "n_d904043477c2aca7",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-biology",
+        "page": 8,
+        "section": "Class X, section 2"
+      },
+      "topics": null,
+      "unit_number": 2,
+      "order": 2,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Plant Physiology",
+      "id": "n_e209170a3ebdf837",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-biology",
+        "page": 8,
+        "section": "Class X, section 3"
+      },
+      "topics": null,
+      "unit_number": 3,
+      "order": 3,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Human Anatomy and Physiology",
+      "id": "n_3efcfb30bf4f89b0",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-biology",
+        "page": 10,
+        "section": "Class X, section 4"
+      },
+      "topics": null,
+      "unit_number": 4,
+      "order": 4,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Population",
+      "id": "n_6adc779187029744",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-biology",
+        "page": 11,
+        "section": "Class X, section 5"
+      },
+      "topics": null,
+      "unit_number": 5,
+      "order": 5,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Human Evolution",
+      "id": "n_a42cccd099b1a184",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-biology",
+        "page": 10,
+        "section": "Class X, section 6"
+      },
+      "topics": null,
+      "unit_number": 6,
+      "order": 6,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Pollution",
+      "id": "n_0160b38a17a19109",
+      "aliases": []
+    }
+  ],
+  "note": "The unit list and the unit order below are read off the CISCE booklet for this subject and were checked by hand against it. The topic layer that an earlier pass derived from the booklet's two-column layout has been withdrawn: the re-flow keyed off line position rather than the booklet's own bracketed sub-headings, which truncated topic titles mid-phrase and filed topics under the wrong unit. Nothing from that layer is kept, and no topic list is asserted here. Next step: re-derive the topics from the booklet's bracket structure, then have a second reader confirm the unit to topic mapping before anything is promoted."
+}

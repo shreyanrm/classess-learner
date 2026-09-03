@@ -1,0 +1,194 @@
+{
+  "framework_id": "icse",
+  "framework_name": "Indian Certificate of Secondary Education (CISCE)",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cisce.org/",
+  "aliases": [
+    "ICSE",
+    "CISCE",
+    "Council for the Indian School Certificate Examinations"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    9,
+    10
+  ],
+  "version": "2026-27",
+  "exam_year": 2027,
+  "level": "Class 10",
+  "level_order": 10,
+  "subject": "Chemistry",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "icse-chemistry",
+      "title": "Chemistry (52), ICSE examination year 2027",
+      "publisher": "Council for the Indian School Certificate Examinations",
+      "url": "https://cisce.org/wp-content/uploads/2025/03/11.-Chemistry.pdf",
+      "media_type": "application/pdf",
+      "pages": 14,
+      "bytes": 3907440,
+      "fetched_at": "2026-09-03T07:29:49Z",
+      "document_sha256": "18026d7b758953978288418a3dd1a70abf9e502680b41608ee29d30e100120be",
+      "extracted_text_sha256": "3ee496a143988a610101d418b97848e93bd8d3f4518df24ab1e124722c61429c",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "icse-chemistry",
+        "page": 8,
+        "section": "Class X, section 1"
+      },
+      "topics": null,
+      "unit_number": 1,
+      "order": 1,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Periodic Properties and variations of Properties",
+      "id": "n_cf68862b3622f68f",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-chemistry",
+        "page": 8,
+        "section": "Class X, section 2"
+      },
+      "topics": null,
+      "unit_number": 2,
+      "order": 2,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Chemical Bonding",
+      "id": "n_7ee711fa7d5702b3",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-chemistry",
+        "page": 8,
+        "section": "Class X, section 3"
+      },
+      "topics": null,
+      "unit_number": 3,
+      "order": 3,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Study of Acids, Bases and Salts",
+      "id": "n_8a7b21867d3ce050",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-chemistry",
+        "page": 9,
+        "section": "Class X, section 4"
+      },
+      "topics": null,
+      "unit_number": 4,
+      "order": 4,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Analytical Chemistry",
+      "id": "n_eda4c2d4552d7ded",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-chemistry",
+        "page": 9,
+        "section": "Class X, section 5"
+      },
+      "topics": null,
+      "unit_number": 5,
+      "order": 5,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Mole Concept and Stoichiometry",
+      "id": "n_ae9fa51c5aac5061",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-chemistry",
+        "page": 10,
+        "section": "Class X, section 6"
+      },
+      "topics": null,
+      "unit_number": 6,
+      "order": 6,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Electrolysis",
+      "id": "n_56b563799e52b35d",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-chemistry",
+        "page": 10,
+        "section": "Class X, section 7"
+      },
+      "topics": null,
+      "unit_number": 7,
+      "order": 7,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Metallurgy",
+      "id": "n_a538d31e7c403ffb",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-chemistry",
+        "page": 11,
+        "section": "Class X, section 8"
+      },
+      "topics": null,
+      "unit_number": 8,
+      "order": 8,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Study of Compounds",
+      "id": "n_9b7c18a50d6ac5ca",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-chemistry",
+        "page": 12,
+        "section": "Class X, section 9"
+      },
+      "topics": null,
+      "unit_number": 9,
+      "order": 9,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Organic Chemistry",
+      "id": "n_81a2aaed2879bffa",
+      "aliases": []
+    }
+  ],
+  "note": "The unit list and the unit order below are read off the CISCE booklet for this subject and were checked by hand against it. The topic layer that an earlier pass derived from the booklet's two-column layout has been withdrawn: the re-flow keyed off line position rather than the booklet's own bracketed sub-headings, which truncated topic titles mid-phrase and filed topics under the wrong unit. Nothing from that layer is kept, and no topic list is asserted here. Next step: re-derive the topics from the booklet's bracket structure, then have a second reader confirm the unit to topic mapping before anything is promoted."
+}

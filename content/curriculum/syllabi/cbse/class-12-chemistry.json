@@ -1,0 +1,975 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 12",
+  "level_order": 12,
+  "subject": "Chemistry",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [
+      "no_duplicate_topic_name_within_a_unit"
+    ],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "cbse-1112-chemistry",
+      "title": "Chemistry, Classes XI and XII, Secondary Curriculum Part 2, 2026-27",
+      "publisher": "Central Board of Secondary Education",
+      "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Chemistry_SecP2_2026-27.pdf",
+      "media_type": "application/pdf",
+      "pages": 15,
+      "bytes": 639598,
+      "fetched_at": "2026-09-03T07:03:55Z",
+      "document_sha256": "5610f09d357d3ccc9a7b39fc29cb7b1f4530847753783b16c72fff691acd2418",
+      "extracted_text_sha256": "b01124de4aeb9871bc94cac10d9e46d346a0813b19d0e38077ad5fc2c7aab6c7",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 8,
+        "section": "Unit 1"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 1: Solutions"
+          },
+          "order": 1,
+          "name": "Types of Solutions",
+          "id": "n_96d0a143d3226578",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 1: Solutions"
+          },
+          "order": 2,
+          "name": "Expression of Concentration of Solutions",
+          "id": "n_8be88b23875c6ceb",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 1: Solutions"
+          },
+          "order": 3,
+          "name": "Solubility, Vapour Pressure of Liquid Solutions",
+          "id": "n_6002c292e8afd4bd",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 1: Solutions"
+          },
+          "order": 4,
+          "name": "Ideal and Non –Ideal Solutions",
+          "id": "n_94e7b64674cde8ba",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 1: Solutions"
+          },
+          "order": 5,
+          "name": "Colligative Properties and Determination of Molar Mass",
+          "id": "n_0a317b8082a6cb67",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 1: Solutions"
+          },
+          "order": 6,
+          "name": "Abnormal Molecular Masses",
+          "id": "n_1fba826e267a8daf",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "1",
+      "contents": "Types of Solutions, Expression of Concentration of Solutions, Solubility, Vapour Pressure of Liquid Solutions, Ideal and Non –Ideal Solutions, Colligative Properties and Determination of Molar Mass, Abnormal Molecular Masses.",
+      "marks": 7,
+      "order": 1,
+      "name": "Solutions",
+      "id": "n_cc0ef58ae7d7b880",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 8,
+        "section": "Unit 2"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 2: Electrochemistry"
+          },
+          "order": 1,
+          "name": "Electrochemical Cells",
+          "id": "n_48ef2ffa7f987773",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 2: Electrochemistry"
+          },
+          "order": 2,
+          "name": "Galvanic Cells",
+          "id": "n_41ae1c26782a1dac",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 2: Electrochemistry"
+          },
+          "order": 3,
+          "name": "Nernst Equation",
+          "id": "n_8dd9c952b8044257",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 2: Electrochemistry"
+          },
+          "order": 4,
+          "name": "Conductance of Electrolytic solutions",
+          "id": "n_8acd99a6c6ce2603",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 2: Electrochemistry"
+          },
+          "order": 5,
+          "name": "Electrolytic Cells and Electrolysis",
+          "id": "n_5a12a580a0b3ad07",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 2: Electrochemistry"
+          },
+          "order": 6,
+          "name": "Batteries, Fuel Cells",
+          "id": "n_f2d04b9fa2337d57",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 2: Electrochemistry"
+          },
+          "order": 7,
+          "name": "Corrosion",
+          "id": "n_b9880cf89553bc00",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "2",
+      "contents": "Electrochemical Cells, Galvanic Cells, Nernst Equation, Conductance of Electrolytic solutions, Electrolytic Cells and Electrolysis, Batteries, Fuel Cells, Corrosion.",
+      "marks": 9,
+      "order": 2,
+      "name": "Electrochemistry",
+      "id": "n_fb344db57fe7b2d3",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 8,
+        "section": "Unit 3"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 3: Chemical Kinetics"
+          },
+          "order": 1,
+          "name": "Rate of a Chemical reaction, factors influencing rate of reaction, integrated rate equations",
+          "id": "n_a1017f8f7ddcf38d",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 3: Chemical Kinetics"
+          },
+          "order": 2,
+          "name": "Temperature Dependence of the rate of a reaction",
+          "id": "n_1f701ade0b1270f0",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 3: Chemical Kinetics"
+          },
+          "order": 3,
+          "name": "Collision theory of Chemical Reactions",
+          "id": "n_92de0ab3eabe416f",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "3",
+      "contents": "Rate of a Chemical reaction, factors influencing rate of reaction, integrated rate equations, Temperature Dependence of the rate of a reaction, Collision theory of Chemical Reactions",
+      "marks": 7,
+      "order": 3,
+      "name": "Chemical Kinetics",
+      "id": "n_37b32c634275ae4f",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 8,
+        "section": "Unit 4"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 4: d and f Block Elements"
+          },
+          "order": 1,
+          "name": "Position in the Periodic Table",
+          "id": "n_98f888e67adfecc7",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 4: d and f Block Elements"
+          },
+          "order": 2,
+          "name": "Electronic configuration of the d-Block Elements",
+          "id": "n_c701d9ffc7feaa2b",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 4: d and f Block Elements"
+          },
+          "order": 3,
+          "name": "General properties of the Transition Elements (d-Block)",
+          "id": "n_f218d91dd617c9c2",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 4: d and f Block Elements"
+          },
+          "order": 4,
+          "name": "Some Important Compounds of Transition Elements",
+          "id": "n_4ba6ae342a3d5083",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 4: d and f Block Elements"
+          },
+          "order": 5,
+          "name": "The Lanthanoids",
+          "id": "n_1e40da4a29311f9a",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 4: d and f Block Elements"
+          },
+          "order": 6,
+          "name": "The Actinoids",
+          "id": "n_b750b0a450e5363b",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 4: d and f Block Elements"
+          },
+          "order": 7,
+          "name": "Some Applications of d-and f- Block Elements",
+          "id": "n_6d7a633d05cd3f27",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "4",
+      "contents": "Position in the Periodic Table, Electronic configuration of the d-Block Elements, General properties of the Transition Elements (d-Block), Some Important Compounds of Transition Elements, The Lanthanoids, The Actinoids, Some Applications of d- and f- Block Elements.",
+      "marks": 7,
+      "order": 4,
+      "name": "d and f Block Elements",
+      "id": "n_803eb1036a8ef807",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 8,
+        "section": "Unit 5"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 5: Coordination Compounds"
+          },
+          "order": 1,
+          "name": "Werner’s Theory of Coordination Compound",
+          "id": "n_c48c704324aa35c5",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 5: Coordination Compounds"
+          },
+          "order": 2,
+          "name": "Definition of Some important terms pertaining to Coordination Compounds",
+          "id": "n_cbbf7d9b1fc61707",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 5: Coordination Compounds"
+          },
+          "order": 3,
+          "name": "Nomenclature of Coordination Compounds",
+          "id": "n_918f7eeb685d1787",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 5: Coordination Compounds"
+          },
+          "order": 4,
+          "name": "Isomerism in Coordination Compounds",
+          "id": "n_1dd984cf1cb7f4f0",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 5: Coordination Compounds"
+          },
+          "order": 5,
+          "name": "Bonding in coordination compounds",
+          "id": "n_f1df54a59402147c",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 5: Coordination Compounds"
+          },
+          "order": 6,
+          "name": "Bonding in Metal Carbonyls",
+          "id": "n_746dcfd9c38db572",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 5: Coordination Compounds"
+          },
+          "order": 7,
+          "name": "Importance and Applications of Coordination Compounds",
+          "id": "n_36a253712ddf26ec",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "5",
+      "contents": "Werner’s Theory of Coordination Compound, Definition of Some important terms pertaining to Coordination Compounds, Nomenclature of Coordination Compounds. Isomerism in Coordination Compounds, Bonding in coordination compounds, Bonding in Metal Carbonyls, Importance and Applications of Coordination Compounds.",
+      "marks": 7,
+      "order": 5,
+      "name": "Coordination Compounds",
+      "id": "n_4fe9bcab0cb9d7ad",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 8,
+        "section": "Unit 6"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 6: Haloalkanes and Haloarenes"
+          },
+          "order": 1,
+          "name": "Classification, Nomenclature",
+          "id": "n_cd6c3b7554b023cc",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 6: Haloalkanes and Haloarenes"
+          },
+          "order": 2,
+          "name": "Nature of C–X bond",
+          "id": "n_0529e1d47804ec12",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 6: Haloalkanes and Haloarenes"
+          },
+          "order": 3,
+          "name": "Methods of Preparation of Haloalkanes",
+          "id": "n_cef2f31b662c0a06",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 6: Haloalkanes and Haloarenes"
+          },
+          "order": 4,
+          "name": "Preparation of Haloarenes",
+          "id": "n_4cbfb45b2c3852bb",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 6: Haloalkanes and Haloarenes"
+          },
+          "order": 5,
+          "name": "Physical Properties",
+          "id": "n_b33efa25d8d474e7",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 6: Haloalkanes and Haloarenes"
+          },
+          "order": 6,
+          "name": "Chemical Reactions",
+          "id": "n_ee5d11a67e625b80",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 8,
+            "section": "Unit 6: Haloalkanes and Haloarenes"
+          },
+          "order": 7,
+          "name": "Polyhalogen Compounds",
+          "id": "n_b8b9638a7089364b",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "6",
+      "contents": "Classification, Nomenclature, Nature of C–X bond, Methods of Preparation of Haloalkanes, Preparation of Haloarenes, Physical Properties, Chemical Reactions, Polyhalogen Compounds.",
+      "marks": 6,
+      "order": 6,
+      "name": "Haloalkanes and Haloarenes",
+      "id": "n_557a1b8b3a2c7dda",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 9,
+        "section": "Unit 7"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 7: Alcohols, Phenols and Ethers"
+          },
+          "order": 1,
+          "name": "Classification, Nomenclature",
+          "id": "n_a7ba0cab48e12391",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 7: Alcohols, Phenols and Ethers"
+          },
+          "order": 2,
+          "name": "Structures of Functional Groups",
+          "id": "n_1bf7ec77c0aeda70",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 7: Alcohols, Phenols and Ethers"
+          },
+          "order": 3,
+          "name": "Alcohols and Phenols",
+          "id": "n_e512051320c8cd10",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 7: Alcohols, Phenols and Ethers"
+          },
+          "order": 4,
+          "name": "Some commercially Important Alcohols",
+          "id": "n_4a268056a2686a24",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 7: Alcohols, Phenols and Ethers"
+          },
+          "order": 5,
+          "name": "Ethers",
+          "id": "n_582f17c6c0990d99",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "7",
+      "contents": "Classification, Nomenclature, Structures of Functional Groups, Alcohols and Phenols, Some commercially Important Alcohols, Ethers.",
+      "marks": 6,
+      "order": 7,
+      "name": "Alcohols, Phenols and Ethers",
+      "id": "n_d08b4d0abc21f858",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 9,
+        "section": "Unit 8"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 8: Aldehydes, Ketones and Carboxylic Acids"
+          },
+          "order": 1,
+          "name": "Nomenclature and Structure of Carbonyl Group",
+          "id": "n_66f92b9ed6eb8eed",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 8: Aldehydes, Ketones and Carboxylic Acids"
+          },
+          "order": 2,
+          "name": "Preparation of Aldehydes and Ketones",
+          "id": "n_b7209755552f7bcb",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 8: Aldehydes, Ketones and Carboxylic Acids"
+          },
+          "order": 3,
+          "name": "Physical Properties and Chemical Reactions",
+          "id": "n_1cb5c540f80e519d",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 8: Aldehydes, Ketones and Carboxylic Acids"
+          },
+          "order": 4,
+          "name": "Uses of Aldehydes and Ketones Nomenclature Structure of Carboxyl Group",
+          "id": "n_919d519291de78d2",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 8: Aldehydes, Ketones and Carboxylic Acids"
+          },
+          "order": 5,
+          "name": "Methods of Preparation of Carboxylic Acids",
+          "id": "n_366642242fb00781",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 8: Aldehydes, Ketones and Carboxylic Acids"
+          },
+          "order": 6,
+          "name": "Physical Properties and Chemical Reactions",
+          "id": "n_d3c0f5dc899d0c38",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 8: Aldehydes, Ketones and Carboxylic Acids"
+          },
+          "order": 7,
+          "name": "Uses of Carboxylic Acids",
+          "id": "n_c22dbde44d67a7db",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "8",
+      "contents": "Nomenclature and Structure of Carbonyl Group, Preparation of Aldehydes and Ketones, Physical Properties and Chemical Reactions, Uses of Aldehydes and Ketones Nomenclature Structure of Carboxyl Group, Methods of Preparation of Carboxylic Acids, Physical Properties and Chemical Reactions, Uses of Carboxylic Acids.",
+      "marks": 8,
+      "order": 8,
+      "name": "Aldehydes, Ketones and Carboxylic Acids",
+      "id": "n_69415e242a27aba2",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 9,
+        "section": "Unit 9"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 9: Amines"
+          },
+          "order": 1,
+          "name": "Structure of Amines",
+          "id": "n_78aed6843663d8e5",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 9: Amines"
+          },
+          "order": 2,
+          "name": "Classification, Nomenclature",
+          "id": "n_ee718947c1c729c9",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 9: Amines"
+          },
+          "order": 3,
+          "name": "Preparation of Amines",
+          "id": "n_b8afc142fd97d0c9",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 9: Amines"
+          },
+          "order": 4,
+          "name": "Physical Properties",
+          "id": "n_601710588cdaba4b",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 9: Amines"
+          },
+          "order": 5,
+          "name": "Chemical Reactions",
+          "id": "n_7b13d5ec2cf8fbbf",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 9: Amines"
+          },
+          "order": 6,
+          "name": "Methods of Preparation of Diazonium Salts",
+          "id": "n_cdfe65cf3f505115",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 9: Amines"
+          },
+          "order": 7,
+          "name": "Physical Propeties",
+          "id": "n_34e64c67d61a094c",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 9: Amines"
+          },
+          "order": 8,
+          "name": "Chemical Reactions",
+          "id": "n_9e0f2540f1fbe0b1",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 9: Amines"
+          },
+          "order": 9,
+          "name": "Chemical Reactions Importance of Diazonium Salts in Synthesis of Aromatic Compounds",
+          "id": "n_d7dea6e0a616420f",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "9",
+      "contents": "Structure of Amines, Classification, Nomenclature, Preparation of Amines, Physical Properties, Chemical Reactions, Methods of Preparation of Diazonium Salts, Physical Propeties, Chemical Reactions, Chemical Reactions Importance of Diazonium Salts in Synthesis of Aromatic Compounds.",
+      "marks": 6,
+      "order": 9,
+      "name": "Amines",
+      "id": "n_cb707797e64aa661",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-1112-chemistry",
+        "page": 9,
+        "section": "Unit 10"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 10: Biomolecules"
+          },
+          "order": 1,
+          "name": "Carbohydrates, Proteins",
+          "id": "n_56fefdafa8ed8afe",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 10: Biomolecules"
+          },
+          "order": 2,
+          "name": "Enzymes, Vitamins Nucleic Acids",
+          "id": "n_65d6bce8b1ba63d9",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "cbse-1112-chemistry",
+            "page": 9,
+            "section": "Unit 10: Biomolecules"
+          },
+          "order": 3,
+          "name": "Hormones",
+          "id": "n_d62f02474fa47b30",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "10",
+      "contents": "Carbohydrates. Proteins, Enzymes, Vitamins Nucleic Acids, Hormones Note: The following topics are included in the syllabus but will be assessed only formatively to reinforce understanding without adding to summative assessments. This reduces academic stress while ensuring meaningful learning. Schools can integrate these with existing chapters as they align well. Relevant NCERT textual material is enclosed for reference. 1. Surface Chemistry - Adsorption - physisorption and chemisorption, factors affecting adsorption of gases on solids, colloidal state distinction between true solutions, colloids and suspension; lyophilic, lyophobic properties of colloids; coagulation, emulsion - types of emulsions. 2. General Principles and Processes of Isolation of Elements - Principles and methods of extraction - concentration, oxidation, reduction - electrolytic method and refining 3. Polymers – Polymerisation, Homopolymers and copolymer with few examples 4. Chemistry in Everyday life - Chemicals in medicines - analgesics, tranquilizers antiseptics, disinfectants, antimicrobials, antifertility drugs, antibiotics, antacids, antihistamines. Chemicals in food - preservatives, artificial sweetening agents, antioxidants.",
+      "marks": 7,
+      "order": 10,
+      "notes_from_document": [
+        "Note: The following topics are included in the syllabus but will be assessed only formatively to reinforce understanding without adding to summative assessments",
+        "This reduces academic stress while ensuring meaningful learning",
+        "Schools can integrate these with existing chapters as they align well",
+        "Relevant NCERT textual material is enclosed for reference. 1. Surface Chemistry - Adsorption - physisorption and chemisorption, factors affecting adsorption of gases on solids, colloidal state distinction between true solutions, colloids and suspension",
+        "lyophilic, lyophobic properties of colloids",
+        "coagulation, emulsion - types of emulsions. 2. General Principles and Processes of Isolation of Elements - Principles and methods of extraction - concentration, oxidation, reduction - electrolytic method and refining 3. Polymers – Polymerisation",
+        "Homopolymers and copolymer with few examples 4. Chemistry in Everyday life - Chemicals in medicines - analgesics, tranquilizers antiseptics, disinfectants, antimicrobials, antifertility drugs, antibiotics, antacids, antihistamines",
+        "Chemicals in food - preservatives, artificial sweetening agents, antioxidants",
+        "PRACTICAL Evaluation Scheme for Examination Marks Volumetric Analysis 08 Salt Analysis 08 Content Based Experiment 06 Project Work 04 Class record and viva 04"
+      ],
+      "name": "Biomolecules",
+      "id": "n_b353b8480efff927",
+      "aliases": []
+    }
+  ],
+  "note": "Units and marks are the course structure table; the unit contents are the document's own prose. Where a unit's contents are stated as one run of prose, the topics below are that prose split at its own commas, semicolons and full stops; every topic string is verbatim, only the boundaries are ours, and the unit keeps the untouched prose in `contents`."
+}

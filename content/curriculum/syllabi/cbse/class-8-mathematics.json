@@ -1,0 +1,294 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 8",
+  "level_order": 8,
+  "subject": "Mathematics",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "ncert-8-ganita1",
+      "title": "Ganita Prakash, textbook of Mathematics for Grade 8, Part 1 (prelims)",
+      "publisher": "National Council of Educational Research and Training",
+      "url": "https://ncert.nic.in/textbook/pdf/hegp1ps.pdf",
+      "media_type": "application/pdf",
+      "pages": 16,
+      "bytes": 2847866,
+      "fetched_at": "2026-09-03T07:07:09Z",
+      "document_sha256": "e08bdb82e719ba12a1b2482c94629a4f35df91852539b4413f2a26e9eaab3dfd",
+      "extracted_text_sha256": "93dad7dc076d93d55457e483df6a24fd7f53bd4785db85cbff51e6f8febbf56b",
+      "extraction": "python standard library extractor (zlib inflate over PDF content streams)"
+    },
+    {
+      "id": "ncert-8-ganita2",
+      "title": "Ganita Prakash, textbook of Mathematics for Grade 8, Part 2 (prelims)",
+      "publisher": "National Council of Educational Research and Training",
+      "url": "https://ncert.nic.in/textbook/pdf/hegp2ps.pdf",
+      "media_type": "application/pdf",
+      "pages": 16,
+      "bytes": 5503192,
+      "fetched_at": "2026-09-03T07:07:21Z",
+      "document_sha256": "c5f4d86252edb391401831f279ab5f2065ecb2f2d0631607aa4044e5a0d74cc8",
+      "extracted_text_sha256": "a205d83dd73bd76766eb74f6a5ccb68706d11674f91f6bffad31a4ec13cc19d8",
+      "extraction": "python standard library extractor (zlib inflate over PDF content streams)"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "ncert-8-ganita1",
+        "page": 15,
+        "section": "Contents"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-8-ganita1",
+            "page": 15,
+            "section": "Contents, chapter 1"
+          },
+          "chapter_number": 1,
+          "order": 1,
+          "name": "A Square and A Cube",
+          "id": "n_6686093b529560ac",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-ganita1",
+            "page": 15,
+            "section": "Contents, chapter 2"
+          },
+          "chapter_number": 2,
+          "order": 2,
+          "name": "Power Play",
+          "id": "n_00905705ed14457e",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-ganita1",
+            "page": 15,
+            "section": "Contents, chapter 3"
+          },
+          "chapter_number": 3,
+          "order": 3,
+          "name": "A Story of Numbers",
+          "id": "n_6b6a08ff356c6655",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-ganita1",
+            "page": 15,
+            "section": "Contents, chapter 4"
+          },
+          "chapter_number": 4,
+          "order": 4,
+          "name": "Quadrilaterals",
+          "id": "n_645f8766b61ac8c6",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-ganita1",
+            "page": 15,
+            "section": "Contents, chapter 5"
+          },
+          "chapter_number": 5,
+          "order": 5,
+          "name": "Number Play",
+          "id": "n_955d6fa77c3955a7",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-ganita1",
+            "page": 15,
+            "section": "Contents, chapter 6"
+          },
+          "chapter_number": 6,
+          "order": 6,
+          "name": "We Distribute, Yet Things Multiply",
+          "id": "n_c9f902040afc13e0",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-ganita1",
+            "page": 15,
+            "section": "Contents, chapter 7"
+          },
+          "chapter_number": 7,
+          "order": 7,
+          "name": "Proportional Reasoning-1",
+          "id": "n_79b81b5a67889493",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Ganita Prakash, Grade 8, Part 1",
+      "order": 1,
+      "name": "Ganita Prakash, Grade 8, Part 1",
+      "id": "n_ef935595912761d4",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "ncert-8-ganita2",
+        "page": 15,
+        "section": "Contents"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-8-ganita2",
+            "page": 15,
+            "section": "Contents, chapter 1"
+          },
+          "chapter_number": 1,
+          "order": 1,
+          "name": "Fractions in Disguise",
+          "id": "n_b3aeb3f75450b0b2",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-ganita2",
+            "page": 15,
+            "section": "Contents, chapter 2"
+          },
+          "chapter_number": 2,
+          "order": 2,
+          "name": "The Baudhayana-Pythagoras Theorem",
+          "id": "n_ca67d84d3f3dc695",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-ganita2",
+            "page": 15,
+            "section": "Contents, chapter 3"
+          },
+          "chapter_number": 3,
+          "order": 3,
+          "name": "Proportional Reasoning-2",
+          "id": "n_f3ae9bbd8fcc855e",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-ganita2",
+            "page": 15,
+            "section": "Contents, chapter 4"
+          },
+          "chapter_number": 4,
+          "order": 4,
+          "name": "Exploring Some Geometric Themes",
+          "id": "n_1dd0479100c6af93",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-ganita2",
+            "page": 15,
+            "section": "Contents, chapter 5"
+          },
+          "chapter_number": 5,
+          "order": 5,
+          "name": "Tales by Dots and Lines",
+          "id": "n_608f17d463228026",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-ganita2",
+            "page": 15,
+            "section": "Contents, chapter 6"
+          },
+          "chapter_number": 6,
+          "order": 6,
+          "name": "Algebra Play",
+          "id": "n_72b93fab3e27bdcb",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-8-ganita2",
+            "page": 15,
+            "section": "Contents, chapter 7"
+          },
+          "chapter_number": 7,
+          "order": 7,
+          "name": "Area",
+          "id": "n_c737d2330667a696",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Ganita Prakash, Grade 8, Part 2",
+      "order": 2,
+      "name": "Ganita Prakash, Grade 8, Part 2",
+      "id": "n_d1b033a0c4592731",
+      "aliases": []
+    }
+  ],
+  "note": "CBSE publishes a curriculum document only for the secondary stage (classes IX to XII). For the middle stage it prescribes the NCERT textbooks, so the structure below is the structure of the prescribed NCERT book: units are the book's own parts or themes and topics are its chapters, read off the Contents page of the book's official prelims PDF on ncert.nic.in. A Contents page states no learning objectives, so none are recorded."
+}

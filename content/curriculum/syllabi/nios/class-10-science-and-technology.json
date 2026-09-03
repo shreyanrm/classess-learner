@@ -1,0 +1,578 @@
+{
+  "framework_id": "nios",
+  "framework_name": "National Institute of Open Schooling",
+  "framework_kind": "open",
+  "country": "IN",
+  "official_site": "https://nios.ac.in/",
+  "aliases": [
+    "NIOS",
+    "Open school"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    10,
+    12
+  ],
+  "version": "2023",
+  "applies_to": "2026-27",
+  "level": "Class 10",
+  "level_order": 10,
+  "stage": "secondary",
+  "subject": "Science and Technology",
+  "course_code": "212",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "nios-bif-212",
+      "title": "Bifurcation of syllabus, Science and Technology (212), NIOS secondary course",
+      "publisher": "National Institute of Open Schooling",
+      "url": "https://nios.ac.in/media/documents/Course_Bifurcation_2023/10th/212.pdf",
+      "media_type": "application/pdf",
+      "pages": 1,
+      "bytes": 453155,
+      "fetched_at": "2026-09-03T07:41:10Z",
+      "document_sha256": "ff502cfc85e0e30f68163088f3af9cb4cfacd1ad61cad022a96ce88cb1ee0725",
+      "extracted_text_sha256": "b1f0bdbb46fb128d7f3b873ebd3dc784c21a7230eda9f2af8d818277dc8e2a23",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "nios-bif-212",
+        "page": 1,
+        "section": "Module I"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module I: Measurement in Science"
+          },
+          "lesson_number": 1,
+          "order": 1,
+          "name": "Measurement in Science and Technology",
+          "id": "n_d581db7433f23a41",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "I",
+      "order": 1,
+      "name": "Measurement in Science",
+      "id": "n_580a4415ff59c9f9",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "nios-bif-212",
+        "page": 1,
+        "section": "Module II"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module II: Matter in our Surroundings"
+          },
+          "lesson_number": 2,
+          "order": 1,
+          "name": "Matter in our Surroundings",
+          "id": "n_5b34c086f01bcf03",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module II: Matter in our Surroundings"
+          },
+          "lesson_number": 3,
+          "order": 2,
+          "name": "Atom and Molecules",
+          "id": "n_c3bfb122a8d10d75",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module II: Matter in our Surroundings"
+          },
+          "lesson_number": 4,
+          "order": 3,
+          "name": "Chemical Reaction and Equations",
+          "id": "n_89de5b54a2a31075",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module II: Matter in our Surroundings"
+          },
+          "lesson_number": 5,
+          "order": 4,
+          "name": "Atomic Structure",
+          "id": "n_5379b35293fbd3b7",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module II: Matter in our Surroundings"
+          },
+          "lesson_number": 6,
+          "order": 5,
+          "name": "Periodic Classification of Elements",
+          "id": "n_ff421f804bb80d77",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module II: Matter in our Surroundings"
+          },
+          "lesson_number": 7,
+          "order": 6,
+          "name": "Chemical Bonding",
+          "id": "n_4a61e2450385e77a",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module II: Matter in our Surroundings"
+          },
+          "lesson_number": 8,
+          "order": 7,
+          "name": "Acids, Bases and Salts",
+          "id": "n_406dd75ad0ff1271",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "II",
+      "order": 2,
+      "name": "Matter in our Surroundings",
+      "id": "n_2d74e67589c5f89f",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "nios-bif-212",
+        "page": 1,
+        "section": "Module III"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module III: Moving Things"
+          },
+          "lesson_number": 9,
+          "order": 1,
+          "name": "Motion and its Description",
+          "id": "n_27dd9f7f509c36de",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module III: Moving Things"
+          },
+          "lesson_number": 10,
+          "order": 2,
+          "name": "Force and motion",
+          "id": "n_6626ed3c8eb6a7fd",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module III: Moving Things"
+          },
+          "lesson_number": 11,
+          "order": 3,
+          "name": "Gravitation",
+          "id": "n_5b8a3c966e642d2b",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "III",
+      "order": 3,
+      "name": "Moving Things",
+      "id": "n_f963305e54cd35b6",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "nios-bif-212",
+        "page": 1,
+        "section": "Module IV"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module IV: Energy"
+          },
+          "lesson_number": 12,
+          "order": 1,
+          "name": "Sources of Energy",
+          "id": "n_e42e32d26c9e728d",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module IV: Energy"
+          },
+          "lesson_number": 13,
+          "order": 2,
+          "name": "Work and Energy",
+          "id": "n_abbf782763281ffa",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module IV: Energy"
+          },
+          "lesson_number": 14,
+          "order": 3,
+          "name": "Thermal Energy",
+          "id": "n_cfbfd60863c9f8ef",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module IV: Energy"
+          },
+          "lesson_number": 15,
+          "order": 4,
+          "name": "Light Energy",
+          "id": "n_6529cfb66fd42e19",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module IV: Energy"
+          },
+          "lesson_number": 16,
+          "order": 5,
+          "name": "Electrical Energy",
+          "id": "n_eafe52114ed0f62d",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module IV: Energy"
+          },
+          "lesson_number": 17,
+          "order": 6,
+          "name": "Magnetic Effect of Electric Current",
+          "id": "n_08debba549796c23",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module IV: Energy"
+          },
+          "lesson_number": 18,
+          "order": 7,
+          "name": "Sound and Communication",
+          "id": "n_924ec9f5fa5b24c2",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "IV",
+      "order": 4,
+      "name": "Energy",
+      "id": "n_a86fddadf4448661",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "nios-bif-212",
+        "page": 1,
+        "section": "Module V"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module V: The Living World"
+          },
+          "lesson_number": 19,
+          "order": 1,
+          "name": "Classification of Living Organisms",
+          "id": "n_886defd75749afe1",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module V: The Living World"
+          },
+          "lesson_number": 20,
+          "order": 2,
+          "name": "History of Life on Earth",
+          "id": "n_d3f59f9839df841a",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module V: The Living World"
+          },
+          "lesson_number": 21,
+          "order": 3,
+          "name": "Building Blocks of Life – Cell and Tissues",
+          "id": "n_82b2c195370c28ec",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module V: The Living World"
+          },
+          "lesson_number": 22,
+          "order": 4,
+          "name": "Life Processes – I : Nutrition, Transportation, Respiration and Excretion",
+          "id": "n_e782a10d5105ad02",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module V: The Living World"
+          },
+          "lesson_number": 23,
+          "order": 5,
+          "name": "Life Processes – II : Control and Coordination",
+          "id": "n_a716f0068b788f2b",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module V: The Living World"
+          },
+          "lesson_number": 24,
+          "order": 6,
+          "name": "Life Processes – III : Reproduction",
+          "id": "n_deeb9fe1e1f9fbae",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module V: The Living World"
+          },
+          "lesson_number": 25,
+          "order": 7,
+          "name": "Heredity",
+          "id": "n_d9428d7d3868fdae",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "V",
+      "order": 5,
+      "name": "The Living World",
+      "id": "n_7baea2685adf5d8a",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "nios-bif-212",
+        "page": 1,
+        "section": "Module VI"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module VI: Natural Resources"
+          },
+          "lesson_number": 26,
+          "order": 1,
+          "name": "Air and Water",
+          "id": "n_319dd096347ca3fa",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module VI: Natural Resources"
+          },
+          "lesson_number": 27,
+          "order": 2,
+          "name": "Metals and Non-metals",
+          "id": "n_b20f69855d0bb368",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module VI: Natural Resources"
+          },
+          "lesson_number": 28,
+          "order": 3,
+          "name": "Carbon and Its Compounds",
+          "id": "n_6f83b0628486ab54",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "VI",
+      "order": 6,
+      "name": "Natural Resources",
+      "id": "n_93501d298232d057",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "nios-bif-212",
+        "page": 1,
+        "section": "Module VII"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module VII: Human Environment"
+          },
+          "lesson_number": 29,
+          "order": 1,
+          "name": "Natural Environment",
+          "id": "n_c09b2fd46c7e5169",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module VII: Human Environment"
+          },
+          "lesson_number": 30,
+          "order": 2,
+          "name": "Human impact on Environment",
+          "id": "n_9c089f88ebfd1f8d",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module VII: Human Environment"
+          },
+          "lesson_number": 31,
+          "order": 3,
+          "name": "Food Production",
+          "id": "n_9d34aa4ea516e2db",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "nios-bif-212",
+            "page": 1,
+            "section": "Module VII: Human Environment"
+          },
+          "lesson_number": 32,
+          "order": 4,
+          "name": "Health and Hygiene",
+          "id": "n_b3d8da4a3034493a",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "unit_number": "VII",
+      "order": 7,
+      "name": "Human Environment",
+      "id": "n_81ada322241857b8",
+      "aliases": []
+    }
+  ],
+  "note": "NIOS states its syllabus as a bifurcation table: one row per module, with that module's lessons split between the tutor-marked assignment (40 per cent) and the public examination (60 per cent). Units here are the modules and topics are the lessons, merged back into lesson order. NIOS runs a course, not a class-by-class syllabus; the secondary course is equivalent to class 10 and the senior secondary course to class 12. Version note: the bifurcation document NIOS publishes is the 2023 edition, which is the edition still in force; this file is stamped version 2023 and applies_to 2026-27 rather than claiming a 2026-27 document that does not exist."
+}

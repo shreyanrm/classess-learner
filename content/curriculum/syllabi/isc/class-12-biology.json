@@ -1,0 +1,134 @@
+{
+  "framework_id": "isc",
+  "framework_name": "Indian School Certificate (CISCE)",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cisce.org/",
+  "aliases": [
+    "ISC",
+    "CISCE",
+    "Council for the Indian School Certificate Examinations"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "exam_year": 2027,
+  "level": "Class 12",
+  "level_order": 12,
+  "subject": "Biology",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "isc-biology",
+      "title": "Biology, ISC examination year 2027",
+      "publisher": "Council for the Indian School Certificate Examinations",
+      "url": "https://cisce.org/wp-content/uploads/2025/04/20.-ISC-Biology.pdf",
+      "media_type": "application/pdf",
+      "pages": 22,
+      "bytes": 4146135,
+      "fetched_at": "2026-09-03T07:29:56Z",
+      "document_sha256": "8419f94fea206eb5b3978908d1a44e3ed0eae325872814e444672a68175cc0af",
+      "extracted_text_sha256": "4f89a216edaa2f749fb347afc129ae64fb3a0dccb6ed4b514b296d52bba972d6",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "isc-biology",
+        "page": 14,
+        "section": "Class XII, section 1"
+      },
+      "topics": null,
+      "unit_number": 1,
+      "order": 1,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Reproduction",
+      "id": "n_5679098421c88627",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-biology",
+        "page": 15,
+        "section": "Class XII, section 2"
+      },
+      "topics": null,
+      "unit_number": 2,
+      "order": 2,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Genetics and Evolution",
+      "id": "n_511ad2fb949f39ac",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-biology",
+        "page": 16,
+        "section": "Class XII, section 3"
+      },
+      "topics": null,
+      "unit_number": 3,
+      "order": 3,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Biology and Human Welfare",
+      "id": "n_32b4bf21d4b1c103",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-biology",
+        "page": 16,
+        "section": "Class XII, section 4"
+      },
+      "topics": null,
+      "unit_number": 4,
+      "order": 4,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Biotechnology and its Applications",
+      "id": "n_60e5c98461cf0b1c",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-biology",
+        "page": 18,
+        "section": "Class XII, section 5"
+      },
+      "topics": null,
+      "unit_number": 5,
+      "order": 5,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Ecology and Environment",
+      "id": "n_620759efd47f2f86",
+      "aliases": []
+    }
+  ],
+  "note": "The unit list and the unit order below are read off the CISCE booklet for this subject and were checked by hand against it. The topic layer that an earlier pass derived from the booklet's two-column layout has been withdrawn: the re-flow keyed off line position rather than the booklet's own bracketed sub-headings, which truncated topic titles mid-phrase and filed topics under the wrong unit. Nothing from that layer is kept, and no topic list is asserted here. Next step: re-derive the topics from the booklet's bracket structure, then have a second reader confirm the unit to topic mapping before anything is promoted."
+}

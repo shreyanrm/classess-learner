@@ -1,0 +1,184 @@
+{
+  "framework_id": "icse",
+  "framework_name": "Indian Certificate of Secondary Education (CISCE)",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cisce.org/",
+  "aliases": [
+    "ICSE",
+    "CISCE",
+    "Council for the Indian School Certificate Examinations"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    9,
+    10
+  ],
+  "version": "2026-27",
+  "exam_year": 2028,
+  "level": "Class 9",
+  "level_order": 9,
+  "subject": "Mathematics",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "icse-maths",
+      "title": "Mathematics (51), ICSE examination year 2027",
+      "publisher": "Council for the Indian School Certificate Examinations",
+      "url": "https://cisce.org/wp-content/uploads/2025/03/9.-Mathematics.pdf",
+      "media_type": "application/pdf",
+      "pages": 13,
+      "bytes": 3779431,
+      "fetched_at": "2026-09-03T07:29:47Z",
+      "document_sha256": "08b64aa3b4a5ff2b818bb2a92d4459c0a64c99622e2422fec6f26d90d97c7d16",
+      "extracted_text_sha256": "bdaea2e8021cd4fafd534503627f11127477e9b1ccd3d02e59f3b94ce4d45f0a",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "icse-maths",
+        "page": 4,
+        "section": "Class IX, section 1"
+      },
+      "topics": null,
+      "unit_number": 1,
+      "contents": "Rational and Irrational Numbers Rational, irrational numbers as real numbers, their place in the number system. Surds and rationalization of surds. Simplifying an expression by rationalizing the denominator. Representation of rational and irrational numbers on the number line. Proofs of irrationality of",
+      "order": 1,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Pure Arithmetic",
+      "id": "n_9feb94c725c75263",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-maths",
+        "page": 4,
+        "section": "Class IX, section 2"
+      },
+      "topics": null,
+      "unit_number": 2,
+      "contents": "Compound Interest (a) Compound interest as a repeated Simple Interest computation with a growing Principal. Use of this in computing Amount over a period of 2 or 3 years. (b) Use of formula n . Finding CI from the relation CI = A – P. • Interest compounded half-yearly included. 4. To develop the necessary skills to work with modern technological devices such as calculators and computers in real life situations. 5. To develop drawing skills, skills of reading tables, charts and graphs. 6. To develop an interest in mathematics. • Using the formula to find one quantity given different combinations of A, P, r, n, CI and SI; difference between CI and SI type included. Rate of growth and depreciation. Note: Paying back in equal installments, being given rate of interest and installment amount, not included.",
+      "order": 2,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Commercial Mathematics",
+      "id": "n_80936f1e601042d9",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-maths",
+        "page": 4,
+        "section": "Class IX, section 3"
+      },
+      "topics": null,
+      "unit_number": 3,
+      "order": 3,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Algebra",
+      "id": "n_b3425c96dd808023",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-maths",
+        "page": 5,
+        "section": "Class IX, section 4"
+      },
+      "topics": null,
+      "unit_number": 4,
+      "order": 4,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Geometry",
+      "id": "n_fc8b2cd619860515",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-maths",
+        "page": 6,
+        "section": "Class IX, section 5"
+      },
+      "topics": null,
+      "unit_number": 5,
+      "order": 5,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Statistics",
+      "id": "n_69f1023e9a4e4f15",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-maths",
+        "page": 5,
+        "section": "Class IX, section 6"
+      },
+      "topics": null,
+      "unit_number": 6,
+      "contents": "Area and perimeter of a triangle and a quadrilateral. Area and circumference of circle. Surface area and volume of Cube and Cuboids. (a) Area and perimeter of triangle (including Heron’s formula), all types of Quadrilaterals. (b) Circle: Area and Circumference. Direct application problems including Inner and Outer area. Areas of sectors of circles other than quarter-circle and semicircle are not included. (c) Surface area and volume of 3-D solids: cube and cuboid including problems of type involving: • Different internal and external dimensions of the solid. • Cost. • Concept of volume being equal to area of cross-section x height. • Open/closed cubes/cuboids.",
+      "order": 6,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Mensuration",
+      "id": "n_9009f221f330df58",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-maths",
+        "page": 6,
+        "section": "Class IX, section 7"
+      },
+      "topics": null,
+      "unit_number": 7,
+      "contents": "(a) Trigonometric Ratios: sine, cosine, tangent of an angle and their reciprocals. (b) Trigonometric ratios of standard angles - 0, 30, 45, 60, 90 degrees. Evaluation of an expression involving these ratios. (c) Simple 2-D problems involving one right-angled triangle. (d) Concept of trigonometric ratios of complementary angles and their direct application: sin A = cos (90 - A), cos A = sin (90 – A) tan A = cot (90 – A), cot A = tan (90- A) sec A = cosec (90 – A), cosec A=sec (90 – A)",
+      "order": 7,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Trigonometry",
+      "id": "n_7cbdc4a9d0052e96",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-maths",
+        "page": 6,
+        "section": "Class IX, section 8"
+      },
+      "topics": null,
+      "unit_number": 8,
+      "contents": "Cartesian System, plotting of points in the plane for given coordinates, solving simultaneous linear equations in 2 variables graphically and finding the distance between two points using distance formula. (a) Dependent and independent variables. • (b) Ordered pairs, coordinates of points and • plotting them in the Cartesian plane. (c) Solution of Simultaneous Linear Equations graphically. • (d) Distance formula. INTERNAL ASSESSMENT • A minimum of two assignments are to be done during the year as prescribed by the teacher. Suggested Assignments • • Conduct a survey of a group of students and represent it graphically - height, weight, number of family members, pocket money, etc. • Planning delivery routes for a postman/milkman. Running a tuck shop/canteen. Study ways of raising a loan to buy a car or house, e.g. bank loan or purchase a refrigerator or a television set through hire purchase. Cutting a circle into equal sections of a small central angle to find the area of a circle by using the formula A = πr2. To use flat cutouts to form cube, cuboids and pyramids to obtain formulae for volume and total surface area. Draw a circle of radius r on a ½ cm graph paper, and then on a 2 mm graph paper. Estimate the area enclosed in each case by actually counting the squares. Now try out with circles of different radii. Establish the pattern, if any, between the two observed values and the theoretical value (area = π r2). Any modifications?",
+      "order": 8,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Coordinate Geometry",
+      "id": "n_1f7c6978603ed851",
+      "aliases": []
+    }
+  ],
+  "note": "The unit list and the unit order below are read off the CISCE booklet for this subject and were checked by hand against it. The topic layer that an earlier pass derived from the booklet's two-column layout has been withdrawn: the re-flow keyed off line position rather than the booklet's own bracketed sub-headings, which truncated topic titles mid-phrase and filed topics under the wrong unit. Nothing from that layer is kept, and no topic list is asserted here. Next step: re-derive the topics from the booklet's bracket structure, then have a second reader confirm the unit to topic mapping before anything is promoted."
+}

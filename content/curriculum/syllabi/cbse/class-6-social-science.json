@@ -1,0 +1,323 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 6",
+  "level_order": 6,
+  "subject": "Social Science",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "ncert-6-society",
+      "title": "Exploring Society: India and Beyond, Social Science for Grade 6 (prelims)",
+      "publisher": "National Council of Educational Research and Training",
+      "url": "https://ncert.nic.in/textbook/pdf/fees1ps.pdf",
+      "media_type": "application/pdf",
+      "pages": 20,
+      "bytes": 23733031,
+      "fetched_at": "2026-09-03T07:05:47Z",
+      "document_sha256": "7605e63efa73bf1748d866c843217473b1a4826f39309525540a3a058bd6e310",
+      "extracted_text_sha256": "db88926abb25113f98f7c67fe8761a98b919363a243f113f8c2f751a8a52ae5c",
+      "extraction": "python standard library extractor (zlib inflate over PDF content streams)"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "ncert-6-society",
+        "page": 19,
+        "section": "Contents, theme heading"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-6-society",
+            "page": 19,
+            "section": "Contents, chapter 1"
+          },
+          "chapter_number": 1,
+          "order": 1,
+          "name": "Locating Places on the Earth",
+          "id": "n_c57d0bcc1fc0f51b",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-society",
+            "page": 19,
+            "section": "Contents, chapter 2"
+          },
+          "chapter_number": 2,
+          "order": 2,
+          "name": "Oceans and Continents",
+          "id": "n_a87e296375f31841",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-society",
+            "page": 19,
+            "section": "Contents, chapter 3"
+          },
+          "chapter_number": 3,
+          "order": 3,
+          "name": "Landforms and Life",
+          "id": "n_deaaa40aef49ed94",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Exploring Society: India and Beyond, Grade 6",
+      "order": 1,
+      "name": "Theme A - India and the World: Land and the People",
+      "id": "n_e7abce23b0328a0d",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "ncert-6-society",
+        "page": 19,
+        "section": "Contents, theme heading"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-6-society",
+            "page": 19,
+            "section": "Contents, chapter 4"
+          },
+          "chapter_number": 4,
+          "order": 1,
+          "name": "Timeline and Sources of History",
+          "id": "n_7184a27a0c50ab70",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-society",
+            "page": 19,
+            "section": "Contents, chapter 5"
+          },
+          "chapter_number": 5,
+          "order": 2,
+          "name": "India, That Is Bharat",
+          "id": "n_5463e148de7f61a1",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-society",
+            "page": 19,
+            "section": "Contents, chapter 6"
+          },
+          "chapter_number": 6,
+          "order": 3,
+          "name": "The Beginnings of Indian Civilisation",
+          "id": "n_c15d47ddcc7df42d",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Exploring Society: India and Beyond, Grade 6",
+      "order": 2,
+      "name": "Theme B - Tapestry of the Past",
+      "id": "n_b3a04612d7a25afe",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "ncert-6-society",
+        "page": 19,
+        "section": "Contents, theme heading"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-6-society",
+            "page": 19,
+            "section": "Contents, chapter 7"
+          },
+          "chapter_number": 7,
+          "order": 1,
+          "name": "India's Cultural Roots",
+          "id": "n_39f59352c77ca96f",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-society",
+            "page": 19,
+            "section": "Contents, chapter 8"
+          },
+          "chapter_number": 8,
+          "order": 2,
+          "name": "Unity in Diversity, or 'Many in the One'",
+          "id": "n_4640f8b1a244888c",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Exploring Society: India and Beyond, Grade 6",
+      "order": 3,
+      "name": "Theme C - Our Cultural Heritage and Knowledge Traditions",
+      "id": "n_ecf96fd732831066",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "ncert-6-society",
+        "page": 19,
+        "section": "Contents, theme heading"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-6-society",
+            "page": 19,
+            "section": "Contents, chapter 9"
+          },
+          "chapter_number": 9,
+          "order": 1,
+          "name": "Family and Community",
+          "id": "n_37cec2991fd40270",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-society",
+            "page": 19,
+            "section": "Contents, chapter 10"
+          },
+          "chapter_number": 10,
+          "order": 2,
+          "name": "Grassroots Democracy - Part 1: Governance",
+          "id": "n_1c9b7783aea743b4",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-society",
+            "page": 19,
+            "section": "Contents, chapter 11"
+          },
+          "chapter_number": 11,
+          "order": 3,
+          "name": "Grassroots Democracy - Part 2: Local Government in Rural Areas",
+          "id": "n_ac8ae471bd60d5d5",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-society",
+            "page": 19,
+            "section": "Contents, chapter 12"
+          },
+          "chapter_number": 12,
+          "order": 4,
+          "name": "Grassroots Democracy - Part 3: Local Government in Urban Areas",
+          "id": "n_e2196760049db0e0",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Exploring Society: India and Beyond, Grade 6",
+      "order": 4,
+      "name": "Theme D - Governance and Democracy",
+      "id": "n_dee73fdd99d0a7b8",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "ncert-6-society",
+        "page": 19,
+        "section": "Contents, theme heading"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-6-society",
+            "page": 19,
+            "section": "Contents, chapter 13"
+          },
+          "chapter_number": 13,
+          "order": 1,
+          "name": "The Value of Work",
+          "id": "n_ec804ed4f1d68902",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-6-society",
+            "page": 19,
+            "section": "Contents, chapter 14"
+          },
+          "chapter_number": 14,
+          "order": 2,
+          "name": "Economic Activities Around Us",
+          "id": "n_2618c66d8dc2acea",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Exploring Society: India and Beyond, Grade 6",
+      "order": 5,
+      "name": "Theme E - Economic Life Around Us",
+      "id": "n_f046bf055ed5ee80",
+      "aliases": []
+    }
+  ],
+  "note": "CBSE publishes a curriculum document only for the secondary stage (classes IX to XII). For the middle stage it prescribes the NCERT textbooks, so the structure below is the structure of the prescribed NCERT book: units are the book's own parts or themes and topics are its chapters, read off the Contents page of the book's official prelims PDF on ncert.nic.in. A Contents page states no learning objectives, so none are recorded."
+}

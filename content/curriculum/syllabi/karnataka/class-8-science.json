@@ -1,0 +1,64 @@
+{
+  "framework_id": "karnataka",
+  "framework_name": "Karnataka School Examination and Assessment Board",
+  "framework_kind": "state",
+  "country": "IN",
+  "region": "Karnataka",
+  "official_site": "https://textbooks.karnataka.gov.in/",
+  "aliases": [
+    "Karnataka State Board",
+    "KSEAB",
+    "SSLC Karnataka",
+    "KTBS"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "version": "2026-27",
+  "level": "Class 8",
+  "level_order": 8,
+  "subject": "Science",
+  "status": "provisional",
+  "read_off_source": false,
+  "discovery_state": "blocked",
+  "blocker": "browser_required",
+  "provenance": {
+    "extractor": null,
+    "verifier": null,
+    "checks_passed": [
+      "stored_negative_result_has_a_blocker_code"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "ka-textbooks",
+      "title": "Karnataka Textbook Society textbook portal - index",
+      "publisher": "Karnataka Textbook Society",
+      "url": "https://textbooks.karnataka.gov.in/",
+      "media_type": "text/html",
+      "pages": null,
+      "bytes": 1229881,
+      "fetched_at": "2026-09-03T07:47:02Z",
+      "document_sha256": "89bb24f30e431a075f5950985473f9752315d1c6d3c0e283c46818556e69c27c",
+      "extracted_text_sha256": "6843f5a51cc89afd578b397de62883db971698e5785b8284d5e6084c397dedd2",
+      "extraction": "python standard library tag strip"
+    }
+  ],
+  "units": null,
+  "note": "The Karnataka Textbook Society portal serves textbook PDFs, but its index labels the English-medium core books without the class they belong to, and the class grouping lives in an accordion the plain page text does not preserve; the ktbs.kar.nic.in host also timed out. Rather than guess a class-to-book mapping, no units are recorded. The portal index was fetched and is recorded below. Next step: run the discovery job (docs/CURRICULUM.md section 4) with a browser-capable fetcher against the portal recorded below, then extract the chapter list from the prescribed textbook's own contents page, the way the CBSE middle-stage files here do."
+}

@@ -1,0 +1,194 @@
+{
+  "framework_id": "isc",
+  "framework_name": "Indian School Certificate (CISCE)",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cisce.org/",
+  "aliases": [
+    "ISC",
+    "CISCE",
+    "Council for the Indian School Certificate Examinations"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "exam_year": 2027,
+  "level": "Class 12",
+  "level_order": 12,
+  "subject": "Physics",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "isc-physics",
+      "title": "Physics, ISC examination year 2027",
+      "publisher": "Council for the Indian School Certificate Examinations",
+      "url": "https://cisce.org/wp-content/uploads/2026/02/ISC-2027-Physics.pdf",
+      "media_type": "application/pdf",
+      "pages": 27,
+      "bytes": 3376583,
+      "fetched_at": "2026-09-03T07:29:54Z",
+      "document_sha256": "18d4fc0f33ff9b5a5cdb575ec92190f3a32bbd4d69931566adff3de32792a6d2",
+      "extracted_text_sha256": "6c3dc56c10960f6ec5fa449b5a70e019f33ab1221b8b90cea7034c217e27c344",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 16,
+        "section": "Class XII, section 1"
+      },
+      "topics": null,
+      "unit_number": 1,
+      "order": 1,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Electrostatics",
+      "id": "n_ace75ba2dd098cfe",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 17,
+        "section": "Class XII, section 2"
+      },
+      "topics": null,
+      "unit_number": 2,
+      "order": 2,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Current Electricity",
+      "id": "n_5ec23c7c9ba29adf",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 18,
+        "section": "Class XII, section 3"
+      },
+      "topics": null,
+      "unit_number": 3,
+      "order": 3,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Magnetic Effects of Current and Magnetism",
+      "id": "n_141d9a97184d7482",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 20,
+        "section": "Class XII, section 4"
+      },
+      "topics": null,
+      "unit_number": 4,
+      "order": 4,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Electromagnetic Induction and Alternating Currents",
+      "id": "n_3ddfeb212b7db48c",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 20,
+        "section": "Class XII, section 5"
+      },
+      "topics": null,
+      "unit_number": 5,
+      "order": 5,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Electromagnetic Waves",
+      "id": "n_5699e9ac2aaf180f",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 21,
+        "section": "Class XII, section 6"
+      },
+      "topics": null,
+      "unit_number": 6,
+      "order": 6,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Optics",
+      "id": "n_78701b6ece752de1",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 23,
+        "section": "Class XII, section 7"
+      },
+      "topics": null,
+      "unit_number": 7,
+      "order": 7,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Dual Nature of Radiation and Matter",
+      "id": "n_3992f28916d7f82d",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 23,
+        "section": "Class XII, section 8"
+      },
+      "topics": null,
+      "unit_number": 8,
+      "order": 8,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Atoms and Nuclei",
+      "id": "n_c67dd39915eaf6e8",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-physics",
+        "page": 24,
+        "section": "Class XII, section 9"
+      },
+      "topics": null,
+      "unit_number": 9,
+      "order": 9,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Electronic Devices",
+      "id": "n_04b1408b4223f7d6",
+      "aliases": []
+    }
+  ],
+  "note": "The unit list and the unit order below are read off the CISCE booklet for this subject and were checked by hand against it. The topic layer that an earlier pass derived from the booklet's two-column layout has been withdrawn: the re-flow keyed off line position rather than the booklet's own bracketed sub-headings, which truncated topic titles mid-phrase and filed topics under the wrong unit. Nothing from that layer is kept, and no topic list is asserted here. Next step: re-derive the topics from the booklet's bracket structure, then have a second reader confirm the unit to topic mapping before anything is promoted."
+}

@@ -1,0 +1,56 @@
+{
+  "framework_id": "nios",
+  "framework_name": "National Institute of Open Schooling",
+  "framework_kind": "open",
+  "country": "IN",
+  "official_site": "https://nios.ac.in/",
+  "aliases": [
+    "NIOS",
+    "Open school"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    10,
+    12
+  ],
+  "version": "2023",
+  "applies_to": "2026-27",
+  "level": "Class 10",
+  "level_order": 10,
+  "stage": "secondary",
+  "subject": "English",
+  "course_code": "202",
+  "status": "provisional",
+  "read_off_source": false,
+  "discovery_state": "blocked",
+  "blocker": "document_not_machine_readable",
+  "provenance": {
+    "extractor": null,
+    "verifier": null,
+    "checks_passed": [
+      "stored_negative_result_has_a_blocker_code"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "nios-bif-202",
+      "title": "Bifurcation of syllabus, English (202), NIOS secondary course",
+      "publisher": "National Institute of Open Schooling",
+      "url": "https://nios.ac.in/media/documents/Course_Bifurcation_2023/10th/202.pdf",
+      "media_type": "application/pdf",
+      "pages": 1,
+      "bytes": 200292,
+      "fetched_at": "2026-09-03T07:41:08Z",
+      "document_sha256": "1599b176a6df6824c96a12bcfcaa090163ecca389b8f41ca2a3955ec54e4aff3",
+      "extracted_text_sha256": "c726b4e82328ff109299f72a046717dbf4a3c46ce6715c69351d6f48ba65b506",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": null,
+  "note": "The NIOS English bifurcation table was fetched (see the document below) but it is organised by named sections - prescribed texts, reading, writing, grammar - rather than by numbered modules with lessons, so no unit list could be read off it without guessing. No units are recorded rather than invented. The per-lesson course material on the NIOS site is the place to look next. Version note: the bifurcation document NIOS publishes is the 2023 edition, which is the edition still in force; this file is stamped version 2023 and applies_to 2026-27 rather than claiming a 2026-27 document that does not exist."
+}

@@ -1,0 +1,179 @@
+{
+  "framework_id": "icse",
+  "framework_name": "Indian Certificate of Secondary Education (CISCE)",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cisce.org/",
+  "aliases": [
+    "ICSE",
+    "CISCE",
+    "Council for the Indian School Certificate Examinations"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    9,
+    10
+  ],
+  "version": "2026-27",
+  "exam_year": 2028,
+  "level": "Class 9",
+  "level_order": 9,
+  "subject": "Physics",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "icse-physics",
+      "title": "Physics (52), ICSE examination year 2027",
+      "publisher": "Council for the Indian School Certificate Examinations",
+      "url": "https://cisce.org/wp-content/uploads/2025/03/10.-Physics.pdf",
+      "media_type": "application/pdf",
+      "pages": 13,
+      "bytes": 3756112,
+      "fetched_at": "2026-09-03T07:29:48Z",
+      "document_sha256": "2acfb898c5377a15c7e89770dba64597a5760bbb4683b3c2c2c47651b9003cac",
+      "extracted_text_sha256": "70c6a2e433fea6d205580d96b85bf07c4f12752b0f8089249d26d75273b7e924",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "icse-physics",
+        "page": 4,
+        "section": "Class IX, section 1"
+      },
+      "topics": null,
+      "unit_number": 1,
+      "order": 1,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Measurements and Experimentation",
+      "id": "n_358ce7ba89d08f44",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-physics",
+        "page": 4,
+        "section": "Class IX, section 2"
+      },
+      "topics": null,
+      "unit_number": 2,
+      "order": 2,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Motion in One Dimension",
+      "id": "n_8581bab184fbe9a8",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-physics",
+        "page": 4,
+        "section": "Class IX, section 3"
+      },
+      "topics": null,
+      "unit_number": 3,
+      "order": 3,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Laws of Motion",
+      "id": "n_5879fcf84fd765d0",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-physics",
+        "page": 5,
+        "section": "Class IX, section 4"
+      },
+      "topics": null,
+      "unit_number": 4,
+      "order": 4,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Fluids",
+      "id": "n_6e70e79807f86f3f",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-physics",
+        "page": 5,
+        "section": "Class IX, section 5"
+      },
+      "topics": null,
+      "unit_number": 5,
+      "order": 5,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Heat and Energy",
+      "id": "n_4f1b69905abb60e0",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-physics",
+        "page": 6,
+        "section": "Class IX, section 6"
+      },
+      "topics": null,
+      "unit_number": 6,
+      "order": 6,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Light",
+      "id": "n_d6dec73b8cf996de",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-physics",
+        "page": 6,
+        "section": "Class IX, section 7"
+      },
+      "topics": null,
+      "unit_number": 7,
+      "order": 7,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Sound",
+      "id": "n_5375bf9f831f3cbc",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-physics",
+        "page": 6,
+        "section": "Class IX, section 8"
+      },
+      "topics": null,
+      "unit_number": 8,
+      "order": 8,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Electricity and Magnetism",
+      "id": "n_01fd6f5c8b0a41bc",
+      "aliases": []
+    }
+  ],
+  "note": "The unit list and the unit order below are read off the CISCE booklet for this subject and were checked by hand against it. The topic layer that an earlier pass derived from the booklet's two-column layout has been withdrawn: the re-flow keyed off line position rather than the booklet's own bracketed sub-headings, which truncated topic titles mid-phrase and filed topics under the wrong unit. Nothing from that layer is kept, and no topic list is asserted here. Next step: re-derive the topics from the booklet's bracket structure, then have a second reader confirm the unit to topic mapping before anything is promoted."
+}

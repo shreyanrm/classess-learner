@@ -1,0 +1,209 @@
+{
+  "framework_id": "isc",
+  "framework_name": "Indian School Certificate (CISCE)",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cisce.org/",
+  "aliases": [
+    "ISC",
+    "CISCE",
+    "Council for the Indian School Certificate Examinations"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "exam_year": 2027,
+  "level": "Class 12",
+  "level_order": 12,
+  "subject": "Chemistry",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "isc-chemistry",
+      "title": "Chemistry, ISC examination year 2027",
+      "publisher": "Council for the Indian School Certificate Examinations",
+      "url": "https://cisce.org/wp-content/uploads/2025/04/19.-ISC-Chemistry-1.pdf",
+      "media_type": "application/pdf",
+      "pages": 24,
+      "bytes": 4099060,
+      "fetched_at": "2026-09-03T07:29:55Z",
+      "document_sha256": "8cc033031b12f40db02390719ab8606106ee318597c133fd71e5fc66ff12ce1d",
+      "extracted_text_sha256": "70aa6186d5a6ad1db87646031852954ed3b8e2c0163c573ec2ac97f8b872d093",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "isc-chemistry",
+        "page": 15,
+        "section": "Class XII, section 1"
+      },
+      "topics": null,
+      "unit_number": 1,
+      "order": 1,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Solutions",
+      "id": "n_5d8a6c497627bd23",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-chemistry",
+        "page": 15,
+        "section": "Class XII, section 2"
+      },
+      "topics": null,
+      "unit_number": 2,
+      "order": 2,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Electrochemistry",
+      "id": "n_e2008fb19f3c8da9",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-chemistry",
+        "page": 16,
+        "section": "Class XII, section 3"
+      },
+      "topics": null,
+      "unit_number": 3,
+      "order": 3,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Chemical Kinetics",
+      "id": "n_7762b8c9494cb5e0",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-chemistry",
+        "page": 17,
+        "section": "Class XII, section 4"
+      },
+      "topics": null,
+      "unit_number": 4,
+      "order": 4,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "d-and f- Block Elements",
+      "id": "n_40f724305882e36a",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-chemistry",
+        "page": 17,
+        "section": "Class XII, section 5"
+      },
+      "topics": null,
+      "unit_number": 5,
+      "order": 5,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Coordination Compounds",
+      "id": "n_291bf37a1e2b71ee",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-chemistry",
+        "page": 18,
+        "section": "Class XII, section 6"
+      },
+      "topics": null,
+      "unit_number": 6,
+      "order": 6,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Haloalkanes and Haloarenes",
+      "id": "n_0216b483809aabe8",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-chemistry",
+        "page": 19,
+        "section": "Class XII, section 7"
+      },
+      "topics": null,
+      "unit_number": 7,
+      "order": 7,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Alcohols, Phenols and Ethers",
+      "id": "n_1f1d0310f019c578",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-chemistry",
+        "page": 20,
+        "section": "Class XII, section 8"
+      },
+      "topics": null,
+      "unit_number": 8,
+      "order": 8,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Aldehydes, Ketones and Carboxylic Acids",
+      "id": "n_ccc317477ad3e932",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-chemistry",
+        "page": 21,
+        "section": "Class XII, section 9"
+      },
+      "topics": null,
+      "unit_number": 9,
+      "order": 9,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Organic compounds containing Nitrogen",
+      "id": "n_36336156dbdb86a5",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "isc-chemistry",
+        "page": 21,
+        "section": "Class XII, section 10"
+      },
+      "topics": null,
+      "unit_number": 10,
+      "order": 10,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Biomolecules",
+      "id": "n_6aa7ce727a7138ab",
+      "aliases": []
+    }
+  ],
+  "note": "The unit list and the unit order below are read off the CISCE booklet for this subject and were checked by hand against it. The topic layer that an earlier pass derived from the booklet's two-column layout has been withdrawn: the re-flow keyed off line position rather than the booklet's own bracketed sub-headings, which truncated topic titles mid-phrase and filed topics under the wrong unit. Nothing from that layer is kept, and no topic list is asserted here. Next step: re-derive the topics from the booklet's bracket structure, then have a second reader confirm the unit to topic mapping before anything is promoted."
+}

@@ -1,0 +1,41 @@
+{
+  "framework_id": "icse",
+  "framework_name": "Indian Certificate of Secondary Education (CISCE)",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cisce.org/",
+  "aliases": [
+    "ICSE",
+    "CISCE",
+    "Council for the Indian School Certificate Examinations"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    9,
+    10
+  ],
+  "version": "2026-27",
+  "exam_year": 2028,
+  "level": "Class 7",
+  "level_order": 7,
+  "subject": "Science",
+  "status": "provisional",
+  "read_off_source": false,
+  "discovery_state": "blocked",
+  "blocker": "no_official_document",
+  "provenance": {
+    "extractor": null,
+    "verifier": null,
+    "checks_passed": [
+      "stored_negative_result_has_a_blocker_code"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [],
+  "units": null,
+  "note": "CISCE publishes a syllabus only for the ICSE examination (classes IX and X) and the ISC examination (classes XI and XII); its Publications and Resources listing at https://cisce.org/ carries no curriculum document for classes I to VIII, and the ICSE subject booklets open directly at Class IX. Schools affiliated to CISCE set their own middle school scheme of study within the council's framework, so there is no official unit list to record here and none is invented. No document is recorded on this file, because no document was extracted for it. Next step: run the discovery job (docs/CURRICULUM.md section 4) against the council's listing with a browser-capable fetcher, and if nothing is published, take the learner's own school scheme through the own-syllabus path in section 6."
+}

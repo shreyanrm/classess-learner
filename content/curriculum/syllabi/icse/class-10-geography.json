@@ -1,0 +1,234 @@
+{
+  "framework_id": "icse",
+  "framework_name": "Indian Certificate of Secondary Education (CISCE)",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cisce.org/",
+  "aliases": [
+    "ICSE",
+    "CISCE",
+    "Council for the Indian School Certificate Examinations"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    9,
+    10
+  ],
+  "version": "2026-27",
+  "exam_year": 2027,
+  "level": "Class 10",
+  "level_order": 10,
+  "subject": "Geography",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "icse-geography",
+      "title": "Geography (53), ICSE examination year 2027",
+      "publisher": "Council for the Indian School Certificate Examinations",
+      "url": "https://cisce.org/wp-content/uploads/2025/03/ICSE-Geography.pdf",
+      "media_type": "application/pdf",
+      "pages": 11,
+      "bytes": 3138098,
+      "fetched_at": "2026-09-03T07:29:52Z",
+      "document_sha256": "d4fa4d4fc971aa3d7386161e86b6414b1850992b3357bc4514fc03e12786221f",
+      "extracted_text_sha256": "bdbfee6d92ab37ae72b4974ebd6b31c25901e8ca590be88b3f20802ab9df808b",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "icse-geography",
+        "page": 8,
+        "section": "Class X, section 1"
+      },
+      "topics": null,
+      "unit_number": 1,
+      "contents": "(a) Locating features with the help of a four figure or a six-figure grid reference. (b) Definition of contour and contour interval. Identification of landforms marked by contours (steep slope, gentle slope, hill, ridge, escarpment), triangulated height, spot height, relative height/ depth. (c) Interpretation of colour tints and conventional symbols used on a topographical survey of India map. (d) Identification and definition of types of scale given on the map (Statement scale, Representative Fraction and Linear Scale). Measuring distances (direct distance only) and calculating area (full grid square) using the scale given therein. (e) Marking directions between different locations, using eight cardinal points. (f) Identify: Site of prominent villages /towns/settlements, services available types of land use / land cover and means of transport (metalled, unmetalled, cart track, pack track, footpath) and communication with the help of the index given at the bottom of the sheet. (g) Identification of drainage (direction of flow and pattern - dendritic, trellised and radial) and settlement patterns (clustered and dispersed). (h) Identification of natural and man-made features. Map of India On an outline map of India, candidates will be required to locate, mark and name the following: (6 map features for marking and 4 features for identification) Mountains, Peaks and Plateaus (To be marked): Himalayas, Karakoram, Aravali, Vindhyas, Satpura, Western and Eastern Ghats, Nilgiris, Khasi, Mount Godwin Austin (K2), Mount Kanchenjunga. Deccan Plateau, Chota Nagpur Plateau. Plains (To be marked): Gangetic Plains and Coastal plains – (Konkan, Malabar, Coromandel, Northern Circars). Desert (To be marked): Thar (The Great Indian Desert) Rivers (To be identified): Indus, Ravi, Beas, Chenab, Jhelum, Satluj, Ganga, Yamuna, Ghaghra, Gomti, Gandak, Kosi, Chambal, Betwa, Brahmaputra, Narmada, Tapti, Mahanadi, Godavari, Krishna, Cauveri. Water Bodies (To be marked): Gulf of Kutch, Gulf of Khambhat, Gulf of Mannar, Palk Strait, Andaman Sea, Wular Lake. Passes (To be marked): Karakoram. Latitude and Longitudes (To be identified): Tropic of Cancer, Standard Meridian (82° 30’E). Direction of Winds (To be marked): Southwest Monsoons (Arabian Sea and Bay of Bengal Branches), North East Monsoons and Western Disturbances. Distribution of Minerals (To be identified): Oil - Mumbai High (Offshore Oil Field) and Digboi. Iron – Singhbhum, Coal – Jharia. Soil Distribution (To be marked): Alluvial, Black and Red Soil. Cities (To be identified): Delhi, Mumbai, Kolkata, Chennai, Hyderabad, Bengaluru, Kochi, Allahabad. Population (To be marked): Distribution of Population (Dense and sparse). PART - II GEOGRAPHY OF INDIA",
+      "order": 1,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Interpretation of Topographical Maps",
+      "id": "n_df638c05745e72c3",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-geography",
+        "page": 8,
+        "section": "Class X, section 2"
+      },
+      "topics": null,
+      "unit_number": 2,
+      "order": 2,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Map of India",
+      "id": "n_1c3d46043340e444",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-geography",
+        "page": 9,
+        "section": "Class X, section 3"
+      },
+      "topics": null,
+      "unit_number": 3,
+      "contents": "Distribution of Temperature, Rainfall, winds in Summer and Winter and factors affecting the climate of India (latitudes, altitude, distance from sea, winds, Himalayas, jet streams, and El Nino). Monsoon and its mechanism. Seasons: Summer; Monsoon, Retreating Monsoon and Winter. Temperature and pressure conditions, wind movements, local winds, precipitation and interpretation of climate data.",
+      "order": 3,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Climate",
+      "id": "n_83aece36693499d1",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-geography",
+        "page": 9,
+        "section": "Class X, section 4"
+      },
+      "topics": null,
+      "unit_number": 4,
+      "contents": "• Types of soil (alluvial, black, red and laterite), mode of formation, distribution, composition and characteristics such as colour, texture, minerals and crops associated. • Soil Erosion – meaning, agents and causes. • Soil Conservation – importance and methods",
+      "order": 4,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Soil Resources",
+      "id": "n_3c0b18910bff400d",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-geography",
+        "page": 9,
+        "section": "Class X, section 5"
+      },
+      "topics": null,
+      "unit_number": 5,
+      "contents": "• Importance of forests. • Types of vegetation; distribution and correlation with their environment (tropical evergreen, tropical deciduous, tropical desert, littoral and mountain). • Forest conservation – afforestation, reforestation, social forestry, agroforestry and Van Mahotsav",
+      "order": 5,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Natural Vegetation",
+      "id": "n_48381e796660022b",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-geography",
+        "page": 9,
+        "section": "Class X, section 6"
+      },
+      "topics": null,
+      "unit_number": 6,
+      "contents": "• Sources (Surface water and ground water). • Need for conservation • Rain water harvesting and its importance. • Irrigation: Importance and methods – wells, tube well, tanks, canal, drip and sprinkler irrigation.",
+      "order": 6,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Water Resources",
+      "id": "n_6f47fb4245b49511",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-geography",
+        "page": 8,
+        "section": "Class X, section 7"
+      },
+      "topics": null,
+      "unit_number": 7,
+      "contents": "• Iron ore, Manganese, Copper, Bauxite – uses and their distribution. (two leading states and their prominent mining areas) • Conventional Sources: Coal, Petroleum, Natural gas (distribution, advantages and disadvantages). • Hydel power - Bhakra Nangal Dam and Hirakud Projects and their benefits. • Non-conventional Sources: Solar, wind, tidal, geo-thermal, nuclear and bio-gas (important areas and advantages and disadvantages).",
+      "order": 7,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Mineral and Energy Resources",
+      "id": "n_4bb9b574b1cb87e4",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-geography",
+        "page": 9,
+        "section": "Class X, section 8"
+      },
+      "topics": null,
+      "unit_number": 8,
+      "contents": "• Indian Agriculture – importance, problems and benefits; Green Revolution-meaning and impact of first green revolution. • Types of farming in India: subsistence and commercial: intensive, extensive, plantation and mixed. • Agricultural seasons (rabi, kharif, zayad). • Climatic conditions, soil requirements, methods of cultivation, and distribution (major producing states) of the following crops: - rice, wheat, millets and pulses. - sugarcane, oilseeds (groundnut, mustard and soya bean). - cotton, jute and tea",
+      "order": 8,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Agriculture",
+      "id": "n_28a4e9447d67af9c",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-geography",
+        "page": 9,
+        "section": "Class X, section 9"
+      },
+      "topics": null,
+      "unit_number": 9,
+      "contents": "Importance and classification (large scale, small scale, mineral-based, agro-based, public and private sector) • Agro based Industry - Sugar, Textile (Cotton and Silk). • Mineral based Industry – integrated Iron & Steel plants (Tata Steel, Rourkela, Vishakhapatnam) Petro Chemical and Electronics (some key centres) relevance in the modern world.",
+      "order": 9,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Manufacturing Industries",
+      "id": "n_6dd226820a5ca093",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-geography",
+        "page": 9,
+        "section": "Class X, section 10"
+      },
+      "topics": null,
+      "unit_number": 10,
+      "contents": "Importance and Modes • Roadways - Factors affecting its development, advantages and disadvantages. Expressways, national highways, NSEW Corridor and Golden Quadrilateral [meaning and importance) • Railways - Factors affecting its development, advantages and disadvantages. • Airways - Advantages and disadvantages. • Waterways - Inland and coastal, advantages and disadvantages.",
+      "order": 10,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Transport",
+      "id": "n_aff4119a64b71cfd",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-geography",
+        "page": 10,
+        "section": "Class X, section 11"
+      },
+      "topics": null,
+      "unit_number": 11,
+      "contents": "• Impact of waste accumulation - spoilage of landscape, pollution, health hazards. • Need for waste management. • Understanding key terms – global warming, acid rain, eutrophication, biomagnification and thermal pollution (in brief). • Methods of safe disposal - segregation, dumping and composting. • Need and methods for reducing, reusing and recycling waste.",
+      "order": 11,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Waste Management",
+      "id": "n_9584f46d32a1f938",
+      "aliases": []
+    }
+  ],
+  "note": "The unit list and the unit order below are read off the CISCE booklet for this subject and were checked by hand against it. The topic layer that an earlier pass derived from the booklet's two-column layout has been withdrawn: the re-flow keyed off line position rather than the booklet's own bracketed sub-headings, which truncated topic titles mid-phrase and filed topics under the wrong unit. Nothing from that layer is kept, and no topic list is asserted here. Next step: re-derive the topics from the booklet's bracket structure, then have a second reader confirm the unit to topic mapping before anything is promoted."
+}

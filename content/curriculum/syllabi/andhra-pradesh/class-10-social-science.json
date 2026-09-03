@@ -1,0 +1,63 @@
+{
+  "framework_id": "andhra-pradesh",
+  "framework_name": "Board of Secondary Education, Andhra Pradesh",
+  "framework_kind": "state",
+  "country": "IN",
+  "region": "Andhra Pradesh",
+  "official_site": "https://bse.ap.gov.in/",
+  "aliases": [
+    "Andhra Pradesh State Board",
+    "AP SSC",
+    "BSE AP"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "version": "2026-27",
+  "level": "Class 10",
+  "level_order": 10,
+  "subject": "Social Science",
+  "status": "provisional",
+  "read_off_source": false,
+  "discovery_state": "blocked",
+  "blocker": "no_official_document",
+  "provenance": {
+    "extractor": null,
+    "verifier": null,
+    "checks_passed": [
+      "stored_negative_result_has_a_blocker_code"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "ap-bse-home",
+      "title": "Board of Secondary Education, Andhra Pradesh - site index",
+      "publisher": "Board of Secondary Education, Andhra Pradesh",
+      "url": "https://bse.ap.gov.in/",
+      "media_type": "text/html",
+      "pages": null,
+      "bytes": 80451,
+      "fetched_at": "2026-09-03T07:49:22Z",
+      "document_sha256": "9418448335352304738ff54b19e9de9008d2a9a43bc326881b6ee851dbaf0440",
+      "extracted_text_sha256": "12cbfa8a6661b903f690253ef236c177e72e13ea2bb2b98269624324f05bf014",
+      "extraction": "python standard library tag strip"
+    }
+  ],
+  "units": null,
+  "note": "The board's site index carries no syllabus or textbook link, and the SCERT Andhra Pradesh host (apscert.gov.in) did not resolve from here, so no official syllabus document could be reached. The board site index was fetched and is recorded below. Next step: run the discovery job (docs/CURRICULUM.md section 4) with a browser-capable fetcher against the portal recorded below, then extract the chapter list from the prescribed textbook's own contents page, the way the CBSE middle-stage files here do."
+}

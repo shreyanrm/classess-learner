@@ -1,0 +1,135 @@
+{
+  "framework_id": "icse",
+  "framework_name": "Indian Certificate of Secondary Education (CISCE)",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cisce.org/",
+  "aliases": [
+    "ICSE",
+    "CISCE",
+    "Council for the Indian School Certificate Examinations"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    9,
+    10
+  ],
+  "version": "2026-27",
+  "exam_year": 2028,
+  "level": "Class 9",
+  "level_order": 9,
+  "subject": "Geography",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "icse-geography",
+      "title": "Geography (53), ICSE examination year 2027",
+      "publisher": "Council for the Indian School Certificate Examinations",
+      "url": "https://cisce.org/wp-content/uploads/2025/03/ICSE-Geography.pdf",
+      "media_type": "application/pdf",
+      "pages": 11,
+      "bytes": 3138098,
+      "fetched_at": "2026-09-03T07:29:52Z",
+      "document_sha256": "d4fa4d4fc971aa3d7386161e86b6414b1850992b3357bc4514fc03e12786221f",
+      "extracted_text_sha256": "bdbfee6d92ab37ae72b4974ebd6b31c25901e8ca590be88b3f20802ab9df808b",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "icse-geography",
+        "page": 4,
+        "section": "Class IX, section 1"
+      },
+      "topics": null,
+      "unit_number": 1,
+      "order": 1,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Our World",
+      "id": "n_ce1d8343aec27e0a",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-geography",
+        "page": 4,
+        "section": "Class IX, section 2"
+      },
+      "topics": null,
+      "unit_number": 2,
+      "order": 2,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Structure of the Earth",
+      "id": "n_ac2227082fb054e8",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-geography",
+        "page": 5,
+        "section": "Class IX, section 3"
+      },
+      "topics": null,
+      "unit_number": 3,
+      "contents": "Meaning of hydrosphere. Tides - formation and pattern. Ocean Currents – their circulation pattern and effects. (Specifically of Gulf Stream, North 5. Atlantic Drift, Labrador Current, Kuro Shio and Oya Shio.)",
+      "order": 3,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Hydrosphere",
+      "id": "n_7f30e7905fb91636",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-geography",
+        "page": 5,
+        "section": "Class IX, section 4"
+      },
+      "topics": null,
+      "unit_number": 4,
+      "order": 4,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Atmosphere",
+      "id": "n_c2aebf2f5bf4d805",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "icse-geography",
+        "page": 5,
+        "section": "Class IX, section 5"
+      },
+      "topics": null,
+      "unit_number": 5,
+      "order": 5,
+      "topic_discovery_state": "blocked",
+      "topic_blocker": "extraction_unreliable",
+      "name": "Pollution",
+      "id": "n_cb417db5d9a60fb2",
+      "aliases": []
+    }
+  ],
+  "note": "The unit list and the unit order below are read off the CISCE booklet for this subject and were checked by hand against it. The topic layer that an earlier pass derived from the booklet's two-column layout has been withdrawn: the re-flow keyed off line position rather than the booklet's own bracketed sub-headings, which truncated topic titles mid-phrase and filed topics under the wrong unit. Nothing from that layer is kept, and no topic list is asserted here. Next step: re-derive the topics from the booklet's bracket structure, then have a second reader confirm the unit to topic mapping before anything is promoted."
+}

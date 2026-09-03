@@ -1,0 +1,484 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 7",
+  "level_order": 7,
+  "subject": "Social Science",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "ncert-7-society1",
+      "title": "Exploring Society: India and Beyond, Social Science for Grade 7, Part 1 (prelims)",
+      "publisher": "National Council of Educational Research and Training",
+      "url": "https://ncert.nic.in/textbook/pdf/gees1ps.pdf",
+      "media_type": "application/pdf",
+      "pages": 22,
+      "bytes": 16408301,
+      "fetched_at": "2026-09-03T07:06:37Z",
+      "document_sha256": "7701947726d2dcc9890bce3e36669cd8388fe5bea2cf3cd55082b2a409fdb7da",
+      "extracted_text_sha256": "e3ebabd28f4575b5eab974c0e3a23cc83706dae53cc40cb6a0ed4d50ac0d119b",
+      "extraction": "python standard library extractor (zlib inflate over PDF content streams)"
+    },
+    {
+      "id": "ncert-7-society2",
+      "title": "Exploring Society: India and Beyond, Social Science for Grade 7, Part 2 (prelims)",
+      "publisher": "National Council of Educational Research and Training",
+      "url": "https://ncert.nic.in/textbook/pdf/gees2ps.pdf",
+      "media_type": "application/pdf",
+      "pages": 16,
+      "bytes": 12045380,
+      "fetched_at": "2026-09-03T07:07:03Z",
+      "document_sha256": "f673f0474ebf9d8f5b383ef255ef5630ff967a67db30204bc20e84fe5121ed16",
+      "extracted_text_sha256": "b3bb44f4e57b9a48119dfb084c18936731e33552be7ab5ab82f125e41a6ead12",
+      "extraction": "python standard library extractor (zlib inflate over PDF content streams)"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "ncert-7-society1",
+        "page": 21,
+        "section": "Contents, theme heading"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society1",
+            "page": 21,
+            "section": "Contents, chapter 1"
+          },
+          "chapter_number": 1,
+          "order": 1,
+          "name": "Geographical Diversity of India",
+          "id": "n_8937f8ee989b3485",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society1",
+            "page": 21,
+            "section": "Contents, chapter 2"
+          },
+          "chapter_number": 2,
+          "order": 2,
+          "name": "Understanding the Weather",
+          "id": "n_0d86af4b7a5f2d7b",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society1",
+            "page": 21,
+            "section": "Contents, chapter 3"
+          },
+          "chapter_number": 3,
+          "order": 3,
+          "name": "Climates of India",
+          "id": "n_6e215ad8fb5511c6",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Exploring Society: India and Beyond, Grade 7, Part 1",
+      "order": 1,
+      "name": "Theme A - India and the World: Land and the People",
+      "id": "n_3aaa0710f90271a2",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "ncert-7-society1",
+        "page": 21,
+        "section": "Contents, theme heading"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society1",
+            "page": 21,
+            "section": "Contents, chapter 4"
+          },
+          "chapter_number": 4,
+          "order": 1,
+          "name": "New Beginnings: Cities and States",
+          "id": "n_097fa917eb6a13bc",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society1",
+            "page": 21,
+            "section": "Contents, chapter 5"
+          },
+          "chapter_number": 5,
+          "order": 2,
+          "name": "The Rise of Empires",
+          "id": "n_70908f74791c4194",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society1",
+            "page": 21,
+            "section": "Contents, chapter 6"
+          },
+          "chapter_number": 6,
+          "order": 3,
+          "name": "The Age of Reorganisation",
+          "id": "n_b76243389b81dca3",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society1",
+            "page": 21,
+            "section": "Contents, chapter 7"
+          },
+          "chapter_number": 7,
+          "order": 4,
+          "name": "The Gupta Era: An Age of Tireless Creativity",
+          "id": "n_251b8c892bed5a9a",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Exploring Society: India and Beyond, Grade 7, Part 1",
+      "order": 2,
+      "name": "Theme B - Tapestry of the Past",
+      "id": "n_3021abcda4addfa5",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "ncert-7-society1",
+        "page": 21,
+        "section": "Contents, theme heading"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society1",
+            "page": 21,
+            "section": "Contents, chapter 8"
+          },
+          "chapter_number": 8,
+          "order": 1,
+          "name": "How the Land Becomes Sacred",
+          "id": "n_1c96f985f27452e0",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Exploring Society: India and Beyond, Grade 7, Part 1",
+      "order": 3,
+      "name": "Theme C - Our Cultural Heritage and Knowledge Traditions",
+      "id": "n_f62305632dad4eaa",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "ncert-7-society1",
+        "page": 21,
+        "section": "Contents, theme heading"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society1",
+            "page": 21,
+            "section": "Contents, chapter 9"
+          },
+          "chapter_number": 9,
+          "order": 1,
+          "name": "From the Rulers to the Ruled: Types of Governments",
+          "id": "n_79dfebcc30f599e8",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society1",
+            "page": 21,
+            "section": "Contents, chapter 10"
+          },
+          "chapter_number": 10,
+          "order": 2,
+          "name": "The Constitution of India - An Introduction",
+          "id": "n_580aac99996d1256",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Exploring Society: India and Beyond, Grade 7, Part 1",
+      "order": 4,
+      "name": "Theme D - Governance and Democracy",
+      "id": "n_e0f680a3faf09c30",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "ncert-7-society1",
+        "page": 21,
+        "section": "Contents, theme heading"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society1",
+            "page": 21,
+            "section": "Contents, chapter 11"
+          },
+          "chapter_number": 11,
+          "order": 1,
+          "name": "From Barter to Money",
+          "id": "n_69b4745cf2d9a88f",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society1",
+            "page": 21,
+            "section": "Contents, chapter 12"
+          },
+          "chapter_number": 12,
+          "order": 2,
+          "name": "Understanding Markets",
+          "id": "n_4406bcf03ab32bd7",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Exploring Society: India and Beyond, Grade 7, Part 1",
+      "order": 5,
+      "name": "Theme E - Economic Life Around Us",
+      "id": "n_f4c616985cb19ace",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "ncert-7-society2",
+        "page": 15,
+        "section": "Contents, theme heading"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society2",
+            "page": 15,
+            "section": "Contents, chapter 1"
+          },
+          "chapter_number": 1,
+          "order": 1,
+          "name": "The Story of Indian Farming",
+          "id": "n_e04ed9c6ec814da2",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society2",
+            "page": 15,
+            "section": "Contents, chapter 2"
+          },
+          "chapter_number": 2,
+          "order": 2,
+          "name": "India and Her Neighbours",
+          "id": "n_253a310d1626b131",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Exploring Society: India and Beyond, Grade 7, Part 2",
+      "order": 6,
+      "name": "Theme A - India and the World: Land and the People (Part 2)",
+      "id": "n_72c396957b21d4ff",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "ncert-7-society2",
+        "page": 15,
+        "section": "Contents, theme heading"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society2",
+            "page": 15,
+            "section": "Contents, chapter 3"
+          },
+          "chapter_number": 3,
+          "order": 1,
+          "name": "Empires and Kingdoms: 6th to 10th Centuries",
+          "id": "n_981785590e375ddb",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society2",
+            "page": 15,
+            "section": "Contents, chapter 4"
+          },
+          "chapter_number": 4,
+          "order": 2,
+          "name": "Turning Tides: 11th and 12th Centuries",
+          "id": "n_3b4fd550b9149143",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Exploring Society: India and Beyond, Grade 7, Part 2",
+      "order": 7,
+      "name": "Theme B - Tapestry of the Past (Part 2)",
+      "id": "n_7cc224f34cf76ab2",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "ncert-7-society2",
+        "page": 15,
+        "section": "Contents, theme heading"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society2",
+            "page": 15,
+            "section": "Contents, chapter 5"
+          },
+          "chapter_number": 5,
+          "order": 1,
+          "name": "India, a Home to Many",
+          "id": "n_570821acb27336f7",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Exploring Society: India and Beyond, Grade 7, Part 2",
+      "order": 8,
+      "name": "Theme C - Our Cultural Heritage and Knowledge Traditions (Part 2)",
+      "id": "n_9644ea71d615e0db",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "ncert-7-society2",
+        "page": 15,
+        "section": "Contents, theme heading"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society2",
+            "page": 15,
+            "section": "Contents, chapter 6"
+          },
+          "chapter_number": 6,
+          "order": 1,
+          "name": "The State, the Government, and You",
+          "id": "n_1a96c782dc7aa69b",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Exploring Society: India and Beyond, Grade 7, Part 2",
+      "order": 9,
+      "name": "Theme D - Governance and Democracy (Part 2)",
+      "id": "n_a4bf69c96fe5d355",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "ncert-7-society2",
+        "page": 15,
+        "section": "Contents, theme heading"
+      },
+      "topics": [
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society2",
+            "page": 15,
+            "section": "Contents, chapter 7"
+          },
+          "chapter_number": 7,
+          "order": 1,
+          "name": "Infrastructure: Engine of India's Development",
+          "id": "n_a493cf94bfefb0c1",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "source_ref": {
+            "document_id": "ncert-7-society2",
+            "page": 15,
+            "section": "Contents, chapter 8"
+          },
+          "chapter_number": 8,
+          "order": 2,
+          "name": "Banks and the Magic of Finance",
+          "id": "n_4f38b23a3826f8f5",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "prescribed_book": "Exploring Society: India and Beyond, Grade 7, Part 2",
+      "order": 10,
+      "name": "Theme E - Economic Life Around Us (Part 2)",
+      "id": "n_5ea8e070d196fabc",
+      "aliases": []
+    }
+  ],
+  "note": "CBSE publishes a curriculum document only for the secondary stage (classes IX to XII). For the middle stage it prescribes the NCERT textbooks, so the structure below is the structure of the prescribed NCERT book: units are the book's own parts or themes and topics are its chapters, read off the Contents page of the book's official prelims PDF on ncert.nic.in. A Contents page states no learning objectives, so none are recorded."
+}

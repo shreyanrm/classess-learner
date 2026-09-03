@@ -1,0 +1,483 @@
+{
+  "framework_id": "cbse",
+  "framework_name": "Central Board of Secondary Education",
+  "framework_kind": "national",
+  "country": "IN",
+  "official_site": "https://cbseacademic.nic.in/",
+  "aliases": [
+    "CBSE",
+    "Central Board of Secondary Education, New Delhi"
+  ],
+  "languages": [
+    "en"
+  ],
+  "levels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "version": "2026-27",
+  "level": "Class 10",
+  "level_order": 10,
+  "subject": "Mathematics",
+  "status": "provisional",
+  "read_off_source": true,
+  "provenance": {
+    "extractor": "deterministic text extraction from the fetched document; no model in the loop",
+    "verifier": null,
+    "checks_passed": [
+      "unit_order_is_1_to_n",
+      "no_empty_unit_name",
+      "no_duplicate_unit_name",
+      "every_unit_has_a_source_ref",
+      "every_source_ref_resolves_to_a_document",
+      "every_document_carries_a_hash",
+      "topic_order_is_1_to_n_within_every_unit",
+      "no_unit_left_without_topics",
+      "no_duplicate_topic_name_within_a_unit",
+      "no_page_tail_bled_into_a_node"
+    ],
+    "checks_failed": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "documents": [
+    {
+      "id": "cbse-10-maths",
+      "title": "Mathematics, Class X, Secondary Curriculum Part 1, 2026-27",
+      "publisher": "Central Board of Secondary Education",
+      "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/Maths_SecP1X_2026-27.pdf",
+      "media_type": "application/pdf",
+      "pages": 10,
+      "bytes": 270782,
+      "fetched_at": "2026-09-03T07:03:44Z",
+      "document_sha256": "d773e7c12b99e0bd498067e2b8268c76d0496bf9cad1c9e41c8652ab68b412a5",
+      "extracted_text_sha256": "e6136d06fb3e83ea27e6a935a4eb219f6c787ebbc6b1ad3d201ebfb951131b8d",
+      "extraction": "pdftotext -layout (poppler 25.x), cross-checked against a python-standard-library extractor"
+    }
+  ],
+  "units": [
+    {
+      "source_ref": {
+        "document_id": "cbse-10-maths",
+        "page": 2,
+        "section": "Course structure Class X, unit 1"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Develops understanding of numbers, including the set of real numbers and its properties",
+            "Extends the understanding of powers (radical powers) and exponents",
+            "Applies Fundamental Theorem of Arithmetic to solve problems related to real life contexts"
+          ],
+          "source_ref": {
+            "document_id": "cbse-10-maths",
+            "page": 3,
+            "section": "Unit 1: NUMBER SYSTEMS"
+          },
+          "contents": [
+            "Fundamental Theorem of Arithmetic - statements after reviewing work done earlier and after illustrating and motivating through examples",
+            "Proofs of irrationality of √2, √3, √5"
+          ],
+          "order": 1,
+          "name": "Real numbers",
+          "source_title": "REAL NUMBERS",
+          "id": "n_bac02f49da8ffcd5",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 6,
+      "order": 1,
+      "name": "Number systems",
+      "source_title": "NUMBER SYSTEMS",
+      "id": "n_5779096d50e7e497",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-10-maths",
+        "page": 2,
+        "section": "Course structure Class X, unit 2"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Develops a relationship between algebraic and graphical methods of finding the zeroes of a polynomial"
+          ],
+          "source_ref": {
+            "document_id": "cbse-10-maths",
+            "page": 3,
+            "section": "Unit 2: ALGEBRA"
+          },
+          "contents": [
+            "Zeros of a polynomial",
+            "Relationship between zeros and coefficients of quadratic polynomials"
+          ],
+          "order": 1,
+          "name": "Polynomials",
+          "source_title": "POLYNOMIALS",
+          "id": "n_2ec767e92c06bb74",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Describes plotting a pair of linear equations and graphically finding the solution",
+            "Models and solves contextualised problems using equations (e.g., simultaneous linear equations in two variables)"
+          ],
+          "source_ref": {
+            "document_id": "cbse-10-maths",
+            "page": 3,
+            "section": "Unit 2: ALGEBRA"
+          },
+          "contents": [
+            "Pair of linear equations in two variables and graphical method of their solution, consistency/inconsistency",
+            "Algebraic conditions for number of solutions",
+            "Solution of a pair of linear equations in two variables algebraically - by substitution, by elimination"
+          ],
+          "order": 2,
+          "name": "Pair of linear equations in two variables",
+          "source_title": "PAIR OF LINEAR EQUATIONS IN TWO VARIABLES",
+          "id": "n_2e7f5a8cc8c79e0f",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Demonstrates strategies of finding roots and determining the nature of roots of a quadratic equation"
+          ],
+          "source_ref": {
+            "document_id": "cbse-10-maths",
+            "page": 4,
+            "section": "Unit 2: ALGEBRA"
+          },
+          "contents": [
+            "Standard form of a quadratic equation ax² + bx + c = 0, (a ≠ 0)",
+            "Solutions of quadratic equations (only real roots) by factorization, and by using quadratic formula. Relationship between discriminant and nature of roots",
+            "Situational problems based on quadratic equations related to day-to-day activities to be incorporated"
+          ],
+          "order": 3,
+          "name": "Quadratic equations",
+          "source_title": "QUADRATIC EQUATIONS",
+          "id": "n_1b9b500552857118",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Develops strategies to apply the concept of A.P. to daily life situations"
+          ],
+          "source_ref": {
+            "document_id": "cbse-10-maths",
+            "page": 4,
+            "section": "Unit 2: ALGEBRA"
+          },
+          "contents": [
+            "Motivation for studying Arithmetic Progression",
+            "Derivation of the nth term and sum of the first n terms of AP and their application in solving daily life problems"
+          ],
+          "order": 4,
+          "name": "Arithmetic progressions",
+          "source_title": "ARITHMETIC PROGRESSIONS",
+          "id": "n_973cba36ec714cf6",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 20,
+      "order": 2,
+      "name": "Algebra",
+      "source_title": "ALGEBRA",
+      "id": "n_176a514059564657",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-10-maths",
+        "page": 2,
+        "section": "Course structure Class X, unit 3"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Derives formulae to establish relations for geometrical shapes in the context of a coordinate plane, such as, finding the distance between two given points, to determine the coordinates of a point between any two given points"
+          ],
+          "source_ref": {
+            "document_id": "cbse-10-maths",
+            "page": 5,
+            "section": "Unit 3: COORDINATE GEOMETRY"
+          },
+          "contents": [
+            "Review: Concepts of coordinate geometry. Distance formula. Section formula (internal division)"
+          ],
+          "order": 1,
+          "name": "Coordinate Geometry",
+          "id": "n_0e3118aafbd82983",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 6,
+      "order": 3,
+      "name": "Coordinate geometry",
+      "source_title": "COORDINATE GEOMETRY",
+      "id": "n_c829a09edc758e4c",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-10-maths",
+        "page": 2,
+        "section": "Course structure Class X, unit 4"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Works out ways to differentiate between congruent and similar figures",
+            "Establishes properties for similarity of two triangles logically using different geometric criteria established earlier such as, Basic Proportionality Theorem, etc"
+          ],
+          "source_ref": {
+            "document_id": "cbse-10-maths",
+            "page": 5,
+            "section": "Unit 4: GEOMETRY"
+          },
+          "contents": [
+            "Definitions, examples, counter examples of similar triangles",
+            "(Prove) If a line is drawn parallel to one side of a triangle to intersect the other two sides in distinct points, the other two sides are divided in the same ratio",
+            "State (without proof) If a line divides two sides of a triangle in the same ratio, the line is parallel to the third side",
+            "State (without proof) If in two triangles, the corresponding angles are equal, their corresponding sides are proportional and the triangles are similar",
+            "State (without proof) If the corresponding sides of two triangles are proportional, their corresponding angles are equal and the two triangles are similar",
+            "State (without proof) If one angle of a triangle is equal to one angle of another triangle and the sides including these angles are proportional, the two triangles are similar"
+          ],
+          "order": 1,
+          "name": "Triangles",
+          "source_title": "TRIANGLES",
+          "id": "n_72088a5e08368ae2",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Derives proofs of theorems related to the tangents of circles"
+          ],
+          "source_ref": {
+            "document_id": "cbse-10-maths",
+            "page": 5,
+            "section": "Unit 4: GEOMETRY"
+          },
+          "contents": [
+            "Tangent to a circle at point of contact",
+            "(Prove) The tangent at any point of a circle is perpendicular to the radius through the point of contact",
+            "(Prove) The lengths of tangents drawn from an external point to a circle are equal"
+          ],
+          "order": 2,
+          "name": "Circles",
+          "source_title": "CIRCLES",
+          "id": "n_9ca8b5dc69e4ff54",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 15,
+      "order": 4,
+      "name": "Geometry",
+      "source_title": "GEOMETRY",
+      "id": "n_33d434c0efa6b1b9",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-10-maths",
+        "page": 2,
+        "section": "Course structure Class X, unit 5"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Understands the definitions of the basic trigonometric functions (including the introduction of the sine and cosine functions)"
+          ],
+          "source_ref": {
+            "document_id": "cbse-10-maths",
+            "page": 6,
+            "section": "Unit 5: TRIGONOMETRY"
+          },
+          "contents": [
+            "Trigonometric ratios of an acute angle of a right-angled triangle. Proof of their existence (well defined)",
+            "Motivate the ratios whichever are defined at 0° and 90°. Values of the trigonometric ratios of 30°, 45° and 60°",
+            "Relationships between the ratios"
+          ],
+          "order": 1,
+          "name": "Introduction to trigonometry",
+          "source_title": "INTRODUCTION TO TRIGONOMETRY",
+          "id": "n_c1c4aaf036dd22ee",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Uses Trigonometric identities to solve problems"
+          ],
+          "source_ref": {
+            "document_id": "cbse-10-maths",
+            "page": 6,
+            "section": "Unit 5: TRIGONOMETRY"
+          },
+          "contents": [
+            "Proof and applications of the identity sin² A + cos² A = 1",
+            "Only simple identities to be given"
+          ],
+          "order": 2,
+          "name": "Trigonometric identities",
+          "source_title": "TRIGONOMETRIC IDENTITIES",
+          "id": "n_855d3cb41e7aa199",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Applies Trigonometric ratios in solving problems in daily life contexts like finding heights of different structures or distance from them"
+          ],
+          "source_ref": {
+            "document_id": "cbse-10-maths",
+            "page": 6,
+            "section": "Unit 5: TRIGONOMETRY"
+          },
+          "contents": [
+            "Simple problems on heights and distances. Problems should not involve more than two right triangles. Angles of elevation / depression should be only 30°, 45°, and 60°"
+          ],
+          "order": 3,
+          "name": "Heights and distances: Angle of elevation, Angle of Depression",
+          "source_title": "HEIGHTS AND DISTANCES: Angle of elevation, Angle of Depression",
+          "id": "n_6989727494cb290e",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 12,
+      "order": 5,
+      "name": "Trigonometry",
+      "source_title": "TRIGONOMETRY",
+      "id": "n_702ea6c628fe501b",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-10-maths",
+        "page": 2,
+        "section": "Course structure Class X, unit 6"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Derives and uses formulae to calculate areas of plane figures"
+          ],
+          "source_ref": {
+            "document_id": "cbse-10-maths",
+            "page": 7,
+            "section": "Unit 6: MENSURATION"
+          },
+          "contents": [
+            "Area of sectors and segments of a circle",
+            "Problems based on areas and perimeter/circumference of the above said plane figures. (In calculating area of segment of a circle, problems should be restricted to central angle of 60°, 90° and 120° only)"
+          ],
+          "order": 1,
+          "name": "Areas related to circles",
+          "source_title": "AREAS RELATED TO CIRCLES",
+          "id": "n_2bf62bec6a63f87b",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Visualises and uses mathematical thinking to discover formulae to calculate surface areas and volumes of solid objects (cubes, cuboids, spheres, hemispheres, right circular cylinders/cones, and their combinations)"
+          ],
+          "source_ref": {
+            "document_id": "cbse-10-maths",
+            "page": 7,
+            "section": "Unit 6: MENSURATION"
+          },
+          "contents": [
+            "Surface areas and volumes of combinations of any two of the following: cubes, cuboids, spheres, hemispheres and right circular cylinders/cones"
+          ],
+          "order": 2,
+          "name": "Surface areas and volumes",
+          "source_title": "SURFACE AREAS AND VOLUMES",
+          "id": "n_be5e5801854c4135",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 10,
+      "order": 6,
+      "name": "Mensuration",
+      "source_title": "MENSURATION",
+      "id": "n_10702af7752ef7c8",
+      "aliases": []
+    },
+    {
+      "source_ref": {
+        "document_id": "cbse-10-maths",
+        "page": 2,
+        "section": "Course structure Class X, unit 7"
+      },
+      "topics": [
+        {
+          "objectives": [
+            "Calculates mean, median and mode for different sets of data related with real life contexts"
+          ],
+          "source_ref": {
+            "document_id": "cbse-10-maths",
+            "page": 7,
+            "section": "Unit 7: STATISTICS AND PROBABILITY"
+          },
+          "contents": [
+            "Mean, median and mode of grouped data (bimodal situation to be avoided)"
+          ],
+          "order": 1,
+          "name": "Statistics",
+          "source_title": "STATISTICS",
+          "id": "n_bbb0c6e6f893a77e",
+          "aliases": [],
+          "concept_ids": []
+        },
+        {
+          "objectives": [
+            "Applies concepts from probability to solve problems on the likelihood of everyday events"
+          ],
+          "source_ref": {
+            "document_id": "cbse-10-maths",
+            "page": 7,
+            "section": "Unit 7: STATISTICS AND PROBABILITY"
+          },
+          "contents": [
+            "Classical definition of probability",
+            "Simple problems on finding the probability of an event"
+          ],
+          "order": 2,
+          "name": "Probability",
+          "source_title": "PROBABILITY",
+          "id": "n_f85ee284961dfadc",
+          "aliases": [],
+          "concept_ids": []
+        }
+      ],
+      "marks": 11,
+      "order": 7,
+      "name": "Statistics and probability",
+      "source_title": "STATISTICS AND PROBABILITY",
+      "id": "n_f5f6b5e96e049e90",
+      "aliases": []
+    }
+  ],
+  "note": "Units and marks are the course structure on page 2. Each topic's `contents` are the document's numbered content entries and its `objectives` are the document's own competencies column, verbatim. The document covers Mathematics Standard (041); the Basic (241) paper is the same syllabus with a different question paper design."
+}
