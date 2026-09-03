@@ -6,70 +6,74 @@ Product copy everywhere: sentence case, no emoji, no exclamation marks, calm and
 
 ---
 
-## 1. The standard — restraint is the positioning made visual
+## 1. The standard — bold ink on good paper
 
-The whole category is red-urgency noise. We are the opposite: calm, spacious, certain. Calm is a status signal and the antidote an anxious learner is starving for. Premium feel is a load-bearing psychological lever, not decoration — processing fluency makes learning feel achievable. The reference class is a product where every pixel was argued over. European-minimal, not decorated-minimal: steel and one hit of pigment.
+Wobo looks like something drawn by a confident hand on thick paper: bold ink, warm paper, a few pigments used on purpose, and a character that is alive. Calm, but never thin. Friendly, but never childish. The wordmark sets the tone: round, chunky, sure of itself. Every screen has to feel like it belongs to that logo. When a screen could belong to a generic edtech app, or to a corporate dashboard, it has failed — rebuild it.
 
-## 2. Brand tokens — build as code tokens, never generic defaults, never Tailwind base styles
+Two people have to love every page: the parent who pays and the learner who uses it. Beauty is not decoration here; it is the proof that someone cared, and it is what makes a hard subject feel approachable.
 
-**Color.** Black and white carry the entire interface. Colour appears only where it means something.
-- Ink scale on white (and inverse on dark surfaces): near-black `#0D0D10` through the grays.
-- **Ultramarine `#1F35E0`** — the signature pigment, reserved for brand and mastery. This is "ignite" at rest.
-- Accent family, used rarely and with intent: molten `#FF5A1F`, magenta `#CC1E7A`, acid `#66B300`. A pop of vibrant colour where a moment earns it — never a rainbow.
-- The rule: one hit of pigment per view. If two things are shouting, one is wrong.
+## 2. Brand tokens — built as code tokens, never generic defaults
 
-**Type.** Google Sans Flex for all product UI — no other UI typeface. Brand and document system (marketing, the vision docs) may use Fraunces, Inter, JetBrains Mono, and Caveat as a sparse handwritten accent.
+**Paper (light).** `paper #FBFBF9` ground · `paper-2 #F2F2EE` surfaces (cards, inputs, sheets) · `paper-3 #E9E9E4` pressed and secondary · `ink #1A1A1F` · `ink-2 #55555E` · `ink-3 #8E8E99`.
+**Graphite (dark).** `ground #0D0D10` · `surface #17171C` · `surface-2 #202027` · `ink #EDEDF1` · `ink-2 #B0B0BA` · `ink-3 #74747F`. Dark is designed on its own, never inverted: pigments lift a step, washes drop a step.
 
-**Surfaces & depth.** No shadows, ever. Depth comes from 0.5px hairlines, tonal surface steps, and frost on overlays only.
+**Pigments, each with a job.**
+- **Ultramarine `#1F35E0`** (dark `#7B8CFF`) — the brand, Wobo's pen and eyes, primary actions, links.
+- **Violet `#6B4CFF`** (`#A08BFF`) — depth; the far end of any ultramarine gradient, the dust; never alone as text.
+- **Rose `#F0578C`** (`#FF7FAB`) — warmth: the learner's own moment ("oh, that's why"), the line in a parent's note worth underlining.
+- **Marigold `#F5A623`** (`#FFC24D`) — a win: the flourish when something is mastered, a lamp's glow, a streak kept.
+- **Mint `#1FB98A`** (`#4FE3BD`) — correct and safe: the tick, the "verified" mark, a saved place.
+- **Washes.** Each pigment at 10–24% as a flat fill behind illustrations, callouts and selected states. One leading pigment per surface; a second only as a wash. Never a rainbow, never grey-on-grey timidity either.
 
-**Corners.** Sharp. 3px default radius (`radius-sm`).
+**Type.** **Poppins** for every interface word: display 700 at 48–120 px, tracking −0.03em; title 600 at 28–40, −0.02em; heading 600 at 20–24; body 400 and 500 at 16–17 / 1.55; label 500 at 13. Sentence case everywhere. All-caps tracked labels only for chapter markers, and rarely. Tabular numerals wherever numbers align. **Caveat** 600/700 only for what Wobo writes by hand: the board, notes, greetings, one-line delights. No third face.
 
-**Density.** Generous whitespace. The screen breathes. Emptiness is the premium signal in a category of clutter.
+**Shape.** Round and chunky, like the wordmark. `radius-s 10px` buttons and inputs · chips are pills · `radius-m 16px` cards and sheets · `radius-l 24px` the plane, modals, hero panels. Nothing sharp, nothing 3 px.
+
+**Line.** There are no border lines in the interface: no 1 px card edges, no hairline dividers, no outlined inputs. Surfaces separate by tone (`paper-2` on `paper`), by space, and by shape. The only lines on a screen are the ones Wobo draws, and those are bold: **3 px** ink on screens (2.5 px minimum on a phone), **4 px** for illustration outlines and hero drawings, round caps and joins, the hand-wobble kept. A rule Wobo draws under something is 2 px at least. Anything thinner reads as a photocopy of a pencil and is a defect.
+
+**Depth.** Tone and space first. Soft, tinted, diffuse shadows are allowed only on things that float: the plane, the docked orb, sheets, menus, toasts — `shadow-soft: 0 12px 40px rgba(31,53,224,.10)` on paper, `0 16px 48px rgba(0,0,0,.5)` on graphite. Actionable cards may lift 1 px on hover with `shadow-lift: 0 6px 20px rgba(26,26,31,.08)`. Never a hard or small shadow, never a shadow on a static surface.
+
+**Space.** A 4 px base. Sections breathe at 96–128 px on desktop and 56–72 px on a phone; cards pad 24–28 px; touch targets are 44 px or more. Emptiness is fine when it frames something; emptiness that is just absence is a defect.
+
+**Atmosphere.** Fine dust: dotted particles of 1–2 px in the ultramarine → violet → rose range at low alpha, drifting slowly, lit where the pointer is. It gathers only for an intentional moment and never sits behind a lesson board. On marketing pages the pointer is the pen of light with its comet trace; inside the app the cursor is native, because learners are working.
 
 ## 3. The ten design laws
 
 1. One screen, one intention, one next-best-action.
-2. Calm on the surface, intensity underneath — the intelligence works hard; the interface never shouts.
-3. No shadows — depth via hairlines, tonal steps, frost.
-4. One hit of pigment per view; ultramarine reserved for brand and mastery.
-5. Animate meaning, never chrome.
-6. Progressive disclosure — the simple thing first; depth on request.
-7. Every generated visual is glanceable — understood at a glance or it is redrawn.
-8. Wobo is present but never in the way — expanding when summoned, contracting when not.
-9. The aha is precious — the ignite event is scarce, earned only by genuine comprehension.
-10. Built to be screenshotted — the twin and mastery artifacts are hero art by default.
+2. Bold ink, warm paper: no line thinner than 2.5 px, no border on a surface, no corner under 10 px.
+3. Depth by tone and space; a soft shadow only under what floats.
+4. One leading pigment per surface, with a job; a second only as a wash.
+5. Animate meaning, never chrome; everything eases like it has weight.
+6. Progressive disclosure: the simple thing first, depth on request.
+7. Every generated visual is glanceable, or it is redrawn.
+8. Wobo is present but never in the way: expands when summoned, contracts when not.
+9. The aha is precious: the ignite event is scarce, earned by genuine comprehension.
+10. Every element earns its place (plan §15): a learner task, brand delight, or a nice-to-have someone can name.
 
 ## 4. Wobo (the tutor) — the life, not a layer
 
-Wobo is one name for both the app and the tutor inside it; this section is about the tutor. Wobo is the runtime the app executes inside. Every surface is one of three things: Wobo is it, Wobo composed it, or it reports to Wobo. See `CONTEXT.md` for the architecture; this is how Wobo looks and behaves.
+Wobo is one name for the app and the tutor inside it; this section is the tutor. Every surface is one of three things: Wobo is it, Wobo composed it, or it reports to Wobo. Wobo has no gender (plan §19): name first, they/them only when unavoidable, "I" in its own voice.
 
-**The body.** A soft, round, molten matte-jelly orb with two expressive eyes and a flickering warm glow. Wobo has real physical personality — weight and squash, anticipation before motion, overshoot and settle. Constant idle micro-motion so Wobo is never frozen. Rebuilt from zero to a higher bar than any mascot in the category: the Koji quality bar, exceeded. Joyful, cute, alive — never saccharine, never noisy.
+**The body.** The ink-visor wobot, exactly as the shipped rig renders it: a round body in ink (`#1A1A1F` on paper, `#EDEDF1` on graphite) with a white visor (`#0D0D10` on graphite) and two ultramarine eyes (`#7B8CFF` on graphite), an ultramarine pen tip, and a half-pixel opposite-tone hairline that keeps the silhouette crisp on any ground — the one hairline that survives, because it is part of the character, not the chrome. The rig is SVG driven by spring channels in one animation loop: weight and squash, anticipation, overshoot and settle, constant idle life (blinks, glances, boredom, stretches), gaze that follows the pointer or the pen, twenty expressions and a scenes registry the brain can cue. Docked, the orb sits on `shadow-soft`. Rebuilt to exceed the Koji bar: joyful, alive, never saccharine, never noisy.
 
-**States, each with distinct body language:**
-- **Listening** — gooey, leaning in, softened edges.
-- **Thinking** — a gentle inward pulse.
-- **Explaining** — gestures toward what Wobo annotates.
-- **Celebrating** — a bright squash-and-pop on genuine mastery, tied to the ignite event.
-- **Resting** — a slow calm breath, used to sanction planned rest (anti-streak), never to guilt.
+**States, each with distinct body language.** Listening leans in; thinking pulses inward with a pen tap; explaining gestures toward what it draws; drawing follows its own pen; celebrating squashes and pops on genuine mastery, with a marigold flourish; resting breathes slowly and never guilts.
 
-**The two modes — one entity, two presentations:**
-- **Front door (home only):** Wobo expanded into a full conversation. Ask or do anything.
-- **Docked (everywhere else):** the orb, present and watching, one tap from expanding, laying ink over the current screen, executing actions. Wobo never forgets who the learner is between the two. There is no second assistant.
+**The two modes, one entity.** Front door on the home screen, expanded into a full conversation; docked everywhere else, one tap from expanding, laying ink over the current screen, executing actions. It never forgets who the learner is between the two. There is no second assistant.
 
-**Code-level screen awareness.** Wobo does not screenshot the screen. Every interactive component publishes its live state to a shared bus Wobo reads directly — Wobo knows the exact circuit on the board, the current slider values, the last drag. This is why annotation is exact and responsive. See §12, the component contract.
+**Code-level screen awareness.** Wobo does not screenshot the screen. Every interactive component publishes its live state to the bus Wobo reads (§12), so annotation is exact.
 
-**Tech.** Rive for the interactive rig driven by real product state; Lottie for set-piece flourishes; Framer Motion for interface transitions. Wobo's reactions are driven by state, never canned loops. Voice via the Gemini path — a signature voice bloom on activation.
+**Illustration.** One hand draws everything: ink-and-wash scenes with 4 px outlines on paper, flat washes at 18–28% of one pigment, Wobo present in every scene, hand-wobble on long lines, no perspective boxes, no clip-art glyphs. Icons live on a 24 px grid at 2.5 px, rounded, drawn from the same hand.
 
 ## 5. The motion system — animate meaning
 
-Named, GPU-friendly, eased, always meaningful, never decorative.
+Named, GPU-friendly, eased, always meaningful.
 
-- **Signature primitives:** **ignite** (a region catching light the moment something is genuinely mastered) and **constellation-ignite** (the twin lighting a region and its connections).
-- **Motion-lab defaults:** rise-fill, fill-wipe, spotlight, border-draw.
-- **The aha is a multisensory event** — a signature sub-second sound plus haptic (where supported) that fires only on genuine comprehension. Scarcity makes it precious; it never fires for routine taps.
-- **Meaning, animated:** a misconception shattering, scaffolding fading, a derivation self-assembling, the two missing `2ab` rectangles sliding into the gap. Never animate chrome for its own sake.
-- **Micro-interaction character:** magnetic buttons (cursor-attracted within a small radius, subtle and physical), tactile press states, butter-smooth expansion. Playful and cute lives in Wobo and in motion; the chrome itself stays disciplined. The tension to hold: a five-year-old finds it friendly, a parent finds it serious — achieved by restraint plus one living character, never by decorating the chrome.
-- **Transitions:** the smallest transitions matter — weight, bounce, position, settle. Nothing snaps; everything eases with physical logic.
+- **Curve.** `cubic-bezier(.2,.8,.2,1)` for entrances and settles at 320–480 ms; presses scale to .98 and back; hovers lift 1 px with `shadow-lift`. Nothing linear, nothing that snaps.
+- **Ink.** Everything Wobo draws is drawn on (stroke-dashoffset or the pen), never faded in. Text in its hand writes itself.
+- **Signature primitives.** **ignite** (a region catching light the moment something is mastered, marigold) and **constellation-ignite** (the twin lighting a region and its connections).
+- **The aha is multisensory.** A sub-second sound plus haptic where supported, only on genuine comprehension.
+- **Arrival.** The app arrives with the loader from the states set: the pen draws a line, the line becomes the orb, the body settles. Under a second. Reduced motion shows the still frame.
+- **Character in the chrome.** Playful lives in Wobo and in motion; the chrome itself stays disciplined. A five-year-old finds it friendly, a parent finds it serious.
 
 ## 6. Navigation — one screen, one intention
 
@@ -182,4 +186,4 @@ Every interactive component (sim, sandbox, chart, workbook, diagram) must:
 
 ## 13. The review test — what "not generic edtech" means
 
-Before any screen ships, ask: could this belong to a generic edtech app? If yes, it fails. The signals of failure: a persistent nav rail, dashboard cards of raw numbers, explain-first video-with-a-quiz, shadows, more than one hit of pigment, chrome that animates for no reason, Wobo reduced to a corner chatbot. The signals of the standard: calm and spacious, one intention per screen, meaning animated, Wobo alive and central, the aha earned and precious, the twin worth screenshotting.
+Before any screen ships, look at it, in both themes and at three widths, and ask: could this belong to a generic edtech app, or to a corporate dashboard? If yes, it fails. The signals of failure: a persistent nav rail, dashboard cards of raw numbers, explain-first video-with-a-quiz, hard shadows, hairline borders, corners under 10 px, strokes under 2.5 px, monochrome timidity, the same headline size in every section, empty stretches that frame nothing, chrome that animates for no reason, Wobo reduced to a corner chatbot. The signals of the standard: bold ink on warm paper, one leading pigment with a job, meaning animated, Wobo alive and central, illustrations from one hand, the aha earned and precious, the twin worth screenshotting, and the owner smiling at the screenshot.
