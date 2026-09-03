@@ -14,16 +14,16 @@ Two people have to love every page: the parent who pays and the learner who uses
 
 ## 2. Brand tokens — built as code tokens, never generic defaults
 
-**Paper (light).** `paper #FBFBF9` ground · `paper-2 #F2F2EE` surfaces (cards, inputs, sheets) · `paper-3 #E9E9E4` pressed and secondary · `ink #1A1A1F` · `ink-2 #55555E` · `ink-3 #8E8E99`.
-**Graphite (dark).** `ground #0D0D10` · `surface #17171C` · `surface-2 #202027` · `ink #EDEDF1` · `ink-2 #B0B0BA` · `ink-3 #74747F`. Dark is designed on its own, never inverted: pigments lift a step, washes drop a step.
+**Paper (light).** `paper #FAF7F0` a warm cream ground · `paper-2 #F1EDE3` surfaces (cards, inputs, sheets) · `paper-3 #E7E1D3` pressed and secondary · `ink #14142B` a deep navy-black · `ink-2 #4E4E66` · `ink-3 #8A8A9E`.
+**Night (dark).** `ground #0F1226` deep navy · `surface #181C3A` · `surface-2 #22264A` · `ink #F3F0E8` cream text · `ink-2 #B8B6C6` · `ink-3 #7C7B92`. Dark is designed on its own, never inverted: pigments lift a step, washes drop to their night tints.
 
 **Pigments, each with a job.**
-- **Ultramarine `#1F35E0`** (dark `#7B8CFF`) — the brand, Wobo's pen and eyes, primary actions, links.
-- **Violet `#6B4CFF`** (`#A08BFF`) — depth; the far end of any ultramarine gradient, the dust; never alone as text.
-- **Rose `#F0578C`** (`#FF7FAB`) — warmth: the learner's own moment ("oh, that's why"), the line in a parent's note worth underlining.
-- **Marigold `#F5A623`** (`#FFC24D`) — a win: the flourish when something is mastered, a lamp's glow, a streak kept.
-- **Mint `#1FB98A`** (`#4FE3BD`) — correct and safe: the tick, the "verified" mark, a saved place.
-- **Washes.** Each pigment at 10–24% as a flat fill behind illustrations, callouts and selected states. One leading pigment per surface; a second only as a wash. Never a rainbow, never grey-on-grey timidity either.
+- **Wobo blue `#2B45FF`** (night `#7C8CFF`) — the brand, Wobo's pen and eyes, primary actions, links, the ink thread.
+- **Marigold `#FFB629`** (`#FFC85A`) — the second brand colour: the highlighter, a win, a lamp's glow, "Begin tonight".
+- **Coral `#FF6B57`** (`#FF8A78`) — warmth: the learner's own moment ("oh, that's why"), the line in a parent's note worth underlining, the "live" pulse.
+- **Mint `#22C48B`** (`#4FE3BD`) — correct and safe: the tick, "verified", a saved place, the free-plan marks.
+- **Lilac `#B7A6FF`** (`#C9BDFF`) and **violet `#7C5CFF`** (`#A996FF`) — depth and the far end of any blue gradient; tiles for language and reading; never alone as text.
+- **Washes.** Every pigment has a tile tint (`pig-w #E6EAFF`, `marigold-w #FFF1D6`, `rose-w #FFE7E2`, `mint-w #DDF6EC`, `lilac-w #EFEBFF`, and their night versions) for product tiles, callouts and selected states. One leading pigment per surface; a second only as a wash. Never a rainbow, never grey-on-grey timidity either.
 
 **Type.** **Poppins** for every interface word: display 700 at 48–120 px, tracking −0.03em; title 600 at 28–40, −0.02em; heading 600 at 20–24; body 400 and 500 at 16–17 / 1.55; label 500 at 13. Sentence case everywhere. All-caps tracked labels only for chapter markers, and rarely. Tabular numerals wherever numbers align. **Caveat** 600/700 only for what Wobo writes by hand: the board, notes, greetings, one-line delights. No third face.
 
@@ -35,7 +35,7 @@ Two people have to love every page: the parent who pays and the learner who uses
 
 **Space.** A 4 px base. Sections breathe at 96–128 px on desktop and 56–72 px on a phone; cards pad 24–28 px; touch targets are 44 px or more. Emptiness is fine when it frames something; emptiness that is just absence is a defect.
 
-**Atmosphere.** Fine dust: dotted particles of 1–2 px in the ultramarine → violet → rose range at low alpha, drifting slowly, lit where the pointer is. It gathers only for an intentional moment and never sits behind a lesson board. On marketing pages the pointer is the pen of light with its comet trace; inside the app the cursor is native, because learners are working.
+**Atmosphere and depth.** No particle or dust backgrounds. Depth comes from layered surfaces, floating drawn objects at different parallax depths, tilted cards, soft tinted shadows, and one sculpted 3D Wobo (a raymarched clay render in the same palette) where the page needs a centrepiece. On marketing pages the pointer is a plain Wobo-blue dot with a marigold highlighter trace that follows and fades; inside the app the cursor is native, because learners are working. Scroll is a storytelling instrument: pinned chapters scrub transformations, tiles land with a spring, headlines rise word by word, an ink thread draws itself down the page.
 
 ## 3. The ten design laws
 
