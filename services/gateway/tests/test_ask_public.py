@@ -555,9 +555,7 @@ def test_the_chips_agree_with_the_prototype_files() -> None:
         "meet": "site-meet.html",
         "how": "site-how.html",
         "parents": "site-parents.html",
-        # "students" is deliberately absent: the prototype's chips are teaching questions, which
-        # a help box cannot answer, so the gateway's set differs until the page is redrawn
-        # (test_every_chip_is_a_question_the_help_centre_covers).
+        "students": "site-students.html",
         "subjects": "site-subjects.html",
         "about": "site-about.html",
         "security": "site-security.html",
@@ -572,7 +570,7 @@ def test_the_chips_agree_with_the_prototype_files() -> None:
         assert list(SUGGESTIONS[key].questions) == found, name
         placeholder = re.search(r'<input placeholder="([^"]+)"', html)
         assert placeholder and SUGGESTIONS[key].placeholder == placeholder.group(1), name
-    home = (root / "landing-v6.html").read_text(encoding="utf-8")
+    home = (root / "landing-v7.html").read_text(encoding="utf-8")
     block = re.search(r'<div class="chips"[^>]*>(.*?)</div>', home, re.S)
     assert block and list(SUGGESTIONS["home"].questions) == re.findall(
         r'<button type="button">(.*?)</button>', block.group(1)
