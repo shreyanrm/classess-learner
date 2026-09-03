@@ -557,6 +557,7 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 - [ ] **Domain wave** — custom domain for web, api and mail; database host proxied through our domain or fronted by a CDN; until then hosting and database hosts are visible in the network tab (owner informed)
 
 ### 7.14 Device agnostic + handcrafted (plan §18)
+- [ ] **Pronoun pass (plan §19)** — repo-wide rewrite of she/her → name-first or they/them for Wobo across docs, prompts (wobo.py persona, board planner, email templates), code comments, tests, legal/marketing drafts; Wobo's self-description answer; CI grep gate
 - [ ] **Three-width proofs** — every screen proven at 360 / 820 / 1440 in both themes; touch, mouse, stylus, keyboard; portrait and landscape on tablet; screen reader path; reduced motion
 - [ ] **Board on small screens** — plane as sheet, lasso by finger, hold-to-talk as long press; ink scales with the target
 - [ ] **Handcrafted default** — her hand, their name, their syllabus, their pace on every page; copy audit for template smell; no generic empty states
