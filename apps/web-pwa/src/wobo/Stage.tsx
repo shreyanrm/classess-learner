@@ -31,11 +31,14 @@ import {
   WoboPlane,
 } from '@wobo/wobo';
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
+import { Button } from '../ui/primitives';
 import { saveBoardToNotes } from './board-notes';
 import { boardTargets, boardTurn, focusRegionsFor, lessonStore, screenStore } from './board-turn';
 import { useBusRegistryBridge } from './bus-bridge';
 import { setTurnFocus, turnFocus } from './capabilities';
 import { showCursor } from './hands';
+import { lessonView, useLessonView } from './lesson-view';
 import { videoHandoff } from './video';
 
 export interface WoboStageProps {
@@ -178,11 +181,16 @@ function usePlaneTarget(): void {
   }, [registerTarget, open, state.title, state.pinned]);
 }
 
-// --- The full board a lesson becomes ---------------------------------------------------------------
+// --- The board a lesson draws on ---------------------------------------------------------------------
 
 /**
  * Inside a lesson the board is the screen (docs/BOARD.md §5). It arrives only once Wobo has actually
  * drawn something, and there is always a way back to the lesson — the board is never a trap.
+ *
+ * Where it lands is the lesson screen's choice (wobo/lesson-view.ts): "Full board" covers the
+ * viewport; "Plane" puts the same renderer inside the plane card's canvas, portalled into the
+ * element the screen handed over. Escape leaves the full board for the plane, and hides the inline
+ * ink until Wobo's next turn.
  */
 function LessonBoard({
   title,
@@ -200,59 +208,46 @@ function LessonBoard({
     () => lessonStore.snapshot().length,
     () => 0,
   );
+  const { view, host } = useLessonView();
   const [dismissed, setDismissed] = useState(false);
-  const showing = state.presentation === 'full' && objects > 0 && !dismissed;
-  // A new turn on the full board brings it back — dismissing is for this board, not for lessons.
+  // A new turn brings the ink back — dismissing is for this board, not for lessons.
   useEffect(() => {
     if (state.active) setDismissed(false);
   }, [state.active]);
+  const inked = objects > 0 && !dismissed;
+  const full = inked && view === 'full';
+  const inline = inked && view === 'plane' && host !== null;
 
   useEffect(() => {
-    if (!showing) return;
+    if (!full && !inline) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setDismissed(true);
+      if (e.key !== 'Escape') return;
+      if (full) lessonView.view('plane');
+      else setDismissed(true);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [showing]);
+  }, [full, inline]);
 
-  if (!showing) return null;
+  if (!full && !inline) return null;
+  const board = (
+    <WoboFullBoard
+      store={lessonStore}
+      {...(title ? { title } : {})}
+      targets={boardTargets}
+      {...(onVariableChange ? { onVariableChange } : {})}
+      onShare={shareImage}
+      // the scrubber and the share live on the full board; the plane card keeps to the ink
+      chrome={full}
+    />
+  );
+  if (inline && host) return createPortal(<div className="ls-ink">{board}</div>, host);
   return (
-    <div
-      style={{
-        background: 'var(--wobo-page, #FFFFFF)',
-        inset: 0,
-        position: 'fixed',
-        zIndex: zIndex.panel,
-      }}
-    >
-      <WoboFullBoard
-        store={lessonStore}
-        {...(title ? { title } : {})}
-        targets={boardTargets}
-        {...(onVariableChange ? { onVariableChange } : {})}
-        onShare={shareImage}
-      />
-      <button
-        type="button"
-        onClick={() => setDismissed(true)}
-        style={{
-          appearance: 'none',
-          background: 'transparent',
-          border: `0.5px solid ${hairline.onPaper}`,
-          borderRadius: radius.sm,
-          color: 'var(--wobo-ink-500, #6E6E76)',
-          cursor: 'pointer',
-          font: 'inherit',
-          fontSize: 12,
-          left: 16,
-          padding: '4px 10px',
-          position: 'absolute',
-          top: 16,
-        }}
-      >
+    <div style={{ background: 'var(--paper)', inset: 0, position: 'fixed', zIndex: zIndex.panel }}>
+      {board}
+      <Button size="sm" tone="quiet" className="ls-back" onClick={() => lessonView.view('plane')}>
         back to the lesson
-      </button>
+      </Button>
     </div>
   );
 }

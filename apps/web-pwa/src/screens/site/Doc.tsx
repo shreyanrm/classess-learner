@@ -59,7 +59,7 @@ export function Runs({ runs }: { runs: readonly Inline[] }) {
 function One({ block }: { block: Block }) {
   switch (block.k) {
     case 'rule':
-      return <hr style={{ border: 0, borderTop: '0.5px solid var(--wobo-hairline-on-paper)' }} />;
+      return <hr />;
     case 'h':
       return block.level === 2 ? (
         <h2>
@@ -111,7 +111,7 @@ function One({ block }: { block: Block }) {
 
 export function Prose({ blocks, className }: { blocks: readonly Block[]; className?: string }) {
   return (
-    <div className={className ? `st-doc ${className}` : 'st-doc'}>
+    <div className={className ? `st-prose ${className}` : 'st-prose'}>
       {blocks.map((block, i) => (
         <One
           key={keyOf(block.k, i, block.k === 'ul' || block.k === 'ol' ? '' : blockText(block))}

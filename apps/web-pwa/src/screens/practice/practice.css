@@ -1,0 +1,54 @@
+/* biome-ignore-all format: every rule is design/prototypes/app-v1.html (board 04), kept as written */
+/*
+ * The practice screen — board 04 of design/prototypes/app-v1.html, rule for rule, under a `pr-`
+ * prefix so nothing here meets a rule from an older screen. src/screens/practice/practice.test.ts
+ * holds each rule to its source.
+ *
+ * The answer itself (the grid the prototype draws as `.grid4`) is the answer library's own skin —
+ * packages/wobo/src/answers/ui.tsx — which takes the prototype's numbers: ink round the figure,
+ * paper parts, Wobo blue on the chosen ones, a 4px ring in Wobo's hand where the gap is.
+ */
+
+/* the grid: the item card and the side column */
+.pr-prac{display:grid;grid-template-columns:1fr 360px;gap:20px}
+
+/* the item card */
+.pr-item{border-radius:26px;background:var(--mint-w);padding:32px;display:grid;gap:22px;justify-items:center;position:relative;min-height:560px;align-content:center}
+.pr-q{font:600 22px/1.3 var(--sans);text-align:center;max-width:26ch}
+.pr-q i{font-style:normal;font-family:var(--hand);color:var(--pig);font-size:1.3em}
+.pr-row{display:flex;gap:10px}
+.pr-say{font-family:var(--hand);font-size:28px;color:var(--pig);min-height:1.2em}
+.pr-say.pr-win{color:var(--marigold)}
+.pr-item>.wk-head{position:absolute;right:22px;bottom:18px}
+
+/* the answer sits in the card's grid; its own prompt and reset are the card's question and row */
+.pr-answer{width:100%;max-width:520px;justify-self:stretch;position:relative}
+/* the line Wobo writes beside a ringed quarter — the prototype's Caveat 30 in Wobo blue, below the tile */
+.pr-note{position:absolute;left:0;bottom:-6px;font:700 30px/1 var(--hand);color:var(--pig);pointer-events:none}
+.pr-answer .wobo-answer-prompt{display:none}
+.pr-answer .wobo-answer-reset{display:none}
+.pr-answer .wobo-answer-foot{min-height:0}
+.pr-answer .wobo-answer-readout{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* the side column: this set, and how this works */
+.pr-side{display:grid;gap:14px;align-content:start}
+.pr-side .wk-card{min-height:0}
+.pr-set{display:grid;gap:8px}
+.pr-set button{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--paper-2);font-size:14px;border:0;cursor:pointer;text-align:left;font-family:inherit;color:inherit;width:100%}
+.pr-set button.pr-on{background:var(--pig-w);font-weight:500}
+.pr-set .pr-ok{width:22px;height:22px;border-radius:50%;background:var(--mint);display:grid;place-items:center}
+.pr-set .pr-ok svg{width:12px;height:12px}
+.pr-set .pr-dot{width:10px;height:10px;border-radius:50%;background:var(--paper-3)}
+.pr-set .pr-on .pr-dot{background:var(--pig)}
+
+/* the screen's spoken heading */
+.pr-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* phone */
+@media (max-width:900px){
+  .pr-prac{grid-template-columns:1fr}
+  .pr-item{min-height:0;padding:24px 16px}
+  .pr-item>.wk-head{display:none}
+  .pr-say{font-size:24px}
+  .pr-note{font-size:24px}
+}

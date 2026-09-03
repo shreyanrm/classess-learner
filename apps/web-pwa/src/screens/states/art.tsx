@@ -2,7 +2,8 @@
 
 /**
  * The ink for the state family — one drawing per thing that can go wrong, ported from the
- * owner-directed prototype (`scratchpad/design/states.html`).
+ * owner-directed prototype (`design/prototypes/states-v2.html`): 3.5px ink with round caps, the
+ * pen in Wobo blue, the washes at the prototype's own opacities.
  *
  * Two rules hold all six together. First, every drawing is a line being drawn: the stroke arrives
  * with the same dash-offset motion Wobo's own hand uses, so a page that failed still looks like
@@ -17,7 +18,6 @@
  * scene was composed to read as a still picture first.
  */
 
-import { fontFamily } from '@wobo/config';
 import { WoboBody, type WoboExpression } from '@wobo/wobo';
 import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
 
@@ -108,8 +108,8 @@ export function Draw({
   len,
   dur = 1.6,
   delay = 0,
-  stroke = 'var(--wobo-ink-900)',
-  width = 1.6,
+  stroke = 'var(--ink)',
+  width = 3.5,
   dashed,
   fill = 'none',
   className,
@@ -124,6 +124,8 @@ export function Draw({
   fill?: string;
   className?: string;
 }) {
+  // A drawing filled with a wash keeps the prototype's own tint: the envelope at .14.
+  const washed = className === 'ws-wash';
   // A dashed line cannot also carry the draw-on dash pattern, so a dashed path skips the animation
   // and simply arrives — the alternative is a stroke that visibly fights itself.
   const style = {
@@ -141,6 +143,7 @@ export function Draw({
       strokeLinecap="round"
       strokeLinejoin="round"
       {...(dashed ? { strokeDasharray: dashed } : {})}
+      {...(washed ? { fillOpacity: 0.14 } : {})}
       fill={fill}
     />
   );
@@ -155,9 +158,11 @@ export function Fade({ delay = 0, children }: { delay?: number; children: ReactN
   );
 }
 
-const INK = 'var(--wobo-ink-900)';
-const PIG = 'var(--wobo-ultramarine)';
-const FAINT = 'var(--wobo-ink-300)';
+const INK = 'var(--ink)';
+const PIG = 'var(--pig)';
+const FAINT = 'var(--ink-3)';
+/** The one stroke every drawing here is made with (DESIGN.md §2: 3px on screens, 4px for hero ink). */
+const STROKE = 3.5;
 
 // --- 404: a dotted path across a map that ends at a question mark ---------------------------------
 
@@ -166,42 +171,31 @@ export const NOT_FOUND_WOBO: WoboMark = { x: 90, y: 130, size: 88, mood: 'curiou
 export function NotFoundArt() {
   return (
     <>
-      <Draw
-        d="M150 150 c30 -60 70 -60 100 -20 s60 40 80 -10"
-        len={280}
-        dur={1.8}
-        delay={0.3}
-        dashed="4 7"
-      />
+      {/* the path draws itself on and settles solid, as the prototype's does (its `.draw` rule
+          overrides the dash pattern on the path, so the dashes never show) */}
+      <Draw d="M150 150 c30 -60 70 -60 100 -20 s60 40 80 -10" len={280} dur={1.8} delay={0.3} />
       <Fade delay={2}>
         <text
           x="322"
-          y="98"
-          fontFamily={fontFamily.handwritten}
-          fontSize="46"
-          fontWeight="600"
+          y="102"
+          fontFamily="var(--hand)"
+          fontSize="64"
+          fontWeight="700"
           fill={PIG}
           textAnchor="middle"
         >
           ?
         </text>
       </Fade>
-      <Draw d="M160 190 l10 -16 l10 16 z" len={60} dur={0.8} delay={1} stroke={FAINT} width={1.3} />
-      <Draw
-        d="M230 60 v14 h12 v-14 z M236 60 v-8"
-        len={60}
-        dur={0.8}
-        delay={1.3}
-        stroke={FAINT}
-        width={1.3}
-      />
+      <path d="M160 190 l10 -16 l10 16 z" fill="var(--marigold)" fillOpacity={0.35} />
+      <Draw d="M160 190 l10 -16 l10 16 z" len={60} dur={0.8} delay={1} stroke={INK} />
+      <Draw d="M230 60 v14 h12 v-14 z M236 60 v-8" len={60} dur={0.8} delay={1.3} stroke={INK} />
       <Draw
         d="M280 170 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0"
         len={60}
         dur={0.8}
         delay={1.6}
-        stroke={FAINT}
-        width={1.3}
+        stroke={INK}
       />
     </>
   );
@@ -238,18 +232,18 @@ export function OfflineArt() {
         dur={1.2}
         delay={0.6}
         stroke={FAINT}
-        width={1.4}
         dashed="3 6"
       />
       <g className="ws-plane">
         <path
           d="M150 112 l40 -14 l-10 26 l-8 -8 z"
-          fill="var(--wobo-page)"
+          fill={PIG}
+          fillOpacity={0.18}
           stroke={PIG}
-          strokeWidth={1.6}
+          strokeWidth={STROKE}
           strokeLinejoin="round"
         />
-        <path d="M180 116 l-8 8" stroke={PIG} strokeWidth={1.6} strokeLinecap="round" />
+        <path d="M180 116 l-8 8" stroke={PIG} strokeWidth={STROKE} strokeLinecap="round" />
       </g>
     </>
   );
@@ -290,17 +284,16 @@ export const EXPIRED_WOBO: WoboMark = { x: 90, y: 120, size: 88, mood: 'supporti
 export function ExpiredLinkArt() {
   return (
     <>
-      <Draw d="M170 80 h140 v90 h-140 z" len={460} dur={1.2} />
+      <Draw
+        d="M170 80 h140 v90 h-140 z"
+        len={460}
+        dur={1.2}
+        fill="var(--rose)"
+        className="ws-wash"
+      />
       <Draw d="M170 80 l70 56 l70 -56" len={180} dur={0.8} delay={1} />
       <circle className="ws-seal" cx="240" cy="136" r="11" fill={PIG} />
-      <Draw
-        d="M236 136 l3 3 l6 -7"
-        len={20}
-        dur={0.4}
-        delay={1.6}
-        stroke="var(--wobo-page)"
-        width={1.8}
-      />
+      <Draw d="M236 136 l3 3 l6 -7" len={20} dur={0.4} delay={1.6} stroke="var(--paper)" />
     </>
   );
 }
@@ -325,7 +318,6 @@ export function MaintenanceArt() {
           dur={0.8}
           delay={0.8}
           stroke={PIG}
-          width={2}
         />
       </g>
     </g>

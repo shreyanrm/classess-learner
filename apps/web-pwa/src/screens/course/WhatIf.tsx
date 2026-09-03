@@ -4,31 +4,27 @@
  * The what-if sandbox (DESIGN.md §9): every numerical is editable. Drag a, b, c in a·x + b = c and
  * the worked solution below recomputes live. The ⓘ on the division step unfolds derivation depth
  * ("how we got here") — most move on; the curious go deep. Doubles as the free-play sandbox.
+ *
+ * Bold ink on paper (DESIGN.md §2): the graph behind the equation is drawn at 3px with the
+ * palette's own pigments, the equation and the worked solution sit on tonal surfaces with no line
+ * round them, and every colour is a token so the night theme comes for free.
  */
 
 import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type ReactNode, useEffect, useState } from 'react';
+import { announceCard } from '../../wobo/speech';
 import { fmt, fractionText } from './equations';
 import type { BarState } from './shared';
-import {
-  CardBody,
-  cardTitle,
-  equationType,
-  GOLD,
-  lead,
-  rgba,
-  Scrubber,
-  Stage,
-  whisper,
-} from './shared';
+import { CardBody, cardTitle, equationType, lead, Scrubber, Stage, whisper } from './shared';
 
-const HUE = 'var(--wobo-ultramarine)';
-const MAGENTA = '#CC1E7A';
+const HUE = 'var(--pig)';
+/** What Wobo says over the free-play plane — its one line, in its own voice. */
+export const FREE_PLAY_LINE = 'Pull any number. I am watching.';
 
 /**
  * The living plot behind the equation — y = a·x + b as a line, y = c as a horizon, their
- * crossing marked in gold. Every scrub moves it on springs; the algebra↔geometry link, felt.
+ * crossing marked in marigold. Every scrub moves it on springs; the algebra↔geometry link, felt.
  */
 function GraphBackdrop({ a, b, c }: { a: number; b: number; c: number }) {
   const W = 400;
@@ -48,7 +44,7 @@ function GraphBackdrop({ a, b, c }: { a: number; b: number; c: number }) {
       preserveAspectRatio="xMidYMid slice"
       style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
     >
-      {/* faint grid + axes */}
+      {/* the grid and the axes: paper-3 rules, then ink at a wash */}
       {[-8, -4, 4, 8].map((gx) => (
         <line
           key={`gx${gx}`}
@@ -56,8 +52,8 @@ function GraphBackdrop({ a, b, c }: { a: number; b: number; c: number }) {
           y1={0}
           x2={px(gx)}
           y2={H}
-          stroke={rgba(HUE, 0.07)}
-          strokeWidth={1}
+          stroke="var(--paper-3)"
+          strokeWidth={2.5}
         />
       ))}
       {[-24, 24].map((gy) => (
@@ -67,30 +63,49 @@ function GraphBackdrop({ a, b, c }: { a: number; b: number; c: number }) {
           y1={py(gy)}
           x2={W}
           y2={py(gy)}
-          stroke={rgba(HUE, 0.07)}
-          strokeWidth={1}
+          stroke="var(--paper-3)"
+          strokeWidth={2.5}
         />
       ))}
-      <line x1={px(0)} y1={0} x2={px(0)} y2={H} stroke={rgba(HUE, 0.16)} strokeWidth={1} />
-      <line x1={0} y1={py(0)} x2={W} y2={py(0)} stroke={rgba(HUE, 0.16)} strokeWidth={1} />
-      {/* y = c — the horizon the line must reach */}
+      <line
+        x1={px(0)}
+        y1={0}
+        x2={px(0)}
+        y2={H}
+        stroke="var(--ink)"
+        strokeWidth={3}
+        strokeOpacity={0.22}
+      />
+      <line
+        x1={0}
+        y1={py(0)}
+        x2={W}
+        y2={py(0)}
+        stroke="var(--ink)"
+        strokeWidth={3}
+        strokeOpacity={0.22}
+      />
+      {/* y = c — the horizon the line must reach, in coral */}
       <motion.line
         animate={{ y1: py(c), y2: py(c) }}
         transition={spring}
         x1={0}
         x2={W}
-        stroke={rgba(MAGENTA, 0.38)}
-        strokeWidth={1.6}
-        strokeDasharray="6 5"
+        stroke="var(--rose)"
+        strokeOpacity={0.7}
+        strokeWidth={3}
+        strokeDasharray="8 8"
+        strokeLinecap="round"
       />
-      {/* y = a·x + b — the learner's line */}
+      {/* y = a·x + b — the learner's line, in Wobo blue */}
       <motion.line
         animate={{ y1: py(a * -10 + b), y2: py(a * 10 + b) }}
         transition={spring}
         x1={px(-10)}
         x2={px(10)}
-        stroke={rgba(HUE, 0.45)}
-        strokeWidth={2}
+        stroke={HUE}
+        strokeOpacity={0.75}
+        strokeWidth={3.5}
         strokeLinecap="round"
       />
       {/* the crossing — x, found geometrically */}
@@ -98,10 +113,10 @@ function GraphBackdrop({ a, b, c }: { a: number; b: number; c: number }) {
         <motion.circle
           animate={{ cx: px(xStar), cy: py(c) }}
           transition={spring}
-          r={5.5}
-          fill={GOLD}
-          stroke="var(--wobo-ink)"
-          strokeWidth={1.6}
+          r={7}
+          fill="var(--marigold)"
+          stroke="var(--ink)"
+          strokeWidth={3}
         />
       )}
     </svg>
@@ -138,12 +153,12 @@ function StepRow({ move, math }: { move: string; math: ReactNode }) {
         padding: '12px 0',
       }}
     >
-      <div style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)' }}>{move}</div>
+      <div style={{ fontSize: '0.875rem', color: 'var(--ink-2)' }}>{move}</div>
       <div
         style={{
           fontSize: '1.15rem',
           fontWeight: 550,
-          color: 'var(--wobo-ink-900)',
+          color: 'var(--ink)',
           fontVariantNumeric: 'tabular-nums',
           display: 'flex',
           alignItems: 'baseline',
@@ -209,6 +224,12 @@ export function WhatIf({
     setBar({ primary: { label: 'Continue', onClick: onDone } });
   }, [setBar, onDone, freePlay]);
 
+  // Free play has no card to read, so the say row would be an empty strip: Wobo says its one line
+  // there instead (no gate — nothing to wait for before the learner pulls a number).
+  useEffect(() => {
+    if (freePlay) announceCard('sandbox-free-play', FREE_PLAY_LINE, false);
+  }, [freePlay]);
+
   return (
     <CardBody maxWidth={620}>
       <div style={whisper}>{freePlay ? 'No task, no clock' : 'What if'}</div>
@@ -231,8 +252,8 @@ export function WhatIf({
             gap: 12,
             flexWrap: 'wrap',
             padding: '10px 18px',
-            borderRadius: 3,
-            background: 'rgba(255,255,255,0.78)',
+            borderRadius: 16,
+            background: 'var(--paper)',
           }}
         >
           <Scrubber value={a} min={1} max={9} onChange={setA} label="coefficient a" />
@@ -255,32 +276,22 @@ export function WhatIf({
       <div
         ref={solutionRef}
         style={{
-          border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
-          borderRadius: 'var(--wobo-radius-md)',
+          borderRadius: 16,
           padding: '6px 20px',
-          background: 'var(--wobo-paper)',
+          background: 'var(--paper-2)',
         }}
       >
         {undoMove && (
-          <>
-            <StepRow
-              move={undoMove}
-              math={
-                <>
-                  <Live>{`${a}x`}</Live>
-                  <span>=</span>
-                  <Live>{`${c} ${b > 0 ? '−' : '+'} ${Math.abs(b)}`}</Live>
-                </>
-              }
-            />
-            <div
-              style={{
-                height: 1,
-                transform: 'scaleY(0.5)',
-                background: 'var(--wobo-hairline-on-paper)',
-              }}
-            />
-          </>
+          <StepRow
+            move={undoMove}
+            math={
+              <>
+                <Live>{`${a}x`}</Live>
+                <span>=</span>
+                <Live>{`${c} ${b > 0 ? '−' : '+'} ${Math.abs(b)}`}</Live>
+              </>
+            }
+          />
         )}
         {a !== 1 && (
           <>
@@ -296,18 +307,20 @@ export function WhatIf({
                     aria-label="how we got here"
                     aria-expanded={depthOpen}
                     onClick={() => setDepthOpen((o) => !o)}
+                    className="ls-why"
                     style={{
-                      border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
-                      background: depthOpen ? 'var(--wobo-ink-900)' : 'var(--wobo-paper)',
-                      color: depthOpen ? 'var(--wobo-paper)' : 'var(--wobo-ink-500)',
+                      border: 0,
+                      background: depthOpen ? 'var(--ink)' : 'var(--paper)',
+                      color: depthOpen ? 'var(--paper)' : 'var(--ink-2)',
                       borderRadius: 999,
-                      width: 20,
-                      height: 20,
-                      fontSize: '0.68rem',
+                      fontSize: '0.875rem',
+                      fontWeight: 600,
                       cursor: 'pointer',
-                      fontFamily: 'inherit',
+                      fontFamily: 'var(--hand)',
                       lineHeight: 1,
                       alignSelf: 'center',
+                      display: 'inline-grid',
+                      placeItems: 'center',
                     }}
                   >
                     i
@@ -328,11 +341,11 @@ export function WhatIf({
                     style={{
                       margin: '2px 0 12px',
                       padding: '12px 14px',
-                      background: 'var(--wobo-canvas)',
-                      borderRadius: 'var(--wobo-radius-sm)',
+                      background: 'var(--paper)',
+                      borderRadius: 12,
                       fontSize: '0.9rem',
                       lineHeight: 1.65,
-                      color: 'var(--wobo-ink-700)',
+                      color: 'var(--ink-2)',
                     }}
                   >
                     <span style={{ ...whisper, display: 'block', marginBottom: 6 }}>
@@ -349,13 +362,6 @@ export function WhatIf({
                 </motion.div>
               )}
             </AnimatePresence>
-            <div
-              style={{
-                height: 1,
-                transform: 'scaleY(0.5)',
-                background: 'var(--wobo-hairline-on-paper)',
-              }}
-            />
           </>
         )}
         <StepRow
@@ -369,12 +375,6 @@ export function WhatIf({
           }
         />
       </div>
-
-      {freePlay && (
-        <div style={{ ...whisper, textAlign: 'center' }}>
-          no task here — bend the equation until it makes sense. Wobo is watching the numbers.
-        </div>
-      )}
     </CardBody>
   );
 }

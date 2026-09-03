@@ -1,0 +1,24 @@
+/* biome-ignore-all format: every rule is design/prototypes/app-v1.html (board 01 · Home), kept as written */
+/*
+ * The home screen's own rules, ported declaration for declaration from the HOME block of
+ * design/prototypes/app-v1.html. Everything else on the screen is the kit (src/ui/primitives).
+ * src/screens/home/screens.test.ts holds each rule to its source.
+ */
+.hm-greet{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:end}
+.hm-greet h1{font:700 clamp(30px,3.2vw,44px)/1.05 var(--sans);letter-spacing:-.03em}
+.hm-greet h1 .hand{display:block;font-size:.7em;color:var(--pig);font-weight:700;margin-bottom:6px}
+.hm-greet p{color:var(--ink-2);margin-top:10px;max-width:44ch}
+/* the head's column — the prototype sets this inline on the greeting's second div */
+.hm-greet .hm-head{display:grid;place-items:end center}
+.hm-today{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.hm-split{display:grid;grid-template-columns:1.3fr .7fr;gap:16px}
+.hm-week{background:var(--paper-2);border-radius:22px;padding:22px;display:grid;gap:12px}
+
+/* phone */
+@media (max-width:900px){
+  .hm-greet{grid-template-columns:1fr}
+  .hm-greet > div:last-child{justify-items:center}
+  .hm-greet h1{font-size:30px}
+  .hm-today{grid-template-columns:1fr}
+  .hm-split{grid-template-columns:1fr}
+}

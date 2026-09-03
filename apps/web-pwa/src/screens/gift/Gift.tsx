@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * `/gift` — Plus, bought for someone else.
+ * `/gift` — a paid plan, bought for someone else.
  *
  * Every word of the page proper is `docs/copy/growth/gift-page.md`, rendered: the heading, the sub,
  * the three steps, what it is, what it is not, and the honest footnote. The page adds structure,
@@ -21,27 +21,48 @@
 import { useMemo } from 'react';
 import source from '../../../../../docs/copy/growth/gift-page.md?raw';
 import { useRouter } from '../../shell/router';
+import { Chip, Label } from '../../ui/primitives';
 import boards from '../landing/boards.json';
 import { BOARDS } from '../landing/copy';
-import { Reveal } from '../landing/Reveal';
 import { countLine } from '../landing/sections/Boards';
 import { legalPath } from '../legal/catalog';
 import { parseBlocks } from '../legal/markdown';
-import { Markdown } from '../legal/Prose';
+import { Markdown, Spans } from '../legal/Prose';
 import { BENEFITS } from '../plans/copy';
-import { cadenceLabel, GIFT_OPTIONS, giftPriceLabel, giftTier, readMarket } from '../plans/prices';
-import { ensurePlansStyles } from '../plans/styles';
+import {
+  GIFT_CADENCE,
+  GIFT_OPTIONS,
+  giftTier,
+  PRICE_UNIT,
+  priceLabel,
+  readMarket,
+} from '../plans/prices';
+import { ClosePanel } from '../site/ClosePanel';
 import { SiteLink } from '../site/nav';
+import { Reveal } from '../site/Reveal';
 import { SiteShell } from '../site/SiteShell';
 import { fillTemplate, giftSections, isButtonLine, sectionText } from './content';
 import { GIFT_FOR, GIFT_PAGE } from './copy';
-
-ensurePlansStyles();
 
 const SECTIONS = giftSections(parseBlocks(fillTemplate(source)));
 
 /** The steps, minus the copy's own button line, which the page draws as a real control. */
 const STEPS = (SECTIONS['How it works'] ?? []).filter((block) => !isButtonLine(block));
+
+/** The copy writes the steps as one ordered list; each item becomes a numbered card. */
+const STEP_ITEMS = STEPS.flatMap((block) => (block.kind === 'list' ? block.items : []));
+
+const TINTS = ['st-pig', 'st-mint', 'st-marigold'] as const;
+
+function Tick() {
+  return (
+    <i>
+      <svg viewBox="0 0 12 12" aria-hidden="true">
+        <path d="M2 6 l3 3 l5 -6" />
+      </svg>
+    </i>
+  );
+}
 
 export function Gift() {
   const router = useRouter();
@@ -51,167 +72,194 @@ export function Gift() {
 
   return (
     <SiteShell current="gift" title="Gift — Wobo">
-      <section className="lp-wrap lp-head">
-        <p className="lp-eyebrow">{GIFT_PAGE.eyebrow}</p>
-        <h1 className="lp-h1x">{sectionText(SECTIONS.Heading)}</h1>
-        <p className="lp-lead">{sectionText(SECTIONS.Sub)}</p>
-        <div className="lp-cta" style={{ marginTop: 26 }}>
-          <button type="button" className="lp-btn lp-btn--pigment" onClick={give}>
-            {GIFT_PAGE.cta}
-          </button>
-          <small>{GIFT_PAGE.ctaNote}</small>
+      <section className="st-page-hero">
+        <div className="st-wrap">
+          <Label>{GIFT_PAGE.eyebrow}</Label>
+          <h1>{sectionText(SECTIONS.Heading)}</h1>
+          <p className="st-sub">{sectionText(SECTIONS.Sub)}</p>
+          <div className="st-row">
+            <button type="button" className="st-btn st-pig" onClick={give}>
+              {GIFT_PAGE.cta}
+            </button>
+            <span className="st-fine">{GIFT_PAGE.ctaNote}</span>
+          </div>
         </div>
       </section>
 
-      <section className="lp-section">
-        <div className="lp-wrap">
-          <Reveal>
-            <h2 className="lp-h2">{GIFT_PAGE.cardsTitle}</h2>
-            <p className="lp-lead">{GIFT_PAGE.cardsNote}</p>
-            <div className="lp-gifts">
-              {GIFT_OPTIONS.map((option) => {
-                const tier = giftTier(option);
-                return (
-                  <article className="lp-tier" key={option.id}>
-                    <h3>{option.name}</h3>
-                    <p className="lp-price">{giftPriceLabel(option, market)}</p>
-                    {/* §14: a gift costs what the same plan costs, and it is paid once. */}
-                    <p className="lp-tier-cadence">
-                      {cadenceLabel(tier).replace('billed monthly, cancel any time', 'paid once')} ·
-                      renews never
-                    </p>
-                    <ul>
-                      {option.lines.map((line) => (
-                        <li key={line}>{line}</li>
-                      ))}
-                      <li>They choose their own board and subjects</li>
-                      <li>You never see their work unless they show you</li>
-                    </ul>
-                    <button type="button" className="lp-btn lp-btn--ghost" onClick={give}>
-                      {GIFT_PAGE.cta}
-                    </button>
-                  </article>
-                );
-              })}
-            </div>
+      <section className="st-section">
+        <div className="st-wrap">
+          <Reveal className="st-head">
+            <h2>{GIFT_PAGE.cardsTitle}</h2>
+            <p>{GIFT_PAGE.cardsNote}</p>
           </Reveal>
-        </div>
-      </section>
-
-      <section className="lp-section lp-section--tonal">
-        <div className="lp-wrap">
-          <Reveal>
-            <h2 className="lp-h2">{GIFT_PAGE.stepsTitle}</h2>
-            <div className="lp-prose" style={{ marginTop: 20 }}>
-              <Markdown blocks={STEPS} known={[]} />
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="lp-section">
-        <div className="lp-wrap">
-          <Reveal>
-            <h2 className="lp-h2">{GIFT_PAGE.forTitle}</h2>
-            <div className="lp-cards">
-              {GIFT_FOR.map((card) => (
-                <article className="lp-card" key={card.label}>
-                  <h3>{card.label}</h3>
-                  <p>{card.quote}</p>
-                </article>
-              ))}
-            </div>
-            <div className="lp-gifts" style={{ marginTop: 34 }}>
-              <article className="lp-panel">
-                <h3>What it is</h3>
-                <div className="lp-prose" style={{ fontSize: 14.5 }}>
-                  <Markdown blocks={SECTIONS['What it is'] ?? []} known={[]} />
+          <Reveal className="pl-plans">
+            {GIFT_OPTIONS.map((option) => {
+              const tier = giftTier(option);
+              return (
+                <div
+                  className={tier.id === 'max' ? 'pl-plan pl-max' : 'pl-plan pl-pro'}
+                  key={option.id}
+                >
+                  <div className="pl-name">{option.name}</div>
+                  <div className="pl-price">
+                    <span>{priceLabel(tier, market)}</span>
+                    <small>{PRICE_UNIT.paid}</small>
+                  </div>
+                  <div className="pl-x">{tier.allowanceMultiple}× allowance</div>
+                  <ul>
+                    {option.lines.map((line) => (
+                      <li key={line}>
+                        <Tick />
+                        {line}
+                      </li>
+                    ))}
+                    <li>
+                      <Tick />
+                      They choose their own board and subjects
+                    </li>
+                    <li>
+                      <Tick />
+                      You never see their work unless they show you
+                    </li>
+                  </ul>
+                  <button
+                    type="button"
+                    className={tier.id === 'max' ? 'st-btn' : 'st-btn st-pig'}
+                    onClick={give}
+                  >
+                    {GIFT_PAGE.cta}
+                  </button>
+                  <div className="pl-fine">{GIFT_CADENCE}</div>
                 </div>
-              </article>
-              <article className="lp-panel">
-                <h3>What it is not</h3>
-                <div className="lp-prose" style={{ fontSize: 14.5 }}>
-                  <Markdown blocks={SECTIONS['What it is not'] ?? []} known={[]} />
-                </div>
-              </article>
+              );
+            })}
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="st-section" id="how-it-works">
+        <div className="st-wrap">
+          <Reveal className="st-head">
+            <h2>{GIFT_PAGE.stepsTitle}</h2>
+          </Reveal>
+          <Reveal className="gf-steps">
+            {STEP_ITEMS.map((spans, i) => (
+              <div className="gf-step" key={spans.map((s) => s.text).join('')}>
+                <i>{i + 1}</i>
+                <p>
+                  <Spans spans={spans} known={[]} />
+                </p>
+              </div>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="st-section">
+        <div className="st-wrap">
+          <Reveal className="st-head">
+            <h2>{GIFT_PAGE.forTitle}</h2>
+          </Reveal>
+          <Reveal className="st-grid3">
+            {GIFT_FOR.map((card, i) => (
+              <div className={`st-tile ${TINTS[i % TINTS.length]}`} key={card.label}>
+                <h3>{card.label}</h3>
+                <p>{card.quote}</p>
+              </div>
+            ))}
+          </Reveal>
+          <Reveal className="st-grid2">
+            <div className="st-tile">
+              <h3>What it is</h3>
+              <div className="st-prose" style={{ fontSize: 15 }}>
+                <Markdown blocks={SECTIONS['What it is'] ?? []} known={[]} />
+              </div>
+            </div>
+            <div className="st-tile">
+              <h3>What it is not</h3>
+              <div className="st-prose" style={{ fontSize: 15 }}>
+                <Markdown blocks={SECTIONS['What it is not'] ?? []} known={[]} />
+              </div>
             </div>
           </Reveal>
         </div>
       </section>
 
-      <section className="lp-section lp-section--tonal">
-        <div className="lp-wrap">
+      <section className="st-section">
+        <div className="st-wrap">
+          <Reveal className="st-head">
+            <h2>{GIFT_PAGE.benefitsTitle}</h2>
+            <p>{GIFT_PAGE.benefitsNote}</p>
+          </Reveal>
           <Reveal>
-            <h2 className="lp-h2">{GIFT_PAGE.benefitsTitle}</h2>
-            <p className="lp-lead">{GIFT_PAGE.benefitsNote}</p>
-            <ul className="lp-lines">
+            <ul className="st-lines">
               {BENEFITS.filter((row) => row.pro !== false).map((row) => (
                 <li key={row.label}>
-                  {row.label}
-                  {typeof row.pro === 'string' ? ` — ${row.pro}` : ''}
+                  <Tick />
+                  <span>
+                    {row.label}
+                    {typeof row.pro === 'string' && row.pro !== 'same' ? ` — ${row.pro}` : ''}
+                  </span>
                 </li>
               ))}
             </ul>
-            <p className="lp-note">
-              <SiteLink href="/plans">Free, Pro and Max, side by side</SiteLink>
-            </p>
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="lp-section">
-        <div className="lp-wrap">
-          <Reveal>
-            <h2 className="lp-h2">{GIFT_PAGE.boardsTitle}</h2>
-            <p className="lp-lead">{GIFT_PAGE.boardsNote}</p>
-            <div className="lp-chips">
-              {boards.shown.map((board) => (
-                <span className="lp-chip" key={board.id} title={board.name}>
-                  {board.short}
-                </span>
-              ))}
-              <span className="lp-chip lp-chip--more">{BOARDS.more}</span>
-            </div>
-            <p className="lp-note">
-              {countLine(BOARDS.countTemplate, {
-                shown: boards.shown.length,
-                total: boards.total,
-                countries: boards.countries,
-              })}
-            </p>
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="lp-section">
-        <div className="lp-wrap">
-          <Reveal>
-            <h2 className="lp-h2">{GIFT_PAGE.testimonialsTitle}</h2>
-            <p className="lp-quiet">{GIFT_PAGE.testimonialsEmpty}</p>
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="lp-section lp-closing">
-        <div className="lp-wrap">
-          <Reveal>
-            <h2 className="lp-h2">{GIFT_PAGE.closingTitle}</h2>
-            <div className="lp-cta">
-              <button type="button" className="lp-btn lp-btn--pigment" onClick={give}>
-                {GIFT_PAGE.cta}
-              </button>
-            </div>
-            <div className="lp-prose" style={{ margin: '26px auto 0', fontSize: 14 }}>
-              <Markdown blocks={SECTIONS['The honest footnote'] ?? []} known={[]} />
-            </div>
-            <p className="lp-note" style={{ marginInline: 'auto' }}>
-              <SiteLink href={legalPath('refund-and-cancellation')}>
-                Refunds and cancellation, in full
+            <p className="st-hint" style={{ marginTop: 'var(--s3)' }}>
+              <SiteLink to={{ name: 'plans' }} className="st-link">
+                Free, Pro and Max, side by side
               </SiteLink>
             </p>
           </Reveal>
         </div>
       </section>
+
+      <section className="st-section">
+        <div className="st-wrap">
+          <Reveal className="st-head">
+            <h2>{GIFT_PAGE.boardsTitle}</h2>
+            <p>{GIFT_PAGE.boardsNote}</p>
+          </Reveal>
+          <Reveal className="gf-boards">
+            <div className="st-chips">
+              {boards.shown.map((board) => (
+                <Chip key={board.id} title={board.name}>
+                  {board.short}
+                </Chip>
+              ))}
+              <Chip on>{BOARDS.more}</Chip>
+            </div>
+            <span className="st-fine">
+              {countLine(BOARDS.countTemplate, {
+                shown: boards.shown.length,
+                total: boards.total,
+                countries: boards.countries,
+              })}
+            </span>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="st-section">
+        <div className="st-wrap">
+          <Reveal className="st-head">
+            <h2>{GIFT_PAGE.testimonialsTitle}</h2>
+          </Reveal>
+          <Reveal>
+            <p className="st-quiet-card">{GIFT_PAGE.testimonialsEmpty}</p>
+          </Reveal>
+        </div>
+      </section>
+
+      <ClosePanel
+        title={GIFT_PAGE.closingTitle}
+        hand={null}
+        primary={{ label: GIFT_PAGE.cta, onClick: give }}
+        quiet={{
+          label: 'Refunds and cancellation, in full',
+          href: legalPath('refund-and-cancellation'),
+        }}
+      >
+        <Markdown blocks={SECTIONS['The honest footnote'] ?? []} known={[]} />
+      </ClosePanel>
     </SiteShell>
   );
 }

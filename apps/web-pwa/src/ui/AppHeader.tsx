@@ -14,6 +14,7 @@ import { levelInfo, useProgress, type XpBloom } from '../store/progress';
 import { AVATAR_CHANGED_EVENT, readAvatarProfile, renderAvatar } from './avatars';
 import { SparkIcon } from './icons';
 import { WoboLogo } from './Logo';
+import { useShellMounted } from './shellPresence';
 
 const STAR_PATH =
   'M7 0.5 C7.9 4 8.9 5 12.5 7 C8.9 9 7.9 10 7 13.5 C6.1 10 5.1 9 1.5 7 C5.1 5 6.1 4 7 0.5 Z';
@@ -429,6 +430,9 @@ const chipStyle = {
 
 export function AppHeader() {
   const router = useRouter();
+  // A screen built on the app shell (src/ui/primitives/AppShell) carries the wordmark and the doors
+  // in its own rail, so this header stays off it — read first, acted on after every hook below.
+  const shelled = useShellMounted();
   const { width } = useViewport();
   // Narrow phones can't hold the full cluster — the did-you-know nicety folds away so the
   // core (streak · xp · level · avatar) never clips off the right edge.
@@ -458,6 +462,8 @@ export function AppHeader() {
       window.removeEventListener(AVATAR_CHANGED_EVENT, refresh);
     };
   }, []);
+
+  if (shelled) return null;
 
   return (
     <header

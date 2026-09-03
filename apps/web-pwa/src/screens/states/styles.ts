@@ -1,17 +1,16 @@
 /**
- * The stylesheet for the state family — the loader and the six things that can go wrong.
+ * The stylesheet for the state family — the loader and the six things that can go wrong, in the
+ * hand of design/prototypes/states-v2.html on palette v4 (DESIGN.md §2): cream paper, navy ink,
+ * Wobo blue for the pen, 12px buttons with no border, 3.5px ink, no shadow on anything that does
+ * not float.
  *
  * Why its own sheet and not the landing page's: these scenes are app chrome, not marketing. A 404
  * can be reached from inside a lesson and the daily-limit page can land over the board, so the
  * scene has to stand on the product's tokens alone rather than on a page shell that assumes a
- * visitor, a hero and a footer. What it does share with the landing page is the law both obey:
- * every colour is a `--wobo-*` token (so both themes are free), corners are 3px, depth is a
- * half-pixel hairline, and nothing carries a shadow.
+ * visitor, a hero and a footer.
  *
  * Scoped under `.ws` so it cannot leak into a screen underneath.
  */
-
-import { fontFamily, radius } from '@wobo/config';
 
 const STYLE_ID = 'wobo-states';
 
@@ -19,10 +18,10 @@ export const STATES_CSS = `
 .ws {
   --ws-gutter: clamp(20px, 5vw, 56px);
   align-items: center;
-  background: var(--wobo-page);
-  color: var(--wobo-ink-900);
+  background: var(--paper);
+  color: var(--ink);
   display: grid;
-  font-family: ${fontFamily.system};
+  font: 400 16px/1.5 var(--sans);
   justify-items: center;
   min-height: 100dvh;
   padding: 32px var(--ws-gutter);
@@ -33,60 +32,53 @@ export const STATES_CSS = `
 
 /* The scene: one column, centred, nothing else on the page. DESIGN.md law 1. */
 .ws-card { display: grid; justify-items: center; max-width: 560px; text-align: center; width: 100%; }
-.ws-art { display: block; height: auto; overflow: visible; width: min(360px, 100%); }
+.ws-art { display: block; height: auto; overflow: visible; width: min(420px, 100%); }
 .ws-h1 {
-  font-size: clamp(23px, 3.4vw, 31px);
-  font-weight: 600;
+  font: 600 clamp(28px, 4vw, 40px)/1.15 var(--sans);
   letter-spacing: -0.02em;
-  line-height: 1.2;
-  margin: 26px 0 8px;
+  margin: 30px 0 10px;
+  text-wrap: balance;
 }
-.ws-body { color: var(--wobo-ink-500); font-size: 15px; line-height: 1.6; margin: 0; max-width: 42ch; }
+.ws-body { color: var(--ink-2); margin: 0; max-width: 42ch; text-wrap: pretty; }
 .ws-hand {
-  color: var(--wobo-ultramarine);
-  font-family: ${fontFamily.handwritten};
-  font-size: clamp(22px, 3vw, 27px);
-  line-height: 1.2;
+  color: var(--pig);
+  font: 600 clamp(22px, 3vw, 28px)/1.2 var(--hand);
   min-height: 1.4em;
 }
-/* A full sentence, so it sits on the 14px body-copy floor (WOBO-PLAN §18) rather than under it. */
-.ws-tiny { color: var(--wobo-ink-500); font-size: 14px; line-height: 1.55; margin: 12px 0 0; max-width: 46ch; }
+.ws-tiny { color: var(--ink-3); font-size: 13px; margin: 12px 0 0; max-width: 46ch; }
 .ws-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 24px; }
 
 /* The two corners: what state this is, and whose product it is. */
 .ws-code {
-  color: var(--wobo-ink-300);
-  font-size: 11px;
-  font-weight: 500;
+  color: var(--ink-3);
+  font: 500 12px/1 var(--sans);
   left: var(--ws-gutter);
   letter-spacing: 0.14em;
   position: absolute;
   text-transform: uppercase;
   top: 24px;
 }
-.ws-mark { position: absolute; right: var(--ws-gutter); top: 22px; }
+.ws-mark { color: var(--ink); position: absolute; right: var(--ws-gutter); top: 22px; }
+.ws-mark svg { display: block; fill: currentColor; height: 22px; width: auto; }
 
-/* Controls. Same shapes as everywhere else: 3px, hairline, one pigment on the primary. */
+/* Controls. The prototype's button: 12px corners, no border, ink on paper, quiet on paper-2. */
 .ws-btn {
   align-items: center;
-  background: var(--wobo-ink);
-  border: 0.5px solid transparent;
-  border-radius: ${radius.sm}px;
-  color: var(--wobo-on-ink);
+  background: var(--ink);
+  border: 0;
+  border-radius: 12px;
+  color: var(--paper);
   cursor: pointer;
   display: inline-flex;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 500;
+  font: 500 15px/1 var(--sans);
   justify-content: center;
-  min-height: 44px;
-  padding: 12px 20px;
+  min-height: 46px;
+  padding: 15px 22px;
   text-decoration: none;
-  transition: background 180ms ease, border-color 180ms ease;
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.ws-btn:hover { background: var(--wobo-ink-hover); }
-.ws-btn--quiet { background: transparent; border-color: var(--wobo-card-border); color: var(--wobo-ink-900); }
-.ws-btn--quiet:hover { background: var(--wobo-tonal); }
+.ws-btn:hover { transform: translateY(-1px); }
+.ws-btn--quiet { background: var(--paper-2); color: var(--ink); }
 
 /* The ink itself. A path draws itself on; a group fades in behind it. */
 .ws-draw {
@@ -124,7 +116,7 @@ export const STATES_CSS = `
    board — because each scene carries its own wordmark and a second one underneath reads as two
    products at once. */
 .ws-full {
-  background: var(--wobo-page);
+  background: var(--paper);
   inset: 0;
   overflow-y: auto;
   position: fixed;
@@ -152,13 +144,13 @@ export const STATES_CSS = `
 /* Composed per breakpoint (WOBO-PLAN §18), never scaled down. */
 @media (max-width: 600px) {
   .ws { padding-top: 64px; }
-  .ws-art { width: min(280px, 100%); }
+  .ws-art { width: min(300px, 100%); }
   .ws-row { flex-direction: column; width: 100%; }
   .ws-row .ws-btn { width: 100%; }
 }
 
-/* Reduced motion: every drawing rests finished, and nothing loops. The scenes still read — they
-   were composed as still pictures first. */
+/* Reduced motion — the OS setting, or the app's own switch: every drawing rests finished, and
+   nothing loops. The scenes still read — they were composed as still pictures first. */
 @media (prefers-reduced-motion: reduce) {
   .ws-draw { animation: none; stroke-dashoffset: 0; }
   .ws-fade, .ws-hand span { animation: none; opacity: 1; }
@@ -166,6 +158,11 @@ export const STATES_CSS = `
   .ws-seal { animation: none; opacity: 0.18; }
   .ws-btn { transition: none; }
 }
+:root[data-motion="reduce"] .ws-draw { animation: none; stroke-dashoffset: 0; }
+:root[data-motion="reduce"] .ws-fade, :root[data-motion="reduce"] .ws-hand span { animation: none; opacity: 1; }
+:root[data-motion="reduce"] .ws-sand, :root[data-motion="reduce"] .ws-turn, :root[data-motion="reduce"] .ws-plane, :root[data-motion="reduce"] .ws-spanner, :root[data-motion="reduce"] .ws-spiral { animation: none; }
+:root[data-motion="reduce"] .ws-seal { animation: none; opacity: 0.18; }
+:root[data-motion="reduce"] .ws-btn { transition: none; }
 `;
 
 /** Inject the stylesheet once per document. Idempotent; never removed (the chunk is lazy). */

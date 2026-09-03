@@ -1,0 +1,153 @@
+/* biome-ignore-all format: every rule is design/prototypes/app-v1.html, kept as written */
+/* biome-ignore-all lint/style/noDescendingSpecificity: the rules keep the prototype's order, and order is what decides where two of them match */
+/*
+ * The kit — every primitive's rules, ported declaration for declaration from
+ * design/prototypes/app-v1.html (the sticker from the site pages). Class names carry a `wk-` prefix
+ * so nothing here meets a rule from an older screen; the numbers are the prototype's, untouched.
+ * src/ui/primitives/ui.test.ts holds each rule to its source.
+ *
+ * The only declarations that are not the prototype's are element resets — a <button> or a <form>
+ * standing where the prototype drew a <span> or a <div> needs its border, padding and cursor put
+ * back to nothing — and the two floors DESIGN.md §2 sets that a desktop board does not show:
+ * touch targets of 44px or more (the phone block grows every control's box, never its type) and no
+ * type under the 13px label size (where the prototype wrote 12px the kit writes 13px). Both are
+ * listed in the test's allowance.
+ */
+
+/* Button — ink by default; pig for the one primary action; quiet for the rest; sm for inside cards */
+.wk-btn{font:500 15px/1 var(--sans);padding:14px 20px;border-radius:12px;border:0;background:var(--ink);color:var(--paper);display:inline-flex;align-items:center;gap:8px;min-height:46px;cursor:pointer}
+.wk-btn.wk-pig{background:var(--pig);color:#fff}
+.wk-btn.wk-quiet{background:var(--paper-2);color:var(--ink)}
+.wk-btn.wk-sm{padding:10px 14px;min-height:38px;font-size:14px;border-radius:10px}
+
+/* Chip — a pill of paper-2; on = ink */
+.wk-chip{display:inline-flex;align-items:center;gap:6px;font:500 13px/1 var(--sans);padding:8px 12px;border-radius:999px;background:var(--paper-2);color:var(--ink-2)}
+.wk-chip.wk-on{background:var(--ink);color:var(--paper)}
+button.wk-chip{border:0;cursor:pointer}
+/* a fact ("Streak · 7") never breaks across two lines; a question chip may wrap on a phone */
+span.wk-chip{white-space:nowrap}
+
+/* Tag (uppercase ink-3) and Label (uppercase pig) */
+.wk-tag{font:500 11px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.wk-label{font:500 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--pig)}
+
+/* Card — a tonal surface; one leading pigment as a wash */
+.wk-card{border-radius:22px;padding:22px;background:var(--paper-2);display:grid;gap:10px;align-content:start;position:relative;min-height:190px}
+.wk-card.wk-pig{background:var(--pig-w)}
+.wk-card.wk-mint{background:var(--mint-w)}
+.wk-card.wk-rose{background:var(--rose-w)}
+.wk-card.wk-marigold{background:var(--marigold-w)}
+.wk-card.wk-lilac{background:var(--lilac-w)}
+.wk-card.wk-compact{min-height:0}
+.wk-card h3{font:600 19px/1.2 var(--sans)}
+.wk-card p{color:var(--ink-2);font-size:14px}
+.wk-card .wk-foot{margin-top:auto;display:flex;align-items:center;gap:10px}
+
+/* Tile — a subject door; on = a 3px pig outline */
+.wk-tile{border-radius:18px;padding:18px;background:var(--paper-2);display:grid;gap:8px}
+.wk-tile.wk-on{outline:3px solid var(--pig)}
+.wk-tile b{font:600 16px/1.2 var(--sans)}
+.wk-tile span{font-size:13px;color:var(--ink-3)}
+button.wk-tile{border:0;cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
+
+/* Pill — a small fact on a card */
+.wk-pill{font:500 12px/1 var(--sans);padding:6px 10px;border-radius:999px;background:var(--paper);color:var(--ink-2)}
+
+/* Toggle — the switch, and the settings row it sits in. The switch is drawn by a <span>; the
+   <button> round it is the thumb's target, and on a phone it grows to the 44px floor. */
+.wk-sw{width:46px;height:28px;border-radius:999px;background:var(--paper-3);position:relative;flex:none}
+.wk-sw.wk-on{background:var(--pig)}
+.wk-sw::after{content:"";position:absolute;top:4px;left:4px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s}
+.wk-sw.wk-on::after{left:22px}
+.wk-sw-hit{border:0;padding:0;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.wk-toggle{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:2px solid var(--paper-3)}
+.wk-toggle:first-child{border-top:0}
+.wk-toggle b{font-weight:500;display:block}
+.wk-toggle span{font-size:13px;color:var(--ink-3)}
+
+/* Segmented — Week / Month / Year */
+.wk-seg{display:inline-flex;background:var(--paper-3);border-radius:999px;padding:4px;gap:4px}
+.wk-seg button{padding:8px 14px;border-radius:999px;font:500 13px/1 var(--sans);color:var(--ink-2);border:0;background:transparent;cursor:pointer}
+.wk-seg button.wk-on{background:var(--paper);color:var(--ink)}
+
+/* AskBox — the front door: input, mic, Ask */
+.wk-ask{margin-top:18px;display:flex;gap:10px;background:var(--paper-2);border-radius:18px;padding:8px 8px 8px 20px;align-items:center;max-width:640px}
+.wk-ask input{flex:1;border:0;background:transparent;font:400 16px/1.4 var(--sans);color:var(--ink);outline:none;min-width:0}
+.wk-ask input::placeholder{color:var(--ink-3)}
+.wk-ask input:focus-visible{outline:3px solid var(--pig);outline-offset:2px;border-radius:10px}
+.wk-ask .wk-mic{width:40px;height:40px;border-radius:12px;background:var(--paper);display:grid;place-items:center;border:0;padding:0;cursor:pointer;flex:none}
+
+/* Sticker — marigold, in Wobo's hand, a little turned (the site pages) */
+.wk-sticker{position:absolute;background:var(--marigold);color:#14142B;font-family:var(--hand);font-weight:700;font-size:22px;padding:6px 14px;border-radius:12px;transform:rotate(-6deg);box-shadow:0 10px 20px rgba(20,20,43,.12)}
+
+/* HandNote — what Wobo writes, with the line worth underlining in coral */
+.wk-hand{font-family:var(--hand);font-weight:600;font-size:24px;line-height:1.2;color:var(--ink)}
+.wk-hand em{font-style:normal;color:var(--rose)}
+
+/* StreakDays — the count, the week, the line that says rest days are fine */
+.wk-streak{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:var(--paper-2);border-radius:22px;padding:18px 22px}
+.wk-streak .wk-n{font:700 40px/1 var(--sans);font-variant-numeric:tabular-nums}
+.wk-streak b{font-weight:600}
+.wk-streak .wk-days{display:flex;gap:6px;margin-top:8px}
+.wk-streak .wk-days i{width:26px;height:26px;border-radius:50%;background:var(--paper-3);display:grid;place-items:center;font:600 11px/1 var(--sans);color:var(--ink-3)}
+.wk-streak .wk-days i.wk-on{background:var(--marigold);color:var(--ink)}
+.wk-streak .wk-note{font-size:13px;color:var(--ink-3);display:block;margin-top:8px}
+
+/* AllowanceCard — the rail's bottom slot */
+.wk-allow{background:var(--marigold-w);border-radius:18px;padding:16px;display:grid;gap:8px}
+.wk-allow b{font:600 14px/1.2 var(--sans)}
+.wk-allow .wk-bar{height:8px;border-radius:4px;background:rgba(20,20,43,.08);overflow:hidden}
+.wk-allow .wk-bar i{display:block;height:100%;background:var(--marigold);border-radius:4px}
+.wk-allow span{font-size:13px;color:var(--ink-2)}
+
+/* AppShell — the desktop rail and the main column */
+.wk-shell{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.wk-rail{padding:28px 20px;display:flex;flex-direction:column;gap:6px}
+.wk-rail .wk-wm{display:flex;align-items:center;gap:10px;padding:6px 10px 26px}
+.wk-rail .wk-wm svg{height:22px;width:auto;fill:var(--ink)}
+.wk-rail a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;font:500 15px/1 var(--sans);color:var(--ink-2)}
+.wk-rail a.wk-on{background:var(--paper-2);color:var(--ink)}
+.wk-rail a svg{width:22px;height:22px}
+.wk-rail .wk-spacer{flex:1}
+.wk-rail nav{display:contents}
+.wk-main{padding:28px 40px 60px;display:grid;gap:28px;align-content:start}
+
+/* TopBar — the crumb on the left, whatever the screen needs on the right */
+.wk-topbar{display:flex;align-items:center;gap:14px}
+.wk-topbar .wk-crumb{font:500 14px/1 var(--sans);color:var(--ink-3)}
+.wk-topbar .wk-right{margin-left:auto;display:flex;gap:10px;align-items:center}
+.wk-avatar{width:38px;height:38px;border-radius:50%;background:var(--lilac-w);display:grid;place-items:center;font:600 14px/1 var(--sans);color:var(--ink)}
+
+/* TalkHint — the lesson rail's bottom slot */
+.wk-talk{display:flex;align-items:center;gap:12px;background:var(--ink);color:var(--paper);border-radius:18px;padding:14px 16px}
+.wk-talk .wk-k{font:600 12px/1 var(--sans);padding:6px 8px;border-radius:8px;background:rgba(255,255,255,.14)}
+.wk-talk span{font-size:14px}
+
+/* WoboHead — the rig, head only: the grounding mark under it is hidden, and the head reads the
+   page's own --body / --visor / --eye so a themed panel colours it (set inline by the component).
+   The soft shadow is the prototype's, for the hero head only. */
+.wk-head{display:inline-block;line-height:0}
+.wk-head.wk-shadow{filter:drop-shadow(0 14px 20px rgba(20,20,43,.16))}
+.wk-head .wobo-rig>svg>g>ellipse:first-child,.wk-head .wobo-rig>svg>g>line:first-child{display:none}
+
+/* phone: rail becomes a bottom tab bar */
+@media (max-width:900px){
+  .wk-shell{grid-template-columns:1fr;min-height:100vh}
+  .wk-rail{position:fixed;left:0;right:0;bottom:0;z-index:10;flex-direction:row;justify-content:space-around;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:var(--paper);box-shadow:0 -10px 30px rgba(20,20,43,.08);gap:0}
+  .wk-rail .wk-wm,.wk-rail .wk-spacer,.wk-rail .wk-bottom{display:none}
+  .wk-rail a{flex-direction:column;gap:4px;font-size:11px;padding:8px 12px;border-radius:12px}
+  .wk-rail a svg{width:24px;height:24px}
+  .wk-main{padding:16px 16px 110px;gap:20px;min-width:0}
+  /* a long crumb keeps to one line and ends in an ellipsis; min-width:0 up the chain lets it shrink */
+  .wk-topbar{min-width:0}
+  .wk-topbar .wk-crumb{font-size:13px;line-height:44px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .wk-topbar .wk-seg{display:none}
+  .wk-ask{padding:6px 6px 6px 14px}
+  .wk-ask input{font-size:15px;min-height:44px}
+  /* the touch floor (DESIGN.md §2): every control's box grows to 44px; its type does not move */
+  .wk-ask .wk-mic{width:44px;height:44px}
+  .wk-btn.wk-sm{min-height:44px}
+  button.wk-chip{min-height:44px}
+  .wk-seg button{min-height:44px}
+  .wk-sw-hit{min-width:44px;min-height:44px}
+}

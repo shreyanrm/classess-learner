@@ -40,6 +40,8 @@ const EXACT: Record<string, Route> = {
   practice: { name: 'practice' },
   practise: { name: 'practice' },
   sandbox: { name: 'practice' },
+  'parent view': { name: 'parent' },
+  parent: { name: 'parent' },
   profile: { name: 'you' },
   settings: { name: 'you' },
   account: { name: 'you' },
@@ -106,6 +108,7 @@ function matchLoose(s: string): Route | null {
   if (/\bhome\b/.test(s)) return { name: 'home' };
   if (/\b(?:chat|conversation|messages?)\b/.test(s)) return { name: 'chat' };
   if (/\b(?:progress|mastery|knowledge twin|twin)\b/.test(s)) return { name: 'progress' };
+  if (/\bparent(?:'s)? view\b/.test(s)) return { name: 'parent' };
   if (/\b(?:practice|practise|sandbox)\b/.test(s)) return { name: 'practice' };
   if (/\b(?:profile|settings|account)\b/.test(s)) return { name: 'you' };
   if (/\b(?:library|subjects?|courses?|catalogue?|catalog|learn)\b/.test(s))
@@ -137,6 +140,8 @@ function destSay(route: Route): string {
       return 'Here is your progress.';
     case 'you':
       return 'Opening your profile.';
+    case 'parent':
+      return "Opening the parent's view.";
     case 'subject':
       return `Taking you to ${subjectName(route.subjectId)}.`;
     case 'course':

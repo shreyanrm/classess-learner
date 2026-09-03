@@ -1,0 +1,51 @@
+/* biome-ignore-all format: every rule is design/prototypes/app-v1.html (board 05) and design/prototypes/site-parents.html (the parent view mock), kept as written */
+/* biome-ignore-all lint/style/noDescendingSpecificity: the rules keep the prototype's order, and order is what decides where two of them match */
+/*
+ * The You screen's own rules — the two-column grid, the strengths list and the drawn chart from
+ * board 05 of design/prototypes/app-v1.html, and the parent's view from chapter 02 of
+ * design/prototypes/site-parents.html. Declaration for declaration; `wy-` so nothing here meets
+ * a rule from an older screen. you.test.ts holds each rule to its source.
+ */
+
+/* board 05 · You */
+.wy-you{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.wy-strengths{display:grid;gap:10px}
+.wy-strengths > div{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start;font-size:14px;color:var(--ink-2)}
+.wy-strengths b{display:block;color:var(--ink);font-weight:600}
+.wy-strengths svg{width:44px;height:44px}
+.wy-chart{display:flex;align-items:flex-end;gap:8px;height:120px;padding-top:8px}
+.wy-chart i{flex:1;background:var(--pig);border-radius:8px 8px 4px 4px;opacity:.85}
+.wy-chart i.wy-k{background:var(--paper-3);opacity:1}
+
+/* the parent's view (site-parents · 02) */
+.wy-mock{background:var(--paper);border-radius:22px;padding:18px;display:grid;gap:12px;width:100%;box-shadow:0 18px 40px rgba(20,20,43,.10)}
+.wy-mock .wy-top{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-3)}
+.wy-mock .wy-top b{color:var(--ink);font-weight:600;font-size:15px}
+.wy-mock .wy-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;background:var(--paper-2);border-radius:14px;padding:12px 14px;font-size:14px}
+.wy-mock .wy-row b{display:block;font-weight:600;color:var(--ink)}
+.wy-mock .wy-row span{color:var(--ink-3);font-size:13px}
+.wy-mock .wy-row .wy-ok{font:500 12px/1 var(--sans);padding:6px 10px;border-radius:999px;background:var(--mint-w);color:var(--ink)}
+.wy-mock .wy-row .wy-now{background:var(--pig);color:#fff}
+.wy-mock .wy-note{background:var(--marigold-w);border-radius:14px;padding:14px;font-family:var(--hand);font-weight:600;font-size:22px;line-height:1.15}
+.wy-mock .wy-note em{font-style:normal;color:var(--rose)}
+.wy-mock .wy-lock{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-3)}
+.wy-mock .wy-lock svg{width:16px;height:16px;fill:none;stroke:var(--ink-3);stroke-width:2.4;stroke-linecap:round}
+
+/* the parent's view sits in the site's art panel (site-parents · .art) */
+.wy-art{border-radius:28px;padding:var(--s3);position:relative;min-height:380px;display:grid;place-items:center}
+.wy-art.wy-lilac{background:var(--lilac-w)}
+
+/* phone */
+@media (max-width:900px){
+  .wy-you{grid-template-columns:1fr}
+  .wy-art{min-height:0}
+  .wy-shell .wk-rail{position:fixed;top:auto;height:auto}
+}
+
+/* the page is taller than the artboard: the rail keeps its bottom slot in view */
+.wy-shell .wk-rail{position:sticky;top:0;height:100vh}
+
+/* element resets — a <button> where the prototype drew a <span>; no pixel moves */
+.wy-crumb-btn{border:0;background:transparent;padding:0;font:inherit;color:inherit;cursor:pointer}
+.wy-strengths p{color:inherit;font-size:inherit}
+.wy-you .wk-card>p a{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:2px}

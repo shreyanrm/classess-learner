@@ -16,7 +16,7 @@ export { CirclePart, type CirclePartProps } from './circle-part';
 export { AnswerControl, type AnswerControlProps } from './control';
 export { DrawAnswer, type DrawAnswerProps } from './draw';
 export { Expression, type ExpressionProps } from './expression';
-export { FigurePicture, FigureRule, VisualPicture } from './figure';
+export { FigureFrame, FigurePicture, FigureRule, VisualPicture } from './figure';
 export * from './geometry';
 export { type HandProps, HandValue, plainOf } from './hand';
 export * from './keyboard';

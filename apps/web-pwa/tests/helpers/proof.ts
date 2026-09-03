@@ -62,11 +62,13 @@ export interface RouteCase {
  */
 export const APP_ROUTES: readonly RouteCase[] = [
   { id: 'home', path: '/', ready: 'Practice' },
-  { id: 'learn', path: '/learn', ready: 'Where to today?' },
-  { id: 'practice', path: '/practice', ready: 'Due for review' },
+  { id: 'learn', path: '/learn', ready: 'Your subjects' },
+  { id: 'practice', path: '/practice', ready: 'This set' },
   { id: 'chat', path: '/chat', ready: 'One conversation, always' },
   { id: 'progress', path: '/progress', ready: 'YOUR REPORT' },
-  { id: 'you', path: '/you', ready: 'The ledger' },
+  { id: 'you', path: '/you', ready: 'Learning strengths' },
+  // The parent's read-only view of the You page, reached from its Parents card.
+  { id: 'parent', path: '/parent', ready: 'Questions word for word' },
   { id: 'subject-math-learn', path: '/subject/math/learn', ready: 'THE CHAPTERS' },
   { id: 'subject-math-practice', path: '/subject/math/practice', ready: 'THE CHAPTERS' },
   {
@@ -78,7 +80,8 @@ export const APP_ROUTES: readonly RouteCase[] = [
   { id: 'concept-engines', path: '/concept/engines', ready: 'engine gallery' },
   // Onboarding and the frame theatre are Wobo's own full-screen flows: they settle on a final
   // beat (the door, the welcome) and wait there for a tap, so the settled beat is the signal.
-  { id: 'onboarding', path: '/onboarding', ready: 'Tap to begin' },
+  // Keyless, the flow opens on step two ("Who's learning"); with an account layer, on step one.
+  { id: 'onboarding', path: '/onboarding', ready: /make this yours|Who's learning/ },
   { id: 'building', path: '/building', ready: /Step in|Choose your board/ },
 ] as const;
 
@@ -106,7 +109,22 @@ export const PUBLIC_ROUTE_CASES: readonly RouteCase[] = [
   // what a SIGNED-OUT visitor sees at the same address and needs an unseeded session to reach;
   // it is proved by the landing page's own suite rather than measured here against a learner
   // who would never see it.
-  { id: 'about', path: '/about', ready: 'Why Wobo exists' },
+  { id: 'about', path: '/about', ready: 'The homework hour is where confidence is made or lost.' },
+  // The six pitch pages, each on a line its own prototype carries (design/prototypes/site-*.html).
+  { id: 'meet-wobo', path: '/meet-wobo', ready: 'Wobo has no gender. Wobo is just Wobo.' },
+  { id: 'how-it-works', path: '/how-it-works', ready: 'Try one. Wobo rings the gap.' },
+  { id: 'for-parents', path: '/for-parents', ready: 'Safe by design, not by promise.' },
+  {
+    id: 'for-students',
+    path: '/for-students',
+    ready: 'Free every day. No card. No trial that ends.',
+  },
+  { id: 'subjects', path: '/subjects', ready: 'Every proof drawn, every number computed.' },
+  {
+    id: 'security',
+    path: '/security',
+    ready: 'Every row here has a purpose, a shelf life and a delete button.',
+  },
   { id: 'help', path: '/help', ready: /articles, in three groups/i },
   {
     id: 'help-article',
@@ -119,7 +137,7 @@ export const PUBLIC_ROUTE_CASES: readonly RouteCase[] = [
     path: '/legal/terms-of-service',
     ready: /open for counsel/i,
   },
-  { id: 'plans', path: '/plans', ready: 'What each plan carries.' },
+  { id: 'plans', path: '/plans', ready: 'What changes between plans, and what never does.' },
   { id: 'plans-checkout', path: '/plans/checkout', ready: /Checkout opens with launch/i },
   { id: 'gift', path: '/gift', ready: /Give someone a tutor who sits beside them/i },
   { id: 'contact', path: '/contact', ready: /Every mailbox/i },
@@ -342,15 +360,24 @@ const AUDIT = (opts: { tapTargets: boolean }): Finding[] => {
     }
   }
 
-  // 4 — body copy below 14 px is unreadable on a cheap phone. Measured on elements that carry
-  //     their OWN text (a wrapper's font-size is inherited, not shown), excluding the typographic
-  //     exceptions where small is correct.
+  // 4 — body copy below the readable floor is unreadable on a cheap phone. Measured on elements
+  //     that carry their OWN text (a wrapper's font-size is inherited, not shown), excluding the
+  //     typographic exceptions where small is correct.
+  //
+  //     THE FLOOR is DESIGN.md §2's own smallest size: "label 500 at 13". Body copy is 16–17 and
+  //     a label is 13; nothing the law allows is smaller, so anything under 13 is a defect and
+  //     anything at 13 is a label the law permits.
   //
   //     BODY COPY, precisely: a run of at least 20 characters — a phrase somebody reads. A chip
   //     ("+45"), a count ("3"), a one-word tab label is a glyph the eye recognises by shape, and
   //     holding those to the prose floor would bury the real findings under design intent.
+  //
+  //     CHAPTER MARKERS are exempt too: DESIGN.md §2 allows "all-caps tracked labels only for
+  //     chapter markers" (the kit's Tag at 11px, its Label at 12px). Tracked capitals are read by
+  //     shape, like a chip, and the law names them as the one place small tracked type belongs.
   const SMALL_BY_DESIGN = new Set(['SUP', 'SUB', 'CODE', 'KBD']);
   const BODY_COPY_MIN_CHARS = 20;
+  const FONT_FLOOR = 13;
   for (const el of all) {
     if (SMALL_BY_DESIGN.has(el.tagName) || el.closest('sup, sub')) continue;
     if (!visible(el)) continue;
@@ -359,9 +386,19 @@ const AUDIT = (opts: { tapTargets: boolean }): Finding[] => {
       .map((n) => (n.textContent ?? '').trim())
       .join('');
     if (text.length < BODY_COPY_MIN_CHARS) continue;
-    const size = Number.parseFloat(getComputedStyle(el).fontSize);
-    if (!Number.isFinite(size) || size >= 14 - 0.01) continue;
-    push('font-size', el, `font-size ${size.toFixed(1)}px, below the 14px floor`, size.toFixed(4));
+    const cs = getComputedStyle(el);
+    const size = Number.parseFloat(cs.fontSize);
+    if (!Number.isFinite(size) || size >= FONT_FLOOR - 0.01) continue;
+    const tracked = Number.parseFloat(cs.letterSpacing);
+    if (cs.textTransform === 'uppercase' && Number.isFinite(tracked) && tracked >= size * 0.08) {
+      continue;
+    }
+    push(
+      'font-size',
+      el,
+      `font-size ${size.toFixed(1)}px, below the ${FONT_FLOOR}px floor`,
+      size.toFixed(4),
+    );
   }
 
   return out as Finding[];
@@ -450,6 +487,32 @@ export async function freezeMotion(page: Page): Promise<void> {
   await settle(page, 3_000);
 }
 
+/**
+ * Walk the whole page once before a capture: down in viewport-sized steps, then back to the top.
+ *
+ * The site pages reveal their chapters on intersection (a block below the fold rests faded and
+ * 18px low until a fifth of it scrolls into view). A full-page screenshot taken from the top
+ * therefore photographs every unrevealed chapter as blank paper — the proof under-documents the
+ * page, and a finding on a faded block is a finding about the harness, not the screen. A real
+ * reader scrolls; so does the harness, and every reveal has fired before anything is measured.
+ */
+export async function scrollThrough(page: Page): Promise<void> {
+  await page.evaluate(async () => {
+    const doc = document.scrollingElement ?? document.documentElement;
+    const step = Math.max(200, Math.floor(window.innerHeight * 0.8));
+    const frame = () => new Promise((r) => requestAnimationFrame(() => r(null)));
+    for (let y = 0; y < doc.scrollHeight; y += step) {
+      window.scrollTo(0, y);
+      await frame();
+      await frame();
+    }
+    window.scrollTo(0, doc.scrollHeight);
+    await frame();
+    window.scrollTo(0, 0);
+    await frame();
+  });
+}
+
 /** Put the app in a theme the way the app itself does — `data-theme` on the root (src/ui/theme.ts). */
 export async function applyTheme(page: Page, theme: Theme): Promise<void> {
   await page.emulateMedia({ colorScheme: theme });
@@ -464,7 +527,7 @@ const STABLE_DETAIL: Record<CheckId, string> = {
   'horizontal-overflow': 'the page is wider than the screen (the exact width moves as it animates)',
   'clipped-text': 'the box clips the text inside it (the exact width moves as it animates)',
   'tap-target': 'below the 44×44 floor (the exact size moves as the element animates)',
-  'font-size': 'below the 14px floor (the exact size moves as the element animates)',
+  'font-size': 'below the 13px floor (the exact size moves as the element animates)',
   'focus-visible': 'no visible focus ring',
 };
 
@@ -637,7 +700,7 @@ const CHECK_TITLES: Record<CheckId, string> = {
   'horizontal-overflow': 'Horizontal overflow',
   'clipped-text': 'Clipped text',
   'tap-target': 'Tap target < 44px',
-  'font-size': 'Body copy < 14px',
+  'font-size': 'Body copy < 13px',
   'focus-visible': 'Focus not visible',
 };
 

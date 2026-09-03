@@ -24,7 +24,7 @@ import { Boss } from './Boss';
 import { Greeting } from './Greeting';
 import { MysteryLesson, MysteryTease } from './Mystery';
 import { PracticeRun } from './PracticeRun';
-import type { BarState } from './shared';
+import type { BarState, LessonOutline } from './shared';
 import {
   CardBody,
   Deck,
@@ -49,6 +49,31 @@ type CardId =
   | 'mystery';
 
 const SEGMENTS = 9;
+/**
+ * The lesson's own ideas, for the side column — each card's own headline, in order, the way the
+ * prototype lists "A right angle and its sides, Squares on each side, …" rather than the machinery
+ * behind them. The arrival card is the topic itself, so it has no step of its own; the greeting,
+ * the tease and the mystery are not steps of the lesson (a mystery lesson is discovered, never
+ * assigned — DESIGN.md §9), so the column ends at the boss.
+ */
+const STEPS: readonly [CardId, string][] = [
+  ['scale', 'Get x alone'],
+  ['whatif', 'Every number here is yours to drag'],
+  ['practice', 'Solve for x'],
+  ['boss', 'Three questions, one scale'],
+];
+/** Where each card sits against the steps: the door stands before the boss; the end is past it. */
+const STEP_AT: Record<CardId, number> = {
+  arrival: -1,
+  scale: 0,
+  whatif: 1,
+  practice: 2,
+  bossdoor: 3,
+  boss: 3,
+  greeting: 4,
+  tease: 4,
+  mystery: 4,
+};
 /** Per-card progress: base fill + the span the card's own sub-progress moves through. */
 const PROGRESS: Record<CardId, [base: number, span: number]> = {
   arrival: [0.08, 0], // endowed — it never starts empty
@@ -69,6 +94,7 @@ export function AtomJourney({
   setProgress,
   onExit,
   onResume,
+  onOutline,
 }: {
   topic: Topic;
   nodeId: string;
@@ -77,6 +103,8 @@ export function AtomJourney({
   onExit: () => void;
   /** Fired once when the player restores a saved mid-course position. */
   onResume?: () => void;
+  /** The steps and the one on stage, for the lesson's side column. */
+  onOutline?: (outline: LessonOutline) => void;
 }) {
   const sdk = useSdk();
   const bus = useWoboBus();
@@ -104,6 +132,9 @@ export function AtomJourney({
     return 'arrival';
   });
   const resumedRef = useRef(card !== 'arrival');
+  useEffect(() => {
+    onOutline?.({ steps: STEPS.map((s) => s[1]), at: STEP_AT[card] });
+  }, [card, onOutline]);
   const [sub, setSub] = useState(0);
   const [items, setItems] = useState<PracticeItem[]>([]);
   // how many of the boss's three the learner got right — the greeting's performance-star signal

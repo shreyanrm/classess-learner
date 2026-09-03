@@ -8,8 +8,9 @@
  * memory (`search.ts`) — no index, no request, and a result on the keystroke.
  *
  * The list is never hidden behind the search. Someone who does not know what to type sees every
- * article there is, grouped the way `help-centre/README.md` groups them; someone who does know
- * types two words and the groups give way to the answers. Nothing collapses, nothing paginates.
+ * article there is, grouped the way `help-centre/README.md` groups them, one tile per group in its
+ * own wash; someone who does know types two words and the tiles give way to the answers. Nothing
+ * collapses, nothing paginates.
  *
  * Every word — the groups' names, their one-line descriptions, every article title — is the
  * reviewed copy, compiled at build time. The only strings written here are the ones the copy has no
@@ -17,12 +18,16 @@
  */
 
 import { useMemo, useState } from 'react';
-import { Reveal } from '../landing/Reveal';
+import { Button, Label, Tag } from '../../ui/primitives';
+import { ClosePanel } from './ClosePanel';
 import { HELP } from './help-content';
 import { GroupMark } from './marks';
 import { SiteLink } from './nav';
+import { Reveal } from './Reveal';
 import { SiteShell } from './SiteShell';
 import { searchArticles } from './search';
+
+const TINTS = ['st-pig', 'st-mint', 'st-marigold'] as const;
 
 export function Help() {
   const [query, setQuery] = useState('');
@@ -32,59 +37,53 @@ export function Help() {
 
   return (
     <SiteShell current="help" title={`${HELP.title} — Wobo`} label={HELP.title}>
-      <div className="lp-wrap st-hero st-hero--doc">
-        <Reveal>
-          <h1 className="lp-h1">{HELP.title}</h1>
-          <label className="lp-eyebrow st-search-label" htmlFor="help-search">
-            Search
-          </label>
-          <div className="st-search">
+      <section className="st-page-hero">
+        <div className="st-wrap">
+          <Label>Help</Label>
+          <h1>{HELP.title}</h1>
+          <div className="hp-search">
             <input
               id="help-search"
               type="search"
               autoComplete="off"
+              aria-label="Search"
               placeholder="What do you want to do"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
             />
             {searching ? (
-              <button
-                type="button"
-                className="st-search-clear"
-                onClick={() => setQuery('')}
-                aria-label="Clear the search"
-              >
+              <Button tone="quiet" size="sm" onClick={() => setQuery('')}>
                 Clear
-              </button>
+              </Button>
             ) : null}
           </div>
           {/* A live region, so a keyboard or screen-reader visitor hears the count change instead
               of typing into a field that appears to do nothing. */}
-          <p className="st-count" role="status">
+          <p className="hp-count" role="status">
             {searching
               ? `${results.length} of ${total} articles`
               : `${total} articles, in three groups`}
           </p>
-        </Reveal>
-      </div>
+        </div>
+      </section>
 
       {searching ? (
-        <section className="lp-section st-section--flush" aria-label="Search results">
-          <div className="lp-wrap">
+        <section className="st-section" aria-label="Search results">
+          <div className="st-wrap">
             {results.length === 0 ? (
-              <p className="st-empty">
+              <p className="hp-empty">
                 Nothing here matches that. Try one word instead of a sentence, or ask Wobo directly
                 — Wobo answers from these same pages.
               </p>
             ) : (
-              <div className="st-results">
+              <div className="hp-results">
                 {results.map((hit) => (
                   <SiteLink
                     key={`${hit.group}/${hit.slug}`}
-                    className="st-result"
+                    className="hp-result"
                     to={{ name: 'helpArticle', group: hit.group, slug: hit.slug }}
                   >
-                    <em>{hit.groupTitle}</em>
+                    <Tag>{hit.groupTitle}</Tag>
                     <b>{hit.title}</b>
                     <span>{hit.snippet}</span>
                   </SiteLink>
@@ -94,32 +93,32 @@ export function Help() {
           </div>
         </section>
       ) : (
-        <section className="lp-section st-section--flush" aria-label="Every help article">
-          <div className="lp-wrap">
-            <Reveal>
-              <div className="st-groups">
-                {HELP.groups.map((group) => (
-                  <div className="st-group" key={group.slug}>
-                    <GroupMark group={group.slug} />
-                    <h2>{group.title}</h2>
-                    <p>{group.blurb}</p>
-                    <div className="st-list">
-                      {group.articles.map((article) => (
-                        <SiteLink
-                          key={article.slug}
-                          to={{ name: 'helpArticle', group: group.slug, slug: article.slug }}
-                        >
-                          {article.title}
-                        </SiteLink>
-                      ))}
-                    </div>
+        <section className="st-section" aria-label="Every help article">
+          <div className="st-wrap">
+            <Reveal className="hp-groups">
+              {HELP.groups.map((group, i) => (
+                <div className={`hp-group ${TINTS[i % TINTS.length]}`} key={group.slug}>
+                  <GroupMark group={group.slug} />
+                  <h2>{group.title}</h2>
+                  <p>{group.blurb}</p>
+                  <div className="hp-list">
+                    {group.articles.map((article) => (
+                      <SiteLink
+                        key={article.slug}
+                        to={{ name: 'helpArticle', group: group.slug, slug: article.slug }}
+                      >
+                        {article.title}
+                      </SiteLink>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </Reveal>
           </div>
         </section>
       )}
+
+      <ClosePanel />
     </SiteShell>
   );
 }

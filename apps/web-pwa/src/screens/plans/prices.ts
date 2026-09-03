@@ -4,7 +4,7 @@
  * The numbers are the owner's, set in WOBO-PLAN §14 ("Prices", owner, 2026-09-03): free every day
  * with a daily allowance; Pro ₹1,999 a month for five times that allowance; Max ₹3,999 a month for
  * twenty times. Outside India, Pro is $20 and Max is $50, chosen by the learner's country. Billed
- * monthly, cancel any time.
+ * monthly, cancel any time. The words on each card are design/prototypes/site-plans.html.
  *
  * Two laws shape the file rather than decorate it:
  *
@@ -13,9 +13,8 @@
  *    country the currency belongs to, not a segment. What varies by behaviour is the gift and the
  *    framing, and neither of those lives here.
  *  · §16 — the reference product's three price cards are kept as a SHAPE, and filled with §14's
- *    tiers rather than with its cadences. §16 described monthly / annual / family because that is
- *    what Brilliant draws; §14 is dated after it and says billed monthly, so the three cards are
- *    Free, Pro and Max and there is no annual card to strike a price through.
+ *    tiers rather than with its cadences: Free, Pro and Max, and there is no annual card to strike
+ *    a price through.
  *
  * Everything that draws a price reads it from here, so a change to a number is one edit.
  */
@@ -33,57 +32,89 @@ export interface PlanTier {
   name: string;
   /** What this tier's daily allowance is, as a multiple of the free one (§14). */
   allowanceMultiple: number;
+  /** The allowance, in questions a day. */
+  questionsPerDay: number;
+  /** How many learners the plan carries. */
+  learners: number;
   /** Null on the free tier, which has no price to state. */
   price: Readonly<Record<Market, Money>> | null;
-  /** What the card says under the name. */
+  /** The line under the allowance. */
+  blurb: string;
+  /** What the card lists. */
   lines: readonly string[];
+  /** The card's door. */
+  cta: string;
+  /** The small print under the door. */
+  fine: string;
   /** The one card carrying pigment. §14 forbids a decoy, so this is the middle tier, not the top. */
   recommended: boolean;
 }
 
-/** Said under every paid price. §14: billed monthly, cancel anytime. */
-export const CADENCE = 'billed monthly, cancel any time';
+/** What runs beside a price: the paid tiers are a month, the free one is forever. */
+export const PRICE_UNIT = { paid: 'a month', free: 'forever' } as const;
 
-/** Said under the free tier, which is a product and not a trailer. */
-export const FREE_CADENCE = 'free every day, no card';
+/** The sticker on the recommended card. */
+export const BEST_FOR = 'most families';
+
+/** Said under a gift's price: a gift is paid once and renews never (`gift-page.md`, rules). */
+export const GIFT_CADENCE = 'paid once, renews never';
 
 export const PLAN_TIERS: readonly PlanTier[] = [
   {
     id: 'free',
     name: 'Free',
     allowanceMultiple: 1,
+    questionsPerDay: 40,
+    learners: 1,
     price: null,
+    blurb:
+      'Forty questions a day, every subject, every class, the Sunday note, a linked parent. The whole tutor.',
     lines: [
-      'A daily allowance of turns with Wobo',
-      'Your real board and class, this year',
-      'Boards, practice and the sandbox',
-      'Everything saved on your device',
+      '40 questions a day',
+      'Every subject, class 4 to 12',
+      'Practice, the week, the Sunday note',
+      'One linked parent',
     ],
+    cta: 'Start learning for free',
+    fine: 'No card. No trial that ends.',
     recommended: false,
   },
   {
     id: 'pro',
     name: 'Pro',
     allowanceMultiple: 5,
+    questionsPerDay: 200,
+    learners: 1,
     price: { IN: { currency: 'INR', amount: 1999 }, INTL: { currency: 'USD', amount: 20 } },
+    blurb:
+      'For the term that has a test every fortnight. Two hundred questions a day, and Wobo reads answers aloud.',
     lines: [
-      'Five times the free daily allowance',
-      'Custom courses on anything you name',
-      'A weekly artifact for a parent',
-      'Voice, on every board',
+      '200 questions a day',
+      'Voice replies, in your accent',
+      'Longer lessons on the full board',
+      'Everything in Free',
     ],
+    cta: 'Choose Pro',
+    fine: 'Monthly. Cancel in two taps, keep it till the month ends.',
     recommended: true,
   },
   {
     id: 'max',
     name: 'Max',
     allowanceMultiple: 20,
+    questionsPerDay: 800,
+    learners: 2,
     price: { IN: { currency: 'INR', amount: 3999 }, INTL: { currency: 'USD', amount: 50 } },
+    blurb:
+      'Board year. Eight hundred questions a day, so nobody counts, and two learners on one plan.',
     lines: [
-      'Twenty times the free daily allowance',
+      '800 questions a day',
+      'Two learners, two Sunday notes',
+      'Past-paper practice sets',
       'Everything in Pro',
-      'Room for a day of exam revision without counting',
     ],
+    cta: 'Choose Max',
+    fine: 'Monthly. Same two taps to cancel.',
     recommended: false,
   },
 ];
@@ -136,15 +167,38 @@ export function formatMoney(money: Money): string {
   }
 }
 
-/** The price a card shows. The free tier says what it is rather than showing a zero. */
+/** The price a card shows. The free tier shows a zero in the market's own money: ₹0, $0. */
 export function priceLabel(tier: PlanTier, market: Market): string {
   const money = priceOf(tier, market);
-  return money ? formatMoney(money) : 'No cost';
+  return formatMoney(money ?? { currency: market === 'IN' ? 'INR' : 'USD', amount: 0 });
 }
 
-/** What runs under a card's price. */
-export function cadenceLabel(tier: PlanTier): string {
-  return tier.price ? CADENCE : FREE_CADENCE;
+/** What runs beside a card's price. */
+export function priceUnit(tier: PlanTier): string {
+  return tier.price ? PRICE_UNIT.paid : PRICE_UNIT.free;
+}
+
+/**
+ * The day a plan bought today renews: the same day next month, or that month's last day where
+ * the day does not exist (a plan bought on the 31st of January renews on the last day of February).
+ */
+export function renewsOn(from: Date): Date {
+  const next = new Date(from.getTime());
+  const day = next.getDate();
+  next.setDate(1);
+  next.setMonth(next.getMonth() + 1);
+  const last = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
+  next.setDate(Math.min(day, last));
+  return next;
+}
+
+/** A renewal date, written the way the card says it: "3 October". */
+export function renewalLabel(date: Date): string {
+  try {
+    return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long' }).format(date);
+  } catch {
+    return date.toDateString();
+  }
 }
 
 // --- gifts ---------------------------------------------------------------------------------------
@@ -180,13 +234,6 @@ export const GIFT_OPTIONS: readonly GiftOption[] = [
 /** The tier a gift is a gift of. */
 export function giftTier(option: GiftOption): PlanTier {
   return tierById(option.tier) ?? (PLAN_TIERS[0] as PlanTier);
-}
-
-/** What a gift costs a month, which is exactly what the same plan costs a month. */
-export function giftPriceLabel(option: GiftOption, market: Market): string {
-  const tier = giftTier(option);
-  const money = priceOf(tier, market);
-  return money ? `${formatMoney(money)} a month` : 'No cost';
 }
 
 /** The refund window, stated in `docs/legal/refund-and-cancellation.md`. */

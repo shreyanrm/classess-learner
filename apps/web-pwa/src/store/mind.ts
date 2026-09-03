@@ -44,6 +44,84 @@ export interface MindState {
   interests: string[];
   /** durable free-form facts Wobo has learned in conversation — the concierge's notepad */
   facts: string[];
+  /**
+   * One line per day of what actually happened — the You screen's week, month and year are read
+   * off this, never off a guess. Keyed by ISO date, the way session days are. Optional only so a
+   * mind built by hand (a test, an older snapshot) still types; `loadMind` always fills it.
+   */
+  days?: Record<string, DayLedger>;
+  /** When help was last asked for after a miss — the next answer counts as keeping going. */
+  helpedAt?: string;
+}
+
+/** What one day held. Every number is a count of real events; nothing here is estimated. */
+export interface DayLedger {
+  /** answers submitted (practice and attempts, the pair deduped) */
+  answered: number;
+  /** of which wrong */
+  wrong: number;
+  /** lines the learner sent Wobo */
+  asked: number;
+  /** a line sent within ten minutes of a wrong answer — help, asked for after a miss */
+  helped: number;
+  /** an answer given after asking for that help — they kept going */
+  kept: number;
+  /** lessons opened */
+  entered: number;
+  /** seconds on the app's surfaces */
+  seconds: number;
+  /** a session opened at 18:00 or later, the learner's own clock */
+  evening: boolean;
+}
+
+const BLANK_DAY: DayLedger = {
+  answered: 0,
+  wrong: 0,
+  asked: 0,
+  helped: 0,
+  kept: 0,
+  entered: 0,
+  seconds: 0,
+  evening: false,
+};
+/** How many days the ledger keeps — a year's view, and a little over. */
+const MAX_LEDGER_DAYS = 380;
+/** A line sent this soon after a miss is help asked for about the miss. */
+const HELP_WINDOW_MS = 10 * 60_000;
+
+/** The day's ledger, a copy — write it back with `putDay`. */
+export function dayOf(mind: MindState, day: string): DayLedger {
+  return { ...BLANK_DAY, ...(mind.days?.[day] ?? {}) };
+}
+
+function putDay(mind: MindState, day: string, ledger: DayLedger): void {
+  const days = { ...(mind.days ?? {}), [day]: ledger };
+  const keys = Object.keys(days).sort();
+  if (keys.length > MAX_LEDGER_DAYS) {
+    for (const k of keys.slice(0, keys.length - MAX_LEDGER_DAYS)) delete days[k];
+  }
+  mind.days = days;
+}
+
+function ledgerFrom(raw: unknown): Record<string, DayLedger> {
+  if (!raw || typeof raw !== 'object') return {};
+  const out: Record<string, DayLedger> = {};
+  for (const [day, v] of Object.entries(raw as Record<string, unknown>)) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !v || typeof v !== 'object') continue;
+    const d = v as Partial<Record<keyof DayLedger, unknown>>;
+    const n = (x: unknown) => (typeof x === 'number' && Number.isFinite(x) && x > 0 ? x : 0);
+    out[day] = {
+      answered: n(d.answered),
+      wrong: n(d.wrong),
+      asked: n(d.asked),
+      helped: n(d.helped),
+      kept: n(d.kept),
+      entered: n(d.entered),
+      seconds: n(d.seconds),
+      evening: d.evening === true,
+    };
+  }
+  return out;
 }
 
 const EMPTY: MindState = {
@@ -53,6 +131,7 @@ const EMPTY: MindState = {
   sessionDays: [],
   interests: [],
   facts: [],
+  days: {},
 };
 const MAX_LATENCIES = 60;
 const MAX_SLIPS = 12;
@@ -79,6 +158,8 @@ export function loadMind(): MindState {
       // second device on an older build, must not reach the prompt with its line breaks intact.
       interests: Array.isArray(m.interests) ? m.interests.map(flattenFact).filter(Boolean) : [],
       facts: Array.isArray(m.facts) ? m.facts.map(flattenFact).filter(Boolean) : [],
+      days: ledgerFrom(m.days),
+      helpedAt: typeof m.helpedAt === 'string' ? m.helpedAt : undefined,
     };
   } catch {
     return { ...EMPTY };
@@ -276,9 +357,33 @@ function asRecord(v: unknown): Record<string, unknown> {
  * Fold new events into the mind. PracticeRun fires learn.attempt.submitted AND
  * practice.item.answered for the same answer — `seen` dedupes the pair by item and latency.
  */
-function foldEvents(mind: MindState, events: LoggedEvent[], seen: Set<string>): boolean {
+export function foldEvents(mind: MindState, events: LoggedEvent[], seen: Set<string>): boolean {
   let changed = false;
   for (const e of events) {
+    const day = typeof e.occurred_at === 'string' ? e.occurred_at.slice(0, 10) : '';
+    const at = typeof e.occurred_at === 'string' ? Date.parse(e.occurred_at) : Number.NaN;
+    // The day's ledger: one line to Wobo, one lesson opened. Keyed by event id so a pulse that
+    // sees an event twice counts it once.
+    if (e.event_type === 'wobo.turn.user.v1' || e.event_type === 'learn.node.entered.v1') {
+      const id = (e as { event_id?: unknown }).event_id;
+      const key = typeof id === 'string' ? id : `${e.event_type}:${e.occurred_at}`;
+      if (seen.has(key) || !day) continue;
+      seen.add(key);
+      const ledger = dayOf(mind, day);
+      if (e.event_type === 'learn.node.entered.v1') ledger.entered += 1;
+      else {
+        ledger.asked += 1;
+        const miss = mind.slips[mind.slips.length - 1];
+        const gap = miss ? at - Date.parse(miss.at) : Number.NaN;
+        if (miss && gap >= 0 && gap <= HELP_WINDOW_MS) {
+          ledger.helped += 1;
+          mind.helpedAt = e.occurred_at;
+        }
+      }
+      putDay(mind, day, ledger);
+      changed = true;
+      continue;
+    }
     if (
       e.event_type !== 'practice.item.answered.v1' &&
       e.event_type !== 'learn.attempt.submitted.v1'
@@ -291,6 +396,18 @@ function foldEvents(mind: MindState, events: LoggedEvent[], seen: Set<string>): 
     if (seen.has(key)) continue;
     seen.add(key);
     if (seen.size > 400) seen.clear(); // ponytail: cheap prune, worst case one duplicate slips in
+    if (day) {
+      const ledger = dayOf(mind, day);
+      ledger.answered += 1;
+      if (!correct) ledger.wrong += 1;
+      // An answer after asking for help about a miss: they kept going. Counted once per ask.
+      if (mind.helpedAt && at >= Date.parse(mind.helpedAt)) {
+        ledger.kept += 1;
+        mind.helpedAt = undefined;
+      }
+      putDay(mind, day, ledger);
+      changed = true;
+    }
     if (latency !== undefined && latency > 0) {
       mind.latenciesMs = [...mind.latenciesMs, latency].slice(-MAX_LATENCIES);
       changed = true;
@@ -325,19 +442,38 @@ function foldEvents(mind: MindState, events: LoggedEvent[], seen: Set<string>): 
   return changed;
 }
 
-/** Mark today as a session day. Returns true when the day is new. */
-function markSessionDay(mind: MindState): boolean {
-  const today = new Date().toISOString().slice(0, 10);
-  if (mind.sessionDays.includes(today)) return false;
-  mind.sessionDays = [...mind.sessionDays, today].slice(-MAX_DAYS);
-  return true;
+/**
+ * Mark today as a session day. Returns true when anything changed. An evening session (18:00 or
+ * later on the learner's own clock) is noted on the day's ledger — the You screen's "opened Wobo
+ * on your own three evenings this week" is read off it.
+ */
+export function markSessionDay(mind: MindState, now: Date = new Date()): boolean {
+  const today = now.toISOString().slice(0, 10);
+  let changed = false;
+  if (!mind.sessionDays.includes(today)) {
+    mind.sessionDays = [...mind.sessionDays, today].slice(-MAX_DAYS);
+    changed = true;
+  }
+  if (now.getHours() >= 18) {
+    const ledger = dayOf(mind, today);
+    if (!ledger.evening) {
+      ledger.evening = true;
+      putDay(mind, today, ledger);
+      changed = true;
+    }
+  }
+  return changed;
 }
 
 /** Add dwell seconds for a surface (per-stay capped so an idle tab never dominates). */
-function addDwell(mind: MindState, surface: string, seconds: number): void {
+export function addDwell(mind: MindState, surface: string, seconds: number): void {
   const s = Math.min(seconds, 1800);
   if (s < 2) return;
   mind.dwellSec = { ...mind.dwellSec, [surface]: (mind.dwellSec[surface] ?? 0) + s };
+  const today = new Date().toISOString().slice(0, 10);
+  const ledger = dayOf(mind, today);
+  ledger.seconds += s;
+  putDay(mind, today, ledger);
 }
 
 // --- summarizing out -----------------------------------------------------------------------------

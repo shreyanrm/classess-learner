@@ -1,612 +1,344 @@
 'use client';
 
 /**
- * The home — the day as one walkable thread (Concept B, productionised). Wobo arrives first
- * (swoop → land → typed greeting, once per session), then the page IS the journey: a machined
- * bezier drawn down the canvas with data-driven stops that each route somewhere real. Wobo
- * sits on the thread beside the current stop; the chat bar lives beneath the thread's start;
- * the aurora doors wait at the thread's end.
+ * The home — board 01 of design/prototypes/app-v1.html, on the kit.
+ *
+ * The crumb (weekday · class · board), the streak and the learner's initial; the greeting in
+ * Wobo's hand and the one question; a situational line built from the day's real plan; the ask
+ * box, which is the front door to the one conversation; the three today cards (continue,
+ * practice, what Wobo noticed); this week in Wobo's words; and the streak, with the line that
+ * says rest days are fine. Every number on the page is the learner's own — the plan comes from the
+ * registry and the progress store, the note from the activity marks, the observation from the mind.
  */
 
-import { fontFamily } from '@wobo/config';
-import { useRegisterTarget, useWoboBus, WoboBody } from '@wobo/wobo';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { type FormEvent, useEffect, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { openCommandPalette } from '../shell/CommandPalette';
-import { currentFidelity } from '../shell/resilience';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
+import { useEffect, useMemo, useState } from 'react';
+import { useRegistryRevision, useWorld } from '../curriculum/hooks';
+import { loadedTopics } from '../curriculum/registry';
+import { warmFromCache } from '../curriculum/warm';
+import { AppFrame } from '../shell/AppFrame';
 import { useRouter } from '../shell/router';
-import { loadMind, loadProactivity, proactiveChip } from '../store/mind';
+import { loadMind } from '../store/mind';
 import { useProgress } from '../store/progress';
-import { SendIcon, SparkIcon, WaveformIcon } from '../ui/icons';
 import {
-  AuroraButton,
-  cascade,
-  fluidSpace,
-  fluidType,
-  Kbd,
-  MagneticButton,
-  PARALLAX,
-  rise,
-  useParallax,
-  usePointerTilt,
-} from '../ui/kit';
+  AskBox,
+  Avatar,
+  Button,
+  Card,
+  CardFoot,
+  Chip,
+  HandNote,
+  Pill,
+  StreakDays,
+  Tag,
+  TopBar,
+  usePhone,
+  WoboHead,
+} from '../ui/primitives';
 import { useWoboChat } from '../wobo/chat';
 import { useWoboVoice } from '../wobo/voice';
-import { claimDailyQuest, deriveStops } from './home/stops';
-import { Thread } from './home/Thread';
-import { loadProfile } from './you/profile';
-
-function greeting(name: string): string {
-  const h = new Date().getHours();
-  const part =
-    h < 5 ? 'Good night' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-  return `${part}, ${name}`;
-}
-
-// Wobo's line under the greeting — one per day (days-since-epoch rotation), never a poster slogan.
-const DAILY_LINES = [
-  'The day is a walk, not a list',
-  'Curiosity first — the rest follows',
-  'One good question beats ten answers',
-  'Today bends to the curious',
-  'The hard part is only new once',
-  'Mistakes are just data with feelings',
-  'Begin anywhere; it all connects',
-  'Nothing clicks until something snags',
-  'Confusion is the start of knowing',
-  'Stay for the aha, not the marks',
-  'A little every day outruns a lot someday',
-  'Questions are doors left ajar',
-  'Practice makes patterns, not perfect',
-  'What you notice, you never lose',
-  'Thinking slow is still thinking',
-  'The good stuff hides one step past easy',
-  'Today has one idea with your name on it',
-  'Almost right is halfway home',
-  'Let the problem talk first',
-  'Ten quiet minutes can move a mountain',
-  'The pencil remembers what the eye forgets',
-  'Wonder is a muscle — warm it up',
-  'Every expert was once this lost',
-  'Small steps count double here',
-  'We build the bridge as we cross it',
-  'Slow is smooth, smooth is fast',
-  'Follow the itch in the question',
-  'Learning is remembering forward',
-];
-
-const CAPS = {
-  fontSize: fluidType.eyebrow,
-  fontWeight: 600,
-  letterSpacing: '0.15em',
-  textTransform: 'uppercase',
-  color: 'color-mix(in srgb, var(--wobo-ink) 36%, transparent)',
-} as const;
-
-const CHIPS: { label: string; prompt: string }[] = [
-  {
-    label: 'Learn something cool',
-    prompt:
-      'Tell me something genuinely cool from science or math that most people never learn in school.',
-  },
-  {
-    label: 'Open a rabbit hole',
-    prompt: 'Pick a fascinating question connected to what I already know and pull me into it.',
-  },
-  {
-    label: 'What should I do today',
-    prompt: 'Look at where I am and tell me the one best thing to work on right now.',
-  },
-];
-
-/**
- * The sky plane (MOTION.md §1) — a calm ultramarine wash and Wobo's warm beam, drifting at the
- * 0.08 sky rate behind the whole home. Portaled to <body> so it stays viewport-pinned past the
- * route wrapper's residual transform (the same escape the back pill makes). Decorative, muted.
- */
-function HomeSky() {
-  const skyRef = useParallax<HTMLDivElement>(-PARALLAX.sky, { max: 120 });
-  const still = useReducedMotion();
-  // The parallax ref drives transform imperatively, so the breath animates opacity only — the
-  // two writers never touch the same property. A slow ~11s tide makes the personal sky feel lived-in
-  // rather than printed; motion-off holds it steady.
-  const node = (
-    <motion.div
-      ref={skyRef}
-      aria-hidden
-      animate={still ? undefined : { opacity: [0.82, 1, 0.82] }}
-      transition={
-        still ? undefined : { duration: 11, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }
-      }
-      style={{
-        position: 'fixed',
-        inset: '-12% -8% 20% -8%',
-        zIndex: -1,
-        pointerEvents: 'none',
-        willChange: 'transform, opacity',
-        background:
-          'radial-gradient(58% 40% at 50% 4%, var(--wobo-ultramarine-soft) 0%, transparent 72%),' +
-          ' radial-gradient(46% 30% at 50% 30%, rgba(255,201,60,0.06) 0%, transparent 70%)',
-      }}
-    />
-  );
-  return typeof document === 'undefined' ? node : createPortal(node, document.body);
-}
+import {
+  calendarWeek,
+  continueLine,
+  noticed as noticedBy,
+  todayLine,
+  todayPlan,
+} from './home/today';
+import { SET_TITLE } from './practice/set';
+import { activityCounts, weekTopics } from './you/ledger';
+import { boardName, loadProfile, markToday } from './you/profile';
+import { summarise, weekSentence } from './you/week';
+import './home/Home.css';
 
 export function Home() {
   const router = useRouter();
-  const still = useReducedMotion();
-  const { ask, busy, mood, setMood } = useWoboChat();
-  // Pointer parallax on the hero (MOTION.md §1): desktop only, ±6px, spring-lagged.
-  const tilt = usePointerTilt(6);
-  const progress = useProgress();
   const { publishPage } = useWoboBus();
+  const { ask, busy, mood, setMood } = useWoboChat();
+  const progress = useProgress();
+  const world = useWorld();
+  const revision = useRegistryRevision();
+  const phone = usePhone();
+  const profile = loadProfile();
+
+  // What this device already knows of the pinned syllabus, before any subject screen has opened.
+  const worldKey = world
+    ? `${world.frameworkId}:${world.versionId ?? ''}:${world.level ?? ''}`
+    : '';
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the world key is the trigger; the cache read is idempotent
+  useEffect(() => {
+    warmFromCache();
+  }, [worldKey]);
+
+  // The day, from real state. Re-derived whenever the registry ingests or progress moves.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `revision` stands in for the registry's contents
+  const plan = useMemo(() => todayPlan(progress), [progress, revision]);
+  const line = todayLine(plan);
+
+  // Showing up is marked once per visit; the week and the note both read the marks.
+  const [marks] = useState(() => markToday());
+  const week = useMemo(() => calendarWeek(marks), [marks]);
+  // "This week, in Wobo's words" — the You screen's own sentence, from the same ledger, so the
+  // home and You never say two different things under one heading.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `revision` stands in for the registry's contents
+  const summary = useMemo(
+    () =>
+      summarise({
+        now: new Date(),
+        span: 'week',
+        marks,
+        counts: activityCounts(),
+        days: loadMind().days ?? {},
+        topics: weekTopics(),
+        topicProgress: progress.topicProgress,
+        completed: progress.completed,
+      }),
+    [marks, progress.topicProgress, progress.completed, revision],
+  );
+  const sentence = weekSentence(summary);
+  const [seen] = useState(() => noticedBy(loadMind()));
+
+  // The crumb: "Tuesday · Class 8 · CBSE" — the weekday, then the class and board they chose.
+  const weekday = new Date().toLocaleDateString('en-GB', { weekday: 'long' });
+  const crumb = [
+    weekday,
+    world?.level ?? profile.grade,
+    world?.frameworkName ?? boardName(profile.boardId),
+  ]
+    .filter(Boolean)
+    .join(' · ');
+  const initial = profile.name.trim().charAt(0).toUpperCase();
+
+  // The composer — the same door as before: one line into the one conversation, on the chat page.
   const [draft, setDraft] = useState('');
+  const submit = (text: string) => {
+    if (busy) return;
+    setDraft('');
+    router.navigate({ name: 'chat' });
+    void ask(text);
+  };
   const [voiceNote, setVoiceNote] = useState<string | null>(null);
   const voice = useWoboVoice({ setMood });
-
-  // The day, derived from real state — every stop routes somewhere real.
-  const { stops, currentIndex } = useMemo(() => deriveStops(progress), [progress]);
-
-  // Wobo reads the day at code level and can point at it: every stop on the thread, and where Wobo
-  // has walked the learner to. So "what's on my screen" on home names the real stops, not a box.
-  const threadRef = useRegisterTarget<HTMLDivElement>('today-thread', {
-    kind: 'journey',
-    label: "today's walk — the stops on the thread, each a real door",
-    getSceneState: () => ({
-      current: stops[currentIndex]?.title,
-      stops: stops.map((s) => ({ title: s.title, meta: s.meta, kind: s.kind })),
-    }),
-  });
-
-  // The front door's own parts, named so Wobo can point at them, draw on them, and walk a learner
-  // to them ("show me where I type"). Registering is the whole contract: a component Wobo cannot
-  // see is a component Wobo cannot teach with (DESIGN.md §12).
-  const composerRef = useRegisterTarget<HTMLFormElement>('home-composer', {
-    kind: 'composer',
-    label: 'the box where you talk to Wobo',
-    getSceneState: () => ({ draft }),
-  });
-  const chipsRef = useRegisterTarget<HTMLDivElement>('home-chips', {
-    kind: 'suggestions',
-    label: 'the things Wobo is offering to teach right now',
-  });
-  const doorsRef = useRegisterTarget<HTMLDivElement>('home-doors', {
-    kind: 'doors',
-    label: 'the two doors: learn, and practice',
-  });
-
-  // The proactivity dial (You settings) gates every suggestion — quiet means Wobo waits to be asked.
-  const [dial] = useState(() => loadProactivity());
-  const chips = useMemo(() => {
-    if (dial === 'quiet') return [];
-    if (dial !== 'proactive') return CHIPS;
-    const extra = proactiveChip(loadMind());
-    return extra ? [...CHIPS, extra] : CHIPS;
-  }, [dial]);
-
-  // The opening — once per session, Wobo arrives before anything else exists.
-  const [firstVisit] = useState(() => sessionStorage.getItem('wobo-home-opened') !== '1');
-  // Family N, actually applied: a learner on a 2G-class link, with Data Saver on, or who asked the
-  // OS for less motion skips the 1.5s arrival and the letter-by-letter greeting and lands on the
-  // finished page. Grace degrades; help never does.
-  // Decided once, at mount: fidelity flipping mid-arrival would abort an animation in flight.
-  const [swoop] = useState(() => firstVisit && currentFidelity() === 'full');
-  const [landed, setLanded] = useState(!swoop);
-  const [greetShown, setGreetShown] = useState(swoop ? 0 : 999);
-  // Whether or not the arrival played, this session has now opened home — so a second visit does
-  // not replay it, and a low-fidelity first visit is still recorded.
-  useEffect(() => {
-    if (landed) sessionStorage.setItem('wobo-home-opened', '1');
-  }, [landed]);
-  // Identity comes from the onboarded profile — the catalog's seed learner is only a fallback.
-  const greetingText = greeting(loadProfile().name);
-  useEffect(() => {
-    if (!landed || greetShown >= greetingText.length) return;
-    const t = setInterval(() => setGreetShown((n) => n + 1), 28);
-    return () => clearInterval(t);
-  }, [landed, greetShown, greetingText.length]);
-  // Safety net: if the swoop is ever interrupted (tab hidden, HMR, dropped frame callback),
-  // the hero must still land — the page can never stay blank past the swoop's duration.
-  useEffect(() => {
-    if (landed) return;
-    const t = window.setTimeout(() => {
-      setLanded(true);
-      sessionStorage.setItem('wobo-home-opened', '1');
-    }, 2200);
-    return () => window.clearTimeout(t);
-  }, [landed]);
-
-  useEffect(() => {
-    publishPage({
-      route: 'home',
-      state: { title: 'today', intent: 'walk the day', stops: stops.map((s) => s.title) },
-    });
-  }, [publishPage, stops]);
-
   const voiceOn =
     voice.status === 'listening' || voice.status === 'speaking' || voice.status === 'connecting';
   const toggleVoice = () => {
-    if (voiceOn) return voice.stop();
+    if (voiceOn) {
+      voice.stop();
+      return;
+    }
     void voice.start().then((state) => {
-      // 'idle' back from start() means getUserMedia was denied/blocked — don't fail silently.
-      const note =
+      // 'idle' back from start() means the microphone was refused — say so rather than fail silently.
+      const said =
         state === 'unavailable'
           ? 'My voice is asleep right now — the words still arrive'
           : state === 'idle'
             ? 'Allow microphone access to talk with Wobo'
             : null;
-      if (note) {
-        setVoiceNote(note);
+      if (said) {
+        setVoiceNote(said);
         window.setTimeout(() => setVoiceNote(null), 3000);
       }
     });
   };
 
-  // Starting to talk opens the conversation page — the same never-ending thread Wobo carries.
-  const submit = (e: FormEvent) => {
-    e.preventDefault();
-    const text = draft.trim();
-    if (!text || busy) return;
-    setDraft('');
-    router.navigate({ name: 'chat' });
-    void ask(text);
-  };
+  // Wobo reads the home at code level: the box, and the three cards of the day (DESIGN.md §12).
+  const composerRef = useRegisterTarget<HTMLDivElement>('home-composer', {
+    kind: 'composer',
+    label: 'the box where you talk to Wobo',
+    getSceneState: () => ({ draft }),
+  });
+  const todayRef = useRegisterTarget<HTMLDivElement>('home-today', {
+    kind: 'plan',
+    label: "today's cards — continue, practice, and what Wobo noticed",
+    getSceneState: () => ({
+      continue: plan.continue?.topic.name,
+      next: plan.next?.topic.name,
+      noticed: seen?.title,
+    }),
+  });
 
-  const now = new Date();
-  // Just the date — it's obviously today, saying so is noise.
-  const dateLine = now
-    .toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
-    .replace(/,/g, '');
+  useEffect(() => {
+    publishPage({
+      route: 'home',
+      state: {
+        title: 'today',
+        intent: 'figure out tonight',
+        line,
+        continue: plan.continue?.topic.name,
+        next: plan.next?.topic.name,
+      },
+    });
+  }, [publishPage, line, plan]);
 
-  const currentKind = stops[currentIndex]?.kind;
-  // Under the quiet dial Wobo never volunteers a line — presence without a nudge.
-  const woboLine = busy
-    ? 'Thinking…'
-    : dial === 'quiet'
-      ? 'Here when you need me'
-      : currentKind === 'continue'
-        ? 'Right where we left it'
-        : 'I marked today’s walk for you';
-
-  // Wobo, on the journey — the Thread seats Wobo beside the current stop.
-  const woboNode = (
-    <motion.div
-      initial={swoop ? { x: '30vw', y: '-70vh', rotate: 16, opacity: 0 } : false}
-      animate={{
-        x: ['30vw', '12vw', '-2vw', '0vw'],
-        y: ['-70vh', '-36vh', '-5vh', '0vh'],
-        rotate: [16, 9, -7, 0],
-        opacity: [0, 1, 1, 1],
-      }}
-      transition={
-        swoop
-          ? { duration: 1.5, times: [0, 0.45, 0.8, 1], ease: [0.3, 0.9, 0.4, 1] }
-          : { duration: 0 }
-      }
-      onAnimationComplete={() => {
-        if (!landed) {
-          setLanded(true);
-          sessionStorage.setItem('wobo-home-opened', '1');
-          setMood('celebrate');
-          window.setTimeout(() => setMood('idle'), 1100);
-        }
-      }}
-      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}
-    >
-      <motion.div style={{ x: tilt.x, y: tilt.y }}>
-        <WoboBody size={96} mood={busy ? 'thinking' : mood} gaze="pointer" label="Wobo" />
-      </motion.div>
-      <div
-        style={{
-          fontFamily: fontFamily.handwritten,
-          fontSize: 20,
-          fontWeight: 600,
-          color: 'color-mix(in srgb, var(--wobo-ink) 58%, transparent)',
-          textAlign: 'center',
-          lineHeight: 1.15,
-          maxWidth: 126,
-        }}
-      >
-        {woboLine}
-      </div>
-    </motion.div>
+  // The practice door is always drawn (a row with a hole in it is "emptiness that is just
+  // absence", DESIGN.md §2): the topic in flight, else the first the world knows; with no topic
+  // loaded yet, the door opens the practice set itself.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `revision` stands in for the registry's contents
+  const practiceTopic = useMemo(
+    () => plan.continue?.topic ?? plan.next?.topic ?? loadedTopics()[0] ?? null,
+    [plan, revision],
   );
 
   return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
-      <HomeSky />
-      {/* beneath the global AppHeader — nothing at the top edge */}
-      <motion.div
-        variants={cascade}
-        initial="hidden"
-        animate={landed ? 'show' : 'hidden'}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: `calc(64px + ${fluidSpace.lg}) ${fluidSpace.gutter} 0`,
-        }}
-      >
-        {/* the trailhead — date, greeting, and Wobo's hand */}
-        <motion.div variants={rise} style={CAPS}>
-          {dateLine}
-        </motion.div>
-        <motion.h1
-          variants={rise}
-          style={{
-            margin: `${fluidSpace.sm} 0 0`,
-            fontSize: fluidType.display,
-            fontWeight: 300,
-            letterSpacing: '-0.03em',
-            color: 'var(--wobo-ink)',
-            textAlign: 'center',
-            lineHeight: 1.1,
-          }}
-        >
-          {greetingText.slice(0, greetShown)}
-          {greetShown < greetingText.length && landed && (
-            <motion.span
-              aria-hidden
-              animate={still ? undefined : { opacity: [1, 0.15, 1] }}
-              transition={
-                still
-                  ? undefined
-                  : { duration: 1, repeat: Number.POSITIVE_INFINITY, ease: 'linear' }
-              }
-              style={{
-                display: 'inline-block',
-                marginLeft: '0.04em',
-                fontWeight: 200,
-                color: 'var(--wobo-ink-faint)',
-              }}
-            >
-              |
-            </motion.span>
-          )}
-        </motion.h1>
-        <motion.div
-          variants={rise}
-          style={{
-            marginTop: 8,
-            fontFamily: fontFamily.handwritten,
-            fontSize: 'clamp(19px, 1.6vw, 24px)',
-            color: 'color-mix(in srgb, var(--wobo-ink) 58%, transparent)',
-          }}
-        >
-          {DAILY_LINES[Math.floor(now.getTime() / 86_400_000) % DAILY_LINES.length]}
-        </motion.div>
+    <AppFrame active="home">
+      <TopBar
+        crumb={crumb}
+        right={
+          <>
+            <Chip>Streak · {progress.streakDays}</Chip>
+            <Avatar aria-hidden={initial ? undefined : true}>{initial}</Avatar>
+          </>
+        }
+      />
 
-        {/* the chat bar — the door; the conversation itself lives on its own page */}
-        <motion.form
-          ref={composerRef}
-          variants={rise}
-          onSubmit={submit}
-          style={{
-            width: '100%',
-            maxWidth: 560,
-            marginTop: fluidSpace.md,
-            display: 'flex',
-            gap: 10,
-            alignItems: 'center',
-          }}
-        >
-          <div style={{ position: 'relative', flex: 1, display: 'flex' }}>
-            <input
+      <div className="hm-greet">
+        <div>
+          <h1>
+            <span className="hand">Hey{profile.name.trim() ? ` ${profile.name.trim()}` : ''},</span>
+            what are we figuring out tonight?
+          </h1>
+          <p>{line}</p>
+          <div ref={composerRef}>
+            <AskBox
+              placeholder="Ask anything from your syllabus, or paste question 7"
               value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onFocus={() => setMood('listening')}
-              onBlur={() => setMood('idle')}
-              placeholder="Talk to Wobo…"
-              style={{
-                flex: 1,
-                height: 52,
-                padding: '0 52px 0 18px',
-                fontSize: fluidType.body,
-                fontFamily: 'inherit',
-                border: '1px solid var(--wobo-card-border)',
-                borderRadius: 3,
-                background: 'var(--wobo-card)',
-                color: 'var(--wobo-ink)',
-                transition: 'border-color 0.2s ease',
-              }}
-              onFocusCapture={(e) => {
-                e.currentTarget.style.borderColor =
-                  'color-mix(in srgb, var(--wobo-ultramarine) 55%, var(--wobo-card-border))';
-              }}
-              onBlurCapture={(e) => {
-                e.currentTarget.style.borderColor = 'var(--wobo-card-border)';
-              }}
+              onChange={setDraft}
+              onAsk={submit}
+              onMic={toggleVoice}
+              micLabel={voiceOn ? 'Stop voice' : 'Talk by voice'}
+              label="Ask Wobo"
             />
-            <button
-              type="button"
-              onClick={toggleVoice}
-              aria-label={voiceOn ? 'Stop voice' : 'Talk by voice'}
-              style={{
-                position: 'absolute',
-                right: 6,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                width: 44,
-                height: 44,
-                display: 'grid',
-                placeItems: 'center',
-                border: 'none',
-                background: 'transparent',
-                color: voiceOn ? '#FF5A1F' : 'var(--wobo-ink-faint)',
-                cursor: 'pointer',
-                transition: 'color 0.25s ease',
-              }}
-              onMouseEnter={(e) => {
-                if (!voiceOn) e.currentTarget.style.color = 'var(--wobo-ink)';
-              }}
-              onMouseLeave={(e) => {
-                if (!voiceOn) e.currentTarget.style.color = 'var(--wobo-ink-faint)';
-              }}
+          </div>
+          {voiceNote && <p>{voiceNote}</p>}
+        </div>
+        <div className="hm-head">
+          <WoboHead
+            size={phone ? 120 : 180}
+            shadow
+            mood={busy ? 'thinking' : mood}
+            gaze="pointer"
+            label="Wobo"
+          />
+        </div>
+      </div>
+
+      <div className="hm-today" ref={todayRef}>
+        {plan.continue ? (
+          <Card tint="pig">
+            <Tag>Continue</Tag>
+            <h3>{plan.continue.topic.name}</h3>
+            <p>{continueLine(plan.continue)}</p>
+            <CardFoot>
+              <Button
+                size="sm"
+                onClick={() =>
+                  plan.continue &&
+                  router.navigate({ name: 'course', topicId: plan.continue.topic.id })
+                }
+              >
+                Continue
+              </Button>
+              {/* TODO(data): the prototype's pill is a duration ("6 min"); until a course reports
+                  one, the pill carries how far the learner has walked. */}
+              <Pill>{Math.round(plan.continue.progress * 100)}%</Pill>
+            </CardFoot>
+          </Card>
+        ) : plan.next ? (
+          <Card tint="pig">
+            <Tag>Continue</Tag>
+            <h3>{plan.next.topic.name}</h3>
+            <p>{continueLine(plan.next)}</p>
+            <CardFoot>
+              <Button
+                size="sm"
+                onClick={() =>
+                  plan.next && router.navigate({ name: 'course', topicId: plan.next.topic.id })
+                }
+              >
+                Continue
+              </Button>
+            </CardFoot>
+          </Card>
+        ) : plan.world ? (
+          <Card tint="pig">
+            <Tag>Continue</Tag>
+            <h3>Open your subjects</h3>
+            <p>Your chapters come from your board when you open one.</p>
+            <CardFoot>
+              <Button size="sm" onClick={() => router.navigate({ name: 'learn' })}>
+                Learn
+              </Button>
+            </CardFoot>
+          </Card>
+        ) : (
+          <Card tint="pig">
+            <Tag>Continue</Tag>
+            <h3>Tell me your board</h3>
+            <p>Then your own syllabus lands here.</p>
+            <CardFoot>
+              <Button size="sm" onClick={() => router.navigate({ name: 'you' })}>
+                Choose your board
+              </Button>
+            </CardFoot>
+          </Card>
+        )}
+
+        <Card tint="mint">
+          <Tag>Practice</Tag>
+          <h3>{practiceTopic?.name ?? SET_TITLE}</h3>
+          <p>Shade, drag and draw. Wobo rings the gap when you're close.</p>
+          <CardFoot>
+            <Button
+              size="sm"
+              tone="quiet"
+              onClick={() =>
+                router.navigate(
+                  practiceTopic
+                    ? { name: 'sandbox', topicId: practiceTopic.id }
+                    : { name: 'practice' },
+                )
+              }
             >
-              <WaveformIcon active={voiceOn} size={19} />
-            </button>
-          </div>
-          {/* the ask affordance exists only once there is something to ask */}
-          <AnimatePresence initial={false}>
-            {draft.trim() && (
-              <motion.span
-                key="ask"
-                initial={{ opacity: 0, scale: 0.88 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.88 }}
-                transition={{ type: 'spring', stiffness: 380, damping: 26 }}
-                style={{ display: 'inline-flex' }}
-              >
-                <MagneticButton variant="primary" onClick={() => {}} ariaLabel="Ask Wobo">
-                  <SendIcon size={13} /> Ask
-                </MagneticButton>
-              </motion.span>
+              Start
+            </Button>
+            {/* TODO(data): the prototype's pill is a duration ("8 min"); no practice set reports one yet. */}
+          </CardFoot>
+        </Card>
+
+        {seen && (
+          <Card tint="marigold">
+            <Tag>Wobo noticed</Tag>
+            <h3>{seen.title}</h3>
+            <p>That's exactly how learning looks. It goes in the Sunday note.</p>
+            <CardFoot>
+              <WoboHead size={40} />
+              {seen.when && <Pill>{seen.when}</Pill>}
+            </CardFoot>
+          </Card>
+        )}
+      </div>
+
+      <div className="hm-split">
+        <div className="hm-week">
+          <Tag>{summary.tag}</Tag>
+          <HandNote>
+            {sentence.map((seg, i) =>
+              seg.em ? (
+                // biome-ignore lint/suspicious/noArrayIndexKey: the segments are a fixed sentence
+                <em key={i}>{seg.text}</em>
+              ) : (
+                // biome-ignore lint/suspicious/noArrayIndexKey: the segments are a fixed sentence
+                <span key={i}>{seg.text}</span>
+              ),
             )}
-          </AnimatePresence>
-        </motion.form>
-        {voiceNote && (
-          <div style={{ marginTop: 8, color: 'var(--wobo-ink-500)', fontSize: fluidType.small }}>
-            {voiceNote}
-          </div>
-        )}
-
-        {/* learn-something-cool chips — gated by the proactivity dial */}
-        {chips.length > 0 && (
-          <motion.div
-            ref={chipsRef}
-            variants={rise}
-            style={{
-              display: 'flex',
-              gap: 8,
-              marginTop: fluidSpace.sm,
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-            }}
-          >
-            {chips.map((c) => (
-              <button
-                key={c.label}
-                type="button"
-                onClick={() => {
-                  if (busy) return;
-                  router.navigate({ name: 'chat' });
-                  void ask(c.prompt);
-                }}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 7,
-                  minHeight: 44,
-                  border: 'none',
-                  background: 'var(--wobo-tonal)',
-                  color: 'var(--wobo-ink)',
-                  borderRadius: 3,
-                  padding: '10px 18px',
-                  fontSize: fluidType.small,
-                  fontWeight: 550,
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                  transition: 'border-color 0.25s ease, transform 0.2s ease, color 0.25s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--wobo-tonal-hover)';
-                  e.currentTarget.style.color = 'var(--wobo-ultramarine)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'var(--wobo-tonal)';
-                  e.currentTarget.style.color = 'var(--wobo-ink)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                <SparkIcon size={11} /> {c.label}
-              </button>
-            ))}
-          </motion.div>
-        )}
-
-        {/* the doors, at hand — Learn and Practice reachable before the walk begins */}
-        <motion.div
-          ref={doorsRef}
-          variants={rise}
-          style={{
-            display: 'flex',
-            gap: 12,
-            marginTop: fluidSpace.md,
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-          }}
-        >
-          <AuroraButton
-            size="md"
-            onClick={() => router.navigate({ name: 'learn' })}
-            style={{ minWidth: 132 }}
-            flashDelay={swoop ? 1.6 : undefined}
-          >
-            Learn
-          </AuroraButton>
-          <AuroraButton
-            size="md"
-            onClick={() => router.navigate({ name: 'practice' })}
-            style={{ minWidth: 132 }}
-            flashDelay={swoop ? 1.75 : undefined}
-          >
-            Practice
-          </AuroraButton>
-        </motion.div>
-      </motion.div>
-
-      {/* the day, drawn — one thread, stops on it, Wobo walking it */}
-      <div ref={threadRef} style={{ marginTop: fluidSpace.md }}>
-        <Thread
-          stops={stops}
-          currentIndex={currentIndex}
-          wobo={woboNode}
-          onGo={(route) => router.navigate(route)}
-          onArrive={(stop) => {
-            // The bonus chest pays out its shown bounty as real XP, once per day.
-            if (stop.kind === 'bonus' && stop.bounty !== undefined && claimDailyQuest()) {
-              progress.award('bonus', { amount: stop.bounty, hue: stop.hue });
-            }
-          }}
+          </HandNote>
+        </div>
+        <StreakDays
+          count={progress.streakDays}
+          title="days in a row"
+          days={week}
+          note="Rest days don't break it. Learning does not need guilt."
         />
       </div>
-
-      {/* The palette's only entry point used to be ⌘K, which does not exist on a phone or in the
-          installed PWA. The same line is now the button that opens it. */}
-      <div
-        style={{
-          padding: `${fluidSpace.md} 0 18px`,
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
-        <button
-          type="button"
-          onClick={openCommandPalette}
-          aria-label="Open the command palette — go anywhere, or ask anything"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            // A real touch target, not a caption: 44px is the floor a thumb needs.
-            minHeight: 44,
-            padding: '0 14px',
-            border: 'none',
-            background: 'transparent',
-            color: 'var(--wobo-ink-300)',
-            fontSize: '0.75rem',
-            fontFamily: 'inherit',
-            cursor: 'pointer',
-            borderRadius: 'var(--wobo-radius-sm)',
-          }}
-        >
-          <Kbd>⌘K</Kbd> Anything, anywhere
-        </button>
-      </div>
-    </div>
+    </AppFrame>
   );
 }

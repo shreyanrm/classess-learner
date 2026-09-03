@@ -16,6 +16,7 @@ import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { CloseIcon, SendIcon, WaveformIcon } from '../ui/icons';
+import { useShellMounted } from '../ui/shellPresence';
 import { sfx } from '../ui/sound';
 import { boardTurn } from './board-turn';
 import { appendToArchive, type ChatTurn, useWoboChat } from './chat';
@@ -122,6 +123,11 @@ export function WoboCompanion() {
   const [ptt, setPtt] = useState(false);
   const [pttNote, setPttNote] = useState<string | null>(null);
   const reduced = useReducedMotion();
+  // A screen on the app shell (the four doors, the lesson) IS Wobo's presence: Wobo's head lives
+  // on its cards and in the say row, the rail carries hold-to-talk, and the prototype's boards
+  // draw no docked orb. The orb would only cover the bar's fourth door on a phone. It stays
+  // mounted (the hold and the drawer keep working) and simply does not show.
+  const shelled = useShellMounted();
   const scrollRef = useRef<HTMLDivElement | null>(null);
   // The drawer is modal: focus lands on the composer when it opens and returns to whatever opened
   // it when it closes.
@@ -428,7 +434,7 @@ export function WoboCompanion() {
           re-fly, and the fixed drawer (higher z) covers Wobo while open. */}
       {/* The push-to-talk halo — a soft molten pulse ring around Wobo while Wobo is on a live hold,
           visible without any drawer. Reduced motion: a calm static ring. */}
-      {ptt && (
+      {ptt && !shelled && (
         <motion.div
           aria-hidden
           animate={reduced ? undefined : { scale: [1, 1.16, 1], opacity: [0.55, 0.3, 0.55] }}
@@ -453,7 +459,7 @@ export function WoboCompanion() {
           }}
         />
       )}
-      <div style={{ visibility: open ? 'hidden' : 'visible' }}>
+      <div style={{ visibility: open || shelled ? 'hidden' : 'visible' }}>
         <FlyingWobo
           routeKey={route.name}
           mood={expression}
@@ -482,7 +488,7 @@ export function WoboCompanion() {
       </div>
       {/* The lean-in: Wobo offers a pointer, Wobo does not take over. Both answers are one tap, and
           walking away is an answer too — it retires on its own. */}
-      {offer && !open && (
+      {offer && !open && !shelled && (
         <div
           style={{
             position: 'fixed',
@@ -520,7 +526,7 @@ export function WoboCompanion() {
           </div>
         </div>
       )}
-      {pttNote && (
+      {pttNote && !shelled && (
         <div
           style={{
             position: 'fixed',

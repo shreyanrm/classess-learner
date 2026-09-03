@@ -14,14 +14,18 @@
  *  · a table of contents. These are long documents and a reader usually arrives looking for one
  *    section — refunds, what happens to a child's data, how to cancel.
  *  · print rules. A parent who wants to keep the terms should get a clean page, not a screenshot of
- *    a navigation bar (`SiteShell.tsx`).
+ *    a navigation bar (`site/styles.ts`).
  *
- * The contact page carries no new promises: it lists the mailboxes the documents themselves name.
+ * The "in plain words" card every document opens with is lifted above the body, in the
+ * highlighter and Wobo's hand, because it is the honest summary a reader should be able to stop at.
  */
 
 import { useEffect } from 'react';
 import { useRouter } from '../../shell/router';
-import { SiteLink } from '../site/nav';
+import { Label, Pill, Tag } from '../../ui/primitives';
+import { ClosePanel } from '../site/ClosePanel';
+import { SiteLink, type SiteSection } from '../site/nav';
+import { Reveal } from '../site/Reveal';
 import { SiteShell } from '../site/SiteShell';
 import { canonicalSlug, legalPath, spansText } from './catalog';
 import { documentSlugs, legalDocument, legalIndex, setDrafted } from './docs';
@@ -32,12 +36,21 @@ import { Markdown, PlainWords } from './Prose';
 const INTRO =
   'Everything Wobo has to tell a learner and a parent: how the product works, what it does with their information, what it costs, and what it will not do.';
 
+/** The footer names five of the documents by their own link; the rest read as the legal set. */
+const SECTIONS: Readonly<Record<string, SiteSection>> = {
+  'terms-of-service': 'terms',
+  'privacy-policy': 'privacy',
+  'childrens-privacy': 'children',
+  cookies: 'cookies',
+  'accessibility-statement': 'accessibility',
+};
+
 /** Stated on every page, because it is true of every document here. */
 function DraftNotice({ drafted, reviews }: { drafted: string | null; reviews?: number }) {
   return (
-    <aside className="lp-panel" aria-label="The state of these documents">
-      <p className="lp-mark">Draft</p>
-      <p style={{ marginTop: 8 }}>
+    <aside className="st-note" aria-label="The state of these documents">
+      <Tag>Draft</Tag>
+      <p>
         {drafted ? `Drafted ${drafted}. ` : ''}Written by the Wobo team and not yet reviewed by a
         lawyer.
         {typeof reviews === 'number' && reviews > 0
@@ -53,33 +66,37 @@ function Index() {
   const rows = legalIndex();
   return (
     <>
-      <section className="lp-wrap lp-head">
-        <p className="lp-eyebrow">Legal</p>
-        <h1 className="lp-h1x">The legal set.</h1>
-        <p className="lp-lead">{INTRO}</p>
-        <div style={{ marginTop: 26, maxWidth: 640 }}>
-          <DraftNotice drafted={setDrafted()} />
+      <section className="st-page-hero">
+        <div className="st-wrap">
+          <Label>Legal</Label>
+          <h1>The legal set.</h1>
+          <p className="st-sub">{INTRO}</p>
+          <div style={{ marginTop: 'var(--s3)', maxWidth: 640 }}>
+            <DraftNotice drafted={setDrafted()} />
+          </div>
         </div>
       </section>
-      <section className="lp-wrap" style={{ paddingBottom: 'clamp(56px, 8vw, 96px)' }}>
-        <div className="lp-rows">
-          {rows.map((row) => {
-            const doc = legalDocument(row.slug);
-            return (
-              <SiteLink key={row.slug} href={legalPath(row.slug)} className="lp-row">
-                <p className="lp-row-title">{doc?.shape.title ?? row.slug}</p>
-                <p className="lp-row-what">{spansText(row.what)}</p>
-                <p className="lp-row-who">{spansText(row.who)}</p>
-              </SiteLink>
-            );
-          })}
-          <SiteLink href="/contact" className="lp-row">
-            <p className="lp-row-title">How to reach us</p>
-            <p className="lp-row-what">
-              Every mailbox these documents name, and a message straight to a person.
-            </p>
-            <p className="lp-row-who">anyone with a question</p>
-          </SiteLink>
+      <section className="st-section" style={{ paddingTop: 0 }}>
+        <div className="st-wrap">
+          <Reveal className="lg-rows">
+            {rows.map((row) => {
+              const doc = legalDocument(row.slug);
+              return (
+                <SiteLink key={row.slug} href={legalPath(row.slug)} className="lg-row">
+                  <p className="lg-row-title">{doc?.shape.title ?? row.slug}</p>
+                  <p className="lg-row-what">{spansText(row.what)}</p>
+                  <p className="lg-row-who">{spansText(row.who)}</p>
+                </SiteLink>
+              );
+            })}
+            <SiteLink to={{ name: 'contact' }} className="lg-row">
+              <p className="lg-row-title">How to reach us</p>
+              <p className="lg-row-what">
+                Every mailbox these documents name, and a message straight to a person.
+              </p>
+              <p className="lg-row-who">anyone with a question</p>
+            </SiteLink>
+          </Reveal>
         </div>
       </section>
     </>
@@ -94,32 +111,26 @@ function Document({ slug }: { slug: string }) {
   const { shape } = doc;
   return (
     <>
-      <section className="lp-wrap lp-head">
-        <p className="lp-crumb">
-          <SiteLink href={legalPath()}>Legal</SiteLink>
-          <span aria-hidden>/</span>
-          {shape.title ?? slug}
-        </p>
-        <h1 className="lp-h1x">{shape.title ?? slug}</h1>
-        <p className="lp-meta">
-          {shape.drafted ? (
-            <span>
-              Drafted <b>{shape.drafted}</b>
-            </span>
-          ) : null}
-          {shape.version ? (
-            <span>
-              Version <b>{shape.version}</b>
-            </span>
-          ) : null}
-          <span>
-            <b>{doc.reviews}</b> question{doc.reviews === 1 ? '' : 's'} open for counsel
-          </span>
-        </p>
+      <section className="st-page-hero">
+        <div className="st-wrap">
+          <nav className="st-crumb" aria-label="Where this page sits">
+            <SiteLink to={{ name: 'legal' }}>Legal</SiteLink>
+            <span aria-hidden>/</span>
+            <b>{shape.title ?? slug}</b>
+          </nav>
+          <h1>{shape.title ?? slug}</h1>
+          <div className="lg-meta">
+            {shape.drafted ? <Pill>Drafted {shape.drafted}</Pill> : null}
+            {shape.version ? <Pill>Version {shape.version}</Pill> : null}
+            <Pill>
+              {doc.reviews} question{doc.reviews === 1 ? '' : 's'} open for counsel
+            </Pill>
+          </div>
+        </div>
       </section>
-      <div className="lp-wrap lp-doc">
-        <nav className="lp-toc lp-print-hide" aria-label="Sections of this document">
-          <p className="lp-mark">Contents</p>
+      <div className="st-wrap lg-doc">
+        <nav className="lg-toc st-print-hide" aria-label="Sections of this document">
+          <Label>Contents</Label>
           <ol>
             {shape.contents.map((heading) => (
               <li key={heading.id}>
@@ -128,14 +139,14 @@ function Document({ slug }: { slug: string }) {
             ))}
           </ol>
         </nav>
-        <article className="lp-prose">
-          <DraftNotice drafted={shape.drafted} reviews={doc.reviews} />
-          {shape.plainWords ? (
-            <div style={{ marginTop: 26 }}>
-              <PlainWords paragraphs={shape.plainWords} known={known} />
-            </div>
-          ) : null}
-          <Markdown blocks={documentBody(doc.blocks)} known={known} />
+        <article>
+          <div style={{ marginBottom: 'var(--s3)' }}>
+            <DraftNotice drafted={shape.drafted} reviews={doc.reviews} />
+          </div>
+          {shape.plainWords ? <PlainWords paragraphs={shape.plainWords} known={known} /> : null}
+          <div className="st-prose">
+            <Markdown blocks={documentBody(doc.blocks)} known={known} />
+          </div>
         </article>
       </div>
     </>
@@ -145,12 +156,8 @@ function Document({ slug }: { slug: string }) {
 /**
  * `/legal/contact` is an ALIAS of `/contact`, not a second contact page.
  *
- * There were two: this one listed the mailboxes the documents name, and `/contact` composed a
- * message to one of them. Two pages doing one job means a visitor finds whichever the page they
- * happened to be on links to, and the landing footer and the legal index disagreed about which
- * that was. The address is kept because it is published in the landing footer and in the documents
- * themselves; it now replaces itself with the real page, so nothing that already links here breaks
- * and the back button does not bounce.
+ * The address is kept because it is published in the documents themselves; it replaces itself with
+ * the real page, so nothing that already links here breaks and the back button does not bounce.
  */
 function ContactAlias() {
   const router = useRouter();
@@ -158,15 +165,17 @@ function ContactAlias() {
     router.replace({ name: 'contact' });
   }, [router]);
   return (
-    <section className="lp-wrap lp-head" style={{ paddingBottom: 'clamp(56px, 8vw, 96px)' }}>
-      <h1 className="lp-h1x">How to reach us.</h1>
-      <p className="lp-lead">
-        Taking you to the contact page, where every mailbox is listed and you can write to one.
-      </p>
-      <div className="lp-cta" style={{ marginTop: 24 }}>
-        <SiteLink href="/contact" className="lp-btn lp-btn--pigment">
-          Open the contact page
-        </SiteLink>
+    <section className="st-page-hero">
+      <div className="st-wrap">
+        <h1>How to reach us.</h1>
+        <p className="st-sub">
+          Taking you to the contact page, where every mailbox is listed and you can write to one.
+        </p>
+        <div className="st-row">
+          <SiteLink to={{ name: 'contact' }} className="st-btn st-pig">
+            Open the contact page
+          </SiteLink>
+        </div>
       </div>
     </section>
   );
@@ -175,16 +184,18 @@ function ContactAlias() {
 /** An address that is not one of ours: say so, and offer the way back. */
 function NotFound({ slug }: { slug: string }) {
   return (
-    <section className="lp-wrap lp-head" style={{ paddingBottom: 'clamp(56px, 8vw, 96px)' }}>
-      <h1 className="lp-h1x">There is no document at that address.</h1>
-      <p className="lp-lead">
-        Nothing in the legal set is called <code>{slug}</code>. The ten documents are listed on the
-        index.
-      </p>
-      <div className="lp-cta" style={{ marginTop: 24 }}>
-        <SiteLink href={legalPath()} className="lp-btn lp-btn--pigment">
-          The legal set
-        </SiteLink>
+    <section className="st-page-hero">
+      <div className="st-wrap">
+        <h1>There is no document at that address.</h1>
+        <p className="st-sub">
+          Nothing in the legal set is called <code>{slug}</code>. The ten documents are listed on
+          the index.
+        </p>
+        <div className="st-row">
+          <SiteLink to={{ name: 'legal' }} className="st-btn st-pig">
+            The legal set
+          </SiteLink>
+        </div>
       </div>
     </section>
   );
@@ -197,7 +208,7 @@ export function Legal({ slug }: { slug?: string }) {
     ? `${legalDocument(canonical)?.shape.title ?? 'Legal'} — Wobo`
     : 'The legal set — Wobo';
   return (
-    <SiteShell current="legal" title={title}>
+    <SiteShell current={SECTIONS[canonical] ?? 'legal'} title={title}>
       {!canonical ? (
         <Index />
       ) : canonical === 'contact' ? (
@@ -205,6 +216,7 @@ export function Legal({ slug }: { slug?: string }) {
       ) : (
         <Document slug={canonical} />
       )}
+      <ClosePanel />
     </SiteShell>
   );
 }

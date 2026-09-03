@@ -30,7 +30,7 @@ test('approval card: Wobo proposes starting practice, approve executes', async (
 
   // the home chat bar is the door — it navigates to the chat page, then asks. "practice" routes
   // the turn to the start_practice capability (execute_with_permission → an approval card).
-  const bar = page.getByPlaceholder('Talk to Wobo…');
+  const bar = page.getByPlaceholder('Ask anything from your syllabus, or paste question 7');
   await bar.fill('practice this');
   await bar.press('Enter');
 

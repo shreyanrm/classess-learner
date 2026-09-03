@@ -1,43 +1,90 @@
 'use client';
 
 /**
- * The course player — the keystone (DESIGN.md §8, §9). A guided-discovery shell: full-bleed card
- * area, a thin segmented progress bar (endowed, eased), close top-left, and one action bar at the
- * bottom. Cards slide horizontally on springs. Wobo stays docked (mounted globally) and reads
- * every interactive card at code level through the bus.
+ * The lesson — board 03 of design/prototypes/app-v1.html (DESIGN.md is law). The app shell with
+ * the hold-to-talk pill in the rail; the crumb and the three view chips; the plane card (Wobo's
+ * bar, the canvas, the say row); and the side column (this lesson's steps, ask about this, your
+ * place).
  *
- * Three journeys share the shell: the atom (topic m2-1 — the complete proven course), the honest
- * composing journey for topics whose verified course is still being prepared, and the free-play
- * sandbox (route `sandbox`) that opens straight into the what-if card.
+ * The canvas holds the lesson's cards — the atom journey, the composed course, or the free-play
+ * sandbox — and, once Wobo has drawn, Wobo's board over them: the existing renderer, portalled in
+ * by the stage (wobo/Stage.tsx) through the lesson-view seam. Nothing about the board is drawn
+ * here; this screen is the frame around it.
  */
 
-import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { chapterById, topicById } from '../curriculum/registry';
+import {
+  armLasso,
+  BoardStore,
+  BoardSurface,
+  restoreBoard,
+  useRegisterTarget,
+  useWoboBus,
+} from '@wobo/wobo';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  type PointerEvent as ReactPointerEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
+import { useRegistryRevision } from '../curriculum/hooks';
+import { chapterById, subjectById, topicById } from '../curriculum/registry';
+import { ensureTopic, warmFromCache } from '../curriculum/warm';
+import { AppFrame } from '../shell/AppFrame';
 import { useRouter } from '../shell/router';
 import { enqueue as enqueueDownload, getDownload } from '../store/downloads';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
-import { CloseIcon } from '../ui/icons';
+import { Button, Card, Chip, Tag, TopBar, WoboHead } from '../ui/primitives';
+import { readNotes, type SavedBoard } from '../wobo/board-notes';
+import { boardTurn } from '../wobo/board-turn';
+import { holdToTalkEnd, holdToTalkStart } from '../wobo/hold';
+import { type LessonView, lessonView, useLessonView } from '../wobo/lesson-view';
 import { MuteButton, ReplayButton, useCardNarration } from '../wobo/speech';
 import { AtomJourney } from './course/AtomJourney';
 import { Composing } from './course/Composing';
-import { ActionBar, type BarState, SegmentedProgress, whisper } from './course/shared';
+import { type BarState, type LessonOutline, useAdvanceTarget } from './course/shared';
 import { WhatIf } from './course/WhatIf';
+import './course/lesson.css';
+import { loadProfile } from './you/profile';
+
+/** The three chips at the top: where Wobo's board shows. */
+const VIEWS: readonly { id: LessonView; label: string }[] = [
+  { id: 'full', label: 'Full board' },
+  { id: 'plane', label: 'Plane' },
+  { id: 'notes', label: 'Notes' },
+];
 
 export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?: boolean }) {
   const router = useRouter();
   const sdk = useSdk();
   const bus = useWoboBus();
-  const still = useReducedMotion();
-  // the close affordance comes forward on hover/focus — ink lifts from quiet grey to full ink
-  const [closeLit, setCloseLit] = useState(false);
 
   // A custom course Wobo composed from a free-text ask: topicId carries the concept itself
   // (`custom:black holes`), so the composing player gets the real title, never "a new course".
   const custom = topicId.startsWith('custom:') ? topicId.slice('custom:'.length).trim() : null;
+  // A deep link opens the course cold: the registry is empty until a screen has ingested the
+  // pinned world. Read the cache here, before the first lookup (synchronous, nothing fetched), and
+  // if the topic is still unknown ask the world for it before deciding anything — otherwise a real
+  // topic's own name, atom, chapter and subject would be unknown on the first paint, the crumb
+  // would call it "a new course" and the download gate would bounce the learner back home.
+  useRegistryRevision();
+  if (!custom && !topicById(topicId)) warmFromCache();
   const topic = custom ? undefined : topicById(topicId);
+  const [resolving, setResolving] = useState(() => !custom && !topic);
+  useEffect(() => {
+    if (!resolving) return;
+    let live = true;
+    void ensureTopic(topicId).finally(() => {
+      if (live) setResolving(false);
+    });
+    return () => {
+      live = false;
+    };
+  }, [resolving, topicId]);
   const chapter = topic ? chapterById(topic.chapterId) : custom ? undefined : chapterById(topicId);
   const title = topic?.name ?? chapter?.name ?? custom ?? 'a new course';
   const nodeId = topic?.nodeId;
@@ -60,7 +107,8 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
   // the ready toast opens it). The atom (a prebuilt node), a mastered course (warm cache), a course
   // already ready to open, and every practice sandbox all open instantly, untouched by the gate.
   const dl = getDownload(topicId);
-  const needsDownload = mode === 'composing' && !completed.has(topicId) && dl?.status !== 'ready';
+  const needsDownload =
+    !resolving && mode === 'composing' && !completed.has(topicId) && dl?.status !== 'ready';
   const [progress, setProgress] = useState<{ f: number; segments: number }>({
     f: 0.08,
     segments: 9,
@@ -133,156 +181,283 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
     );
   }, [sandbox, nodeId, sdk]);
 
+  // --- The frame's own state ---------------------------------------------------------------------
+
+  // Which surface Wobo's board is on. The canvas is handed to the stage, which puts the board there.
+  const { view } = useLessonView();
+  const hostRef = useCallback((el: HTMLDivElement | null) => lessonView.host(el), []);
+  useEffect(() => () => lessonView.reset(), []);
+  // The live pill: on while the pen is moving.
+  const drawing = useSyncExternalStore(
+    boardTurn.subscribe,
+    () => boardTurn.get().active,
+    () => false,
+  );
+  // This lesson's steps, reported by the player on stage; free play has none.
+  const [outline, setOutline] = useState<LessonOutline | null>(null);
+  const learner = useMemo(() => loadProfile().name, []);
+  const crumb = useMemo(() => {
+    // free play on no topic in particular is just free play
+    if (sandbox) return topic || custom ? `Free play · ${title}` : 'Free play';
+    const subject = chapter ? subjectById(chapter.subjectId) : undefined;
+    const lesson = topic && chapter ? chapter.topics.findIndex((t) => t.id === topic.id) + 1 : 0;
+    const parts = [
+      subject?.name,
+      chapter ? `Chapter ${chapter.index}` : undefined,
+      lesson > 0 ? `Lesson ${lesson}` : undefined,
+    ].filter((p): p is string => Boolean(p));
+    return parts.length > 0 ? parts.join(' · ') : title;
+  }, [sandbox, title, topic, chapter]);
+
+  const notes = view === 'notes';
+
   // Gated: hold a plain paper screen for the single frame before router.back() lands — no cold
-  // skeleton, no white flash. The learner returns to where they were, download in flight.
-  if (needsDownload) return <div style={{ height: '100dvh', background: 'var(--wobo-paper)' }} />;
+  // skeleton, no white flash. The learner returns to where they were, download in flight. The same
+  // paper holds while a cold address is being resolved against the world.
+  if (needsDownload || resolving) {
+    return <div style={{ height: '100dvh', background: 'var(--paper)' }} />;
+  }
 
   return (
-    <div
-      style={{
-        height: '100dvh',
-        display: 'flex',
-        flexDirection: 'column',
-        background: 'var(--wobo-paper)',
-        position: 'relative',
-        isolation: 'isolate',
-      }}
-    >
-      {/* a whisper of paper warmth behind the chrome only (§1 ambient depth) — a soft light source
-          for the header, fading out well before the full-bleed content so the card stays content-first */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          insetInline: 0,
-          top: 0,
-          height: 200,
-          zIndex: -1,
-          pointerEvents: 'none',
-          background:
-            'radial-gradient(64% 100% at 50% 0%, rgba(255,201,60,0.05) 0%, transparent 72%)',
-        }}
+    <AppFrame active="learn" bottom={<HoldToTalk />}>
+      <h1 className="ls-sr">{title}</h1>
+      <TopBar
+        crumb={crumb}
+        right={VIEWS.map((v) => (
+          <Chip key={v.id} on={view === v.id} onClick={() => lessonView.view(v.id)}>
+            {v.label}
+          </Chip>
+        ))}
       />
-      {/* the shell chrome: close, and the endowed progress line — settles in as the course opens */}
-      <motion.header
-        initial={still ? false : { opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: 'spring', stiffness: 240, damping: 30, delay: 0.05 }}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 20,
-          // clears the fixed 64px app header — the close button must never sit under the logo
-          padding: '72px 20px 10px',
-          minHeight: 52,
-        }}
-      >
-        <motion.button
-          type="button"
-          aria-label="Close course"
-          onClick={() => router.back()}
-          onPointerEnter={() => setCloseLit(true)}
-          onPointerLeave={() => setCloseLit(false)}
-          onFocus={() => setCloseLit(true)}
-          onBlur={() => setCloseLit(false)}
-          whileTap={still ? undefined : { scale: 0.88 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 24 }}
-          style={{
-            border: 'none',
-            background: 'transparent',
-            color: closeLit ? 'var(--wobo-ink-900)' : 'var(--wobo-ink-500)',
-            lineHeight: 1,
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-            padding: 6,
-            display: 'grid',
-            placeItems: 'center',
-            transition: 'color 0.18s ease',
-          }}
-        >
-          <CloseIcon size={17} />
-        </motion.button>
-        {mode === 'sandbox' ? (
-          <div style={{ ...whisper, flex: 1, textAlign: 'center' }}>
-            Free play{topic ? ` · ${topic.name}` : ''}
+      <div className="ls-lesson">
+        <section className="ls-plane" aria-label={`${title}, with Wobo`}>
+          <div className="ls-bar">
+            <b>Wobo</b>
+            {learner ? ` · with ${learner}` : null}
+            {/* on-stage voice controls: mute Wobo's narration, or replay the current card */}
+            <span className="ls-voice">
+              <ReplayButton onReplay={narration.replay} />
+              <MuteButton />
+            </span>
+            {drawing && (
+              <span className="ls-live">
+                <i /> drawing
+              </span>
+            )}
           </div>
-        ) : (
-          <div style={{ flex: 1, maxWidth: 460, margin: '0 auto', display: 'flex' }}>
-            <SegmentedProgress fraction={progress.f} segments={progress.segments} />
+          <div className="ls-canvas">
+            {/* the lesson's cards; they stay mounted behind the notes so the beat is kept */}
+            <main ref={stageRef} className="ls-stage wobo-scroll-quiet" hidden={notes}>
+              {mode === 'sandbox' && <WhatIf nodeId={nodeId} freePlay setBar={setBar} />}
+              {mode === 'atom' && topic && nodeId && (
+                <AtomJourney
+                  topic={topic}
+                  nodeId={nodeId}
+                  setBar={setBar}
+                  setProgress={setProgress}
+                  onExit={exit}
+                  onResume={onResume}
+                  onOutline={setOutline}
+                />
+              )}
+              {mode === 'composing' && (
+                <Composing
+                  topicId={topicId}
+                  title={title}
+                  setBar={setBar}
+                  setProgress={setProgress}
+                  onExit={exit}
+                  onResume={onResume}
+                  onOutline={setOutline}
+                />
+              )}
+            </main>
+            {/* Wobo's board, when there is ink on it — the stage portals the renderer in here */}
+            <div ref={hostRef} className="ls-host" hidden={notes} />
+            {notes && <LessonNotes />}
           </div>
-        )}
-        {/* on-stage voice controls: mute Wobo's narration, or replay the current card */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <ReplayButton onReplay={narration.replay} />
-          <MuteButton />
-        </div>
-      </motion.header>
-
-      {/* the full-bleed card area */}
-      <main
-        ref={stageRef}
-        className="wobo-scroll-quiet"
-        style={{
-          flex: 1,
-          minHeight: 0,
-          overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        {mode === 'sandbox' && <WhatIf nodeId={nodeId} freePlay setBar={setBar} />}
-        {mode === 'atom' && topic && nodeId && (
-          <AtomJourney
-            topic={topic}
-            nodeId={nodeId}
-            setBar={setBar}
-            setProgress={setProgress}
-            onExit={exit}
-            onResume={onResume}
-          />
-        )}
-        {mode === 'composing' && (
-          <Composing
-            topicId={topicId}
-            title={title}
-            setBar={setBar}
-            setProgress={setProgress}
-            onExit={exit}
-            onResume={onResume}
-          />
-        )}
-      </main>
+          <div className="ls-say">
+            <WoboHead size={44} />
+            <div className="hand" aria-live="polite">
+              {narration.text}
+            </div>
+            <SayActions
+              bar={bar}
+              gate={gateApplies ? { progress: narration.progress } : undefined}
+            />
+          </div>
+        </section>
+        <aside className="ls-side">
+          {outline && outline.steps.length > 0 && (
+            <Card compact>
+              <Tag>This lesson</Tag>
+              <div className="ls-steps">
+                {outline.steps.map((step, i) => (
+                  <div key={step} className={i === outline.at ? 'ls-on' : undefined}>
+                    <i>{i + 1}</i>
+                    {step}
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+          <Card tint="rose" compact>
+            <Tag>Ask about this</Tag>
+            <p style={{ color: 'var(--ink)' }}>
+              Circle any part of the board and ask why. Or just say it.
+            </p>
+            <div className="ls-tools">
+              <Chip onClick={() => armLasso(true)}>Circle</Chip>
+              <Chip>Type</Chip>
+              <TalkChip />
+            </div>
+          </Card>
+          <Card compact>
+            <Tag>Your place</Tag>
+            <p>Saved as you go. Leave any time, come back to this line.</p>
+          </Card>
+        </aside>
+      </div>
 
       {/* the quiet resume beat — a soft line, then it fades on its own */}
       <AnimatePresence>
         {resumed && (
           <motion.div
+            className="ls-resume"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
             transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-            style={{
-              position: 'fixed',
-              left: '50%',
-              bottom: 'calc(84px + env(safe-area-inset-bottom, 0px))',
-              transform: 'translateX(-50%)',
-              zIndex: 40,
-              padding: '9px 16px',
-              borderRadius: 3,
-              background: 'var(--wobo-ink-900)',
-              color: 'var(--wobo-paper)',
-              fontSize: '0.82rem',
-              fontWeight: 500,
-              whiteSpace: 'nowrap',
-              pointerEvents: 'none',
-            }}
           >
             Picking up where you left off
           </motion.div>
         )}
       </AnimatePresence>
+    </AppFrame>
+  );
+}
 
-      <ActionBar bar={bar} gate={gateApplies ? { progress: narration.progress } : undefined} />
+// --- The say row's actions -----------------------------------------------------------------------
+
+/**
+ * The one action under the board: the card's primary (Begin, Check, Continue) and, when the card
+ * offers one, its quiet second (Hint, Why?). The primary is the `course-advance` target Wobo can
+ * walk the learner to; while Wobo reads a teaching card it fills up rather than going dead.
+ */
+function SayActions({ bar, gate }: { bar: BarState | null; gate?: { progress: number } }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const gated = Boolean(gate);
+  useAdvanceTarget(ref, bar, gated);
+  if (!bar) return null;
+  return (
+    <div ref={ref} className="ls-actions">
+      {bar.secondary && (
+        <Button size="sm" tone="quiet" onClick={bar.secondary.onClick}>
+          {bar.secondary.label}
+        </Button>
+      )}
+      <Button
+        size="sm"
+        className={gated ? 'ls-gated' : undefined}
+        disabled={bar.primary.disabled || gated}
+        onClick={bar.primary.onClick}
+      >
+        {gated && (
+          <span
+            className="ls-fill"
+            aria-hidden="true"
+            style={{ width: `${Math.round((gate?.progress ?? 0) * 100)}%` }}
+          />
+        )}
+        <span style={{ position: 'relative' }}>{bar.primary.label}</span>
+      </Button>
     </div>
+  );
+}
+
+// --- Hold to talk --------------------------------------------------------------------------------
+
+/** A hold that opens Wobo's microphone and lets go when the pointer does — the orb's own hold. */
+function useHold() {
+  const held = useRef(false);
+  const start = useCallback((e: ReactPointerEvent<HTMLElement>) => {
+    if (held.current) return;
+    held.current = true;
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    holdToTalkStart();
+  }, []);
+  const end = useCallback(() => {
+    if (!held.current) return;
+    held.current = false;
+    holdToTalkEnd();
+  }, []);
+  useEffect(() => end, [end]);
+  return { start, end };
+}
+
+/** The rail's bottom slot: the hint, and a hold on it is the same hold as the space bar. */
+function HoldToTalk() {
+  const { start, end } = useHold();
+  return (
+    <button
+      type="button"
+      className="wk-talk ls-hold"
+      aria-label="Hold to talk to Wobo"
+      onPointerDown={start}
+      onPointerUp={end}
+      onPointerCancel={end}
+    >
+      <span className="wk-k">space</span>
+      <span>Hold to talk to Wobo</span>
+    </button>
+  );
+}
+
+/** The Talk chip in the ask card — hold it to speak. */
+function TalkChip() {
+  const { start, end } = useHold();
+  return (
+    <Chip
+      onClick={() => {}}
+      aria-label="Hold to talk to Wobo"
+      onPointerDown={start}
+      onPointerUp={end}
+      onPointerCancel={end}
+    >
+      Talk
+    </Chip>
+  );
+}
+
+// --- Notes ---------------------------------------------------------------------------------------
+
+/** The boards the learner kept, newest first; open one and it is drawn again on the canvas. */
+function LessonNotes() {
+  const [notes] = useState<SavedBoard[]>(() => readNotes());
+  const [open, setOpen] = useState<SavedBoard | null>(null);
+  const store = useMemo(() => new BoardStore({ presentation: 'full' }), []);
+  useEffect(() => {
+    if (open) restoreBoard(store, open.objects);
+  }, [open, store]);
+  if (open) {
+    return (
+      <div className="ls-ink">
+        <BoardSurface store={store} autoCamera label={`${open.title}, from your notes`} />
+        <Button size="sm" tone="quiet" className="ls-back" onClick={() => setOpen(null)}>
+          Notes
+        </Button>
+      </div>
+    );
+  }
+  return (
+    <section className="ls-notes" aria-label="Notes">
+      {notes.length === 0 && <div className="ls-empty">Nothing kept yet.</div>}
+      {notes.map((note) => (
+        <button key={note.id} type="button" onClick={() => setOpen(note)}>
+          {note.title}
+          <span>{new Date(note.savedAt).toLocaleDateString()}</span>
+        </button>
+      ))}
+    </section>
   );
 }

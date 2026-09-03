@@ -130,9 +130,9 @@ export function DrawAnswer({
           y={view[1]}
           width={view[2]}
           height={view[3]}
-          fill="transparent"
-          stroke="var(--wa-line)"
-          strokeWidth={1}
+          rx={Math.min(view[2], view[3]) * 0.03}
+          fill="var(--wa-tonal)"
+          stroke="none"
         />
         {backdrop}
         {state.path.length > 1 ? (
@@ -151,7 +151,8 @@ export function DrawAnswer({
                 r={14}
                 fill="var(--wa-wash)"
                 stroke="var(--wa-mark)"
-                strokeWidth={2}
+                strokeWidth={3}
+                vectorEffect="non-scaling-stroke"
               />
             ))
           : null}

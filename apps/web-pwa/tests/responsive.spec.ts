@@ -9,7 +9,7 @@
  *   1. the page is never wider than the screen (no sideways scroll to finish a sentence),
  *   2. no box clips the text inside it without an ellipsis or a way to scroll,
  *   3. every control is at least 44×44 px on the phone, where a thumb has to hit it,
- *   4. body copy is never below 14 px,
+ *   4. body copy is never below 13 px (DESIGN.md §2's own label size),
  *   5. the first three tabbable controls show focus.
  *
  * A screenshot of each route × width × theme is captured beside the report, plus a reduced-motion
@@ -40,6 +40,7 @@ import {
   ROUTES,
   type RouteReport,
   screenshotPath,
+  scrollThrough,
   settle,
   THEMES,
   WIDTHS,
@@ -198,6 +199,9 @@ for (const route of ROUTES) {
         // Settle, measure and capture are ONE retryable unit: a hot reload landing anywhere inside
         // them invalidates the whole cell, not just the step that happened to notice.
         const findings: Finding[] = await measure(page, route.ready, async () => {
+          // A reader scrolls, so every reveal-on-scroll block has fired before the page is
+          // measured or photographed (a full-page capture from the top would show them blank).
+          await scrollThrough(page);
           await settle(page);
           const found = [
             ...(await auditViewport(page, vp.width)),
@@ -227,6 +231,7 @@ for (const route of ROUTES) {
     await openRoute(page, route.path, route.ready);
     const reducedShot = screenshotPath(route.id, REDUCED_MOTION_WIDTH, 'reduced-motion');
     const reducedFindings = await measure(page, route.ready, async () => {
+      await scrollThrough(page);
       await settle(page);
       const found = [
         ...(await auditViewport(page, REDUCED_MOTION_WIDTH)),

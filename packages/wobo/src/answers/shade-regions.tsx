@@ -12,7 +12,7 @@
 import type { AnswerCheck, AnswerSpecOf, AnswerStateOf } from '@wobo/contracts';
 import { type ReactNode, useRef, useState } from 'react';
 import { shadeAria } from './a11y';
-import { FigureRule } from './figure';
+import { FigureFrame, FigureRule } from './figure';
 import { FIGURE_BOX, figureParts, partAt, partCount } from './geometry';
 import { figureColumns, type KeyPress, rove, shadeKey } from './keyboard';
 import { toggleShade } from './state';
@@ -138,6 +138,7 @@ export function ShadeRegions({
         }}
       >
         <title>{spec.prompt ?? 'shade the parts'}</title>
+        <FigureFrame figure={spec.figure} />
         <FigureRule figure={spec.figure} />
         {parts.map((p) => (
           <path

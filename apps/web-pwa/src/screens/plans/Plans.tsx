@@ -1,87 +1,87 @@
 'use client';
 
 /**
- * `/plans` — what Wobo costs, and what it does not.
+ * `/plans` — free every day; more when exams get close. A port of
+ * design/prototypes/site-plans.html: the hero with the India / everywhere toggle and the allowance
+ * drawing, the three plan cards, the honest table, the checkout preview with its two consent
+ * boxes, the gift block, the money questions and the close.
  *
- * WOBO-PLAN §16 sets the shape: the benefits table, three price cards, the honest billing
- * footnote, the two consent checkboxes, the allowance widget, and the FAQ. §14 sets the ethics:
- * the price never varies by who is looking, nothing is engineered to rush a child, and no number
- * appears before it is decided.
+ * The prices are the owner's (WOBO-PLAN §14) and every one of them is read from `prices.ts` — the
+ * cards, the table, the checkout preview and the one answer that quotes them — so a change to a
+ * number is one edit and every surface says the same thing in the same breath. The toggle changes
+ * the currency shown, never the deal: §14 says the price varies by country and never by person.
  *
- * The prices are the owner's, set in §14 (2026-09-03) and read from one constant file
- * (`prices.ts`), so a change to a number is one edit and every surface says the same thing in the
- * same breath. §16 asked for three cards; §14 is dated after it and bills monthly, so the three
- * are Free, Pro and Max rather than monthly, annual and family.
- *
- * What this page deliberately does not do is take a payment. The primary control leads to
+ * What this page deliberately does not do is take a payment. "Choose Pro" and "Choose Max" bring
+ * the checkout preview into view with that plan on it; its payment control leads to
  * `/plans/checkout`, which says plainly that checkout opens with launch. A payment page that
  * looked real but was not, on a product used by children, would be the worst thing on the site.
  *
- * The allowance widget reads the learner's real budget through `sdk.me()`; where there is no
+ * The allowance drawing reads the learner's real budget through `sdk.me()`; where there is no
  * answer it says it cannot see one rather than showing a number nobody verified.
  */
 
+import { useReducedMotion } from '@wobo/motion';
 import type { Me } from '@wobo/sdk';
-import { useEffect, useMemo, useState } from 'react';
-import article from '../../../../../docs/copy/help-centre/wobo-basics/09-plans-and-billing.md?raw';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from '../../shell/router';
 import { useSdk } from '../../store/sdk';
-import { PLANS } from '../landing/copy';
-import { Reveal } from '../landing/Reveal';
+import { Label, Sticker, WoboHead } from '../../ui/primitives';
 import { legalPath } from '../legal/catalog';
-import { parseBlocks, stripEditorialNotes } from '../legal/markdown';
-import { Markdown } from '../legal/Prose';
+import { ClosePanel } from '../site/ClosePanel';
 import { SiteLink } from '../site/nav';
+import { Reveal } from '../site/Reveal';
 import { SiteShell } from '../site/SiteShell';
 import { allowanceLine, readAllowance } from './allowance';
-import { BENEFITS, type Benefit, PLANS_PAGE } from './copy';
-import { faqItems } from './faq';
-import { cadenceLabel, PLAN_TIERS, priceLabel, readMarket } from './prices';
-import { ensurePlansStyles } from './styles';
+import { BENEFITS, type Benefit, faqItems, PLANS_PAGE } from './copy';
+import {
+  BEST_FOR,
+  type Market,
+  PLAN_TIERS,
+  type PlanTier,
+  priceLabel,
+  priceUnit,
+  readMarket,
+  renewalLabel,
+  renewsOn,
+} from './prices';
 
-ensurePlansStyles();
+const FAQ = faqItems();
+const MARKETS: readonly Market[] = ['IN', 'INTL'];
 
-const FAQ = faqItems(parseBlocks(stripEditorialNotes(article).text));
-
-/** A tick, drawn. DESIGN.md forbids emoji, and a screen reader gets the word instead. */
+/** A tick, drawn. DESIGN.md forbids emoji, and the line beside it says what is included. */
 function Tick() {
   return (
-    <>
-      <span className="lp-yes" aria-hidden>
-        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" role="presentation">
-          <path
-            d="M3 8l3 3 6-7"
-            stroke="currentColor"
-            strokeWidth="1.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </span>
-      <span className="lp-sr">included</span>
-    </>
+    <i>
+      <svg viewBox="0 0 12 12" aria-hidden="true">
+        <path d="M2 6 l3 3 l5 -6" />
+      </svg>
+    </i>
   );
 }
 
 function Cell({ value }: { value: Benefit }) {
-  if (value === true) return <Tick />;
-  if (value === false)
+  if (value === false) return <div className="pl-same">{PLANS_PAGE.table.no}</div>;
+  if (value === true || value === 'same') {
     return (
-      <>
-        <span className="lp-no" aria-hidden />
-        <span className="lp-sr">not included</span>
-      </>
+      <div>
+        <span className="pl-y">
+          <i />
+          {value === true ? PLANS_PAGE.table.yes : PLANS_PAGE.table.same}
+        </span>
+      </div>
     );
-  return <span>{value}</span>;
+  }
+  return <div>{value}</div>;
 }
 
-/** What is left of today, read from the brain. */
+/** What is left of today, read from the brain, drawn as the prototype draws it. */
 function Allowance() {
   const sdk = useSdk();
   const [me, setMe] = useState<Me | null>(null);
+  const [drawn, setDrawn] = useState(false);
   useEffect(() => {
     let live = true;
-    // A budget the page cannot read is not an error worth showing: the widget says so itself.
+    // A budget the page cannot read is not an error worth showing: the drawing says so itself.
     void sdk
       .me()
       .then((answer) => {
@@ -92,184 +92,290 @@ function Allowance() {
       live = false;
     };
   }, [sdk]);
+  // The bar fills after the first paint, so it draws itself rather than arriving full.
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setDrawn(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
   const allowance = readAllowance(me);
   const share =
     allowance.known && allowance.remaining !== null && allowance.limit
       ? Math.max(0, Math.min(1, allowance.remaining / allowance.limit))
       : null;
   return (
-    <section className="lp-panel" aria-label={PLANS_PAGE.allowanceTitle}>
-      <div className="lp-meter">
-        <div>
-          <p className="lp-mark">{PLANS_PAGE.allowanceTitle}</p>
-          <p className="lp-meter-line">{allowanceLine(allowance)}</p>
-        </div>
-        <p className="lp-row-who" style={{ margin: 0 }}>
-          {PLANS_PAGE.allowanceNote}
-        </p>
+    <Reveal className="pl-allow">
+      <Sticker rotate={6}>{PLANS_PAGE.allowance.sticker}</Sticker>
+      <b>{PLANS_PAGE.allowance.title}</b>
+      <div
+        className="pl-bar"
+        {...(share !== null
+          ? {
+              role: 'progressbar',
+              'aria-valuemin': 0,
+              'aria-valuemax': allowance.limit ?? 0,
+              'aria-valuenow': allowance.remaining ?? 0,
+              'aria-label': PLANS_PAGE.allowance.title,
+            }
+          : {})}
+      >
+        <i style={{ width: drawn && share !== null ? `${Math.round(share * 100)}%` : 0 }} />
       </div>
-      {share !== null ? (
-        <div
-          className="lp-meter-track"
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={allowance.limit ?? 0}
-          aria-valuenow={allowance.remaining ?? 0}
-          aria-label={PLANS_PAGE.allowanceTitle}
-        >
-          <div className="lp-meter-fill" style={{ width: `${Math.round(share * 100)}%` }} />
-        </div>
-      ) : null}
-    </section>
+      <span>{allowanceLine(allowance)}</span>
+      <div className="hand">{PLANS_PAGE.allowance.hand}</div>
+    </Reveal>
   );
 }
 
+const CARD_CLASS: Record<PlanTier['id'], string> = {
+  free: 'pl-plan',
+  pro: 'pl-plan pl-pro',
+  max: 'pl-plan pl-max',
+};
+
 export function Plans() {
   const router = useRouter();
+  const reduced = useReducedMotion();
+  const [market, setMarket] = useState<Market>(() => readMarket());
+  const [previewId, setPreviewId] = useState<PlanTier['id']>('pro');
   const [terms, setTerms] = useState(false);
   const [renewal, setRenewal] = useState(false);
+  const checkoutRef = useRef<HTMLElement | null>(null);
   const ready = terms && renewal;
-  // Read once per mount: the market is the device's, and a price must not change under a reader.
-  const market = useMemo(() => readMarket(), []);
+  // Read once per mount: a renewal date must not change under a reader.
+  const today = useMemo(() => new Date(), []);
+  const preview =
+    PLAN_TIERS.find((t) => t.id === previewId && t.price) ??
+    PLAN_TIERS.find((t) => t.recommended) ??
+    (PLAN_TIERS[1] as PlanTier);
+  const c = PLANS_PAGE.checkout;
+
+  const choose = (tier: PlanTier) => {
+    setPreviewId(tier.id);
+    checkoutRef.current?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
+  };
 
   return (
-    <SiteShell current="plans" title="Plans — Wobo">
-      <section className="lp-wrap lp-head">
-        <p className="lp-eyebrow">{PLANS_PAGE.eyebrow}</p>
-        <h1 className="lp-h1x">{PLANS.title}</h1>
-        <p className="lp-lead">{PLANS.lead}</p>
-        <div style={{ marginTop: 28, maxWidth: 640 }}>
+    <SiteShell current="plans" title="Wobo plans">
+      <section className="pl-hero">
+        <div className="st-wrap">
+          <Label>{PLANS_PAGE.eyebrow}</Label>
+          <h1>
+            {PLANS_PAGE.title} <em>{PLANS_PAGE.titleEm}</em>
+          </h1>
+          <p className="pl-sub">{PLANS_PAGE.lead}</p>
+          <fieldset className="pl-region" aria-label={PLANS_PAGE.regionLabel}>
+            {MARKETS.map((m) => (
+              <button
+                key={m}
+                type="button"
+                className={m === market ? 'st-on' : undefined}
+                aria-pressed={m === market}
+                onClick={() => setMarket(m)}
+              >
+                {PLANS_PAGE.regions[m]}
+              </button>
+            ))}
+          </fieldset>
           <Allowance />
         </div>
       </section>
 
-      <section className="lp-section">
-        <div className="lp-wrap">
-          <Reveal>
-            <h2 className="lp-h2">{PLANS_PAGE.benefitsTitle}</h2>
-            <div className="lp-scroll" style={{ marginTop: 26 }}>
-              <table className="lp-grid lp-grid--plans">
-                <thead>
-                  <tr>
-                    <th scope="col">What you get</th>
-                    <th scope="col">Free</th>
-                    <th scope="col">Pro</th>
-                    <th scope="col">Max</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {BENEFITS.map((row) => (
-                    <tr key={row.label}>
-                      <td>{row.label}</td>
-                      <td data-label="Free">
-                        <Cell value={row.free} />
-                      </td>
-                      <td data-label="Pro">
-                        <Cell value={row.pro} />
-                      </td>
-                      <td data-label="Max">
-                        <Cell value={row.max} />
-                      </td>
-                    </tr>
+      <section className="st-section">
+        <div className="st-wrap">
+          <Reveal className="pl-plans">
+            {PLAN_TIERS.map((tier) => (
+              <div className={CARD_CLASS[tier.id]} key={tier.id}>
+                {tier.recommended ? <span className="pl-best">{BEST_FOR}</span> : null}
+                <div className="pl-name">{tier.name}</div>
+                <div className="pl-price">
+                  <span>{priceLabel(tier, market)}</span>
+                  <small>{priceUnit(tier)}</small>
+                </div>
+                <div className="pl-x">{tier.allowanceMultiple}× allowance</div>
+                <p>{tier.blurb}</p>
+                <ul>
+                  {tier.lines.map((line) => (
+                    <li key={line}>
+                      <Tick />
+                      {line}
+                    </li>
                   ))}
-                </tbody>
-              </table>
-            </div>
+                </ul>
+                {tier.price ? (
+                  <button
+                    type="button"
+                    className={tier.recommended ? 'st-btn st-pig' : 'st-btn'}
+                    onClick={() => choose(tier)}
+                  >
+                    {tier.cta}
+                  </button>
+                ) : (
+                  <SiteLink to={{ name: 'onboarding' }} className="st-btn st-quiet pl-free">
+                    {tier.cta}
+                  </SiteLink>
+                )}
+                <div className="pl-fine">{tier.fine}</div>
+              </div>
+            ))}
           </Reveal>
         </div>
       </section>
 
-      <section className="lp-section lp-section--tonal">
-        <div className="lp-wrap">
-          <Reveal>
-            <h2 className="lp-h2">{PLANS_PAGE.cardsTitle}</h2>
-            <p className="lp-lead">{PLANS_PAGE.cardsNote}</p>
-            <div className="lp-tiers lp-tiers--three">
-              {PLAN_TIERS.map((tier) => (
-                <article
-                  className={tier.recommended ? 'lp-tier lp-tier--pigment' : 'lp-tier'}
-                  key={tier.id}
-                >
-                  {tier.recommended ? <p className="lp-tier-flag">Best value</p> : null}
-                  <h3>{tier.name}</h3>
-                  <p className="lp-price">{priceLabel(tier, market)}</p>
-                  <p className="lp-tier-cadence">{cadenceLabel(tier)}</p>
-                  <ul>
-                    {tier.lines.map((line) => (
-                      <li key={line}>{line}</li>
-                    ))}
-                  </ul>
-                </article>
+      <section className="st-section">
+        <div className="st-wrap">
+          <Reveal className="st-head">
+            <Label>{PLANS_PAGE.table.eyebrow}</Label>
+            <h2>{PLANS_PAGE.table.title}</h2>
+            <p>{PLANS_PAGE.table.lead}</p>
+          </Reveal>
+          <Reveal className="pl-tbl">
+            <div className="pl-r pl-h">
+              {PLANS_PAGE.table.head.map((head) => (
+                <div key={head}>{head}</div>
               ))}
             </div>
+            {BENEFITS.map((row) => (
+              <div className="pl-r" key={row.label}>
+                <div>{row.label}</div>
+                <Cell value={row.free} />
+                <Cell value={row.pro} />
+                <Cell value={row.max} />
+              </div>
+            ))}
+          </Reveal>
+        </div>
+      </section>
 
-            <h3 className="lp-h2" style={{ fontSize: 22, marginTop: 44 }}>
-              {PLANS_PAGE.consentTitle}
-            </h3>
-            <p className="lp-lead">{PLANS_PAGE.consentLead}</p>
-            <div className="lp-consent">
-              <label className="lp-check" htmlFor="consent-terms">
+      <section className="st-section" ref={checkoutRef} id="checkout">
+        <div className="st-wrap">
+          <Reveal className="pl-checkout">
+            <div className="pl-head">
+              <Label>{c.eyebrow}</Label>
+              <h2>{c.title}</h2>
+              <p>{c.lead}</p>
+              <div className="pl-say">
+                {c.say} <em>{c.sayEm}</em>
+              </div>
+            </div>
+            <div className="pl-card">
+              <div className="pl-row">
+                <span>
+                  {preview.name} · {c.learners[preview.learners] ?? `${preview.learners} learners`}
+                </span>
+                <b>
+                  {priceLabel(preview, market)} {c.perMonth}
+                </b>
+              </div>
+              <div className="pl-row">
+                <span>{c.starts}</span>
+                <b>{c.startsValue}</b>
+              </div>
+              <div className="pl-row">
+                <span>{c.renews}</span>
+                <b>
+                  {renewalLabel(renewsOn(today))}, {c.renewsSuffix}
+                </b>
+              </div>
+              <label htmlFor="consent-terms">
                 <input
                   id="consent-terms"
                   type="checkbox"
                   checked={terms}
                   onChange={(e) => setTerms(e.target.checked)}
                 />
-                <span>
-                  I accept the{' '}
-                  <SiteLink href={legalPath('terms-of-service')}>terms of service</SiteLink> and the{' '}
-                  <SiteLink href={legalPath('privacy-policy')}>privacy notice</SiteLink>.
-                </span>
+                <div>
+                  <b>{c.terms}</b>
+                  <SiteLink href={legalPath('terms-of-service')}>{c.termsNote}</SiteLink>
+                </div>
               </label>
-              <label className="lp-check" htmlFor="consent-renewal">
+              <label htmlFor="consent-renewal">
                 <input
                   id="consent-renewal"
                   type="checkbox"
                   checked={renewal}
                   onChange={(e) => setRenewal(e.target.checked)}
                 />
-                <span>{PLANS_PAGE.renewal}</span>
+                <div>
+                  <b>{c.renewal}</b>
+                  {c.renewalNote.replace('{plan}', preview.name)}
+                </div>
               </label>
-            </div>
-            <div className="lp-cta">
+              <div className="pl-total">
+                <span>{c.today}</span>
+                <b>{priceLabel(preview, market)}</b>
+              </div>
               <button
                 type="button"
-                className="lp-btn lp-btn--pigment"
+                className="st-btn st-pig"
                 disabled={!ready}
                 onClick={() => router.navigate({ name: 'plans', checkout: true })}
               >
-                {PLANS_PAGE.cta}
+                {c.pay}
               </button>
-              <small>{ready ? PLANS_PAGE.billingNote : PLANS_PAGE.ctaBlocked}</small>
+              <div className="st-fine">{c.fine}</div>
             </div>
-            <p className="lp-note">{PLANS_PAGE.billingNote}</p>
-            <p className="lp-note">
-              <SiteLink href={legalPath('refund-and-cancellation')}>
-                {PLANS_PAGE.refundsLink}
-              </SiteLink>
-            </p>
           </Reveal>
         </div>
       </section>
 
-      <section className="lp-section">
-        <div className="lp-wrap">
-          <Reveal>
-            <h2 className="lp-h2">{PLANS_PAGE.faqTitle}</h2>
-            {FAQ.lead ? <p className="lp-lead">{FAQ.lead.map((s) => s.text).join('')}</p> : null}
-            <div className="lp-faq">
-              {FAQ.items.map((item) => (
-                <div className="lp-faq-item" key={item.question}>
-                  <h3>{item.question}</h3>
-                  <div className="lp-prose">
-                    <Markdown blocks={item.answer} known={[]} />
-                  </div>
-                </div>
-              ))}
+      <section className="st-section">
+        <div className="st-wrap">
+          <Reveal className="pl-gift">
+            <div>
+              <Label>{PLANS_PAGE.gift.eyebrow}</Label>
+              <h2>{PLANS_PAGE.gift.title}</h2>
+              <p>{PLANS_PAGE.gift.lead}</p>
+              <div className="pl-row">
+                <SiteLink to={{ name: 'gift' }} className="st-btn">
+                  {PLANS_PAGE.gift.cta}
+                </SiteLink>
+                <SiteLink to={{ name: 'gift' }} className="st-btn st-quiet">
+                  {PLANS_PAGE.gift.how}
+                </SiteLink>
+              </div>
+            </div>
+            <div className="pl-art">
+              <svg viewBox="0 0 300 260" aria-hidden="true">
+                <rect x="40" y="90" width="220" height="150" rx="18" fill="var(--pig)" />
+                <rect x="30" y="70" width="240" height="44" rx="14" fill="var(--violet)" />
+                <rect x="138" y="70" width="24" height="170" fill="var(--marigold)" />
+                <path
+                  d="M150 70 c-30 -50 -70 -30 -40 0 M150 70 c30 -50 70 -30 40 0"
+                  fill="none"
+                  stroke="var(--marigold)"
+                  strokeWidth="12"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <WoboHead size={70} />
             </div>
           </Reveal>
         </div>
       </section>
+
+      <section className="st-section">
+        <div className="st-wrap">
+          <Reveal className="st-head">
+            <Label>{PLANS_PAGE.faq.eyebrow}</Label>
+            <h2>{PLANS_PAGE.faq.title}</h2>
+          </Reveal>
+          <Reveal className="pl-faq">
+            {FAQ.map((item, i) => (
+              <details key={item.question} open={i === 0}>
+                <summary>{item.question}</summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      <ClosePanel
+        title={PLANS_PAGE.close.title}
+        hand={PLANS_PAGE.close.hand}
+        primary={{ label: PLANS_PAGE.close.primary, to: { name: 'onboarding' } }}
+        quiet={{ label: PLANS_PAGE.close.quiet, to: { name: 'gift' } }}
+      />
     </SiteShell>
   );
 }

@@ -40,6 +40,8 @@ export type Route =
   | { name: 'sandbox'; topicId?: string }
   | { name: 'progress' }
   | { name: 'you' }
+  // The parent's view of the week — read-only, the page the Sunday note links to (WOBO-PLAN §14).
+  | { name: 'parent' }
   // The public document pages: what Wobo is, and how to use it. Readable signed out.
   | { name: 'about' }
   | { name: 'help' }
@@ -54,10 +56,22 @@ export type Route =
   | { name: 'plans'; checkout?: boolean }
   | { name: 'gift' }
   | { name: 'legal'; slug?: string }
+  // Every public page on one page, for a person rather than a crawler.
+  | { name: 'sitemap' }
+  // The six pitch pages of the public site (SITE.md §2), readable signed out.
+  | { name: 'security' }
+  | { name: 'meet-wobo' }
+  | { name: 'for-parents' }
+  | { name: 'for-students' }
+  | { name: 'how-it-works' }
+  | { name: 'subjects' }
   // An address that is not ours. It keeps the path it was asked for, so the URL bar still shows
   // what the learner typed or followed and they can see the slip in it for themselves.
   | { name: 'notfound'; path?: string }
-  | { name: 'concept'; which: 'engines' };
+  | { name: 'concept'; which: 'engines' }
+  // The kit gallery — every primitive in both themes. Mounted in a dev build only (App.tsx); in a
+  // production build the address answers with the 404, like any page that is not there.
+  | { name: 'ui-kit' };
 
 const HOME: Route = { name: 'home' };
 
@@ -100,12 +114,21 @@ const PLAIN_ROUTES = new Set([
   'practice',
   'progress',
   'you',
+  'parent',
   'about',
   'help',
   'sign-in',
   'sign-up',
   'contact',
   'gift',
+  'sitemap',
+  'security',
+  'meet-wobo',
+  'for-parents',
+  'for-students',
+  'how-it-works',
+  'subjects',
+  'ui-kit',
 ]);
 
 const INTENTS = new Set(['learn', 'practice']);

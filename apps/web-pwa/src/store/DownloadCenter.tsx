@@ -252,15 +252,15 @@ export function DownloadCenter() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 14,
-                padding: '13px 15px',
-                borderRadius: 3,
+                padding: '14px 16px',
+                // a toast floats, so it wears the soft shadow; ink on paper, no line (DESIGN.md §2)
+                borderRadius: 16,
                 cursor: composing ? 'default' : 'pointer',
                 fontFamily: 'inherit',
-                color: 'var(--wobo-paper)',
-                background: 'var(--wobo-frost-on-paper)',
-                backdropFilter: 'blur(var(--wobo-frost-blur)) saturate(1.2)',
-                WebkitBackdropFilter: 'blur(var(--wobo-frost-blur)) saturate(1.2)',
-                border: '0.5px solid color-mix(in srgb, var(--wobo-ink) 14%, transparent)',
+                color: 'var(--paper)',
+                background: 'var(--ink)',
+                border: 0,
+                boxShadow: 'var(--shadow)',
               }}
             >
               {/* honest indeterminate track along the bottom — Wobo is actively working, no fake % */}
@@ -278,11 +278,11 @@ export function DownloadCenter() {
                     position: 'absolute',
                     left: 0,
                     bottom: 0,
-                    height: 2,
+                    height: 3,
                     width: '40%',
                     borderRadius: 999,
-                    background: 'var(--wobo-ultramarine)',
-                    opacity: 0.85,
+                    background: 'var(--marigold)',
+                    opacity: 0.9,
                   }}
                 />
               )}
@@ -301,18 +301,16 @@ export function DownloadCenter() {
                   height: 9,
                   borderRadius: 999,
                   background:
-                    d.status === 'ready' || composing
-                      ? 'var(--wobo-ultramarine)'
-                      : 'var(--wobo-ink-300)',
+                    d.status === 'ready' || composing ? 'var(--marigold)' : 'var(--ink-3)',
                 }}
               />
               <span
                 style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}
               >
-                <span style={{ fontSize: '0.94rem', fontWeight: 600, lineHeight: 1.25 }}>
+                <span style={{ fontSize: '0.9375rem', fontWeight: 600, lineHeight: 1.25 }}>
                   {d.title}
                 </span>
-                <span style={{ fontSize: '0.8rem', opacity: 0.82, lineHeight: 1.35 }}>
+                <span style={{ fontSize: '0.8125rem', opacity: 0.82, lineHeight: 1.35 }}>
                   {composing
                     ? `${stage}… Wobo will let you know the moment it's ready`
                     : d.status === 'ready'
@@ -323,7 +321,7 @@ export function DownloadCenter() {
               <span
                 style={{
                   flexShrink: 0,
-                  fontSize: '0.8rem',
+                  fontSize: '0.8125rem',
                   fontWeight: 600,
                   opacity: 0.9,
                   whiteSpace: 'nowrap',

@@ -1,0 +1,18 @@
+/* biome-ignore-all format: kept in the same hand as ui.css */
+/* The /ui-kit gallery's own frame (dev only). Two panels, one per theme, then the shell. */
+.wk-gal{min-height:100vh;background:var(--paper)}
+.wk-gal-panels{display:grid;grid-template-columns:1fr 1fr}
+.wk-gal-panel{background:var(--paper);color:var(--ink);padding:40px;display:grid;gap:40px;align-content:start;min-width:0}
+.wk-gal-sec{display:grid;gap:14px}
+.wk-gal-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.wk-gal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.wk-gal-rel{position:relative}
+.wk-gal-shell .wk-shell{min-height:0}
+/* the home screen's `.today` grid, for the shell specimen */
+.wk-gal-today{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:900px){
+  .wk-gal-panels{grid-template-columns:1fr}
+  .wk-gal-panel{padding:16px;gap:28px}
+  .wk-gal-grid{grid-template-columns:1fr}
+  .wk-gal-today{grid-template-columns:1fr}
+}

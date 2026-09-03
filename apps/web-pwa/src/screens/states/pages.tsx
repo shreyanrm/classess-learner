@@ -36,7 +36,7 @@ import { resetClock, resetDay } from './select';
 export function NotFound({ onHome, onAsk }: { onHome: () => void; onAsk: () => void }) {
   return (
     <StateScene
-      code="Not found"
+      code="404"
       title="This page isn't here"
       body="Wobo looked around and couldn't find it. It may have moved, or the link had a slip in it."
       actions={[
@@ -58,7 +58,7 @@ export function NotFound({ onHome, onAsk }: { onHome: () => void; onAsk: () => v
 export function ServerError({ onRetry, onHome }: { onRetry: () => void; onHome: () => void }) {
   return (
     <StateScene
-      code="Our fault"
+      code="500"
       title="Something on our side broke"
       body="Not you. Wobo has already told us, and your place is saved. Try again in a moment."
       actions={[
@@ -104,20 +104,23 @@ export function Offline({ onRetry }: { onRetry: () => void }) {
  *
  * It carries TWO doors. WOBO-PLAN §14 puts the plan ask "just before the wow it unlocks, at the
  * emotional peak, framed as pushing limits, never on a timer" — and a learner who has used a whole
- * day of turns is exactly that person. So the second door goes to /plans, phrased as what a bigger
- * day carries rather than as a loss; the primary door is still back to learning, because the day
- * refills by itself and nobody has to pay for that to happen. Nothing here counts down, nothing
- * expires, and the price is the same for everyone (§14).
+ * day of turns is exactly that person. So the second door goes to /plans ("See Pro", the rail's own
+ * word for it); the primary door is still back to learning, because the day refills by itself and
+ * nobody has to pay for that to happen. Nothing here counts down, nothing expires, and the price is
+ * the same for everyone (§14).
  */
 export function DailyLimit({
   resetAt,
   onBack,
   onPlans,
+  onNotes,
 }: {
   resetAt?: string | null;
   onBack: () => void;
   /** Absent where there is nowhere to send them — the door is then simply not drawn. */
   onPlans?: () => void;
+  /** The prototype's third door, "Review today's notes" — drawn only when there are notes kept. */
+  onNotes?: () => void;
 }) {
   const clock = resetClock(resetAt);
   const day = resetDay(resetAt);
@@ -129,9 +132,10 @@ export function DailyLimit({
       body={`You've used today's free turns. They come back ${when}, and your streak is safe.`}
       actions={[
         { label: 'Back to learning', onSelect: onBack, primary: true },
-        ...(onPlans ? [{ label: 'See what a bigger day carries', onSelect: onPlans }] : []),
+        ...(onPlans ? [{ label: 'See Pro', onSelect: onPlans }] : []),
+        ...(onNotes ? [{ label: "Review today's notes", onSelect: onNotes }] : []),
       ]}
-      note="Practice and lessons you've already opened still work. Pro carries five times this allowance and Max twenty, at one price for everyone."
+      note="Practice you've already opened still works."
       art={
         <InkScene label="An hourglass drawn in ink, which Wobo turns over" wobo={DAILY_LIMIT_WOBO}>
           <DailyLimitArt />

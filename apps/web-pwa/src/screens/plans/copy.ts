@@ -1,18 +1,17 @@
 /**
- * The plans page, in words.
- *
- * Almost nothing here is new: the headline and the lead are the landing page's own reviewed lines
- * (`screens/landing/copy.ts`), the FAQ is read out of the help-centre article, and the benefits are
- * the tiers WOBO-PLAN §14 sets. What this file adds is the table that puts them side by side, and
- * the two consent lines, written to match `docs/legal/refund-and-cancellation.md` §2 word for word
- * in substance.
+ * The plans page, in words — design/prototypes/site-plans.html, word for word: the hero, the
+ * allowance drawing, the honest table, the checkout preview with its two consent boxes, the gift
+ * block, the money questions and the close. The prices themselves are never written here: every
+ * number is read from `prices.ts`, so the one answer that quotes a price quotes the tiers.
  *
  * Copy laws (DESIGN.md): sentence case, no emoji, no exclamation marks. A tick is drawn, never
- * typed as an emoji, so the table reads the same in a screen reader as it does on screen.
+ * typed, so the table reads the same in a screen reader as it does on screen.
  */
 
-/** A cell: included, not included, or a qualification in words. */
-export type Benefit = boolean | string;
+import { type Market, PLAN_TIERS, type PlanTier, priceLabel, tierById } from './prices';
+
+/** A cell: included, not included, the same on every plan, or a figure in words. */
+export type Benefit = boolean | 'same' | string;
 
 export interface BenefitRow {
   label: string;
@@ -21,57 +20,136 @@ export interface BenefitRow {
   max: Benefit;
 }
 
+const tier = (id: PlanTier['id']): PlanTier => tierById(id) ?? (PLAN_TIERS[0] as PlanTier);
+
 /**
- * Free, Pro and Max, the three tiers §14 names. Every row is a line the landing page already
- * publishes or a line §14 states; the allowance rows carry the multiples §14 sets, and the
- * qualification the help-centre article makes ("the counter is on screen and tells you the exact
- * time it resets").
+ * The honest table: what changes between plans, and what never does. The figures come from the
+ * tiers; the rows that never change say so.
  */
 export const BENEFITS: readonly BenefitRow[] = [
-  { label: 'Your real board and class, this year', free: true, pro: true, max: true },
-  { label: 'Lessons drawn live on the board', free: true, pro: true, max: true },
-  { label: 'Boards, practice and the sandbox', free: true, pro: true, max: true },
-  { label: 'Your progress, and the parent link', free: true, pro: true, max: true },
-  { label: 'Everything saved on your device', free: true, pro: true, max: true },
   {
-    label: 'Turns with Wobo each day',
-    free: 'a daily allowance, counted on screen',
-    pro: 'five times the free allowance',
-    max: 'twenty times the free allowance',
+    label: 'Questions a day',
+    free: String(tier('free').questionsPerDay),
+    pro: String(tier('pro').questionsPerDay),
+    max: String(tier('max').questionsPerDay),
   },
-  { label: 'Custom courses on anything you name', free: false, pro: true, max: true },
-  { label: 'A weekly artifact for a parent', free: false, pro: true, max: true },
-  { label: 'Voice, on every board', free: false, pro: true, max: true },
+  {
+    label: 'Learners on the plan',
+    free: String(tier('free').learners),
+    pro: String(tier('pro').learners),
+    max: String(tier('max').learners),
+  },
+  { label: 'Voice replies', free: false, pro: true, max: true },
+  { label: 'Past-paper sets', free: false, pro: false, max: true },
+  { label: 'Every subject, class 4 to 12', free: 'same', pro: 'same', max: 'same' },
+  { label: 'The drawn board, practice, the week', free: 'same', pro: 'same', max: 'same' },
+  { label: 'The Sunday note and a linked parent', free: 'same', pro: 'same', max: 'same' },
+  { label: 'No ads, no selling, no opinions', free: 'same', pro: 'same', max: 'same' },
 ];
 
 export const PLANS_PAGE = {
-  eyebrow: 'plans',
-  benefitsTitle: 'What each plan carries.',
-  cardsTitle: 'What each plan costs.',
-  /** Above the three cards. The price is set; the payment page is not open yet, and it says so. */
-  cardsNote:
-    'One price for everyone in a country, billed monthly, cancel any time. Checkout opens with launch, so nothing can be charged today.',
-  allowanceTitle: 'Turns left today',
-  allowanceNote: 'Read from your own account, never estimated.',
-  marketNote: 'Shown in the currency of the country you are reading from.',
-  consentTitle: 'Before anything is charged',
-  consentLead:
-    'Two separate boxes, because agreeing to the terms and agreeing to be charged again are two different decisions. Both are unticked until you tick them.',
-  terms: 'I accept the terms of service and the privacy notice.',
-  renewal:
-    'I understand that a paid plan renews automatically each month until I cancel, that the amount and the renewal date are shown in full before I pay, and that I can cancel in settings, then plan, then cancel.',
-  /**
-   * The line under the control. It has to survive a lawyer and a parent, and it replaces the
-   * landing page's own note, which still says no price is live — true when it was written, and
-   * false since §14 set them.
-   */
-  billingNote:
-    'The price is the same for everyone in a country, it is shown in full before you pay, it renews monthly only if you say so, and you can cancel in two taps. Checkout opens with launch, so nothing can be charged today.',
-  cta: 'Continue',
-  ctaBlocked: 'Tick both boxes to continue',
-  faqTitle: 'What people ask before they pay.',
-  refundsLink: 'Renewals, cancelling and refunds, in full',
+  eyebrow: 'Plans',
+  title: 'Free every day.',
+  titleEm: 'More when exams get close.',
+  lead: 'Every learner gets a daily allowance of questions, forever, with no card and no trial that ends. Pro and Max raise the allowance for the weeks that need it. Cancelling takes as many taps as subscribing.',
+  regionLabel: 'Show prices for',
+  regions: { IN: 'India · ₹', INTL: 'Everywhere else · $' } satisfies Record<Market, string>,
+  allowance: {
+    sticker: 'free, every day',
+    title: "Today's allowance",
+    hand: 'enough for a normal evening, and the next one, and the one after',
+  },
+  table: {
+    eyebrow: 'The honest table',
+    title: 'What changes between plans, and what never does.',
+    lead: "Most of Wobo is the same on every plan. The allowance changes. The tutor doesn't.",
+    head: ['Every day', 'Free', 'Pro', 'Max'],
+    yes: 'yes',
+    same: 'same',
+    no: '—',
+  },
+  checkout: {
+    eyebrow: 'At checkout',
+    title: 'Two boxes, both in plain words.',
+    lead: 'We ask for exactly two things before taking money: that the person paying is an adult who agrees to the terms, and that they know what a month costs and how to stop it. Nothing pre-ticked.',
+    say: 'Same price for everyone in your country.',
+    sayEm: 'Always.',
+    learners: { 1: 'one learner', 2: 'two learners' } as Record<number, string>,
+    perMonth: '/ month',
+    starts: 'Starts',
+    startsValue: 'today',
+    renews: 'Renews',
+    renewsSuffix: 'unless you cancel',
+    terms: "I'm 18 or over and I agree to the terms.",
+    termsNote: 'The terms, in plain words first, are one tap away.',
+    renewal:
+      'I understand this renews monthly and I can cancel in Settings, in two taps, any time.',
+    /** `{plan}` is the tier's name. */
+    renewalNote: 'You keep {plan} until the month you paid for ends.',
+    today: 'Today',
+    pay: 'Pay with the payment provider',
+    fine: "Card or UPI, on the provider's own page. We never see or store the details.",
+  },
+  gift: {
+    eyebrow: 'Gift Wobo',
+    title: "The smartest gift for a child who's about to have a hard term.",
+    lead: 'Three, six or twelve months of Pro, sent to a parent with a note in your words. No account needed to buy. It arrives the day you choose.',
+    cta: 'Choose a gift',
+    how: 'How gifting works',
+  },
+  faq: {
+    eyebrow: 'Questions',
+    title: 'The money questions, answered straight.',
+  },
+  close: {
+    title: 'Start free. Decide later.',
+    hand: 'The first question is on us. So is the fortieth.',
+    primary: 'Start learning for free',
+    quiet: 'Gift Wobo',
+  },
 } as const;
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+/** The money questions. The one that quotes prices reads them from the tiers. */
+export function faqItems(tiers: readonly PlanTier[] = PLAN_TIERS): FaqItem[] {
+  const pro = tiers.find((t) => t.id === 'pro') ?? tier('pro');
+  const max = tiers.find((t) => t.id === 'max') ?? tier('max');
+  return [
+    {
+      question: 'What happens when the free allowance runs out for the day?',
+      answer:
+        "Wobo tells you kindly, shows the time it resets (6 am), and offers to save your question for the morning. Nothing you've done is lost, and nothing nags you to upgrade mid-lesson.",
+    },
+    {
+      question: 'Is the Sunday note only on paid plans?',
+      answer:
+        'No. The note, the parent link, the practice, the drawn board and every subject are on Free. Paid plans change the allowance, voice, and a few extras. They never change the tutor.',
+    },
+    {
+      question: 'How do I cancel?',
+      answer:
+        'Settings → Your plan → Cancel. Two taps, no call, no "are you sure" maze. You keep the plan until the month you paid for ends.',
+    },
+    {
+      question: 'Do prices change by country?',
+      answer: `Yes, by country, never by person. Everyone in India sees ${priceLabel(pro, 'IN')} and ${priceLabel(max, 'IN')}. Everyone elsewhere sees ${priceLabel(pro, 'INTL')} and ${priceLabel(max, 'INTL')}. We don't vary prices by behaviour, device or history.`,
+    },
+    {
+      question: 'Can two children share Pro?',
+      answer:
+        "Pro is for one learner, because the Sunday note and the memory are personal. Max includes two learners, each with their own note. Families with three or more: write to us and we'll sort it.",
+    },
+    {
+      question: 'Are there discounts for schools?',
+      answer:
+        "Schools get a separate plan with a teacher's view and a data-processing agreement. It's on the Schools page, or write to us.",
+    },
+  ];
+}
 
 export const CHECKOUT_PAGE = {
   title: 'Checkout opens with launch.',
@@ -85,4 +163,5 @@ export const CHECKOUT_PAGE = {
     'Two separate consent boxes, both unticked, and neither pre-ticked for you.',
     'A receipt by email with the same information again.',
   ],
+  refunds: 'Renewals, cancelling and refunds, in full',
 } as const;

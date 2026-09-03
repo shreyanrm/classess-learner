@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <!--
       The browser chrome matches the page in BOTH themes. One fixed dark value painted a dark
-      address bar above a white app for every light-mode learner. These two are the token values
-      (`chrome.page` and the dark `--wobo-page`); src/ui/theme.ts rewrites them when the learner
-      picks an explicit theme, so an override does not leave the chrome following the OS.
+      address bar above a light app for every light-mode learner. These two are the palette v4 page
+      colours (src/ui/tokens.ts PAGE — cream paper, navy night); src/ui/theme.ts rewrites them when
+      the learner picks an explicit theme, so an override does not leave the chrome following the OS.
     -->
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FFFFFF" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#17181C" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FAF7F0" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0F1226" />
     <meta
       name="description"
       content="{{APP_DESCRIPTION}}"
@@ -19,22 +19,22 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <!--
-      First paint, before any JS: the app's own background, so a dark-mode learner on a slow phone
-      never gets a white flash while the bundle downloads. Two declarations, nothing else — the
-      real palette arrives with the token layer.
+      First paint, before any JS: the app's own paper, so a dark-mode learner on a slow phone never
+      gets a white flash while the bundle downloads. Two declarations, nothing else — the real
+      palette arrives with src/ui/tokens.css.
     -->
     <style>
       :root { color-scheme: light dark; }
-      html, body { margin: 0; background: #FFFFFF; }
-      @media (prefers-color-scheme: dark) { html, body { background: #17181C; } }
-      html[data-theme='light'], html[data-theme='light'] body { background: #FFFFFF; }
-      html[data-theme='dark'], html[data-theme='dark'] body { background: #17181C; }
+      html, body { margin: 0; background: #FAF7F0; }
+      @media (prefers-color-scheme: dark) { html, body { background: #0F1226; } }
+      html[data-theme='light'], html[data-theme='light'] body { background: #FAF7F0; }
+      html[data-theme='dark'], html[data-theme='dark'] body { background: #0F1226; }
     </style>
     <!--
-      Type: Plus Jakarta Sans (Google Sans Flex stand-in) + Caveat (Wobo's hand). Both are BUNDLED
-      (@fontsource-variable, imported from src/main.tsx) and served from this origin — a Google
-      Fonts <link> is a render-blocking round-trip to a third party on the first paint of a cheap
-      phone, and it put the CDN inside the CSP.
+      Type: Poppins + Caveat (Wobo's hand), self-hosted out of /fonts and declared by
+      src/ui/tokens.css; the bundled fallback faces are imported from src/main.tsx. Every face is
+      served from this origin — a font CDN <link> is a render-blocking round-trip to a third party
+      on the first paint of a cheap phone, and it put the CDN inside the CSP.
     -->
   </head>
   <body>

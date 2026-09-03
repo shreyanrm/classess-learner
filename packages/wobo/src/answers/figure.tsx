@@ -10,7 +10,26 @@
 
 import type { AnswerBox, AnswerFigure, AnswerVisual } from '@wobo/contracts';
 import type { ReactNode } from 'react';
-import { FIGURE_BOX, figureParts } from './geometry';
+import { FIGURE_BOX, figureParts, GRID_CORNER } from './geometry';
+
+/**
+ * The ink ground a grid's cells sit on: a rounded frame whose outer edge is one gutter beyond the
+ * cells, so the tile reads as the prototype draws it. Nothing for any other shape.
+ */
+export function FigureFrame({
+  figure,
+  box = FIGURE_BOX,
+}: {
+  figure: AnswerFigure;
+  box?: AnswerBox;
+}): ReactNode {
+  if (figure.shape !== 'grid') return null;
+  const [bx, by, bw, bh] = box;
+  const corner = Math.min(bw / figure.cols, bh / figure.rows) * GRID_CORNER;
+  return (
+    <rect className="wobo-answer-frame" x={bx} y={by} width={bw} height={bh} rx={corner + 1} />
+  );
+}
 
 /**
  * The rule, ticks and end labels a number line needs under its intervals. Drawn for the number-line
@@ -66,6 +85,7 @@ export function FigurePicture({
 }): ReactNode {
   return (
     <g>
+      <FigureFrame figure={figure} box={box} />
       <FigureRule figure={figure} box={box} />
       {figureParts(figure, box).map((p) => (
         <path

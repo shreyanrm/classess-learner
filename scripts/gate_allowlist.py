@@ -357,6 +357,8 @@ PRONOUNS: tuple[Allowed, ...] = (
         for glob in (
             "apps/web-pwa/src/screens/landing/page-copy.ts",
             "apps/web-pwa/src/screens/landing/page-copy.test.ts",
+            # The For parents page carries the same chapter, ported from its prototype.
+            "apps/web-pwa/src/screens/pitch/ForParents.tsx",
             "design/prototypes/*.html",
         )
         for needle in (

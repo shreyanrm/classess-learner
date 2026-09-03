@@ -4,7 +4,8 @@
  * Course-player chrome, shared across every card: the segmented progress bar (endowed, eased),
  * the bottom action bar (Check/Continue + a quiet "why?"), the horizontal card deck, the
  * hue-tinted Stage every card's visual subject sits on, the celebration particle pop, and the
- * draggable number scrubber. Ink on paper, hairlines, 3px corners (DESIGN.md §2).
+ * draggable number scrubber. Bold ink on paper: tonal surfaces, no line, no corner under 10px
+ * (DESIGN.md §2).
  */
 
 import { useWoboBus } from '@wobo/wobo';
@@ -14,6 +15,7 @@ import {
   type KeyboardEvent,
   type ReactNode,
   type PointerEvent as ReactPointerEvent,
+  type RefObject,
   useEffect,
   useMemo,
   useRef,
@@ -86,7 +88,8 @@ export const GOLD = '#FFC93C';
 // --- Text registers ------------------------------------------------------------------------------
 
 export const whisper: CSSProperties = {
-  fontSize: '0.72rem',
+  // the 13px label floor (DESIGN.md §2) — a whisper is small, never unreadable
+  fontSize: '0.8125rem',
   letterSpacing: '0.14em',
   color: 'var(--wobo-ink-500)',
   fontWeight: 500,
@@ -128,28 +131,33 @@ export interface BarState {
   secondary?: BarAction;
 }
 
-export function ActionBar({
-  bar,
-  gate,
-}: {
-  bar: BarState | null;
-  /** When present, the primary advance button is held closed and fills up as Wobo reads. */
-  gate?: { progress: number };
-}) {
-  const still = useReducedMotion();
-  const gated = Boolean(gate);
-  const barRef = useRef<HTMLDivElement | null>(null);
-  // `registerTarget` alone, never the whole bus, and registered exactly ONCE: registering fans a
-  // state change through the provider, so an effect that re-registers whenever the bar's identity
-  // changes drives the whole tree into a re-render loop (each card hands down a fresh bar object).
-  // The live bar is read through a ref instead, which keeps every reading current and the
-  // registration still.
+/** This lesson's steps, as the player on stage reports them: the names, and which one is on. */
+export interface LessonOutline {
+  steps: string[];
+  /** Index into `steps`; -1 before the lesson has begun, `steps.length` once it is done. */
+  at: number;
+}
+
+/**
+ * The one control that moves a lesson forward, registered by name so "show me how to carry on"
+ * walks the learner to the real button. Its rect is read off the live element rather than a stored
+ * box, so it survives the bar re-laying out under a longer label. Registered exactly ONCE:
+ * registering fans a state change through the provider, so an effect that re-registers whenever
+ * the bar's identity changes drives the whole tree into a re-render loop (each card hands down a
+ * fresh bar object). The live bar is read through a ref instead.
+ *
+ * `host` is the element the primary button is the last `<button>` of — the action bar, or the
+ * lesson screen's say row.
+ */
+export function useAdvanceTarget(
+  host: RefObject<HTMLElement | null>,
+  bar: BarState | null,
+  gated: boolean,
+): void {
+  // `registerTarget` alone, never the whole bus: the bus object is rebuilt on every registration.
   const { registerTarget } = useWoboBus();
   const live = useRef<{ bar: BarState | null; gated: boolean }>({ bar, gated });
   live.current = { bar, gated };
-  // The one control that moves a lesson forward, registered by name so "show me how to carry on"
-  // walks the learner to the real button. Its rect is read off the live element rather than a
-  // stored box, so it survives the bar re-laying out under a longer label.
   useEffect(() => {
     const ready = () => {
       const { bar: b, gated: g } = live.current;
@@ -160,7 +168,7 @@ export function ActionBar({
       kind: 'control',
       label: 'the button that moves this lesson on',
       getRect: () => {
-        const el = barRef.current?.querySelector('button:last-of-type') as HTMLElement | null;
+        const el = host.current?.querySelector('button:last-of-type') as HTMLElement | null;
         return el?.getBoundingClientRect() ?? null;
       },
       getSceneState: () => ({
@@ -176,7 +184,21 @@ export function ActionBar({
         if (patch.advance === true && ready()) live.current.bar?.primary.onClick();
       },
     });
-  }, [registerTarget]);
+  }, [registerTarget, host]);
+}
+
+export function ActionBar({
+  bar,
+  gate,
+}: {
+  bar: BarState | null;
+  /** When present, the primary advance button is held closed and fills up as Wobo reads. */
+  gate?: { progress: number };
+}) {
+  const still = useReducedMotion();
+  const gated = Boolean(gate);
+  const barRef = useRef<HTMLDivElement | null>(null);
+  useAdvanceTarget(barRef, bar, gated);
   if (!bar) return null;
   return (
     <motion.div
@@ -185,7 +207,6 @@ export function ActionBar({
       transition={{ type: 'spring', stiffness: 300, damping: 32 }}
       style={{
         position: 'relative',
-        borderTop: '0.5px solid var(--wobo-hairline-on-paper)',
         padding: '14px 24px calc(14px + env(safe-area-inset-bottom, 0px))',
         display: 'flex',
         justifyContent: 'center',
@@ -357,24 +378,17 @@ export function ChoiceButton({
   const wrongPick = evaluated && chosen && !isAnswer;
   const showCorrect = evaluated && isAnswer;
   const delay = showCorrect && blockWrong ? 0.4 : 0;
-  const border = !evaluated
-    ? chosen
-      ? '0.5px solid var(--wobo-ink-900)'
-      : '0.5px solid var(--wobo-hairline-on-paper-strong)'
-    : showCorrect
-      ? '1px solid var(--wobo-feedback-correct)'
-      : wrongPick
-        ? '1px solid var(--wobo-feedback-retry)'
-        : '0.5px solid var(--wobo-hairline-on-paper)';
+  // Tonal surfaces, no line round them (DESIGN.md §2): paper-2 at rest, ink when chosen, the mint
+  // wash for the right one and the coral wash for a wrong pick once the set is checked.
   const background = !evaluated
     ? chosen
-      ? 'var(--wobo-ink-900)'
-      : 'var(--wobo-paper)'
+      ? 'var(--ink)'
+      : 'var(--paper-2)'
     : showCorrect
-      ? 'var(--wobo-feedback-correctSoft)'
+      ? 'var(--mint-w)'
       : wrongPick
-        ? 'var(--wobo-feedback-retrySoft)'
-        : 'var(--wobo-paper)';
+        ? 'var(--rose-w)'
+        : 'var(--paper-2)';
   return (
     <motion.button
       type="button"
@@ -390,12 +404,12 @@ export function ChoiceButton({
         fontSize: '0.95rem',
         lineHeight: 1.45,
         fontFamily: 'inherit',
-        color: !evaluated && chosen ? 'var(--wobo-paper)' : 'var(--wobo-ink-900)',
+        color: !evaluated && chosen ? 'var(--paper)' : 'var(--ink)',
         background,
-        border,
-        borderRadius: 'var(--wobo-radius-sm)',
+        border: 0,
+        borderRadius: 12,
         cursor: disabled ? 'default' : 'pointer',
-        transition: `background 0.25s ease ${delay}s, border-color 0.25s ease ${delay}s, color 0.2s ease`,
+        transition: `background 0.25s ease ${delay}s, color 0.2s ease`,
         ...style,
       }}
     >
@@ -438,7 +452,7 @@ export function Stage({
         position: 'relative',
         width: '100%',
         minHeight,
-        borderRadius: 3,
+        borderRadius: 16,
         background: tonal ? 'var(--wobo-tonal)' : rgba(hue, tint),
         overflow: 'hidden',
         display: 'flex',
@@ -615,6 +629,7 @@ export function Scrubber({
 
   return (
     <motion.span
+      className="ls-scrub"
       role="slider"
       aria-label={label}
       aria-valuenow={value}

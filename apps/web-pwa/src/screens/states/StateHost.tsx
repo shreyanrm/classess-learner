@@ -17,6 +17,10 @@
 import { Component, type ReactNode, useCallback, useEffect, useState } from 'react';
 import { useConnectivity } from '../../shell/resilience';
 import { useRouter } from '../../shell/router';
+import { useProgress } from '../../store/progress';
+import { readNotes } from '../../wobo/board-notes';
+import { lessonView } from '../../wobo/lesson-view';
+import { todayPlan } from '../home/today';
 import { DailyLimit, ExpiredLink, Maintenance, NotFound, Offline, ServerError } from './pages';
 import { clearFailure, type Failure, reportFailure, selectState, useFailure } from './select';
 import { ensureStateStyles } from './styles';
@@ -90,6 +94,21 @@ export function StateLayer({ children }: { children: ReactNode }) {
     router.navigate({ name: 'plans' });
   }, [router]);
 
+  // "Review today's notes": the boards the learner kept live on the lesson's notes view, so the
+  // door opens the lesson in flight (the one the home would continue) on that view. Drawn only
+  // when there is something kept and a lesson to open it in — a door onto nothing is worse than
+  // no door.
+  const progress = useProgress();
+  const plan = todayPlan(progress);
+  const lesson = plan.continue?.topic.id ?? plan.next?.topic.id ?? null;
+  const hasNotes = lesson !== null && readNotes().length > 0;
+  const notes = useCallback(() => {
+    if (!lesson) return;
+    clearFailure();
+    lessonView.view('notes');
+    router.navigate({ name: 'course', topicId: lesson });
+  }, [router, lesson]);
+
   const kind = selectState({ routeName: router.route.name, online: !offline, failure });
 
   // 'not-found' is an ADDRESS, so it is rendered by the router as a screen of its own; everything
@@ -100,7 +119,12 @@ export function StateLayer({ children }: { children: ReactNode }) {
     ) : kind === 'maintenance' ? (
       <Maintenance backAt={failure?.backAt} onRetry={retry} />
     ) : kind === 'daily-limit' ? (
-      <DailyLimit resetAt={failure?.resetAt} onBack={home} onPlans={plans} />
+      <DailyLimit
+        resetAt={failure?.resetAt}
+        onBack={home}
+        onPlans={plans}
+        onNotes={hasNotes ? notes : undefined}
+      />
     ) : kind === 'offline' ? (
       <Offline onRetry={retry} />
     ) : kind === 'server-error' ? (

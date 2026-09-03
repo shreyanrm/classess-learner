@@ -54,8 +54,7 @@ test('a UI navigation writes an address, browser back pops it without reloading'
 
   // Through the UI, not through the URL bar — the door is what a learner actually presses.
   await learnDoor.click();
-  await expect(page.getByRole('heading', { name: 'Learn', level: 1 })).toBeVisible();
-  await expect(page.getByText('Where to today?')).toBeVisible();
+  await expect(page.getByText('Your subjects')).toBeVisible();
   expect(pathname(page)).toBe('/learn');
   expect(await readSentinel(page), 'a UI navigation must not reload the document').toBe('alive');
 
@@ -74,8 +73,7 @@ test('a cold deep link boots straight onto the addressed screen', async ({ page 
   await seedOnboarded(page);
 
   await page.goto('/learn');
-  await expect(page.getByRole('heading', { name: 'Learn', level: 1 })).toBeVisible();
-  await expect(page.getByText('Where to today?')).toBeVisible();
+  await expect(page.getByText('Your subjects')).toBeVisible();
   expect(pathname(page)).toBe('/learn');
 
   // A fresh document carries no sentinel — which is what makes the no-reload assertion above real.

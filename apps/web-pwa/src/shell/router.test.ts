@@ -24,6 +24,13 @@ const EVERY_ROUTE: Route[] = [
   { name: 'sign-in' },
   { name: 'sign-up' },
   { name: 'contact' },
+  { name: 'sitemap' },
+  { name: 'security' },
+  { name: 'meet-wobo' },
+  { name: 'for-parents' },
+  { name: 'for-students' },
+  { name: 'how-it-works' },
+  { name: 'subjects' },
   { name: 'concept', which: 'engines' },
 ];
 

@@ -3,55 +3,56 @@
 /**
  * `/plans/checkout` — the honest state.
  *
- * There is no price, so there is no checkout. This page says that in one line rather than showing a
- * disabled payment form, and lists what will be on it when there is something to buy, because those
- * promises are already made in `docs/legal/refund-and-cancellation.md` §2 and a visitor is entitled
- * to read them before they trust us with a card.
+ * The payment page is not open, so there is no checkout. This page says that in one line rather
+ * than showing a disabled payment form, and lists what will be on it when there is something to
+ * buy, because those promises are already made in `docs/legal/refund-and-cancellation.md` §2 and a
+ * visitor is entitled to read them before they trust us with a card.
  */
 
-import { useRouter } from '../../shell/router';
 import { legalPath } from '../legal/catalog';
+import { ClosePanel } from '../site/ClosePanel';
 import { SiteLink } from '../site/nav';
 import { SiteShell } from '../site/SiteShell';
-import { CHECKOUT_PAGE } from './copy';
-import { ensurePlansStyles } from './styles';
-
-ensurePlansStyles();
+import { CHECKOUT_PAGE, PLANS_PAGE } from './copy';
 
 export function Checkout() {
-  const router = useRouter();
   return (
     <SiteShell current="plans" title="Checkout — Wobo">
-      <section className="lp-wrap lp-head" style={{ paddingBottom: 'clamp(56px, 8vw, 96px)' }}>
-        <p className="lp-crumb">
-          <SiteLink href="/plans">Plans</SiteLink>
-          <span aria-hidden>/</span>Checkout
-        </p>
-        <h1 className="lp-h1x">{CHECKOUT_PAGE.title}</h1>
-        <p className="lp-lead">{CHECKOUT_PAGE.lead}</p>
-        <ul className="lp-lines">
-          {CHECKOUT_PAGE.promises.map((line) => (
-            <li key={line}>{line}</li>
-          ))}
-        </ul>
-        <div className="lp-cta" style={{ marginTop: 30 }}>
-          <button
-            type="button"
-            className="lp-btn lp-btn--pigment"
-            onClick={() => router.navigate({ name: 'onboarding' })}
-          >
-            {CHECKOUT_PAGE.cta}
-          </button>
-          <SiteLink href="/plans" className="lp-btn lp-btn--ghost">
-            {CHECKOUT_PAGE.back}
-          </SiteLink>
+      <section className="st-page-hero">
+        <div className="st-wrap">
+          <nav className="st-crumb" aria-label="Where this page sits">
+            <SiteLink to={{ name: 'plans' }}>Plans</SiteLink>
+            <span aria-hidden>/</span>
+            <b>Checkout</b>
+          </nav>
+          <h1>{CHECKOUT_PAGE.title}</h1>
+          <p className="st-sub">{CHECKOUT_PAGE.lead}</p>
+          <ul className="pl-promises">
+            {CHECKOUT_PAGE.promises.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+          <div className="st-row">
+            <SiteLink to={{ name: 'onboarding' }} className="st-btn st-pig">
+              {CHECKOUT_PAGE.cta}
+            </SiteLink>
+            <SiteLink to={{ name: 'plans' }} className="st-btn st-quiet">
+              {CHECKOUT_PAGE.back}
+            </SiteLink>
+          </div>
+          <p className="st-hint" style={{ marginTop: 'var(--s3)' }}>
+            <SiteLink href={legalPath('refund-and-cancellation')} className="st-link">
+              {CHECKOUT_PAGE.refunds}
+            </SiteLink>
+          </p>
         </div>
-        <p className="lp-note">
-          <SiteLink href={legalPath('refund-and-cancellation')}>
-            Renewals, cancelling and refunds, in full
-          </SiteLink>
-        </p>
       </section>
+      <ClosePanel
+        title={PLANS_PAGE.close.title}
+        hand={PLANS_PAGE.close.hand}
+        primary={{ label: PLANS_PAGE.close.primary, to: { name: 'onboarding' } }}
+        quiet={{ label: PLANS_PAGE.close.quiet, to: { name: 'gift' } }}
+      />
     </SiteShell>
   );
 }

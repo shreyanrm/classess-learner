@@ -1,0 +1,82 @@
+/* biome-ignore-all format: every rule is design/prototypes/app-v1.html (board 03), kept as written */
+/*
+ * The lesson screen — board 03 of design/prototypes/app-v1.html, rule for rule, under an `ls-`
+ * prefix so nothing here meets a rule from an older screen. src/screens/course/lesson.test.ts
+ * holds each rule to its source.
+ *
+ * Two rules are the screen's own, and the test names them: `.ls-lesson` takes its height from the
+ * viewport rather than the prototype's 900px artboard, and the say row's button stays on a phone
+ * (the prototype hid it, and a lesson the learner cannot move on is a trap).
+ */
+
+/* the grid: the plane card and the side column */
+.ls-lesson{display:grid;grid-template-columns:1fr 340px;gap:20px;height:calc(100dvh - 154px);min-height:420px}
+
+/* the plane card: bar, canvas, say */
+.ls-plane{border-radius:26px;background:var(--paper-2);position:relative;overflow:hidden;display:grid;grid-template-rows:auto 1fr auto}
+.ls-bar{display:flex;align-items:center;gap:10px;padding:16px 20px;font-size:13px;color:var(--ink-3)}
+.ls-bar b{font-weight:500;color:var(--ink-2)}
+.ls-live{margin-left:auto;display:inline-flex;align-items:center;gap:6px;color:var(--rose);font-size:12px}
+.ls-live i{width:8px;height:8px;border-radius:50%;background:var(--rose)}
+.ls-canvas{position:relative;background:var(--paper);margin:0 12px;border-radius:18px;min-width:0}
+.ls-say{padding:14px 20px 18px;display:flex;align-items:center;gap:12px}
+.ls-say .hand{font-size:24px;color:var(--ink)}
+
+/* what the canvas holds: the lesson's cards, and Wobo's board over them when there is ink on it.
+   min-width:0 on the canvas: a card wider than a phone (the scale measures its wrapper and scales
+   itself down) must not size the plane's grid column past the plane. */
+.ls-stage{position:absolute;inset:0;overflow-y:auto;display:flex;flex-direction:column;border-radius:18px}
+.ls-host{position:absolute;inset:0;border-radius:18px;overflow:hidden;pointer-events:none}
+.ls-host:empty,.ls-host[hidden],.ls-stage[hidden]{display:none}
+.ls-host>*{pointer-events:auto}
+.ls-ink{position:absolute;inset:0;background:var(--paper)}
+.ls-back{position:absolute;left:16px;top:16px}
+.ls-fill{position:absolute;left:0;top:0;bottom:0;background:rgba(255,255,255,.2);pointer-events:none}
+.ls-say .ls-actions{margin-left:auto;display:flex;gap:10px;flex:none}
+.ls-actions .wk-btn{position:relative;overflow:hidden}
+.ls-actions .wk-btn:disabled{opacity:.55;cursor:default}
+.ls-actions .wk-btn.ls-gated{opacity:1}
+.ls-say .hand{flex:1;min-width:0}
+.ls-voice{display:inline-flex;align-items:center;gap:2px;margin-left:auto}
+.ls-voice+.ls-live{margin-left:0}
+
+/* the side column */
+.ls-side{display:grid;gap:14px;align-content:start}
+.ls-side .wk-card{min-height:0}
+.ls-steps{display:grid;gap:8px}
+.ls-steps div{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:center;font-size:14px;color:var(--ink-2)}
+.ls-steps i{width:26px;height:26px;border-radius:50%;background:var(--paper);display:grid;place-items:center;font:700 13px/1 var(--hand);color:var(--ink);font-style:normal}
+.ls-steps div.ls-on{color:var(--ink);font-weight:500}
+.ls-steps div.ls-on i{background:var(--pig);color:#fff}
+.ls-tools{display:flex;gap:8px;flex-wrap:wrap}
+
+/* the notes: saved boards, newest first */
+.ls-notes{position:absolute;inset:0;overflow-y:auto;padding:16px;display:grid;gap:8px;align-content:start}
+.ls-notes button{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--paper-2);font:500 14px/1.3 var(--sans);color:var(--ink);border:0;cursor:pointer;text-align:left}
+.ls-notes button.ls-on{background:var(--pig-w)}
+.ls-notes button span{font-size:12px;color:var(--ink-3)}
+.ls-notes .ls-empty{font-size:14px;color:var(--ink-3);padding:6px 2px}
+
+/* the what-if card's own controls, on the plane: the draggable numbers and the "how we got here"
+   button. Desktop keeps them light; the phone block grows their boxes to the touch floor. */
+.ls-scrub{display:inline-block;text-align:center}
+.ls-why{width:32px;height:32px}
+
+/* the rail's bottom slot: a hold on the pill is the same hold as the space bar */
+button.ls-hold{border:0;width:100%;cursor:pointer;font:inherit;text-align:left;touch-action:none;user-select:none}
+
+/* the resume beat, and the screen's spoken heading */
+.ls-resume{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);z-index:40;padding:9px 16px;border-radius:12px;background:var(--ink);color:var(--paper);font:500 13px/1 var(--sans);white-space:nowrap;pointer-events:none}
+.ls-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* phone */
+@media (max-width:900px){
+  .ls-lesson{grid-template-columns:1fr;height:auto}
+  .ls-canvas{min-height:300px}
+  .ls-stage{position:relative;min-height:300px}
+  .ls-say .hand{font-size:20px}
+  /* the touch floor (DESIGN.md §2): the bar's voice buttons, the scrubbed numbers, the why */
+  .ls-voice button{min-width:44px;min-height:44px}
+  .ls-scrub{min-width:44px;min-height:44px;line-height:44px;padding-top:0;padding-bottom:0}
+  .ls-why{width:44px;height:44px}
+}

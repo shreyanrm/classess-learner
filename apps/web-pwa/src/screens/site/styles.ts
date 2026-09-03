@@ -1,444 +1,432 @@
 /**
- * THE public site's stylesheet — /about, /help and every article, the legal set, /plans, /gift and
- * /contact. One sheet, one id, one layer over the landing page's own.
+ * THE public site's stylesheet — the shell every site page wears, and the page rules for /about,
+ * /help and every article, /plans and /plans/checkout, /gift, /contact, the two doors, the legal
+ * set and /sitemap. One sheet, one id, injected once.
  *
- * It used to be two. `site/styles.ts` and `legal/SiteShell.tsx` each injected a `<style>` element
- * under the SAME id (`wobo-site`) with DIFFERENT rules, and both guarded on
- * `getElementById(STYLE_ID)` — so whichever public page a visitor opened first won, and every page
- * from the other half rendered with no stylesheet at all for the rest of the session. Walking
- * /about → /plans through the footer stripped the plans page of its document column, its cards,
- * its table and its skip link. One sheet is the fix; it is also why there is now one shell.
+ * Every shell rule is design/prototypes/site-plans.html (the header, the pill nav, the buttons,
+ * the close panel, the footer, the reveal) and the ask block is site-about.html, ported
+ * declaration for declaration under `st-` names; the About and Plans page rules are their
+ * prototypes the same way. `styles.test.ts` holds each of those rules to its source.
  *
- * The site pages render inside `.lp`, so every shape the landing page defines (the wrap, the
- * section rhythm, the eyebrow, the headings, the buttons, the frost on the top bar, the frame
- * around a board) is inherited rather than restated. Everything here is what the landing page has
- * no equivalent for: long-form prose, a document column, a breadcrumb, a search field, an article
- * list, tables, the plain-words box, print rules, and the one drawn mark on the About hero.
+ * One deliberate change from the prototypes: the ink panels (the footer, the close panel, the team
+ * panel, the Max card) tint their text with `rgba(250,247,240,.6)` — cream at sixty percent. On the
+ * night theme the panel's ink IS cream, so that text vanished in the prototype's own dark frames.
+ * Here the same tints are written as `color-mix(in srgb, var(--paper) 60%, transparent)`: the same
+ * colour on paper, and navy at sixty percent on the cream panel at night. The test normalises the
+ * two spellings before comparing.
  *
- * Same laws, because they are the app's and not this page's (DESIGN.md §2): one pigment,
- * ultramarine, spent on the drawn underline, the search field's focus and the ink marks and
- * nowhere else; no shadows — depth is a half-pixel hairline and a tonal step; 3px corners;
- * sentence case. Every colour is a `--wobo-*` token, so dark mode costs nothing.
- *
- * The last block is the ACCESSIBILITY FLOOR (WOBO-PLAN §18): nothing a public page renders drops
- * below 14px of body copy or 44×44 of tap target. It is written once, here, scoped to `.st`, so
- * every public page rises together and no page forks the landing sheet to fix itself.
+ * The laws that hold everywhere (DESIGN.md §2): no border lines — surfaces separate by tone, space
+ * and shape; corners 10 / 16 / 24 and up; a soft tinted shadow only under what floats (the pinned
+ * mission note, the checkout card, a sticker); Poppins for every word and Caveat only for what
+ * Wobo writes; every colour a palette-v4 token.
  */
-
-import { fontFamily, radius } from '@wobo/config';
-import { ensureLandingStyles } from '../landing/styles';
 
 const STYLE_ID = 'wobo-site';
 
 export const SITE_CSS = `
 /* --- the page ------------------------------------------------------------------------------- */
-/* A short page (the checkout state, a contact page) must still put its footer at the bottom of the
-   window rather than halfway up it with dead space underneath. */
-.st-page { display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 8px; }
-.st-page > main { flex: 1 0 auto; }
-.st-main:focus { outline: none; }
+.st{background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:clip;display:flex;flex-direction:column;min-height:100vh}
+.st>main{flex:1 0 auto}
+.st h1,.st h2,.st h3{margin:0;letter-spacing:-.025em;text-wrap:balance}
+.st p{margin:0}
+/* :where keeps this at class weight, so a button drawn on an anchor (.st-btn) keeps its own colour */
+.st :where(a){color:inherit;text-decoration:none}
+.st-wrap{width:min(1120px,calc(100% - 48px));margin:0 auto}
+.st-btn{font:500 15px/1 var(--sans);padding:14px 20px;border-radius:12px;border:0;background:var(--ink);color:var(--paper);display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;cursor:pointer}
+.st-btn.st-pig{background:var(--pig);color:#fff}
+.st-btn.st-quiet{background:var(--paper-2);color:var(--ink)}
+.st-btn.st-marigold{background:var(--marigold);color:#14142B}
+.st-btn:disabled{cursor:not-allowed;opacity:.42}
+.st .st-btn:focus-visible,.st input:focus-visible,.st button:focus-visible,.st summary:focus-visible,.st a:focus-visible,.st select:focus-visible,.st textarea:focus-visible{outline:3px solid var(--marigold);outline-offset:2px}
+.st-skip{position:fixed;left:12px;top:-80px;z-index:60;background:var(--paper-2);color:var(--ink);padding:12px 16px;border-radius:12px;transition:top 140ms ease}
+.st-skip:focus{top:12px}
 
-.st-nav-links a[aria-current='page'] { color: var(--wobo-ink-900); }
+/* --- the header: sticky, blurred, the wordmark, the pill nav, the two doors ------------------ */
+.st-header{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--paper) 78%,transparent)}
+.st-header .st-wrap{display:flex;align-items:center;gap:var(--s3);height:72px}
+.st-header .st-wm svg{height:26px;width:auto;fill:var(--ink);display:block}
+.st-header nav{margin-left:auto;display:flex;gap:4px;background:var(--paper-2);padding:4px;border-radius:999px}
+.st-header nav a{padding:10px 16px;border-radius:999px;font:500 14px/1 var(--sans);color:var(--ink-2)}
+.st-header nav a.st-on{background:var(--ink);color:var(--paper)}
+.st-header .st-cta{display:flex;gap:8px}
+/* a door (sign in, sign up) has no pill nav: the one quiet button sits where the doors do */
+.st-header .st-door{margin-left:auto}
 
-.st-skip {
-  background: var(--wobo-card);
-  border: 0.5px solid var(--wobo-card-border);
-  border-radius: ${radius.sm}px;
-  color: var(--wobo-ink-900);
-  left: 12px;
-  padding: 12px 16px;
-  position: fixed;
-  top: -80px;
-  transition: top 140ms ease;
-  z-index: 60;
+/* --- reveal on scroll: visible at rest, a small rise while it is below the fold -------------- */
+.st-reveal{opacity:1;transform:none;transition:opacity .6s ease,transform .6s ease}
+.st-reveal.st-pre{opacity:0;transform:translateY(18px)}
+
+/* --- a chapter: the label, the heading, the line under it ----------------------------------- */
+.st-section{padding:var(--s5) 0}
+.st-head{display:grid;gap:var(--s2);max-width:64ch;margin-bottom:var(--s4)}
+.st-head h2{font:700 clamp(28px,3.4vw,42px)/1.08 var(--sans)}
+.st-head p{color:var(--ink-2);font-size:18px}
+
+/* --- tiles: three across, one wash each --------------------------------------------------- */
+.st-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2)}
+.st-grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s2)}
+.st-tile{border-radius:22px;padding:var(--s3);background:var(--paper-2);display:grid;gap:10px;align-content:start}
+.st-tile.st-pig{background:var(--pig-w)}
+.st-tile.st-mint{background:var(--mint-w)}
+.st-tile.st-marigold{background:var(--marigold-w)}
+.st-tile.st-rose{background:var(--rose-w)}
+.st-tile.st-lilac{background:var(--lilac-w)}
+.st-tile h3{font:600 19px/1.25 var(--sans)}
+.st-tile p{color:var(--ink-2);font-size:15px}
+.st-tile svg{width:44px;height:44px;fill:none;stroke:var(--ink);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* --- the ask block: Wobo's head, a label, a line, the box, three chips ---------------------- */
+.st-ask{background:var(--paper-2);border-radius:28px;padding:var(--s4);display:grid;grid-template-columns:auto 1fr;gap:var(--s3);align-items:center}
+.st-ask h2{font:700 28px/1.1 var(--sans)}
+.st-ask .wk-ask{display:flex;gap:10px;background:var(--paper);border-radius:16px;padding:8px 8px 8px 18px;align-items:center;margin-top:var(--s2);max-width:none}
+.st-ask .wk-ask .wk-mic{background:var(--paper-2)}
+.st-ask .st-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.st-ask .st-chips .wk-chip{font:500 13px/1 var(--sans);padding:8px 12px;border-radius:999px;background:var(--paper);color:var(--ink-2)}
+
+/* --- the close panel: begin tonight ----------------------------------------------------------- */
+.st-close{margin:var(--s5) 0 0;background:var(--ink);color:var(--paper);padding:var(--s6) 0;text-align:center}
+.st-close h2{font:700 clamp(34px,5vw,60px)/1.02 var(--sans);letter-spacing:-.035em}
+.st-close .hand{font-size:30px;color:var(--marigold);display:block;margin-top:var(--s2)}
+.st-close .st-row{display:flex;gap:var(--s2);justify-content:center;margin-top:var(--s4);flex-wrap:wrap}
+.st-close .st-btn{background:var(--marigold);color:#14142B}
+.st-close .st-btn.st-q{background:color-mix(in srgb,var(--paper) 12%,transparent);color:var(--paper)}
+.st-close .st-fine{margin:var(--s4) auto 0;max-width:60ch;color:color-mix(in srgb,var(--paper) 72%,transparent);font-size:15px}
+.st-close .st-fine a{color:var(--marigold);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+
+/* --- the footer: four columns and the line ------------------------------------------------- */
+.st-footer{background:var(--ink);color:color-mix(in srgb,var(--paper) 60%,transparent);padding:var(--s4) 0 var(--s5);font-size:14px}
+.st-footer .st-wrap{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:var(--s3)}
+.st-footer b{display:block;color:var(--paper);font-weight:600;margin-bottom:10px}
+.st-footer a{display:block;padding:4px 0}
+.st-footer .st-wm svg{height:24px;fill:var(--paper)}
+.st-footer a[aria-current="page"]{color:var(--paper)}
+.st-footer .st-line{margin-top:10px;max-width:28ch}
+
+/* --- prose: reviewed copy, rendered (help articles, the legal set, the gift page) ------------ */
+.st-prose{color:var(--ink-2);font-size:17px;line-height:1.65;max-width:68ch}
+.st-prose h2{font:700 clamp(24px,2.6vw,32px)/1.1 var(--sans);color:var(--ink);margin:var(--s4) 0 var(--s2);scroll-margin-top:88px}
+.st-prose h3{font:600 20px/1.25 var(--sans);color:var(--ink);margin:var(--s3) 0 var(--s1);scroll-margin-top:88px}
+.st-prose h2:first-child,.st-prose h3:first-child{margin-top:0}
+.st-prose p{margin:0 0 var(--s2)}
+.st-prose ul,.st-prose ol{margin:0 0 var(--s2);padding-left:22px}
+.st-prose li{margin-bottom:8px}
+.st-prose li::marker{color:var(--pig)}
+.st-prose strong{color:var(--ink);font-weight:600}
+.st-prose a{color:var(--pig);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+.st-prose code{font:inherit;background:var(--paper-2);border-radius:10px;padding:2px 8px}
+.st-prose hr{border:0;height:2px;border-radius:999px;background:var(--paper-3);margin:var(--s4) 0}
+.st-prose>:last-child{margin-bottom:0}
+/* an unfilled term in the reviewed copy, shown as the gap it is rather than invented */
+.st-slot{color:var(--ink-3);background:var(--paper-2);border-radius:10px;padding:0 8px}
+/* a table in a document: the plans table's shape */
+.st-scroll{margin:0 0 var(--s3);overflow-x:auto;border-radius:24px}
+.st-grid{border-collapse:collapse;width:100%;min-width:560px;background:var(--paper-2);font-size:15px}
+.st-grid th,.st-grid td{padding:14px var(--s3);text-align:left;vertical-align:top}
+.st-grid th{font:500 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);background:var(--paper-3);padding:var(--s2) var(--s3)}
+.st-grid tr+tr td{border-top:2px solid var(--paper)}
+.st-grid td:first-child{font-weight:500;color:var(--ink)}
+/* the "in plain words" card: the highlighter, Wobo's hand, then the honest summary */
+.st-plain{background:var(--marigold-w);border-radius:24px;padding:var(--s3);margin:0 0 var(--s4)}
+.st-plain .hand{display:block;font-size:26px;color:var(--ink);margin-bottom:var(--s1)}
+.st-plain p{color:var(--ink-2);font-size:17px;margin:0 0 12px}
+.st-plain p:last-child{margin-bottom:0}
+/* a note card: a tag and a line */
+.st-note{background:var(--paper-2);border-radius:20px;padding:20px var(--s3);display:grid;gap:8px}
+.st-note p{color:var(--ink-2);font-size:15px}
+/* a crumb: where the page sits */
+.st-crumb{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font:500 14px/1.3 var(--sans);color:var(--ink-3);margin-bottom:var(--s3)}
+.st-crumb a{display:inline-flex;align-items:center;min-height:44px;min-width:44px}
+.st-crumb a:hover{color:var(--ink)}
+.st-crumb b{font-weight:500;color:var(--ink-2)}
+/* a field: a small label over a tonal input */
+.st-field{display:grid;gap:6px;text-align:left}
+.st-field label{font:500 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.st-field input,.st-field select,.st-field textarea{font:400 17px/1.4 var(--sans);padding:14px 16px;border-radius:12px;border:0;background:var(--paper-2);color:var(--ink);width:100%;min-height:50px}
+.st-field input::placeholder,.st-field textarea::placeholder{color:var(--ink-3)}
+.st-field textarea{min-height:180px;resize:vertical;line-height:1.55}
+.st-field select{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);background-position:calc(100% - 24px) 22px,calc(100% - 18px) 22px;background-size:6px 6px;background-repeat:no-repeat;padding-right:44px}
+.st-fine{font-size:13px;color:var(--ink-3)}
+.st-hint{font-size:14px;color:var(--ink-2)}
+/* a page hero that announces itself: a label, a headline, a line */
+.st-page-hero{padding:var(--s5) 0 var(--s4)}
+.st-page-hero h1{font:700 clamp(36px,4.8vw,58px)/1.04 var(--sans);letter-spacing:-.035em;margin-top:var(--s2);max-width:18ch}
+.st-page-hero h1 em{font-style:normal;color:var(--pig)}
+.st-page-hero p.st-sub{font-size:19px;color:var(--ink-2);max-width:52ch;margin-top:var(--s3)}
+.st-page-hero .hand{font-size:26px;color:var(--pig);display:block;margin-top:var(--s2)}
+.st-page-hero .st-row{display:flex;gap:var(--s2);margin-top:var(--s4);flex-wrap:wrap;align-items:center}
+.st-chips{display:flex;gap:8px;flex-wrap:wrap}
+.st-lines{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.st-lines li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:16px}
+.st-lines li i{width:22px;height:22px;border-radius:50%;background:var(--mint);display:grid;place-items:center;margin-top:2px}
+.st-lines li i svg{width:12px;height:12px;fill:none;stroke:#14142B;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.st-quiet-card{background:var(--paper-2);border-radius:20px;padding:var(--s3);color:var(--ink-3);font-size:15px;max-width:60ch}
+.st-link{color:var(--pig);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+
+/* --- /about ------------------------------------------------------------------------------- */
+.ab-hero{padding:var(--s5) 0 var(--s4)}
+.ab-hero .st-wrap{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5);align-items:center}
+.ab-hero h1{font:700 clamp(36px,4.8vw,58px)/1.04 var(--sans);letter-spacing:-.035em;margin-top:var(--s2)}
+.ab-hero h1 em{font-style:normal;color:var(--pig)}
+.ab-hero p.ab-sub{font-size:19px;color:var(--ink-2);max-width:46ch;margin-top:var(--s3)}
+.ab-mission{background:var(--paper-2);border-radius:28px;padding:var(--s4);position:relative;transform:rotate(-1.5deg);box-shadow:0 26px 50px rgba(20,20,43,.12)}
+.ab-mission .hand{font-size:clamp(28px,3vw,40px);line-height:1.12}
+.ab-mission .hand em{font-style:normal;color:var(--rose)}
+.ab-mission .ab-sig{margin-top:var(--s3);display:flex;align-items:center;gap:10px;font-family:var(--hand);font-weight:700;font-size:24px}
+.ab-mission .ab-pin{position:absolute;top:-14px;left:50%;width:28px;height:28px;border-radius:50%;background:var(--marigold);transform:translateX(-50%);box-shadow:0 8px 16px rgba(20,20,43,.16)}
+.ab-story{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5);align-items:start}
+.ab-story p{color:var(--ink-2);font-size:18px;max-width:52ch}
+.ab-story p+p{margin-top:var(--s2)}
+.ab-story .ab-pull{font-family:var(--hand);font-weight:600;font-size:30px;line-height:1.15;color:var(--ink);background:var(--marigold-w);border-radius:24px;padding:var(--s3)}
+.ab-story .ab-pull em{font-style:normal;color:var(--rose)}
+.ab-promises{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s2)}
+.ab-promise{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start;background:var(--paper-2);border-radius:20px;padding:var(--s3)}
+.ab-promise i{width:44px;height:44px;border-radius:50%;background:var(--marigold);display:grid;place-items:center;font:700 22px/1 var(--hand);font-style:normal;color:var(--ink)}
+.ab-promise b{display:block;font-weight:600;font-size:17px}
+.ab-promise span{color:var(--ink-2);font-size:15px}
+.ab-team{display:grid;grid-template-columns:1.1fr .9fr;gap:var(--s4);align-items:center;background:var(--ink);color:var(--paper);border-radius:32px;padding:var(--s5) var(--s4)}
+.ab-team h2{font:700 clamp(28px,3.4vw,42px)/1.06 var(--sans)}
+.ab-team p{color:color-mix(in srgb,var(--paper) 72%,transparent);margin-top:var(--s2);max-width:46ch}
+.ab-team .hand{font-size:28px;color:var(--marigold);margin-top:var(--s3)}
+.ab-team .ab-cards{display:grid;gap:12px}
+.ab-team .ab-card{background:color-mix(in srgb,var(--paper) 8%,transparent);border-radius:18px;padding:18px 20px;display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:center}
+.ab-team .ab-card .ab-a{width:48px;height:48px;border-radius:50%;background:var(--marigold);display:grid;place-items:center;font:700 18px/1 var(--sans);color:#14142B}
+.ab-team .ab-card b{display:block;font-weight:600}
+.ab-team .ab-card span{font-size:14px;color:color-mix(in srgb,var(--paper) 60%,transparent)}
+.ab-team .ab-card .ab-a.ab-paper{background:var(--paper)}
+.ab-team .ab-card .ab-a.ab-plus{background:color-mix(in srgb,var(--paper) 14%,transparent);color:var(--paper)}
+.ab-team .st-label{color:var(--marigold)}
+
+/* --- /plans ------------------------------------------------------------------------------- */
+.pl-hero{padding:var(--s5) 0 var(--s4);text-align:center}
+.pl-hero h1{font:700 clamp(38px,5.4vw,64px)/1.0 var(--sans);letter-spacing:-.035em;margin:var(--s2) auto 0;max-width:18ch}
+.pl-hero h1 em{font-style:normal;color:var(--pig)}
+.pl-hero p.pl-sub{font-size:19px;color:var(--ink-2);max-width:52ch;margin:var(--s3) auto 0}
+.pl-hero .st-row{display:flex;gap:var(--s2);justify-content:center;margin-top:var(--s4);flex-wrap:wrap}
+.pl-region{display:inline-flex;background:var(--paper-2);border-radius:999px;padding:4px;gap:4px;margin-top:var(--s4)}
+.pl-region button{border:0;background:transparent;font:500 14px/1 var(--sans);color:var(--ink-2);padding:10px 16px;border-radius:999px;cursor:pointer}
+.pl-region button.st-on{background:var(--ink);color:var(--paper)}
+fieldset.pl-region{border:0;margin:0;min-width:0}
+.pl-allow{margin:var(--s4) auto 0;max-width:560px;background:var(--paper-2);border-radius:24px;padding:var(--s3);text-align:left;display:grid;gap:12px;position:relative}
+.pl-allow b{font-weight:600}
+.pl-allow .pl-bar{height:14px;border-radius:7px;background:var(--paper-3);overflow:hidden;position:relative}
+.pl-allow .pl-bar i{position:absolute;left:0;top:0;height:100%;border-radius:7px;background:var(--marigold);width:0;transition:width 1.4s cubic-bezier(.6,0,.2,1)}
+.pl-allow span{font-size:13px;color:var(--ink-3)}
+.pl-allow .hand{font-size:24px;color:var(--pig)}
+.pl-allow .wk-sticker{right:-14px;top:-16px}
+.pl-plans{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);align-items:start}
+.pl-plan{border-radius:28px;padding:var(--s3);display:grid;gap:14px;background:var(--paper-2);position:relative}
+.pl-plan.pl-pro{background:var(--pig-w)}
+.pl-plan.pl-max{background:var(--ink);color:var(--paper)}
+.pl-plan .pl-name{font:600 14px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.pl-plan.pl-max .pl-name{color:color-mix(in srgb,var(--paper) 60%,transparent)}
+.pl-plan .pl-price{font:700 44px/1 var(--sans);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.pl-plan .pl-price small{font:500 15px/1 var(--sans);letter-spacing:0;color:var(--ink-3);margin-left:6px}
+.pl-plan.pl-max .pl-price small{color:color-mix(in srgb,var(--paper) 60%,transparent)}
+.pl-plan .pl-x{font-family:var(--hand);font-weight:700;font-size:26px;color:var(--pig);line-height:1}
+.pl-plan.pl-max .pl-x{color:var(--marigold)}
+.pl-plan p{font-size:15px;color:var(--ink-2)}
+.pl-plan.pl-max p{color:color-mix(in srgb,var(--paper) 75%,transparent)}
+.pl-plan ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.pl-plan li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:15px}
+.pl-plan li i{width:22px;height:22px;border-radius:50%;background:var(--mint);display:grid;place-items:center}
+.pl-plan li i svg{width:12px;height:12px;fill:none;stroke:#14142B;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.pl-plan .st-btn{margin-top:6px}
+.pl-plan.pl-max .st-btn{background:var(--marigold);color:#14142B}
+.pl-plan .pl-free{background:var(--paper)}
+.pl-plan .pl-best{position:absolute;right:18px;top:-14px;background:var(--marigold);color:#14142B;font-family:var(--hand);font-weight:700;font-size:20px;padding:5px 12px;border-radius:10px;transform:rotate(4deg);box-shadow:0 10px 20px rgba(20,20,43,.12)}
+.pl-plan .pl-fine{font-size:13px;color:var(--ink-3)}
+.pl-plan.pl-max .pl-fine{color:color-mix(in srgb,var(--paper) 50%,transparent)}
+.pl-tbl{border-radius:24px;overflow:hidden;background:var(--paper-2)}
+.pl-tbl .pl-r{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;align-items:center}
+.pl-tbl .pl-r+.pl-r{border-top:2px solid var(--paper)}
+.pl-tbl .pl-r>div{padding:14px var(--s3);font-size:15px}
+.pl-tbl .pl-r.pl-h>div{font:500 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);background:var(--paper-3);padding:var(--s2) var(--s3)}
+.pl-tbl .pl-r>div:first-child{font-weight:500}
+.pl-tbl .pl-same{color:var(--ink-3)}
+.pl-tbl .pl-y{display:inline-flex;align-items:center;gap:6px}
+.pl-tbl .pl-y i{width:10px;height:10px;border-radius:50%;background:var(--mint)}
+.pl-checkout{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4);align-items:center}
+.pl-checkout .pl-card{background:var(--paper);border-radius:24px;padding:var(--s3);box-shadow:0 18px 40px rgba(20,20,43,.10);display:grid;gap:14px}
+.pl-checkout .pl-row{display:flex;justify-content:space-between;font-size:15px}
+.pl-checkout .pl-row b{font-weight:600}
+.pl-checkout label{display:grid;grid-template-columns:26px 1fr;gap:12px;align-items:start;font-size:14px;color:var(--ink-2);padding:12px;border-radius:14px;background:var(--paper-2)}
+.pl-checkout label input{width:22px;height:22px;accent-color:var(--pig);margin:1px 0 0}
+.pl-checkout label b{color:var(--ink);font-weight:600;display:block}
+.pl-checkout .pl-total{display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid var(--paper-2);padding-top:12px}
+.pl-checkout .pl-total b{font:700 28px/1 var(--sans)}
+.pl-checkout .pl-say{font-family:var(--hand);font-weight:600;font-size:26px;line-height:1.15;margin-top:var(--s3)}
+.pl-checkout .pl-say em{font-style:normal;color:var(--rose)}
+.pl-checkout .pl-head h2{font:700 clamp(28px,3.4vw,42px)/1.08 var(--sans);margin-top:10px}
+.pl-checkout .pl-head p{color:var(--ink-2);margin-top:var(--s2);max-width:46ch}
+.pl-checkout .pl-card .st-fine{font-size:13px;color:var(--ink-3)}
+.pl-gift{background:var(--marigold-w);border-radius:28px;padding:var(--s4);display:grid;grid-template-columns:1.1fr .9fr;gap:var(--s4);align-items:center}
+.pl-gift h2{font:700 clamp(26px,3vw,36px)/1.08 var(--sans)}
+.pl-gift p{color:var(--ink-2);margin-top:var(--s2)}
+.pl-gift .pl-row{display:flex;gap:var(--s2);margin-top:var(--s3);flex-wrap:wrap}
+.pl-gift .st-btn.st-quiet{background:var(--paper)}
+.pl-gift svg{width:min(100%,300px);justify-self:center;overflow:visible;filter:drop-shadow(0 20px 30px rgba(20,20,43,.14))}
+.pl-gift .st-label{color:var(--ink-2)}
+.pl-gift .pl-art{position:relative;justify-self:center;width:min(100%,300px)}
+.pl-gift .pl-art .wk-head{position:absolute;right:-6px;top:-28px}
+.pl-gift h2{margin-top:8px}
+.pl-faq{display:grid;gap:10px}
+.pl-faq details{background:var(--paper-2);border-radius:18px;padding:0 var(--s3)}
+.pl-faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:var(--s2);padding:18px 0;font-weight:500;font-size:17px}
+.pl-faq summary::-webkit-details-marker{display:none}
+.pl-faq summary::after{content:"+";font:600 24px/1 var(--sans);color:var(--pig);transition:transform .3s}
+.pl-faq details[open] summary::after{transform:rotate(45deg)}
+.pl-faq details p{color:var(--ink-2);padding:0 0 18px;max-width:64ch}
+.pl-faq details p a{color:var(--pig);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+/* the checkout page: the honest state, a list of promises */
+.pl-promises{margin:var(--s3) 0 0;padding:0;list-style:none;display:grid;gap:10px;max-width:62ch}
+.pl-promises li{background:var(--paper-2);border-radius:16px;padding:14px 20px;font-size:16px;color:var(--ink-2)}
+
+/* --- /help ---------------------------------------------------------------------------------- */
+.hp-search{display:flex;gap:10px;background:var(--paper-2);border-radius:16px;padding:8px 8px 8px 18px;align-items:center;margin-top:var(--s3);max-width:560px}
+.hp-search input{flex:1;border:0;background:transparent;font:400 17px/1.4 var(--sans);color:var(--ink);outline:none;min-width:0;min-height:40px}
+.hp-search input::placeholder{color:var(--ink-3)}
+.hp-search input::-webkit-search-cancel-button{appearance:none;display:none}
+.hp-count{font-size:14px;color:var(--ink-3);margin-top:12px}
+.hp-groups{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);align-items:start}
+.hp-group{border-radius:22px;padding:var(--s3);background:var(--paper-2);display:grid;gap:10px;align-content:start}
+.hp-group.st-pig{background:var(--pig-w)}
+.hp-group.st-mint{background:var(--mint-w)}
+.hp-group.st-marigold{background:var(--marigold-w)}
+.hp-group h2{font:600 22px/1.2 var(--sans)}
+.hp-group>p{color:var(--ink-2);font-size:15px}
+.hp-mark{width:44px;height:44px;fill:none;stroke:var(--ink);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.hp-list{display:grid;gap:2px;margin-top:var(--s1)}
+.hp-list a{display:flex;align-items:center;min-height:44px;padding:6px 12px;border-radius:12px;font:500 15px/1.3 var(--sans);color:var(--ink)}
+.hp-list a:hover{background:var(--paper)}
+.hp-list a[aria-current="page"]{background:var(--ink);color:var(--paper)}
+.hp-results{display:grid;gap:10px}
+.hp-result{background:var(--paper-2);border-radius:18px;padding:18px var(--s3);display:grid;gap:4px}
+.hp-result:hover{transform:translateY(-1px);box-shadow:var(--lift)}
+.hp-result b{font:600 17px/1.3 var(--sans);color:var(--ink)}
+.hp-result span{font-size:15px;color:var(--ink-2)}
+.hp-empty{color:var(--ink-2);font-size:17px;max-width:52ch}
+.hp-article{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:var(--s5);align-items:start;padding:var(--s4) 0 var(--s5)}
+.hp-article h1{font:700 clamp(30px,3.6vw,44px)/1.08 var(--sans);letter-spacing:-.03em}
+.hp-lead{font:500 clamp(19px,1.8vw,22px)/1.45 var(--sans);color:var(--ink);margin:var(--s2) 0 var(--s3);max-width:46ch}
+.hp-next{margin-top:var(--s4);background:var(--pig-w);border-radius:20px;padding:var(--s3);display:grid;gap:6px}
+.hp-next a{font:600 19px/1.25 var(--sans);color:var(--ink);display:inline-flex;align-items:center;min-height:44px}
+.hp-next a:hover{color:var(--pig)}
+.hp-aside{position:sticky;top:88px;background:var(--paper-2);border-radius:22px;padding:var(--s3);display:grid;gap:10px}
+.hp-aside h2{font:600 16px/1.2 var(--sans)}
+.hp-article .st-ask{margin-top:var(--s4)}
+
+/* --- /legal ----------------------------------------------------------------------------------- */
+.lg-rows{display:grid;gap:12px}
+.lg-row{background:var(--paper-2);border-radius:20px;padding:20px var(--s3);display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.4fr) minmax(0,.9fr);gap:6px var(--s3);align-items:baseline}
+.lg-row:hover{transform:translateY(-1px);box-shadow:var(--lift)}
+.lg-row-title{font:600 17px/1.3 var(--sans);color:var(--ink)}
+.lg-row-what{font-size:15px;color:var(--ink-2)}
+.lg-row-who{font-size:14px;color:var(--ink-3)}
+.lg-doc{display:grid;grid-template-columns:240px minmax(0,1fr);gap:var(--s5);align-items:start;padding:var(--s4) 0 var(--s5)}
+.lg-toc{position:sticky;top:88px;background:var(--paper-2);border-radius:22px;padding:var(--s3)}
+.lg-toc ol{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:2px}
+.lg-toc a{display:flex;align-items:center;min-height:44px;padding:6px 12px;border-radius:12px;font-size:14px;line-height:1.35;color:var(--ink-2)}
+.lg-toc a:hover{background:var(--paper);color:var(--ink)}
+.lg-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:var(--s3)}
+.lg-meta .wk-pill{background:var(--paper-2);font-size:14px;padding:8px 12px}
+
+/* --- /gift ----------------------------------------------------------------------------------- */
+.gf-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2)}
+.gf-step{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start;background:var(--paper-2);border-radius:20px;padding:var(--s3)}
+.gf-step i{width:44px;height:44px;border-radius:50%;background:var(--marigold);display:grid;place-items:center;font:700 22px/1 var(--hand);font-style:normal;color:var(--ink)}
+.gf-step p{color:var(--ink-2);font-size:15px}
+.gf-boards{margin-top:var(--s3)}
+.gf-boards .st-fine{margin-top:12px;display:block}
+
+/* --- /contact ------------------------------------------------------------------------------- */
+.ct-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:var(--s4);align-items:start}
+.ct-form{background:var(--paper-2);border-radius:28px;padding:var(--s4);display:grid;gap:var(--s2)}
+.ct-form .st-field input,.ct-form .st-field select,.ct-form .st-field textarea{background:var(--paper)}
+.ct-form .st-row{display:flex;gap:var(--s2);align-items:center;flex-wrap:wrap}
+.ct-boxes{display:grid;gap:10px}
+.ct-box{background:var(--paper-2);border-radius:18px;padding:16px 20px;display:grid;gap:4px}
+.ct-box a{font:600 16px/1.3 var(--sans);color:var(--pig);display:inline-flex;align-items:center;min-height:44px}
+.ct-box span{font-size:14px;color:var(--ink-2)}
+.ct-aside h2{font:600 22px/1.2 var(--sans);margin-bottom:var(--s2)}
+.ct-aside .st-hint{margin-top:var(--s2)}
+
+/* --- the two doors ---------------------------------------------------------------------------- */
+.wa{display:grid;place-items:center;padding:var(--s4) 0 var(--s5)}
+.wa-card{width:min(560px,100%);display:grid;gap:22px;justify-items:center;text-align:center}
+.wa-bub{background:var(--paper-2);border-radius:18px 18px 18px 4px;padding:12px 18px;font-family:var(--hand);font-weight:700;font-size:26px;line-height:1.1;color:var(--ink);max-width:420px}
+.wa-card h1{font:700 clamp(28px,3.6vw,40px)/1.08 var(--sans)}
+.wa-card p.wa-sub{color:var(--ink-2);font-size:17px;max-width:44ch}
+.wa-form{width:100%;display:grid;gap:10px}
+.wa-form .st-btn{width:100%;min-height:48px;padding:15px 22px}
+.wa-or{display:flex;align-items:center;gap:12px;font:500 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);width:100%}
+.wa-or::before,.wa-or::after{content:"";flex:1;height:3px;border-radius:999px;background:var(--paper-2)}
+.wa-fine{font-size:13px;color:var(--ink-3);max-width:44ch;margin:0 auto}
+.wa-parent{background:var(--pig-w);border-radius:20px;padding:var(--s3);display:grid;gap:8px;text-align:left}
+.wa-parent h2{font:600 17px/1.25 var(--sans)}
+.wa-parent p{font-size:15px;color:var(--ink-2)}
+.wa-consent{display:grid;grid-template-columns:26px 1fr;gap:12px;align-items:start;font-size:14px;color:var(--ink-2);padding:12px;border-radius:14px;background:var(--paper-2);text-align:left}
+.wa-consent input{width:22px;height:22px;accent-color:var(--pig);margin:1px 0 0}
+.wa-consent a{color:var(--ink);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:2px}
+.wa-error{background:var(--rose-w);border-radius:14px;padding:12px 16px;font-size:15px;color:var(--ink);text-align:left;width:100%}
+.wa-switch{font-size:14px;color:var(--ink-2)}
+.wa-switch button{background:none;border:0;padding:0;font:inherit;font-weight:500;color:var(--ink);cursor:pointer;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:2px;min-height:44px}
+.wa-glyph{width:16px;height:16px;flex:none}
+
+/* --- /sitemap ---------------------------------------------------------------------------------- */
+.sm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);align-items:start}
+.sm-col{background:var(--paper-2);border-radius:22px;padding:var(--s3);display:grid;gap:2px;align-content:start}
+.sm-col h2{font:600 19px/1.25 var(--sans);margin-bottom:8px}
+.sm-col a{display:flex;align-items:center;min-height:44px;padding:4px 12px;border-radius:12px;font:500 15px/1.3 var(--sans);color:var(--ink)}
+.sm-col a:hover{background:var(--paper)}
+
+/* --- a phone ---------------------------------------------------------------------------------- */
+@media (max-width:900px){
+  .st-header nav{display:none}
+  /* the touch floor (DESIGN.md §2): the wordmark and every footer link are a thumb's 44px tall */
+  .st-header .st-wm{display:inline-flex;align-items:center;min-height:44px}
+  .st-footer .st-wrap a{display:flex;align-items:center;min-height:44px;padding:0}
+  .st-footer .st-wrap{grid-template-columns:1fr 1fr}
+  .st-ask{grid-template-columns:1fr}
+  .st-grid3,.st-grid2{grid-template-columns:1fr}
+  .ab-hero .st-wrap{grid-template-columns:1fr}
+  .ab-mission{transform:none}
+  .ab-story{grid-template-columns:1fr}
+  .ab-promises{grid-template-columns:1fr}
+  .ab-team{grid-template-columns:1fr}
+  .pl-plans{grid-template-columns:1fr}
+  .pl-tbl{overflow-x:auto}
+  .pl-tbl .pl-r{min-width:640px}
+  .pl-checkout{grid-template-columns:1fr}
+  .pl-gift{grid-template-columns:1fr}
+  .hp-groups{grid-template-columns:1fr}
+  .hp-article{grid-template-columns:1fr}
+  .hp-aside{position:static}
+  .lg-row{grid-template-columns:1fr}
+  .lg-doc{grid-template-columns:1fr}
+  .lg-toc{position:static}
+  .gf-steps{grid-template-columns:1fr}
+  .ct-grid{grid-template-columns:1fr}
+  .sm-grid{grid-template-columns:1fr}
 }
-.st-skip:focus { top: 12px; }
-
-/* --- long-form prose (the /about and /help tree) --------------------------------------------- */
-.st-doc { color: var(--wobo-ink-700); font-size: 15.5px; line-height: 1.72; max-width: 66ch; }
-/* The rhythm goes on the elements themselves rather than on an adjacent-sibling universal rule: a
-   class-plus-element selector outranks a class-plus-universal one whatever the order, so the
-   sibling rule would lose and every paragraph would run into the next. The first-child rule then
-   outranks both and clears the top. */
-.st-doc p, .st-doc ul, .st-doc ol, .st-doc blockquote, .st-doc hr { margin: 17px 0 0; }
-.st-doc > :first-child { margin-top: 0; }
-/* Two runs of prose in a row, or a bordered aside and then more prose, keep the same rhythm as two
-   paragraphs would — the reader cannot see where one React element stopped and the next began. */
-.st-doc + .st-doc, .st-honesty + .st-doc { margin-top: 20px; }
-.st-doc h2 {
-  color: var(--wobo-ink-900);
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  margin: 30px 0 0;
-}
-.st-doc h3 { color: var(--wobo-ink-900); font-size: 15px; font-weight: 600; margin: 24px 0 0; }
-.st-doc ul, .st-doc ol { padding-left: 20px; }
-.st-doc li + li { margin-top: 9px; }
-.st-doc li::marker { color: var(--wobo-ink-300); }
-.st-doc strong { color: var(--wobo-ink-900); font-weight: 600; }
-.st-doc code {
-  background: var(--wobo-tonal);
-  border-radius: ${radius.sm}px;
-  font-size: 0.92em;
-  padding: 1px 5px;
-}
-.st-doc a { border-bottom: 0.5px solid var(--wobo-ultramarine); color: var(--wobo-ultramarine); }
-.st-doc blockquote {
-  border-left: 0.5px solid var(--wobo-card-border);
-  color: var(--wobo-ink-500);
-  padding-left: 16px;
-}
-
-/* An unfilled hole in the reviewed copy. Shown, never invented: a page that says it does not yet
-   know its own registered name is honest; one that makes a name up is not. The two parsers each
-   have a name for it and both draw the same gap. */
-.st-slot, .lp-blank {
-  border-bottom: 0.5px dashed var(--wobo-card-border);
-  color: var(--wobo-ink-300);
-  font-size: 0.94em;
-  font-style: normal;
-  padding: 0 3px;
-}
-
-/* The first line of a help article — a complete answer on its own. */
-.st-lead {
-  color: var(--wobo-ink-900);
-  font-size: clamp(17px, 1.5vw, 20px);
-  font-weight: 500;
-  line-height: 1.5;
-  margin: 0 0 22px;
-  max-width: 44ch;
-}
-
-/* --- breadcrumbs ---------------------------------------------------------------------------- */
-.st-crumbs, .lp-crumb {
-  align-items: center;
-  color: var(--wobo-ink-300);
-  display: flex;
-  flex-wrap: wrap;
-  font-size: 14px;
-  gap: 4px;
-  margin: 0 0 18px;
-}
-.st-crumbs a:hover, .lp-crumb a:hover { color: var(--wobo-ink-900); }
-.st-crumbs span[aria-hidden], .lp-crumb span[aria-hidden] { color: var(--wobo-ink-300); padding-inline: 6px; }
-.st-crumbs b { color: var(--wobo-ink-500); font-weight: 400; }
-
-/* --- the help index ------------------------------------------------------------------------- */
-.st-search { margin-top: 10px; max-width: 460px; position: relative; }
-.st-search input {
-  background: var(--wobo-card);
-  border: 0.5px solid var(--wobo-card-border);
-  border-radius: ${radius.sm}px;
-  color: var(--wobo-ink-900);
-  font: inherit;
-  font-size: 15px;
-  padding: 14px 46px 14px 14px;
-  width: 100%;
-}
-.st-search input::placeholder { color: var(--wobo-ink-300); }
-/* The browser's own clear affordance would sit under ours and give the field two of them. */
-.st-search input::-webkit-search-cancel-button { appearance: none; display: none; }
-.st-search input:hover { border-color: var(--wobo-hairline-on-paper-strong); }
-.st-search-clear {
-  align-items: center;
-  background: none;
-  border: 0;
-  color: var(--wobo-ink-300);
-  cursor: pointer;
-  display: inline-flex;
-  font: inherit;
-  font-size: 14px;
-  justify-content: center;
-  min-height: 44px;
-  min-width: 44px;
-  position: absolute;
-  right: 2px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-.st-search-clear:hover { color: var(--wobo-ink-900); }
-.st-count { color: var(--wobo-ink-500); font-size: 14px; margin: 12px 0 0; }
-.st-search-label { display: block; margin-top: 26px; }
-
-.st-groups { display: grid; gap: 22px 26px; grid-template-columns: repeat(3, 1fr); margin-top: 6px; }
-.st-group { border-top: var(--lp-hair); display: flex; flex-direction: column; padding-top: 18px; }
-.st-group h2 { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; margin: 14px 0 6px; }
-.st-group p { color: var(--wobo-ink-500); font-size: 14px; line-height: 1.6; margin: 0 0 14px; }
-.st-mark { color: var(--wobo-ultramarine); display: block; height: 26px; }
-
-.st-list { display: flex; flex-direction: column; }
-.st-list a {
-  align-items: center;
-  border-top: var(--lp-hair);
-  color: var(--wobo-ink-700);
-  display: flex;
-  flex-wrap: wrap;
-  font-size: 14.5px;
-  min-height: 44px;
-  padding: 11px 0;
-  transition: color 160ms ease, padding-left 160ms ease;
-}
-.st-list a:first-child { border-top: 0; }
-.st-list a:hover { color: var(--wobo-ultramarine); padding-left: 4px; }
-.st-list a[aria-current='page'] { color: var(--wobo-ink-900); font-weight: 600; }
-.st-list small { color: var(--wobo-ink-500); display: block; font-size: 14px; margin-top: 3px; width: 100%; }
-
-/* --- search results ------------------------------------------------------------------------- */
-.st-results { display: flex; flex-direction: column; margin-top: 6px; }
-.st-result {
-  border-top: var(--lp-hair);
-  display: block;
-  padding: 16px 0;
-  transition: padding-left 160ms ease;
-}
-.st-result:hover { padding-left: 4px; }
-.st-result b { color: var(--wobo-ink-900); display: block; font-size: 15.5px; font-weight: 600; }
-.st-result span { color: var(--wobo-ink-500); display: block; font-size: 14px; line-height: 1.55; margin-top: 5px; }
-.st-result em { color: var(--wobo-ink-300); display: block; font-size: 14px; font-style: normal; letter-spacing: 0.08em; margin-bottom: 6px; text-transform: uppercase; }
-.st-empty { color: var(--wobo-ink-500); font-size: 15px; line-height: 1.6; margin-top: 26px; max-width: 52ch; }
-
-/* --- an article ----------------------------------------------------------------------------- */
-.st-article { display: grid; gap: clamp(28px, 5vw, 64px); grid-template-columns: minmax(0, 1fr) 260px; }
-.st-aside { align-self: start; position: sticky; top: 84px; }
-.st-aside h2 { color: var(--wobo-ink-300); font-size: 11px; font-weight: 600; letter-spacing: 0.14em; margin: 0 0 12px; text-transform: uppercase; }
-.st-aside + .st-aside { margin-top: 30px; }
-.st-ask { border-top: var(--lp-hair); margin-top: 30px; padding-top: 22px; }
-.st-ask p { color: var(--wobo-ink-500); font-size: 14px; line-height: 1.6; margin: 0 0 14px; }
-.st-next { border-top: var(--lp-hair); margin-top: 34px; padding-top: 20px; }
-.st-next span { color: var(--wobo-ink-300); display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; margin-bottom: 8px; text-transform: uppercase; }
-.st-next a { color: var(--wobo-ink-900); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
-.st-next a:hover { color: var(--wobo-ultramarine); }
-
-/* --- about ---------------------------------------------------------------------------------- */
-.st-hero { padding-block: clamp(44px, 7vw, 88px) clamp(22px, 3vw, 34px); }
-.st-hero .lp-h1 { max-width: 12ch; }
-/* A reference page announces itself; it does not sell. */
-.st-hero--doc .lp-h1 { font-size: clamp(30px, 4vw, 50px); max-width: 16ch; }
-/* Sits under a hero that has already opened the page, so it does not open it a second time. */
-.st-section--flush { padding-top: clamp(22px, 3vw, 34px); }
-/* The one drawn mark on the page: Wobo underlines the headline as the page settles. It is a stroke
-   of the same ink the field and the nib use, drawn by dash offset rather than by a script. */
-.st-underline { display: block; height: 14px; margin: 2px 0 22px; max-width: 320px; overflow: visible; width: 62%; }
-.st-underline path {
-  animation: st-draw 900ms cubic-bezier(0.16, 1, 0.3, 1) 220ms both;
-  fill: none;
-  stroke: var(--wobo-ultramarine);
-  stroke-dasharray: 340;
-  stroke-linecap: round;
-  stroke-width: 3;
-}
-@keyframes st-draw { from { stroke-dashoffset: 340; } to { stroke-dashoffset: 0; } }
-
-.st-pull {
-  border-left: 0.5px solid var(--wobo-ultramarine);
-  color: var(--wobo-ink-900);
-  font-size: clamp(19px, 2.2vw, 26px);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.35;
-  margin: 30px 0 0;
-  max-width: 30ch;
-  padding-left: 20px;
-}
-.st-split { display: grid; gap: clamp(26px, 4vw, 56px); grid-template-columns: 1fr 1fr; align-items: start; }
-.st-points { counter-reset: st-point; display: grid; gap: 26px; grid-template-columns: 1fr 1fr; list-style: none; margin: 32px 0 0; padding: 0; }
-.st-points li { border-top: var(--lp-hair); padding-top: 16px; }
-.st-points li::before {
-  color: var(--wobo-ink-300);
-  content: '0' counter(st-point);
-  counter-increment: st-point;
-  display: block;
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.1em;
-  margin-bottom: 8px;
-}
-.st-points p { color: var(--wobo-ink-500); font-size: 14.5px; line-height: 1.6; margin: 0; }
-.st-points strong { color: var(--wobo-ink-900); display: block; font-weight: 600; margin-bottom: 5px; }
-.st-honesty { border: 0.5px solid var(--wobo-card-border); border-radius: ${radius.sm}px; color: var(--wobo-ink-500); font-size: 14px; line-height: 1.6; margin-top: 26px; max-width: 60ch; padding: 18px 20px; }
-/* A board is a board, not a banner: held to a width a drawing composes at, and labelled, because a
-   live demonstration nobody can name is a shape in a box. */
-.st-board { margin-top: 26px; max-width: 760px; }
-.st-board-cap { color: var(--wobo-ink-500); font-size: 14px; line-height: 1.6; margin: 12px 0 0; max-width: 60ch; }
-.st-contact { color: var(--wobo-ink-500); font-size: 14px; line-height: 1.7; }
-.st-contact a { border-bottom: 0.5px solid var(--wobo-card-border); }
-.st-contact a:hover { border-bottom-color: var(--wobo-ultramarine); color: var(--wobo-ultramarine); }
-.st-contact-links { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 14px; }
-.st-hand-note { font-family: ${fontFamily.handwritten}; }
-
-/* --- the document surfaces (legal, plans, gift) ---------------------------------------------- */
-.lp-head { padding-block: clamp(28px, 5vw, 56px) 0; }
-.lp-head .lp-h1x {
-  font-size: clamp(30px, 4.6vw, 54px);
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.04;
-  margin: 0 0 14px;
-  max-width: 20ch;
-}
-
-/* --- a hairline card, the one container shape these pages use --- */
-.lp-panel {
-  background: var(--wobo-card);
-  border: 0.5px solid var(--wobo-card-border);
-  border-radius: ${radius.sm}px;
-  padding: clamp(18px, 2.4vw, 26px);
-}
-.lp-panel--pigment { border-color: var(--wobo-ultramarine); }
-.lp-panel h3 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 8px; }
-.lp-panel p { color: var(--wobo-ink-500); font-size: 14.5px; line-height: 1.62; margin: 0; }
-.lp-mark { color: var(--wobo-ink-300); font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
-
-/* --- prose: the shape reviewed copy renders into --- */
-.lp-prose { color: var(--wobo-ink-700); font-size: 15.5px; line-height: 1.68; max-width: 68ch; }
-.lp-prose h2 { font-size: clamp(19px, 2vw, 24px); font-weight: 600; letter-spacing: -0.02em; margin: 44px 0 12px; scroll-margin-top: 84px; }
-.lp-prose h3 { font-size: 16.5px; font-weight: 600; margin: 28px 0 8px; scroll-margin-top: 84px; }
-.lp-prose h2:first-child, .lp-prose h3:first-child { margin-top: 0; }
-.lp-prose p { margin: 0 0 14px; }
-.lp-prose ul, .lp-prose ol { margin: 0 0 16px; padding-left: 20px; }
-.lp-prose li { margin-bottom: 7px; }
-.lp-prose strong { color: var(--wobo-ink-900); font-weight: 600; }
-.lp-prose a { color: var(--wobo-ultramarine); text-underline-offset: 3px; text-decoration: underline; }
-.lp-prose code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
-.lp-prose hr { border: 0; border-top: var(--lp-hair); margin: 34px 0; }
-.lp-scroll { -webkit-overflow-scrolling: touch; margin: 0 0 18px; overflow-x: auto; }
-.lp-grid { border-collapse: collapse; font-size: 14.5px; min-width: 100%; width: max-content; }
-.lp-grid th, .lp-grid td { border-bottom: var(--lp-hair); padding: 11px 16px 11px 0; text-align: left; vertical-align: top; }
-.lp-grid th { color: var(--wobo-ink-300); font-size: 11.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
-.lp-grid td { color: var(--wobo-ink-500); }
-.lp-grid td:first-child { color: var(--wobo-ink-900); }
-
-/* --- the plain-words box: a hairline card, never a coloured panel --- */
-.lp-plain {
-  border: 0.5px solid var(--wobo-card-border);
-  border-left: 2px solid var(--wobo-ultramarine);
-  border-radius: ${radius.sm}px;
-  margin: 0 0 30px;
-  padding: clamp(18px, 2.4vw, 26px);
-}
-.lp-plain p { color: var(--wobo-ink-700); font-size: 15.5px; line-height: 1.66; margin: 0 0 12px; }
-.lp-plain p:last-child { margin-bottom: 0; }
-.lp-plain .lp-hand { display: block; margin-bottom: 10px; }
-
-/* --- the document column and its contents --- */
-.lp-doc { display: grid; gap: clamp(26px, 4vw, 56px); grid-template-columns: 220px minmax(0, 1fr); padding-block: clamp(26px, 4vw, 44px) clamp(56px, 8vw, 96px); }
-.lp-toc { align-self: start; position: sticky; top: 78px; }
-.lp-toc ol { list-style: none; margin: 10px 0 0; padding: 0; }
-.lp-toc li { border-top: var(--lp-hair); }
-.lp-toc a { align-items: center; color: var(--wobo-ink-500); display: flex; font-size: 14px; line-height: 1.4; min-height: 44px; padding: 9px 0; }
-.lp-toc a:hover { color: var(--wobo-ultramarine); }
-.lp-meta { color: var(--wobo-ink-500); display: flex; flex-wrap: wrap; font-size: 14px; gap: 6px 18px; margin: 0 0 22px; }
-.lp-meta b { color: var(--wobo-ink-900); font-weight: 500; }
-
-/* --- lists of links (the legal index) --- */
-.lp-rows { border-top: var(--lp-hair); margin-top: 28px; }
-.lp-row { align-items: baseline; border-bottom: var(--lp-hair); display: grid; gap: 6px 24px; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr) minmax(0, 0.9fr); padding: 18px 0; transition: color 160ms ease; }
-.lp-row:hover .lp-row-title { color: var(--wobo-ultramarine); }
-.lp-row-title { font-size: 16.5px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
-.lp-row-what { color: var(--wobo-ink-500); font-size: 14.5px; line-height: 1.6; margin: 0; }
-.lp-row-who { color: var(--wobo-ink-500); font-size: 14px; margin: 0; }
-
-/* --- /contact ---------------------------------------------------------------------------------
-   A form that composes a message for the visitor's own mail app, beside every address it could go
-   to. The column shape is a CLASS and not an inline style, so the breakpoint below can flatten it:
-   an inline style would outrank the media query and leave a 300px sidebar on a 360px phone. */
-.lp-doc--contact { grid-template-columns: minmax(0, 1fr) 300px; }
-.ct-field { margin: 0 0 22px; max-width: 46ch; }
-.ct-label { color: var(--wobo-ink-500); display: block; font-size: 14px; margin: 0 0 8px; }
-.ct-input {
-  background: var(--wobo-card);
-  border: 0.5px solid var(--wobo-card-border);
-  border-radius: 3px;
-  color: var(--wobo-ink-900);
-  font: inherit;
-  font-size: 15px;
-  min-height: 44px;
-  padding: 12px 14px;
-  width: 100%;
-}
-.ct-input:hover { border-color: var(--wobo-hairline-on-paper-strong); }
-.ct-textarea { line-height: 1.6; min-height: 180px; resize: vertical; }
-.ct-mail { align-items: center; color: var(--wobo-ultramarine); display: inline-flex; min-height: 44px; }
-.ct-what { color: var(--wobo-ink-500); display: block; font-size: 14px; line-height: 1.55; }
-
-/* --- device agnostic (WOBO-PLAN §18) --------------------------------------------------------- */
-@media (max-width: 980px) {
-  .st-article, .st-split, .st-points, .lp-doc--contact { grid-template-columns: 1fr; }
-  .st-groups { grid-template-columns: 1fr 1fr; }
-  .st-aside { position: static; }
-  .lp-doc { grid-template-columns: 1fr; }
-  .lp-toc { position: static; }
-  .lp-row { grid-template-columns: 1fr; }
-}
-@media (max-width: 680px) {
-  /* The landing bar hides its links below 680px because they are anchors into the page under it.
-     On a public page they are the ONLY way from one document to another, so they wrap onto a
-     second row instead of disappearing. This is the public site's mobile navigation. */
-  .st .lp-nav .lp-wrap { flex-wrap: wrap; row-gap: 8px; }
-  .st .lp-nav-links { column-gap: 18px; display: flex; flex-wrap: wrap; font-size: 14px; order: 3; row-gap: 0; width: 100%; }
-  .st .lp-nav-right .lp-btn--ghost { display: none; }
-  .st-groups { grid-template-columns: 1fr; }
-  .st-underline { width: 78%; }
-  .st-doc { font-size: 15px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .st-underline path { animation: none; stroke-dashoffset: 0; }
-  .st-list a, .st-result, .st-search input, .st-skip, .lp-row { transition: none; }
+@media (prefers-reduced-motion:reduce){
+  .st-skip,.pl-allow .pl-bar i,.hp-result,.lg-row{transition:none}
 }
 
 /* --- print: a legal page has to survive being printed and filed ------------------------------ */
-@media print {
-  .lp-nav, .lp-footer, .lp-toc, .lp-trail, .lp-nib, .st-skip, .lp-field, .lp-print-hide { display: none !important; }
-  .lp { background: #fff; color: #000; }
-  .lp-doc { display: block; padding: 0; }
-  .lp-prose, .st-doc { max-width: none; }
-  .lp-prose h2, .lp-prose h3 { break-after: avoid; }
-  .lp-prose p, .lp-prose li, .lp-plain { break-inside: avoid; }
-  .lp-plain, .lp-panel { border: 1px solid #000; }
-  /* A section that was never scrolled into view still rests at REST_OPACITY, and Reveal writes
-     that as an INLINE style — so without !important a printed /plans or /gift comes out of the
-     printer grey and shifted down the page. Printing has no scroll and no viewport to settle
-     against, so every section prints settled. */
-  .lp-reveal { opacity: 1 !important; transform: none !important; }
+@media print{
+  .st-header,.st-footer,.st-close,.st-skip,.lg-toc,.st-ask,.st-print-hide{display:none !important}
+  .st{background:#fff;color:#000}
+  .lg-doc{display:block;padding:0}
+  .st-prose{max-width:none}
+  .st-prose h2,.st-prose h3{break-after:avoid}
+  .st-prose p,.st-prose li,.st-plain{break-inside:avoid}
+  .st-reveal{opacity:1 !important;transform:none !important}
 }
-
-/* --- the accessibility floor (WOBO-PLAN §18) -------------------------------------------------
-   Written once, scoped to the public shell, so raising it raises every public page at the same
-   time. The landing sheet sets several of these below the floor for its own reasons; a public
-   document page is read, not skimmed, and overrides them here rather than forking the sheet. */
-.st .lp-note, .st .lp-cta small, .st .lp-footer, .st .lp-price-note, .st .lp-tier-cadence,
-.st .lp-eyebrow, .st .lp-chip { font-size: 14px; }
-.st .lp-eyebrow, .st .lp-mark { letter-spacing: 0.12em; }
-.st .lp-btn { min-height: 44px; }
-/* Every standalone link in the chrome is a thumb target, not a word in a sentence. Inline links
-   inside prose are deliberately excluded: they are read, and padding them would break the line. */
-.st .lp-nav-links a, .st .lp-footer-links a, .st .st-crumbs a, .st .lp-crumb a, .st .lp-home,
-.st .st-contact-links a, .st .st-next a {
-  align-items: center;
-  display: inline-flex;
-  justify-content: center;
-  min-height: 44px;
-  /* Both dimensions: a four-letter link ("Gift", "Terms") clears 44px of height and still leaves
-     a 35px-wide target, which is the half of the rule that actually gets missed by a thumb. */
-  min-width: 44px;
-}
-.st .lp-footer { align-items: center; }
-.st .lp-footer-links { column-gap: 18px; row-gap: 0; }
 `;
 
-/**
- * Inject the landing stylesheet and this one, once per document, in that order.
- *
- * The order is the point: this sheet overrides a handful of landing declarations and both are
- * plain `<style>` elements, so the landing sheet has to be in the document first whether the
- * visitor arrived here from the landing page or straight from a bookmark.
- */
+/** Inject the sheet once per document. Idempotent; a no-op wherever there is no document. */
 export function ensureSiteStyles(): void {
-  if (typeof document === 'undefined') return;
-  ensureLandingStyles();
-  if (document.getElementById(STYLE_ID)) return;
+  if (typeof document === 'undefined' || document.getElementById(STYLE_ID)) return;
   const style = document.createElement('style');
   style.id = STYLE_ID;
   style.textContent = SITE_CSS;

@@ -117,7 +117,6 @@ export function Slider({ spec, state, onChange, result, disabled }: SliderProps)
       <path
         className="wobo-answer-learner"
         d={`M ${PAD} ${TRACK_Y} H ${x}`}
-        strokeWidth={1}
         opacity={state.value === null ? 0.35 : 1}
       />
       <HandValue

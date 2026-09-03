@@ -103,10 +103,9 @@ export function CirclePart({
                 y={y}
                 width={w}
                 height={h}
-                rx={3}
-                fill={inside.includes(part.id) ? 'var(--wa-soft-wash)' : 'transparent'}
-                stroke="var(--wa-line)"
-                strokeWidth={1}
+                rx={Math.min(w, h) * 0.12}
+                fill={inside.includes(part.id) ? 'var(--wa-wash)' : 'var(--wa-tonal)'}
+                stroke="none"
               />
               <text
                 className="wobo-answer-label"

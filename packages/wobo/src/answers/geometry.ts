@@ -34,10 +34,40 @@ export function partCount(figure: AnswerFigure): number {
   return figure.shape === 'grid' ? figure.rows * figure.cols : figure.parts;
 }
 
-function rectPart(index: number, x: number, y: number, w: number, h: number): PartGeometry {
+/**
+ * A grid cell's corner, as a share of its shorter side: the prototype tiles a 110px cell at 14px
+ * (design/prototypes/app-v1.html, `.grid4 button`), so the cells read as rounded tiles on an ink
+ * ground rather than as graph paper (DESIGN.md §2: nothing sharp).
+ */
+export const GRID_CORNER = 14 / 110;
+
+function rectPart(
+  index: number,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  corner = 0,
+): PartGeometry {
+  const r = round(Math.min(corner, w / 2, h / 2));
+  const d =
+    r > 0
+      ? [
+          `M ${round(x + r)} ${round(y)}`,
+          `H ${round(x + w - r)}`,
+          `A ${r} ${r} 0 0 1 ${round(x + w)} ${round(y + r)}`,
+          `V ${round(y + h - r)}`,
+          `A ${r} ${r} 0 0 1 ${round(x + w - r)} ${round(y + h)}`,
+          `H ${round(x + r)}`,
+          `A ${r} ${r} 0 0 1 ${round(x)} ${round(y + h - r)}`,
+          `V ${round(y + r)}`,
+          `A ${r} ${r} 0 0 1 ${round(x + r)} ${round(y)}`,
+          'Z',
+        ].join(' ')
+      : `M ${round(x)} ${round(y)} H ${round(x + w)} V ${round(y + h)} H ${round(x)} Z`;
   return {
     index,
-    d: `M ${round(x)} ${round(y)} H ${round(x + w)} V ${round(y + h)} H ${round(x)} Z`,
+    d,
     center: [round(x + w / 2), round(y + h / 2)],
     box: [round(x), round(y), round(w), round(h)],
   };
@@ -55,10 +85,11 @@ export function figureParts(figure: AnswerFigure, box: AnswerBox = FIGURE_BOX): 
   if (figure.shape === 'grid') {
     const w = bw / figure.cols;
     const h = bh / figure.rows;
+    const corner = Math.min(w, h) * GRID_CORNER;
     const out: PartGeometry[] = [];
     for (let r = 0; r < figure.rows; r++) {
       for (let c = 0; c < figure.cols; c++) {
-        out.push(rectPart(r * figure.cols + c, bx + c * w, by + r * h, w, h));
+        out.push(rectPart(r * figure.cols + c, bx + c * w, by + r * h, w, h, corner));
       }
     }
     return out;

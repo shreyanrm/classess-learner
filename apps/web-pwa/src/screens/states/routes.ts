@@ -24,6 +24,13 @@ export const PUBLIC_ROUTES: readonly PublicRoute[] = [
   { path: '/sign-up', changefreq: 'monthly', priority: '0.8' },
   { path: '/sign-in', changefreq: 'monthly', priority: '0.6' },
   { path: '/about', changefreq: 'monthly', priority: '0.7' },
+  // The six pitch pages (SITE.md §2): the pill nav's five and the security page the footer links.
+  { path: '/meet-wobo', changefreq: 'monthly', priority: '0.8' },
+  { path: '/how-it-works', changefreq: 'monthly', priority: '0.8' },
+  { path: '/for-parents', changefreq: 'monthly', priority: '0.8' },
+  { path: '/for-students', changefreq: 'monthly', priority: '0.8' },
+  { path: '/subjects', changefreq: 'monthly', priority: '0.8' },
+  { path: '/security', changefreq: 'monthly', priority: '0.6' },
   // The index pages of the two document sets. Every article and every legal document is addressable
   // too, and `expandPublicRoutes` adds them from the compiled content at build time — a crawler
   // that only knows the two index pages has to guess at forty-four addresses it could be told.

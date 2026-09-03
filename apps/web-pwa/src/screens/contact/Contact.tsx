@@ -10,16 +10,16 @@
  * that in one line above the button. Every mailbox is printed as well, so somebody whose device has
  * no mail app set up can still copy one.
  *
- * It used to be two pages: this one, and `/legal/contact`, which listed the mailboxes the legal
- * documents name. Two pages doing one job meant a visitor found whichever the page they were on
- * linked to. The mailbox list moved here, `/legal/contact` is now an alias of this address, and
- * this page wears the same public shell as every other public page — so it has the same header,
- * the same skip link and the same way back to anywhere.
+ * `/legal/contact` is an alias of this address (`legal/Legal.tsx`), so the mailbox list lives here
+ * once and every page that names an address links to the same one.
  */
 
 import { useMemo, useState } from 'react';
+import { Label } from '../../ui/primitives';
 import { CONTACT } from '../auth/copy';
+import { ClosePanel } from '../site/ClosePanel';
 import { MAILBOXES, OPEN_TERMS } from '../site/identity';
+import { Reveal } from '../site/Reveal';
 import { SiteShell } from '../site/SiteShell';
 
 /** The message, as an address the learner's own mail app understands. */
@@ -35,73 +35,64 @@ export function Contact() {
 
   return (
     <SiteShell current="contact" title="Contact — Wobo" label={CONTACT.title}>
-      <section className="lp-wrap lp-head">
-        <p className="lp-eyebrow">{CONTACT.eyebrow}</p>
-        <p className="lp-hand">{CONTACT.hand}</p>
-        <h1 className="lp-h1x">{CONTACT.title}</h1>
-        <p className="lp-lead">{CONTACT.body}</p>
+      <section className="st-page-hero">
+        <div className="st-wrap">
+          <Label>{CONTACT.eyebrow}</Label>
+          <h1>{CONTACT.title}</h1>
+          <span className="hand">{CONTACT.hand}</span>
+          <p className="st-sub">{CONTACT.body}</p>
+        </div>
       </section>
 
-      <section className="lp-wrap lp-doc lp-doc--contact">
-        <div>
-          <div className="ct-field">
-            <label className="ct-label" htmlFor="wc-reason">
-              {CONTACT.subject}
-            </label>
-            <select
-              id="wc-reason"
-              className="ct-input"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-            >
-              {CONTACT.reasons.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </select>
-          </div>
+      <section className="st-section" style={{ paddingTop: 0 }}>
+        <div className="st-wrap">
+          <div className="ct-grid">
+            <Reveal className="ct-form">
+              <div className="st-field">
+                <label htmlFor="wc-reason">{CONTACT.subject}</label>
+                <select id="wc-reason" value={reason} onChange={(e) => setReason(e.target.value)}>
+                  {CONTACT.reasons.map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="st-field">
+                <label htmlFor="wc-message">{CONTACT.message}</label>
+                <textarea
+                  id="wc-message"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
+              </div>
+              <p className="st-hint">{CONTACT.mailtoNote}</p>
+              <div className="st-row">
+                <a className="st-btn st-pig" href={href}>
+                  {CONTACT.send}
+                </a>
+              </div>
+            </Reveal>
 
-          <div className="ct-field">
-            <label className="ct-label" htmlFor="wc-message">
-              {CONTACT.message}
-            </label>
-            <textarea
-              id="wc-message"
-              className="ct-input ct-textarea"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-          </div>
-
-          <p className="lp-note">{CONTACT.mailtoNote}</p>
-
-          <div className="lp-cta" style={{ marginTop: 18 }}>
-            <a className="lp-btn lp-btn--pigment" href={href}>
-              {CONTACT.send}
-            </a>
+            <Reveal as="section" className="ct-aside">
+              <h2>Every mailbox</h2>
+              <div className="ct-boxes">
+                {MAILBOXES.map((box) => (
+                  <div className="ct-box" key={box.address}>
+                    <a href={`mailto:${box.address}`}>{box.address}</a>
+                    <span>{box.what}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="st-hint">
+                {`A postal address and a registered company name belong here too. Neither is settled yet (${OPEN_TERMS.join(' and ')}), and the legal set shows both as blanks rather than printing something we would have to correct.`}
+              </p>
+            </Reveal>
           </div>
         </div>
-
-        <aside className="st-aside" aria-label="Every address you can write to">
-          <h2>Every mailbox</h2>
-          <ul className="lp-lines" style={{ marginTop: 0 }}>
-            {MAILBOXES.map((box) => (
-              <li key={box.address}>
-                <a className="ct-mail" href={`mailto:${box.address}`}>
-                  {box.address}
-                </a>
-                <span className="ct-what">{box.what}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="lp-note">
-            {`A postal address and a registered company name belong here too. Neither is settled yet
-            (${OPEN_TERMS.join(' and ')}), and the legal set shows both as blanks rather than
-            printing something we would have to correct.`}
-          </p>
-        </aside>
       </section>
+
+      <ClosePanel />
     </SiteShell>
   );
 }

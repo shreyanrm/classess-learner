@@ -1,0 +1,33 @@
+/* biome-ignore-all format: every rule is design/prototypes/app-v1.html (board 02 · Learn), kept as written */
+/* biome-ignore-all lint/style/noDescendingSpecificity: the rules keep the prototype's order, and order is what decides where two of them match */
+/*
+ * The learn screen's own rules, ported declaration for declaration from the LEARN block of
+ * design/prototypes/app-v1.html. The subject tiles are the kit's Tile; the rest is here.
+ * src/screens/home/screens.test.ts holds each rule to its source.
+ */
+/* the headline — the prototype sets this inline on the h1 */
+.ln-h1{font:700 34px/1.1 var(--sans);margin-top:10px}
+.ln-subjects{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.ln-units{display:grid;gap:12px}
+.ln-unit{display:grid;grid-template-columns:56px 1fr auto;gap:16px;align-items:center;background:var(--paper-2);border-radius:20px;padding:16px 20px}
+.ln-unit .ln-n{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font:700 22px/1 var(--hand);color:var(--ink);background:var(--pig-w)}
+.ln-unit b{font:600 17px/1.2 var(--sans);display:block}
+.ln-unit span{font-size:13px;color:var(--ink-3)}
+.ln-unit .ln-prog{height:8px;border-radius:4px;background:var(--paper-3);overflow:hidden;margin-top:8px;max-width:360px}
+.ln-unit .ln-prog i{display:block;height:100%;background:var(--mint);border-radius:4px}
+.ln-unit.ln-now{background:var(--pig-w)}
+.ln-unit.ln-now .ln-n{background:var(--pig);color:#fff}
+.ln-unit.ln-done .ln-n{background:var(--mint-w)}
+.ln-unit .ln-state{font:500 13px/1 var(--sans);color:var(--ink-2)}
+.ln-prov{display:inline-flex;align-items:center;gap:6px;font:500 13px/1 var(--sans);color:var(--ink-2);background:var(--paper);padding:6px 10px;border-radius:999px}
+.ln-prov i{width:8px;height:8px;border-radius:50%;background:var(--mint)}
+/* Wobo's line under the chapters — the prototype sets this inline */
+.ln-wobo{display:flex;gap:10px;align-items:center;color:var(--ink-3);font-size:13px}
+
+/* phone */
+@media (max-width:900px){
+  .ln-subjects{grid-template-columns:1fr 1fr}
+  .ln-unit{grid-template-columns:44px 1fr;gap:12px}
+  .ln-unit .ln-n{width:44px;height:44px;font-size:18px}
+  .ln-unit > .wk-btn,.ln-unit > .ln-state{grid-column:2}
+}

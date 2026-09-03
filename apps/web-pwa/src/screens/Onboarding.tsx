@@ -1,1166 +1,812 @@
 'use client';
 
 /**
- * Onboarding — Wobo is the whole interface (owner redesign, 2026-07-07). Wobo settles at the
- * centre of the screen and asks one thing at a time, aloud (voice + a line that fades in whole,
- * gently rising — no typing). There is no thread, no dots, no chrome: the last beat fades out as
- * the next fades in, so it reads as one continuous conversation. Wobo greets, then — before any
- * get-to-know-you question — makes the space theirs: sign-in is the FIRST beat and it is mandatory
- * (Google leads, phone-code the alternate). A dev bypass exists only when no account layer is
- * configured (no Supabase keys → local dev / tests). On the Google return Wobo always asks your name
- * as its own beat — a given-name may sit prefilled, but Wobo still asks and your answer wins — then
- * when you were born (a calendar; age is derived from it), class + board, and what you're into
- * (grounds Wobo's analogies from lesson one). Wobo seals it with a personalised-plan promise, you step in.
+ * Onboarding — five steps, design/prototypes/onboarding-v2.html as drawn: sign in, who's learning,
+ * the first question (the aha), a parent, ready. Wobo's head over a speech bubble, one form, one
+ * pig button, the dots at the top and a quiet way past any step that can be skipped.
+ *
+ * What is underneath is the app's own machinery, unchanged: the additive account layer (a code to
+ * an email or a phone, or a sign-in provider), the curriculum registry for boards and classes, the
+ * own-syllabus door, the one conversation for the aha, the gateway's parent link, and the same
+ * finish the frame theatre had — the account award, the onboarded mark, the live-mode rebuild.
+ *
+ * Sign-in is bypassed by configuration only: a build with no account layer (no keys → local dev,
+ * tests) opens on step two, exactly as the old flow skipped its auth beat. There is no skip for a
+ * learner.
  */
 
-import { fontFamily } from '@wobo/config';
-import { useRegisterTarget, useWoboBus, WoboBody, type WoboMood } from '@wobo/wobo';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { type CSSProperties, useEffect, useRef, useState } from 'react';
+import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
+import { type FormEvent, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { ONBOARDED_KEY, SIGNIN_SOURCE_KEY } from '../App';
-import { adoptFramework, adoptOwnSyllabus, askDiscovery } from '../curriculum/adopt';
+import { adoptFramework, adoptOwnSyllabus } from '../curriculum/adopt';
+import { useBoardSearch, useRegistryRevision } from '../curriculum/hooks';
 import { OwnSyllabus } from '../curriculum/OwnSyllabus';
-import { DiscoveryCard } from '../curriculum/StatusCard';
+import { loadedTopics } from '../curriculum/registry';
+import { gradeOf, schoolLevels } from '../curriculum/world';
 import { useRouter } from '../shell/router';
-import { rememberInterests } from '../store/mind';
+import { lifetimeSnapshot } from '../store/mind';
+import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
-import { AmbientWash, cascade, fluidSpace, MagneticButton, rise } from '../ui/kit';
+import { WoboHead, Wordmark } from '../ui/primitives';
 import { sfx } from '../ui/sound';
-import { estimateReadMs, MuteButton, speakLine } from '../wobo/speech';
-import { BoardPicker, type ChosenBoard, GradePicker } from './you/GradeBoardPicker';
-import {
-  ageFromBirthdate,
-  hasStoredName,
-  loadProfile,
-  resolveBoardId,
-  saveProfile,
-} from './you/profile';
+import { boardTurn } from '../wobo/board-turn';
+import { useWoboChat } from '../wobo/chat';
+import { speakLine } from '../wobo/speech';
+import { callSeam, liveSeams, seamFor } from './auth/client';
+import { ERRORS, SENT } from './auth/copy';
+import { classLine } from './You';
+import { boardOf, type ChosenBoard, levelsFor } from './you/GradeBoardPicker';
+import { ParentInvite } from './you/ParentInvite';
+import { looksLikeEmail } from './you/parentLink';
+import { boardName, loadProfile, resolveBoardId, saveProfile } from './you/profile';
+import './onboarding/onboarding.css';
 
-// The first-run atmosphere (§1 ambient depth) — a soft brand dawn blooming from where Wobo
-// settles at the centre, so Wobo arrives inside Wobo's own light. Token-driven; both themes.
-const ONBOARDING_WASH =
-  'radial-gradient(46% 40% at 50% 38%, var(--wobo-ultramarine-soft) 0%, transparent 66%),' +
-  ' radial-gradient(60% 44% at 50% 40%, rgba(255,201,60,0.04) 0%, transparent 74%)';
-
-/** Survives the Google round-trip in this tab: on return, resume at the name beat (given-name prefilled). */
+/** Survives the provider round-trip in this tab: on return, resume signed in. */
 const ONB_RETURN_KEY = 'wobo-onb-return';
-/**
- * Wobo introduces themself ONCE, ever (owner law, 2026-09-02). This marks that the first meeting has
- * happened on this device; a learner who already knows Wobo is greeted by name and never re-introduced.
- */
-const MET_KEY = 'wobo-met-v1';
 
-/**
- * The first line a learner ever hears from Wobo — owner copy, verbatim. "Hey there." is deliberately
- * a two-word sentence: the TTS pipeline synthesizes sentence by sentence, so Wobo's voice starts on a
- * short one and the rest streams behind it.
- */
-const FIRST_MEETING_LINE =
-  "Hey there. I'm Wobo, your AI wobot. I'll help you learn, and I'll be with you every step of the way.";
+type Step = 1 | 2 | 3 | 4 | 5;
+const STEPS: readonly Step[] = [1, 2, 3, 4, 5];
 
-/** Wobo's hand's pace when Wobo writes a line letter by letter (matches the overlay's note pen, ms/char). */
-const MS_PER_CHAR = 34;
-
-/** Off-screen but announced — the written line reaches a screen reader whole, not letter by letter. */
-const SR_ONLY: CSSProperties = {
-  position: 'absolute',
-  width: 1,
-  height: 1,
-  padding: 0,
-  margin: -1,
-  overflow: 'hidden',
-  clipPath: 'inset(50%)',
-  whiteSpace: 'nowrap',
-  border: 0,
+/** The bubble's line on each step, verbatim. */
+const BUBBLE: Partial<Record<Step, string>> = {
+  1: "Hi. I'm Wobo. Let's make this yours.",
+  2: "Tell me once. I'll find your exact chapter every week after.",
+  4: 'On Sundays I write three lines home. Want someone to get them?',
 };
 
-/**
- * Has this learner met Wobo before? A name they actually typed counts too — a re-run is never a first
- * meeting. (Must not use loadProfile(): it fills in the seed name when nothing is stored, which would
- * make every learner look like an old friend and silence the introduction for good.)
- */
-function hasMet(): boolean {
-  try {
-    return localStorage.getItem(MET_KEY) === '1' || hasStoredName();
-  } catch {
-    return false;
-  }
-}
-function markMet(): void {
-  try {
-    localStorage.setItem(MET_KEY, '1');
-  } catch {
-    // private mode — Wobo simply introduces themself again on a device that can't remember
-  }
-}
-/** The given name Wobo already knows them by, if any. */
-function knownName(): string {
-  try {
-    return loadProfile().name?.trim().split(/\s+/)[0] ?? '';
-  } catch {
-    return '';
-  }
-}
-const spring = { type: 'spring', stiffness: 320, damping: 30 } as const;
-const softSpring = { type: 'spring', stiffness: 220, damping: 24 } as const;
+/** The class ladder onboarding-v2 draws before a board is chosen — shown, never pressable, until one is. */
+const LADDER = ['4', '5', '6', '7', '8', '9', '10', '11', '12'] as const;
 
-/** Framed as fun, gathered as signal — Wobo's analogies reach for these. */
-const LIKES = [
-  'cricket',
-  'football',
-  'video games',
-  'music',
-  'movies',
-  'drawing',
-  'reading',
-  'space',
-  'coding',
-  'animals',
-  'dancing',
-  'food',
-];
+/** The three sample questions, verbatim. */
+const SAMPLES = [
+  "What's the difference between speed and velocity?",
+  'Why is the sky blue?',
+  'Explain fractions with a chocolate bar',
+] as const;
 
-type Phase = 'greet' | 'name' | 'age' | 'board' | 'own' | 'grade' | 'likes' | 'auth';
-
-/** "98765 43210" or "+91 98765 43210" → E.164; bare Indian numbers get +91. */
 function normalizePhone(raw: string): string {
-  const kept = raw.replace(/[^\d+]/g, '');
-  return kept.startsWith('+') ? kept : `+91${kept}`;
+  const digits = raw.replace(/[^\d+]/g, '');
+  if (digits.startsWith('+')) return digits;
+  if (digits.length === 10) return `+91${digits}`;
+  return `+${digits}`;
 }
 
-const ghostButton: React.CSSProperties = {
-  border: 'none',
-  background: 'transparent',
-  color: 'var(--wobo-ink-500)',
-  fontSize: '0.85rem',
-  cursor: 'pointer',
-  fontFamily: 'inherit',
-  padding: 4,
-};
+/** "classes 6–10" — the run of school levels a board offers, from its own list. */
+export function levelRange(levels: readonly string[]): string {
+  const grades = schoolLevels(levels)
+    .map(gradeOf)
+    .filter((g): g is number => g !== null);
+  if (grades.length === 0) return '';
+  const lo = Math.min(...grades);
+  const hi = Math.max(...grades);
+  return lo === hi ? `class ${lo}` : `classes ${lo}–${hi}`;
+}
 
-function Chip({
-  label,
-  selected,
-  onClick,
-}: {
-  label: string;
-  selected: boolean;
-  onClick: () => void;
-}) {
+/** The typed prefix, marked in the name it matched. */
+function Marked({ name, query }: { name: string; query: string }) {
+  const q = query.trim();
+  const i = q ? name.toLowerCase().indexOf(q.toLowerCase()) : -1;
+  if (i < 0) return <b>{name}</b>;
   return (
-    <motion.button
-      type="button"
-      onClick={onClick}
-      aria-pressed={selected}
-      whileHover={{ y: -1 }}
-      whileTap={{ scale: 0.95 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 26 }}
-      style={{
-        // hairline depth (tonal-step, no shadow) on the resting chip; solid ink when chosen
-        border: selected ? '0.5px solid transparent' : '0.5px solid var(--wobo-hairline-on-paper)',
-        background: selected ? 'var(--wobo-ink-900)' : 'var(--wobo-tonal)',
-        color: selected ? 'var(--wobo-paper)' : 'var(--wobo-ink-700)',
-        borderRadius: 3,
-        padding: '10px 16px',
-        fontSize: '0.92rem',
-        fontFamily: 'inherit',
-        cursor: 'pointer',
-        lineHeight: 1.2,
-        transition: 'background 0.18s ease, color 0.18s ease, border-color 0.18s ease',
-      }}
-    >
-      {label}
-    </motion.button>
+    <b>
+      {name.slice(0, i)}
+      <mark>{name.slice(i, i + q.length)}</mark>
+      {name.slice(i + q.length)}
+    </b>
   );
 }
 
-/** The single text field this app uses for name and codes — one intention, centered, calm. */
-const fieldStyle: React.CSSProperties = {
-  flex: 1,
-  minWidth: 0,
-  fontSize: '1.15rem',
-  fontFamily: 'inherit',
-  color: 'var(--wobo-ink-900)',
-  background: 'var(--wobo-tonal)',
-  border: 'none',
-  borderRadius: 3,
-  // no inline `outline: none` — the global :focus-visible ring (main.tsx) marks the focused field
-  padding: '13px 16px',
-};
+function Dots({ step }: { step: Step }) {
+  return (
+    <span className="ob-dots" role="img" aria-label={`step ${step} of 5`}>
+      {STEPS.map((s) => (
+        <i key={s} className={s === step ? 'ob-on' : s < step ? 'ob-done' : undefined} />
+      ))}
+    </span>
+  );
+}
+
+function useDrawing(): boolean {
+  return useSyncExternalStore(
+    (l) => boardTurn.subscribe(l),
+    () => boardTurn.get().active,
+    () => false,
+  );
+}
 
 export function Onboarding() {
   const router = useRouter();
   const sdk = useSdk();
   const bus = useWoboBus();
-  const reduced = useReducedMotion() ?? false;
+  const chat = useWoboChat();
+  const { award } = useProgress();
+  const drawing = useDrawing();
+  const revision = useRegistryRevision();
 
-  const [phase, setPhase] = useState<Phase>('greet');
-  // Wobo's current line: it types on screen and plays aloud. `onDone` runs when the typing finishes
-  // (reveal the beat's input, or — for a statement beat like the greeting — advance on its own).
-  const [line, setLine] = useState('');
-  // Wobo's introduction alone is WRITTEN, letter by letter in Wobo's hand (Caveat) — everything after it
-  // fades in whole. `written` is how many characters of the current line Wobo's pen has laid down.
-  const [handwriting, setHandwriting] = useState(false);
-  const [written, setWritten] = useState(0);
-  const [promptReady, setPromptReady] = useState(false);
-  const [mood, setMood] = useState<WoboMood>('idle');
-
-  const [name, setName] = useState('');
-  // Wobo asks when they were born (free text — a year or a full date); age is derived, not asked.
-  const [birthdate, setBirthdate] = useState('');
-  const [age, setAge] = useState<number | null>(null);
-  const [grade, setGrade] = useState<string | null>(null);
-  // The board the learner chose, as the registry knows it — or the name they typed, which is a
-  // search we have not run yet. Never a substituted board (CURRICULUM.md §4.6).
-  const [board, setBoard] = useState<ChosenBoard | null>(null);
-  const [sourcing, setSourcing] = useState<string | null>(null);
-  const [interests, setInterests] = useState<string[]>([]);
-
-  // Sign-in is the FIRST beat and it is mandatory — the additive account layer (Supabase) IS the
-  // gate. `authed` tracks that ACCOUNT session (Google/phone), not the always-true dev-mock
-  // identity. With no account layer (no Supabase keys → pure local dev / tests) the auth beat is
-  // bypassed by config, never by the learner.
   const account = sdk.account;
   const canAuth = !!account;
   const [authed, setAuthed] = useState(() => !!account?.isAuthenticated());
-  // Audio can't autoplay before a gesture — the first beat waits for one warm tap, which unlocks
-  // Wobo's voice; then Wobo greets and every later line rides the taps that advance the beats.
-  const [begun, setBegun] = useState(false);
-  const [phone, setPhone] = useState('');
-  const [code, setCode] = useState('');
-  const [authStage, setAuthStage] = useState<'phone' | 'code'>('phone');
-  const [authBusy, setAuthBusy] = useState(false);
-  const [authErr, setAuthErr] = useState<string | null>(null);
-  const [showPhone, setShowPhone] = useState(false);
+  const [step, setStep] = useState<Step>(() => {
+    // DEV ONLY: `?step=3` opens a later step for the design gate's screenshots. Production builds
+    // ignore it — a learner always starts where the flow starts.
+    if (import.meta.env.DEV && typeof location !== 'undefined') {
+      const asked = Number(new URLSearchParams(location.search).get('step'));
+      if (asked >= 1 && asked <= 5) return asked as Step;
+    }
+    return canAuth && !account?.isAuthenticated() ? 1 : 2;
+  });
 
-  const finalName = name.trim();
-  // Setting up is a surface too: the beat Wobo is on and what Wobo is waiting for. It is what makes
-  // the guided tour possible later — Wobo can point at the very control Wobo just asked about.
+  // --- sign in ---------------------------------------------------------------------------------
+  const seams = useMemo(
+    () =>
+      liveSeams({
+        account: account as unknown as Record<string, unknown> | undefined,
+        identityAuth: sdk.identity.auth as unknown as Record<string, unknown>,
+        devAuth: sdk.config.devAuth,
+      }),
+    [account, sdk],
+  );
+  const [address, setAddress] = useState('');
+  const [code, setCode] = useState('');
+  const [stage, setStage] = useState<'address' | 'code' | 'sent'>('address');
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState<string | null>(null);
+
+  // --- who's learning --------------------------------------------------------------------------
+  const [name, setName] = useState(() => loadProfile().name);
+  const [grade, setGrade] = useState<string | null>(() => loadProfile().grade || null);
+  const [board, setBoard] = useState<ChosenBoard | null>(null);
+  const [own, setOwn] = useState(false);
+  const search = useBoardSearch();
+  const [typed, setTyped] = useState('');
+  const results = search.state.result?.results ?? [];
+  const levels = useMemo(() => schoolLevels(levelsFor(board)), [board]);
+
+  // --- the aha ---------------------------------------------------------------------------------
+  const [question, setQuestion] = useState('');
+  const [askedAt, setAskedAt] = useState<number | null>(null);
+  const reply = useMemo(() => {
+    if (askedAt === null) return null;
+    const last = [...chat.turns].reverse().find((t) => t.role === 'wobo');
+    return last && chat.turns.indexOf(last) >= askedAt ? last.text : null;
+  }, [chat.turns, askedAt]);
+
+  // --- ready -----------------------------------------------------------------------------------
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the registry revision is the trigger
+  const firstTopic = useMemo(() => loadedTopics()[0]?.name ?? null, [revision]);
+  const [allowance, setAllowance] = useState<{
+    left: number;
+    limit: number;
+    reset: string | null;
+  } | null>(null);
+  useEffect(() => {
+    if (step !== 5) return;
+    let cancelled = false;
+    void sdk
+      .me()
+      .then((me) => {
+        if (cancelled || !me) return;
+        const { limit, remaining } = me.budget.turns;
+        if (limit === null) return;
+        const reset = me.budget.resetAt
+          ? new Date(me.budget.resetAt).toLocaleTimeString(undefined, {
+              hour: 'numeric',
+              minute: '2-digit',
+            })
+          : null;
+        setAllowance({ left: remaining ?? limit, limit, reset });
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [sdk, step]);
+
+  const firstName = name.trim().split(/\s+/)[0] ?? '';
+  const boardLabel = board?.name ?? boardName(loadProfile().boardId);
+
   const stageRef = useRegisterTarget<HTMLDivElement>('onboarding-stage', {
     kind: 'flow',
-    label: 'setting up — the beat Wobo is on and what Wobo is waiting for',
+    label: 'setting up — the step Wobo is on and what Wobo is waiting for',
     getSceneState: () => ({
-      beat: phase,
-      askedFor: line,
+      step,
       signedIn: authed,
-      name: finalName || undefined,
+      name: firstName || undefined,
       grade: grade ?? undefined,
       board: board?.name ?? undefined,
-      interests,
     }),
   });
-  // Times the input/continue reveal after each line settles (replaces the old typing-done signal).
-  const revealTimer = useRef<number | undefined>(undefined);
-
-  // --- Wobo speaks a line: it fades in whole (gently rising — no typing) and plays aloud. The
-  // input/continue reveal keys off a calm delay after the line settles, not a character count. -----
-  const REVEAL_DELAY = 820;
-  const penTimer = useRef<number | undefined>(undefined);
-  /** A ceiling on waiting for Wobo's voice, so a dead TTS can never strand the learner on a beat. */
-  const voiceTimer = useRef<number | undefined>(undefined);
-  const say = (
-    text: string,
-    onDone?: () => void,
-    opts?: { hand?: boolean; awaitVoice?: boolean },
-  ) => {
-    setPromptReady(false);
-    setLine(text);
-    // Wobo's hand, when the line is written rather than spoken-and-shown: one character per tick,
-    // instant under reduced motion. The pen and Wobo's voice start together — one performance.
-    window.clearInterval(penTimer.current);
-    const hand = Boolean(opts?.hand) && !reduced;
-    setHandwriting(Boolean(opts?.hand));
-    setWritten(hand ? 0 : text.length);
-    if (hand) {
-      penTimer.current = window.setInterval(() => {
-        setWritten((n) => {
-          if (n >= text.length) {
-            window.clearInterval(penTimer.current);
-            return n;
-          }
-          return n + 1;
-        });
-      }, MS_PER_CHAR);
-    }
-    // The reveal waits for the pen to finish the line, then the same calm beat as every other line.
-    // A line Wobo must finish saying (Wobo's introduction) also waits for Wobo's voice, so advancing never
-    // cuts Wobo off mid-word — with a ceiling, so a silent/failed TTS still releases the beat.
-    const writeMs = hand ? text.length * MS_PER_CHAR : 0;
-    let penDone = false;
-    let voiceDone = !opts?.awaitVoice;
-    const release = () => {
-      if (!penDone || !voiceDone) return;
-      window.clearTimeout(voiceTimer.current);
-      if (onDone) onDone();
-      else setPromptReady(true);
-    };
-    void speakLine(
-      text,
-      opts?.awaitVoice
-        ? {
-            onDone: () => {
-              voiceDone = true;
-              release();
-            },
-          }
-        : undefined,
-    );
-    window.clearTimeout(voiceTimer.current);
-    if (opts?.awaitVoice) {
-      voiceTimer.current = window.setTimeout(
-        () => {
-          voiceDone = true;
-          release();
-        },
-        REVEAL_DELAY + writeMs + estimateReadMs(text) + 4000,
-      );
-    }
-    window.clearTimeout(revealTimer.current);
-    revealTimer.current = window.setTimeout(() => {
-      penDone = true;
-      release();
-    }, REVEAL_DELAY + writeMs);
-  };
-
-  // --- the beats (a soft tick marks each advance; nothing on typing / idle) ---------------------
-  const toName = () => {
-    sfx.tap();
-    setPhase('name');
-    say('So — what should I call you?');
-  };
-  const toAge = (who: string) => {
-    sfx.tap();
-    setPhase('age');
-    say(`Lovely to meet you, ${who}. So — when did you land on this planet? Pop your birthday in.`);
-  };
-  const toBoard = () => {
-    sfx.tap();
-    setPhase('board');
-    say(`Which board are you on, ${finalName}?`);
-  };
-  const toGrade = () => {
-    sfx.tap();
-    setPhase('grade');
-    say(`And which class, ${finalName}?`);
-  };
-  const toLikes = () => {
-    sfx.tap();
-    setPhase('likes');
-    say(`Last fun one, ${finalName} — what are you into these days?`);
-  };
-  const toAuth = () => {
-    sfx.tap();
-    setPhase('auth');
-    say(
-      "First — let's make this space truly yours. One sign-in and everything you build here follows you everywhere.",
-    );
-  };
-  // Everything gathered — persist locally, seal the onboarded marker + world onto the account (so a
-  // future sign-in reconstructs it and lands home), and hand to the building theatre (FrameBuilding).
-  const goBuilding = () => {
-    const boardId = board?.id;
-    if (grade && boardId) {
-      // Pin the framework before the building beat, so that screen opens a real world or an
-      // honest status card — never a world assembled from a file.
-      void adoptFramework({ frameworkId: boardId, name: board.name, level: grade });
-      saveProfile({
-        name: finalName,
-        grade,
-        boardId,
-        birthdate: birthdate || undefined,
-        age: age ?? undefined,
-        interests,
-      });
-      // board stored as its raw id so a restore rebuilds the frame; archetype_slot carries the
-      // onboarded sentinel (a real column — no schema change). Best-effort; local stays the truth.
-      // ponytail: birthdate/interests aren't in profiles_cache on this project, so they stay
-      // local-only — cross-device restore of those needs the columns added, name/board/grade suffice.
-      void account?.syncProfile({
-        display_name: finalName,
-        grade,
-        board: boardId,
-        archetype_slot: 'onboarded',
-      });
-    }
-    rememberInterests(interests);
-    sfx.reveal(); // Wobo's big moment — the world-build handoff
-    router.replace({ name: 'building' });
-  };
-
-  // After the greeting: sign-in is the first ask (mandatory) unless there's no account layer
-  // (local dev / tests), where we go straight to the name beat.
-  const afterGreet = () => (canAuth && !authed ? toAuth() : toName());
-
-  // The first warm tap unlocks Wobo's voice inside the gesture, then Wobo greets and the flow begins.
-  // A first meeting gets Wobo's introduction — verbatim owner copy, written in Wobo's hand and spoken.
-  // Anyone Wobo has already met is greeted by name and NEVER introduced again.
-  const begin = () => {
-    if (begun) return;
-    setBegun(true);
-    sfx.tap(); // the gesture that unlocks Wobo's voice — and ticks the first beat in
-    const known = knownName();
-    if (hasMet()) {
-      say(known ? `Good to see you again, ${known}.` : 'Good to see you again.', () =>
-        window.setTimeout(afterGreet, 600),
-      );
-      return;
-    }
-    markMet();
-    say(FIRST_MEETING_LINE, () => window.setTimeout(afterGreet, 600), {
-      hand: true,
-      awaitVoice: true,
-    });
-  };
-
-  // A Google return, resolved: an already-onboarded account skips every question and lands home
-  // with one warm line; a new account resumes at the name beat (Wobo ALWAYS asks — the Google
-  // given-name only prefills, their answer wins).
-  const resumeAfterAuth = async () => {
-    const remote = (await account?.fetchProfile().catch(() => null)) ?? null;
-    const restorable = remote?.archetype_slot === 'onboarded' && !!remote.grade && !!remote.board;
-    if (restorable) {
-      const p = loadProfile();
-      const boardId = resolveBoardId(remote?.board) ?? p.boardId;
-      const grade = (remote?.grade as string | undefined) ?? p.grade;
-      // remote wins for identity/board/grade; local keeps birthdate/interests it already holds
-      saveProfile({
-        ...p,
-        name: (remote?.display_name ?? p.name).trim() || p.name,
-        grade,
-        boardId,
-      });
-      // Pin their world again on this device so the registry, not a cache, decides what they study.
-      void adoptFramework({ frameworkId: boardId, name: boardId, level: grade });
-      localStorage.setItem(ONBOARDED_KEY, '1');
-      const given = (remote?.display_name ?? p.name).trim().split(/\s+/)[0];
-      say(`Welcome back${given ? `, ${given}` : ''}.`);
-      window.setTimeout(() => router.replace({ name: 'home' }), 1600);
-      return;
-    }
-    const given = account?.profile()?.name?.trim().split(/\s+/)[0];
-    if (given) setName(given);
-    toName();
-  };
-
-  // Boot: a Google return resumes (restore-and-home, or the name beat prefilled). Otherwise the
-  // first beat waits for the warm begin tap. A reload without a session simply replays this and,
-  // after the greeting, lands back on the mandatory auth gate.
-  const booted = useRef(false);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: run-once boot, guarded by booted ref
-  useEffect(() => {
-    if (booted.current) return;
-    booted.current = true;
-    if (sessionStorage.getItem(ONB_RETURN_KEY) && account?.isAuthenticated()) {
-      sessionStorage.removeItem(ONB_RETURN_KEY);
-      setAuthed(true);
-      setBegun(true); // returning from an OAuth gesture — no separate begin tap needed
-      void resumeAfterAuth();
-    }
-  }, [sdk]);
-
-  // Don't leave the reveal timer or Wobo's pen running past unmount.
-  useEffect(
-    () => () => {
-      window.clearTimeout(revealTimer.current);
-      window.clearTimeout(voiceTimer.current);
-      window.clearInterval(penTimer.current);
-    },
-    [],
-  );
 
   useEffect(() => {
     bus.publishPage({
       route: 'onboarding',
       state: {
-        phase,
-        name: name || undefined,
-        age: age ?? undefined,
+        step,
+        name: firstName || undefined,
         grade: grade ?? undefined,
-        board: board?.name ?? undefined,
-        interests: interests.length ? interests : undefined,
+        board: board?.name,
         signedIn: authed,
       },
     });
-  }, [bus, phase, name, age, grade, board, interests, authed]);
+  }, [bus, step, firstName, grade, board, authed]);
 
-  // --- answers ---------------------------------------------------------------------------------
-  const submitName = () => {
-    const n = name.trim();
-    if (!n) return;
-    setName(n);
-    setMood('celebrate');
-    window.setTimeout(() => setMood('idle'), 800);
-    toAge(n);
-  };
-  const submitBirthdate = () => {
-    const b = birthdate.trim();
-    if (!b) return; // capture stays mandatory — but whatever they give, we take it (no value gate)
-    setBirthdate(b);
-    setAge(ageFromBirthdate(b) ?? null);
-    setMood('celebrate');
-    window.setTimeout(() => setMood('idle'), 600);
-    toBoard();
-  };
-  const submitBoard = () => {
-    if (!board) return;
-    // A board the registry did not list is a search, said out loud before we move on.
-    if (board.unlisted) void askDiscovery(board.name, null).then(() => setSourcing(board.name));
-    toGrade();
-  };
-  const toOwn = () => {
-    sfx.tap();
-    setPhase('own');
-    say(`Show me your syllabus, ${finalName}, and I will lay it out for you.`);
-  };
-  const submitGrade = () => {
-    if (!grade) return;
-    toLikes();
-  };
-  const toggleLike = (l: string) =>
-    setInterests((xs) => (xs.includes(l) ? xs.filter((x) => x !== l) : [...xs, l]));
-  const submitLikes = () => goBuilding();
+  // Wobo says the bubble's line on each step — the same voice the old flow had, muted where muted.
+  useEffect(() => {
+    const line = BUBBLE[step];
+    if (line) void speakLine(line);
+  }, [step]);
 
-  // --- the sign-in beat's moves (live mode) ----------------------------------------------------
-  const sendCode = async () => {
-    const normalized = normalizePhone(phone);
-    if (normalized.replace(/\D/g, '').length < 10) {
-      setAuthErr('That number looks short — check it once more');
+  // A provider return, resolved: an already-onboarded account skips every question and lands home;
+  // a new account resumes at step two with the given name prefilled.
+  const resumeAfterAuth = async () => {
+    setAuthed(true);
+    const remote = (await account?.fetchProfile().catch(() => null)) ?? null;
+    const restorable = remote?.archetype_slot === 'onboarded' && !!remote.grade && !!remote.board;
+    if (restorable) {
+      const p = loadProfile();
+      const boardId = resolveBoardId(remote?.board) ?? p.boardId;
+      const level = (remote?.grade as string | undefined) ?? p.grade;
+      saveProfile({
+        ...p,
+        name: (remote?.display_name ?? p.name).trim() || p.name,
+        grade: level,
+        boardId,
+      });
+      void adoptFramework({ frameworkId: boardId, name: boardId, level });
+      localStorage.setItem(ONBOARDED_KEY, '1');
+      router.replace({ name: 'home' });
       return;
     }
-    setAuthBusy(true);
-    setAuthErr(null);
-    setMood('thinking');
+    const given = account?.profile()?.name?.trim().split(/\s+/)[0];
+    if (given && !name.trim()) setName(given);
+    setStep(2);
+  };
+
+  const booted = useRef(false);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: run-once boot, guarded by the ref
+  useEffect(() => {
+    if (booted.current) return;
+    booted.current = true;
+    if (sessionStorage.getItem(ONB_RETURN_KEY) && account?.isAuthenticated()) {
+      sessionStorage.removeItem(ONB_RETURN_KEY);
+      void resumeAfterAuth();
+    }
+  }, [sdk]);
+
+  const sendCode = async (e: FormEvent) => {
+    e.preventDefault();
+    const raw = address.trim();
+    if (!raw || busy) return;
+    setNote(null);
+    setBusy(true);
     try {
-      await sdk.identity.auth.requestPhoneOtp(normalized);
-      setAuthStage('code');
-      setMood('listening');
+      if (looksLikeEmail(raw)) {
+        const seam = seamFor('magicLink', seams);
+        if (!seam) {
+          setNote(ERRORS.unknown);
+          return;
+        }
+        await callSeam(seams, seam, raw);
+        setStage('sent');
+      } else {
+        const phone = normalizePhone(raw);
+        if (phone.replace(/\D/g, '').length < 10) {
+          setNote('That number looks short — check it once more');
+          return;
+        }
+        await sdk.identity.auth.requestPhoneOtp(phone);
+        setStage('code');
+      }
     } catch {
-      setAuthErr('The code could not go out — check the number and try again');
-      setMood('hint');
+      setNote(ERRORS.unknown);
     } finally {
-      setAuthBusy(false);
+      setBusy(false);
     }
   };
 
   const verifyCode = async (candidate: string) => {
-    setAuthBusy(true);
-    setAuthErr(null);
-    setMood('thinking');
+    if (busy) return;
+    setBusy(true);
+    setNote(null);
     try {
-      await sdk.identity.auth.verifyPhoneOtp(normalizePhone(phone), candidate);
+      await sdk.identity.auth.verifyPhoneOtp(normalizePhone(address.trim()), candidate);
       localStorage.setItem(SIGNIN_SOURCE_KEY, 'phone');
-      setAuthed(true);
-      void resumeAfterAuth(); // existing account → home; new → the name beat (Wobo still asks)
+      sfx.tap();
+      await resumeAfterAuth();
     } catch {
-      setAuthErr('That code did not match — take another look and try again');
-      setMood('oops');
+      setNote(ERRORS.code);
     } finally {
-      setAuthBusy(false);
+      setBusy(false);
     }
   };
 
-  const withGoogle = async () => {
-    // Auth is beat one — nothing gathered yet. Mark the return so boot resumes here, signed in
-    // (the additive account layer runs the redirect and completes it on the way back).
+  const withProvider = async () => {
     sessionStorage.setItem(ONB_RETURN_KEY, '1');
     localStorage.setItem(SIGNIN_SOURCE_KEY, 'google');
     try {
       await account?.signInWithGoogle(window.location.origin);
     } catch {
       sessionStorage.removeItem(ONB_RETURN_KEY);
-      setAuthErr('Google did not open — the phone code works just as well');
-      setShowPhone(true);
+      setNote(ERRORS.unknown);
     }
   };
 
-  const skip = () => {
+  // --- who's learning → the aha --------------------------------------------------------------------
+  const ready2 = name.trim().length > 0 && !!grade && !!board;
+  const thatsMe = (e: FormEvent) => {
+    e.preventDefault();
+    if (!ready2 || !board || !grade) return;
+    sfx.tap();
+    saveProfile({ ...loadProfile(), name: name.trim(), grade, boardId: board.id });
+    void adoptFramework({ frameworkId: board.id, name: board.name, level: grade });
+    void account?.syncProfile({ display_name: name.trim(), grade, board: board.id });
+    setStep(3);
+  };
+
+  const ask = (text: string) => {
+    const line = text.trim();
+    if (!line || chat.busy) return;
+    setQuestion(line);
+    setAskedAt(chat.turns.length);
+    void chat.ask(line);
+  };
+
+  const finish = () => {
+    sfx.reveal();
+    award('account');
+    try {
+      sdk.events.record('onboarding.step.completed.v1', {
+        step: 'aha',
+        step_index: 2,
+        total_steps: 5,
+      });
+    } catch {
+      // event stream best-effort
+    }
+    bus.publishLifetime(lifetimeSnapshot());
     localStorage.setItem(ONBOARDED_KEY, '1');
+    // live mode rebuilds on the real session so providers re-key to auth.uid()
+    if (!sdk.config.devAuth) {
+      window.location.assign('/');
+      return;
+    }
     router.replace({ name: 'home' });
   };
 
-  const nameReady = name.trim().length > 0;
+  const pickBoard = (b: ChosenBoard) => {
+    setBoard(b);
+    setTyped(b.name);
+    search.clear();
+    if (grade && !levelsFor(b).includes(grade)) setGrade(null);
+  };
+
+  const skipLabel: Partial<Record<Step, string>> = {
+    1: 'Already have an account? Sign in',
+    3: 'Skip for now',
+    4: 'Not now',
+  };
+  const skip = () => {
+    sfx.tap();
+    if (step === 1) router.navigate({ name: 'sign-in' });
+    else if (step === 3) setStep(4);
+    else if (step === 4) setStep(5);
+  };
 
   return (
-    <div
-      ref={stageRef}
-      style={{
-        minHeight: '100dvh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
-        padding: `${fluidSpace.xl} ${fluidSpace.gutter}`,
-        position: 'relative',
-        isolation: 'isolate',
-        gap: fluidSpace.md,
-      }}
-    >
-      <AmbientWash gradient={ONBOARDING_WASH} />
-      {/* the one control on the page — Wobo speaks every line, so muting is always within reach */}
-      <div style={{ position: 'fixed', top: fluidSpace.sm, right: fluidSpace.sm, zIndex: 2 }}>
-        <MuteButton />
-      </div>
-
-      {/* Wobo settles at the centre — the whole interface, present before a word is asked */}
-      <motion.div
-        initial={{ scale: 0.55, y: -46, opacity: 0 }}
-        animate={{ scale: 1, y: 0, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.15 }}
-        style={{ display: 'grid', placeItems: 'center', position: 'relative' }}
-      >
-        {/* Wobo's own light — the one earned pigment hit, ultramarine "ignite at rest": a soft halo
-            that breathes so Wobo reads as alive, brighter before the first tap (the door). Behind
-            Wobo's body, never intercepts the tap; static under reduced motion. */}
-        <motion.div
-          aria-hidden
-          initial={false}
-          animate={
-            reduced
-              ? { opacity: begun ? 0.32 : 0.46 }
-              : {
-                  opacity: begun ? [0.24, 0.42, 0.24] : [0.36, 0.62, 0.36],
-                  scale: [1, 1.09, 1],
-                }
-          }
-          transition={
-            reduced
-              ? { duration: 0.4 }
-              : { duration: begun ? 4.6 : 3.4, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }
-          }
-          style={{
-            position: 'absolute',
-            width: 230,
-            height: 230,
-            left: '50%',
-            top: '50%',
-            marginLeft: -115,
-            marginTop: -115,
-            borderRadius: '50%',
-            background:
-              'radial-gradient(closest-side, var(--wobo-ultramarine-soft) 0%, transparent 72%)',
-            filter: 'blur(8px)',
-            pointerEvents: 'none',
-            // behind Wobo's body but scoped to this transformed wrapper's own stacking context
-            zIndex: -1,
-          }}
-        />
-        <WoboBody
-          size={112}
-          mood={mood}
-          gaze="pointer"
-          label={begun ? 'Wobo' : 'Wobo — tap to begin'}
-          onTap={() => {
-            if (!begun) {
-              begin(); // Wobo's body is the tap that unlocks Wobo's voice
-              return;
-            }
-            setMood('celebrate');
-            window.setTimeout(() => setMood('idle'), 1000);
-          }}
-        />
-      </motion.div>
-
-      {/* one beat at a time — Wobo's line and its single input, the last fading out as the next fades in */}
-      <div
-        style={{
-          width: '100%',
-          maxWidth: 560,
-          minHeight: 220,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: fluidSpace.md,
-        }}
-      >
-        {!begun ? (
-          // The one gesture that unlocks Wobo's voice — Wobo can't autoplay before it. Wobo's body above is
-          // tappable too; this is the warm, obvious door in.
-          <motion.div
-            variants={cascade}
-            initial="hidden"
-            animate="show"
+    <div className="ob-screen" ref={stageRef}>
+      {step === 5 && (
+        <div className="ob-confetti" aria-hidden="true">
+          <i style={{ left: '12%', top: '12%', background: 'var(--marigold)' }} />
+          <i
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: fluidSpace.md,
+              left: '26%',
+              top: '7%',
+              background: 'var(--pig)',
+              transform: 'rotate(-20deg)',
             }}
-          >
-            <motion.div
-              variants={rise}
-              style={{
-                fontSize: 'clamp(1.32rem, 1.05rem + 1.5vw, 1.9rem)',
-                fontWeight: 550,
-                letterSpacing: '-0.02em',
-                lineHeight: 1.35,
-                color: 'var(--wobo-ink-900)',
-                textAlign: 'center',
-              }}
-            >
-              Ready when you are.
-            </motion.div>
-            <motion.div variants={rise}>
-              <MagneticButton
-                size="lg"
-                variant="primary"
-                onClick={begin}
-                ariaLabel="begin"
-                style={{ minWidth: 160, justifyContent: 'center' }}
-              >
-                Tap to begin
-              </MagneticButton>
-            </motion.div>
-          </motion.div>
+          />
+          <i style={{ left: '78%', top: '9%', background: 'var(--rose)' }} />
+          <i
+            style={{
+              left: '64%',
+              top: '15%',
+              background: 'var(--mint)',
+              transform: 'rotate(40deg)',
+            }}
+          />
+          <i style={{ left: '88%', top: '18%', background: 'var(--lilac)' }} />
+          <i
+            style={{
+              left: '36%',
+              top: '17%',
+              background: 'var(--violet)',
+              transform: 'rotate(-35deg)',
+            }}
+          />
+        </div>
+      )}
+      <div className="ob-top">
+        <span className="ob-wm" style={{ width: 90 }}>
+          <Wordmark />
+        </span>
+        <Dots step={step} />
+        {skipLabel[step] ? (
+          <button type="button" className="ob-skip" onClick={skip}>
+            {skipLabel[step]}
+          </button>
         ) : (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={phase}
-              initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, y: -14, filter: 'blur(6px)', transition: { duration: 0.24 } }}
-              transition={softSpring}
-              style={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: fluidSpace.md,
-              }}
-            >
-              {/* Wobo's question — the only text on screen; the whole line fades in and gently rises
-                (MOTION §3 spring), no typing. Keyed by the line so each new one re-animates. */}
-              <div
-                style={
-                  handwriting
-                    ? {
-                        // Wobo's introduction, in Wobo's own hand — larger, warmer, and written on
-                        fontFamily: fontFamily.handwritten,
-                        fontSize: 'clamp(1.7rem, 1.2rem + 2.4vw, 2.6rem)',
-                        fontWeight: 600,
-                        lineHeight: 1.3,
-                        color: 'var(--wobo-ink-900)',
-                        textAlign: 'center',
-                        textWrap: 'balance',
-                        maxWidth: 560,
-                        minHeight: '2.6em',
-                      }
-                    : {
-                        fontSize: 'clamp(1.32rem, 1.05rem + 1.5vw, 1.9rem)',
-                        fontWeight: 550,
-                        letterSpacing: '-0.02em',
-                        lineHeight: 1.35,
-                        color: 'var(--wobo-ink-900)',
-                        textAlign: 'center',
-                        textWrap: 'balance',
-                        maxWidth: 520,
-                        minHeight: '2.6em',
-                      }
-                }
-              >
-                {handwriting ? (
-                  // The pen lays the line down letter by letter; assistive tech reads the whole
-                  // line at once (aria-label) rather than announcing every keystroke.
-                  <div>
-                    <span aria-hidden>{line.slice(0, written)}</span>
-                    <span style={SR_ONLY}>{line}</span>
-                  </div>
-                ) : (
-                  <motion.div
-                    key={line}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={softSpring}
-                  >
-                    {line}
-                  </motion.div>
-                )}
-              </div>
-
-              {/* the beat's single input, revealed once Wobo has finished asking */}
-              <AnimatePresence>
-                {promptReady && phase === 'name' && (
-                  <motion.div
-                    key="i-name"
-                    initial={{ opacity: 0, y: 14, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={spring}
-                    style={{
-                      display: 'flex',
-                      gap: 10,
-                      alignItems: 'center',
-                      width: '100%',
-                      maxWidth: 380,
-                    }}
-                  >
-                    <input
-                      // biome-ignore lint/a11y/noAutofocus: the input is this beat's single intention
-                      autoFocus
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      onFocus={() => setMood('listening')}
-                      onBlur={() => setMood('idle')}
-                      onKeyDown={(e) => e.key === 'Enter' && submitName()}
-                      placeholder="Type your name"
-                      aria-label="your name"
-                      style={{ ...fieldStyle, textAlign: 'center' }}
-                    />
-                    {/* the continue affordance bubbles in only once there is a name to send */}
-                    <AnimatePresence>
-                      {nameReady && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.6, x: -6 }}
-                          animate={{ opacity: 1, scale: 1, x: 0 }}
-                          exit={{ opacity: 0, scale: 0.6 }}
-                          transition={{ type: 'spring', stiffness: 480, damping: 24 }}
-                        >
-                          <MagneticButton
-                            size="lg"
-                            variant="primary"
-                            onClick={submitName}
-                            ariaLabel="continue"
-                            style={{ minWidth: 52, justifyContent: 'center', padding: '0 18px' }}
-                          >
-                            →
-                          </MagneticButton>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                )}
-
-                {promptReady && phase === 'age' && (
-                  <motion.div
-                    key="i-age"
-                    initial={{ opacity: 0, y: 14, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={spring}
-                    style={{
-                      display: 'flex',
-                      gap: 10,
-                      alignItems: 'center',
-                      width: '100%',
-                      maxWidth: 380,
-                    }}
-                  >
-                    <input
-                      type="date"
-                      // biome-ignore lint/a11y/noAutofocus: the input is this beat's single intention
-                      autoFocus
-                      value={birthdate}
-                      onChange={(e) => setBirthdate(e.target.value)}
-                      onFocus={() => setMood('listening')}
-                      onBlur={() => setMood('idle')}
-                      onKeyDown={(e) => e.key === 'Enter' && submitBirthdate()}
-                      aria-label="your date of birth"
-                      style={{
-                        ...fieldStyle,
-                        textAlign: 'center',
-                        cursor: 'pointer',
-                        // native <input type="date"> over a picker lib (ponytail). Its calendar chrome
-                        // follows the live theme so it stays legible in both. No range limit — owner law:
-                        // take whatever they give; ageFromBirthdate parses the YYYY-MM-DD it yields.
-                        colorScheme:
-                          typeof document !== 'undefined' &&
-                          document.documentElement.dataset.theme === 'dark'
-                            ? 'dark'
-                            : 'light',
-                      }}
-                    />
-                    {/* the continue affordance bubbles in only once there is something to send */}
-                    <AnimatePresence>
-                      {birthdate.trim().length > 0 && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.6, x: -6 }}
-                          animate={{ opacity: 1, scale: 1, x: 0 }}
-                          exit={{ opacity: 0, scale: 0.6 }}
-                          transition={{ type: 'spring', stiffness: 480, damping: 24 }}
-                        >
-                          <MagneticButton
-                            size="lg"
-                            variant="primary"
-                            onClick={submitBirthdate}
-                            ariaLabel="continue"
-                            style={{ minWidth: 52, justifyContent: 'center', padding: '0 18px' }}
-                          >
-                            →
-                          </MagneticButton>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                )}
-
-                {promptReady && phase === 'board' && (
-                  <motion.div
-                    key="i-board"
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={spring}
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: 18,
-                      width: '100%',
-                      maxWidth: 440,
-                    }}
-                  >
-                    <BoardPicker board={board} onBoard={setBoard} onOwnSyllabus={toOwn} />
-                    <AnimatePresence>
-                      {board && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10, scale: 0.94 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.9 }}
-                          transition={{ type: 'spring', stiffness: 420, damping: 26 }}
-                        >
-                          <MagneticButton
-                            size="lg"
-                            variant="primary"
-                            onClick={submitBoard}
-                            style={{ minWidth: 120, justifyContent: 'center' }}
-                          >
-                            Next
-                          </MagneticButton>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                )}
-
-                {promptReady && phase === 'own' && (
-                  <motion.div
-                    key="i-own"
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={spring}
-                    style={{ width: '100%', maxWidth: 520, textAlign: 'left' }}
-                  >
-                    <OwnSyllabus
-                      suggestedName={board?.name ?? ''}
-                      onCancel={() => setPhase('board')}
-                      onReady={(view) => {
-                        const world = adoptOwnSyllabus(view);
-                        setBoard({
-                          id: world.frameworkId,
-                          name: world.frameworkName,
-                          framework: null,
-                          unlisted: false,
-                        });
-                        setGrade(world.level);
-                        goBuilding();
-                      }}
-                    />
-                  </motion.div>
-                )}
-
-                {promptReady && phase === 'grade' && (
-                  <motion.div
-                    key="i-grade"
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={spring}
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: 18,
-                      width: '100%',
-                      maxWidth: 440,
-                    }}
-                  >
-                    <GradePicker board={board} grade={grade} onGrade={setGrade} />
-                    {sourcing && (
-                      <DiscoveryCard
-                        placeholder={null}
-                        message={`I am looking for ${sourcing} now. Pick your class and I will bring what I find.`}
-                        onOwnSyllabus={toOwn}
-                      />
-                    )}
-                    <AnimatePresence>
-                      {grade && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10, scale: 0.94 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.9 }}
-                          transition={{ type: 'spring', stiffness: 420, damping: 26 }}
-                        >
-                          <MagneticButton
-                            size="lg"
-                            variant="primary"
-                            onClick={submitGrade}
-                            style={{ minWidth: 140, justifyContent: 'center' }}
-                          >
-                            That's me
-                          </MagneticButton>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                )}
-
-                {promptReady && phase === 'likes' && (
-                  <motion.div
-                    key="i-likes"
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={spring}
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: 16,
-                      maxWidth: 460,
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: 'flex',
-                        gap: 8,
-                        flexWrap: 'wrap',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {LIKES.map((l) => (
-                        <Chip
-                          key={l}
-                          label={l}
-                          selected={interests.includes(l)}
-                          onClick={() => toggleLike(l)}
-                        />
-                      ))}
-                    </div>
-                    <MagneticButton
-                      size="lg"
-                      variant="primary"
-                      onClick={submitLikes}
-                      style={{ minWidth: 150, justifyContent: 'center' }}
-                    >
-                      {interests.length ? 'That’s me' : 'A bit of everything'}
-                    </MagneticButton>
-                  </motion.div>
-                )}
-
-                {promptReady && phase === 'auth' && (
-                  <motion.div
-                    key="i-auth"
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={spring}
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: 14,
-                      width: '100%',
-                      maxWidth: 380,
-                    }}
-                  >
-                    {/* Google leads — one tap keeps it safe across devices */}
-                    <MagneticButton
-                      size="lg"
-                      variant="primary"
-                      disabled={authBusy}
-                      onClick={() => void withGoogle()}
-                      style={{ width: '100%', justifyContent: 'center' }}
-                    >
-                      Continue with Google
-                    </MagneticButton>
-
-                    {!showPhone ? (
-                      <button type="button" onClick={() => setShowPhone(true)} style={ghostButton}>
-                        Or use your phone
-                      </button>
-                    ) : authStage === 'phone' ? (
-                      <div
-                        style={{ display: 'flex', gap: 10, alignItems: 'center', width: '100%' }}
-                      >
-                        <input
-                          type="tel"
-                          inputMode="tel"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          onFocus={() => setMood('listening')}
-                          onBlur={() => setMood('idle')}
-                          onKeyDown={(e) => e.key === 'Enter' && !authBusy && void sendCode()}
-                          placeholder="Your phone number"
-                          aria-label="your phone number"
-                          style={fieldStyle}
-                        />
-                        <MagneticButton
-                          size="lg"
-                          variant="primary"
-                          disabled={authBusy}
-                          onClick={() => void sendCode()}
-                          style={{ minWidth: 92, justifyContent: 'center' }}
-                        >
-                          {authBusy ? 'sending…' : 'send'}
-                        </MagneticButton>
-                      </div>
-                    ) : (
-                      <div
-                        style={{ display: 'flex', gap: 10, alignItems: 'center', width: '100%' }}
-                      >
-                        <input
-                          // biome-ignore lint/a11y/noAutofocus: the code is this stage's single intention
-                          autoFocus
-                          inputMode="numeric"
-                          autoComplete="one-time-code"
-                          maxLength={6}
-                          value={code}
-                          onChange={(e) => {
-                            const digits = e.target.value.replace(/\D/g, '');
-                            setCode(digits);
-                            if (digits.length === 6 && !authBusy) void verifyCode(digits);
-                          }}
-                          onFocus={() => setMood('listening')}
-                          placeholder="6-digit code"
-                          aria-label="the six-digit code we texted you"
-                          style={{ ...fieldStyle, letterSpacing: '0.3em', textAlign: 'center' }}
-                        />
-                        <MagneticButton
-                          size="lg"
-                          variant="primary"
-                          disabled={authBusy || code.length < 6}
-                          onClick={() => void verifyCode(code)}
-                          style={{ minWidth: 92, justifyContent: 'center' }}
-                        >
-                          {authBusy ? '…' : 'go'}
-                        </MagneticButton>
-                      </div>
-                    )}
-                    {authErr && (
-                      <div style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)' }}>
-                        {authErr}
-                      </div>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </AnimatePresence>
+          <span className="ob-skip" />
         )}
       </div>
 
-      {/* a dev door out — ONLY when no account layer is configured (pure local dev / tests). With
-          Supabase keys present, sign-in is mandatory and there is no skip. */}
-      {!canAuth && (
-        <button
-          type="button"
-          onClick={skip}
-          style={{ ...ghostButton, position: 'fixed', bottom: fluidSpace.sm }}
-        >
-          Skip for now
-        </button>
-      )}
+      <div className="ob-body">
+        {step === 1 && (
+          <div className="ob-card">
+            <WoboHead size={120} shadow className="ob-wobo" mood="listening" />
+            <div className="ob-bub">Hi. I'm Wobo. Let's make this yours.</div>
+            <h1>Sign in so everything stays with you, on any device.</h1>
+            <p className="ob-sub">That's the only reason I'm asking. No newsletter, no card.</p>
+            {stage === 'sent' ? (
+              <div className="ob-form">
+                <p className="ob-sub">
+                  <b>{SENT.title}</b>
+                  <br />
+                  {SENT.body}
+                </p>
+                <button
+                  type="button"
+                  className="ob-btn ob-link"
+                  onClick={() => setStage('address')}
+                >
+                  {SENT.again}
+                </button>
+              </div>
+            ) : stage === 'code' ? (
+              <form
+                className="ob-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void verifyCode(code);
+                }}
+              >
+                <div className="ob-field">
+                  <label htmlFor="ob-code">The code Wobo sent</label>
+                  <input
+                    id="ob-code"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={6}
+                    value={code}
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, '');
+                      setCode(digits);
+                      if (digits.length === 6) void verifyCode(digits);
+                    }}
+                    placeholder="6-digit code"
+                    // biome-ignore lint/a11y/noAutofocus: the code is this stage's single intention
+                    autoFocus
+                  />
+                </div>
+                {note ? <p className="ob-fine">{note}</p> : null}
+                <button type="submit" className="ob-btn ob-pig" disabled={busy || code.length < 6}>
+                  Check the code
+                </button>
+              </form>
+            ) : (
+              <form className="ob-form" onSubmit={(e) => void sendCode(e)}>
+                <div className="ob-field">
+                  <label htmlFor="ob-address">Email or phone</label>
+                  <input
+                    id="ob-address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="you@example.com or +91 …"
+                    autoComplete="username"
+                    inputMode="email"
+                  />
+                </div>
+                {note ? <p className="ob-fine">{note}</p> : null}
+                <button type="submit" className="ob-btn ob-pig" disabled={busy}>
+                  Send me a code
+                </button>
+                <div className="ob-or">or</div>
+                <button
+                  type="button"
+                  className="ob-btn ob-quiet"
+                  onClick={() => void withProvider()}
+                >
+                  Continue with a sign-in provider
+                </button>
+                <p className="ob-fine">
+                  Under 13, or under 18 in India?{' '}
+                  <a
+                    href="/sign-up"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.navigate({ name: 'sign-up' });
+                    }}
+                  >
+                    A parent signs in first.
+                  </a>{' '}
+                  I'll explain why in one line when you get there.
+                </p>
+              </form>
+            )}
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="ob-card">
+            <WoboHead size={120} shadow className="ob-wobo" mood="listening" />
+            <div className="ob-bub">
+              Tell me once. I'll find your exact chapter every week after.
+            </div>
+            <h1>Who's learning, and where?</h1>
+            <form className="ob-form" onSubmit={thatsMe}>
+              <div className="ob-field">
+                <label htmlFor="ob-name">First name</label>
+                <input
+                  id="ob-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="What should I call you?"
+                  autoComplete="given-name"
+                />
+              </div>
+              <fieldset className="ob-field">
+                <legend>Class</legend>
+                {levels.length > 0 ? (
+                  <div className="ob-chips">
+                    {levels.map((level) => (
+                      <button
+                        key={level}
+                        type="button"
+                        aria-pressed={grade === level}
+                        onClick={() => setGrade(level)}
+                      >
+                        <span className={grade === level ? 'ob-on' : undefined}>
+                          {gradeOf(level) ?? level}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <>
+                    {/* the board's own classes replace this ladder the moment a board is chosen;
+                        until then it is the prototype's row, drawn but not pressable */}
+                    <div className="ob-chips" aria-hidden="true">
+                      {LADDER.map((level) => (
+                        <button key={level} type="button" disabled tabIndex={-1}>
+                          <span>{level}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <p className="ob-fine">
+                      {board?.unlisted
+                        ? `I do not have ${board.name}'s classes yet. Pick your board first and I will bring them.`
+                        : 'Pick your board and I will bring its classes.'}
+                    </p>
+                  </>
+                )}
+              </fieldset>
+              <div className="ob-field ob-ta">
+                <label htmlFor="ob-board">Board</label>
+                <input
+                  id="ob-board"
+                  value={typed}
+                  onChange={(e) => {
+                    setTyped(e.target.value);
+                    setBoard(null);
+                    search.setQuery(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      search.flush();
+                    }
+                  }}
+                  autoComplete="off"
+                  spellCheck={false}
+                  placeholder="CBSE, ICSE, your state board…"
+                  aria-label="Board"
+                  aria-autocomplete="list"
+                />
+                {!board && typed.trim() && (
+                  <div className="ob-list">
+                    {results.slice(0, 5).map((f) => (
+                      <button
+                        key={f.id}
+                        type="button"
+                        className="ob-opt"
+                        onClick={() => pickBoard(boardOf(f))}
+                      >
+                        <Marked name={f.name} query={typed} />
+                        <span>{levelRange(f.levels)}</span>
+                      </button>
+                    ))}
+                    {search.state.error ? <div className="ob-own">{search.state.error}</div> : null}
+                    <button type="button" className="ob-own" onClick={() => setOwn(true)}>
+                      Not listed? <b>Paste your school's syllabus</b> and I'll build the plan from
+                      that.
+                    </button>
+                  </div>
+                )}
+              </div>
+              {own && (
+                <div style={{ textAlign: 'left' }}>
+                  <OwnSyllabus
+                    suggestedName={typed}
+                    onCancel={() => setOwn(false)}
+                    onReady={(view) => {
+                      const world = adoptOwnSyllabus(view);
+                      setOwn(false);
+                      pickBoard({
+                        id: world.frameworkId,
+                        name: world.frameworkName,
+                        framework: null,
+                        unlisted: false,
+                      });
+                      if (world.level) setGrade(world.level);
+                    }}
+                  />
+                </div>
+              )}
+              <button type="submit" className="ob-btn ob-pig" disabled={!ready2}>
+                That's me
+              </button>
+            </form>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="ob-card">
+            <h1>
+              Ask me anything from {grade ? classLine(grade) : 'your class'}
+              {boardLabel ? `, ${boardLabel}` : ''}. I'll draw it.
+            </h1>
+            <p className="ob-sub">
+              Try one of these, or type your own. This is the whole thing, in thirty seconds.
+            </p>
+            <div className="ob-aha">
+              <div className="ob-bar">
+                <b>Wobo{firstName ? ` · with ${firstName}` : ''}</b>
+                {chat.busy || drawing ? (
+                  <span className="ob-live">
+                    <i /> drawing
+                  </span>
+                ) : null}
+              </div>
+              <div className="ob-canvas" aria-live="polite">
+                {reply ? (
+                  <div className="ob-hw">{reply}</div>
+                ) : question ? (
+                  <div className="ob-hw ob-pig">{question}</div>
+                ) : null}
+                <WoboHead
+                  size={72}
+                  mood={chat.busy || drawing ? 'thinking' : 'listening'}
+                  style={{ position: 'absolute', right: 14, bottom: 10 }}
+                />
+              </div>
+              <form
+                className="ob-ask"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  ask(question);
+                }}
+              >
+                <input
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  placeholder="why does a² + b² = c²?"
+                  aria-label="Ask Wobo"
+                  autoComplete="off"
+                  enterKeyHint="send"
+                />
+                <button type="submit" className="ob-btn ob-pig" disabled={chat.busy}>
+                  Ask
+                </button>
+              </form>
+              <div className="ob-chipsq">
+                {SAMPLES.map((q) => (
+                  <button key={q} type="button" className="ob-chipq" onClick={() => ask(q)}>
+                    <span>{q}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <button
+              type="button"
+              className="ob-btn"
+              onClick={() => {
+                sfx.tap();
+                setStep(4);
+              }}
+            >
+              That was it. Keep going
+            </button>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="ob-card">
+            <WoboHead size={120} shadow className="ob-wobo" mood="listening" />
+            <div className="ob-bub">
+              On Sundays I write three lines home. Want someone to get them?
+            </div>
+            <h1>Link a parent, if you'd like.</h1>
+            <p className="ob-sub">
+              They'll see your lessons, your progress and the Sunday note. Your questions word for
+              word stay yours unless you choose to share them.
+            </p>
+            <div className="ob-parent">
+              <div className="ob-note">
+                {firstName || 'They'} asked for help twice after a miss this week,{' '}
+                <em>which is exactly how learning looks.</em>
+                <small>a sample of the Sunday note</small>
+              </div>
+              <ParentInvite
+                learnerName={firstName}
+                onDone={() => {
+                  award('invite_parent', { onceKey: 'invite_parent' });
+                  sfx.tap();
+                  setStep(5);
+                }}
+                onLater={() => {
+                  sfx.tap();
+                  setStep(5);
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {step === 5 && (
+          <div className="ob-card">
+            <WoboHead size={120} shadow className="ob-wobo" mood="celebrate" />
+            <h1>
+              That's it{firstName ? `, ${firstName}` : ''}.{' '}
+              {[
+                grade && classLine(grade),
+                boardLabel,
+                firstTopic && `${firstTopic.toLowerCase()} this week`,
+              ]
+                .filter(Boolean)
+                .join(', ')}
+              .
+            </h1>
+            <p className="ob-sub">
+              {allowance ? `${allowance.limit} questions a day` : 'Forty questions a day'}, every
+              day, for free. Hold space to talk to me, or just type. I'll be here at 10 pm and at 6
+              am.
+            </p>
+            <div className="ob-allow">
+              <b>Today's allowance</b>
+              <div className="ob-bar" aria-hidden="true">
+                <i
+                  style={
+                    allowance
+                      ? { width: `${Math.round((allowance.left / allowance.limit) * 100)}%` }
+                      : undefined
+                  }
+                />
+              </div>
+              {allowance ? (
+                <span>
+                  {allowance.left} of {allowance.limit} questions
+                  {allowance.reset ? ` · resets ${allowance.reset}` : ''}
+                </span>
+              ) : null}
+            </div>
+            <button type="button" className="ob-btn ob-pig" onClick={finish}>
+              Begin tonight
+            </button>
+            <p className="ob-fine">
+              You can change the class, the board or the parent link any time in Settings.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

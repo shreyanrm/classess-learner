@@ -92,6 +92,11 @@ describe('the command palette names its parts correctly', () => {
  * ⌘K cannot be pressed on a phone or in the installed PWA. The palette reaches every screen, every
  * subject and every action in the app — leaving it keyboard-only made all of that unreachable on
  * the device most learners actually hold.
+ *
+ * The home built on design/prototypes/app-v1.html has no palette button: on a phone the four doors
+ * are the bottom tab bar (AppShell) and anything else is said to Wobo in the ask box, which the app
+ * resolves to a destination before it ever asks the brain (resolveDestination). The opener stays
+ * exported for the next surface that wants it.
  */
 describe('the command palette has a touch entry point', () => {
   it('exports an opener that does not depend on a keyboard', () => {
@@ -101,11 +106,9 @@ describe('the command palette has a touch entry point', () => {
     expect(palette).toContain('window.removeEventListener(OPEN_PALETTE_EVENT, onOpen)');
   });
 
-  it('wires the existing home affordance to it, as a real button', () => {
-    expect(home).toContain('openCommandPalette');
-    expect(home).toMatch(/onClick=\{openCommandPalette\}/);
-    const button = home.slice(home.indexOf('onClick={openCommandPalette}'));
-    expect(button.slice(0, 900)).toContain('minHeight: 44'); // a thumb-sized target, not a caption
-    expect(button.slice(0, 900)).toContain('aria-label');
+  it('the home reaches everywhere by touch: the four doors and the ask box', () => {
+    expect(home).toContain('<AppFrame active="home">');
+    expect(home).toContain('placeholder="Ask anything from your syllabus, or paste question 7"');
+    expect(read('App.tsx')).toContain('resolveDestination(text)');
   });
 });

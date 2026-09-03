@@ -38,24 +38,19 @@ describe('decideFidelity — grace degrades, help does not', () => {
 });
 
 /**
- * The degradation this module documents has to be APPLIED, not merely decidable. Two consumers
- * carry it: the home arrival (a 1.5s swoop plus a letter-by-letter greeting) and the pointer-tilt
- * spring (a continuous pointermove listener + two springs). Both are grace, not help.
+ * The degradation this module documents has to be APPLIED, not merely decidable. The pointer-tilt
+ * spring (a continuous pointermove listener + two springs) carries it; the home's old arrival (a
+ * 1.5s swoop plus a letter-by-letter greeting) is gone with the home built on the prototype, which
+ * arrives finished — the app's arrival is the states set's loader (DESIGN.md §5), not a screen's.
  */
 describe('low fidelity is actually wired into the surfaces that cost frames', () => {
   const home = readFileSync(join(import.meta.dir, '..', 'src', 'screens', 'Home.tsx'), 'utf8');
   const kit = readFileSync(join(import.meta.dir, '..', 'src', 'ui', 'kit.tsx'), 'utf8');
 
-  it('gates the home arrival on fidelity, not on first-visit alone', () => {
-    expect(home).toContain('currentFidelity()');
-    expect(home).toMatch(/const \[swoop\] = useState\(\(\) => firstVisit && currentFidelity\(\)/);
-    // the animation branches read the gated flag, never the raw first-visit flag
+  it('the home carries no arrival of its own to gate', () => {
+    expect(home).not.toContain('swoop');
     expect(home).not.toMatch(/initial=\{firstVisit \?/);
     expect(home).not.toMatch(/flashDelay=\{firstVisit \?/);
-  });
-
-  it('records the session as opened even when the arrival is skipped', () => {
-    expect(home).toMatch(/if \(landed\) sessionStorage\.setItem\('wobo-home-opened', '1'\)/);
   });
 
   it('turns the continuous pointer-tilt spring off under low fidelity', () => {

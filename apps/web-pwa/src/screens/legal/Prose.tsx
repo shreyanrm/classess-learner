@@ -19,7 +19,7 @@ import { SiteLink } from '../site/nav';
 import { crossReference } from './catalog';
 import { type Block, type Inline, trimPlainWordsLabel } from './markdown';
 
-function Spans({
+export function Spans({
   spans,
   known,
 }: {
@@ -59,7 +59,7 @@ function Spans({
         const decided = resolveSlot(span.text);
         if (decided) return <span key={key}>{decided}</span>;
         return (
-          <span key={key} className="lp-blank" title="Not decided yet">
+          <span key={key} className="st-slot" title="Not decided yet">
             {span.text}
           </span>
         );
@@ -85,7 +85,7 @@ function One({ block, known }: { block: Block; known: readonly string[] }): Reac
       );
     case 'quote':
       return (
-        <blockquote className="lp-plain">
+        <blockquote className="st-plain">
           {block.paragraphs.map((spans, i) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: paragraphs of a static document
             <p key={i}>
@@ -109,8 +109,8 @@ function One({ block, known }: { block: Block; known: readonly string[] }): Reac
     }
     case 'table':
       return (
-        <div className="lp-scroll">
-          <table className="lp-grid">
+        <div className="st-scroll">
+          <table className="st-grid">
             <thead>
               <tr>
                 {block.head.map((spans, i) => (
@@ -160,7 +160,7 @@ export function Markdown({
   );
 }
 
-/** The plain-words box on its own, so a page can lift it above the body. */
+/** The plain-words card on its own, so a page can lift it above the body. */
 export function PlainWords({
   paragraphs,
   known,
@@ -169,8 +169,8 @@ export function PlainWords({
   known: readonly string[];
 }) {
   return (
-    <aside className="lp-plain" aria-label="In plain words">
-      <span className="lp-hand">In plain words</span>
+    <aside className="st-plain" aria-label="In plain words">
+      <span className="hand">In plain words</span>
       {trimPlainWordsLabel(paragraphs).map((spans, i) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: paragraphs of a static document
         <p key={i}>

@@ -1,548 +1,247 @@
 'use client';
 
 /**
- * Practice, reorganized (DESIGN.md §8, Fable's forge). One intention: sharpen what you already
- * hold. The page reads top-down as a workshop — what's fading first (FSRS due), the bosses you can
- * re-challenge, the sandboxes keyed to your own chapters, and then the forge, where you bind your
- * own workbook from what you've touched and keep it on a shelf. Wobo watches at code level
- * throughout; the copy never guilts, memory fades on a real curve.
+ * Practice — board 04 of design/prototypes/app-v1.html (DESIGN.md is law). The app shell; the
+ * crumb with the set and the place in it, a "Start over" chip and the learner's initial; the mint
+ * item card (the question with its fraction in Wobo's hand, the answer kind, Check / Start over,
+ * Wobo's line, Wobo's head in the corner); and the side column (this set, and how this works).
+ *
+ * The answer kinds are the library's (packages/wobo/src/answers): it draws, it moves, it never
+ * decides. `check` decides, instantly and offline, and its result rings the learner's own marks
+ * where the gap is. Wobo never says wrong.
  */
 
-import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
-import { AnimatePresence, motion } from 'framer-motion';
-import { type ReactNode, useEffect, useState } from 'react';
-import { chaptersBySubject, subjects, topicById } from '../curriculum/registry';
-import { useRouter } from '../shell/router';
-import { useProgress } from '../store/progress';
-import { hueForTopic } from '../ui/hues';
-import { ChevronIcon } from '../ui/icons';
-import { AmbientWash, cascade, rise } from '../ui/kit';
-import { rgba } from './course/shared';
-import { Whisper } from './Learn';
-import { ForgeBuilder } from './practice/ForgeBuilder';
-import { ForgeRun } from './practice/ForgeRun';
-import { bestScore, type ForgedWorkbook, removeForge, useForged } from './practice/forge-store';
-import { MIX_LABEL, SIZE_LABEL } from './practice/pools';
+import type { AnswerCheck, AnswerState } from '@wobo/contracts';
+import {
+  AnswerControl,
+  check,
+  resetState,
+  stateReadout,
+  useRegisterTarget,
+  useWoboBus,
+} from '@wobo/wobo';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AppFrame } from '../shell/AppFrame';
+import { Avatar, Button, Card, Chip, Tag, TopBar, WoboHead } from '../ui/primitives';
+import { sfx } from '../ui/sound';
+import { CUT_BAR, FRACTIONS_SET, promptParts, quarterMoment, SET_TITLE } from './practice/set';
+import './practice/practice.css';
+import { loadProfile } from './you/profile';
 
-const PRACTICE_WASH =
-  'radial-gradient(64% 40% at 50% -6%, var(--wobo-ultramarine-soft) 0%, transparent 68%),' +
-  ' radial-gradient(48% 26% at 50% 30%, rgba(255,201,60,0.045) 0%, transparent 72%)';
+const N = FRACTIONS_SET.length;
 
-function SectionHead({ title, line }: { title: string; line?: string }) {
-  return (
-    <div style={{ marginBottom: 18 }}>
-      <div
-        style={{
-          fontSize: '1.15rem',
-          fontWeight: 600,
-          letterSpacing: '-0.02em',
-          color: 'var(--wobo-ink-900)',
-        }}
-      >
-        {title}
-      </div>
-      {line && (
-        <div style={{ marginTop: 3, fontSize: '0.88rem', color: 'var(--wobo-ink-500)' }}>
-          {line}
-        </div>
-      )}
-    </div>
-  );
+/** Wobo's line under the answer: when the learner is one part short, and when it holds. */
+const CLOSE = "one more, and you're there";
+const HOLDS = 'that holds.';
+
+function sayFor(result: AnswerCheck | null): { text: string; win: boolean } | null {
+  if (!result) return null;
+  if (result.correct) return { text: HOLDS, win: true };
+  const short = result.feedback.some((f) => f.code === 'too_few' && f.count === 1);
+  return short ? { text: CLOSE, win: false } : null;
 }
-
-/** A horizontal rail — bosses and sandboxes scroll sideways, one intention each. */
-function Rail({ children }: { children: ReactNode }) {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        gap: 12,
-        overflowX: 'auto',
-        paddingBottom: 6,
-        scrollbarWidth: 'thin',
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function RailCard({
-  eyebrow,
-  title,
-  hue,
-  onClick,
-}: {
-  eyebrow: string;
-  title: string;
-  hue: string;
-  onClick: () => void;
-}) {
-  return (
-    <motion.button
-      type="button"
-      onClick={onClick}
-      whileHover={{ y: -3 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ type: 'spring', stiffness: 360, damping: 26 }}
-      style={{
-        flex: '0 0 auto',
-        width: 190,
-        textAlign: 'left',
-        padding: '16px 16px 18px',
-        borderRadius: 3,
-        cursor: 'pointer',
-        fontFamily: 'inherit',
-        background: 'var(--wobo-card)',
-        border: '0.5px solid var(--wobo-card-border)',
-        borderTop: `3px solid ${hue}`,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8,
-        minHeight: 108,
-        justifyContent: 'space-between',
-      }}
-    >
-      <div
-        style={{
-          fontSize: '0.72rem',
-          textTransform: 'uppercase',
-          letterSpacing: '0.08em',
-          color: hue,
-          fontWeight: 600,
-        }}
-      >
-        {eyebrow}
-      </div>
-      <div
-        style={{
-          fontSize: '0.98rem',
-          fontWeight: 560,
-          color: 'var(--wobo-ink-900)',
-          lineHeight: 1.3,
-        }}
-      >
-        {title}
-      </div>
-    </motion.button>
-  );
-}
-
-// --- The forged-workbook shelf --------------------------------------------------------------------
-
-function ShelfCard({ w, onRun }: { w: ForgedWorkbook; onRun: () => void }) {
-  const hue = hueForTopic(w.picks[0] ?? '');
-  const best = bestScore(w);
-  const building = w.status === 'building';
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 26 }}
-      style={{
-        border: '0.5px solid var(--wobo-card-border)',
-        borderLeft: `3px solid ${hue}`,
-        borderRadius: 3,
-        background: 'var(--wobo-card)',
-        padding: '16px 18px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 12,
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          gap: 12,
-          alignItems: 'flex-start',
-        }}
-      >
-        <div style={{ minWidth: 0 }}>
-          <div style={{ fontSize: '1.02rem', fontWeight: 600, color: 'var(--wobo-ink-900)' }}>
-            {w.title.toLowerCase()}
-          </div>
-          <div style={{ marginTop: 3, fontSize: '0.82rem', color: 'var(--wobo-ink-500)' }}>
-            {w.total || w.size} items · {SIZE_LABEL[w.size]} · {MIX_LABEL[w.mix]}
-          </div>
-        </div>
-        {best && (
-          <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div
-              style={{
-                fontSize: '1.1rem',
-                fontWeight: 650,
-                color: best.correct / best.total >= 0.8 ? 'var(--wobo-feedback-correct)' : hue,
-                fontVariantNumeric: 'tabular-nums',
-              }}
-            >
-              {best.correct}/{best.total}
-            </div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--wobo-ink-300)' }}>best</div>
-          </div>
-        )}
-      </div>
-
-      {w.attempts.length > 1 && (
-        <div style={{ display: 'flex', gap: 4, alignItems: 'flex-end', height: 22 }}>
-          {w.attempts.slice(-8).map((a, i) => (
-            <div
-              // biome-ignore lint/suspicious/noArrayIndexKey: attempt bars are positional history
-              key={i}
-              title={`${a.correct}/${a.total}`}
-              style={{
-                width: 6,
-                height: `${Math.max(0.12, a.correct / a.total) * 22}px`,
-                background: rgba(hue, 0.5),
-                borderRadius: 1,
-              }}
-            />
-          ))}
-        </div>
-      )}
-
-      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-        <motion.button
-          type="button"
-          disabled={building}
-          onClick={onRun}
-          whileTap={building ? undefined : { scale: 0.98 }}
-          style={{
-            flex: 1,
-            padding: '10px 14px',
-            borderRadius: 3,
-            border: 'none',
-            cursor: building ? 'default' : 'pointer',
-            fontFamily: 'inherit',
-            fontSize: '0.9rem',
-            fontWeight: 600,
-            color: building ? 'var(--wobo-ink-500)' : 'var(--wobo-on-ink)',
-            background: building ? 'var(--wobo-tonal)' : 'var(--wobo-ultramarine)',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-          }}
-        >
-          {building ? (
-            <>
-              <motion.span
-                aria-hidden
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1.1, repeat: Number.POSITIVE_INFINITY, ease: 'linear' }}
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: 999,
-                  border: '2px solid var(--wobo-ink-300)',
-                  borderTopColor: 'transparent',
-                }}
-              />
-              binding…
-            </>
-          ) : (
-            <>
-              {w.attempts.length > 0 ? 'forge it again' : 'attempt'}
-              <ChevronIcon size={13} />
-            </>
-          )}
-        </motion.button>
-        {!building && (
-          <button
-            type="button"
-            onClick={() => removeForge(w.id)}
-            aria-label="remove this workbook"
-            style={{
-              padding: '9px 12px',
-              borderRadius: 3,
-              border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
-              background: 'transparent',
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-              fontSize: '0.82rem',
-              color: 'var(--wobo-ink-500)',
-            }}
-          >
-            remove
-          </button>
-        )}
-      </div>
-    </motion.div>
-  );
-}
-
-// --- The screen -----------------------------------------------------------------------------------
 
 export function Practice() {
-  const router = useRouter();
   const { publishPage } = useWoboBus();
-  const { completed } = useProgress();
-  const forged = useForged();
-  const [view, setView] = useState<'home' | 'builder'>('home');
-  const [runId, setRunId] = useState<string | null>(null);
-
-  // due: only what's genuinely been learned can fade (honest FSRS framing)
-  const completedList = [...completed];
-  const due = completedList.length > 0 ? Math.min(completedList.length, 3) : 0;
-  const reviewTopicId = completedList[0];
-
-  // the learner's own chapters — a sandbox door per chapter they've stepped into their subjects
-  const sandboxChapters = subjects.flatMap((s) =>
-    (chaptersBySubject[s.id] ?? []).slice(0, 3).map((c) => ({
-      subject: s.name,
-      chapter: c.name,
-      topicId: c.topics[0]?.id ?? '',
-    })),
+  const [pos, setPos] = useState(0);
+  const [states, setStates] = useState<AnswerState[]>(() => FRACTIONS_SET.map(resetState));
+  const [results, setResults] = useState<(AnswerCheck | null)[]>(() =>
+    FRACTIONS_SET.map(() => null),
   );
+  const spec = FRACTIONS_SET[pos] ?? FRACTIONS_SET[0];
+  const state = states[pos] ?? resetState(spec);
+  const result = results[pos] ?? null;
+  const done = results.map((r) => r?.correct === true);
+  const doneCount = done.filter(Boolean).length;
+  const learner = useMemo(() => loadProfile().name.trim(), []);
+  const say = sayFor(result);
+  // The board's ringed quarter: the learner's own cell ringed, the line beside it in Wobo's hand.
+  const moment = quarterMoment(spec, state, result);
+  const shown = moment?.result ?? result;
+  // The last item draws over a bar — the thing the line has to cut — in the board's own ink.
+  const backdrop =
+    spec.kind === 'draw' ? (
+      <rect
+        className="wobo-answer-stroke"
+        x={CUT_BAR[0]}
+        y={CUT_BAR[1]}
+        width={CUT_BAR[2]}
+        height={CUT_BAR[3]}
+        rx={24}
+      />
+    ) : undefined;
+
+  const put = useCallback((index: number, next: AnswerState, r: AnswerCheck | null) => {
+    setStates((all) => all.map((s, i) => (i === index ? next : s)));
+    setResults((all) => all.map((x, i) => (i === index ? r : x)));
+  }, []);
+
+  /** A new move is a new answer: the ring was about the last one. */
+  const onChange = (next: AnswerState) => put(pos, next, null);
+  const resetItem = () => put(pos, resetState(spec), null);
+  const startOver = () => {
+    setStates(FRACTIONS_SET.map(resetState));
+    setResults(FRACTIONS_SET.map(() => null));
+    setPos(0);
+  };
+  /** On to the next item still open; with none left, the set is done and the row keeps Start over. */
+  const advance = () => {
+    for (let step = 1; step <= N; step++) {
+      const i = (pos + step) % N;
+      if (!done[i]) {
+        setPos(i);
+        return;
+      }
+    }
+  };
+  const doCheck = () => {
+    if (result?.correct) {
+      advance();
+      return;
+    }
+    const r = check(spec, state);
+    put(pos, state, r);
+    if (r.correct) sfx.bloom();
+    else sfx.wrong();
+  };
 
   useEffect(() => {
     publishPage({
       route: 'practice',
-      state: { title: 'practice', intent: 'practice', due, forged: forged.length },
+      state: {
+        title: 'practice',
+        intent: 'practice',
+        set: SET_TITLE,
+        item: pos + 1,
+        of: N,
+        done: doneCount,
+      },
     });
-  }, [publishPage, due, forged.length]);
+  }, [publishPage, pos, doneCount]);
 
-  // The screen as Wobo sees it: how much is due, what the learner has forged, and the one door Wobo
-  // can open for them. Registered so "what should I practise" is answered from the real queue.
-  const stageRef = useRegisterTarget<HTMLDivElement>('practice-stage', {
-    kind: 'practice',
-    label: 'practice — what has faded, and the workbooks you forged',
+  // The item as Wobo sees it — the question, the learner's marks so far, and what check said —
+  // registered so Wobo rings, answers "why is this wrong" and drives the buttons at code level.
+  const itemRef = useRegisterTarget<HTMLDivElement>('practice-item', {
+    kind: 'answer',
+    label: `practice — ${spec.prompt ?? spec.kind}`,
+    meaning: 'the practice item the learner is answering right now',
     getSceneState: () => ({
-      view,
-      due,
-      forged: forged.length,
-      chapters: sandboxChapters.length,
+      set: SET_TITLE,
+      item: pos + 1,
+      of: N,
+      kind: spec.kind,
+      answer: stateReadout(spec, state),
+      checked: result ? (result.correct ? 'correct' : 'not yet') : 'unchecked',
+      feedback: result?.feedback ?? [],
     }),
-    getValidActions: () => [
-      view === 'builder' ? 'go back to practice' : 'open the forge',
-      due > 0 ? 'start the review' : 'nothing is due yet',
-    ],
+    getValidActions: () => [result?.correct ? 'continue' : 'check', 'start over'],
     applyTutorAction: (patch) => {
-      if (patch.view === 'builder' || patch.view === 'home') setView(patch.view);
+      if (patch.check === true) doCheck();
+      if (patch.reset === true) resetItem();
+      if (patch.next === true) advance();
     },
   });
 
-  if (runId) {
-    return <ForgeRun id={runId} onExit={() => setRunId(null)} />;
-  }
+  const allDone = done.every(Boolean);
+  const mood = result ? (result.correct ? 'celebrate' : 'hint') : 'idle';
 
   return (
-    <motion.div
-      ref={stageRef}
-      variants={cascade}
-      initial="hidden"
-      animate="show"
-      style={{
-        minHeight: '100dvh',
-        padding: '108px 6vw 96px',
-        position: 'relative',
-        isolation: 'isolate',
-      }}
-    >
-      <AmbientWash gradient={PRACTICE_WASH} />
-      <Whisper
-        onClick={() => (view === 'builder' ? setView('home') : router.navigate({ name: 'home' }))}
-      >
-        {view === 'builder' ? 'Practice' : 'Home'}
-      </Whisper>
-
-      <motion.div variants={rise}>
-        <h1
-          style={{
-            margin: 0,
-            fontSize: '1.9rem',
-            fontWeight: 650,
-            letterSpacing: '-0.035em',
-            color: 'var(--wobo-ink-900)',
-          }}
-        >
-          {view === 'builder' ? 'The forge' : 'Practice'}
-        </h1>
-        <div style={{ marginTop: 6, fontSize: '0.95rem', color: 'var(--wobo-ink-500)' }}>
-          {view === 'builder'
-            ? "bind your own workbook from what you've already touched"
-            : 'sharpen what you hold — memory fades on a real curve'}
-        </div>
-      </motion.div>
-
-      <AnimatePresence mode="wait">
-        {view === 'builder' ? (
-          <motion.div
-            key="builder"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.28, ease: [0.2, 0, 0, 1] }}
-            style={{ marginTop: 40 }}
-          >
-            <ForgeBuilder onForged={() => setView('home')} />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="home"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            style={{ marginTop: 44, display: 'flex', flexDirection: 'column', gap: 52 }}
-          >
-            {/* 1 — due for review, up top */}
-            <motion.section variants={rise}>
-              <SectionHead
-                title="Due for review"
-                line={
-                  due === 0
-                    ? 'nothing is fading yet — learn something first'
-                    : due === 1
-                      ? 'one concept is starting to fade'
-                      : `${due} concepts are starting to fade`
-                }
-              />
-              <motion.button
-                type="button"
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.99 }}
-                transition={{ type: 'spring', stiffness: 360, damping: 26 }}
-                onClick={() =>
-                  due > 0
-                    ? router.navigate({ name: 'sandbox', topicId: reviewTopicId })
-                    : router.navigate({ name: 'learn' })
-                }
-                style={{
-                  width: '100%',
-                  textAlign: 'left',
-                  padding: '18px 20px',
-                  borderRadius: 3,
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                  background: 'var(--wobo-card)',
-                  border: '0.5px solid var(--wobo-card-border)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 14,
-                }}
-              >
-                <span style={{ fontSize: '1rem', color: 'var(--wobo-ink-900)', fontWeight: 520 }}>
-                  {due > 0 ? 'refresh them before they slip' : 'go learn something to review later'}
-                </span>
-                <span style={{ color: 'var(--wobo-ink-300)', display: 'inline-flex' }}>
-                  <ChevronIcon size={15} />
-                </span>
-              </motion.button>
-            </motion.section>
-
-            {/* 2 — boss workbooks you can re-challenge */}
-            {completedList.length > 0 && (
-              <motion.section variants={rise}>
-                <SectionHead
-                  title="Boss workbooks"
-                  line="the bosses you've beaten — re-run any to prove it still holds"
-                />
-                <Rail>
-                  {completedList.map((id) => {
-                    const topic = topicById(id);
-                    return (
-                      <RailCard
-                        key={id}
-                        eyebrow="re-challenge"
-                        title={topic?.name ?? 'a topic you mastered'}
-                        hue={hueForTopic(id)}
-                        onClick={() => router.navigate({ name: 'course', topicId: id })}
-                      />
-                    );
-                  })}
-                </Rail>
-              </motion.section>
+    <AppFrame active="practice">
+      <h1 className="pr-sr">Practice</h1>
+      <TopBar
+        crumb={`Practice · ${SET_TITLE} · ${pos + 1} of ${N}`}
+        right={
+          <>
+            <Chip onClick={startOver}>Start over</Chip>
+            {learner && <Avatar aria-label={learner}>{learner[0]?.toUpperCase()}</Avatar>}
+          </>
+        }
+      />
+      <div className="pr-prac">
+        <div ref={itemRef} className="pr-item">
+          <div className="pr-q">
+            {promptParts(spec.prompt ?? '').map((part, i) =>
+              part.fraction ? (
+                // biome-ignore lint/suspicious/noArrayIndexKey: the parts of one line, in order
+                <i key={i}>{part.text}</i>
+              ) : (
+                // biome-ignore lint/suspicious/noArrayIndexKey: the parts of one line, in order
+                <span key={i}>{part.text}</span>
+              ),
             )}
-
-            {/* 3 — sandboxes keyed to your chapters */}
-            <motion.section variants={rise}>
-              <SectionHead
-                title="Sandboxes"
-                line="an open canvas on your own chapters — no task, Wobo watching"
-              />
-              <Rail>
-                {sandboxChapters.map((s) => (
-                  <RailCard
-                    key={`${s.subject}-${s.chapter}`}
-                    eyebrow={s.subject.toLowerCase()}
-                    title={s.chapter}
-                    hue={hueForTopic(s.topicId)}
-                    onClick={() => router.navigate({ name: 'sandbox', topicId: s.topicId })}
-                  />
-                ))}
-              </Rail>
-            </motion.section>
-
-            {/* 4 — forge your own */}
-            <motion.section variants={rise}>
-              <SectionHead
-                title="Forge your own"
-                line="bind a custom workbook from the chapters you've touched"
-              />
-              <motion.button
-                type="button"
-                whileHover={{ y: -3 }}
-                whileTap={{ scale: 0.99 }}
-                transition={{ type: 'spring', stiffness: 360, damping: 26 }}
-                onClick={() => setView('builder')}
-                style={{
-                  width: '100%',
-                  textAlign: 'left',
-                  padding: '22px 24px',
-                  borderRadius: 3,
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                  color: 'var(--wobo-on-ink)',
-                  background: 'linear-gradient(120deg, var(--wobo-ultramarine) 0%, #3A4EF0 100%)',
-                  border: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 16,
-                }}
-              >
-                <span>
-                  <span style={{ fontSize: '1.2rem', fontWeight: 600, letterSpacing: '-0.02em' }}>
-                    Open the forge
-                  </span>
-                  <span
-                    style={{
-                      display: 'block',
-                      marginTop: 4,
-                      fontSize: '0.88rem',
-                      opacity: 0.85,
-                      lineHeight: 1.5,
-                    }}
-                  >
-                    pick your pages, choose the size and balance, and bind them into a book of your
-                    own
-                  </span>
-                </span>
-                <span style={{ opacity: 0.9, display: 'inline-flex', flexShrink: 0 }}>
-                  <ChevronIcon size={16} />
-                </span>
-              </motion.button>
-
-              {/* the shelf — forged workbooks persist here, re-attemptable */}
-              {forged.length > 0 && (
-                <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <div style={{ ...{ fontSize: '0.82rem', color: 'var(--wobo-ink-500)' } }}>
-                    your shelf
-                  </div>
-                  <AnimatePresence initial={false}>
-                    {forged.map((w) => (
-                      <ShelfCard key={w.id} w={w} onRun={() => setRunId(w.id)} />
-                    ))}
-                  </AnimatePresence>
-                </div>
-              )}
-            </motion.section>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+          </div>
+          <div className="pr-answer">
+            <AnswerControl
+              key={`${spec.id}-${pos}`}
+              spec={spec}
+              state={state}
+              onChange={onChange}
+              result={shown}
+              disabled={result?.correct === true}
+              backdrop={backdrop}
+            />
+            {moment && (
+              <div className="pr-note" aria-live="polite">
+                {moment.note}
+              </div>
+            )}
+          </div>
+          <div className="pr-row">
+            {!(result?.correct && allDone) && (
+              <Button onClick={doCheck}>{result?.correct ? 'Continue' : 'Check'}</Button>
+            )}
+            <Button tone="quiet" onClick={resetItem}>
+              Start over
+            </Button>
+          </div>
+          <div className={say?.win ? 'pr-say pr-win' : 'pr-say'} aria-live="polite">
+            {say?.text ?? ''}
+          </div>
+          <WoboHead size={56} mood={mood} />
+        </div>
+        <div className="pr-side">
+          <Card compact>
+            <Tag>This set</Tag>
+            <div className="pr-set">
+              {FRACTIONS_SET.map((item, i) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={i === pos ? 'pr-on' : undefined}
+                  aria-current={i === pos ? 'step' : undefined}
+                  onClick={() => setPos(i)}
+                >
+                  {item.prompt}
+                  {done[i] ? (
+                    <span className="pr-ok" role="img" aria-label="done">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="var(--ink)"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M5 12 l5 5 l9 -10" />
+                      </svg>
+                    </span>
+                  ) : (
+                    <span className="pr-dot" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </Card>
+          <Card tint="marigold" compact>
+            <Tag>How this works</Tag>
+            <p style={{ color: 'var(--ink)' }}>
+              Wobo never says wrong. When you're close, it draws the difference on your answer and
+              waits. Get it, and it makes a small fuss.
+            </p>
+          </Card>
+        </div>
+      </div>
+    </AppFrame>
   );
 }

@@ -1,210 +1,254 @@
 'use client';
 
 /**
- * /about — who Wobo is and what we will not do.
+ * /about — why we built it. A port of design/prototypes/site-about.html, word for word and section
+ * for section: the mission line in Wobo's hand, the homework hour, the three habits, what we
+ * cover, the six promises, the people, the ask block and the close.
  *
- * Every word is `docs/copy/about.md`, compiled at build time. This file chooses the ORDER and the
- * SHAPE and nothing else: no sentence here is written in this file, and a heading that changes in
- * the copy changes on the page with no code edit. What the copy deck calls a field, the page turns
- * into the right kind of block — a pull line becomes a pull line, four points become four points,
- * the honesty line gets the border it is asking for.
- *
- * Three things the copy asks for that are not prose:
- *
- *  · the drawn underline under the headline. `about.md` names it as the page's live element — Wobo
- *    performing the product's core move on the first screen. It is one path drawn by dash offset,
- *    already drawn under reduced motion, and it is the page's only decoration.
- *  · a real board, drawing. The section is called "drawn live, not looked up", and the honest way
- *    to say that is to draw. It plays a SHIPPING golden through the shipping store and the shipping
- *    renderer (`landing/board-play.ts`), read-only — the same bytes the hand's regression suite
- *    reads, so what a visitor watches is the product drawing rather than a recording of it.
- *  · the unfilled slots. `about.md` still says `[Company legal name]` and `[support email]`, and the
- *    page says so too. Inventing an address on the page that asks to be trusted would be the one
- *    unforgivable thing to do here.
+ * Every word on this page is the prototype's. The only things drawn by code are Wobo's head (the
+ * shipped rig, through the kit, never redrawn) and the three tile icons, which are the prototype's
+ * own paths.
  */
 
-import { BoardFrame } from '../landing/BoardFrame';
-import { landingGolden } from '../landing/board-play';
-import { DEMO } from '../landing/copy';
-import { Reveal } from '../landing/Reveal';
-import { aboutField, aboutFields, aboutLine } from './content';
-import { Prose, Runs } from './Doc';
-import type { Block } from './markdown';
+import { Label, WoboHead } from '../../ui/primitives';
+import { AskWobo } from './AskWobo';
+import { ClosePanel } from './ClosePanel';
+import { Reveal } from './Reveal';
 import { SiteShell } from './SiteShell';
 
-// The section headings of the copy deck. Named once, so a rename in `about.md` is one edit here
-// and the page's own test says which name went missing.
-const HERO = 'Hero';
-const MISSION = 'Mission';
-const TEACHES = 'How Wobo teaches';
-const COVER = 'What we cover';
-const PROMISES = 'Our promises';
-const CHARACTER = 'Wobo, the character';
-const TEAM = 'Team';
-const CONTACT = 'Footer block for this page';
-
-/** The board that plays inside "drawn live, not looked up" — a derivation, drawn line by line. */
-const BOARD = 'pythagoras';
-
-/** Where each name in the copy's own footer line actually goes. */
-const LINK_TARGETS: Record<string, string> = {
-  'Help centre': '/help',
-  Privacy: '/legal/privacy',
-  Terms: '/legal/terms',
-  Cookies: '/legal/cookies',
-  'Parental consent': '/legal/parental-consent',
-  'Delete your data': '/you',
-  Plans: '/#plans',
-};
-
-/** A promise's own name: the copy labels them `Promise 1 — Your data is yours`. */
-function promiseTitle(label: string): string {
-  const parts = label.split(/\s+[—-]\s+/);
-  return parts.length > 1 ? (parts[1] ?? label) : label;
-}
-
-function Section({
-  id,
-  tonal,
-  children,
-}: {
-  id: string;
-  tonal?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className={tonal ? 'lp-section lp-section--tonal' : 'lp-section'} id={id}>
-      <div className="lp-wrap">
-        <Reveal>{children}</Reveal>
-      </div>
-    </section>
-  );
-}
-
-/** The four numbered points, which the copy writes as one ordered list of bold-led items. */
-function Points({ blocks }: { blocks: Block[] | null }) {
-  const list = blocks?.find((block) => block.k === 'ol');
-  if (list?.k !== 'ol') return null;
-  return (
-    <ol className="st-points">
-      {list.items.map((item) => (
-        <li
-          key={item
-            .map((run) => run.v)
-            .join('')
-            .slice(0, 40)}
-        >
-          <p>
-            <Runs runs={item} />
-          </p>
-        </li>
-      ))}
-    </ol>
-  );
-}
+const PROMISES: readonly { title: string; line: string }[] = [
+  {
+    title: 'Free every day, forever.',
+    line: 'A daily allowance of questions with no card and no trial that ends. Paid plans raise the allowance; they never change the tutor.',
+  },
+  {
+    title: "Your school's syllabus, not a generic one.",
+    line: "The chapter your class is on this week, in your textbook's order and your exam's words.",
+  },
+  {
+    title: 'No ads, no selling, no data for sale.',
+    line: 'Wobo is paid for by families. Nothing in it is trying to sell your child anything.',
+  },
+  {
+    title: 'Neutral on everything but the chapter.',
+    line: 'Politics, religion, anything contested: Wobo stays out of it and steers back to the lesson, kindly.',
+  },
+  {
+    title: "Parents see how it's going, without spying.",
+    line: 'Lessons, progress and the Sunday note. Questions word for word only if the child allows.',
+  },
+  {
+    title: 'Erase everything, any time.',
+    line: 'One button. Memory, progress, account. Gone, and gone from backups within 30 days.',
+  },
+];
 
 export function About() {
-  const golden = landingGolden(BOARD);
-  const promises = aboutFields(PROMISES, 'Promise');
-  const links = aboutLine(CONTACT, 'Links')
-    .split('·')
-    .map((part) => part.trim())
-    .filter(Boolean);
-
   return (
-    <SiteShell
-      current="about"
-      title="About Wobo"
-      label={aboutLine(HERO, 'Headline') || 'About Wobo'}
-    >
-      <div className="lp-wrap st-hero">
-        <Reveal>
-          <p className="lp-eyebrow">{aboutLine(HERO, 'Eyebrow')}</p>
-          <h1 className="lp-h1">{aboutLine(HERO, 'Headline')}</h1>
-          {/* Wobo underlines the headline as the page settles. Decorative: the sentence above it
-              already says everything, so there is nothing here for a screen reader to miss. */}
-          <svg className="st-underline" viewBox="0 0 320 14" preserveAspectRatio="none" aria-hidden>
-            <title>a stroke of ink under the headline</title>
-            <path d="M4 9 C 78 3, 158 12, 316 5" />
-          </svg>
-          <p className="lp-lead">{aboutLine(HERO, 'Subhead')}</p>
-        </Reveal>
-      </div>
-
-      <Section id="mission" tonal>
-        <h2 className="lp-h2">{aboutLine(MISSION, 'Section heading')}</h2>
-        <Prose blocks={aboutField(MISSION, 'Body') ?? []} />
-        <p className="st-pull">{aboutLine(MISSION, 'Pull line')}</p>
-      </Section>
-
-      <Section id="teaching">
-        <h2 className="lp-h2">{aboutLine(TEACHES, 'Section heading')}</h2>
-        <Prose blocks={aboutField(TEACHES, 'Body') ?? []} />
-        <Points blocks={aboutField(TEACHES, 'Four points')} />
-        <p className="lp-hand" style={{ marginTop: 30 }}>
-          {aboutLine(TEACHES, 'Closing line')}
-        </p>
-        {golden ? (
-          <div className="st-board">
-            <BoardFrame golden={golden} frameLabel={DEMO.frame} hint={golden.subject} />
-            {/* The one place this page DEMONSTRATES rather than describes, so it says what it is
-                showing. Without the caption the section reads as a drawing in a box: the frame bar
-                names the board, but nothing tells a reader that the thing moving in front of them
-                is the product, running. The sentence is the landing page's own. */}
-            <p className="st-board-cap">
-              {`${golden.title} — a real board, played here exactly as it plays inside a lesson: same plan, same hand, same order. This is not a picture of a board.`}
+    <SiteShell current="about" title="About Wobo">
+      <section className="ab-hero">
+        <div className="st-wrap">
+          <div>
+            <Label>About</Label>
+            <h1>
+              We built the tutor we wished we'd had <em>at 9 pm on a Tuesday.</em>
+            </h1>
+            <p className="ab-sub">
+              Wobo is a small company with one job: make sure no child in classes 4 to 12 is stuck
+              alone with a question. Not a content library. Not a chatbot. A tutor that draws, never
+              judges, and is always there.
             </p>
           </div>
-        ) : null}
-      </Section>
-
-      <Section id="cover" tonal>
-        <h2 className="lp-h2">{aboutLine(COVER, 'Section heading')}</h2>
-        <Prose blocks={aboutField(COVER, 'Body') ?? []} />
-        <p className="st-honesty">{aboutLine(COVER, 'Honesty line')}</p>
-        <Prose blocks={aboutField(COVER, 'Subjects') ?? []} />
-      </Section>
-
-      <Section id="promises">
-        <h2 className="lp-h2">{aboutLine(PROMISES, 'Section heading')}</h2>
-        <div className="lp-cards">
-          {promises.map((promise) => (
-            <div className="lp-card" key={promise.label}>
-              <h3>{promiseTitle(promise.label)}</h3>
-              <Prose blocks={promise.blocks} />
+          <div className="ab-mission">
+            <span className="ab-pin" />
+            <div className="hand">
+              Every child deserves a patient teacher at the table, every evening,{' '}
+              <em>whether or not the family can afford one.</em> That's the whole company.
             </div>
-          ))}
-        </div>
-      </Section>
-
-      <Section id="character" tonal>
-        <h2 className="lp-h2">{aboutLine(CHARACTER, 'Section heading')}</h2>
-        <Prose blocks={aboutField(CHARACTER, 'Body') ?? []} />
-      </Section>
-
-      <Section id="team">
-        <h2 className="lp-h2">{aboutLine(TEAM, 'Section heading')}</h2>
-        <Prose blocks={aboutField(TEAM, 'Body') ?? []} />
-        <Prose blocks={aboutField(TEAM, 'Careers line') ?? []} />
-      </Section>
-
-      <Section id="contact">
-        <div className="st-contact">
-          <Prose blocks={aboutField(CONTACT, 'Contact') ?? []} />
-          <div className="st-contact-links">
-            {links.map((label) => {
-              const href = LINK_TARGETS[label];
-              return href ? (
-                <a key={label} href={href}>
-                  {label}
-                </a>
-              ) : (
-                <span key={label}>{label}</span>
-              );
-            })}
+            <div className="ab-sig">
+              <WoboHead size={40} />— written by Wobo, kept by us
+            </div>
           </div>
         </div>
-      </Section>
+      </section>
+
+      <section className="st-section">
+        <div className="st-wrap">
+          <Reveal className="st-head">
+            <Label>Why</Label>
+            <h2>The homework hour is where confidence is made or lost.</h2>
+          </Reveal>
+          <Reveal className="ab-story">
+            <div>
+              <p>
+                Most of learning happens at home, at the kitchen table, at the hour when parents are
+                tired and tutors are expensive. That's when a child decides they're "not a maths
+                person". Not in class. At the table, alone, with question 7.
+              </p>
+              <p>
+                We wanted a tutor for exactly that hour. One that knows the child's actual syllabus,
+                answers the basic question without a face, draws instead of lecturing, and tells the
+                parent on Sunday how it's really going. And we wanted it free, every day, so the
+                family that needs it most gets it too.
+              </p>
+              <p>
+                So we built Wobo: one character, one pen, one promise. It teaches what your school
+                teaches, and it never makes anyone feel small.
+              </p>
+            </div>
+            <div className="ab-pull">
+              The child who gets unstuck at 9:46 pm on a Tuesday{' '}
+              <em>walks into class on Wednesday a different kid.</em>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="st-section">
+        <div className="st-wrap">
+          <Reveal className="st-head">
+            <Label>How Wobo teaches</Label>
+            <h2>Three habits of a great teacher, built in.</h2>
+          </Reveal>
+          <Reveal className="st-grid3">
+            <div className="st-tile st-pig">
+              <svg viewBox="0 0 44 44" aria-hidden="true">
+                <path d="M8 36 l6 -1 l20 -20 l-5 -5 l-20 20 z" />
+                <path d="M26 13 l5 5" />
+              </svg>
+              <h3>It draws</h3>
+              <p>
+                Every answer appears line by line on a board, in the order a good teacher would draw
+                it. You watch it think.
+              </p>
+            </div>
+            <div className="st-tile st-mint">
+              <svg viewBox="0 0 44 44" aria-hidden="true">
+                <circle cx="22" cy="22" r="14" />
+                <path d="M14 22 l6 6 l10 -12" />
+              </svg>
+              <h3>It rings the gap</h3>
+              <p>
+                When you're close, Wobo circles what you did and waits. It never says wrong. "Close"
+                is the word.
+              </p>
+            </div>
+            <div className="st-tile st-marigold">
+              <svg viewBox="0 0 44 44" aria-hidden="true">
+                <rect x="6" y="10" width="32" height="24" rx="5" />
+                <path d="M6 14 l16 10 l16 -10" />
+              </svg>
+              <h3>It notices</h3>
+              <p>
+                Earned praise, a quiet record of strengths, and a three-line note home on Sunday in
+                its own words.
+              </p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="st-section">
+        <div className="st-wrap">
+          <Reveal className="st-head">
+            <Label>What we cover</Label>
+            <h2>
+              Classes 4 to 12. Mathematics, Science, Social science, English. Your board, your
+              school's order.
+            </h2>
+            <p>
+              CBSE, ICSE and the state boards today, with the year's official syllabus behind each
+              one, and the door open for a school's own syllabus. More countries as families ask.
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="st-section">
+        <div className="st-wrap">
+          <Reveal className="st-head">
+            <Label>Our promises</Label>
+            <h2>Six lines we'd put in a contract.</h2>
+          </Reveal>
+          <Reveal className="ab-promises">
+            {PROMISES.map((promise, i) => (
+              <div className="ab-promise" key={promise.title}>
+                <i>{i + 1}</i>
+                <div>
+                  <b>{promise.title}</b>
+                  <span>{promise.line}</span>
+                </div>
+              </div>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="st-section">
+        <div className="st-wrap">
+          <Reveal className="ab-team">
+            <div>
+              <Label>The people</Label>
+              <h2>A very small team, and one very patient character.</h2>
+              <p>
+                Wobo is built in India by a founder who was, not long ago, the kid stuck at the
+                table. The company is small on purpose: every rupee goes into the tutor, not into a
+                sales team.
+              </p>
+              <div className="hand">
+                We'd rather be trusted by a thousand families than known by a million.
+              </div>
+            </div>
+            <div className="ab-cards">
+              <div className="ab-card">
+                <div className="ab-a">S</div>
+                <div>
+                  <b>Founder</b>
+                  <span>
+                    Product, design, the promises above. Answers the contact form personally.
+                  </span>
+                </div>
+              </div>
+              <div className="ab-card">
+                <div className="ab-a ab-paper">
+                  <WoboHead size={36} />
+                </div>
+                <div>
+                  <b>Wobo</b>
+                  <span>
+                    The tutor. Draws, notices, never judges. Has no gender and no opinions about
+                    anything but the chapter.
+                  </span>
+                </div>
+              </div>
+              <div className="ab-card">
+                <div className="ab-a ab-plus">+</div>
+                <div>
+                  <b>You, maybe</b>
+                  <span>
+                    Teachers who want to help shape lessons, and engineers who care about children's
+                    data: write to us.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="st-section">
+        <div className="st-wrap">
+          <Reveal>
+            <AskWobo
+              heading="Ask Wobo about us. It answers for itself."
+              placeholder="Who makes Wobo, and how do they make money?"
+              chips={['Why is it free?', 'Where is my data stored?', 'Can my school use it?']}
+            />
+          </Reveal>
+        </div>
+      </section>
+
+      <ClosePanel />
     </SiteShell>
   );
 }

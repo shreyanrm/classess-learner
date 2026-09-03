@@ -18,13 +18,24 @@ import { useReducedMotion } from '@wobo/motion';
 import { WoboLoader } from '@wobo/wobo';
 import { type ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { WoboLogo } from '../../ui/Logo';
+import { WORDMARK_PATHS, WORDMARK_VIEWBOX } from '../landing/wordmark';
 import { LOADING_LINE_MS, LOADING_LINES } from './generation';
 import { ensureStateStyles } from './styles';
 
 // The chunk arriving IS the page being shown, so the stylesheet goes in at import time — an effect
 // would let the first paint land unstyled for a frame, on the one screen that must never flicker.
 ensureStateStyles();
+
+/** The real wordmark, as drawn — the owner's own glyphs, in the page's ink. */
+function StateWordmark() {
+  return (
+    <svg viewBox={WORDMARK_VIEWBOX} role="img" aria-label="wobo">
+      {WORDMARK_PATHS.map((g) => (
+        <path key={g.transform} transform={g.transform} d={g.d} />
+      ))}
+    </svg>
+  );
+}
 
 export interface SceneAction {
   label: string;
@@ -55,7 +66,7 @@ export function StateScene({
     <div className="ws">
       <span className="ws-code">{code}</span>
       <span className="ws-mark">
-        <WoboLogo height={17} />
+        <StateWordmark />
       </span>
       <div className="ws-card">
         {art}
@@ -133,7 +144,7 @@ export function LoadingScene({
   return (
     <div className="ws">
       <span className="ws-mark">
-        <WoboLogo height={17} />
+        <StateWordmark />
       </span>
       <div className="ws-card">
         <WoboLoader width={width} {...(onDone ? { onDone } : {})} />
@@ -182,7 +193,7 @@ export function GenerationWait({
       <div className="ws">
         <span className="ws-code">{title}</span>
         <span className="ws-mark">
-          <WoboLogo height={17} />
+          <StateWordmark />
         </span>
         <div className="ws-card">
           <WoboLoader width={300} />

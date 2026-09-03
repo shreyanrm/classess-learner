@@ -1,0 +1,98 @@
+/* biome-ignore-all format: every rule is design/prototypes/onboarding-v2.html, kept as written */
+/* biome-ignore-all lint/style/noDescendingSpecificity: the rules keep the prototype's order, and order is what decides where two of them match */
+/*
+ * Onboarding's rules, ported declaration for declaration from design/prototypes/onboarding-v2.html
+ * and prefixed `ob-`. The only departures are the artboard's own chrome — the screen is the page
+ * here, so it has no 28px corners and no 860px floor — and element resets where a <button> stands
+ * for the prototype's <span>. onboarding.test.ts holds each rule to its source.
+ */
+.ob-btn{font:500 15px/1 var(--sans);padding:15px 22px;border-radius:12px;border:0;background:var(--ink);color:var(--paper);display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;cursor:pointer;width:100%}
+.ob-btn.ob-pig{background:var(--pig);color:#fff}
+.ob-btn.ob-quiet{background:var(--paper-2);color:var(--ink)}
+.ob-btn.ob-link{background:transparent;color:var(--ink-2);min-height:40px;font-weight:400}
+.ob-btn:focus-visible,.ob-field input:focus-visible{outline:3px solid var(--marigold);outline-offset:2px}
+
+/* the step screen */
+.ob-screen{background:var(--paper);min-height:100dvh;display:grid;grid-template-rows:auto 1fr;position:relative;overflow:hidden}
+.ob-top{display:flex;align-items:center;justify-content:space-between;padding:22px 28px}
+.ob-top .ob-wm svg{height:22px;fill:var(--ink)}
+.ob-top .ob-dots{display:flex;gap:8px}
+.ob-top .ob-dots i{width:10px;height:10px;border-radius:50%;background:var(--paper-3)}
+.ob-top .ob-dots i.ob-on{background:var(--pig);width:26px;border-radius:5px}
+.ob-top .ob-dots i.ob-done{background:var(--mint)}
+.ob-top .ob-skip{font:500 14px/1 var(--sans);color:var(--ink-3)}
+button.ob-skip{border:0;background:transparent;padding:0;cursor:pointer}
+.ob-body{display:grid;place-items:center;padding:0 24px 60px}
+.ob-card{width:min(560px,100%);display:grid;gap:22px;justify-items:center;text-align:center}
+.ob-card .ob-wobo{width:120px;filter:drop-shadow(0 16px 24px rgba(20,20,43,.16))}
+.ob-card .ob-bub{background:var(--paper-2);border-radius:18px 18px 18px 4px;padding:12px 18px;font-family:var(--hand);font-weight:700;font-size:26px;line-height:1.1;color:var(--ink);max-width:420px}
+.ob-card h1{font:700 clamp(28px,3.6vw,40px)/1.08 var(--sans)}
+.ob-card p.ob-sub{color:var(--ink-2);font-size:17px;max-width:44ch}
+.ob-form{width:100%;display:grid;gap:10px}
+.ob-field{display:grid;gap:6px;text-align:left}
+.ob-field label,.ob-field legend{font:500 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+fieldset.ob-field{border:0;padding:0;margin:0;min-inline-size:0}
+.ob-field legend{padding:0;margin-bottom:6px}
+.ob-field input{font:400 17px/1.4 var(--sans);padding:14px 16px;border-radius:12px;border:0;background:var(--paper-2);color:var(--ink);width:100%}
+.ob-field input::placeholder{color:var(--ink-3)}
+.ob-fine{font-size:13px;color:var(--ink-3);max-width:44ch}
+.ob-or{display:flex;align-items:center;gap:12px;font:500 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);width:100%}
+.ob-or::before,.ob-or::after{content:"";flex:1;height:3px;border-radius:2px;background:var(--paper-2)}
+
+/* type-ahead */
+.ob-ta{position:relative;text-align:left}
+.ob-ta .ob-list{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--paper);border-radius:14px;box-shadow:0 18px 40px rgba(20,20,43,.14);padding:6px;z-index:2;display:grid;gap:4px}
+.ob-ta .ob-opt{display:flex;justify-content:space-between;padding:10px 12px;border-radius:10px;font-size:15px}
+.ob-ta .ob-opt.ob-on{background:var(--pig-w)}
+.ob-ta .ob-opt span{font-size:12px;color:var(--ink-3)}
+.ob-ta .ob-opt mark{background:transparent;color:var(--pig);font-weight:700}
+.ob-ta .ob-own{padding:10px 12px;font-size:13px;color:var(--ink-2)}
+.ob-ta .ob-own b{color:var(--pig);font-weight:600}
+button.ob-opt,button.ob-own{border:0;background:transparent;font:inherit;color:inherit;width:100%;text-align:left;cursor:pointer}
+
+/* chips (class) */
+.ob-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.ob-chips span{font:500 14px/1 var(--sans);padding:12px 16px;border-radius:999px;background:var(--paper-2);color:var(--ink-2);min-width:52px}
+.ob-chips span.ob-on{background:var(--ink);color:var(--paper)}
+.ob-chips button{border:0;background:transparent;padding:0;font:inherit;cursor:pointer}
+.ob-chips button:disabled{cursor:default;opacity:.55}
+
+/* the aha */
+.ob-aha{width:100%;background:var(--paper-2);border-radius:22px;padding:14px;display:grid;gap:10px;text-align:left}
+.ob-aha .ob-bar{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-3);padding:2px 6px}
+.ob-aha .ob-bar b{color:var(--ink-2);font-weight:500}
+.ob-aha .ob-live{color:var(--rose);display:inline-flex;align-items:center;gap:6px}
+.ob-aha .ob-live i{width:8px;height:8px;border-radius:50%;background:var(--rose)}
+.ob-aha .ob-canvas{background:var(--paper);border-radius:16px;height:260px;position:relative;overflow:hidden}
+.ob-aha .ob-canvas .ob-hw{font-family:var(--hand);font-weight:600;color:var(--ink);font-size:24px;line-height:1.2;padding:18px 100px 18px 20px}
+.ob-aha .ob-canvas .ob-hw.ob-pig{color:var(--pig)}
+.ob-aha .ob-ask{display:flex;gap:8px;background:var(--paper);border-radius:14px;padding:6px 6px 6px 14px;align-items:center}
+.ob-aha .ob-ask input{flex:1;border:0;background:transparent;font:400 15px/1.4 var(--sans);color:var(--ink);outline:none;min-width:0}
+.ob-aha .ob-ask .ob-btn{width:auto;min-height:38px;padding:10px 14px;font-size:14px}
+.ob-chipsq{display:flex;flex-wrap:wrap;gap:8px}
+.ob-chipsq span{font:500 13px/1 var(--sans);padding:9px 12px;border-radius:999px;background:var(--paper);color:var(--ink-2)}
+.ob-chipsq button{border:0;background:transparent;padding:0;font:inherit;cursor:pointer;text-align:left}
+
+/* parent */
+.ob-parent{width:100%;display:grid;gap:12px;text-align:left}
+.ob-note{background:var(--marigold-w);border-radius:16px;padding:16px 18px;font-family:var(--hand);font-weight:600;font-size:22px;line-height:1.15}
+.ob-note em{font-style:normal;color:var(--rose)}
+.ob-note small{display:block;font:400 12px/1.4 var(--sans);color:var(--ink-3);margin-top:8px}
+
+/* ready */
+.ob-allow{width:100%;background:var(--paper-2);border-radius:20px;padding:20px;display:grid;gap:10px;text-align:left}
+.ob-allow b{font-weight:600}
+.ob-allow .ob-bar{height:12px;border-radius:6px;background:var(--paper-3);overflow:hidden}
+.ob-allow .ob-bar i{display:block;height:100%;width:100%;background:var(--marigold);border-radius:6px}
+.ob-allow span{font-size:13px;color:var(--ink-3)}
+.ob-confetti{position:absolute;inset:0;pointer-events:none}
+.ob-confetti i{position:absolute;width:12px;height:12px;border-radius:3px;opacity:.9;transform:rotate(15deg)}
+@media (max-width:600px){.ob-body{padding:0 16px 40px}.ob-card .ob-wobo{width:96px}}
+/* the touch floor (DESIGN.md §2): on a phone every pressable box is 44px tall; its type does not move */
+@media (max-width:900px){
+  button.ob-skip{min-height:44px}
+  .ob-btn.ob-link{min-height:44px}
+  .ob-chips button,.ob-chipsq button{display:inline-flex;align-items:center;min-height:44px}
+  button.ob-opt,button.ob-own{min-height:44px}
+  .ob-aha .ob-ask .ob-btn{min-height:44px}
+}

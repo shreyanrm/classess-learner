@@ -138,10 +138,17 @@ export function mergeAccount(acct: { email?: string; name?: string; avatar?: str
  * the learner's pinned world and otherwise hands back what it was given — never a guess from a
  * list of boards we happen to ship.
  */
+/**
+ * The board's name for a learner to read. The pinned world knows its framework's name; a stored
+ * id the world does not answer for is never printed raw — a short bare id ("cbse") is a board's
+ * initials and is written as such ("CBSE"), and anything longer is left as it was typed.
+ */
 export function boardName(boardId: string): string {
-  if (!boardId) return '';
+  const id = boardId.trim();
+  if (!id) return '';
   const world = loadWorld();
-  return world?.frameworkId === boardId ? world.frameworkName : boardId;
+  if (world?.frameworkId === id) return world.frameworkName;
+  return /^[a-z]{2,6}$/i.test(id) ? id.toUpperCase() : id;
 }
 
 /** Reverse of boardName — a stored board (raw id OR display name) resolved against the world. */

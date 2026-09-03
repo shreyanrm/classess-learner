@@ -67,7 +67,7 @@ import { hueForTopic } from '../../ui/hues';
 import { cascade, rise } from '../../ui/kit';
 import { useWoboChat } from '../../wobo/chat';
 import { Greeting } from './Greeting';
-import type { BarState } from './shared';
+import type { BarState, LessonOutline } from './shared';
 import {
   CardBody,
   ChoiceButton,
@@ -1127,6 +1127,7 @@ export function Composing({
   setProgress,
   onExit,
   onResume,
+  onOutline,
 }: {
   topicId: string;
   title: string;
@@ -1135,6 +1136,8 @@ export function Composing({
   onExit: () => void;
   /** Fired once when the player restores a saved mid-course position. */
   onResume?: () => void;
+  /** The steps and the one on stage, for the lesson's side column. */
+  onOutline?: (outline: LessonOutline) => void;
 }) {
   const sdk = useSdk();
   const { setMood } = useWoboChat();
@@ -1287,6 +1290,24 @@ export function Composing({
   useEffect(() => {
     setProgress({ f: entered ? (idx + 0.6) / segments : 0.07, segments });
   }, [entered, idx, segments, setProgress]);
+
+  // the side column's steps: the ink screen's own outline, with the one on stage marked
+  useEffect(() => {
+    if (!course) return;
+    const steps = [...course.cards.map((c) => c.title.toLowerCase()), 'the workbook', 'the boss'];
+    const at = !entered
+      ? -1
+      : stage === 'cards'
+        ? idx
+        : stage === 'workbook'
+          ? stops
+          : stage === 'boss'
+            ? stops + 1
+            : stage === 'greeting'
+              ? steps.length
+              : -1;
+    onOutline?.({ steps, at });
+  }, [course, entered, idx, stage, stops, onOutline]);
 
   // persist the card index as the learner travels — resume reads it on the next entry
   useEffect(() => {

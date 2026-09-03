@@ -7,11 +7,12 @@
  * share, open in a new tab and hand to a crawler — and a `<button>` styled as a link is none of
  * those things. A plain left click is taken over by the app's router so the navigation costs no
  * reload; a middle click, a modified click, or a right click is left to the browser, which is the
- * visitor asking for a tab and getting one.
+ * visitor asking for a tab and getting one. An address the router does not know yet (a page
+ * another wave is still building) is left to the browser too, so the link is never dead.
  *
- * `PUBLIC_LINKS` is the single list every public header and footer draws. There used to be two
- * headers with disjoint link sets — /about and /help could not reach /plans, and /plans could not
- * reach /help — which meant the site a visitor could see depended on which page they landed on.
+ * `NAV_LINKS` is the pill nav every site page carries and `FOOTER_COLUMNS` the four footer columns,
+ * both word for word from the site prototypes (design/prototypes/site-*.html); `nav.test.ts` holds
+ * them to that source.
  */
 
 import type { MouseEvent, ReactNode } from 'react';
@@ -39,8 +40,28 @@ export function hrefRoute(href: string): Route | null {
   return pathToRoute(clean);
 }
 
-/** The section of the public site a page belongs to, for `aria-current`. */
-export type SiteSection = 'about' | 'help' | 'plans' | 'gift' | 'legal' | 'contact';
+/** The page of the public site being read, for `aria-current` in the header and the footer. */
+export type SiteSection =
+  | 'meet'
+  | 'how'
+  | 'parents'
+  | 'students'
+  | 'subjects'
+  | 'plans'
+  | 'gift'
+  | 'schools'
+  | 'help'
+  | 'contact'
+  | 'questions'
+  | 'about'
+  | 'security'
+  | 'legal'
+  | 'terms'
+  | 'privacy'
+  | 'children'
+  | 'cookies'
+  | 'accessibility'
+  | 'sitemap';
 
 export interface PublicLink {
   label: string;
@@ -48,18 +69,68 @@ export interface PublicLink {
   section: SiteSection;
 }
 
-/**
- * Every public page, in the order the header lists them: what Wobo is, how to use it, what it
- * costs, how to give it, what we promise in writing, and how to reach a person.
- */
-export const PUBLIC_LINKS: readonly PublicLink[] = [
-  { label: 'About', href: '/about', section: 'about' },
-  { label: 'Help centre', href: '/help', section: 'help' },
+/** The pill nav, in the prototype's order. */
+export const NAV_LINKS: readonly PublicLink[] = [
+  { label: 'Meet Wobo', href: '/meet-wobo', section: 'meet' },
+  { label: 'How it works', href: '/how-it-works', section: 'how' },
+  { label: 'For parents', href: '/for-parents', section: 'parents' },
+  { label: 'For students', href: '/for-students', section: 'students' },
+  { label: 'Subjects', href: '/subjects', section: 'subjects' },
   { label: 'Plans', href: '/plans', section: 'plans' },
-  { label: 'Gift', href: '/gift', section: 'gift' },
-  { label: 'Legal', href: '/legal', section: 'legal' },
-  { label: 'Contact', href: '/contact', section: 'contact' },
 ];
+
+/** The two doors in the header. */
+export const DOORS = { signIn: 'Sign in', getStarted: 'Get started' } as const;
+
+export interface FooterColumn {
+  title: string;
+  links: readonly PublicLink[];
+}
+
+/** The footer's four columns, word for word. */
+export const FOOTER_COLUMNS: readonly FooterColumn[] = [
+  {
+    title: 'Wobo',
+    links: [
+      { label: 'Meet Wobo', href: '/meet-wobo', section: 'meet' },
+      { label: 'How it works', href: '/how-it-works', section: 'how' },
+      { label: 'Subjects', href: '/subjects', section: 'subjects' },
+      { label: 'Plans', href: '/plans', section: 'plans' },
+      { label: 'Gift Wobo', href: '/gift', section: 'gift' },
+    ],
+  },
+  {
+    title: 'For',
+    links: [
+      { label: 'Parents', href: '/for-parents', section: 'parents' },
+      { label: 'Students', href: '/for-students', section: 'students' },
+      { label: 'Schools', href: '/schools', section: 'schools' },
+    ],
+  },
+  {
+    title: 'Help',
+    links: [
+      { label: 'Help centre', href: '/help', section: 'help' },
+      { label: 'Contact', href: '/contact', section: 'contact' },
+      { label: 'Questions', href: '/#questions', section: 'questions' },
+    ],
+  },
+  {
+    title: 'Company',
+    links: [
+      { label: 'About', href: '/about', section: 'about' },
+      { label: 'Security and trust', href: '/security', section: 'security' },
+      { label: 'Terms', href: '/legal/terms', section: 'terms' },
+      { label: 'Privacy', href: '/legal/privacy', section: 'privacy' },
+      { label: "Children's privacy", href: '/legal/children', section: 'children' },
+      { label: 'Cookies', href: '/legal/cookies', section: 'cookies' },
+      { label: 'Accessibility', href: '/legal/accessibility', section: 'accessibility' },
+    ],
+  },
+];
+
+/** The line under the footer's wordmark. */
+export const FOOTER_LINE = 'A tutor that draws, never judges, and is always there.';
 
 export function SiteLink({
   to,

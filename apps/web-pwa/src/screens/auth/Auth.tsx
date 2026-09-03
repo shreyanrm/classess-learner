@@ -4,14 +4,13 @@
  * The two doors: `/sign-in` and `/sign-up`.
  *
  * Order, from WOBO-PLAN §7: sign in first, then the aha, then the tour. This screen is that first
- * beat given an address of its own, so a link in an email, a share, or the landing page's own
- * button can land straight on it instead of dropping somebody into the middle of onboarding.
+ * beat given an address of its own, so a link in an email, a share, or the front page's own button
+ * can land straight on it instead of dropping somebody into the middle of onboarding.
  *
- * The landing page is the visual parent and is IMPORTED, never copied: its stylesheet, its footer
- * and its ink cursor come from `../landing`, so the type scale, the button, the page rhythm and the
- * breakpoints are the same objects, not lookalikes. The one thing NOT reused is the landing nav —
- * its four anchors point at sections of that page, and four dead links at the top of a sign-in form
- * is exactly the "element with no reason to be there" §15 forbids.
+ * It wears the site shell's door chrome (the wordmark and the other door, no pill nav) and draws
+ * the sign-in screen of design/prototypes/onboarding-v2.html: Wobo's head, one line in Wobo's hand,
+ * the headline, the fields on paper-2, one pig button, a rule with a word in it, and the quiet
+ * doors under it.
  *
  * Honesty is the load-bearing choice here. Every way in is rendered, and the ones the app's single
  * auth client does not expose are rendered DISABLED with one line saying so, rather than hidden or,
@@ -19,14 +18,11 @@
  * a seam the door opens by itself.
  */
 
-import { WoboBody } from '@wobo/wobo';
 import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from '../../shell/router';
 import { useSdk } from '../../store/sdk';
-import { WoboLogo } from '../../ui/Logo';
-import { InkCursor, inkCursorAllowed, readCursorEnvironment } from '../landing/cursor';
-import { Footer } from '../landing/sections/Footer';
-import { ensureLandingStyles } from '../landing/styles';
+import { WoboHead } from '../../ui/primitives';
+import { SiteShell } from '../site/SiteShell';
 import { failureFromAuthReturn, reportFailure } from '../states/select';
 import { ageOn, blockedBy, consentBranch, type SignUpFields } from './age';
 import { callSeam, liveSeams, type MethodName, type MethodState, methodStates } from './client';
@@ -44,10 +40,6 @@ import {
   SIGN_IN,
   SIGN_UP,
 } from './copy';
-import { ensureAuthStyles } from './styles';
-
-ensureLandingStyles();
-ensureAuthStyles();
 
 type Mode = 'sign-in' | 'sign-up';
 /** What the screen is showing: the form, or what happened after it was sent. */
@@ -59,7 +51,7 @@ const MIN_PASSWORD = 8;
 function ProviderGlyph({ name }: { name: MethodName }) {
   if (name === 'google') {
     return (
-      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden focusable="false">
+      <svg className="wa-glyph" viewBox="0 0 16 16" aria-hidden focusable="false">
         <title>Google</title>
         <path
           d="M8 3.4c1.2 0 2.1.5 2.6 1l1.9-1.9C11.4 1.4 9.9.8 8 .8A7.2 7.2 0 0 0 1.6 4.7l2.2 1.7C4.3 4.7 6 3.4 8 3.4Z"
@@ -86,7 +78,7 @@ function ProviderGlyph({ name }: { name: MethodName }) {
   }
   if (name === 'apple') {
     return (
-      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden focusable="false">
+      <svg className="wa-glyph" viewBox="0 0 16 16" aria-hidden focusable="false">
         <title>Apple</title>
         <path
           d="M11 8.5c0-1.6 1.3-2.4 1.4-2.4-.8-1.1-2-1.3-2.4-1.3-1-.1-2 .6-2.5.6s-1.3-.6-2.1-.6c-1.1 0-2.1.6-2.7 1.6-1.1 2-.3 4.9.8 6.5.6.8 1.2 1.7 2 1.6.8 0 1.1-.5 2.1-.5s1.2.5 2.1.5 1.4-.8 1.9-1.6c.6-.9.9-1.8.9-1.8s-1.6-.6-1.5-2.6Zm-1.7-4.8c.4-.5.7-1.3.6-2-.6 0-1.4.4-1.9 1-.4.5-.7 1.3-.6 2 .7.1 1.4-.4 1.9-1Z"
@@ -119,10 +111,10 @@ function Door({
 }) {
   const shutId = `${state.name}-shut`;
   return (
-    <div>
+    <div className="wa-form">
       <button
         type="button"
-        className="wa-door"
+        className="st-btn st-quiet"
         disabled={shut !== null || busy}
         onClick={onSelect}
         {...(shut === null ? {} : { 'aria-describedby': shutId })}
@@ -131,7 +123,7 @@ function Door({
         {label}
       </button>
       {shut === null ? null : (
-        <p className="wa-shut" id={shutId}>
+        <p className="wa-fine" id={shutId}>
           {shut}
         </p>
       )}
@@ -167,18 +159,6 @@ export function Auth({ mode }: { mode: Mode }) {
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [fields, setFields] = useState<SignUpFields>({ birth: '', parentEmail: '', agreed: false });
-  // The pen cursor and the ink it draws in, both read from the live document — the landing page's
-  // own two rules, imported rather than re-decided (native cursor on touch and under reduced motion).
-  const [pen, setPen] = useState(false);
-  const [ink, setInk] = useState('#1F35E0');
-
-  useEffect(() => {
-    setPen(inkCursorAllowed(readCursorEnvironment()));
-    const value = getComputedStyle(document.documentElement)
-      .getPropertyValue('--wobo-ultramarine')
-      .trim();
-    if (value) setInk(value);
-  }, []);
 
   // A sign-in link that came back dead. The address is read once and then scrubbed, so the state
   // cannot fire again on a reload and the dead token never sits in the learner's history.
@@ -323,57 +303,33 @@ export function Auth({ mode }: { mode: Mode }) {
     setError(ERRORS.unknown);
   };
 
-  const other = mode === 'sign-in' ? 'sign-up' : 'sign-in';
+  const other: Mode = mode === 'sign-in' ? 'sign-up' : 'sign-in';
+  const title = stage === 'link-sent' || stage === 'parent-sent' ? SENT.title : words.title;
 
   return (
-    <div className="lp wa-page">
-      {pen ? <InkCursor ink={ink} /> : null}
-      {/* Every other public page has one; a door is not an excuse to make a keyboard visitor walk
-          the wordmark and the other door before reaching the first field. */}
-      <a className="wa-skip" href="#wa-main">
-        Skip to signing in
-      </a>
-      <div className="lp-body">
-        <div className="lp-wrap wa-top">
-          <button
-            type="button"
-            className="wa-home"
-            onClick={() => router.navigate({ name: 'landing' })}
-            aria-label="Wobo, back to the front page"
-            style={{ background: 'none', border: 0, cursor: 'pointer', padding: 0 }}
-          >
-            <WoboLogo height={18} />
-          </button>
-          <button
-            type="button"
-            className="lp-btn lp-btn--ghost"
-            onClick={() => router.navigate({ name: other })}
-          >
-            {words.switchAction}
-          </button>
-        </div>
-
-        <div className="lp-wrap">
-          <main id="wa-main" className="wa">
-            <div className="wa-head">
-              {/* Wobo, present but not in the way (DESIGN.md §4): the orb and one line, no more. */}
-              <WoboBody size={64} mood="greeting" />
-              <p className="wa-hand">{words.hand}</p>
-              <h1 className="wa-title">
-                {stage === 'link-sent' || stage === 'parent-sent' ? SENT.title : words.title}
-              </h1>
-              <p className="wa-body">
-                {stage === 'parent-sent'
-                  ? PARENT.sent
-                  : stage === 'link-sent'
-                    ? SENT.body
-                    : words.body}
-              </p>
-            </div>
+    <SiteShell
+      title={`${words.title} — Wobo`}
+      label={words.title}
+      door={{ label: words.switchAction, to: { name: other } }}
+    >
+      <div className="st-wrap">
+        <div className="wa">
+          <div className="wa-card">
+            {/* Wobo, present but not in the way (DESIGN.md §4): the head and one line, no more. */}
+            <WoboHead size={120} shadow mood="greeting" />
+            <div className="wa-bub">{words.hand}</div>
+            <h1>{title}</h1>
+            <p className="wa-sub">
+              {stage === 'parent-sent'
+                ? PARENT.sent
+                : stage === 'link-sent'
+                  ? SENT.body
+                  : words.body}
+            </p>
 
             {stage === 'form' ? (
               <>
-                <div className="wa-doors">
+                <div className="wa-form">
                   <Door
                     state={by('google')}
                     label={METHODS.google}
@@ -403,16 +359,13 @@ export function Auth({ mode }: { mode: Mode }) {
 
                 <div className="wa-or">{ACTIONS.or}</div>
 
-                <form onSubmit={submit} noValidate>
+                <form className="wa-form" onSubmit={submit} noValidate>
                   {emailWayIn ? (
                     <>
-                      <div className="wa-field">
-                        <label className="wa-label" htmlFor="wa-email">
-                          {FIELDS.email}
-                        </label>
+                      <div className="st-field">
+                        <label htmlFor="wa-email">{FIELDS.email}</label>
                         <input
                           id="wa-email"
-                          className="wa-input"
                           type="email"
                           autoComplete="email"
                           inputMode="email"
@@ -421,13 +374,10 @@ export function Auth({ mode }: { mode: Mode }) {
                         />
                       </div>
                       {by('password').available ? (
-                        <div className="wa-field">
-                          <label className="wa-label" htmlFor="wa-password">
-                            {FIELDS.password}
-                          </label>
+                        <div className="st-field">
+                          <label htmlFor="wa-password">{FIELDS.password}</label>
                           <input
                             id="wa-password"
-                            className="wa-input"
                             type="password"
                             autoComplete={mode === 'sign-up' ? 'new-password' : 'current-password'}
                             value={password}
@@ -435,32 +385,27 @@ export function Auth({ mode }: { mode: Mode }) {
                           />
                         </div>
                       ) : (
-                        <p className="wa-shut wa-shut--field">
-                          {`${METHODS.password}: ${NOT_WIRED}`}
-                        </p>
+                        <p className="wa-fine">{`${METHODS.password}: ${NOT_WIRED}`}</p>
                       )}
                     </>
                   ) : (
                     // No seam behind an email field is a form that fails on submit, which is the
                     // worst possible way for somebody to find out. Say it instead of drawing it.
-                    <p className="wa-shut wa-shut--field">{NO_EMAIL_WAY}</p>
+                    <p className="wa-fine">{NO_EMAIL_WAY}</p>
                   )}
 
                   {mode === 'sign-up' ? (
                     <>
-                      <div className="wa-field">
-                        <label className="wa-label" htmlFor="wa-birth">
-                          {FIELDS.birth}
-                        </label>
+                      <div className="st-field">
+                        <label htmlFor="wa-birth">{FIELDS.birth}</label>
                         <input
                           id="wa-birth"
-                          className="wa-input"
                           type="date"
                           autoComplete="bday"
                           value={fields.birth}
                           onChange={(e) => setFields((f) => ({ ...f, birth: e.target.value }))}
                         />
-                        <p className="wa-hint">{FIELDS.birthWhy}</p>
+                        <p className="st-hint">{FIELDS.birthWhy}</p>
                       </div>
 
                       {branch && branch.band !== 'adult' ? (
@@ -469,13 +414,10 @@ export function Auth({ mode }: { mode: Mode }) {
                           <p>{branch.notice}</p>
                           <p>{PARENT.body}</p>
                           <p>{PARENT.learning}</p>
-                          <div className="wa-field" style={{ marginBottom: 0, marginTop: 12 }}>
-                            <label className="wa-label" htmlFor="wa-parent-email">
-                              {FIELDS.parentEmail}
-                            </label>
+                          <div className="st-field" style={{ marginTop: 6 }}>
+                            <label htmlFor="wa-parent-email">{FIELDS.parentEmail}</label>
                             <input
                               id="wa-parent-email"
-                              className="wa-input"
                               type="email"
                               inputMode="email"
                               value={fields.parentEmail}
@@ -487,29 +429,25 @@ export function Auth({ mode }: { mode: Mode }) {
                         </div>
                       ) : null}
 
-                      <div className="wa-consent">
+                      <label className="wa-consent" htmlFor="wa-agree">
                         <input
                           id="wa-agree"
                           type="checkbox"
                           checked={fields.agreed}
                           onChange={(e) => setFields((f) => ({ ...f, agreed: e.target.checked }))}
                         />
-                        <label htmlFor="wa-agree">
+                        <span>
                           {`${CONSENT.lead} `}
                           <a href={CONSENT.termsHref}>{CONSENT.terms}</a>
                           {` ${CONSENT.and} `}
                           <a href={CONSENT.privacyHref}>{CONSENT.privacy}</a>.
-                        </label>
-                      </div>
+                        </span>
+                      </label>
                     </>
                   ) : null}
 
                   {canSubmit ? (
-                    <button
-                      type="submit"
-                      className="lp-btn lp-btn--pigment wa-submit"
-                      disabled={busy}
-                    >
+                    <button type="submit" className="st-btn st-pig" disabled={busy}>
                       {childHolds
                         ? ACTIONS.askParent
                         : by('password').available
@@ -518,11 +456,11 @@ export function Auth({ mode }: { mode: Mode }) {
                             : ACTIONS.signIn
                           : ACTIONS.sendLink}
                     </button>
-                  ) : (
-                    <p className="wa-shut">{childHolds ? PARENT.cannotSend : NO_EMAIL_WAY}</p>
-                  )}
+                  ) : childHolds ? (
+                    <p className="wa-fine">{PARENT.cannotSend}</p>
+                  ) : null}
                   {emailWayIn && !by('magicLink').available ? (
-                    <p className="wa-shut">{`${METHODS.magicLink}: ${NOT_WIRED}`}</p>
+                    <p className="wa-fine">{`${METHODS.magicLink}: ${NOT_WIRED}`}</p>
                   ) : null}
                 </form>
               </>
@@ -530,6 +468,7 @@ export function Auth({ mode }: { mode: Mode }) {
 
             {stage === 'code' ? (
               <form
+                className="wa-form"
                 onSubmit={(e) => {
                   e.preventDefault();
                   if (code.trim()) verifyCode();
@@ -537,13 +476,10 @@ export function Auth({ mode }: { mode: Mode }) {
                 }}
                 noValidate
               >
-                <div className="wa-field">
-                  <label className="wa-label" htmlFor="wa-phone">
-                    {FIELDS.phone}
-                  </label>
+                <div className="st-field">
+                  <label htmlFor="wa-phone">{FIELDS.phone}</label>
                   <input
                     id="wa-phone"
-                    className="wa-input"
                     type="tel"
                     autoComplete="tel"
                     inputMode="tel"
@@ -551,34 +487,33 @@ export function Auth({ mode }: { mode: Mode }) {
                     onChange={(e) => setPhone(e.target.value)}
                   />
                 </div>
-                <div className="wa-field">
-                  <label className="wa-label" htmlFor="wa-code">
-                    {FIELDS.code}
-                  </label>
+                <div className="st-field">
+                  <label htmlFor="wa-code">{FIELDS.code}</label>
                   <input
                     id="wa-code"
-                    className="wa-input"
                     inputMode="numeric"
                     autoComplete="one-time-code"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                   />
                 </div>
-                <button type="submit" className="lp-btn lp-btn--pigment wa-submit" disabled={busy}>
+                <button type="submit" className="st-btn st-pig" disabled={busy}>
                   {code.trim() ? ACTIONS.verify : ACTIONS.sendCode}
                 </button>
               </form>
             ) : null}
 
             {stage === 'link-sent' ? (
-              <button
-                type="button"
-                className="lp-btn lp-btn--ghost wa-submit"
-                disabled={busy}
-                onClick={() => setStage('form')}
-              >
-                {SENT.again}
-              </button>
+              <div className="wa-form">
+                <button
+                  type="button"
+                  className="st-btn st-quiet"
+                  disabled={busy}
+                  onClick={() => setStage('form')}
+                >
+                  {SENT.again}
+                </button>
+              </div>
             ) : null}
 
             {error ? (
@@ -593,12 +528,10 @@ export function Auth({ mode }: { mode: Mode }) {
                 {words.switchAction}
               </button>
             </p>
-          </main>
+          </div>
         </div>
-
-        <Footer />
       </div>
-    </div>
+    </SiteShell>
   );
 }
 

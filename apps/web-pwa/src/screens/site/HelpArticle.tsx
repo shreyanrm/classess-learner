@@ -8,143 +8,116 @@
  * the body, then the article the copy itself points at next, resolved to a real address at build
  * time rather than being a sentence naming a page you then have to go and find.
  *
- * "Ask Wobo about this" is the entry the help centre is really for. Wobo answers from this content
- * first, so the button hands Wobo the article and opens the conversation — for a signed-in learner
- * the question is asked on the way, and for a visitor who is not signed in the same button opens
- * the door where signing in happens, because sending an unauthenticated turn at the gateway would
- * fail silently and look like Wobo ignoring them.
+ * "Ask Wobo about this" is the entry the help centre is really for: the ask block under the
+ * article hands Wobo the question and opens the conversation, or the door where signing in happens
+ * for a visitor with no account (`AskWobo.tsx`).
  *
  * An address that names no article does not 404 into nothing: the help centre is one tap away and
  * the page says so.
  */
 
-import { useEffect } from 'react';
-import { useRouter } from '../../shell/router';
 import { useSdk } from '../../store/sdk';
-import { useWoboChat } from '../../wobo/chat';
-import { Reveal } from '../landing/Reveal';
+import { Label } from '../../ui/primitives';
+import { AskWobo } from './AskWobo';
+import { ClosePanel } from './ClosePanel';
 import { Prose, Runs } from './Doc';
 import { HELP } from './help-content';
 import { SiteLink } from './nav';
+import { Reveal } from './Reveal';
 import { SiteShell } from './SiteShell';
 import { findArticle } from './search';
-
-/** What Wobo is handed when the reader asks about an article. */
-export function askPrompt(title: string, lead: string): string {
-  return `I am reading the help article "${title}". ${lead} Explain it to me, and show me on my own account.`;
-}
 
 export function HelpArticle({ group, slug }: { group: string; slug: string }) {
   const article = findArticle(HELP.groups, group, slug);
   const groupDoc = HELP.groups.find((g) => g.slug === group);
-  const router = useRouter();
   const sdk = useSdk();
-  const chat = useWoboChat();
-
-  // A fresh document starts at its top. Without this, arriving from halfway down the index leaves
-  // the reader halfway down the article they just opened.
-  useEffect(() => {
-    if (typeof window !== 'undefined') window.scrollTo({ top: 0 });
-  }, []);
 
   if (!article || !groupDoc) {
     return (
       <SiteShell current="help" title={`${HELP.title} — Wobo`} label={HELP.title}>
-        <div className="lp-wrap st-hero">
-          <h1 className="lp-h1" style={{ maxWidth: '16ch' }}>
-            That page is not here
-          </h1>
-          <p className="lp-lead">
-            The address does not match an article we publish. Everything the help centre has is on
-            one page.
-          </p>
-          <div className="lp-cta" style={{ marginTop: 24 }}>
-            <SiteLink className="lp-btn lp-btn--pigment" to={{ name: 'help' }}>
-              Open the help centre
-            </SiteLink>
+        <section className="st-page-hero">
+          <div className="st-wrap">
+            <Label>{HELP.title}</Label>
+            <h1>That page is not here</h1>
+            <p className="st-sub">
+              The address does not match an article we publish. Everything the help centre has is on
+              one page.
+            </p>
+            <div className="st-row">
+              <SiteLink className="st-btn st-pig" to={{ name: 'help' }}>
+                Open the help centre
+              </SiteLink>
+            </div>
           </div>
-        </div>
+        </section>
+        <ClosePanel />
       </SiteShell>
     );
   }
 
-  const lead = article.lead.map((run) => run.v).join('');
   const signedIn = sdk.config.devAuth || sdk.identity.isAuthenticated();
-  const askWobo = () => {
-    if (!signedIn) {
-      router.navigate({ name: 'onboarding' });
-      return;
-    }
-    void chat.ask(askPrompt(article.title, lead));
-    router.navigate({ name: 'chat' });
-  };
 
   return (
     <SiteShell current="help" title={`${article.title} — Wobo`} label={article.title}>
-      <div className="lp-wrap" style={{ paddingBlock: 'clamp(28px, 4vw, 52px)' }}>
-        <nav className="st-crumbs" aria-label="Where this page sits">
-          <SiteLink to={{ name: 'help' }}>{HELP.title}</SiteLink>
-          <span aria-hidden>·</span>
-          <b>{groupDoc.title}</b>
-        </nav>
-
-        <div className="st-article">
-          <article>
-            <Reveal>
-              <h1 className="lp-h2" style={{ marginBottom: 18 }}>
-                {article.title}
-              </h1>
-              {article.lead.length > 0 ? (
-                <p className="st-lead">
-                  <Runs runs={article.lead} />
-                </p>
-              ) : null}
-              <Prose blocks={article.blocks} />
-              {article.next ? (
-                <div className="st-next">
-                  <span>Next</span>
-                  <SiteLink
-                    to={{
-                      name: 'helpArticle',
-                      group: article.next.group,
-                      slug: article.next.slug,
-                    }}
-                  >
-                    {article.next.title}
-                  </SiteLink>
-                </div>
-              ) : null}
-            </Reveal>
-          </article>
-
-          <div>
-            <div className="st-aside">
-              <h2>More in {groupDoc.title.toLowerCase()}</h2>
-              <div className="st-list">
-                {groupDoc.articles.map((other) => (
-                  <SiteLink
-                    key={other.slug}
-                    to={{ name: 'helpArticle', group: groupDoc.slug, slug: other.slug }}
-                    current={other.slug === article.slug}
-                  >
-                    {other.title}
-                  </SiteLink>
-                ))}
+      <div className="st-wrap hp-article">
+        <article>
+          <nav className="st-crumb" aria-label="Where this page sits">
+            <SiteLink to={{ name: 'help' }}>{HELP.title}</SiteLink>
+            <span aria-hidden>·</span>
+            <b>{groupDoc.title}</b>
+          </nav>
+          <Reveal>
+            <h1>{article.title}</h1>
+            {article.lead.length > 0 ? (
+              <p className="hp-lead">
+                <Runs runs={article.lead} />
+              </p>
+            ) : null}
+            <Prose blocks={article.blocks} />
+            {article.next ? (
+              <div className="hp-next">
+                <Label>Next</Label>
+                <SiteLink
+                  to={{
+                    name: 'helpArticle',
+                    group: article.next.group,
+                    slug: article.next.slug,
+                  }}
+                >
+                  {article.next.title}
+                </SiteLink>
               </div>
-              <div className="st-ask">
-                <p>
-                  {signedIn
-                    ? 'Wobo answers from these pages, and can show you on your own account.'
-                    : 'Wobo answers from these pages. Sign in and ask on your own account.'}
-                </p>
-                <button type="button" className="lp-btn lp-btn--pigment" onClick={askWobo}>
-                  Ask Wobo about this
-                </button>
-              </div>
-            </div>
+            ) : null}
+          </Reveal>
+          <Reveal>
+            <AskWobo
+              label="Ask Wobo about this"
+              heading={
+                signedIn
+                  ? 'Wobo answers from these pages, and can show you on your own account.'
+                  : 'Wobo answers from these pages. Sign in and ask on your own account.'
+              }
+              placeholder={article.title}
+            />
+          </Reveal>
+        </article>
+
+        <aside className="hp-aside" aria-label={`More in ${groupDoc.title.toLowerCase()}`}>
+          <h2>More in {groupDoc.title.toLowerCase()}</h2>
+          <div className="hp-list">
+            {groupDoc.articles.map((other) => (
+              <SiteLink
+                key={other.slug}
+                to={{ name: 'helpArticle', group: groupDoc.slug, slug: other.slug }}
+                current={other.slug === article.slug}
+              >
+                {other.title}
+              </SiteLink>
+            ))}
           </div>
-        </div>
+        </aside>
       </div>
+      <ClosePanel />
     </SiteShell>
   );
 }

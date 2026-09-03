@@ -1,30 +1,30 @@
 'use client';
 
 /**
- * The ink mark beside each help group.
+ * The ink mark on each help group's tile.
  *
  * `help-centre/README.md` asks for an illustration on every group and every article: "Wobo drawing
  * the thing the article is about, in ink". Those drawings do not exist yet, and a stock icon set
  * would be the wrong thing in the right place. What ships instead is the smallest honest version of
- * the same idea — one stroke per group, in Wobo's ink, drawn in the same hand as the board: a pen
- * with its stroke for the basics, a board with a mark on it for the features, a ladder of rungs for
- * the syllabus. They are decorative and hidden from assistive technology; the group's name and its
- * line of copy carry the meaning.
+ * the same idea — one drawing per group, in the hand the About page's tiles are drawn in (a 44px
+ * grid, 3.5px ink, round caps): a pen for the basics, a board with a curve on it for the features,
+ * a ladder of rungs for the syllabus. They are decorative and hidden from assistive technology; the
+ * group's name and its line of copy carry the meaning.
  *
  * When the real illustrations arrive, this file is what they replace.
  */
 
 const MARKS: Record<string, { d: string; drawn: string }> = {
   'wobo-basics': {
-    d: 'M3 20 C 10 19, 14 11, 21 7 M21 7 L28 4 L26 11 Z',
-    drawn: 'a pen, with its stroke behind it',
+    d: 'M8 36 l6 -1 l20 -20 l-5 -5 l-20 20 z M26 13 l5 5',
+    drawn: 'a pen',
   },
   'product-features': {
-    d: 'M3 5 H37 V19 H3 Z M10 12 C 14 8, 18 16, 22 12 M26 12 H31',
+    d: 'M6 10 h32 v24 h-32 z M12 26 c4 -10 8 4 12 -4 s6 0 8 4',
     drawn: 'a board with a curve drawn on it',
   },
   'boards-and-curriculum': {
-    d: 'M6 21 V4 M22 21 V4 M6 17 H22 M6 12 H22 M6 7 H22',
+    d: 'M14 6 v32 M30 6 v32 M14 14 h16 M14 22 h16 M14 30 h16',
     drawn: 'a ladder of rungs, a syllabus climbed',
   },
 };
@@ -33,15 +33,9 @@ export function GroupMark({ group }: { group: string }) {
   const mark = MARKS[group];
   if (!mark) return null;
   return (
-    <svg className="st-mark" viewBox="0 0 40 24" fill="none" aria-hidden>
+    <svg className="hp-mark" viewBox="0 0 44 44" aria-hidden="true">
       <title>{mark.drawn}</title>
-      <path
-        d={mark.d}
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d={mark.d} />
     </svg>
   );
 }

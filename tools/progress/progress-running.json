@@ -4,11 +4,7 @@
   "detail": "A component kit from DESIGN.md; Home, Learn, Lesson, Practice, You ported to the five reference screens; the site shell and every public page to the eight prototypes; the six pitch pages built verbatim. Gate: three widths, both themes, brand gates, an adversarial visual QA against the frames."
  },
  {
-  "title": "Wave 8d \u00b7 the front-door seams",
-  "detail": "An unauthenticated, budgeted Ask Wobo endpoint grounded in the help articles; the parent link (invite email, accept, decline, revoke) the Sunday note already expects; erase-everything now covers mail preferences and parent links."
- },
- {
-  "title": "Landed and pushed \u00b7 commit 4b4cdb8",
-  "detail": "Wave 5b (board seams), Wave 7c (landing v7 in the app, Poppins and Caveat self-hosted), Wave 8b (hospitality mail), and every Fable prototype."
+  "title": "Landed and pushed \u00b7 4b4cdb8, 29b3134, bf81c26",
+  "detail": "Waves 5b, 7c, 8b, 8d and every Fable prototype. The public Ask Wobo, the parent link and its invite email, erase-everything covering mail and parent links, the help copy shipped in the gateway image."
  }
 ]

@@ -729,6 +729,8 @@ export function estimateReadMs(text: string): number {
 }
 
 export interface CardNarration {
+  /** The line Wobo is reading — what the lesson screen writes in Wobo's hand under the board. */
+  text: string;
   /** True once Wobo has finished reading (or the muted reading clock elapsed). */
   ready: boolean;
   /** 0→1 fill for the locked advance button — never a dead button. */
@@ -804,7 +806,7 @@ export function useCardNarration(): CardNarration {
     setEpoch((e) => e + 1);
   }, []);
 
-  return { ready, progress, gating: narr.gate, replay };
+  return { text: narr.text, ready, progress, gating: narr.gate, replay };
 }
 
 /** Replay button for the course stage — re-speaks the current card. Sits beside mute. */

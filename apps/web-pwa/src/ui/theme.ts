@@ -1,10 +1,10 @@
 /**
- * Appearance — light / dark / system. Dark is subtle graphite (never black); the palette lives in
- * the `--wobo-*` token layer (`[data-theme="dark"]`). This module only decides which theme is live
- * and writes `data-theme` on the document root. 'system' follows prefers-color-scheme live.
+ * Appearance — light / dark / system. Night is deep navy (never black); the palette lives in
+ * src/ui/tokens.css (`[data-theme="dark"]`). This module only decides which theme is live and
+ * writes `data-theme` on the document root. 'system' follows prefers-color-scheme live.
  */
-import { chrome, dark } from '@wobo/config';
 import { useSyncExternalStore } from 'react';
+import { PAGE as PALETTE_PAGE } from './tokens';
 
 export type ThemePref = 'light' | 'dark' | 'system';
 const KEY = 'wobo-theme-v1';
@@ -20,10 +20,7 @@ function resolve(pref: ThemePref): 'light' | 'dark' {
 }
 
 /** The page colour of each theme, straight from the tokens — never a second copy of the hex. */
-const PAGE: Record<'light' | 'dark', string> = {
-  light: chrome.page,
-  dark: dark['--wobo-page'] ?? chrome.page,
-};
+const PAGE: Record<'light' | 'dark', string> = PALETTE_PAGE;
 
 /**
  * Keep the browser chrome on the app's page colour.

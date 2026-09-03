@@ -156,10 +156,38 @@ const SignUp = lazy(() => import('./screens/auth/Auth').then((m) => ({ default: 
 const Contact = lazy(() =>
   import('./screens/contact/Contact').then((m) => ({ default: m.Contact })),
 );
+const Sitemap = lazy(() => import('./screens/site/Sitemap').then((m) => ({ default: m.Sitemap })));
+// The six pitch pages, one chunk each: a visitor reads one of them, not all six.
+const Security = lazy(() =>
+  import('./screens/pitch/Security').then((m) => ({ default: m.Security })),
+);
+const MeetWobo = lazy(() =>
+  import('./screens/pitch/MeetWobo').then((m) => ({ default: m.MeetWobo })),
+);
+const ForParents = lazy(() =>
+  import('./screens/pitch/ForParents').then((m) => ({ default: m.ForParents })),
+);
+const ForStudents = lazy(() =>
+  import('./screens/pitch/ForStudents').then((m) => ({ default: m.ForStudents })),
+);
+const HowItWorks = lazy(() =>
+  import('./screens/pitch/HowItWorks').then((m) => ({ default: m.HowItWorks })),
+);
+const Subjects = lazy(() =>
+  import('./screens/pitch/Subjects').then((m) => ({ default: m.Subjects })),
+);
 const NotFoundScreen = lazy(() =>
   import('./screens/states/StateHost').then((m) => ({ default: m.NotFoundScreen })),
 );
 const You = lazy(() => import('./screens/You').then((m) => ({ default: m.You })));
+const ParentView = lazy(() =>
+  import('./screens/you/ParentView').then((m) => ({ default: m.ParentView })),
+);
+// DEV ONLY: the kit gallery at /ui-kit — every primitive in both themes, for the design gate. A
+// production build has no chunk for it and the address answers with the 404.
+const UiKit = import.meta.env.DEV
+  ? lazy(() => import('./ui/UiKit').then((m) => ({ default: m.UiKit })))
+  : null;
 
 /**
  * What sits in the frame while a screen's chunk arrives. Deliberately empty: the route transition
@@ -190,7 +218,15 @@ export function isPublicSite(name: Route['name']): boolean {
     name === 'sign-in' ||
     name === 'sign-up' ||
     name === 'contact' ||
-    name === 'notfound'
+    name === 'sitemap' ||
+    name === 'security' ||
+    name === 'meet-wobo' ||
+    name === 'for-parents' ||
+    name === 'for-students' ||
+    name === 'how-it-works' ||
+    name === 'subjects' ||
+    name === 'notfound' ||
+    name === 'ui-kit'
   );
 }
 
@@ -226,7 +262,15 @@ const OWN_VIEWPORT_ROUTES = new Set([
   'sign-in',
   'sign-up',
   'contact',
+  'sitemap',
+  'security',
+  'meet-wobo',
+  'for-parents',
+  'for-students',
+  'how-it-works',
+  'subjects',
   'notfound',
+  'ui-kit',
 ]);
 const SHARED_SPRING = { type: 'spring', stiffness: 260, damping: 30 } as const;
 
@@ -319,6 +363,7 @@ function Screen() {
           {route.name === 'sandbox' && <Course topicId={route.topicId ?? ''} sandbox />}
           {route.name === 'progress' && <ProgressScreen />}
           {route.name === 'you' && <You />}
+          {route.name === 'parent' && <ParentView />}
           {route.name === 'about' && <About />}
           {route.name === 'help' && <Help />}
           {route.name === 'helpArticle' && <HelpArticle group={route.group} slug={route.slug} />}
@@ -328,8 +373,16 @@ function Screen() {
           {route.name === 'sign-in' && <SignIn />}
           {route.name === 'sign-up' && <SignUp />}
           {route.name === 'contact' && <Contact />}
+          {route.name === 'sitemap' && <Sitemap />}
+          {route.name === 'security' && <Security />}
+          {route.name === 'meet-wobo' && <MeetWobo />}
+          {route.name === 'for-parents' && <ForParents />}
+          {route.name === 'for-students' && <ForStudents />}
+          {route.name === 'how-it-works' && <HowItWorks />}
+          {route.name === 'subjects' && <Subjects />}
           {route.name === 'notfound' && <NotFoundScreen />}
           {route.name === 'concept' && route.which === 'engines' && <EnginesGallery />}
+          {route.name === 'ui-kit' && (UiKit ? <UiKit /> : <NotFoundScreen />)}
         </Suspense>
       </motion.div>
     </AnimatePresence>

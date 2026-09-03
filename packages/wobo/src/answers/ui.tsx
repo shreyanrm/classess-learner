@@ -5,10 +5,10 @@
  * that makes a finger, a mouse and a stylus the same input, and the invisible layer of real buttons
  * that makes all of it reachable from a keyboard.
  *
- * The visual language is the app's, not a widget library's (DESIGN.md §2–§3): hairlines instead of
- * shadows, three-pixel corners, ultramarine on the learner's own mark and nowhere else. The ring is
- * drawn with the board's own pen, so when Wobo points at a wrong part the mark is the same hand
- * that writes on the board.
+ * The visual language is the app's, not a widget library's (DESIGN.md §2–§3): bold ink on paper,
+ * tonal surfaces with no line round them, corners never under 10px, Wobo blue on the learner's own
+ * mark and nowhere else. The ring is drawn with the board's own pen, so when Wobo points at a wrong
+ * part the mark is the same hand that writes on the board.
  */
 
 import type { AnswerBox, AnswerHighlight, AnswerPoint } from '@wobo/contracts';
@@ -19,71 +19,82 @@ import { penRng, penStroke } from '../board/pen';
 
 /**
  * One stylesheet for the whole library, injected by the frame. Everything resolves through the
- * `--wobo-*` tokens, so both themes come for free and no component carries a hex literal. Reduced
- * motion is honoured here rather than in JavaScript: the only motion in the library is a fill
- * transition, and a media query turns it off without a component knowing anything about it.
+ * app's palette tokens (DESIGN.md §2 — paper, ink, the pigments; the hex fallbacks are the same
+ * palette for a page that has not loaded them), so both themes come for free and no component
+ * carries a colour of its own. Reduced motion is honoured here rather than in JavaScript: the only
+ * motion in the library is a fill transition, and a media query turns it off without a component
+ * knowing anything about it.
  */
 export const ANSWER_CSS = `
 .wobo-answer{
-  --wa-ink:var(--wobo-ink-900,#0D0D10);
-  --wa-soft:var(--wobo-ink-500,#6E6E76);
-  --wa-faint:var(--wobo-ink-300,#72727C);
-  --wa-line:var(--wobo-hairline-on-paper,rgba(13,13,16,0.10));
-  --wa-line-strong:var(--wobo-hairline-on-paper-strong,rgba(13,13,16,0.18));
-  --wa-mark:var(--wobo-ultramarine,#1F35E0);
-  --wa-wash:var(--wobo-ultramarine-wash,rgba(31,53,224,0.12));
-  --wa-soft-wash:var(--wobo-ultramarine-soft,rgba(31,53,224,0.07));
-  --wa-ring:var(--wobo-highlight-ink,#1F35E0);
-  --wa-surface:var(--wobo-card,#FFFFFF);
-  --wa-tonal:var(--wobo-tonal,#F1F1F5);
+  --wa-ink:var(--ink,#14142B);
+  --wa-soft:var(--ink-2,#4E4E66);
+  --wa-faint:var(--ink-3,#8A8A9E);
+  --wa-mark:var(--pig,#2B45FF);
+  --wa-wash:var(--pig-w,#E6EAFF);
+  --wa-soft-wash:var(--pig-w,#E6EAFF);
+  --wa-ring:var(--pig,#2B45FF);
+  --wa-surface:var(--paper,#FAF7F0);
+  --wa-tonal:var(--paper-2,#F1EDE3);
+  --wa-pressed:var(--paper-3,#E7E1D3);
+  --wa-sans:var(--sans,'Poppins',system-ui,sans-serif);
+  --wa-hand:var(--hand,'Caveat',cursive);
+  --wa-lift:var(--lift,0 8px 24px rgba(20,20,43,.10));
   color:var(--wa-ink);
   display:flex;flex-direction:column;gap:16px;
 }
 .wobo-answer *{box-sizing:border-box}
-.wobo-answer-prompt{margin:0;font-size:1.05rem;line-height:1.5;color:var(--wa-ink)}
+.wobo-answer-prompt{margin:0 auto;font:600 22px/1.3 var(--wa-sans);text-align:center;max-width:26ch;color:var(--wa-ink)}
 .wobo-answer-stage{position:relative;width:100%}
 .wobo-answer svg{display:block;width:100%;height:auto;touch-action:none;overflow:visible}
 .wobo-answer-foot{display:flex;align-items:center;gap:12px;min-height:28px}
 .wobo-answer-reset{
-  appearance:none;background:none;border:0;padding:4px 2px;margin:0;cursor:pointer;
-  font:inherit;font-size:.85rem;color:var(--wa-soft);border-bottom:1px solid var(--wa-line-strong);
+  appearance:none;border:0;margin:0;cursor:pointer;
+  font:500 14px/1 var(--wa-sans);padding:10px 14px;border-radius:10px;min-height:38px;
+  background:var(--wa-tonal);color:var(--wa-ink);display:inline-flex;align-items:center;
 }
 .wobo-answer-reset[disabled]{opacity:.4;cursor:default}
-.wobo-answer-reset:hover:not([disabled]){color:var(--wa-ink)}
-.wobo-answer-readout{font-size:.85rem;color:var(--wa-faint)}
+.wobo-answer-reset:hover:not([disabled]){background:var(--wa-pressed)}
+.wobo-answer-readout{font-size:13px;color:var(--wa-faint)}
 .wobo-answer-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .wobo-answer-set{border:0;margin:0;padding:0;min-width:0}
 
-.wobo-answer-part{fill:transparent;stroke:var(--wa-line-strong);stroke-width:1;transition:fill 160ms cubic-bezier(0.2,0,0,1)}
-.wobo-answer-part[data-on="true"]{fill:var(--wa-wash);stroke:var(--wa-mark)}
-.wobo-answer-rule{fill:none;stroke:var(--wa-line-strong);stroke-width:1}
-.wobo-answer-grid{fill:none;stroke:var(--wa-line);stroke-width:.5}
-.wobo-answer-ring{fill:none;stroke:var(--wa-ring);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+/* Ink is bold and never scales with the figure: 3px on a screen, whatever the viewBox. The parts
+   of a figure sit in 6px ink gutters, the way the prototype tiles its grid. */
+.wobo-answer-part{fill:var(--wa-surface);stroke:var(--wa-ink);stroke-width:6;stroke-linejoin:round;vector-effect:non-scaling-stroke;transition:fill 160ms cubic-bezier(0.2,0,0,1)}
+/* A grid is a tile: rounded cells on an ink ground, the ground showing as a 6px frame round the
+   outside (the prototype's .grid4: 6px padding, 20px corners, cells at 14px). */
+.wobo-answer-frame{fill:var(--wa-ink);stroke:var(--wa-ink);stroke-width:12;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.wobo-answer-part[data-on="true"]{fill:var(--wa-mark)}
+.wobo-answer-rule{fill:none;stroke:var(--wa-ink);stroke-width:3;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.wobo-answer-grid{fill:none;stroke:var(--wa-pressed);stroke-width:2.5;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.wobo-answer-ring{fill:none;stroke:var(--wa-ring);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
 .wobo-answer-mark{fill:var(--wa-mark);stroke:none}
-.wobo-answer-stroke{fill:none;stroke:var(--wa-ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.wobo-answer-learner{fill:none;stroke:var(--wa-mark);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-/* Size is set per drawing: a text size is in the SVG's own units, so one number cannot fit
-   a hundred-unit figure and a thousand-unit board at once. */
-.wobo-answer-label{fill:var(--wa-faint)}
+.wobo-answer-stroke{fill:none;stroke:var(--wa-ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.wobo-answer-learner{fill:none;stroke:var(--wa-mark);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+/* Written by Wobo, so in Wobo's hand. Size is set per drawing: a text size is in the SVG's own
+   units, so one number cannot fit a hundred-unit figure and a thousand-unit board at once. */
+.wobo-answer-label{fill:var(--wa-soft);font-family:var(--wa-hand);font-weight:600}
 
 .wobo-answer-canvas{position:relative;width:100%;margin:0 auto}
 .wobo-answer-canvas svg{cursor:pointer}
 .wobo-answer-layer{position:absolute;inset:0;pointer-events:none}
 .wobo-answer-target{
   position:absolute;appearance:none;margin:0;padding:0;border:0;background:none;
-  color:transparent;font:inherit;pointer-events:none;border-radius:3px;
+  color:transparent;font:inherit;pointer-events:none;border-radius:10px;
 }
-.wobo-answer-target:focus-visible{outline:2px solid var(--wa-mark);outline-offset:0}
+.wobo-answer-target:focus-visible{outline:3px solid var(--wa-mark);outline-offset:0}
 
+/* Keys, options and column entries: a tonal surface, no line, a corner never under 10px. */
 .wobo-answer-btn{
-  appearance:none;font:inherit;cursor:pointer;color:var(--wa-ink);
-  background:var(--wa-surface);border:1px solid var(--wa-line-strong);border-radius:3px;
-  padding:10px 12px;min-height:44px;min-width:44px;transition:background 160ms cubic-bezier(0.2,0,0,1);
+  appearance:none;font:500 15px/1 var(--wa-sans);cursor:pointer;color:var(--wa-ink);
+  background:var(--wa-tonal);border:0;border-radius:12px;
+  padding:12px 14px;min-height:46px;min-width:46px;transition:background 160ms cubic-bezier(0.2,0,0,1);
 }
-.wobo-answer-btn:hover{background:var(--wa-tonal)}
-.wobo-answer-btn:focus-visible{outline:2px solid var(--wa-mark);outline-offset:2px}
+.wobo-answer-btn:hover{background:var(--wa-pressed)}
+.wobo-answer-btn:focus-visible{outline:3px solid var(--wa-mark);outline-offset:2px}
 .wobo-answer-btn[aria-checked="true"],.wobo-answer-btn[aria-pressed="true"],.wobo-answer-btn[data-on="true"]{
-  border-color:var(--wa-mark);background:var(--wa-soft-wash);
+  background:var(--wa-ink);color:var(--wa-surface);
 }
 .wobo-answer-btn[aria-disabled="true"]{opacity:.45;cursor:default}
 
@@ -93,21 +104,22 @@ export const ANSWER_CSS = `
 .wobo-answer-cards[data-axis="horizontal"]{flex-direction:row;flex-wrap:wrap}
 .wobo-answer-card{
   display:flex;align-items:center;gap:12px;padding:12px 14px;min-height:48px;cursor:grab;
-  background:var(--wa-surface);border:1px solid var(--wa-line-strong);border-radius:3px;
+  font:500 15px/1.3 var(--wa-sans);background:var(--wa-tonal);border:0;border-radius:14px;
 }
-.wobo-answer-card[data-dragging="true"]{cursor:grabbing;border-color:var(--wa-mark)}
-.wobo-answer-card[aria-selected="true"]{border-color:var(--wa-mark)}
-.wobo-answer-card[data-ringed="true"]{outline:1.5px solid var(--wa-ring);outline-offset:2px}
-.wobo-answer-rank{font-variant-numeric:tabular-nums;color:var(--wa-faint);min-width:1.4em}
+.wobo-answer-card[data-dragging="true"]{cursor:grabbing;box-shadow:var(--wa-lift)}
+.wobo-answer-card[aria-selected="true"]{background:var(--wa-wash)}
+.wobo-answer-card[data-ringed="true"]{outline:3px solid var(--wa-ring);outline-offset:2px}
+.wobo-answer-rank{font-family:var(--wa-hand);font-weight:700;font-size:1.2em;color:var(--wa-faint);min-width:1.4em}
 .wobo-answer-columns{display:grid;grid-template-columns:1fr 1fr;gap:32px;position:relative;border:0;margin:0;padding:0;min-width:0}
 .wobo-answer-column{display:flex;flex-direction:column;gap:8px}
 .wobo-answer-wires{position:absolute;inset:0;pointer-events:none}
 .wobo-answer-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:12px;border:0;margin:0;padding:0;min-width:0}
-.wobo-answer-option{display:flex;flex-direction:column;gap:8px;align-items:stretch;padding:12px}
-.wobo-answer-option-name{font-size:.85rem;color:var(--wa-soft);text-align:left}
+.wobo-answer-option{display:flex;flex-direction:column;gap:8px;align-items:stretch;padding:12px;border-radius:18px}
+.wobo-answer-option[aria-checked="true"],.wobo-answer-option[aria-pressed="true"]{background:var(--wa-tonal);color:var(--wa-ink);outline:3px solid var(--wa-mark)}
+.wobo-answer-option-name{font-size:13px;line-height:1.3;color:var(--wa-soft);text-align:left}
 .wobo-answer-display{
   min-height:64px;display:flex;align-items:center;justify-content:flex-start;gap:8px;
-  padding:8px 12px;border-bottom:1px solid var(--wa-line-strong);
+  padding:8px 12px;background:var(--wa-tonal);border-radius:12px;
 }
 @media (prefers-reduced-motion: reduce){
   .wobo-answer-part{transition:none}

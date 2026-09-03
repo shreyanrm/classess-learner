@@ -1,13 +1,15 @@
 import { describe, expect, it } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { chrome, dark } from '@wobo/config';
+import { PAGE } from '../src/ui/tokens';
 
 const APP = join(import.meta.dir, '..');
 const html = readFileSync(join(APP, 'index.html'), 'utf8');
 
-const LIGHT_PAGE = chrome.page;
-const DARK_PAGE = dark['--wobo-page'] as string;
+// Palette v4 (DESIGN.md §2): cream paper by day, deep navy by night — the page colours in
+// src/ui/tokens.css, restated in src/ui/tokens.ts for the places a stylesheet cannot reach.
+const LIGHT_PAGE = PAGE.light;
+const DARK_PAGE = PAGE.dark;
 
 /**
  * The document shell is what a learner on a cheap phone sees before a single byte of JS runs. What
@@ -36,8 +38,13 @@ describe('the document shell paints correctly before any JS', () => {
 
   it('declares a first-paint background for both schemes, so dark mode never flashes white', () => {
     expect(html).toContain('color-scheme: light dark');
-    expect(html).toMatch(/@media \(prefers-color-scheme: dark\)[^}]*background: #17181C/i);
+    expect(html).toMatch(
+      new RegExp(`@media \\(prefers-color-scheme: dark\\)[^}]*background: ${DARK_PAGE}`, 'i'),
+    );
     expect(html.toUpperCase()).toContain(DARK_PAGE.toUpperCase());
+    expect(html).toMatch(
+      new RegExp(`html, body \\{ margin: 0; background: ${LIGHT_PAGE}; \\}`, 'i'),
+    );
   });
 
   it('honours an explicit theme in the pre-JS style too', () => {
@@ -51,10 +58,12 @@ describe('the document shell paints correctly before any JS', () => {
     expect(html).not.toMatch(/<link[^>]+rel="stylesheet"[^>]+https?:/);
   });
 
-  it('imports both bundled faces from the app entry', () => {
+  it('imports both bundled fallback faces from the app entry, and the palette v4 token layer', () => {
     const main = readFileSync(join(APP, 'src', 'main.tsx'), 'utf8');
     expect(main).toContain('@fontsource-variable/plus-jakarta-sans');
     expect(main).toContain('@fontsource-variable/caveat');
+    expect(main).toContain("import './ui/tokens.css'");
+    expect(main).toContain('LEGACY_TOKEN_BRIDGE');
   });
 
   it('names those bundled families in the type stack', async () => {
