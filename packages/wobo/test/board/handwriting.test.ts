@@ -180,6 +180,65 @@ describe('tex, the school subset, written by hand', () => {
     expect(() => layoutTex(font, '\\wat{x} + 1', [0, 0], 40)).not.toThrow();
   });
 
+  /**
+   * A matrix is brackets and rows, and nothing else. `\begin` used to be dropped as an unknown
+   * command while `{pmatrix}` was read as ordinary characters, so a learner asking for a matrix got
+   * the WORD "pmatrix" written on their board — BOARD.md §11's "slideshow, not a teacher", exactly.
+   */
+  describe('matrices', () => {
+    const MATRIX = '\\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \\end{pmatrix}';
+
+    it('writes a real matrix — brackets and rows, never the environment name', () => {
+      const laid = layoutTex(font, MATRIX, [0, 0], 40);
+      // Four entries, and not one letter of "pmatrix".
+      expect(laid.glyphs).toHaveLength(4);
+      expect(laid.rules).toHaveLength(2); // one bracket each side
+      // Two rows: the second sits a clear line below the first.
+      const ys = laid.glyphs.map((g) => g.box.y).sort((a, b) => a - b);
+      expect((ys[3] ?? 0) - (ys[0] ?? 0)).toBeGreaterThan(20);
+      // Two columns: the second sits to the right of the first, inside the brackets.
+      const xs = laid.glyphs.map((g) => g.box.x).sort((a, b) => a - b);
+      expect((xs[3] ?? 0) - (xs[0] ?? 0)).toBeGreaterThan(10);
+      expect(laid.width).toBeGreaterThan(0);
+      expect(laid.height).toBeGreaterThan(40);
+    });
+
+    it('never writes the environment name in the plain line either', () => {
+      const plain = texPlainText(MATRIX);
+      expect(plain).not.toContain('pmatrix');
+      expect(plain).not.toContain('begin');
+      expect(plain).toContain('1');
+      expect(plain).toContain('4');
+    });
+
+    it('gives each environment its own fence, and an unknown one no fence at all', () => {
+      const square = layoutTex(font, '\\begin{bmatrix} 1 \\end{bmatrix}', [0, 0], 40);
+      expect(square.rules).toHaveLength(2);
+      const determinant = layoutTex(font, '\\begin{Vmatrix} 1 \\end{Vmatrix}', [0, 0], 40);
+      expect(determinant.rules).toHaveLength(4); // two rules a side
+      const bare = layoutTex(font, '\\begin{madeup} 1 \\end{madeup}', [0, 0], 40);
+      expect(bare.rules).toHaveLength(0);
+      expect(bare.glyphs).toHaveLength(1); // the row still draws; the name never does
+    });
+
+    it('an unterminated environment is still only its contents', () => {
+      const laid = layoutTex(font, '\\begin{pmatrix} 1 & 2', [0, 0], 40);
+      expect(() => layoutTex(font, '\\begin{pmatrix} 1 & 2', [0, 0], 40)).not.toThrow();
+      expect(laid.glyphs).toHaveLength(2);
+    });
+
+    it('a stray \\end writes nothing at all', () => {
+      expect(layoutTex(font, '\\end{pmatrix}', [0, 0], 40).glyphs).toHaveLength(0);
+    });
+  });
+
+  it('a cube root wears its index, and never its brackets', () => {
+    const laid = layoutTex(font, '\\sqrt[3]{x}', [0, 0], 40);
+    // The radical, the 3 and the x — no '[' and no ']'.
+    expect(laid.glyphs).toHaveLength(3);
+    expect(texPlainText('\\sqrt[3]{x}')).toBe('3\u221Ax');
+  });
+
   it('never loops on an unbalanced brace', () => {
     expect(() => layoutTex(font, '\\frac{a', [0, 0], 40)).not.toThrow();
     expect(() => layoutTex(font, '}}}', [0, 0], 40)).not.toThrow();

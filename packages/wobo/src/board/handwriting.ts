@@ -675,8 +675,29 @@ type TexNode =
   | { kind: 'char'; ch: string }
   | { kind: 'row'; nodes: TexNode[] }
   | { kind: 'frac'; num: TexNode; den: TexNode }
-  | { kind: 'sqrt'; body: TexNode }
+  | { kind: 'sqrt'; body: TexNode; index?: TexNode }
+  | { kind: 'matrix'; rows: TexNode[][]; fence: Fence }
   | { kind: 'script'; base: TexNode; sup?: TexNode; sub?: TexNode };
+
+/** What a matrix environment is written inside. `none` is a bare array of rows. */
+type Fence = 'paren' | 'bracket' | 'brace' | 'bar' | 'double-bar' | 'none';
+
+/**
+ * The `\begin{...}` environments a school board actually writes. Anything else still draws as rows
+ * — never as the word: a learner must never see "pmatrix" written on their board (BOARD.md §11).
+ */
+const MATRIX_FENCES: Record<string, Fence> = {
+  matrix: 'none',
+  pmatrix: 'paren',
+  bmatrix: 'bracket',
+  Bmatrix: 'brace',
+  vmatrix: 'bar',
+  Vmatrix: 'double-bar',
+  cases: 'brace',
+  array: 'none',
+  aligned: 'none',
+  align: 'none',
+};
 
 const TEX_SYMBOLS: Record<string, string> = {
   pi: 'π',
@@ -757,7 +778,23 @@ function parseGroup(c: Cursor, stopAtBrace: boolean): TexNode {
         continue;
       }
       if (name === 'sqrt') {
-        nodes.push({ kind: 'sqrt', body: parseArg(c) });
+        // `\sqrt[3]{x}` — the index is part of the radical, never characters beside it. Without
+        // this the brackets and the 3 leaked into the line as ordinary text.
+        const index = parseOptional(c);
+        const body = parseArg(c);
+        nodes.push(index ? { kind: 'sqrt', body, index } : { kind: 'sqrt', body });
+        continue;
+      }
+      if (name === 'begin') {
+        const env = readBraceWord(c);
+        const matrix = matrixNode(env, takeUntilEnd(c, env));
+        if (matrix) nodes.push(matrix);
+        continue;
+      }
+      if (name === 'end') {
+        // A stray `\end` with no opening: swallow its argument. Writing the environment's name on
+        // a learner's board is the one thing that must never happen (BOARD.md §11).
+        readBraceWord(c);
         continue;
       }
       if (TEX_WORDS.has(name)) {
@@ -817,6 +854,100 @@ function parseArg(c: Cursor): TexNode {
   return { kind: 'char', ch };
 }
 
+/** An optional `[...]` argument (the root's index). Null when there is none. */
+function parseOptional(c: Cursor): TexNode | null {
+  if (c.s[c.i] !== '[') return null;
+  const close = c.s.indexOf(']', c.i);
+  if (close < 0) return null;
+  const inner = c.s.slice(c.i + 1, close);
+  c.i = close + 1;
+  return parseTex(inner);
+}
+
+/** Read `{word}` at the cursor — the environment name after `\begin`. Empty when it is not there. */
+function readBraceWord(c: Cursor): string {
+  while (c.s[c.i] === ' ') c.i++;
+  if (c.s[c.i] !== '{') return '';
+  const close = c.s.indexOf('}', c.i);
+  if (close < 0) {
+    c.i = c.s.length;
+    return '';
+  }
+  const word = c.s.slice(c.i + 1, close).trim();
+  c.i = close + 1;
+  return word;
+}
+
+/** Everything up to the matching `\end`, which is consumed with it. Nested environments count. */
+function takeUntilEnd(c: Cursor, _env: string): string {
+  const start = c.i;
+  let depth = 1;
+  let i = c.i;
+  while (i < c.s.length) {
+    if (c.s.startsWith('\\begin', i)) {
+      depth += 1;
+      i += 6;
+      continue;
+    }
+    if (c.s.startsWith('\\end', i)) {
+      depth -= 1;
+      if (depth === 0) {
+        const body = c.s.slice(start, i);
+        c.i = i + 4;
+        readBraceWord(c);
+        return body;
+      }
+      i += 4;
+      continue;
+    }
+    i += 1;
+  }
+  c.i = c.s.length;
+  return c.s.slice(start);
+}
+
+/** Split an environment body into rows on `\\` and cells on `&`, at brace depth zero. */
+function splitCells(body: string): string[][] {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let cell = '';
+  let depth = 0;
+  for (let i = 0; i < body.length; i += 1) {
+    const ch = body[i] as string;
+    if (ch === '{') depth += 1;
+    else if (ch === '}') depth = Math.max(0, depth - 1);
+    if (depth === 0 && ch === '&') {
+      row.push(cell);
+      cell = '';
+      continue;
+    }
+    if (depth === 0 && ch === '\\' && body[i + 1] === '\\') {
+      row.push(cell);
+      rows.push(row);
+      row = [];
+      cell = '';
+      i += 1;
+      continue;
+    }
+    cell += ch;
+  }
+  row.push(cell);
+  rows.push(row);
+  return rows.filter((r) => r.some((text) => text.trim() !== ''));
+}
+
+/** One `\begin{...} … \end{...}` as a matrix. Null when there is nothing in it to draw. */
+function matrixNode(env: string, body: string): TexNode | null {
+  const cells = splitCells(body);
+  if (cells.length === 0) return null;
+  return {
+    kind: 'matrix',
+    rows: cells.map((row) => row.map((text) => parseTex(text))),
+    // An environment we do not know still draws as rows, with no fence — never as its own name.
+    fence: MATRIX_FENCES[env] ?? 'none',
+  };
+}
+
 /** Parse the TeX subset. Anything unrecognised is simply dropped, never thrown. */
 export function parseTex(tex: string): TexNode {
   return parseGroup({ s: tex, i: 0 }, false);
@@ -838,6 +969,81 @@ interface TexOutput {
 }
 
 const SCRIPT_SCALE = 0.68;
+
+/** A ruled stroke through these points — the same rule a fraction bar is drawn with. */
+function rule(points: BoardPoint[]): Stroke {
+  return { d: linePath(points), length: polylineLength(points) };
+}
+
+/**
+ * The brackets a matrix is written inside, drawn as real strokes (BOARD.md §7): round for
+ * `pmatrix`, square for `bmatrix`, curly for `Bmatrix` and `cases`, and rules for a determinant.
+ * `x` is the left edge of this fence's own column, `w` its width.
+ */
+function fenceStrokes(
+  fence: Fence,
+  side: 'left' | 'right',
+  x: number,
+  top: number,
+  height: number,
+  w: number,
+): Stroke[] {
+  const bottom = top + height;
+  const mid = top + height / 2;
+  // For the right-hand fence every horizontal offset is mirrored inside its own column.
+  const at = (fraction: number): number => x + (side === 'left' ? fraction : 1 - fraction) * w;
+  switch (fence) {
+    case 'bracket':
+      return [
+        rule([
+          [at(0.95), top],
+          [at(0.25), top],
+          [at(0.25), bottom],
+          [at(0.95), bottom],
+        ]),
+      ];
+    case 'bar':
+      return [
+        rule([
+          [at(0.5), top],
+          [at(0.5), bottom],
+        ]),
+      ];
+    case 'double-bar':
+      return [
+        rule([
+          [at(0.3), top],
+          [at(0.3), bottom],
+        ]),
+        rule([
+          [at(0.7), top],
+          [at(0.7), bottom],
+        ]),
+      ];
+    case 'brace':
+      return [
+        rule([
+          [at(0.95), top],
+          [at(0.5), top + height * 0.14],
+          [at(0.5), mid - height * 0.06],
+          [at(0.06), mid],
+          [at(0.5), mid + height * 0.06],
+          [at(0.5), bottom - height * 0.14],
+          [at(0.95), bottom],
+        ]),
+      ];
+    default: {
+      // A round bracket: sampled so it bows out at the middle the way a hand draws one.
+      const points: BoardPoint[] = [];
+      const steps = 14;
+      for (let i = 0; i <= steps; i += 1) {
+        const t = i / steps;
+        points.push([at(0.9 - 0.75 * Math.sin(Math.PI * t)), top + t * height]);
+      }
+      return [rule(points)];
+    }
+  }
+}
 
 function measureNode(font: HandFont, node: TexNode, size: number): TexBox {
   switch (node.kind) {
@@ -901,21 +1107,73 @@ function measureNode(font: HandFont, node: TexNode, size: number): TexBox {
     case 'sqrt': {
       const body = measureNode(font, node.body, size);
       const radical = size * 0.62;
-      const width = radical + body.width + size * 0.14;
+      // A cube root wears its index in the crook of the radical, small — never as a `[3]` in the line.
+      const index = node.index ? measureNode(font, node.index, size * 0.5) : null;
+      const lead = index ? Math.max(0, index.width - radical * 0.35) : 0;
+      const width = lead + radical + body.width + size * 0.14;
       return {
         width,
-        ascent: body.ascent + size * 0.22,
+        ascent: Math.max(body.ascent + size * 0.22, index ? body.ascent + index.ascent * 0.6 : 0),
         descent: body.descent,
         draw: (x, y, out) => {
-          const { glyph } = glyphAt(font, '√', size, [x, y]);
+          const stem = x + lead;
+          const { glyph } = glyphAt(font, '√', size, [stem, y]);
           if (glyph) out.glyphs.push(glyph);
           const top = y - body.ascent - size * 0.18;
           const bar: BoardPoint[] = [
-            [x + radical * 0.98, top],
+            [stem + radical * 0.98, top],
             [x + width, top],
           ];
           out.rules.push({ d: linePath(bar), length: polylineLength(bar) });
-          body.draw(x + radical + size * 0.06, y, out);
+          if (index) index.draw(x, y - body.ascent * 0.62, out);
+          body.draw(stem + radical + size * 0.06, y, out);
+        },
+      };
+    }
+    case 'matrix': {
+      const gap = size * 0.55;
+      const lead = size * 0.34;
+      const boxes = node.rows.map((row) => row.map((cell) => measureNode(font, cell, size)));
+      const columns = Math.max(...boxes.map((row) => row.length), 1);
+      const widths: number[] = [];
+      for (let col = 0; col < columns; col += 1) {
+        widths.push(Math.max(...boxes.map((row) => row[col]?.width ?? 0), 0));
+      }
+      const rowAscent = boxes.map((row) => Math.max(...row.map((b) => b.ascent), size * 0.74));
+      const rowDescent = boxes.map((row) => Math.max(...row.map((b) => b.descent), size * 0.2));
+      const rowGap = size * 0.42;
+      const inner = rowAscent.reduce((sum, a, i) => sum + a + (rowDescent[i] ?? 0), 0);
+      const height = inner + rowGap * Math.max(0, boxes.length - 1);
+      const fenceW = node.fence === 'none' ? 0 : size * 0.42;
+      const width =
+        fenceW * 2 +
+        lead * 2 +
+        widths.reduce((sum, w) => sum + w, 0) +
+        gap * Math.max(0, columns - 1);
+      // The block sits on the maths axis, so `Ax = b` lines up either side of the matrix.
+      const axis = size * 0.3;
+      return {
+        width,
+        ascent: height / 2 + axis,
+        descent: height / 2 - axis,
+        draw: (x, y, out) => {
+          const top = y - (height / 2 + axis);
+          let cy = top;
+          boxes.forEach((row, r) => {
+            const baseline = cy + (rowAscent[r] ?? 0);
+            let cx = x + fenceW + lead;
+            row.forEach((cell, col) => {
+              const column = widths[col] ?? 0;
+              cell.draw(cx + (column - cell.width) / 2, baseline, out);
+              cx += column + gap;
+            });
+            cy = baseline + (rowDescent[r] ?? 0) + rowGap;
+          });
+          if (node.fence === 'none') return;
+          out.rules.push(...fenceStrokes(node.fence, 'left', x, top, height, fenceW));
+          out.rules.push(
+            ...fenceStrokes(node.fence, 'right', x + width - fenceW, top, height, fenceW),
+          );
         },
       };
     }
@@ -1069,7 +1327,15 @@ export function scriptText(text: string): string {
  * header of a golden board shows when Caveat has not loaded, and it must never show carets.
  */
 export function texPlainText(tex: string): string {
-  const named = tex.replace(/\\([a-zA-Z]+)/g, (_whole, name: string) => {
+  const flattened = tex
+    // An environment is structure, not a word. Left alone, `\\begin` was dropped as unknown while
+    // `{pmatrix}` survived as characters — so the fallback line wrote "pmatrix" on the board.
+    .replace(/\\(?:begin|end)\s*\{[^}]*\}/g, ' ')
+    .replace(/\\\\/g, '; ') // a row break reads as a pause
+    .replace(/&/g, ' ') // a cell break is a space
+    .replace(/\\sqrt\s*\[([^\]]*)\]/g, '$1\u221A')
+    .replace(/\\sqrt/g, '\u221A');
+  const named = flattened.replace(/\\([a-zA-Z]+)/g, (_whole, name: string) => {
     const mapped = TEX_SYMBOLS[name];
     if (mapped !== undefined) return mapped;
     return TEX_WORDS.has(name) ? name : '';

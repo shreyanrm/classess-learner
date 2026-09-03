@@ -1,6 +1,33 @@
 import { beforeEach, describe, expect, it } from 'bun:test';
 import { createFocus, resetFocusIds, SurfaceRegistry } from '@wobo/wobo';
-import { buildTurnPacket, setTurnFocus, turnFocus, woboTurnPayload } from './capabilities';
+
+/** A localStorage stand-in, installed before the mind store is imported (it reads through it). */
+class FakeStorage {
+  readonly map = new Map<string, string>();
+  get length(): number {
+    return this.map.size;
+  }
+  key(i: number): string | null {
+    return [...this.map.keys()][i] ?? null;
+  }
+  getItem(k: string): string | null {
+    return this.map.get(k) ?? null;
+  }
+  setItem(k: string, v: string): void {
+    this.map.set(k, String(v));
+  }
+  removeItem(k: string): void {
+    this.map.delete(k);
+  }
+  clear(): void {
+    this.map.clear();
+  }
+}
+(globalThis as { localStorage?: unknown }).localStorage = new FakeStorage();
+
+const { buildTurnPacket, mindFrom, noteAccount, setTurnFocus, taskFrom, turnFocus, woboTurnPayload } =
+  await import('./capabilities');
+const { rememberInterests } = await import('../store/mind');
 
 const registry = () => {
   const r = new SurfaceRegistry();
@@ -22,17 +49,27 @@ const registry = () => {
 };
 
 const context = () => ({
-  page: { route: 'course', state: { topicId: 'm2-1' } },
+  page: { route: 'course', state: { topicId: 'm2-1', mode: 'story' } },
   curriculum: { nodeName: 'Linear equations', band: 'developing' },
   session: { sessionId: 's1', recentEvents: ['practice.attempt (correct=false)', 'card.viewed'] },
   turn: { recentTurns: [{ role: 'user' as const, text: 'why is this wrong' }] },
   lifetime: {},
-  targets: [],
+  // The course card, exactly as the registry publishes it: the beat is on the screen, not in a
+  // variable the app happens to remember.
+  targets: [
+    {
+      id: 'course-card',
+      kind: 'card',
+      label: 'the card on stage',
+      scene: { state: { beat: 3, of: 7, attempt: 2, correct: 4 }, drivable: false },
+    },
+  ],
 });
 
 beforeEach(() => {
   resetFocusIds();
   setTurnFocus(null);
+  noteAccount(null);
 });
 
 describe('the turn packet', () => {
@@ -41,12 +78,66 @@ describe('the turn packet', () => {
     expect(packet.v).toBe(1);
     expect(packet.route).toBe('course');
     expect(packet.screen?.surfaces[0]?.targets[0]?.id).toBe('card-3');
-    expect(packet.mind).toEqual({
+    expect(packet.mind).toMatchObject({
       band: 'developing',
       topic: 'Linear equations',
       mistakes: ['practice.attempt (correct=false)'],
     });
     expect(packet.turns).toEqual([{ role: 'learner', text: 'why is this wrong' }]);
+  });
+
+  /**
+   * §5.3 names five things in the mind digest and three in the task state. The builder always fit
+   * all eight; the production feed sent three, so the brain never saw the world the learner asked
+   * to be taught in, the door the brain itself opened, or which beat they were stuck on.
+   */
+  it('digests the whole mind §5.3 asks for — analogy, consent tier and plan included', () => {
+    expect(
+      mindFrom(context(), { analogy: 'cricket', consentTier: 'un_elevated', plan: 'free' }),
+    ).toEqual({
+      band: 'developing',
+      topic: 'Linear equations',
+      mistakes: ['practice.attempt (correct=false)'],
+      analogy: 'cricket',
+      consentTier: 'un_elevated',
+      plan: 'free',
+    });
+  });
+
+  it('carries the world the learner asked for and the door the brain opened, on the real feed', () => {
+    rememberInterests(['cricket', 'space']);
+    noteAccount({ plan: 'free', consentTier: 'un_elevated' });
+    const packet = buildTurnPacket(context(), { registry: registry() });
+    expect(packet.mind?.analogy).toBe('cricket');
+    expect(packet.mind?.consentTier).toBe('un_elevated');
+    expect(packet.mind?.plan).toBe('free');
+  });
+
+  it('tells the brain where in the task they are — the beat, the attempt and the score', () => {
+    expect(taskFrom(context())).toEqual({ beat: '3 of 7', attempt: 2, score: 4, mode: 'story' });
+    expect(buildTurnPacket(context(), { registry: registry() }).task).toEqual({
+      beat: '3 of 7',
+      attempt: 2,
+      score: 4,
+      mode: 'story',
+    });
+  });
+
+  it("lets a caller's own rung win over the screen's, without losing the beat", () => {
+    const packet = buildTurnPacket(context(), {
+      registry: registry(),
+      task: { mode: 'say_it_in_my_world' },
+    });
+    expect(packet.task).toEqual({
+      beat: '3 of 7',
+      attempt: 2,
+      score: 4,
+      mode: 'say_it_in_my_world',
+    });
+  });
+
+  it('sends no task state at all where the screen has none', () => {
+    expect(buildTurnPacket({}, { registry: new SurfaceRegistry() }).task).toBeUndefined();
   });
 
   it('picks up the focus the gesture layer last made', () => {

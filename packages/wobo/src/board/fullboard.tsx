@@ -61,6 +61,9 @@ export function WoboFullBoard(props: WoboFullBoardProps) {
         store={store}
         svgRef={svgRef}
         capture={capture}
+        // The handle drives the surface (BOARD.md §9): dragging shows the board as it was at that
+        // moment, and letting go — "live" — hands the board back to the present.
+        {...(timeline.scrubbing ? { at: timeline.at } : {})}
         autoCamera
         label={props.title ? `Wobo's board: ${props.title}` : "Wobo's board"}
         {...(props.targets ? { targets: props.targets } : {})}

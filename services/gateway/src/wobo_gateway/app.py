@@ -449,6 +449,17 @@ class MeResponse(BaseModel):
     budget: dict[str, Any]
 
 
+class InterruptRequest(BaseModel):
+    """The interrupt frame (BOARD.md §4): which turn, and where the pen came up.
+
+    ``at`` is the client's own ``interrupted_at`` — the id of the object Wobo was drawing — and
+    it is echoed back, never trusted as anything else. Both fields are bounded: an id is short,
+    and this route is reachable by anyone with a token."""
+
+    turn: str = Field(min_length=1, max_length=64)
+    at: str | None = Field(default=None, max_length=64)
+
+
 # --- the streaming board turn (BOARD.md §4) ---------------------------------------------------
 #
 # The board streams over the SAME route as a plain turn — POST /v1/capability/wobo.turn with
@@ -664,6 +675,11 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
 
         limited = (
             path.startswith("/v1/capability/")
+            # Free routes, still bounded: the interrupt frame and the erase are unmetered (a
+            # learner may never be charged for stopping Wobo or for taking their memory back),
+            # and unmetered without a limiter is an open tap on the board store and the database.
+            or path.startswith("/v1/board/")
+            or path == "/v1/me/erase"
             or path == "/v1/voice/session"
             or path == "/v1/voice/tts"
             or path in _SOFT_AUTH_PATHS
@@ -767,6 +783,65 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
             plan=profile.plan,
             consent_tier=profile.tier.value,
             budget=snap.as_dict(),
+        )
+
+    @app.post("/v1/me/erase")
+    def erase_me(request: Request) -> Response:
+        """Forget me. The brain's half of the memory page — erasure that actually propagates.
+
+        Free and unmetered on purpose: a data right that costs a learner their last turn of the
+        day is not a right. Authenticated like every other ``/v1`` route, and keyed on the door's
+        subject, so this is only ever a learner erasing themselves.
+
+        The body is what left, not what was attempted: a store that refused is named and the
+        status is 502, because Wobo never claims to have forgotten something Wobo did not.
+        """
+        from wobo_gateway import memory
+
+        principal: Principal = request.state.principal
+        erased = memory.erase(principal.subject, meter_key=request.state.meter_key)
+        if erased.failed:
+            return JSONResponse(
+                status_code=502,
+                content={
+                    "code": "erase_incomplete",
+                    "message": (
+                        "I cleared what I could reach, but not all of it. "
+                        "Try that again in a moment."
+                    ),
+                    **erased.as_dict(),
+                },
+            )
+        return JSONResponse(status_code=200, content=erased.as_dict())
+
+    @app.post("/v1/board/interrupt")
+    def interrupt_board(body: InterruptRequest, request: Request) -> Response:
+        """The learner stopped Wobo mid-turn (BOARD.md §4).
+
+        The client already lifts its own pen and stops its own voice; this is the frame it sends
+        the brain. The turn stops streaming at the next frame and the reply is the acknowledgement:
+        the turn, and the object Wobo was on when the pen came up. Unmetered — stopping is never
+        charged — and owned by the meter key, so an interrupt is not a way into another learner's
+        turn: an id that is not theirs is simply not found.
+        """
+        from wobo_gateway.board import stream as board_stream
+
+        turn = board_stream.interrupt(body.turn, request.state.meter_key, body.at)
+        if turn is None:
+            return JSONResponse(
+                status_code=404,
+                content={
+                    "code": "turn_not_found",
+                    "message": "That one is already finished. Ask me anything.",
+                },
+            )
+        return JSONResponse(
+            status_code=200,
+            content={
+                "turn": turn.id,
+                "interrupted": True,
+                **({"at": turn.interrupted_at} if turn.interrupted_at else {}),
+            },
         )
 
     @app.get("/v1/capabilities")

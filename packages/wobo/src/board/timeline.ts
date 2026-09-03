@@ -73,13 +73,22 @@ export function visibleAt(state: BoardObjectState, t: number): boolean {
   return true;
 }
 
-/** What was on this board at time `t`, in drawing order — the scrub, the save, and the export. */
-export function boardAt(store: BoardStore, t: number): BoardObject[] {
+/**
+ * What was on this board at time `t`, with each object's own timing — the scrubber's source.
+ *
+ * It reads `history()`, not `snapshot()`: a wiped or erased object was still on the board before it
+ * went, and a scrub that could not go back through a wipe would be a scrub of the present.
+ */
+export function boardStatesAt(store: BoardStore, t: number): BoardObjectState[] {
   return store
     .history()
     .filter((s) => visibleAt(s, t))
-    .sort((a, b) => a.seq - b.seq)
-    .map((s) => s.object);
+    .sort((a, b) => a.seq - b.seq);
+}
+
+/** What was on this board at time `t`, in drawing order — the scrub, the save, and the export. */
+export function boardAt(store: BoardStore, t: number): BoardObject[] {
+  return boardStatesAt(store, t).map((s) => s.object);
 }
 
 export interface Scrubber {

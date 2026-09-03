@@ -1590,7 +1590,15 @@ def run_board_plan(
 
 
 def board_plan_for(payload: dict[str, Any], *, live: bool) -> dict[str, Any] | None:
-    """The plan for this turn, live or keyless. None when the answer is not a drawing."""
+    """The plan for this turn, live or keyless. None when the answer is not a drawing.
+
+    This is the top of a board turn's work, so it is where the turn's clock starts: everything
+    the learner waits through before hearing a syllable or seeing a stroke — the plan, the
+    verifier, the pacing — is downstream of this line (BOARD.md §10, measured in board.stream).
+    """
+    from wobo_gateway.board import stream as board_stream
+
+    board_stream.mark_turn_start()
     if not live:
         return mock_board_plan(payload)
     from wobo_gateway.registry import policy

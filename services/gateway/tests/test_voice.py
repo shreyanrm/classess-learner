@@ -12,10 +12,12 @@ a pure function, so no key and no network is involved.
 
 from __future__ import annotations
 
+import json
 import time
 from typing import Any
 
 import pytest
+from conftest import mint
 from fastapi.testclient import TestClient
 from starlette.websockets import WebSocketDisconnect
 from wobo_gateway import voice
@@ -166,3 +168,82 @@ def test_junk_and_oversized_frames_are_dropped() -> None:
     assert not voice.relay_frame_allowed('{"unknownKind":{}}')
     huge = '{"realtimeInput":"' + "a" * (voice._MAX_RELAY_FRAME_BYTES + 64) + '"}'
     assert not voice.relay_frame_allowed(huge)
+
+
+# --- accent by country (WOBO-PLAN §3) ------------------------------------------------------
+#
+# A learner hears the English spoken around them, and American English when we know nothing.
+# Before this, no accent, locale or voice selection existed anywhere in the brain or the client:
+# every learner on every continent got one accent, and there was no fallback to fall back to.
+
+
+def test_the_accent_follows_the_country_and_falls_back_to_american_english() -> None:
+    assert voice.accent_for("IN") == "en-IN"
+    assert voice.accent_for("GB") == "en-GB"
+    assert voice.accent_for("AU") == "en-AU"
+    assert voice.accent_for("us") == "en-US"
+    # a country we ship no voice for is never handed a tag nobody speaks
+    assert voice.accent_for("ZA") == voice.AMERICAN_ENGLISH
+    assert voice.accent_for(None) == voice.AMERICAN_ENGLISH
+    assert voice.accent_for("") == voice.AMERICAN_ENGLISH
+
+
+def test_a_locale_answers_when_the_record_names_no_country() -> None:
+    assert voice.accent_for(None, "en-IN") == "en-IN"
+    assert voice.accent_for(None, "en_GB") == "en-GB"
+    # a browser's full header, weights and all
+    assert voice.accent_for(None, "en-AU,en;q=0.9") == "en-AU"
+    # the region half is read as a country, so an unspoken tag still lands somewhere honest
+    assert voice.accent_for(None, "hi-IN") == "en-IN"
+    assert voice.accent_for(None, "fr-FR") == voice.AMERICAN_ENGLISH
+
+
+def test_the_learners_own_record_beats_the_device_hint() -> None:
+    """The profile is proof; the header is a guess. A learner whose account says India hears
+    Indian English on a borrowed laptop set to British English."""
+    claims = {"user_metadata": {"country": "IN"}}
+    assert voice.learner_accent(claims, "en-GB") == "en-IN"
+    # nothing on the record: the device's own language is better than nothing
+    assert voice.learner_accent({}, "en-GB") == "en-GB"
+    assert voice.learner_accent(None, None) == voice.AMERICAN_ENGLISH
+
+
+def test_the_session_answers_with_the_accent_and_the_token_carries_it(
+    client: TestClient,
+) -> None:
+    """A socket has no door of its own, so the accent rides the grant. It used to ride nothing:
+    ``voice.py`` had no accent at all."""
+    headers = {
+        "Authorization": f"Bearer {mint('accent-learner', user_metadata={'country': 'IN'})}"
+    }
+    body = client.get("/v1/voice/session", headers=headers).json()
+    assert body["accent"] == "en-IN"
+    grant = voice._consume_grant(body["token"])
+    assert grant is not None
+    assert grant.subject == "accent-learner"
+    assert grant.accent == "en-IN"
+
+
+def test_a_header_only_learner_still_gets_their_own_english(client: TestClient) -> None:
+    headers = {
+        "Authorization": f"Bearer {mint('header-learner')}",
+        "Accept-Language": "en-GB,en;q=0.8",
+    }
+    assert client.get("/v1/voice/session", headers=headers).json()["accent"] == "en-GB"
+
+
+def test_both_sockets_ask_for_the_same_accent_in_words() -> None:
+    """The accent travels as an instruction, never as a setup field: an unknown field is
+    rejected upstream and the socket closes, which is how the microphone died once before."""
+    live = voice._setup_message("en-IN")["setup"]
+    read_aloud = voice._tts_setup_message("en-IN")["setup"]
+    for setup in (live, read_aloud):
+        text = setup["systemInstruction"]["parts"][0]["text"]
+        assert "Indian English" in text
+        assert "speechConfig" not in json.dumps(setup)
+    # the persona and the read-verbatim instruction both survive the accent line
+    assert "Wobo" in live["systemInstruction"]["parts"][0]["text"]
+    assert "verbatim" in read_aloud["systemInstruction"]["parts"][0]["text"]
+    # and the default is the fallback, spelled out
+    default = voice._setup_message()["setup"]["systemInstruction"]["parts"][0]["text"]
+    assert "American English" in default

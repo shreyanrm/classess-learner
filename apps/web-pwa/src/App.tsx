@@ -54,7 +54,13 @@ import { sfx } from './ui/sound';
 import { BoardBenchGate } from './wobo/board-bench';
 import { boardTurn } from './wobo/board-turn';
 import { WoboCompanion } from './wobo/Companion';
-import { boardTurnPayload, forgetAllOffer, turnFocus, woboTurnPayload } from './wobo/capabilities';
+import {
+  boardTurnPayload,
+  forgetAllOffer,
+  noteAccount,
+  turnFocus,
+  woboTurnPayload,
+} from './wobo/capabilities';
 import {
   appendToArchive,
   CHAT_PAGE,
@@ -419,6 +425,22 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       cancelled = true;
     };
   }, [sdk]);
+  // Who the brain says this learner is: the plan they are on and the consent tier IT derived. The
+  // client never decides either — it asks once, and every context packet after that repeats the
+  // answer, so Wobo never offers past the door the brain opened (WOBO-PLAN §5.3). A keyless build
+  // has no meter to read and `me()` answers null, which is carried as honestly as any other answer.
+  useEffect(() => {
+    let cancelled = false;
+    void sdk
+      .me()
+      .then((me) => {
+        if (!cancelled) noteAccount(me);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [sdk]);
   // Save only after the conversation actually moves — re-stamping the boot snapshot "now" would
   // out-fresh an older-but-richer transcript from another device during reconciliation.
   const bootTurns = useRef(true);
@@ -463,6 +485,8 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     text: string,
     shape: ReturnType<typeof boardShapeOf>,
     context: ReturnType<typeof bus.assembleContext>,
+    /** The rung of the assistance ladder this turn is on — the one thing the screen cannot report. */
+    mode?: string,
   ) => {
     const line = say({ role: 'wobo', text: '' });
     const title = context.curriculum?.nodeName ?? (context.page.state.title as string | undefined);
@@ -473,7 +497,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
         // `payload.context.turn.lastUserInput` — both to plan the board and, before that, to
         // run the inbound safety screen. Unwrapping it here handed the brain an empty turn,
         // so a board turn planned nothing and was screened against nothing.
-        payload: boardTurnPayload(context),
+        payload: boardTurnPayload(context, mode ? { task: { mode } } : {}),
         route: route.name,
         ...(shape.override ? { override: shape.override } : {}),
         origin: orbOrigin(),
@@ -680,7 +704,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
       // and the header is the only thing that chooses (docs/BOARD.md §4). Keyless builds never
       // stream, so the deterministic path below keeps every mode working with no gateway at all.
       if (shape.board && GATEWAY_URL) {
-        await askBoard(text, shape, context);
+        await askBoard(text, shape, context, mode ?? undefined);
         return;
       }
       // Navigation on command (WOBO.md §10) — the one nav path, shared by the chat page and the
@@ -709,7 +733,10 @@ function AppInner({ sdk }: { sdk: Sdk }) {
         return;
       }
 
-      const result = await sdk.llm.invoke('wobo.turn', woboTurnPayload(context), {
+      // The rung Wobo is on rides the packet's task state; the beat, the attempt and the score come
+      // off the screen itself (`taskFrom`), so the brain always knows where in the work this is.
+      const onRung = mode ? { task: { mode } } : {};
+      const result = await sdk.llm.invoke('wobo.turn', woboTurnPayload(context, onRung), {
         consentTier: 'un_elevated',
       });
       const output = result.output as {

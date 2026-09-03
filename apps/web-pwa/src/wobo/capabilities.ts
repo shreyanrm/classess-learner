@@ -26,7 +26,7 @@ import {
 import { chaptersBySubject, topicById } from '../curriculum/registry';
 import type { Topic } from '../data/model';
 import type { Router } from '../shell/router';
-import { clearMind } from '../store/mind';
+import { clearMind, eraseFromBrain, preferredAnalogy } from '../store/mind';
 import type { ActionAttachment } from './paths/types';
 
 export type PermissionRung = 'recommend' | 'prepare' | 'execute_with_permission' | 'safe_automatic';
@@ -156,11 +156,19 @@ const CAPABILITIES: Record<CapabilityId, WoboCapability> = {
     // card asks in the thread, and the wipe happens on approval alone (WOBO.md §4, family E).
     rung: 'execute_with_permission',
     label: () => 'forget everything Wobo knows about you',
+    // Erasure has to reach the BRAIN, not just this phone (WOBO-TASKS §5.7). `clearMind` drops the
+    // device copy and queues the server-side erase; this awaits one attempt at it so Wobo's line is
+    // the truth. A queued erase that has not landed is retried on every mind pulse until it does —
+    // and until then Wobo says so, because "I forgot you" while a server still remembers is a lie.
     run: async () => {
       clearMind();
       // MindObserver republishes the (now empty) dossier on its next pulse, so Wobo's very next turn
       // reasons from a blank slate — no stale context surviving the erase.
-      return 'Done — I cleared everything I was keeping about you. We start fresh from here.';
+      const outcome = await eraseFromBrain();
+      if (outcome === 'pending') {
+        return 'Done on this device — everything I was keeping here is gone. I could not reach the part of me that remembers across your devices, so I am still holding that request and I will finish it the moment I can.';
+      }
+      return 'Done — I cleared everything I was keeping about you, here and on my side. We start fresh from here.';
     },
   },
 
@@ -229,7 +237,11 @@ export function turnFocus(): FocusObject | null {
 export interface TurnPacketOptions {
   /** Overrides the live focus, when a caller has one in hand. */
   focus?: FocusObject | null;
-  /** Where the learner is in what they are doing (beat, attempt, score, ladder rung). */
+  /**
+   * What the caller knows about where the learner is (the rung of the assistance ladder Wobo is
+   * on). It is merged over what the screen itself reports (`taskFrom`); an explicit `null` sends no
+   * task state at all.
+   */
   task?: TaskState | null;
   /** Overrides the mind summary derived from the assembled context. */
   mind?: MindSummary | null;
@@ -241,17 +253,87 @@ const isRecordValue = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null;
 
 /**
- * The learner's mind, digested from the context the bus already assembles — mastery band for the
- * topic in front of them, the mistakes worth having in mind, and the consent tier the brain
- * derived. Nothing new is invented here; this only chooses what is worth the tokens.
+ * What this device knows about the learner that the assembled context does not carry: the world
+ * they asked to be taught in, and the two facts only the brain can state — the plan they are on and
+ * the consent tier it derived. The client never DECIDES the last two; it only repeats what
+ * `GET /v1/me` said, so Wobo never offers past the door the brain opened.
  */
-function mindFrom(context: Partial<WoboAssembledContext>): MindSummary | undefined {
+export interface LearnerFacts {
+  analogy?: string | undefined;
+  consentTier?: string | undefined;
+  plan?: string | undefined;
+}
+
+/** The last answer `GET /v1/me` gave. Null until it has answered, and on a keyless build forever. */
+let account: { plan?: string | null; consentTier?: string | null } | null = null;
+
+/**
+ * Record what the brain says this learner is on. App.tsx calls this once the answer lands; the
+ * packet then carries it every turn (WOBO-PLAN §5.3). Passing null forgets it — a sign-out.
+ */
+export function noteAccount(me: { plan?: string | null; consentTier?: string | null } | null): void {
+  account = me;
+}
+
+/** Everything about the learner that comes from the device and the account, not from the screen. */
+export function learnerFacts(): LearnerFacts {
+  return {
+    analogy: preferredAnalogy(),
+    ...(account?.consentTier ? { consentTier: account.consentTier } : {}),
+    ...(account?.plan ? { plan: account.plan } : {}),
+  };
+}
+
+/**
+ * The learner's mind, digested from the context the bus already assembles — mastery band for the
+ * topic in front of them, the mistakes worth having in mind, the world they want analogies drawn
+ * from, and the plan and consent tier the brain derived. Nothing new is invented here; this only
+ * chooses what is worth the tokens. `facts` is injectable so the digest can be held to its full
+ * shape in a test without a device behind it.
+ */
+export function mindFrom(
+  context: Partial<WoboAssembledContext>,
+  facts: LearnerFacts = learnerFacts(),
+): MindSummary | undefined {
   const summary: MindSummary = {};
   if (context.curriculum?.band) summary.band = context.curriculum.band;
   if (context.curriculum?.nodeName) summary.topic = context.curriculum.nodeName;
   const mistakes = (context.session?.recentEvents ?? []).filter((e) => e.includes('correct=false'));
   if (mistakes.length > 0) summary.mistakes = mistakes.slice(-3);
+  if (facts.analogy) summary.analogy = facts.analogy;
+  if (facts.consentTier) summary.consentTier = facts.consentTier;
+  if (facts.plan) summary.plan = facts.plan;
   return Object.keys(summary).length > 0 ? summary : undefined;
+}
+
+const numberAt = (v: unknown): number | undefined =>
+  typeof v === 'number' && Number.isFinite(v) ? v : undefined;
+
+/**
+ * Where the learner is in what they are doing: the beat of the lesson, the attempt they are on, the
+ * score so far (WOBO-PLAN §5.3). It is read off the LIVE SCREEN — every registered target publishes
+ * its own state, so this is the beat the learner can see rather than a number the app remembered.
+ * A caller with something the screen cannot know (the rung of the assistance ladder Wobo is on)
+ * passes it as `options.task` and it wins.
+ */
+export function taskFrom(context: Partial<WoboAssembledContext>): TaskState | undefined {
+  const task: TaskState = {};
+  for (const target of context.targets ?? []) {
+    const state = target.scene?.state;
+    if (!isRecordValue(state)) continue;
+    const beat = numberAt(state.beat);
+    const of = numberAt(state.of);
+    if (beat !== undefined && task.beat === undefined) {
+      task.beat = of === undefined ? String(beat) : `${beat} of ${of}`;
+    }
+    const attempt = numberAt(state.attempt) ?? numberAt(state.attempts);
+    if (attempt !== undefined && task.attempt === undefined) task.attempt = attempt;
+    const score = numberAt(state.score) ?? numberAt(state.correct);
+    if (score !== undefined && task.score === undefined) task.score = score;
+  }
+  const mode = context.page?.state?.mode;
+  if (typeof mode === 'string' && mode) task.mode = mode;
+  return Object.keys(task).length > 0 ? task : undefined;
 }
 
 function turnsFrom(context: Partial<WoboAssembledContext>): PacketTurn[] {
@@ -271,11 +353,15 @@ export function buildTurnPacket(
   options: TurnPacketOptions = {},
 ): ContextPacket {
   const registry = options.registry ?? surfaceRegistry;
+  // The screen's own account of where the learner is, with whatever the caller knows on top of it.
+  // Derived here rather than left to callers: a turn that forgets to say which beat it is on is a
+  // turn the brain has to guess about, and every caller forgot.
+  const task = options.task === null ? {} : { ...taskFrom(context), ...(options.task ?? {}) };
   return buildPacket({
     focus: options.focus === undefined ? currentFocus : options.focus,
     registrySnapshot: registry.snapshot({ route: context.page?.route }),
     route: context.page?.route,
-    task: options.task ?? null,
+    task: Object.keys(task).length > 0 ? task : null,
     mind: options.mind === undefined ? (mindFrom(context) ?? null) : options.mind,
     turns: turnsFrom(context),
     budget: options.budget,

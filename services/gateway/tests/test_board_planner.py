@@ -201,7 +201,7 @@ def test_the_learner_word_overrides_her_rule() -> None:
 
 
 # --- order and timing --------------------------------------------------------------------------
-def test_the_computed_geometry_is_drawn_before_her_marks_over_it() -> None:
+def test_the_computed_geometry_is_drawn_before_wobos_marks_over_it() -> None:
     plan = plan_board(
         {
             "intents": [{"pipeline": "math", "op": "graph", "expr": "x**2"}],
