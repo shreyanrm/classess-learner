@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wobo app screens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAF7F0; --paper-2:#F1EDE3; --paper-3:#E7E1D3; --ink:#14142B; --ink-2:#4E4E66; --ink-3:#8A8A9E;
+  --pig:#2B45FF; --violet:#7C5CFF; --rose:#FF6B57; --marigold:#FFB629; --mint:#22C48B; --lilac:#B7A6FF;
+  --pig-w:#E6EAFF; --violet-w:#ECE6FF; --rose-w:#FFE7E2; --marigold-w:#FFF1D6; --mint-w:#DDF6EC; --lilac-w:#EFEBFF;
+  --shadow:0 18px 50px rgba(43,69,255,.13); --lift:0 8px 24px rgba(20,20,43,.10);
+  --body:#14142B; --body-hi:#3A3A5C; --visor:#FAF7F0; --visor-lo:#E7E1D3; --eye:#2B45FF;
+  --sans:'Poppins',system-ui,-apple-system,sans-serif; --hand:'Caveat',cursive;
+}
+[data-theme="dark"]{
+  --paper:#0F1226; --paper-2:#181C3A; --paper-3:#22264A; --ink:#F3F0E8; --ink-2:#B8B6C6; --ink-3:#7C7B92;
+  --pig:#7C8CFF; --violet:#A996FF; --rose:#FF8A78; --marigold:#FFC85A; --mint:#4FE3BD; --lilac:#C9BDFF;
+  --pig-w:#1E2650; --violet-w:#26214F; --rose-w:#3E2431; --marigold-w:#3E3320; --mint-w:#16362E; --lilac-w:#2A2650;
+  --shadow:0 20px 56px rgba(0,0,0,.55); --lift:0 8px 24px rgba(0,0,0,.4);
+  --body:#F3F0E8; --body-hi:#FFFFFF; --visor:#0F1226; --visor-lo:#1E2650; --eye:#7C8CFF;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{margin:0;letter-spacing:-.02em}
+p{margin:0}
+.hand{font-family:var(--hand);font-weight:600}
+.btn{font:500 15px/1 var(--sans);padding:14px 20px;border-radius:12px;border:0;background:var(--ink);color:var(--paper);display:inline-flex;align-items:center;gap:8px;min-height:46px;cursor:pointer}
+.btn.pig{background:var(--pig);color:#fff}.btn.quiet{background:var(--paper-2);color:var(--ink)}.btn.sm{padding:10px 14px;min-height:38px;font-size:14px;border-radius:10px}
+.chip{display:inline-flex;align-items:center;gap:6px;font:500 13px/1 var(--sans);padding:8px 12px;border-radius:999px;background:var(--paper-2);color:var(--ink-2)}
+.chip.on{background:var(--ink);color:var(--paper)}
+.tag{font:500 11px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.label{font:500 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--pig)}
+.wobo .blink{transform-origin:center;animation:blink 5s infinite}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+.bob{animation:bob 4.5s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+
+/* artboard chrome (review only) */
+.board{margin:40px auto;width:1440px;max-width:100%}
+.board > .name{font:600 13px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:0 24px 10px}
+.screen{background:var(--paper);min-height:900px;position:relative;overflow:hidden;border-radius:28px;box-shadow:var(--shadow)}
+
+/* ---------- app shell ---------- */
+.shell{display:grid;grid-template-columns:240px 1fr;min-height:900px}
+.rail{padding:28px 20px;display:flex;flex-direction:column;gap:6px}
+.rail .wm{display:flex;align-items:center;gap:10px;padding:6px 10px 26px}
+.rail .wm svg{height:22px;width:auto;fill:var(--ink)}
+.rail a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;font:500 15px/1 var(--sans);color:var(--ink-2)}
+.rail a.on{background:var(--paper-2);color:var(--ink)}
+.rail a svg{width:22px;height:22px}
+.rail .spacer{flex:1}
+.rail .allow{background:var(--marigold-w);border-radius:18px;padding:16px;display:grid;gap:8px}
+.rail .allow b{font:600 14px/1.2 var(--sans)}
+.rail .allow .bar{height:8px;border-radius:4px;background:rgba(20,20,43,.08);overflow:hidden}
+.rail .allow .bar i{display:block;height:100%;width:62%;background:var(--marigold);border-radius:4px}
+.rail .allow span{font-size:12px;color:var(--ink-2)}
+.main{padding:28px 40px 60px;display:grid;gap:28px;align-content:start}
+.topbar{display:flex;align-items:center;gap:14px}
+.topbar .crumb{font:500 14px/1 var(--sans);color:var(--ink-3)}
+.topbar .right{margin-left:auto;display:flex;gap:10px;align-items:center}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--lilac-w);display:grid;place-items:center;font:600 14px/1 var(--sans);color:var(--ink)}
+.orb{position:absolute;right:28px;bottom:28px;width:72px;height:72px;filter:drop-shadow(0 12px 20px rgba(20,20,43,.18))}
+
+/* ---------- HOME ---------- */
+.greet{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:end}
+.greet h1{font:700 clamp(30px,3.2vw,44px)/1.05 var(--sans);letter-spacing:-.03em}
+.greet h1 .hand{display:block;font-size:.7em;color:var(--pig);font-weight:700;margin-bottom:6px}
+.greet p{color:var(--ink-2);margin-top:10px;max-width:44ch}
+.ask{margin-top:18px;display:flex;gap:10px;background:var(--paper-2);border-radius:18px;padding:8px 8px 8px 20px;align-items:center;max-width:640px}
+.ask input{flex:1;border:0;background:transparent;font:400 16px/1.4 var(--sans);color:var(--ink);outline:none;min-width:0}
+.ask input::placeholder{color:var(--ink-3)}
+.ask .mic{width:40px;height:40px;border-radius:12px;background:var(--paper);display:grid;place-items:center}
+.today{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{border-radius:22px;padding:22px;background:var(--paper-2);display:grid;gap:10px;align-content:start;position:relative;min-height:190px}
+.card.pig{background:var(--pig-w)}.card.mint{background:var(--mint-w)}.card.rose{background:var(--rose-w)}.card.marigold{background:var(--marigold-w)}.card.lilac{background:var(--lilac-w)}
+.card h3{font:600 19px/1.2 var(--sans)}
+.card p{color:var(--ink-2);font-size:14px}
+.card .foot{margin-top:auto;display:flex;align-items:center;gap:10px}
+.card .mini{width:40px;height:40px}
+.pill{font:500 12px/1 var(--sans);padding:6px 10px;border-radius:999px;background:var(--paper);color:var(--ink-2)}
+.streak{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:var(--paper-2);border-radius:22px;padding:18px 22px}
+.streak .n{font:700 40px/1 var(--sans);font-variant-numeric:tabular-nums}
+.streak .days{display:flex;gap:6px}
+.streak .days i{width:26px;height:26px;border-radius:50%;background:var(--paper-3);display:grid;place-items:center;font:600 11px/1 var(--sans);color:var(--ink-3)}
+.streak .days i.on{background:var(--marigold);color:var(--ink)}
+.week{background:var(--paper-2);border-radius:22px;padding:22px;display:grid;gap:12px}
+.week .hand{font-size:24px;line-height:1.2;color:var(--ink)}
+.week .hand em{font-style:normal;color:var(--rose)}
+.split{display:grid;grid-template-columns:1.3fr .7fr;gap:16px}
+
+/* ---------- LEARN ---------- */
+.subjects{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.subjects a{border-radius:18px;padding:18px;background:var(--paper-2);display:grid;gap:8px}
+.subjects a.on{outline:3px solid var(--pig)}
+.subjects b{font:600 16px/1.2 var(--sans)}
+.subjects span{font-size:13px;color:var(--ink-3)}
+.units{display:grid;gap:12px}
+.unit{display:grid;grid-template-columns:56px 1fr auto;gap:16px;align-items:center;background:var(--paper-2);border-radius:20px;padding:16px 20px}
+.unit .n{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font:700 22px/1 var(--hand);color:var(--ink);background:var(--pig-w)}
+.unit b{font:600 17px/1.2 var(--sans);display:block}
+.unit span{font-size:13px;color:var(--ink-3)}
+.unit .prog{height:8px;border-radius:4px;background:var(--paper-3);overflow:hidden;margin-top:8px;max-width:360px}
+.unit .prog i{display:block;height:100%;background:var(--mint);border-radius:4px}
+.unit.now{background:var(--pig-w)}
+.unit.now .n{background:var(--pig);color:#fff}
+.unit.done .n{background:var(--mint-w)}
+.unit .state{font:500 13px/1 var(--sans);color:var(--ink-2)}
+.prov{display:inline-flex;align-items:center;gap:6px;font:500 12px/1 var(--sans);color:var(--ink-2);background:var(--paper);padding:6px 10px;border-radius:999px}
+.prov i{width:8px;height:8px;border-radius:50%;background:var(--mint)}
+
+/* ---------- LESSON ---------- */
+.lesson{display:grid;grid-template-columns:1fr 340px;gap:20px;height:calc(900px - 56px - 60px)}
+.plane{border-radius:26px;background:var(--paper-2);position:relative;overflow:hidden;display:grid;grid-template-rows:auto 1fr auto}
+.plane .bar{display:flex;align-items:center;gap:10px;padding:16px 20px;font-size:13px;color:var(--ink-3)}
+.plane .bar b{font-weight:500;color:var(--ink-2)}
+.plane .bar .live{margin-left:auto;display:inline-flex;align-items:center;gap:6px;color:var(--rose);font-size:12px}
+.plane .bar .live i{width:8px;height:8px;border-radius:50%;background:var(--rose)}
+.plane .canvas{position:relative;background:var(--paper);margin:0 12px;border-radius:18px}
+.plane .canvas svg{width:100%;height:100%;position:absolute;inset:0}
+.plane .say{padding:14px 20px 18px;display:flex;align-items:center;gap:12px}
+.plane .say .hand{font-size:24px;color:var(--ink)}
+.plane .say .mini{width:44px;height:44px}
+.ink{fill:none;stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.ink.pig{stroke:var(--pig)}.ink.thin{stroke-width:2.5;stroke:var(--ink-2)}
+.hw{font-family:var(--hand);font-weight:600;fill:var(--ink)}.hw.pig{fill:var(--pig)}.hw.rose{fill:var(--rose)}
+.side{display:grid;gap:14px;align-content:start}
+.side .card{min-height:0}
+.steps{display:grid;gap:8px}
+.steps div{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:center;font-size:14px;color:var(--ink-2)}
+.steps i{width:26px;height:26px;border-radius:50%;background:var(--paper);display:grid;place-items:center;font:700 13px/1 var(--hand);color:var(--ink);font-style:normal}
+.steps div.on{color:var(--ink);font-weight:500}.steps div.on i{background:var(--pig);color:#fff}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.talk{display:flex;align-items:center;gap:12px;background:var(--ink);color:var(--paper);border-radius:18px;padding:14px 16px}
+.talk .k{font:600 12px/1 var(--sans);padding:6px 8px;border-radius:8px;background:rgba(255,255,255,.14)}
+.talk span{font-size:14px}
+
+/* ---------- PRACTICE ---------- */
+.prac{display:grid;grid-template-columns:1fr 360px;gap:20px}
+.item{border-radius:26px;background:var(--mint-w);padding:32px;display:grid;gap:22px;justify-items:center;position:relative;min-height:560px;align-content:center}
+.item .q{font:600 22px/1.3 var(--sans);text-align:center;max-width:26ch}
+.item .q i{font-style:normal;font-family:var(--hand);color:var(--pig);font-size:1.3em}
+.grid4{display:grid;grid-template-columns:repeat(2,110px);grid-template-rows:repeat(2,110px);gap:6px;padding:6px;border-radius:20px;background:var(--ink);position:relative}
+.grid4 button{border:0;border-radius:14px;background:var(--paper);padding:0}
+.grid4 button.on{background:var(--pig)}
+.grid4 svg{position:absolute;inset:-36px;width:calc(100% + 72px);height:calc(100% + 72px);pointer-events:none;overflow:visible}
+.item .row{display:flex;gap:10px}
+.item .say{font-family:var(--hand);font-size:28px;color:var(--pig);min-height:1.2em}
+.item .say.win{color:var(--marigold)}
+.set{display:grid;gap:8px}
+.set div{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--paper-2);font-size:14px}
+.set div.on{background:var(--pig-w);font-weight:500}
+.set .ok{width:22px;height:22px;border-radius:50%;background:var(--mint);display:grid;place-items:center}
+.set .ok svg{width:12px;height:12px}
+.set .dot{width:10px;height:10px;border-radius:50%;background:var(--paper-3)}
+
+/* ---------- YOU ---------- */
+.you{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.you .card{min-height:0}
+.strengths{display:grid;gap:10px}
+.strengths > div{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start;font-size:14px;color:var(--ink-2)}
+.strengths b{display:block;color:var(--ink);font-weight:600}
+.strengths svg{width:44px;height:44px}
+.toggle{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:2px solid var(--paper-3)}
+.toggle:first-child{border-top:0}
+.toggle b{font-weight:500;display:block}
+.toggle span{font-size:13px;color:var(--ink-3)}
+.sw{width:46px;height:28px;border-radius:999px;background:var(--paper-3);position:relative;flex:none}
+.sw.on{background:var(--pig)}
+.sw::after{content:"";position:absolute;top:4px;left:4px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s}
+.sw.on::after{left:22px}
+.seg{display:inline-flex;background:var(--paper-3);border-radius:999px;padding:4px;gap:4px}
+.seg span{padding:8px 14px;border-radius:999px;font:500 13px/1 var(--sans);color:var(--ink-2)}
+.seg span.on{background:var(--paper);color:var(--ink)}
+.chart{display:flex;align-items:flex-end;gap:8px;height:120px;padding-top:8px}
+.chart i{flex:1;background:var(--pig);border-radius:8px 8px 4px 4px;opacity:.85}
+.chart i.k{background:var(--paper-3);opacity:1}
+
+/* phone: rail becomes a bottom tab bar */
+@media (max-width:900px){
+  .board{width:100%;margin:24px auto}
+  .screen{border-radius:0;min-height:100vh}
+  .shell{grid-template-columns:1fr;min-height:100vh}
+  .rail{position:fixed;left:0;right:0;bottom:0;z-index:10;flex-direction:row;justify-content:space-around;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:var(--paper);box-shadow:0 -10px 30px rgba(20,20,43,.08);gap:0}
+  .rail .wm,.rail .spacer,.rail .allow,.rail .talk{display:none}
+  .rail a{flex-direction:column;gap:4px;font-size:11px;padding:8px 12px;border-radius:12px}
+  .rail a svg{width:24px;height:24px}
+  .main{padding:16px 16px 110px;gap:20px}
+  .topbar .crumb{font-size:12px}
+  .greet{grid-template-columns:1fr}
+  .greet > div:last-child{justify-items:center}.greet > div:last-child svg{width:120px !important}
+  .greet h1{font-size:30px}
+  .ask{padding:6px 6px 6px 14px}
+  .ask input{font-size:15px}
+  .today{grid-template-columns:1fr}
+  .split{grid-template-columns:1fr}
+  .subjects{grid-template-columns:1fr 1fr}
+  .unit{grid-template-columns:44px 1fr;gap:12px}
+  .unit .n{width:44px;height:44px;font-size:18px}
+  .unit > .btn,.unit > .state{grid-column:2}
+  .lesson{grid-template-columns:1fr;height:auto}
+  .plane .canvas{min-height:300px}
+  .plane .say .hand{font-size:20px}
+  .plane .say .btn{display:none}
+  .prac{grid-template-columns:1fr}
+  .item{min-height:0;padding:24px 16px}
+  .grid4{grid-template-columns:repeat(2,92px);grid-template-rows:repeat(2,92px)}
+  .grid4 svg text{display:none}
+  .item > svg{display:none}
+  .item .say{font-size:24px}
+  .you{grid-template-columns:1fr}
+  .topbar .seg{display:none}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<radialGradient id="hg" cx="36%" cy="30%" r="80%"><stop offset="0" style="stop-color:var(--body-hi)"/><stop offset="1" style="stop-color:var(--body)"/></radialGradient>
+<linearGradient id="vg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--visor)"/><stop offset="1" style="stop-color:var(--visor-lo)"/></linearGradient>
+<symbol id="head" viewBox="0 0 120 120"><g class="wobo"><circle cx="60" cy="60" r="52" fill="url(#hg)"/><rect x="18" y="41" width="84" height="38" rx="19" fill="url(#vg)"/><rect x="22" y="45" width="76" height="12" rx="6" fill="var(--paper)" opacity=".35"/><g class="eyes"><g class="blink"><circle cx="43" cy="61" r="9" fill="var(--eye)"/><circle cx="77" cy="61" r="9" fill="var(--eye)"/><circle cx="40" cy="58" r="3" fill="var(--paper)" opacity=".85"/><circle cx="74" cy="58" r="3" fill="var(--paper)" opacity=".85"/></g></g><path d="M96 96 l10 10 l-4 4 l-10 -10 z" fill="var(--pig)"/></g></symbol>
+<symbol id="wm" viewBox="0 0 1160 340"><text x="0" y="300" font-family="Poppins,sans-serif" font-weight="700" font-size="330" letter-spacing="-12">wobo</text></symbol>
+</defs></svg>
+
+<!-- ===================== HOME ===================== -->
+<div class="board"><div class="name">01 · Home</div>
+<div class="screen"><div class="shell">
+  <aside class="rail">
+    <div class="wm"><svg viewBox="0 0 1160 340"><use href="#wm"/></svg></div>
+    <a class="on" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 L12 4 L20 11 V20 H4 Z"/></svg>Home</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 h16 v12 H4 z M8 10 h8 M8 14 h5"/></svg>Learn</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5 h14 v14 H5 z M5 12 h14 M12 5 v14"/></svg>Practice</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="4"/><path d="M4 20 c2 -5 14 -5 16 0"/></svg>You</a>
+    <div class="spacer"></div>
+    <div class="allow"><b>Today's allowance</b><div class="bar"><i></i></div><span>25 of 40 turns left · resets 6:00 am</span></div>
+  </aside>
+  <main class="main">
+    <div class="topbar"><span class="crumb">Tuesday · Class 8 · CBSE</span><div class="right"><span class="chip">Streak · 7</span><div class="avatar">A</div></div></div>
+    <div class="greet">
+      <div>
+        <h1><span class="hand">Hey Aanya,</span>what are we figuring out tonight?</h1>
+        <p>Friday's test is on triangles. You're two lessons in. Ten minutes on the hypotenuse and you're ready for the first half.</p>
+        <div class="ask"><input placeholder="Ask anything from your syllabus, or paste question 7"><div class="mic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--pig)" stroke-width="2.4" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11 a6 6 0 0 0 12 0 M12 17 v4"/></svg></div><button class="btn pig sm">Ask</button></div>
+      </div>
+      <div style="display:grid;place-items:end center"><svg class="bob" viewBox="0 0 120 120" style="width:180px;filter:drop-shadow(0 14px 20px rgba(20,20,43,.16))"><use href="#head"/></svg></div>
+    </div>
+    <div class="today">
+      <div class="card pig"><span class="tag">Continue</span><h3>Pythagoras, the hypotenuse</h3><p>Chapter 6 · lesson 3 of 5. Last time you found c = 5 yourself.</p><div class="foot"><button class="btn sm">Continue</button><span class="pill">6 min</span></div></div>
+      <div class="card mint"><span class="tag">Practice</span><h3>Five triangles, drawn by you</h3><p>Shade, drag and draw. Wobo rings the gap when you're close.</p><div class="foot"><button class="btn sm quiet">Start</button><span class="pill">8 min</span></div></div>
+      <div class="card marigold"><span class="tag">Wobo noticed</span><h3>You asked for help after a miss</h3><p>That's exactly how learning looks. It goes in the Sunday note.</p><div class="foot"><svg class="mini" viewBox="0 0 120 120"><use href="#head"/></svg><span class="pill">yesterday</span></div></div>
+    </div>
+    <div class="split">
+      <div class="week"><span class="tag">This week, in Wobo's words</span><div class="hand">Three lessons, fourteen problems, and you asked for help twice after a miss, <em>which is exactly how learning looks.</em> Next: the other half of triangles, ten minutes a day.</div></div>
+      <div class="streak"><div class="n">7</div><div><b style="font-weight:600">days in a row</b><div class="days" style="margin-top:8px"><i class="on">M</i><i class="on">T</i><i class="on">W</i><i class="on">T</i><i class="on">F</i><i class="on">S</i><i class="on">S</i></div><span style="font-size:12px;color:var(--ink-3);display:block;margin-top:8px">Rest days don't break it. Learning does not need guilt.</span></div></div>
+    </div>
+  </main>
+</div></div></div>
+
+<!-- ===================== LEARN ===================== -->
+<div class="board"><div class="name">02 · Learn</div>
+<div class="screen"><div class="shell">
+  <aside class="rail">
+    <div class="wm"><svg viewBox="0 0 1160 340"><use href="#wm"/></svg></div>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 L12 4 L20 11 V20 H4 Z"/></svg>Home</a>
+    <a class="on" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 h16 v12 H4 z M8 10 h8 M8 14 h5"/></svg>Learn</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5 h14 v14 H5 z M5 12 h14 M12 5 v14"/></svg>Practice</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="4"/><path d="M4 20 c2 -5 14 -5 16 0"/></svg>You</a>
+    <div class="spacer"></div>
+    <div class="allow"><b>Today's allowance</b><div class="bar"><i></i></div><span>25 of 40 turns left · resets 6:00 am</span></div>
+  </aside>
+  <main class="main">
+    <div class="topbar"><span class="crumb">Learn · Class 8 · CBSE</span><div class="right"><span class="prov"><i></i>Official CBSE 2026–27</span><div class="avatar">A</div></div></div>
+    <div><span class="label">Your subjects</span><h1 style="font:700 34px/1.1 var(--sans);margin-top:10px">Mathematics, where your class is this week</h1></div>
+    <div class="subjects">
+      <a class="on" href="#"><b>Mathematics</b><span>Chapter 6 of 14 · triangles</span></a>
+      <a href="#"><b>Science</b><span>Chapter 4 of 13 · sound</span></a>
+      <a href="#"><b>Social science</b><span>Chapter 3 of 12</span></a>
+      <a href="#"><b>English</b><span>Unit 2 of 8</span></a>
+    </div>
+    <div class="units">
+      <div class="unit done"><div class="n">5</div><div><b>Understanding quadrilaterals</b><span>Done on Sunday · 4 lessons · practice 9 of 10</span></div><span class="state">Mastered</span></div>
+      <div class="unit now"><div class="n">6</div><div><b>Triangles and the hypotenuse</b><span>Lesson 3 of 5 · test on Friday</span><div class="prog"><i style="width:55%"></i></div></div><button class="btn sm">Continue</button></div>
+      <div class="unit"><div class="n">7</div><div><b>Data handling</b><span>5 lessons · starts after the test</span></div><span class="state">Next</span></div>
+      <div class="unit"><div class="n">8</div><div><b>Squares and square roots</b><span>4 lessons</span></div><span class="state">Later</span></div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;color:var(--ink-3);font-size:13px"><svg viewBox="0 0 120 120" style="width:28px"><use href="#head"/></svg>Something your school does differently? Tell me and I'll reorder, add or drop a chapter for you.</div>
+  </main>
+</div></div></div>
+
+<!-- ===================== LESSON ===================== -->
+<div class="board"><div class="name">03 · Lesson, with the board</div>
+<div class="screen"><div class="shell">
+  <aside class="rail">
+    <div class="wm"><svg viewBox="0 0 1160 340"><use href="#wm"/></svg></div>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 L12 4 L20 11 V20 H4 Z"/></svg>Home</a>
+    <a class="on" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 h16 v12 H4 z M8 10 h8 M8 14 h5"/></svg>Learn</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5 h14 v14 H5 z M5 12 h14 M12 5 v14"/></svg>Practice</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="4"/><path d="M4 20 c2 -5 14 -5 16 0"/></svg>You</a>
+    <div class="spacer"></div>
+    <div class="talk"><span class="k">space</span><span>Hold to talk to Wobo</span></div>
+  </aside>
+  <main class="main">
+    <div class="topbar"><span class="crumb">Mathematics · Chapter 6 · Lesson 3</span><div class="right"><span class="chip">Full board</span><span class="chip on">Plane</span><span class="chip">Notes</span></div></div>
+    <div class="lesson">
+      <div class="plane">
+        <div class="bar"><b>Wobo</b> · with Aanya <span class="live"><i></i> drawing</span></div>
+        <div class="canvas">
+          <svg viewBox="0 0 900 520" aria-label="Wobo draws the proof of Pythagoras">
+            <path class="ink" d="M240 330 L400 330 L240 210 Z"/>
+            <path class="ink thin" d="M240 310 h20 v20"/>
+            <text class="hw" x="310" y="362" font-size="28">4</text><text class="hw" x="250" y="280" font-size="28">3</text>
+            <path class="ink thin" d="M240 330 L240 490 L400 490 L400 330"/><text class="hw" x="300" y="420" font-size="30">a²</text>
+            <path class="ink thin" d="M240 210 L120 210 L120 330 L240 330"/><text class="hw" x="158" y="278" font-size="30">b²</text>
+            <path class="ink pig" d="M400 330 L520 170 L360 50 L240 210"/><text class="hw pig" x="420" y="190" font-size="30">c²</text>
+            <text class="hw" x="580" y="140" font-size="44">a² + b² = c²</text>
+            <text class="hw" x="580" y="210" font-size="34">4² + 3² = c²</text>
+            <text class="hw" x="580" y="270" font-size="34">16 + 9 = 25</text>
+            <text class="hw pig" x="580" y="340" font-size="38">so c = 5</text>
+            <path class="ink pig" d="M566 300 c-16 26 -10 60 36 62 s100 6 136 -12 s12 -52 -36 -60 s-114 -8 -136 10"/>
+            <g transform="translate(700 430) rotate(-9)"><rect x="-4" y="-84" width="8" height="64" rx="3" fill="var(--ink)"/><path d="M-4 -20 l4 24 l4 -24 z" fill="var(--pig)"/></g>
+          </svg>
+        </div>
+        <div class="say"><svg class="mini" viewBox="0 0 120 120"><use href="#head"/></svg><div class="hand">So the square on the long side is exactly the other two, added. Want to try one with 5 and 12?</div><button class="btn sm" style="margin-left:auto">Yes, draw it</button></div>
+      </div>
+      <div class="side">
+        <div class="card"><span class="tag">This lesson</span><div class="steps"><div><i>1</i>A right angle and its sides</div><div><i>2</i>Squares on each side</div><div class="on"><i>3</i>Why the big one equals the two</div><div><i>4</i>Try it with numbers</div><div><i>5</i>One you draw yourself</div></div></div>
+        <div class="card rose"><span class="tag">Ask about this</span><p style="color:var(--ink)">Circle any part of the board and ask why. Or just say it.</p><div class="tools"><span class="chip">Circle</span><span class="chip">Type</span><span class="chip">Talk</span></div></div>
+        <div class="card"><span class="tag">Your place</span><p>Saved as you go. Leave any time, come back to this line.</p></div>
+      </div>
+    </div>
+  </main>
+</div></div></div>
+
+<!-- ===================== PRACTICE ===================== -->
+<div class="board"><div class="name">04 · Practice</div>
+<div class="screen"><div class="shell">
+  <aside class="rail">
+    <div class="wm"><svg viewBox="0 0 1160 340"><use href="#wm"/></svg></div>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 L12 4 L20 11 V20 H4 Z"/></svg>Home</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 h16 v12 H4 z M8 10 h8 M8 14 h5"/></svg>Learn</a>
+    <a class="on" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5 h14 v14 H5 z M5 12 h14 M12 5 v14"/></svg>Practice</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="4"/><path d="M4 20 c2 -5 14 -5 16 0"/></svg>You</a>
+    <div class="spacer"></div>
+    <div class="allow"><b>Today's allowance</b><div class="bar"><i></i></div><span>25 of 40 turns left · resets 6:00 am</span></div>
+  </aside>
+  <main class="main">
+    <div class="topbar"><span class="crumb">Practice · Fractions · 3 of 5</span><div class="right"><span class="chip">Start over</span><div class="avatar">A</div></div></div>
+    <div class="prac">
+      <div class="item">
+        <div class="q">Colour <i>½</i> of the shape.</div>
+        <div class="grid4"><button class="on"></button><button></button><button></button><button></button>
+          <svg viewBox="-36 -36 292 292" aria-hidden="true"><path d="M-8 -10 c-16 44 -16 100 8 124 s100 24 116 -8 s8 -108 -14 -120 s-92 -12 -110 4" fill="none" stroke="var(--pig)" stroke-width="4" stroke-linecap="round"/><text x="-30" y="268" font-family="Caveat,cursive" font-weight="700" font-size="30" fill="var(--pig)">that's a quarter, not half</text></svg>
+        </div>
+        <div class="row"><button class="btn">Check</button><button class="btn quiet">Start over</button></div>
+        <div class="say">one more, and you're there</div>
+        <svg viewBox="0 0 120 120" style="position:absolute;right:22px;bottom:18px;width:56px"><use href="#head"/></svg>
+      </div>
+      <div class="side">
+        <div class="card"><span class="tag">This set</span><div class="set"><div class="on">Colour half of the shape<span class="dot" style="background:var(--pig)"></span></div><div>Which is bigger, ⅓ or ¼?<span class="dot"></span></div><div>Drag the point to ⅔<span class="dot"></span></div><div>Build 3/4 on the number pad<span class="dot"></span></div><div>Draw a line that cuts it in half<span class="dot"></span></div></div></div>
+        <div class="card marigold"><span class="tag">How this works</span><p style="color:var(--ink)">Wobo never says wrong. When you're close, it draws the difference on your answer and waits. Get it, and it makes a small fuss.</p></div>
+      </div>
+    </div>
+  </main>
+</div></div></div>
+
+<!-- ===================== YOU ===================== -->
+<div class="board"><div class="name">05 · You (progress, parents, settings)</div>
+<div class="screen"><div class="shell">
+  <aside class="rail">
+    <div class="wm"><svg viewBox="0 0 1160 340"><use href="#wm"/></svg></div>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 L12 4 L20 11 V20 H4 Z"/></svg>Home</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 h16 v12 H4 z M8 10 h8 M8 14 h5"/></svg>Learn</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5 h14 v14 H5 z M5 12 h14 M12 5 v14"/></svg>Practice</a>
+    <a class="on" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="4"/><path d="M4 20 c2 -5 14 -5 16 0"/></svg>You</a>
+    <div class="spacer"></div>
+    <div class="allow"><b>Your plan</b><span style="font-size:14px;color:var(--ink)">Free · 40 turns a day</span><button class="btn sm" style="justify-self:start">See Pro</button></div>
+  </aside>
+  <main class="main">
+    <div class="topbar"><span class="crumb">You · Aanya · Class 8 · CBSE</span><div class="right"><div class="seg"><span class="on">Week</span><span>Month</span><span>Year</span></div><div class="avatar">A</div></div></div>
+    <div class="you">
+      <div class="card"><span class="tag">This week, in Wobo's words</span><div class="hand" style="font-size:24px;line-height:1.2">You showed up five days and asked me eleven questions, <span style="color:var(--rose)">which tells me you're working through problems instead of skipping them.</span> Triangles are half done. Sound is waiting.</div><div class="chart"><i style="height:40%"></i><i style="height:70%"></i><i style="height:55%"></i><i style="height:90%"></i><i style="height:65%"></i><i class="k" style="height:20%"></i><i class="k" style="height:20%"></i></div></div>
+      <div class="card"><span class="tag">Learning strengths</span><div class="strengths">
+        <div><svg viewBox="0 0 44 44" fill="none" stroke="var(--mint)" stroke-width="3.5" stroke-linecap="round"><path d="M8 28 l8 8 l20 -24"/></svg><div><b>Resilience</b>Asked for help after a wrong answer, twice. Kept going both times.</div></div>
+        <div><svg viewBox="0 0 44 44" fill="none" stroke="var(--marigold)" stroke-width="3.5" stroke-linecap="round"><path d="M22 6 l4 10 l10 1 l-8 7 l3 10 l-9 -6 l-9 6 l3 -10 l-8 -7 l10 -1 z"/></svg><div><b>Initiative</b>Opened Wobo on your own three evenings this week.</div></div>
+        <div><svg viewBox="0 0 44 44" fill="none" stroke="var(--pig)" stroke-width="3.5" stroke-linecap="round"><circle cx="22" cy="22" r="13"/><path d="M22 14 v8 l5 3"/></svg><div><b>Consistency</b>Ten minutes a day, most days. That is the whole trick.</div></div>
+      </div></div>
+      <div class="card rose"><span class="tag">Parents</span><h3>Share the week with a parent</h3><p style="color:var(--ink)">They get the Sunday note and a read-only view of every lesson. Nothing else, nothing hidden.</p><div class="foot"><button class="btn sm">Send an invite</button><span class="pill">not linked yet</span></div></div>
+      <div class="card"><span class="tag">Settings</span>
+        <div class="toggle"><div><b>Wobo speaks replies out loud</b><span>Voice chosen for India · English</span></div><div class="sw on"></div></div>
+        <div class="toggle"><div><b>Reduce motion</b><span>Still frames instead of animation</span></div><div class="sw"></div></div>
+        <div class="toggle"><div><b>Appearance</b><span>Auto by time of day</span></div><div class="seg"><span>Light</span><span>Dark</span><span class="on">Auto</span></div></div>
+        <div class="toggle"><div><b>Festivals we can wish you on</b><span>Chosen by your family · none yet</span></div><button class="btn sm quiet">Choose</button></div>
+        <div class="toggle"><div><b>Your data</b><span>Export or delete everything, any time</span></div><button class="btn sm quiet">Manage</button></div>
+      </div>
+    </div>
+  </main>
+</div></div></div>
+
+<script>
+const t = new URLSearchParams(location.search).get('theme'); if (t) document.documentElement.setAttribute('data-theme', t);
+</script>
+</body>
+</html>

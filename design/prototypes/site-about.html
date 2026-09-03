@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About Wobo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAF7F0; --paper-2:#F1EDE3; --paper-3:#E7E1D3; --ink:#14142B; --ink-2:#4E4E66; --ink-3:#8A8A9E;
+  --pig:#2B45FF; --violet:#7C5CFF; --rose:#FF6B57; --marigold:#FFB629; --mint:#22C48B; --lilac:#B7A6FF;
+  --pig-w:#E6EAFF; --rose-w:#FFE7E2; --marigold-w:#FFF1D6; --mint-w:#DDF6EC; --lilac-w:#EFEBFF;
+  --body:#14142B; --body-hi:#3A3A5C; --visor:#FAF7F0; --visor-lo:#E7E1D3; --eye:#2B45FF;
+  --sans:'Poppins',system-ui,-apple-system,sans-serif; --hand:'Caveat',cursive;
+  --s1:8px; --s2:16px; --s3:24px; --s4:40px; --s5:64px; --s6:120px;
+}
+[data-theme="dark"]{
+  --paper:#0F1226; --paper-2:#181C3A; --paper-3:#22264A; --ink:#F3F0E8; --ink-2:#B8B6C6; --ink-3:#7C7B92;
+  --pig:#7C8CFF; --violet:#A996FF; --rose:#FF8A78; --marigold:#FFC85A; --mint:#4FE3BD; --lilac:#C9BDFF;
+  --pig-w:#1E2650; --rose-w:#3E2431; --marigold-w:#3E3320; --mint-w:#16362E; --lilac-w:#2A2650;
+  --body:#F3F0E8; --body-hi:#FFFFFF; --visor:#0F1226; --visor-lo:#1E2650; --eye:#7C8CFF;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{margin:0;letter-spacing:-.025em;text-wrap:balance}
+p{margin:0}
+.hand{font-family:var(--hand);font-weight:600}
+.wrap{width:min(1120px,calc(100% - 48px));margin:0 auto}
+.label{font:500 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--pig)}
+.btn{font:500 15px/1 var(--sans);padding:14px 20px;border-radius:12px;border:0;background:var(--ink);color:var(--paper);display:inline-flex;align-items:center;gap:8px;min-height:46px;cursor:pointer}
+.btn.pig{background:var(--pig);color:#fff}.btn.quiet{background:var(--paper-2);color:var(--ink)}
+.btn:focus-visible,input:focus-visible{outline:3px solid var(--marigold);outline-offset:2px}
+header{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--paper) 78%,transparent)}
+header .wrap{display:flex;align-items:center;gap:var(--s3);height:72px}
+header .wm svg{height:26px;width:auto;fill:var(--ink);display:block}
+header nav{margin-left:auto;display:flex;gap:4px;background:var(--paper-2);padding:4px;border-radius:999px}
+header nav a{padding:10px 16px;border-radius:999px;font:500 14px/1 var(--sans);color:var(--ink-2)}
+header nav a.on{background:var(--ink);color:var(--paper)}
+header .cta{display:flex;gap:8px}
+@media (max-width:900px){header nav{display:none}}
+.blink{transform-origin:center;animation:blink 5s infinite}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+.reveal{opacity:1;transform:none;transition:opacity .6s ease,transform .6s ease}
+.reveal.pre{opacity:0;transform:translateY(18px)}
+
+/* hero: the mission line in Wobo's hand */
+.hero{padding:var(--s5) 0 var(--s4)}
+.hero .wrap{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5);align-items:center}
+.hero h1{font:700 clamp(36px,4.8vw,58px)/1.04 var(--sans);letter-spacing:-.035em;margin-top:var(--s2)}
+.hero h1 em{font-style:normal;color:var(--pig)}
+.hero p.sub{font-size:19px;color:var(--ink-2);max-width:46ch;margin-top:var(--s3)}
+.mission{background:var(--paper-2);border-radius:28px;padding:var(--s4);position:relative;transform:rotate(-1.5deg);box-shadow:0 26px 50px rgba(20,20,43,.12)}
+.mission .hand{font-size:clamp(28px,3vw,40px);line-height:1.12}
+.mission .hand em{font-style:normal;color:var(--rose)}
+.mission .sig{margin-top:var(--s3);display:flex;align-items:center;gap:10px;font-family:var(--hand);font-weight:700;font-size:24px}
+.mission .sig svg{width:40px}
+.mission .pin{position:absolute;top:-14px;left:50%;width:28px;height:28px;border-radius:50%;background:var(--marigold);transform:translateX(-50%);box-shadow:0 8px 16px rgba(20,20,43,.16)}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr}.mission{transform:none}}
+
+/* story */
+section{padding:var(--s5) 0}
+.head{display:grid;gap:var(--s2);max-width:64ch;margin-bottom:var(--s4)}
+.head h2{font:700 clamp(28px,3.4vw,42px)/1.08 var(--sans)}
+.head p{color:var(--ink-2);font-size:18px}
+.story{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5);align-items:start}
+.story p{color:var(--ink-2);font-size:18px;max-width:52ch}
+.story p+p{margin-top:var(--s2)}
+.story .pull{font-family:var(--hand);font-weight:600;font-size:30px;line-height:1.15;color:var(--ink);background:var(--marigold-w);border-radius:24px;padding:var(--s3)}
+.story .pull em{font-style:normal;color:var(--rose)}
+@media (max-width:900px){.story{grid-template-columns:1fr}}
+
+/* how it teaches: three tiles */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2)}
+.tile{border-radius:22px;padding:var(--s3);background:var(--paper-2);display:grid;gap:10px;align-content:start}
+.tile.pig{background:var(--pig-w)}.tile.mint{background:var(--mint-w)}.tile.marigold{background:var(--marigold-w)}.tile.rose{background:var(--rose-w)}.tile.lilac{background:var(--lilac-w)}
+.tile h3{font:600 19px/1.25 var(--sans)}
+.tile p{color:var(--ink-2);font-size:15px}
+.tile svg{width:44px;height:44px;fill:none;stroke:var(--ink);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:900px){.grid3{grid-template-columns:1fr}}
+
+/* promises */
+.promises{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s2)}
+.promise{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start;background:var(--paper-2);border-radius:20px;padding:var(--s3)}
+.promise i{width:44px;height:44px;border-radius:50%;background:var(--marigold);display:grid;place-items:center;font:700 22px/1 var(--hand);font-style:normal;color:var(--ink)}
+.promise b{display:block;font-weight:600;font-size:17px}
+.promise span{color:var(--ink-2);font-size:15px}
+@media (max-width:900px){.promises{grid-template-columns:1fr}}
+
+/* team */
+.team{display:grid;grid-template-columns:1.1fr .9fr;gap:var(--s4);align-items:center;background:var(--ink);color:var(--paper);border-radius:32px;padding:var(--s5) var(--s4)}
+.team h2{font:700 clamp(28px,3.4vw,42px)/1.06 var(--sans)}
+.team p{color:rgba(250,247,240,.72);margin-top:var(--s2);max-width:46ch}
+.team .hand{font-size:28px;color:var(--marigold);margin-top:var(--s3)}
+.team .cards{display:grid;gap:12px}
+.team .card{background:rgba(255,255,255,.08);border-radius:18px;padding:18px 20px;display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:center}
+.team .card .a{width:48px;height:48px;border-radius:50%;background:var(--marigold);display:grid;place-items:center;font:700 18px/1 var(--sans);color:#14142B}
+.team .card b{display:block;font-weight:600}
+.team .card span{font-size:14px;color:rgba(250,247,240,.6)}
+@media (max-width:900px){.team{grid-template-columns:1fr}}
+
+/* ask, close, footer */
+.ask{background:var(--paper-2);border-radius:28px;padding:var(--s4);display:grid;grid-template-columns:auto 1fr;gap:var(--s3);align-items:center}
+.ask h2{font:700 28px/1.1 var(--sans)}
+.ask .box{display:flex;gap:10px;background:var(--paper);border-radius:16px;padding:8px 8px 8px 18px;align-items:center;margin-top:var(--s2)}
+.ask input{flex:1;border:0;background:transparent;font:400 16px/1.4 var(--sans);color:var(--ink);outline:none;min-width:0}
+.ask .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ask .chips span{font:500 13px/1 var(--sans);padding:8px 12px;border-radius:999px;background:var(--paper);color:var(--ink-2)}
+.ask svg.w{width:120px}
+@media (max-width:900px){.ask{grid-template-columns:1fr}.ask svg.w{width:80px}}
+.close{margin:var(--s5) 0 0;background:var(--ink);color:var(--paper);padding:var(--s6) 0;text-align:center}
+.close h2{font:700 clamp(34px,5vw,60px)/1.02 var(--sans);letter-spacing:-.035em}
+.close .hand{font-size:30px;color:var(--marigold);display:block;margin-top:var(--s2)}
+.close .row{display:flex;gap:var(--s2);justify-content:center;margin-top:var(--s4);flex-wrap:wrap}
+.close .btn{background:var(--marigold);color:#14142B}
+.close .btn.q{background:rgba(255,255,255,.12);color:var(--paper)}
+footer{background:var(--ink);color:rgba(250,247,240,.6);padding:var(--s4) 0 var(--s5);font-size:14px}
+footer .wrap{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:var(--s3)}
+footer b{display:block;color:var(--paper);font-weight:600;margin-bottom:10px}
+footer a{display:block;padding:4px 0}
+footer .wm svg{height:24px;fill:var(--paper)}
+@media (max-width:900px){footer .wrap{grid-template-columns:1fr 1fr}}
+@media (prefers-reduced-motion:reduce){.blink{animation:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<radialGradient id="hg" cx="36%" cy="30%" r="80%"><stop offset="0" style="stop-color:var(--body-hi)"/><stop offset="1" style="stop-color:var(--body)"/></radialGradient>
+<linearGradient id="vg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--visor)"/><stop offset="1" style="stop-color:var(--visor-lo)"/></linearGradient>
+<symbol id="head" viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="url(#hg)"/><rect x="18" y="41" width="84" height="38" rx="19" fill="url(#vg)"/><g class="blink"><circle cx="43" cy="61" r="9" fill="var(--eye)"/><circle cx="77" cy="61" r="9" fill="var(--eye)"/><circle cx="40" cy="58" r="3" fill="var(--paper)" opacity=".85"/><circle cx="74" cy="58" r="3" fill="var(--paper)" opacity=".85"/></g></symbol>
+<symbol id="wm" viewBox="0 0 1160 340"><text x="0" y="300" font-family="Poppins,sans-serif" font-weight="700" font-size="330" letter-spacing="-12">wobo</text></symbol>
+</defs></svg>
+
+<header><div class="wrap">
+  <a class="wm" href="#"><svg viewBox="0 0 1160 340"><use href="#wm"/></svg></a>
+  <nav><a href="#">Meet Wobo</a><a href="#">How it works</a><a href="#">For parents</a><a href="#">For students</a><a href="#">Subjects</a><a href="#">Plans</a></nav>
+  <div class="cta"><a class="btn quiet" href="#">Sign in</a><a class="btn pig" href="#">Get started</a></div>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <div>
+    <span class="label">About</span>
+    <h1>We built the tutor we wished we'd had <em>at 9 pm on a Tuesday.</em></h1>
+    <p class="sub">Wobo is a small company with one job: make sure no child in classes 4 to 12 is stuck alone with a question. Not a content library. Not a chatbot. A tutor that draws, never judges, and is always there.</p>
+  </div>
+  <div class="mission"><span class="pin"></span>
+    <div class="hand">Every child deserves a patient teacher at the table, every evening, <em>whether or not the family can afford one.</em> That's the whole company.</div>
+    <div class="sig"><svg viewBox="0 0 120 120"><use href="#head"/></svg>— written by Wobo, kept by us</div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="head reveal"><span class="label">Why</span><h2>The homework hour is where confidence is made or lost.</h2></div>
+  <div class="story reveal">
+    <div>
+      <p>Most of learning happens at home, at the kitchen table, at the hour when parents are tired and tutors are expensive. That's when a child decides they're "not a maths person". Not in class. At the table, alone, with question 7.</p>
+      <p>We wanted a tutor for exactly that hour. One that knows the child's actual syllabus, answers the basic question without a face, draws instead of lecturing, and tells the parent on Sunday how it's really going. And we wanted it free, every day, so the family that needs it most gets it too.</p>
+      <p>So we built Wobo: one character, one pen, one promise. It teaches what your school teaches, and it never makes anyone feel small.</p>
+    </div>
+    <div class="pull">The child who gets unstuck at 9:46 pm on a Tuesday <em>walks into class on Wednesday a different kid.</em></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="head reveal"><span class="label">How Wobo teaches</span><h2>Three habits of a great teacher, built in.</h2></div>
+  <div class="grid3 reveal">
+    <div class="tile pig"><svg viewBox="0 0 44 44"><path d="M8 36 l6 -1 l20 -20 l-5 -5 l-20 20 z"/><path d="M26 13 l5 5"/></svg><h3>It draws</h3><p>Every answer appears line by line on a board, in the order a good teacher would draw it. You watch it think.</p></div>
+    <div class="tile mint"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="14"/><path d="M14 22 l6 6 l10 -12"/></svg><h3>It rings the gap</h3><p>When you're close, Wobo circles what you did and waits. It never says wrong. "Close" is the word.</p></div>
+    <div class="tile marigold"><svg viewBox="0 0 44 44"><rect x="6" y="10" width="32" height="24" rx="5"/><path d="M6 14 l16 10 l16 -10"/></svg><h3>It notices</h3><p>Earned praise, a quiet record of strengths, and a three-line note home on Sunday in its own words.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="head reveal"><span class="label">What we cover</span><h2>Classes 4 to 12. Mathematics, Science, Social science, English. Your board, your school's order.</h2><p>CBSE, ICSE and the state boards today, with the year's official syllabus behind each one, and the door open for a school's own syllabus. More countries as families ask.</p></div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="head reveal"><span class="label">Our promises</span><h2>Six lines we'd put in a contract.</h2></div>
+  <div class="promises reveal">
+    <div class="promise"><i>1</i><div><b>Free every day, forever.</b><span>A daily allowance of questions with no card and no trial that ends. Paid plans raise the allowance; they never change the tutor.</span></div></div>
+    <div class="promise"><i>2</i><div><b>Your school's syllabus, not a generic one.</b><span>The chapter your class is on this week, in your textbook's order and your exam's words.</span></div></div>
+    <div class="promise"><i>3</i><div><b>No ads, no selling, no data for sale.</b><span>Wobo is paid for by families. Nothing in it is trying to sell your child anything.</span></div></div>
+    <div class="promise"><i>4</i><div><b>Neutral on everything but the chapter.</b><span>Politics, religion, anything contested: Wobo stays out of it and steers back to the lesson, kindly.</span></div></div>
+    <div class="promise"><i>5</i><div><b>Parents see how it's going, without spying.</b><span>Lessons, progress and the Sunday note. Questions word for word only if the child allows.</span></div></div>
+    <div class="promise"><i>6</i><div><b>Erase everything, any time.</b><span>One button. Memory, progress, account. Gone, and gone from backups within 30 days.</span></div></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="team reveal">
+    <div><span class="label" style="color:var(--marigold)">The people</span><h2>A very small team, and one very patient character.</h2><p>Wobo is built in India by a founder who was, not long ago, the kid stuck at the table. The company is small on purpose: every rupee goes into the tutor, not into a sales team.</p><div class="hand">We'd rather be trusted by a thousand families than known by a million.</div></div>
+    <div class="cards">
+      <div class="card"><div class="a">S</div><div><b>Founder</b><span>Product, design, the promises above. Answers the contact form personally.</span></div></div>
+      <div class="card"><div class="a" style="background:var(--paper)"><svg viewBox="0 0 120 120" width="36" height="36"><use href="#head"/></svg></div><div><b>Wobo</b><span>The tutor. Draws, notices, never judges. Has no gender and no opinions about anything but the chapter.</span></div></div>
+      <div class="card"><div class="a" style="background:rgba(255,255,255,.14);color:var(--paper)">+</div><div><b>You, maybe</b><span>Teachers who want to help shape lessons, and engineers who care about children's data: write to us.</span></div></div>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="ask reveal">
+    <svg class="w" viewBox="0 0 120 120"><use href="#head"/></svg>
+    <div><span class="label">Still wondering?</span><h2 style="margin-top:8px">Ask Wobo about us. It answers for itself.</h2>
+      <div class="box"><input placeholder="Who makes Wobo, and how do they make money?"><button class="btn pig" style="min-height:40px;padding:10px 16px">Ask</button></div>
+      <div class="chips"><span>Why is it free?</span><span>Where is my data stored?</span><span>Can my school use it?</span></div>
+    </div>
+  </div>
+</div></section>
+
+<div class="close"><div class="wrap">
+  <h2>Begin tonight.</h2>
+  <span class="hand">The first question is on us.</span>
+  <div class="row"><a class="btn" href="#">Start learning for free</a><a class="btn q" href="#">I'm a parent</a></div>
+</div></div>
+<footer><div class="wrap">
+  <div><div class="wm"><svg viewBox="0 0 1160 340" style="width:120px"><use href="#wm"/></svg></div><p style="margin-top:10px;max-width:28ch">A tutor that draws, never judges, and is always there.</p></div>
+  <div><b>Wobo</b><a href="#">Meet Wobo</a><a href="#">How it works</a><a href="#">Subjects</a><a href="#">Plans</a><a href="#">Gift Wobo</a></div>
+  <div><b>For</b><a href="#">Parents</a><a href="#">Students</a><a href="#">Schools</a></div>
+  <div><b>Help</b><a href="#">Help centre</a><a href="#">Contact</a><a href="#">Questions</a></div>
+  <div><b>Company</b><a href="#" style="color:var(--paper)">About</a><a href="#">Security and trust</a><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Children's privacy</a><a href="#">Cookies</a><a href="#">Accessibility</a></div>
+</div></footer>
+
+<script>
+const t = new URLSearchParams(location.search).get('theme'); if (t) document.documentElement.setAttribute('data-theme', t);
+const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (!rm && 'IntersectionObserver' in window) {
+  const els=[...document.querySelectorAll('.reveal')];
+  els.forEach(e=>{ if (e.getBoundingClientRect().top > innerHeight) e.classList.add('pre'); });
+  const io=new IntersectionObserver(en=>en.forEach(x=>{ if(x.isIntersecting){ x.target.classList.remove('pre'); x.target.classList.add('on'); io.unobserve(x.target);} }),{threshold:.18});
+  els.forEach(e=>io.observe(e));
+} else { document.querySelectorAll('.reveal').forEach(e=>e.classList.add('on')); }
+</script>
+</body>
+</html>

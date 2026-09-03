@@ -4,7 +4,9 @@ Run: python3 progress-board.py [--gallery manifest.json]
 """
 import base64, datetime, html, json, os, re, shutil, subprocess, sys
 
-REPO = "/Users/depl/Documents/classess-learner"
+# The repository this board reports on: two levels up from tools/progress/, so a clone
+# anywhere on disk works and no machine's absolute path is baked into the script.
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT = os.path.expanduser("~/Documents/wobo-progress")
 GALLERY = os.path.join(os.path.dirname(os.path.abspath(__file__)), "progress-gallery.json")
 os.makedirs(os.path.join(OUT, "proofs"), exist_ok=True)

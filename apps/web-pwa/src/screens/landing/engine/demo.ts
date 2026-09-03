@@ -83,6 +83,30 @@ export interface LessonHandle {
   reset(): void;
   /** How many marks the board has. */
   readonly count: number;
+  /** Where the pen is right now, in the board's own coordinates. */
+  penPoint(): { x: number; y: number };
+  /**
+   * The gaze the pen is asking for, as a -1..1 pair — the shape the character rig takes. This is
+   * how the real Wobo watches its own hand: same reading as the drawn eyes, no React render.
+   */
+  penGaze(): { x: number; y: number };
+  /** The pen's box in viewport coordinates, for anything that wants to look AT it. */
+  penRect(): DOMRect | null;
+}
+
+/**
+ * The gaze a board point asks for, as a -1..1 pair measured from the little head's own centre.
+ * Pure, so the direction Wobo looks is a tested number rather than a transform read off a screen.
+ */
+export function penGazeAt(
+  x: number,
+  y: number,
+  origin: { x: number; y: number } = EYE_ORIGIN,
+): { x: number; y: number } {
+  const dx = x - origin.x;
+  const dy = y - origin.y;
+  const d = Math.hypot(dx, dy) || 1;
+  return { x: dx / d, y: dy / d };
 }
 
 /**
@@ -96,7 +120,16 @@ export function createLesson(
   wobo: Element | null,
 ): LessonHandle {
   const marks = root ? [...root.querySelectorAll<SVGGraphicsElement>('[data-s]')] : [];
-  if (!marks.length || !pen) return { draw() {}, reset() {}, count: 0 };
+  if (!marks.length || !pen) {
+    return {
+      draw() {},
+      reset() {},
+      count: 0,
+      penPoint: () => ({ x: 0, y: 0 }),
+      penGaze: () => ({ x: 0, y: 0 }),
+      penRect: () => null,
+    };
+  }
 
   const lengths = new Map<Element, number>();
   const spans = spansOf(marks);
@@ -123,6 +156,10 @@ export function createLesson(
 
   return {
     count: marks.length,
+    penPoint: () => ({ x: px, y: py }),
+    penGaze: () => penGazeAt(px, py),
+    penRect: () =>
+      typeof pen.getBoundingClientRect === 'function' ? pen.getBoundingClientRect() : null,
     reset() {
       px = 0;
       py = 0;
@@ -167,11 +204,9 @@ export function createLesson(
       pen.setAttribute('opacity', on.toFixed(2));
 
       if (eyes) {
-        const dx = px - EYE_ORIGIN.x;
-        const dy = py - EYE_ORIGIN.y;
-        const d = Math.hypot(dx, dy) || 1;
+        const gaze = penGazeAt(px, py);
         const reach = EYE_ORIGIN.reach;
-        eyes.style.transform = `translate(${(dx / d) * reach}px, ${(dy / d) * reach}px)`;
+        eyes.style.transform = `translate(${gaze.x * reach}px, ${gaze.y * reach}px)`;
       }
     },
   };

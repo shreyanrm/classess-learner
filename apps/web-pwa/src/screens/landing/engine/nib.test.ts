@@ -9,7 +9,14 @@
  */
 
 import { describe, expect, it } from 'bun:test';
-import { CURSOR_ON_CLASS, isHoverTarget, mountNib, NIB_EASE, nibTransform } from './nib';
+import {
+  CURSOR_ON_CLASS,
+  isHoverTarget,
+  mountNib,
+  NIB_EASE,
+  NIB_VISIBLE_CLASS,
+  nibTransform,
+} from './nib';
 import { createPointerState } from './pointer';
 
 /** A listener-counting event target, standing in for `window` or `document`. */
@@ -117,6 +124,20 @@ describe('mountNib', () => {
     handle.frame();
     expect(el.style.transform).toBe(nibTransform(500 + 500 * NIB_EASE, 300 + 300 * NIB_EASE));
     handle.dispose();
+  });
+
+  it('stays invisible until the pointer has actually moved', () => {
+    // The state starts parked at the centre of the viewport with `has: false`. Showing the nib then
+    // paints a blue dot in the corner of a page nobody has touched, which is what the prototype's
+    // `#nib.on` gate exists to prevent.
+    const { pointer, el, handle } = mount();
+    handle.frame();
+    expect(el.classes.has(NIB_VISIBLE_CLASS)).toBe(false);
+    pointer.has = true;
+    handle.frame();
+    expect(el.classes.has(NIB_VISIBLE_CLASS)).toBe(true);
+    handle.dispose();
+    expect(el.classes.has(NIB_VISIBLE_CLASS)).toBe(false);
   });
 
   it('swells over a control and presses on pointerdown', () => {

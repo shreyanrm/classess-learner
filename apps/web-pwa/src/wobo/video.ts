@@ -187,3 +187,33 @@ class VideoHandoff {
 }
 
 export const videoHandoff = new VideoHandoff();
+
+/**
+ * The handoff for a film that is a real video file — a baked MP4 the render worker produced
+ * (WOBO-TASKS §5.5).
+ *
+ * The live scene player keeps its position in its own step clock and seeks by re-selecting a beat;
+ * a `<video>` keeps its position in `currentTime` and seeks by setting it. Handing a baked film the
+ * scene player's resume put the learner back through a scrubber the film does not have: `playing`
+ * was never true, the position recorded came off a clock nobody was running, and "back to the film"
+ * moved a SMIL beat index while the video played on. This is the transport a video actually has.
+ *
+ * `film` is a thunk, not an element: the resume can be called long after the hold, and by then the
+ * player may have re-rendered under it.
+ */
+export function holdFilm(
+  sceneId: string,
+  film: () => { currentTime: number } | null,
+  options: { atMs?: number; title?: string } = {},
+): void {
+  const at = options.atMs ?? (film()?.currentTime ?? 0) * 1000;
+  videoHandoff.hold(
+    sceneId,
+    at,
+    (atMs) => {
+      const element = film();
+      if (element) element.currentTime = atMs / 1000;
+    },
+    options.title,
+  );
+}

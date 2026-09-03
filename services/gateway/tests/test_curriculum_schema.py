@@ -41,7 +41,8 @@ OFFERS = MIGRATION.parent / "0009_curriculum_review_offers.sql"
 def test_the_migration_exists_and_is_the_last_of_the_curriculum_pair() -> None:
     assert MIGRATION.is_file() and OFFERS.is_file()
     numbers = sorted(p.name[:4] for p in MIGRATION.parent.glob("*.sql"))
-    assert numbers[-1] == "0009"
+    # 0009 follows 0008 directly; later migrations (0010 hospitality) belong to other schemas.
+    assert numbers.index("0009") == numbers.index("0008") + 1
 
 
 def test_the_review_queue_can_hold_an_offered_syllabus() -> None:
@@ -109,7 +110,10 @@ def test_type_ahead_has_an_index_to_stand_on(sql: str) -> None:
     assert "using gin (search_text gin_trgm_ops)" in sql
     # array_to_string is STABLE, so the haystack is trigger-maintained rather than generated.
     assert "search_text text not null default ''" in sql
-    assert "create trigger frameworks_set_search_text before insert or update on curriculum.frameworks" in sql
+    assert (
+        "create trigger frameworks_set_search_text before insert or update "
+        "on curriculum.frameworks" in sql
+    )
 
 
 def test_the_tree_is_indexed_the_way_it_is_read(sql: str) -> None:

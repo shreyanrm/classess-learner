@@ -190,7 +190,7 @@ def test_the_bare_route_the_client_publishes_is_a_lesson() -> None:
     assert is_lesson({"page": {"route": "home"}}, {"lesson": True}) is True
 
 
-def test_the_learner_word_overrides_her_rule() -> None:
+def test_the_learner_word_overrides_wobos_rule() -> None:
     plan = plan_board(
         {"objects": [mark("m1")], "presentation": "screen"},
         context={**TARGETS, "page": {"route": "/course/atoms"}},

@@ -116,7 +116,7 @@ The free tier is a real product, not a trailer. Plus buys more of Wobo, never th
 About the wobot
 
 **Body**
-Wobo is a wobot: a small round body, two eyes, a warm glow, and a hand that draws. Not a boy, not a girl, and if you ask, Wobo will tell you that and get straight back to the problem.
+Wobo is a wobot: a small round body in ink, a visor with two blue eyes on it, and a hand that draws. Not a boy, not a girl, and if you ask, Wobo will tell you that and get straight back to the problem.
 
 Wobo has one job and no side interests. Wobo does not chase you, does not sulk when you leave, and is exactly as pleased to see you on day two hundred as on day one.
 

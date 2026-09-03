@@ -38,6 +38,9 @@ COPY --from=build --chown=gateway:gateway /app/.venv /app/.venv
 # imports at build time and the gateway never reads.
 COPY --chown=gateway:gateway content/catalogs/concepts.json /app/content/catalogs/
 COPY --chown=gateway:gateway content/factbase/facts.v1.jsonl /app/content/factbase/
+#   content/hospitality/festivals.json -> hospitality/festivals.py (the festival wishes;
+#   absent, the rule engine sends nothing and says so in the log)
+COPY --chown=gateway:gateway content/hospitality/festivals.json /app/content/hospitality/
 
 # The package is installed NON-EDITABLE, so it lives under /app/.venv/lib/... — relative
 # path discovery from __file__ would walk up inside the venv, not to /app. These two
@@ -47,7 +50,8 @@ ENV PATH="/app/.venv/bin:$PATH" \
     PLEXUS_CACHE_DIR=/home/gateway/cache \
     WOBO_IMAGE_CACHE_DIR=/home/gateway/cache/images \
     PLEXUS_CONCEPTS_PATH=/app/content/catalogs/concepts.json \
-    FACTBASE_DIR=/app/content/factbase
+    FACTBASE_DIR=/app/content/factbase \
+    WOBO_HOSPITALITY_CONTENT=/app/content/hospitality
 USER gateway
 EXPOSE 8081
 

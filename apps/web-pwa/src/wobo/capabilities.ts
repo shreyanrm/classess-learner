@@ -271,7 +271,9 @@ let account: { plan?: string | null; consentTier?: string | null } | null = null
  * Record what the brain says this learner is on. App.tsx calls this once the answer lands; the
  * packet then carries it every turn (WOBO-PLAN §5.3). Passing null forgets it — a sign-out.
  */
-export function noteAccount(me: { plan?: string | null; consentTier?: string | null } | null): void {
+export function noteAccount(
+  me: { plan?: string | null; consentTier?: string | null } | null,
+): void {
   account = me;
 }
 

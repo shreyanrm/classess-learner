@@ -10,6 +10,7 @@
 import { mintVoiceToken, voiceSocketUrl } from '@wobo/sdk';
 import type { WoboMood } from '@wobo/wobo';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { boardTurn } from './board-turn';
 
 export type VoiceStatus = 'unavailable' | 'idle' | 'connecting' | 'listening' | 'speaking';
 
@@ -42,6 +43,74 @@ interface LiveServerMessage {
     outputTranscription?: { text?: string };
     modelTurn?: { parts?: { inlineData?: { data?: string } }[] };
   };
+}
+
+// --- Barge-in: the learner speaks over Wobo ------------------------------------------------------
+
+/** Wobo's reply, mid-playback — the half of a barge-in the voice owns. */
+export interface SpokenAudio {
+  sources: Set<{ stop: () => void }>;
+  playhead: number;
+}
+
+/**
+ * The learner spoke over Wobo (BOARD.md §4): "on interrupt (tap, key, **voice**), the hand stops the
+ * pen mid-stroke and the voice mid-sentence".
+ *
+ * One interruption, both halves. Stopping only the audio sources left the hand drawing on over a
+ * learner who was already talking — the pen finished a plan nobody was listening to, and the object
+ * Wobo was cut off on never reached the brain, so the next turn started again instead of picking up.
+ *
+ * `hand` is the board conductor by default, and injectable so the seam is provable without a board.
+ */
+export function bargeIn(audio: SpokenAudio, hand: { interrupt: () => unknown } = boardTurn): void {
+  for (const s of audio.sources) s.stop();
+  audio.sources.clear();
+  audio.playhead = 0;
+  hand.interrupt();
+}
+
+/** Everything one relay frame can mean. The socket handler is nothing but a set of these. */
+export interface VoiceFrameSink {
+  /** The learner cut Wobo off. */
+  interrupted(): void;
+  /** A chunk of Wobo's reply, base64 PCM. */
+  audio(base64: string): void;
+  /** More of what the learner said. */
+  heard(text: string): void;
+  /** More of what Wobo said. */
+  said(text: string): void;
+  /** Wobo's turn closed. */
+  turnComplete(): void;
+}
+
+/**
+ * Read one relay frame and tell the sink what it means. Pure and exported so the whole message path
+ * — the barge-in above all — can be driven in a test without a websocket, a microphone or an
+ * AudioContext. A frame that is not JSON, or carries no `serverContent`, means nothing and is
+ * dropped rather than guessed at.
+ */
+export function readServerFrame(raw: string, sink: VoiceFrameSink): void {
+  let msg: LiveServerMessage;
+  try {
+    msg = JSON.parse(raw) as LiveServerMessage;
+  } catch {
+    return;
+  }
+  const content = msg.serverContent;
+  if (!content) return;
+  if (content.interrupted) {
+    sink.interrupted();
+    return;
+  }
+  if (content.inputTranscription?.text) sink.heard(content.inputTranscription.text);
+  if (content.outputTranscription?.text) sink.said(content.outputTranscription.text);
+  // Audio before the turn-complete check, so a frame carrying both is known to have spoken.
+  for (const part of content.modelTurn?.parts ?? []) {
+    const data = part.inlineData?.data;
+    if (typeof data === 'string') sink.audio(data);
+  }
+  if (content.turnComplete) sink.turnComplete();
 }
 
 function pcm16Base64(samples: Float32Array): string {
@@ -322,40 +391,34 @@ export function useWoboVoice(options?: {
       };
     };
 
-    const onServerMessage = (raw: string) => {
-      let msg: LiveServerMessage;
-      try {
-        msg = JSON.parse(raw) as LiveServerMessage;
-      } catch {
-        return;
-      }
-      const content = msg.serverContent;
-      if (content?.interrupted) {
-        for (const s of state.sources) s.stop();
-        state.sources.clear();
-        state.playhead = 0;
-        if (live.current === state) {
-          setStatus('listening');
-          setMood?.('listening');
-        }
-        return;
-      }
-      // Transcripts stream in incrementally; accumulate, then flush the pair on turnComplete.
-      if (content?.inputTranscription?.text) state.inTxt += content.inputTranscription.text;
-      if (content?.outputTranscription?.text) state.outTxt += content.outputTranscription.text;
-      // Audio first, so `spoke` is set before the empty-turn check (a message can carry both).
-      for (const part of content?.modelTurn?.parts ?? []) {
-        const data = part.inlineData?.data;
-        if (typeof data === 'string') playChunk(data);
-      }
-      if (content?.turnComplete) {
-        const heardNothing = state.inTxt.trim() === '';
-        flush(state);
-        // Empty push-to-talk hold — a mic mis-tap that captured only silence, and Wobo has no reply
-        // to stream. Close gracefully now instead of leaving Wobo hanging until the 12s safety timeout.
-        if (state.finishing && heardNothing && !state.spoke) stop();
-      }
-    };
+    const onServerMessage = (raw: string) =>
+      readServerFrame(raw, {
+        interrupted: () => {
+          // The learner spoke over Wobo. The pen lifts with the voice — one interruption, both
+          // halves (BOARD.md §4).
+          bargeIn(state);
+          if (live.current === state) {
+            setStatus('listening');
+            setMood?.('listening');
+          }
+        },
+        // Transcripts stream in incrementally; accumulate, then flush the pair on turnComplete.
+        heard: (text) => {
+          state.inTxt += text;
+        },
+        said: (text) => {
+          state.outTxt += text;
+        },
+        audio: playChunk,
+        turnComplete: () => {
+          const heardNothing = state.inTxt.trim() === '';
+          flush(state);
+          // Empty push-to-talk hold — a mic mis-tap that captured only silence, and Wobo has no
+          // reply to stream. Close gracefully now instead of leaving Wobo hanging until the 12 s
+          // safety timeout.
+          if (state.finishing && heardNothing && !state.spoke) stop();
+        },
+      });
 
     ws.onmessage = (e) => {
       if (typeof e.data === 'string') onServerMessage(e.data);

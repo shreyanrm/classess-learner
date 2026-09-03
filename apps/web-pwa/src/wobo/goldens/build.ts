@@ -395,7 +395,13 @@ function tangent(): GoldenBoard {
   b.ink({ id: 'parabola', kind: 'curve', ...shape(samples), style: style('wobo', 2) }, 900, 1400);
   b.say('At x equals one and a half the curve is climbing. How fast?', 2400);
   b.ink(
-    { id: 'touch-point', kind: 'point', anchor: at(bx(a), by(height)), style: style('accent', 3) },
+    {
+      id: 'touch-point',
+      kind: 'point',
+      anchor: at(bx(a), by(height)),
+      style: style('accent', 3),
+      depends: ['a'],
+    },
     2600,
     300,
   );
@@ -422,6 +428,7 @@ function tangent(): GoldenBoard {
       verified: true,
       check: CHECK.agree('tangent slope'),
       meta: 'd/dx(x**2) at x = 1.5',
+      depends: ['a'],
     },
     4100,
     500,
@@ -437,6 +444,7 @@ function tangent(): GoldenBoard {
       verified: true,
       check: CHECK.agree('point on the curve'),
       meta: '1.5**2',
+      depends: ['a'],
     },
     4600,
     500,
@@ -450,6 +458,7 @@ function tangent(): GoldenBoard {
         [bx(tangentTo), by(slope * tangentTo + intercept)],
       ]),
       style: style('accent', 2),
+      depends: ['a'],
     },
     5100,
     900,
@@ -461,6 +470,7 @@ function tangent(): GoldenBoard {
       anchor: on('tangent-line'),
       text: 'the tangent',
       style: style('accent', 1),
+      depends: ['a'],
     },
     6000,
     600,
@@ -472,11 +482,34 @@ function tangent(): GoldenBoard {
       anchor: on('touch-point'),
       from: at(790, 300),
       style: style('accent', 2),
+      depends: ['a'],
     },
     6600,
     700,
   );
-  b.done(7400);
+  // The board that answers back (docs/BOARD.md §2, §8). Everything above carries `depends: ['a']`,
+  // so dragging this handle is a question to the brain — move the point of contact and the tangent,
+  // the slope and the height on the curve are all recomputed and redrawn. It is drawn last because
+  // a control is only offered once the thing it controls is on the board to be moved.
+  b.say('Drag the handle and watch the slope change.', 7300);
+  b.ink(
+    {
+      id: 'x-handle',
+      kind: 'slider',
+      anchor: at(bx(-3), 590),
+      variable: 'a',
+      min: tangentFrom,
+      max: tangentTo,
+      value: a,
+      step: 0.1,
+      w: 6 * sx,
+      label: 'x',
+      style: style('accent', 2),
+    },
+    7400,
+    600,
+  );
+  b.done(8100);
 
   return {
     name: 'tangent-parabola',
@@ -2109,6 +2142,12 @@ const BUILDERS = [
 
 const NUMERAL = /\d/;
 
+/** Everything an object can put on the board in words or figures. */
+const COMPUTED_FIELDS = ['text', 'tex', 'label', 'title', 'value'] as const;
+
+/** A shape bound to a variable (docs/BOARD.md §2). Its value is the learner's, not the verifier's. */
+const CONTROL_KINDS: ReadonlySet<string> = new Set(['slider', 'toggle', 'input', 'drag']);
+
 /** Everything a golden board must satisfy before it becomes a fixture. */
 function audit(board: GoldenBoard): string[] {
   const problems: string[] = [];
@@ -2150,8 +2189,11 @@ function audit(board: GoldenBoard): string[] {
       }
     }
 
-    // Law 2: every visible numeral names the verifier that signed it.
-    const visible = ['text', 'tex', 'label', 'title', 'value']
+    // Law 2: every visible numeral names the verifier that signed it. A CONTROL is the exception,
+    // and the only one: its `value` is not a quantity Wobo computed and drew, it is where the
+    // learner has put the handle. What the brain recomputes FROM it — the numbers, the tangent —
+    // still names a check, which is what this law is actually protecting.
+    const visible = (CONTROL_KINDS.has(kind) ? ['text', 'tex', 'label', 'title'] : COMPUTED_FIELDS)
       .map((k) => String(object[k] ?? ''))
       .join(' ');
     if (NUMERAL.test(visible) && !String(object.check ?? '').trim()) {

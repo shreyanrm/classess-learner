@@ -54,6 +54,22 @@ export interface ChapterOptions {
   reduced?: boolean;
 }
 
+/**
+ * HOW A CHAPTER IS PINNED, and why it is not the default.
+ *
+ * ScrollTrigger's default `pinType` is `'fixed'`: it holds the section still by switching it to
+ * `position: fixed`. The app wraps every screen in an element that carries `will-change: transform`
+ * (App.tsx), and that hint alone makes the wrapper the containing block for every fixed descendant
+ * — so a "fixed" chapter resolves its offsets against the page instead of the viewport and simply
+ * scrolls away. Both chapters rendered as an empty band; the first proof pass caught it.
+ *
+ * `'transform'` pins by translating the section instead, which needs no containing block and is
+ * what ScrollTrigger itself picks whenever the scroller is not the document. It is correct inside
+ * ANY transformed ancestor, so the page no longer depends on a global override of the app's own
+ * hint, and the screen transition keeps the hint it was given.
+ */
+const PIN_TYPE = 'transform' as const;
+
 /** A target GSAP can accept, or null if the element is not on the page. */
 function target<T extends Element>(el: T | null): T[] {
   return el ? [el] : [];
@@ -70,15 +86,21 @@ export function mountNight(
   options: ChapterOptions = {},
 ): Disposer {
   if (options.reduced) {
-    gsap.set(target(refs.scene), { opacity: 0 });
+    // The still. Everything the chapter would ever show is shown at once, because there is no
+    // scroll to hand one beat to the next: the room stays lit, the question stays above the board,
+    // the board is already drawn, and ALL FOUR captions are visible — the stylesheet's
+    // reduced-motion block lays them out in flow so they read as four paragraphs instead of a
+    // stack. Settling on the last beat, which is what this used to do, silently dropped the desk
+    // scene and three of the four captions for every reader who asked for less motion.
+    gsap.set(target(refs.scene), { opacity: 1, scale: 1, y: 0 });
     gsap.set(target(refs.board), { scale: 1, opacity: 1 });
-    gsap.set(target(refs.question), { opacity: 0 });
+    gsap.set(target(refs.question), { opacity: 1, y: 0 });
     gsap.set(target(refs.moon), { opacity: 1, y: 0 });
     gsap.set(target(refs.cone), { opacity: 0.7 });
     gsap.set(target(refs.steam), { opacity: 1 });
-    refs.captions.forEach((caption, i) => {
-      if (caption) gsap.set(caption, { opacity: i === refs.captions.length - 1 ? 1 : 0, y: 0 });
-    });
+    for (const caption of refs.captions) {
+      if (caption) gsap.set(caption, { opacity: 1, y: 0 });
+    }
     draw(1);
     return () => {};
   }
@@ -89,6 +111,7 @@ export function mountNight(
       start: 'top top',
       end: `+=${NIGHT_SCRUB_PX}`,
       pin: refs.pin ?? undefined,
+      pinType: PIN_TYPE,
       scrub: SCRUB,
       anticipatePin: 1,
     },
@@ -179,6 +202,7 @@ export function mountSunday(refs: SundayRefs, options: ChapterOptions = {}): Dis
       start: 'top top',
       end: `+=${SUNDAY_SCRUB_PX}`,
       pin: refs.pin ?? undefined,
+      pinType: PIN_TYPE,
       scrub: SCRUB,
       anticipatePin: 1,
     },

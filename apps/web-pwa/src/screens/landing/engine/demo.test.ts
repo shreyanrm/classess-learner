@@ -15,6 +15,8 @@ import {
   DEMO_HOLD,
   DEMO_MS,
   demoPhase,
+  EYE_ORIGIN,
+  penGazeAt,
   type StrokeSpan,
   strokeAmount,
   tiltAngles,
@@ -219,5 +221,42 @@ describe('createLesson', () => {
     expect(lesson.count).toBe(0);
     lesson.draw(0.5);
     lesson.reset();
+  });
+});
+
+describe('penGazeAt', () => {
+  it('is straight ahead when the pen is on the eyes', () => {
+    const { x, y } = penGazeAt(EYE_ORIGIN.x, EYE_ORIGIN.y);
+    expect(Number.isNaN(x)).toBe(false);
+    expect(Number.isNaN(y)).toBe(false);
+    expect(Math.hypot(x, y)).toBeLessThanOrEqual(1);
+  });
+
+  it('is a unit direction toward the pen, whatever the distance', () => {
+    for (const d of [1, 40, 900]) {
+      const { x, y } = penGazeAt(EYE_ORIGIN.x + d, EYE_ORIGIN.y);
+      expect(x).toBeCloseTo(1);
+      expect(y).toBeCloseTo(0);
+    }
+    expect(penGazeAt(EYE_ORIGIN.x, EYE_ORIGIN.y - 30).y).toBeCloseTo(-1);
+  });
+
+  it('is what the drawn eyes are moved by, so both Wobos look the same way', () => {
+    const parts = board();
+    const lesson = lessonOf(parts);
+    for (let i = 0; i < 30; i++) lesson.draw(0.25);
+    const gaze = lesson.penGaze();
+    const point = lesson.penPoint();
+    expect(gaze).toEqual(penGazeAt(point.x, point.y));
+    expect(parts.eyes.style.transform).toBe(
+      `translate(${gaze.x * EYE_ORIGIN.reach}px, ${gaze.y * EYE_ORIGIN.reach}px)`,
+    );
+  });
+
+  it('answers a board that is not there without throwing', () => {
+    const lesson = createLesson(null, null, null);
+    expect(lesson.penPoint()).toEqual({ x: 0, y: 0 });
+    expect(lesson.penGaze()).toEqual({ x: 0, y: 0 });
+    expect(lesson.penRect()).toBeNull();
   });
 });

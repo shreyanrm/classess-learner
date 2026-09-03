@@ -97,7 +97,7 @@ def test_only_the_earliest_stroke_is_pulled_forward_to_keep_the_law() -> None:
     assert late["start"] + late["dur"] == clock[1][0] + clock[1][1]
 
 
-def test_ink_with_no_beat_is_spread_across_her_whole_line() -> None:
+def test_ink_with_no_beat_is_spread_across_wobos_whole_line() -> None:
     """The planner's default is 240 ms an object. Streamed as-is, a whole board drew itself in
     under three seconds and then sat still while Wobo talked over it — so the hand draws THROUGH
     the utterance instead: evenly from the lead-in to Wobo's last full stop, in the planner's order.

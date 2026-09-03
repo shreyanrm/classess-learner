@@ -151,7 +151,10 @@ def erase_durable(subject: str) -> Erasure:
     # The mind snapshot: read what is there so the learner can be told exactly what left, then
     # empty it. Patched, never deleted — the same row carries their XP and their streak.
     try:
-        mind = _mind(_request(_url(base, _STATE_TABLE, subject, select="mind"), key, "GET", want_rows=True))
+        rows = _request(
+            _url(base, _STATE_TABLE, subject, select="mind"), key, "GET", want_rows=True
+        )
+        mind = _mind(rows)
         facts = mind.get("facts")
         out.facts = len(facts) if isinstance(facts, list) else 0
         # The twin summary is not stored; it is derived from this snapshot every time it is built,
@@ -188,8 +191,8 @@ def erase(subject: str, *, meter_key: str) -> Erasure:
     device, so their remembered turns are not under their subject), and it comes from the door,
     never from a body.
     """
-    from wobo_gateway.board import stream as board_stream
     from wobo_gateway import voice
+    from wobo_gateway.board import stream as board_stream
 
     out = erase_durable(subject)
     # Cached generations keyed to this learner: the board turns still replayable in the resume

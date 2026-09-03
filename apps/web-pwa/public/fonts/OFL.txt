@@ -1,4 +1,13 @@
+Every face in this directory is licensed under the SIL Open Font License 1.1,
+reproduced below. Two families are bundled, both served from our own origin:
+
 Copyright 2014 The Caveat Project Authors (https://github.com/googlefonts/caveat)
+  Caveat-Regular.ttf         — the board's handwriting engine (packages/wobo)
+  Caveat-latin[-ext].woff2   — the landing page's hand (variable, wght 400-700)
+
+Copyright 2014-2020 Indian Type Foundry (https://github.com/itfoundry/Poppins)
+  Poppins-{400,500,600,700}-latin[-ext].woff2 — the landing page's interface face
+
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

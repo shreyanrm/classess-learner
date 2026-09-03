@@ -218,6 +218,28 @@ def test_erasing_never_costs_a_learner_a_turn(client: TestClient, auth) -> None:
     assert after == before
 
 
+def test_erasing_is_not_a_way_to_refill_a_spent_day(client: TestClient, auth) -> None:
+    """The other half of the same rule: forgetting is a data right, not a refill.
+
+    Erasure clears what Wobo was TOLD about a learner. It must not clear what the learner has
+    SPENT, or "forget me" is an unlimited-turn button one POST away — the meter is keyed on the
+    same door this route reads its subject from, so the two are one line apart in the code.
+    """
+    spent = client.post(
+        "/v1/capability/wobo.turn",
+        json={"payload": {"context": {"turn": {"lastUserInput": "draw benzene"}}}},
+        headers={**auth(), **SSE},
+    )
+    assert spent.status_code == 200
+    before = client.get("/v1/me", headers=auth()).json()["budget"]["turns_remaining"]
+    untouched = client.get("/v1/me", headers=auth("never-asked-anything")).json()
+    assert before < untouched["budget"]["turns_remaining"], "the turn has to be charged first"
+
+    assert erase(client, auth()).status_code == 200
+    after = client.get("/v1/me", headers=auth()).json()["budget"]["turns_remaining"]
+    assert after == before
+
+
 def test_a_malformed_subject_never_reaches_a_filter(monkeypatch: pytest.MonkeyPatch) -> None:
     """The subject is interpolated into a PostgREST filter, so it is checked first."""
     store = FakeStore().install(monkeypatch)

@@ -15,8 +15,10 @@
       "!**/schemas",
       "!**/_bundle.json",
       "!**/*.workflow.js",
+      "!design/prototypes",
       "!content/curriculum/**/*.json",
-      "!content/hospitality/**/*.json"
+      "!content/hospitality/**/*.json",
+      "!tools/progress/progress-*.json"
     ]
   },
   "formatter": {

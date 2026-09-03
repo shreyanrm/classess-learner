@@ -7,9 +7,15 @@
  * stays crisp over any ground. On night the tones swap — a cream body carrying a night visor.
  *
  * You MAY NOT change: Wobo's form (one round ink body with a visor), the visor, the two eyes, the
- * pen tip, the hairline rim, or the tones below. There is no orb, no jelly, no flame, and no warm
- * body colour — that vocabulary is retired (DESIGN.md §2 palette v4). Wobo has no gender
- * (WOBO-PLAN.md §19): nothing in the rig, the palette or the voice signals a boy or a girl.
+ * pen tip, the hairline rim, or the tones below. The old vocabulary is retired with palette v4
+ * (DESIGN.md §2): no jelly, no squircle, no molten body, no flame beneath, and none of the warm
+ * hexes that family was drawn in. That retirement is enforced by `identity.test.ts`, which reads
+ * every source file under `packages/wobo/src` with its comments stripped, so the ban binds the code
+ * while this paragraph stays free to name what it banned. ("Orb" survives — but only as the name
+ * for docked Wobo, never as a body: DESIGN.md §4.)
+ *
+ * Wobo has no gender (WOBO-PLAN.md §19). Nothing here — no tone, no name, no pronoun — is allowed
+ * to signal a boy or a girl, and the test below reads this file back to make sure none does.
  *
  * Everything below is frozen and asserted by tests.
  */

@@ -114,6 +114,8 @@ The same layer captures the learner's strokes. A stroke becomes a focus object w
 | Context packet | 2 KB screen snapshot, 6 KB total | brain |
 | Plan size per turn | 40 objects typical, 200 max | brain |
 
+The first two rows are measured, not asserted. `apps/web-pwa/tests/board-latency.spec.ts` holds the hand to the same numbers on a fast desktop — the strict reading — and `apps/web-pwa/tests/board-latency-throttled.spec.ts` puts the stated machine in: a 4x-throttled CPU on Chrome's Slow 4G profile, applied before the page opens, reporting both of the numbers above on every run, pass or fail. The first stroke is measured there today; the first syllable is reported as unmeasured, and its assertion skips with the reason written out, until the bench publishes a speech-onset number — a budget nobody took is worse than one that says so. The numbers never move; only the machine does.
+
 ## 11. What kills it
 
 Placing by pixels. A component that does not register its targets. A number the model wrote instead of the code computing it. Ink that lands after the word. A board that forgets what Wobo drew. A plane that hides the thing it explains. Any of these and the board is a slideshow, not a teacher.

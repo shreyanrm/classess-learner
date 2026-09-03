@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "file": "festivals.json",
   "purpose": "The hospitality calendar. What the families around a Wobo learner celebrate, when, and how Wobo should greet them.",
   "built_on": "2026-09-03",
@@ -38,6 +38,271 @@
     "ranges": "A date entry with an end greets on the first day only.",
     "dedupe": "One greeting per learner per day. Where two greetable entries fall on the same date and cover the same learner, the festival the learner's own profile names wins; where both or neither are named, the more specific label wins. Naraka Chaturdasi on 8 November 2026 is marked greet false for exactly this reason, because Diwali carries that day.",
     "confirmation": "A festival carrying requires_same_day_confirmation may never be used to schedule anything, whatever the confidence on its dates. Those dates move with the moon. Wobo greets only once a same-day confirmation flag is set."
+  },
+  "rule_engine": {
+    "reference": "docs/WOBO-PLAN.md section 14.1 (hyperlocal, never broadcast) and section 20 (neutral by default). Read by services/gateway/src/wobo_gateway/hospitality/festivals.py, which derives kind, requires_opt_in, calendars and region codes for every festival from the maps below. The festival entries themselves are untouched by this block.",
+    "law": ["A wish goes only to a family whose country, region or chosen calendar includes the day.", "kind civic and kind seasonal follow the family's country and region and need no choice.", "kind religious covers religious and cultural festivals alike. It is sent only when the family chose one of the festival's calendars in their mail preferences, never inferred from a name, a surname, a language, a board or a place.", "One wish a day. Never within twenty-four hours of another email. Never in the family's quiet hours. Nothing at all when the locality is unknown.", "A festival carrying requires_same_day_confirmation is scheduled only once that day's confirmation is set, whatever the confidence on its stored date.", "A wish is one line of plain English that names the day and wishes well. No imagery of deities, no political or national-pride framing, no regional kinship words, no exclamation marks, no emoji. The wishes list below is the copy the engine sends; a festival with no line there falls back to its own greeting, and a line that fails the copy gate is dropped rather than sent."],
+    "kinds": {
+      "civic": "A public day the country or the state keeps: republic, independence and national days. Follows locality; no choice needed.",
+      "seasonal": "A secular turn of the year: 1 January, the regional new years kept as public holidays, Thanksgiving. Follows locality; no choice needed.",
+      "religious": "Anything a family keeps by faith or by community. Needs the family's own choice, always."
+    },
+    "kind_by_tradition": {
+      "civic": "civic",
+      "secular": "seasonal",
+      "hindu": "religious",
+      "muslim": "religious",
+      "christian": "religious",
+      "sikh": "religious",
+      "jain": "religious",
+      "buddhist": "religious",
+      "jewish": "religious",
+      "parsi": "religious",
+      "chinese": "religious",
+      "multi": "religious"
+    },
+    "kind_overrides": {},
+    "calendars": [
+      {
+        "id": "hindu",
+        "name": "Hindu festivals"
+      },
+      {
+        "id": "muslim",
+        "name": "Muslim festivals"
+      },
+      {
+        "id": "christian",
+        "name": "Christian festivals"
+      },
+      {
+        "id": "sikh",
+        "name": "Sikh festivals"
+      },
+      {
+        "id": "jain",
+        "name": "Jain festivals"
+      },
+      {
+        "id": "buddhist",
+        "name": "Buddhist festivals"
+      },
+      {
+        "id": "jewish",
+        "name": "Jewish festivals"
+      },
+      {
+        "id": "parsi",
+        "name": "Parsi festivals",
+        "community": true
+      },
+      {
+        "id": "chinese",
+        "name": "Chinese festivals"
+      },
+      {
+        "id": "bengali",
+        "name": "Bengali festivals",
+        "community": true
+      },
+      {
+        "id": "tamil",
+        "name": "Tamil festivals",
+        "community": true
+      },
+      {
+        "id": "malayali",
+        "name": "Malayali festivals",
+        "community": true
+      },
+      {
+        "id": "punjabi",
+        "name": "Punjabi festivals",
+        "community": true
+      },
+      {
+        "id": "sindhi",
+        "name": "Sindhi festivals",
+        "community": true
+      }
+    ],
+    "calendars_note": "The list a family chooses from in 'Festivals we can wish you on'. A festival belongs to its tradition's calendar plus whatever extra_calendars adds. A community calendar (community: true) also stands in for the region: a Malayali family in Dubai who chose it is wished on Onam even though Onam's date entry is scoped to Kerala. Choosing only the broad calendar for a regional festival still needs the region to match.",
+    "extra_calendars": {
+      "diwali": ["sikh", "jain"],
+      "lohri": ["punjabi", "hindu"],
+      "vaisakhi": ["sikh", "punjabi", "tamil", "malayali", "bengali"],
+      "guru-nanak-jayanti": ["punjabi"],
+      "guru-gobind-singh-jayanti": ["punjabi"],
+      "onam": ["malayali"],
+      "pongal": ["tamil"],
+      "navratri-durga-puja-dussehra": ["bengali"],
+      "chaitra-sukladi": ["sindhi"],
+      "pohela-boishakh": ["bengali"],
+      "rabindra-jayanti": ["bengali"],
+      "chhath-puja": []
+    },
+    "region_codes": {
+      "Andhra Pradesh": ["IN-AP"],
+      "Assam": ["IN-AS"],
+      "Bihar": ["IN-BR"],
+      "Chandigarh": ["IN-CH"],
+      "Delhi": ["IN-DL"],
+      "Goa": ["IN-GA"],
+      "Gujarat": ["IN-GJ"],
+      "Haryana": ["IN-HR"],
+      "Himachal Pradesh": ["IN-HP"],
+      "Jammu": ["IN-JK"],
+      "Jammu and Kashmir": ["IN-JK"],
+      "Jharkhand": ["IN-JH"],
+      "Karnataka": ["IN-KA"],
+      "Kerala": ["IN-KL"],
+      "Madhya Pradesh": ["IN-MP"],
+      "Maharashtra": ["IN-MH"],
+      "Manipur": ["IN-MN"],
+      "Odisha": ["IN-OD"],
+      "Puducherry": ["IN-PY"],
+      "Punjab": ["IN-PB"],
+      "Rajasthan": ["IN-RJ"],
+      "Tamil Nadu": ["IN-TN"],
+      "Telangana": ["IN-TG"],
+      "Tripura": ["IN-TR"],
+      "Uttar Pradesh": ["IN-UP"],
+      "West Bengal": ["IN-WB"],
+      "England and Wales": ["GB-ENG", "GB-WLS"],
+      "Scotland": ["GB-SCT"],
+      "Northern Ireland": ["GB-NIR"],
+      "Quebec": ["CA-QC"],
+      "New South Wales": ["AU-NSW"],
+      "Bangladesh": ["BD"],
+      "Saudi Arabia": ["SA"],
+      "Qatar": ["QA"],
+      "Kuwait": ["KW"],
+      "Bahrain": ["BH"],
+      "Oman": ["OM"]
+    },
+    "region_codes_note": "Free-text regions on a festival, mapped to ISO 3166-2 codes (or a whole country where the text names one). A region not in this map and not in community_regions is ignored, which makes the festival narrower, never wider.",
+    "community_regions": {
+      "Malayali communities": "malayali",
+      "Sindhi communities": "sindhi",
+      "Parsi communities": "parsi",
+      "Parsi and Irani communities": "parsi",
+      "Ismaili communities": null
+    },
+    "region_aliases": {
+      "IN-TS": "IN-TG",
+      "IN-OR": "IN-OD",
+      "IN-UT": "IN-UK"
+    },
+    "scope_aliases": {
+      "GB-EAW": ["GB-ENG", "GB-WLS"]
+    },
+    "country_groups": {
+      "GCC": ["SA", "QA", "KW", "BH", "OM"]
+    },
+    "send_confidences": ["official", "official_reported", "derived"],
+    "human_checked_conventional": {
+      "christmas": "25 December is fixed everywhere this file covers. Checked 2026-09-03."
+    },
+    "suppressed": {
+      "vaisakhi": "One entry carries six regional new years on two dates (Vaisakhi, Vishu, Puthandu, Bohag Bihu, Pana Sankranti, Vaisakhadi); a single line cannot name the right day for the right family, and the 15 April entry would send an Assam greeting to Kerala. Split the entry per region before wishing. Until then, when in doubt, leave it out (section 20)."
+    },
+    "default_timezones": {
+      "IN": "Asia/Kolkata",
+      "GB": "Europe/London",
+      "IE": "Europe/Dublin",
+      "SG": "Asia/Singapore",
+      "HK": "Asia/Hong_Kong",
+      "MY": "Asia/Kuala_Lumpur",
+      "AE": "Asia/Dubai",
+      "SA": "Asia/Riyadh",
+      "QA": "Asia/Qatar",
+      "KW": "Asia/Kuwait",
+      "BH": "Asia/Bahrain",
+      "OM": "Asia/Muscat",
+      "PK": "Asia/Karachi",
+      "BD": "Asia/Dhaka",
+      "LK": "Asia/Colombo",
+      "NP": "Asia/Kathmandu",
+      "ZA": "Africa/Johannesburg",
+      "KE": "Africa/Nairobi",
+      "NZ": "Pacific/Auckland",
+      "JP": "Asia/Tokyo",
+      "KR": "Asia/Seoul"
+    },
+    "default_timezones_note": "Countries with one civil time zone. A family in one of these need not set a timezone; a family anywhere else (the United States, Canada, Australia and the rest) must, or nothing is timed and nothing sends.",
+    "quiet_hours": {
+      "from": "21:00",
+      "to": "08:00",
+      "note": "Local to the family. Nothing sends between these; a wish waits for the morning."
+    },
+    "wishes": [
+      {
+        "festival": "republic-day-india",
+        "day": "Republic Day",
+        "text": "Happy Republic Day, {name}. I hope the morning is bright and the day is an easy one."
+      },
+      {
+        "festival": "new-year-gregorian",
+        "day": "new year",
+        "text": "Happy new year, {name}. I am glad we get another year of this."
+      },
+      {
+        "festival": "independence-day-india",
+        "day": "Independence Day",
+        "text": "Happy Independence Day, {name}. I hope the day is a calm one."
+      },
+      {
+        "festival": "gandhi-jayanti",
+        "day": "Gandhi Jayanti",
+        "text": "Wishing you a good Gandhi Jayanti, {name}. A quiet day is a good day."
+      },
+      {
+        "festival": "diwali",
+        "day": "Diwali",
+        "text": "Happy Diwali, {name}. I hope the house is full of light tonight."
+      },
+      {
+        "festival": "eid-al-fitr",
+        "day": "Eid",
+        "text": "Happy Eid, {name}. I hope the house is full and the food goes on all day."
+      },
+      {
+        "festival": "christmas",
+        "day": "Christmas",
+        "text": "Happy Christmas, {name}. I hope the day is a slow one."
+      },
+      {
+        "festival": "pongal",
+        "day": "Pongal",
+        "text": "Happy Pongal, {name}. I hope the pot boils over exactly the way it should."
+      },
+      {
+        "festival": "onam",
+        "day": "Onam",
+        "text": "Happy Onam, {name}. I hope the flowers are out and the lunch is enormous."
+      },
+      {
+        "festival": "holi",
+        "day": "Holi",
+        "text": "Happy Holi, {name}. I hope the colours take a week to wash out."
+      },
+      {
+        "festival": "makar-sankranti",
+        "day": "Makar Sankranti",
+        "text": "Happy Makar Sankranti, {name}. May your kite stay up longer than everyone else's."
+      },
+      {
+        "festival": "lunar-new-year",
+        "day": "Lunar new year",
+        "text": "Happy Lunar New Year, {name}. I hope the year is a kind one."
+      },
+      {
+        "festival": "pohela-boishakh",
+        "day": "Bengali new year",
+        "text": "Happy Bengali new year, {name}. I hope the year starts sweet."
+      }
+    ],
+    "wishes_note": "day is the name the text uses, and it must be the festival's name or one of its aliases. {name} is the learner's name; the engine drops the clause cleanly when it has none. Locked by services/gateway/tests/test_hospitality_wishes.py against the pronoun gate (scripts/gate_pronouns.py) and the neutral-copy word list."
   },
   "sources": {
     "in_dopt_2026": {
@@ -415,10 +680,10 @@
     {
       "id": "makar-sankranti",
       "name": "Makar Sankranti",
-      "aliases": ["Maghi", "Magha Bihu", "Uttarayan", "Poush Sankranti", "Khichdi"],
+      "aliases": ["Maghi", "Magha Bihu", "Uttarayan", "Poush Sankranti", "Khichdi", "Sankranti"],
       "tradition": "hindu",
       "countries": ["IN", "NP"],
-      "regions": ["Gujarat", "Maharashtra", "Rajasthan", "Uttar Pradesh", "Bihar", "Karnataka", "Assam", "West Bengal"],
+      "regions": ["Gujarat", "Maharashtra", "Rajasthan", "Uttar Pradesh", "Bihar", "Karnataka", "Assam", "West Bengal", "Telangana", "Andhra Pradesh"],
       "calendar": "solar",
       "school_holiday": true,
       "quiet_day": false,

@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security and trust · Wobo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAF7F0; --paper-2:#F1EDE3; --paper-3:#E7E1D3; --ink:#14142B; --ink-2:#4E4E66; --ink-3:#8A8A9E;
+  --pig:#2B45FF; --violet:#7C5CFF; --rose:#FF6B57; --marigold:#FFB629; --mint:#22C48B; --lilac:#B7A6FF;
+  --pig-w:#E6EAFF; --rose-w:#FFE7E2; --marigold-w:#FFF1D6; --mint-w:#DDF6EC; --lilac-w:#EFEBFF;
+  --shadow:0 18px 50px rgba(43,69,255,.13); --lift:0 8px 24px rgba(20,20,43,.10);
+  --body:#14142B; --body-hi:#3A3A5C; --visor:#FAF7F0; --visor-lo:#E7E1D3; --eye:#2B45FF;
+  --sans:'Poppins',system-ui,-apple-system,sans-serif; --hand:'Caveat',cursive;
+  --s1:8px; --s2:16px; --s3:24px; --s4:40px; --s5:64px; --s6:120px;
+}
+[data-theme="dark"]{
+  --paper:#0F1226; --paper-2:#181C3A; --paper-3:#22264A; --ink:#F3F0E8; --ink-2:#B8B6C6; --ink-3:#7C7B92;
+  --pig:#7C8CFF; --violet:#A996FF; --rose:#FF8A78; --marigold:#FFC85A; --mint:#4FE3BD; --lilac:#C9BDFF;
+  --pig-w:#1E2650; --rose-w:#3E2431; --marigold-w:#3E3320; --mint-w:#16362E; --lilac-w:#2A2650;
+  --shadow:0 20px 56px rgba(0,0,0,.55); --lift:0 8px 24px rgba(0,0,0,.4);
+  --body:#F3F0E8; --body-hi:#FFFFFF; --visor:#0F1226; --visor-lo:#1E2650; --eye:#7C8CFF;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{margin:0;letter-spacing:-.025em;text-wrap:balance}
+p{margin:0}
+.hand{font-family:var(--hand);font-weight:600}
+.wrap{width:min(1120px,calc(100% - 48px));margin:0 auto}
+.label{font:500 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--pig)}
+.btn{font:500 15px/1 var(--sans);padding:14px 20px;border-radius:12px;border:0;background:var(--ink);color:var(--paper);display:inline-flex;align-items:center;gap:8px;min-height:46px;cursor:pointer}
+.btn.pig{background:var(--pig);color:#fff}.btn.quiet{background:var(--paper-2);color:var(--ink)}
+.btn:focus-visible,input:focus-visible{outline:3px solid var(--marigold);outline-offset:2px}
+
+/* header */
+header{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--paper) 78%,transparent)}
+header .wrap{display:flex;align-items:center;gap:var(--s3);height:72px}
+header .wm svg{height:26px;width:auto;fill:var(--ink);display:block}
+header nav{margin-left:auto;display:flex;gap:4px;background:var(--paper-2);padding:4px;border-radius:999px}
+header nav a{padding:10px 16px;border-radius:999px;font:500 14px/1 var(--sans);color:var(--ink-2)}
+header nav a.on{background:var(--ink);color:var(--paper)}
+header .cta{display:flex;gap:8px}
+@media (max-width:900px){header nav{display:none}}
+
+/* hero */
+.hero{padding:var(--s5) 0 var(--s5)}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:var(--s4);align-items:center}
+.hero h1{font:700 clamp(38px,5vw,64px)/1.02 var(--sans);letter-spacing:-.035em;margin-top:var(--s2)}
+.hero h1 em{font-style:normal;color:var(--pig)}
+.hero p.sub{font-size:19px;color:var(--ink-2);max-width:48ch;margin-top:var(--s3)}
+.hero .row{display:flex;gap:var(--s2);margin-top:var(--s4);flex-wrap:wrap;align-items:center}
+.hero .note{font-size:14px;color:var(--ink-3)}
+.shield{display:grid;place-items:center}
+.shield svg{width:min(100%,420px);overflow:visible;filter:drop-shadow(0 22px 34px rgba(20,20,43,.14))}
+.shield .draw{fill:none;stroke:var(--ink);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 2.2s cubic-bezier(.6,0,.2,1) .2s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.shield .fill{fill:var(--pig-w);opacity:0;animation:fade .8s ease 1.6s forwards}
+@keyframes fade{to{opacity:1}}
+.shield .eyes{opacity:0;animation:fade .5s ease 2.2s forwards}
+.shield .blink{transform-origin:center;animation:blink 5s infinite 3s}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+.shield .hw{font-family:var(--hand);font-weight:700;fill:var(--ink);opacity:0;animation:fade .6s ease 2.6s forwards}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr}.shield{order:-1}.shield svg{width:min(70%,300px)}}
+@media (prefers-reduced-motion:reduce){.shield .draw{animation:none;stroke-dashoffset:0}.shield .fill,.shield .eyes,.shield .hw{animation:none;opacity:1}.shield .blink{animation:none}}
+
+/* sections */
+section{padding:var(--s5) 0}
+section.tight{padding:var(--s4) 0}
+.head{display:grid;gap:var(--s2);max-width:64ch;margin-bottom:var(--s4)}
+.head h2{font:700 clamp(28px,3.4vw,42px)/1.08 var(--sans)}
+.head p{color:var(--ink-2);font-size:18px}
+.reveal{opacity:1;transform:none;transition:opacity .6s ease,transform .6s ease}
+.reveal.pre{opacity:0;transform:translateY(18px)}
+
+/* short version */
+.short{background:var(--paper-2);border-radius:28px;padding:var(--s4);display:grid;grid-template-columns:1fr 1fr;gap:var(--s3) var(--s5);align-items:start}
+.short .five{display:grid;gap:var(--s2)}
+.short .five > div{display:grid;grid-template-columns:34px 1fr;gap:var(--s2);align-items:start}
+.short .five i{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:700 18px/1 var(--hand);font-style:normal;color:var(--ink);background:var(--marigold)}
+.short .five b{display:block;font-weight:600}
+.short .five span{color:var(--ink-2);font-size:15px}
+.short .hand{font-size:30px;line-height:1.15;color:var(--ink)}
+.short .hand em{font-style:normal;color:var(--rose)}
+@media (max-width:900px){.short{grid-template-columns:1fr}}
+
+/* table */
+.tbl{border-radius:24px;overflow:hidden;background:var(--paper-2)}
+.tbl .r{display:grid;grid-template-columns:1.1fr 1.6fr 1fr 1fr;gap:var(--s2);padding:var(--s2) var(--s3);align-items:start}
+.tbl .r+.r{border-top:2px solid var(--paper)}
+.tbl .r.h{background:var(--paper-3);font:500 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);padding:var(--s2) var(--s3)}
+.tbl b{font-weight:600}
+.tbl span{font-size:15px;color:var(--ink-2)}
+.tbl .del{display:inline-flex;align-items:center;gap:6px;background:var(--rose-w);color:var(--ink);padding:6px 10px;border-radius:999px;font:500 13px/1 var(--sans)}
+.tbl .del i{width:8px;height:8px;border-radius:50%;background:var(--rose)}
+.tbl .mint{background:var(--mint-w)}
+.tbl .r.mintrow{background:var(--mint-w)}
+@media (max-width:900px){.tbl .r{grid-template-columns:1fr;gap:6px}.tbl .r.h{display:none}}
+
+/* protection */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2)}
+.tile{border-radius:22px;padding:var(--s3);background:var(--paper-2);display:grid;gap:10px;align-content:start}
+.tile.pig{background:var(--pig-w)}.tile.mint{background:var(--mint-w)}.tile.marigold{background:var(--marigold-w)}.tile.rose{background:var(--rose-w)}.tile.lilac{background:var(--lilac-w)}
+.tile h3{font:600 19px/1.25 var(--sans)}
+.tile p{color:var(--ink-2);font-size:15px}
+.tile svg{width:44px;height:44px;fill:none;stroke:var(--ink);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.tile .gloss{font-size:13px;color:var(--ink-3)}
+@media (max-width:900px){.grid3{grid-template-columns:1fr}}
+
+/* data flow diagram */
+.flow{margin-top:var(--s4);background:var(--paper-2);border-radius:28px;padding:var(--s3);overflow-x:auto}
+.flow svg{width:100%;min-width:720px;height:auto;display:block}
+.flow .ink{fill:none;stroke:var(--ink);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.flow .box{fill:var(--paper);stroke:var(--ink);stroke-width:3.5}
+.flow .box.pig{fill:var(--pig-w)}.flow .box.mint{fill:var(--mint-w)}.flow .box.rose{fill:var(--rose-w)}.flow .box.marigold{fill:var(--marigold-w)}
+.flow .t{font:600 15px var(--sans);fill:var(--ink)}
+.flow .s{font:400 12px var(--sans);fill:var(--ink-2)}
+.flow .hw{font:700 22px var(--hand);fill:var(--pig)}
+.flow .lock{fill:var(--marigold);stroke:var(--ink);stroke-width:3}
+.flow .draw{stroke-dasharray:600;stroke-dashoffset:600;transition:stroke-dashoffset 1.6s cubic-bezier(.6,0,.2,1)}
+.flow.in .draw{stroke-dashoffset:0}
+
+/* children */
+.children{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);align-items:center}
+.children .card{background:var(--marigold-w);border-radius:28px;padding:var(--s4);display:grid;gap:var(--s2)}
+.children .card .hand{font-size:32px;line-height:1.1}
+.children ul{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+.children li{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start;color:var(--ink-2)}
+.children li b{color:var(--ink);font-weight:600}
+.children li svg{width:28px;height:28px;fill:none;stroke:var(--mint);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:900px){.children{grid-template-columns:1fr}}
+
+/* who sees */
+.who{border-radius:24px;overflow:hidden;background:var(--paper-2)}
+.who .r{display:grid;grid-template-columns:1.2fr repeat(4,1fr);align-items:center}
+.who .r+.r{border-top:2px solid var(--paper)}
+.who .r>div{padding:14px var(--s3);font-size:15px}
+.who .r.h>div{font:500 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);background:var(--paper-3);padding:var(--s2) var(--s3)}
+.who .r>div:first-child{font-weight:600}
+.who .y{display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
+.who .y i{width:10px;height:10px;border-radius:50%;background:var(--mint)}
+.who .n{color:var(--ink-3)}
+.who .n i{display:inline-block;width:14px;height:3px;border-radius:2px;background:var(--paper-3);vertical-align:middle}
+.who .l{display:inline-flex;align-items:center;gap:6px;color:var(--ink-2)}
+.who .l i{width:10px;height:10px;border-radius:50%;background:var(--marigold)}
+@media (max-width:900px){.who{overflow-x:auto}.who .r{min-width:720px}}
+
+/* never */
+.never{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2)}
+.never div{background:var(--paper-2);border-radius:20px;padding:var(--s3);display:grid;gap:8px;align-content:start}
+.never .x{font-family:var(--hand);font-weight:700;font-size:26px;color:var(--rose);line-height:1}
+.never b{font-weight:600}
+.never span{font-size:15px;color:var(--ink-2)}
+@media (max-width:900px){.never{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.never{grid-template-columns:1fr}}
+
+/* posture */
+.posture{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
+.posture .col{border-radius:24px;padding:var(--s3);display:grid;gap:12px;align-content:start}
+.posture .col.today{background:var(--mint-w)}.posture .col.next{background:var(--paper-2)}
+.posture .col h3{font:600 20px/1.2 var(--sans)}
+.posture ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.posture li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:15px;color:var(--ink-2)}
+.posture li i{width:22px;height:22px;border-radius:50%;display:grid;place-items:center}
+.posture .today li i{background:var(--mint)}
+.posture .next li i{background:var(--paper-3)}
+.posture li svg{width:12px;height:12px;fill:none;stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.posture .honest{font-size:14px;color:var(--ink-3)}
+@media (max-width:900px){.posture{grid-template-columns:1fr}}
+
+/* sub-processors */
+.subs{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2)}
+.subs div{background:var(--paper-2);border-radius:20px;padding:var(--s3);display:grid;gap:6px;align-content:start}
+.subs b{font-weight:600}
+.subs span{font-size:14px;color:var(--ink-2)}
+.subs .reg{font:500 12px/1 var(--sans);color:var(--ink-3);letter-spacing:.06em}
+@media (max-width:900px){.subs{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.subs{grid-template-columns:1fr}}
+
+/* report + docs */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
+.panel{border-radius:28px;padding:var(--s4);display:grid;gap:var(--s2);align-content:start}
+.panel.rose{background:var(--rose-w)}.panel.pig{background:var(--pig-w)}.panel.lilac{background:var(--lilac-w)}
+.panel h3{font:600 24px/1.15 var(--sans)}
+.panel p{color:var(--ink-2)}
+.panel .mail{font:600 18px/1 var(--sans);color:var(--ink)}
+.docs{display:grid;gap:8px}
+.docs a{display:flex;justify-content:space-between;align-items:center;background:var(--paper);border-radius:14px;padding:14px 16px;font-weight:500}
+.docs a span{color:var(--ink-3);font-size:13px;font-weight:400}
+@media (max-width:900px){.two{grid-template-columns:1fr}}
+
+/* request form */
+.req{background:var(--ink);color:var(--paper);border-radius:28px;padding:var(--s4);display:grid;grid-template-columns:1.1fr .9fr;gap:var(--s4);align-items:center}
+.req h3{font:600 28px/1.15 var(--sans)}
+.req p{color:rgba(250,247,240,.72)}
+.req form{display:grid;gap:10px}
+.req input{font:400 16px/1.4 var(--sans);padding:14px 16px;border-radius:12px;border:0;background:rgba(255,255,255,.1);color:var(--paper)}
+.req input::placeholder{color:rgba(250,247,240,.5)}
+.req .btn{background:var(--marigold);color:#14142B;justify-self:start}
+.req small{color:rgba(250,247,240,.5);font-size:13px}
+@media (max-width:900px){.req{grid-template-columns:1fr}}
+
+/* ask */
+.ask{background:var(--paper-2);border-radius:28px;padding:var(--s4);display:grid;grid-template-columns:auto 1fr;gap:var(--s3);align-items:center}
+.ask .head{margin:0}
+.ask .box{display:flex;gap:10px;background:var(--paper);border-radius:16px;padding:8px 8px 8px 18px;align-items:center;margin-top:var(--s2)}
+.ask input{flex:1;border:0;background:transparent;font:400 16px/1.4 var(--sans);color:var(--ink);outline:none;min-width:0}
+.ask .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ask .chips span{font:500 13px/1 var(--sans);padding:8px 12px;border-radius:999px;background:var(--paper);color:var(--ink-2)}
+.ask svg.w{width:120px}
+.ask .blink{transform-origin:center;animation:blink 5s infinite}
+@media (max-width:900px){.ask{grid-template-columns:1fr}.ask svg.w{width:80px}}
+
+/* close + footer */
+.close{margin:var(--s5) 0 0;background:var(--ink);color:var(--paper);padding:var(--s6) 0;text-align:center}
+.close h2{font:700 clamp(34px,5vw,60px)/1.02 var(--sans);letter-spacing:-.035em}
+.close .hand{font-size:30px;color:var(--marigold);display:block;margin-top:var(--s2)}
+.close .row{display:flex;gap:var(--s2);justify-content:center;margin-top:var(--s4);flex-wrap:wrap}
+.close .btn{background:var(--marigold);color:#14142B}
+.close .btn.q{background:rgba(255,255,255,.12);color:var(--paper)}
+footer{background:var(--ink);color:rgba(250,247,240,.6);padding:var(--s4) 0 var(--s5);font-size:14px}
+footer .wrap{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:var(--s3)}
+footer b{display:block;color:var(--paper);font-weight:600;margin-bottom:10px}
+footer a{display:block;padding:4px 0}
+footer .wm svg{height:24px;fill:var(--paper)}
+@media (max-width:900px){footer .wrap{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<radialGradient id="hg" cx="36%" cy="30%" r="80%"><stop offset="0" style="stop-color:var(--body-hi)"/><stop offset="1" style="stop-color:var(--body)"/></radialGradient>
+<linearGradient id="vg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--visor)"/><stop offset="1" style="stop-color:var(--visor-lo)"/></linearGradient>
+<symbol id="head" viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="url(#hg)"/><rect x="18" y="41" width="84" height="38" rx="19" fill="url(#vg)"/><g class="blink"><circle cx="43" cy="61" r="9" fill="var(--eye)"/><circle cx="77" cy="61" r="9" fill="var(--eye)"/><circle cx="40" cy="58" r="3" fill="var(--paper)" opacity=".85"/><circle cx="74" cy="58" r="3" fill="var(--paper)" opacity=".85"/></g></symbol>
+<symbol id="wm" viewBox="0 0 1160 340"><text x="0" y="300" font-family="Poppins,sans-serif" font-weight="700" font-size="330" letter-spacing="-12">wobo</text></symbol>
+</defs></svg>
+
+<header><div class="wrap">
+  <a class="wm" href="#"><svg viewBox="0 0 1160 340"><use href="#wm"/></svg></a>
+  <nav><a href="#">Meet Wobo</a><a href="#">How it works</a><a href="#">For parents</a><a href="#">For students</a><a href="#">Subjects</a><a href="#">Plans</a></nav>
+  <div class="cta"><a class="btn quiet" href="#">Sign in</a><a class="btn pig" href="#">Get started</a></div>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <div>
+    <span class="label">Security and trust</span>
+    <h1>Your child's questions stay <em>between them and Wobo.</em></h1>
+    <p class="sub">This page says exactly what we hold, where it lives, who can see it and how to delete it. No jargon without a plain-words line beside it, and no claim we can't show you.</p>
+    <div class="row"><a class="btn" href="#collect">What we collect</a><a class="btn quiet" href="#report">Report a concern</a><span class="note">Last reviewed September 2026</span></div>
+  </div>
+  <div class="shield"><svg viewBox="0 0 420 460" aria-label="A drawn shield with Wobo's eyes">
+    <path class="fill" d="M210 40 L360 96 C360 260 300 360 210 420 C120 360 60 260 60 96 Z"/>
+    <path class="draw" d="M210 40 L360 96 C360 260 300 360 210 420 C120 360 60 260 60 96 Z"/>
+    <g class="eyes"><rect x="118" y="170" width="184" height="78" rx="39" fill="var(--ink)"/><g class="blink"><circle cx="172" cy="209" r="19" fill="var(--eye)"/><circle cx="248" cy="209" r="19" fill="var(--eye)"/><circle cx="166" cy="203" r="6" fill="var(--paper)" opacity=".85"/><circle cx="242" cy="203" r="6" fill="var(--paper)" opacity=".85"/></g></g>
+    <text class="hw" x="150" y="318" font-size="34">i've got this</text>
+  </svg></div>
+</div></section>
+
+<section class="tight"><div class="wrap">
+  <div class="short reveal">
+    <div>
+      <span class="label">The short version</span>
+      <div class="hand" style="margin-top:12px">We keep what a tutor needs to teach, <em>nothing a marketer would want,</em> and you can erase all of it with one button.</div>
+    </div>
+    <div class="five">
+      <div><i>1</i><div><b>What we collect</b><span>An account, the learning itself, and enough about the device to keep things working.</span></div></div>
+      <div><i>2</i><div><b>Why</b><span>To teach the right chapter, remember where a lesson stopped, and write the Sunday note.</span></div></div>
+      <div><i>3</i><div><b>Where it lives</b><span>Encrypted, in a managed database in a named region, behind row-level access rules.</span></div></div>
+      <div><i>4</i><div><b>Who sees it</b><span>The learner, a linked parent, and nobody at Wobo without a logged reason.</span></div></div>
+      <div><i>5</i><div><b>How to delete it</b><span>You, in Settings, any time. Gone from live systems at once and from backups within 30 days.</span></div></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="collect"><div class="wrap">
+  <div class="head reveal"><span class="label">What we collect, and why</span><h2>Every row here has a purpose, a shelf life and a delete button.</h2><p>If something isn't on this list, we don't collect it.</p></div>
+  <div class="tbl reveal">
+    <div class="r h"><div>Data</div><div>Why we need it</div><div>How long</div><div>How to delete</div></div>
+    <div class="r"><div><b>Account</b><span><br>email, name, class, board</span></div><div><span>To sign you in and teach the right syllabus.</span></div><div><span>While the account exists</span></div><div><span class="del"><i></i>Settings → Your data</span></div></div>
+    <div class="r"><div><b>Learning</b><span><br>questions, answers, drawings, progress</span></div><div><span>So Wobo remembers where a lesson stopped and what clicked.</span></div><div><span>While the account exists, or until erased</span></div><div><span class="del"><i></i>Erase memory, keep progress, or erase all</span></div></div>
+    <div class="r"><div><b>Voice</b><span><br>what you say to Wobo</span></div><div><span>Processed for that turn only, to hear the question.</span></div><div><span>Not stored, unless a family turns on transcripts</span></div><div><span class="del"><i></i>Nothing to delete by default</span></div></div>
+    <div class="r"><div><b>Payment</b><span><br>card or UPI details</span></div><div><span>Handled by the payment provider on their pages.</span></div><div><span>Never stored by Wobo</span></div><div><span class="del"><i></i>With the provider</span></div></div>
+    <div class="r"><div><b>Device and usage</b><span><br>app version, crashes, screen size</span></div><div><span>To keep Wobo working on your phone. No advertising identifiers.</span></div><div><span>90 days</span></div><div><span class="del"><i></i>Expires on its own</span></div></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="head reveal"><span class="label">Where it lives, and how it's protected</span><h2>Locked in transit, locked at rest, and opened only by the person it belongs to.</h2></div>
+  <div class="grid3 reveal">
+    <div class="tile pig"><svg viewBox="0 0 44 44"><rect x="8" y="19" width="28" height="19" rx="5"/><path d="M14 19 v-5 a8 8 0 0 1 16 0 v5"/></svg><h3>Encrypted on the way</h3><p>Every connection uses TLS 1.2 or newer.</p><span class="gloss">In plain words: nobody on the same Wi-Fi can read it.</span></div>
+    <div class="tile mint"><svg viewBox="0 0 44 44"><ellipse cx="22" cy="12" rx="13" ry="5"/><path d="M9 12 v20 c0 3 6 5 13 5 s13 -2 13 -5 v-20 M9 22 c0 3 6 5 13 5 s13 -2 13 -5"/></svg><h3>Encrypted where it sits</h3><p>The database and its backups are encrypted at rest, keys managed by the hosting provider and rotated.</p><span class="gloss">In plain words: a stolen disk is unreadable.</span></div>
+    <div class="tile marigold"><svg viewBox="0 0 44 44"><circle cx="22" cy="16" r="7"/><path d="M8 38 c2 -9 26 -9 28 0"/><path d="M30 8 l6 6" /></svg><h3>Only your own rows</h3><p>Access rules live inside the database itself, so a learner can read their rows and nobody else's, even if our app made a mistake.</p><span class="gloss">In plain words: the lock is on the drawer, not just the door.</span></div>
+    <div class="tile"><svg viewBox="0 0 44 44"><path d="M8 34 h28 M12 34 v-12 M20 34 v-18 M28 34 v-8 M36 34 v-22"/></svg><h3>Least privilege</h3><p>Staff have no standing access to learner data. A break-glass path exists for support, and every use of it is written to a log the founder reviews.</p></div>
+    <div class="tile"><svg viewBox="0 0 44 44"><path d="M22 6 a16 16 0 1 1 -11 4"/><path d="M8 6 v8 h8"/></svg><h3>Backups that restore</h3><p>Daily backups, kept for 30 days, and a restore we actually rehearse.</p></div>
+        <div class="tile"><svg viewBox="0 0 44 44"><path d="M10 30 l8 -8 l6 6 l12 -14"/><path d="M28 14 h8 v8"/></svg><h3>Built carefully</h3><p>Every change is reviewed and gated by automated checks. Dependencies are scanned. Secrets never live in the code.</p></div>
+  </div>
+  <div class="flow reveal" id="flow">
+    <svg viewBox="0 0 960 300" aria-label="How a question travels: from the learner's device, encrypted, to Wobo, to the model provider without identity, back to the learner">
+      <rect class="box" x="20" y="100" width="180" height="100" rx="18"/><text class="t" x="110" y="140" text-anchor="middle">Your device</text><text class="s" x="110" y="162" text-anchor="middle">the question, your drawing</text>
+      <path class="ink draw" d="M200 150 h110"/><path class="ink draw" d="M300 142 l10 8 l-10 8"/><rect class="lock" x="236" y="128" width="26" height="20" rx="5"/><path class="ink" d="M242 128 v-5 a7 7 0 0 1 14 0 v5"/>
+      <rect class="box pig" x="320" y="80" width="220" height="140" rx="18"/><text class="t" x="430" y="122" text-anchor="middle">Wobo</text><text class="s" x="430" y="146" text-anchor="middle">checks who you are, finds</text><text class="s" x="430" y="164" text-anchor="middle">your chapter, plans the board</text><text class="s" x="430" y="196" text-anchor="middle">named region · encrypted at rest</text>
+      <path class="ink draw" d="M540 150 h110"/><path class="ink draw" d="M640 142 l10 8 l-10 8"/>
+      <rect class="box marigold" x="660" y="100" width="280" height="100" rx="18"/><text class="t" x="800" y="138" text-anchor="middle">AI model provider</text><text class="s" x="800" y="160" text-anchor="middle">sees the question, never your name,</text><text class="s" x="800" y="178" text-anchor="middle">email or account · no training on it</text>
+      <path class="ink draw" d="M800 200 v40 h-690 v-40"/><path class="ink draw" d="M102 210 l8 -10 l8 10"/>
+      <text class="hw" x="470" y="268" text-anchor="middle">the answer comes back drawn, and the provider forgets the turn</text>
+    </svg>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="head reveal"><span class="label">Children first</span><h2>Built for a ten-year-old at 9 pm, so the rules are stricter than the law asks.</h2></div>
+  <div class="children reveal">
+    <div class="card"><div class="hand">A parent can see everything. A stranger can see nothing. <span style="color:var(--rose)">Wobo has no opinions about anything but the chapter.</span></div><p style="color:var(--ink-2)">Neutral by design: no politics, no religion, no ads, no nudges to buy. When a question strays outside school, Wobo says so kindly and comes back to the lesson.</p></div>
+    <ul>
+      <li><svg viewBox="0 0 28 28"><path d="M5 15 l6 6 l12 -14"/></svg><div><b>Consent by age and country.</b> Under 18 in India needs a parent's verifiable consent under the DPDP Act 2023. Under 13 in the United States follows COPPA. Under 16 in the EU follows GDPR's rules for children.</div></li>
+      <li><svg viewBox="0 0 28 28"><path d="M5 15 l6 6 l12 -14"/></svg><div><b>The parent view.</b> A linked parent sees lessons, progress and the Sunday note. They cannot read a child's typed questions word for word unless the child's settings allow it.</div></li>
+      <li><svg viewBox="0 0 28 28"><path d="M5 15 l6 6 l12 -14"/></svg><div><b>The erase-everything button.</b> In Settings, for the learner and for a linked parent. It deletes memory, progress and the account.</div></li>
+      <li><svg viewBox="0 0 28 28"><path d="M5 15 l6 6 l12 -14"/></svg><div><b>No profiling for advertising.</b> There is no advertising in Wobo, so there is nothing to profile for.</div></li>
+      <li><svg viewBox="0 0 28 28"><path d="M5 15 l6 6 l12 -14"/></svg><div><b>No training on a child's data.</b> A child's questions and drawings are never used to train models unless a parent turns that on, explicitly, and it can be turned off again.</div></li>
+    </ul>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="head reveal"><span class="label">Who can see what</span><h2>Four kinds of people, one honest table.</h2></div>
+  <div class="who reveal">
+    <div class="r h"><div>Data</div><div>Learner</div><div>Linked parent</div><div>School, if linked</div><div>Wobo staff</div></div>
+    <div class="r"><div>Lessons and progress</div><div><span class="y"><i></i>yes</span></div><div><span class="y"><i></i>yes</span></div><div><span class="l"><i></i>progress only</span></div><div><span class="l"><i></i>break-glass, logged</span></div></div>
+    <div class="r"><div>Typed questions, word for word</div><div><span class="y"><i></i>yes</span></div><div><span class="l"><i></i>if the learner allows</span></div><div><span class="n"><i></i></span></div><div><span class="l"><i></i>break-glass, logged</span></div></div>
+    <div class="r"><div>Voice</div><div><span class="n"><i></i> not stored</span></div><div><span class="n"><i></i></span></div><div><span class="n"><i></i></span></div><div><span class="n"><i></i></span></div></div>
+    <div class="r"><div>The Sunday note</div><div><span class="y"><i></i>yes</span></div><div><span class="y"><i></i>yes</span></div><div><span class="n"><i></i></span></div><div><span class="n"><i></i></span></div></div>
+    <div class="r"><div>Email and payment status</div><div><span class="y"><i></i>yes</span></div><div><span class="y"><i></i>yes</span></div><div><span class="n"><i></i></span></div><div><span class="l"><i></i>support, logged</span></div></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="head reveal"><span class="label">What we never do</span><h2>Six lines we'd put in a contract.</h2></div>
+  <div class="never reveal">
+    <div><span class="x">✗</span><b>Sell data</b><span>Not to anyone, not in aggregate, not ever.</span></div>
+    <div><span class="x">✗</span><b>Track across the web</b><span>No pixels, no third-party cookies, no fingerprinting.</span></div>
+    <div><span class="x">✗</span><b>Show ads</b><span>Wobo is paid for by families, not by advertisers.</span></div>
+    <div><span class="x">✗</span><b>Change prices by behaviour</b><span>Everyone in a country sees the same price.</span></div>
+    <div><span class="x">✗</span><b>Use dark patterns</b><span>Cancelling takes as many taps as subscribing.</span></div>
+    <div><span class="x">✗</span><b>Train on a child without consent</b><span>Off by default, explicit to turn on, easy to turn off.</span></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="head reveal"><span class="label">Compliance posture</span><h2>What's in place today, and what's scheduled. Dates only when they're real.</h2></div>
+  <div class="posture reveal">
+    <div class="col today"><h3>In place today</h3><ul>
+      <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>TLS everywhere, encryption at rest, row-level access rules in the database</li>
+      <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Secrets kept out of code, dependency scanning, review and automated gates on every change</li>
+      <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Erase-everything for learners and parents, with a 30-day backup purge</li>
+      <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Questions sent to model providers without identity; providers contractually barred from training on them</li>
+      <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Consent flows for DPDP, COPPA and GDPR-K; neutral content rules</li>
+    </ul></div>
+    <div class="col next"><h3>Scheduled</h3><ul>
+      <li><i></i>Independent penetration test before public launch</li>
+      <li><i></i>Staff break-glass access logging with monthly review</li>
+      <li><i></i>SOC 2 Type I, then Type II, in the first year after launch</li>
+      <li><i></i>ISO 27001 readiness assessment</li>
+      <li><i></i>A children's-safety seal evaluated once the audits are in</li>
+    </ul><p class="honest">We'll move each line up as it lands, with the date it landed. Ask us for the current status any time.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="head reveal"><span class="label">Sub-processors</span><h2>The companies that touch data on our behalf, by role.</h2><p>We name the roles here and the companies in the document you can request below. If a sub-processor changes, account holders get 30 days' notice by email.</p></div>
+  <div class="subs reveal">
+    <div><b>Hosting and compute</b><span>Runs the app and Wobo's tutor service.</span><span class="reg">INDIA · US · EU</span></div>
+    <div><b>Database and storage</b><span>Holds accounts, learning data and backups, encrypted.</span><span class="reg">INDIA, WITH EU FOR EU FAMILIES</span></div>
+    <div><b>AI model providers</b><span>Answer the question without knowing who asked. No training on it.</span><span class="reg">US · EU</span></div>
+    <div><b>Payments</b><span>Take the card or UPI payment on their own pages.</span><span class="reg">INDIA · GLOBAL</span></div>
+    <div><b>Email</b><span>Send the Sunday note and account emails.</span><span class="reg">US</span></div>
+    <div><b>Reliability</b><span>Crash reports and uptime checks. No advertising identifiers.</span><span class="reg">US</span></div>
+  </div>
+</div></section>
+
+<section id="report"><div class="wrap">
+  <div class="two reveal">
+    <div class="panel rose"><span class="label" style="color:var(--rose)">Report a concern</span><h3>Found something? Tell us and we'll answer within 72 hours.</h3><p>Researchers who report responsibly get our thanks in public and never a legal letter. Families with a worry get a person, not a form.</p><a class="mail" href="mailto:security@heywobo.com">security@heywobo.com</a></div>
+    <div class="panel pig"><span class="label">Documents</span><h3>The paperwork, in plain words first.</h3><div class="docs">
+      <a href="#">Privacy policy <span>in plain words, then the full text</span></a>
+      <a href="#">Children's privacy <span>what's different for under-18s</span></a>
+      <a href="#">Terms of service <span>the deal, both ways</span></a>
+      <a href="#">Data processing agreement <span>for schools, on request</span></a>
+      <a href="#">Data-flow diagram <span>the drawing above, as a PDF</span></a>
+    </div></div>
+  </div>
+</div></section>
+
+<section class="tight"><div class="wrap">
+  <div class="req reveal">
+    <div><h3>Want the full security overview?</h3><p>The named sub-processors, the region map, the incident-response plan and the current audit status, as one document. Written for a school's IT lead, readable by a parent.</p></div>
+    <form onsubmit="event.preventDefault();this.querySelector('.btn').textContent='Sent. Check your inbox.'"><input type="email" required placeholder="Your email"><input type="text" placeholder="School or organisation (optional)"><button class="btn" type="submit">Send me the overview</button><small>We use this address once, to send the document.</small></form>
+  </div>
+</div></section>
+
+<section class="tight"><div class="wrap">
+  <div class="ask reveal">
+    <svg class="w" viewBox="0 0 120 120"><use href="#head"/></svg>
+    <div><div class="head"><span class="label">Still wondering?</span><h2 style="font-size:28px">Ask Wobo about any of this. It answers for itself.</h2></div>
+      <div class="box"><input placeholder="Can my school see my questions?"><button class="btn pig" style="min-height:40px;padding:10px 16px">Ask</button></div>
+      <div class="chips"><span>Where is my data stored?</span><span>What happens when I delete my account?</span><span>Does Wobo listen all the time?</span></div>
+    </div>
+  </div>
+</div></section>
+
+<div class="close"><div class="wrap">
+  <h2>Confident? Begin tonight.</h2>
+  <span class="hand">The first question is on us.</span>
+  <div class="row"><a class="btn" href="#">Start learning for free</a><a class="btn q" href="#">I'm a parent</a></div>
+</div></div>
+<footer><div class="wrap">
+  <div><div class="wm"><svg viewBox="0 0 1160 340" style="width:120px"><use href="#wm"/></svg></div><p style="margin-top:10px;max-width:28ch">A tutor that draws, never judges, and is always there.</p></div>
+  <div><b>Wobo</b><a href="#">Meet Wobo</a><a href="#">How it works</a><a href="#">Subjects</a><a href="#">Plans</a><a href="#">Gift Wobo</a></div>
+  <div><b>For</b><a href="#">Parents</a><a href="#">Students</a><a href="#">Schools</a></div>
+  <div><b>Help</b><a href="#">Help centre</a><a href="#">Contact</a><a href="#">Questions</a></div>
+  <div><b>Company</b><a href="#">About</a><a href="#" style="color:var(--paper)">Security and trust</a><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Children's privacy</a><a href="#">Cookies</a><a href="#">Accessibility</a></div>
+</div></footer>
+
+<script>
+const t = new URLSearchParams(location.search).get('theme'); if (t) document.documentElement.setAttribute('data-theme', t);
+const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (!rm && 'IntersectionObserver' in window) {
+  const els=[...document.querySelectorAll('.reveal')];
+  els.forEach(e=>{ if (e.getBoundingClientRect().top > innerHeight) e.classList.add('pre'); });
+  const io=new IntersectionObserver(en=>en.forEach(x=>{ if(x.isIntersecting){ x.target.classList.remove('pre'); if(x.target.id==='flow') x.target.classList.add('in'); io.unobserve(x.target);} }),{threshold:.12});
+  els.forEach(e=>io.observe(e));
+} else { document.getElementById('flow').classList.add('in'); }
+</script>
+</body>
+</html>

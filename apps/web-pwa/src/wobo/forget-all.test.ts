@@ -98,7 +98,10 @@ describe('the erase reaches the brain, and is honest until it does', () => {
       {} as Parameters<NonNullable<ReturnType<typeof capabilityById>>['run']>[0],
       {},
     );
-    expect(erases).toEqual(['POST http://brain.test/v1/memory/erase']);
+    // The route the gateway actually serves (`POST /v1/me/erase`). A client knocking on a path
+    // nobody serves gets a 404, reads it as "not confirmed", and queues an erase that can never
+    // land — the learner is told they are still owed a wipe for the life of the install.
+    expect(erases).toEqual(['POST http://brain.test/v1/me/erase']);
     expect(loadMind().facts).toEqual([]);
     expect(brainErasePending()).toBe(false); // nothing is owed once the brain confirms
     expect(said).toContain('on my side');

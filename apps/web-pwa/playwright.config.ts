@@ -21,6 +21,11 @@ export default defineConfig({
   // The cross-browser matrix lives beside the journey specs but is a separate suite with its own
   // config, port and engines (tests/x-browser.config.ts) — `test:e2e` must not pull it in.
   testIgnore: ['x-browser.spec.ts'],
+  // Refuse to run against an app that can reach a gateway. `reuseExistingServer` below will attach
+  // to whatever is already on the port, and a plain `bun run dev` is wired to the brain on 8081 —
+  // which turns every console-error assertion in the suite into a CORS failure that says nothing
+  // about the code. tests/global-setup.ts says so once, in words, instead.
+  globalSetup: './tests/global-setup.ts',
   fullyParallel: false,
   workers: 1,
   forbidOnly: !!process.env.CI,

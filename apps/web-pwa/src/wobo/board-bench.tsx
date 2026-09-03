@@ -32,6 +32,8 @@ import {
 } from '@wobo/wobo';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GOLDEN_BOARDS, type GoldenBoard, goldenBoard } from './goldens';
+import { GOLDEN_BRAINS } from './goldens/brains';
+import { changeVariable } from './variables';
 
 // --- The hand-written golden -------------------------------------------------------------------------
 
@@ -462,6 +464,10 @@ export function BoardBench(props: { board?: string }) {
       '',
   );
   const [instant, setInstant] = useState(false);
+  /** The full board's own chrome — the scrubber and share. Asked for in the hash: `.../chrome`. */
+  const [chrome, setChrome] = useState(
+    () => typeof window !== 'undefined' && window.location.hash.includes('/chrome'),
+  );
   const [, setTick] = useState(0);
 
   const board = useMemo(
@@ -603,6 +609,7 @@ export function BoardBench(props: { board?: string }) {
   useEffect(() => {
     const fromHash = () => {
       const name = nameFromHash(window.location.hash) ?? fallback.current;
+      setChrome(window.location.hash.includes('/chrome'));
       start(name, { instant: window.location.hash.includes('/instant') });
     };
     fromHash();
@@ -616,6 +623,20 @@ export function BoardBench(props: { board?: string }) {
       window.__woboBenchReady = false;
     };
   }, [start]);
+
+  /**
+   * A bound control moved (docs/BOARD.md §8). The bench has no gateway, so the golden's own
+   * generator answers as the brain: the dependants are recomputed and come back as ink frames,
+   * through exactly the seam the app drives the gateway through.
+   */
+  const onVariableChange = useCallback(
+    (variable: string, value: number | boolean | string | [number, number]) => {
+      const brain = board ? GOLDEN_BRAINS[board.name] : undefined;
+      if (!brain) return;
+      void changeVariable(store, { variable, value }, brain);
+    },
+    [board, store],
+  );
 
   /** The same plan on the other surface: the frosted plane, summoned from Wobo's orb. */
   const onPlane = useCallback(() => {
@@ -641,9 +662,13 @@ export function BoardBench(props: { board?: string }) {
       <WoboFullBoard
         store={store}
         title={board.title}
-        chrome={false}
+        // The scrubber and the share affordance are the full board's own chrome. Off by default so
+        // a screenshot is the ink and nothing else; `#board-bench/<name>/chrome` turns them on,
+        // which is how the timeline is driven from a test.
+        chrome={chrome}
         capture={false}
         targets={benchTargets}
+        onVariableChange={onVariableChange}
       />
       {/* The other surface. It draws nothing until it is summoned, so it costs a screenshot
           nothing — and it means the same plan can be watched on the plane from here. */}
@@ -702,11 +727,15 @@ export function BoardBench(props: { board?: string }) {
       <p
         data-testid="bench-prompt"
         style={{
-          bottom: 14,
+          // Above the board's own chrome when there is any: the prompt is a caption, and it used to
+          // sit exactly over the scrubber and swallow every click meant for it.
+          bottom: chrome ? 56 : 14,
           color: 'var(--wobo-ink-300, #72727C)',
           fontSize: 12,
           left: 16,
           margin: 0,
+          // It is text about the board, never something to press.
+          pointerEvents: 'none',
           position: 'absolute',
           right: 16,
         }}

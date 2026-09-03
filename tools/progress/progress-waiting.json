@@ -1,26 +1,42 @@
 [
- {
-  "title": "Namecheap nameservers for heywobo.com",
-  "detail": "Not 'Personal DNS Server'. Domain List \u2192 Manage \u2192 Domain tab \u2192 Nameservers row \u2192 Custom DNS \u2192 ns1.vercel-dns.com, ns2.vercel-dns.com \u2192 green tick."
- },
- {
-  "title": "api.heywobo.com in Railway",
-  "detail": "Service wobo \u2192 Settings \u2192 Networking \u2192 Custom Domain \u2192 api.heywobo.com. Paste the CNAME target it shows."
- },
- {
-  "title": "heywobo.com in Resend",
-  "detail": "Domains \u2192 Add domain \u2192 heywobo.com. Paste or screenshot the DNS records it shows."
- },
- {
-  "title": "Wordmark and icon: your go",
-  "detail": "Solid wordmark as primary, sticker as secondary; the eyes icon with ultramarine pupils. Say go and I generate the whole icon set."
- },
- {
-  "title": "Company legal name and postal address",
-  "detail": "The legal set and the email footer carry placeholders."
- },
- {
-  "title": "Rotate the Railway project token",
-  "detail": "It passed through the terminal and this chat. Project settings \u2192 Tokens."
- }
+  {
+    "title": "Namecheap nameservers for heywobo.com",
+    "detail": "Not 'Personal DNS Server'. Domain List \u2192 Manage \u2192 Domain tab \u2192 Nameservers row \u2192 Custom DNS \u2192 ns1.vercel-dns.com, ns2.vercel-dns.com \u2192 green tick."
+  },
+  {
+    "title": "api.heywobo.com in Railway",
+    "detail": "Service wobo \u2192 Settings \u2192 Networking \u2192 Custom Domain \u2192 api.heywobo.com. Paste the CNAME target it shows."
+  },
+  {
+    "title": "heywobo.com in Resend",
+    "detail": "Domains \u2192 Add domain \u2192 heywobo.com. Paste or screenshot the DNS records it shows."
+  },
+  {
+    "title": "Wordmark and icon: your go",
+    "detail": "Solid wordmark as primary, sticker as secondary; the eyes icon with ultramarine pupils. Say go and I generate the whole icon set."
+  },
+  {
+    "title": "Company legal name and postal address",
+    "detail": "The legal set and the email footer carry placeholders."
+  },
+  {
+    "title": "Rotate the Railway project token",
+    "detail": "It passed through the terminal and this chat. Project settings \u2192 Tokens."
+  },
+  {
+    "title": "Resend: add heywobo.com in the dashboard and paste the DNS records",
+    "detail": "The key is send-only, so the domain must be verified by you. Until then every live send is recorded as a queued would-send."
+  },
+  {
+    "title": "Railway: two hourly crons and four variables",
+    "detail": "POST /v1/internal/mail/sunday and /v1/internal/mail/wishes with header X-Wobo-Internal; set EMAIL_MODE=live, EMAIL_REPLY_TO=help@heywobo.com, EMAIL_POSTAL_ADDRESS (your legal address), MAIL_LOG_PATH on a volume."
+  },
+  {
+    "title": "Plans page extras: approve or strike",
+    "detail": "Pro adds voice replies and longer full-board lessons; Max adds two learners and past-paper sets. Your multipliers (5\u00d7, 20\u00d7) and prices are as set."
+  },
+  {
+    "title": "22 festival wishes need your line",
+    "detail": "Durga Puja/Navratri, Ganesh Chaturthi, Eid al-Adha, Good Friday, Nowruz, Passover, Dashain and others send nothing until a one-line English wish passes the neutral gate."
+  }
 ]

@@ -20,6 +20,7 @@ import { sfx } from '../ui/sound';
 import { boardTurn } from './board-turn';
 import { appendToArchive, type ChatTurn, useWoboChat } from './chat';
 import { FlyingWobo } from './Flight';
+import { registerHoldToTalk } from './hold';
 import {
   type LeanReason,
   leanInLine,
@@ -269,6 +270,21 @@ export function WoboCompanion() {
     if (!ptt) return;
     voice.finishTurn(); // stop capturing, let Wobo's spoken reply stream back, then the session closes
   };
+
+  // The desktop hotkey is the same hold as pressing Wobo (WOBO-TASKS §5.9). The chord is caught by
+  // the gesture layer on the stage, which has no microphone of its own; this is where the one live
+  // voice session lives, so the body offers its hold and the hotkey takes it. Registered through a
+  // ref so the handlers stay current without re-registering on every render.
+  const holdRef = useRef({ start: holdStart, end: holdEnd });
+  holdRef.current = { start: holdStart, end: holdEnd };
+  useEffect(
+    () =>
+      registerHoldToTalk({
+        start: () => holdRef.current.start(),
+        end: () => holdRef.current.end(),
+      }),
+    [],
+  );
 
   // The session can end on its own — Wobo's reply finishing, an abort, a drop. Retire the halo with it.
   useEffect(() => {

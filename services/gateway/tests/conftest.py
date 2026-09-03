@@ -62,6 +62,15 @@ def _gateway_test_env(monkeypatch: pytest.MonkeyPatch) -> None:
     consent.reset_cache()
     auth.reset_jwks_cache()
     voice.reset_tokens()
+    # Mail: console transport, an empty in-memory send log, and background sends run inline so
+    # a test can assert on what went out without waiting on a thread.
+    from wobo_gateway import email as email_mod
+    from wobo_gateway.hospitality import jobs
+
+    monkeypatch.delenv("MAIL_LOG_PATH", raising=False)
+    monkeypatch.setenv("EMAIL_MODE", "console")
+    email_mod.reset_mail_log()
+    jobs.set_runner(lambda go: go())
 
 
 @pytest.fixture

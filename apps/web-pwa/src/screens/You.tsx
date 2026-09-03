@@ -29,6 +29,7 @@ import type { Topic } from '../data/model';
 import { useRouter } from '../shell/router';
 import {
   clearMind,
+  eraseFromBrain,
   type KnownItem,
   lifetimeSnapshot,
   loadMind,
@@ -894,7 +895,12 @@ export function You() {
 
   // --- Wobo's memory of you (steerable, per-item — the forget verb's visual twin) ----------
   const [mind, setMind] = useState(() => loadMind());
-  const [mindCleared, setMindCleared] = useState(false);
+  /**
+   * What the erase actually achieved, never what it hoped for (WOBO-TASKS §5.7). 'pending' is the
+   * honest state while the brain has not confirmed: the device is clear, the server may not be, and
+   * saying "cleared" then would be a lie the learner cannot check.
+   */
+  const [mindCleared, setMindCleared] = useState<'idle' | 'erased' | 'local' | 'pending'>('idle');
   const knownItems = useMemo(() => removableItems(mind), [mind]);
   const observations = useMemo(() => observationLines(mind), [mind]);
   // Every removal re-reads storage, then refreshes Wobo's live lifetime slot so the very next turn
@@ -911,10 +917,15 @@ export function You() {
   const forgetMind = () => {
     clearMind();
     setMind(loadMind());
-    setMindCleared(true);
+    setMindCleared('pending');
     // the lifetime slot empties immediately — Wobo's next call carries nothing about you
     bus.publishLifetime({});
-    window.setTimeout(() => setMindCleared(false), 2600);
+    // …and the brain is told too. `clearMind` only QUEUES that; this is the attempt, and the page
+    // says "pending" until it lands (a keyless build answers 'local', which is the whole wipe).
+    void eraseFromBrain().then((outcome) => {
+      setMindCleared(outcome);
+      if (outcome !== 'pending') window.setTimeout(() => setMindCleared('idle'), 2600);
+    });
   };
 
   // --- settings ----------------------------------------------------------
@@ -1713,9 +1724,11 @@ export function You() {
             <Card style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 12 }}>
               {knownItems.length === 0 && observations.length === 0 ? (
                 <div style={bodyLine}>
-                  {mindCleared
-                    ? 'cleared — Wobo starts fresh from your next answer'
-                    : 'Wobo is still getting to know you — how you answer, where you linger, when you show up. it gathers here as you learn.'}
+                  {mindCleared === 'idle'
+                    ? 'Wobo is still getting to know you — how you answer, where you linger, when you show up. it gathers here as you learn.'
+                    : mindCleared === 'pending'
+                      ? 'cleared on this device — I could not reach the part of me that remembers across your devices, so I am still holding that request and will finish it the moment I can'
+                      : 'cleared — Wobo starts fresh from your next answer'}
                 </div>
               ) : (
                 <>

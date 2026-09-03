@@ -207,8 +207,14 @@ export function clearMind(): void {
 /** Set while the brain still holds what this device has already dropped. */
 const BRAIN_ERASE_KEY = 'wobo-brain-erase-v1';
 
-/** The gateway's own erase door. No key, no model, no limit — identity rides `gatewayFetch`. */
-const ERASE_PATH = '/v1/memory/erase';
+/**
+ * The gateway's own erase door (`services/gateway/src/wobo_gateway/app.py`, `POST /v1/me/erase`).
+ * No key, no model, no limit — identity rides `gatewayFetch`, and the route keys off the door's own
+ * subject, so this is only ever a learner erasing themselves. The path is the brain's, not a guess:
+ * a client knocking on `/v1/memory/erase` got a 404, which reads as "pending" forever — Wobo would
+ * have queued and retried an erase that could never land, on a route nobody serves.
+ */
+const ERASE_PATH = '/v1/me/erase';
 
 /** Remember that the brain still has to be told. Idempotent — one pending erase, not a log. */
 export function queueBrainErase(): void {

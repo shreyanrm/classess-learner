@@ -81,6 +81,7 @@ import {
   runsWithoutAsking,
   showMe,
 } from './wobo/hands';
+import { holdToTalkEnd, holdToTalkStart } from './wobo/hold';
 import { MODE_BY_ID, modeFromText, modePrompt } from './wobo/modes';
 import { resolveTurnExtras, type TurnExtras } from './wobo/paths';
 import { useLifeSignals } from './wobo/presence';
@@ -88,6 +89,7 @@ import { boardShapeOf, isLessonRoute } from './wobo/presentation';
 import { refusalLine } from './wobo/refusals';
 import { WoboStage } from './wobo/Stage';
 import { registerPerformance, SpeechNarrator, speakLine } from './wobo/speech';
+import { changeVariable, gatewayBrain } from './wobo/variables';
 
 // Every VITE_ name is typed in vite-env.d.ts, so these reads need no casts and a misspelled name
 // is a compile error rather than a silent undefined.
@@ -429,7 +431,15 @@ function AppInner({ sdk }: { sdk: Sdk }) {
   // client never decides either — it asks once, and every context packet after that repeats the
   // answer, so Wobo never offers past the door the brain opened (WOBO-PLAN §5.3). A keyless build
   // has no meter to read and `me()` answers null, which is carried as honestly as any other answer.
+  //
+  // NOT ON THE PUBLIC FRONT DOOR. The landing page is a marketing page: nothing on it reads a plan,
+  // a consent tier or a budget, and a visitor who has never opened the product should not have
+  // their account metered by arriving. Asked there anyway, it was a request to the production
+  // gateway on every first load — visible locally only because it CORS-failed. The ask is deferred
+  // to the moment someone walks through the door, which is exactly when the answer is first used.
+  const onFrontDoor = route.name === 'landing';
   useEffect(() => {
+    if (onFrontDoor) return;
     let cancelled = false;
     void sdk
       .me()
@@ -440,7 +450,7 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     return () => {
       cancelled = true;
     };
-  }, [sdk]);
+  }, [sdk, onFrontDoor]);
   // Save only after the conversation actually moves — re-stamping the boot snapshot "now" would
   // out-fresh an older-but-richer transcript from another device during reconciliation.
   const bootTurns = useRef(true);
@@ -938,6 +948,28 @@ function AppInner({ sdk }: { sdk: Sdk }) {
     isPublicSite(route.name) ||
     route.name === 'concept';
   const onHome = route.name === 'home';
+  /**
+   * The learner moved one of Wobo's controls (docs/BOARD.md §8). The handle follows the finger at
+   * once and the dependants are recomputed BY THE BRAIN — the hand never invents the new numbers.
+   * Without a gateway there is nobody to ask, so the handle still moves and the board honestly
+   * keeps the numbers it already had.
+   */
+  const onVariableChange = (
+    variable: string,
+    value: number | boolean | string | [number, number],
+  ) => {
+    if (!GATEWAY_URL) return;
+    const store = boardTurn.boardStore();
+    void changeVariable(
+      store,
+      { variable, value },
+      gatewayBrain({
+        gatewayUrl: GATEWAY_URL,
+        payload: boardTurnPayload(bus.assembleContext()),
+        board: boardTurn.boardContext(route.name),
+      }),
+    );
+  };
   // What a saved or shared board is called: the topic Wobo is on, or the lesson Wobo is inside.
   const boardTitle = isLessonRoute(route.name)
     ? (bus.assembleContext().curriculum.nodeName ?? undefined)
@@ -970,8 +1002,20 @@ function AppInner({ sdk }: { sdk: Sdk }) {
         gestures={!inFlow}
         onFocus={setFocus}
         onAsk={(f) => void ask(modePrompt('explain_this', f?.text))}
-        onHoldStart={() => setMood('listening')}
-        onHoldEnd={() => setMood('idle')}
+        // Hold-to-talk on the desktop hotkey opens the SAME microphone the orb's hold does
+        // (WOBO-TASKS §5.9). The face alone was the whole of it before, so every keyboard hold was
+        // a pantomime: Wobo looked like Wobo was listening and no session ever opened.
+        onHoldStart={() => {
+          setMood('listening');
+          holdToTalkStart();
+        }}
+        onHoldEnd={() => {
+          holdToTalkEnd();
+          setMood('idle');
+        }}
+        // A bound control moved on a board: the brain recomputes everything that depends on that
+        // variable and redraws it in place (docs/BOARD.md §8).
+        onVariableChange={onVariableChange}
       />
       {!inFlow && <AppHeader />}
       {/* the chat page IS Wobo — no docked twin over it */}

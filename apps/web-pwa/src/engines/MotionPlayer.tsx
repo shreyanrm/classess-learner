@@ -19,7 +19,7 @@ import {
 } from 'react';
 import { lead, whisper } from '../screens/course/shared';
 import { WoboLogo } from '../ui/Logo';
-import { usePausedFrame, videoHandoff } from '../wobo/video';
+import { holdFilm, usePausedFrame, videoHandoff } from '../wobo/video';
 import { SafeSvg, svgIsClean } from './DiagramView';
 
 // --- The motion-scene spec ------------------------------------------------------------------------
@@ -210,7 +210,106 @@ function ScrubBar({ fraction, onSeek }: { fraction: number; onSeek: (f: number) 
 
 // --- The player -----------------------------------------------------------------------------------
 
+/**
+ * A baked MP4 of this exact film (the render worker's output, watermark already burned in).
+ *
+ * It is a separate component, not a branch inside the scene player, because it is a different
+ * transport: a `<video>` owns its own clock, its own controls and its own seek. Returning an early
+ * `<video>` from inside the scene player meant every one of that player's hooks still ran and none
+ * of them applied — `playing` was never true, so the handoff recorded a paused position off a clock
+ * nobody was running, and "back to the film" moved a SMIL beat index rather than the video.
+ */
+function RenderedFilm({ scene }: { scene: MotionScene }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [paused, setPaused] = useState(true);
+  const [atMs, setAtMs] = useState(0);
+
+  const stageRef = useRegisterTarget<HTMLDivElement>(`motion-${scene.id}`, {
+    kind: 'motion',
+    label: scene.title
+      ? `the film "${scene.title}" — a rendered explainer`
+      : 'the rendered explainer on this card',
+  });
+
+  // Paused, the frame is a surface Wobo can be asked about. A baked film has no scene spec to read
+  // parts out of, so what it offers is the frame itself and the position it is stopped at —
+  // BOARD.md §5's "for content we did not make" case, applied to a film we made but flattened.
+  const frame = paused
+    ? {
+        sceneId: scene.id,
+        stepId: 'film',
+        atMs,
+        ...(scene.title ? { title: scene.title } : {}),
+      }
+    : null;
+  usePausedFrame(frame, stageRef);
+
+  // The handoff (WOBO-TASKS §5.5): paused, the film registers where it is and how to put the
+  // learner back — on the video's own clock. Playing again releases it, so nothing stale is ever
+  // returned to.
+  useEffect(() => {
+    if (!paused) {
+      videoHandoff.release(scene.id);
+      return;
+    }
+    holdFilm(scene.id, () => videoRef.current, {
+      atMs,
+      ...(scene.title ? { title: scene.title } : {}),
+    });
+    return () => videoHandoff.release(scene.id);
+  }, [paused, atMs, scene.id, scene.title]);
+
+  const readClock = () => setAtMs((videoRef.current?.currentTime ?? 0) * 1000);
+
+  return (
+    <div
+      ref={stageRef}
+      style={{
+        position: 'relative',
+        width: '100%',
+        border: '0.5px solid var(--wobo-hairline-on-paper)',
+        borderRadius: 'var(--wobo-radius-md)',
+        background: 'var(--wobo-paper)',
+        overflow: 'hidden',
+      }}
+    >
+      {/* biome-ignore lint/a11y/useMediaCaption: narration is spoken in the film; scene captions are baked into the frames */}
+      <video
+        ref={videoRef}
+        src={scene.renderedUrl}
+        controls
+        playsInline
+        preload="metadata"
+        aria-label={scene.title ? `motion explainer: ${scene.title}` : 'motion explainer'}
+        onPlay={() => setPaused(false)}
+        onPause={() => {
+          readClock();
+          setPaused(true);
+        }}
+        onSeeked={readClock}
+        onLoadedMetadata={readClock}
+        onEnded={() => {
+          readClock();
+          setPaused(true);
+        }}
+        style={{ width: '100%', height: 'auto', display: 'block' }}
+      />
+    </div>
+  );
+}
+
+/**
+ * The film, however it was made. A baked MP4 plays as a video with a video's transport; everything
+ * else plays live as timed scenes. One decision, taken before either player mounts — neither ever
+ * runs the other's hooks.
+ */
 export function MotionPlayer({ scene }: { scene: MotionScene }) {
+  if (scene.renderedUrl) return <RenderedFilm scene={scene} />;
+  return <ScenePlayer scene={scene} />;
+}
+
+/** The live player: timed scenes, spring transitions, narration audio, and its own step clock. */
+function ScenePlayer({ scene }: { scene: MotionScene }) {
   const steps = scene.steps;
   const durations = useMemo(() => steps.map((s) => s.durationMs), [steps]);
   const total = useMemo(() => durations.reduce((a, b) => a + b, 0), [durations]);
@@ -365,35 +464,6 @@ export function MotionPlayer({ scene }: { scene: MotionScene }) {
     }
     setPlaying(true);
   };
-
-  // Prefer the baked MP4 when the render worker has produced one (its Wobo watermark is already
-  // burned in, so no overlay here). Native <video controls> — reduced-motion safe (no autoplay),
-  // both themes via the token-styled stage. Falls back to the live SMIL scenes when absent.
-  if (scene.renderedUrl) {
-    return (
-      <div
-        ref={stageRef}
-        style={{
-          position: 'relative',
-          width: '100%',
-          border: '0.5px solid var(--wobo-hairline-on-paper)',
-          borderRadius: 'var(--wobo-radius-md)',
-          background: 'var(--wobo-paper)',
-          overflow: 'hidden',
-        }}
-      >
-        {/* biome-ignore lint/a11y/useMediaCaption: narration is spoken in the film; scene captions are baked into the frames */}
-        <video
-          src={scene.renderedUrl}
-          controls
-          playsInline
-          preload="metadata"
-          aria-label={scene.title ? `motion explainer: ${scene.title}` : 'motion explainer'}
-          style={{ width: '100%', height: 'auto', display: 'block' }}
-        />
-      </div>
-    );
-  }
 
   if (!step) return null;
   const current = step;

@@ -247,9 +247,11 @@ CHECKERS = {
 @pytest.mark.parametrize("name", NAMES)
 def test_every_visible_numeral_names_a_real_verifier(name: str) -> None:
     for obj in objects_of(BOARDS[name]):
-        fields = ("text", "tex", "label", "title", "value")
-        visible = " ".join(str(obj.get(k) or "") for k in fields)
-        if not schema.contains_number(visible):
+        # The grammar's own classifier, not a second copy of it. The hand-rolled list this used
+        # to carry drifted both ways: it missed the fields the law had since learned to read (a
+        # table's cells, a quantity's unit, an atom's symbol), and it read a control's `value` —
+        # where the knob sits — as if it were a numeral Wobo had written out.
+        if not schema.contains_number(schema.visible_text(obj)):
             continue
         check = str(obj.get("check") or "")
         match = CHECK_NAME.match(check)

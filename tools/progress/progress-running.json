@@ -1,14 +1,18 @@
 [
- {
-  "title": "Wave 7c \u00b7 the landing page into the app",
-  "detail": "Porting landing v6 (GSAP ScrollTrigger + Lenis, the Tuesday and Sunday chapters, Ask Wobo, the ribbon) into the app's front door, with a side-by-side comparison against the prototype and a performance gate."
- },
- {
-  "title": "Wave 5b \u00b7 the seams",
-  "detail": "Closing the wired-but-dead seams from the Wave 5 reconciliation: packet fields, bidirectional board controls, timeline scrub, barge-in stops ink, the hotkey starts voice, memory erase on the brain side, accent by country, the speech-latency metric, the identity lock."
- },
- {
-  "title": "Queued \u00b7 the re-skin and the internal pages",
-  "detail": "Every app screen and every public page to the bold-ink law and palette v4, on a component kit; then Meet Wobo, How it works, For parents, For students, Subjects, Security per docs/SITE.md."
- }
+  {
+    "title": "Wave 7c \u00b7 the landing port (against v7)",
+    "detail": "Opus workers port the v7 prototype into the app on GSAP and Lenis; an adversarial visual gate at three widths."
+  },
+  {
+    "title": "App reference screens \u00b7 Fable's hand",
+    "detail": "Home, Learn, Lesson, Practice, You in the bold-ink law, both themes. These become the re-skin wave's brief."
+  },
+  {
+    "title": "Site pages \u00b7 Fable's hand, done as prototypes",
+    "detail": "Security and trust, Meet Wobo, For parents, For students, How it works, Subjects. Each pitches its own way; all in design/prototypes/site-*.html and ~/Documents/wobo-design-2026-09-02/."
+  },
+  {
+    "title": "Queued \u00b7 the re-skin wave",
+    "detail": "Every app screen to the five reference screens, every public page to the six prototypes, once 7c and 5b land."
+  }
 ]

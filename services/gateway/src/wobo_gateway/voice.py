@@ -24,7 +24,12 @@ speech fallback can pick a matching local voice, and it is the honest statement 
 learner is about to hear. The socket learns it from the TOKEN, not from a query parameter —
 the token is the only thing a socket can trust, so the grant carries the accent with the subject.
 
-Both sockets carry the accent as a line in the system instruction rather than as
+All three spoken paths carry it: the live microphone (``/v1/voice/relay``), the read-aloud
+socket (``/v1/voice/tts/stream``) — both from the grant — and the one-shot line
+(``POST /v1/voice/tts``), which resolves it from the same verified record the session route
+reads and returns it as ``accent`` beside the audio.
+
+Every one of them carries the accent as a line in the system instruction rather than as
 ``generationConfig.speechConfig.languageCode``. That is deliberate: the native-audio model
 detects the spoken language itself, and an unknown or unsupported setup field is rejected by
 the upstream, which closes the socket instantly and takes the microphone with it — exactly how
@@ -439,16 +444,26 @@ def register_voice(app: FastAPI) -> None:
 
     @app.post("/v1/voice/tts")
     def tts(body: TtsBody, request: Request) -> dict[str, str]:
-        """Wobo's spoken line for a typed turn — same voice as the live relay, key server-side."""
+        """Wobo's spoken line for a typed turn — same voice as the live relay, key server-side.
+
+        Same ACCENT, too. This is the third way a learner hears Wobo (the live microphone, the
+        read-aloud socket, and this one-shot line), and it is the one that used to speak American
+        English to everybody: it took the learner's text and nothing about the learner. One voice,
+        one accent, every path — so it is resolved from the same verified record the session route
+        reads, and reported back beside the audio the way ``/v1/voice/session`` reports it.
+        """
         if not (os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY")):
             raise HTTPException(status_code=503, detail="voice unavailable")
         _charge_voice(request, "voice.tts")
         from wobo_gateway.plexus.media import synthesize_narration
 
-        audio = synthesize_narration(body.text)
+        accent = learner_accent(
+            request.state.principal.claims, request.headers.get("accept-language")
+        )
+        audio = synthesize_narration(body.text, instruction=accent_instruction(accent))
         if audio is None:
             raise HTTPException(status_code=502, detail="tts failed")
-        return audio
+        return {**audio, "accent": accent}
 
     @app.websocket("/v1/voice/relay")
     async def relay(client: WebSocket) -> None:

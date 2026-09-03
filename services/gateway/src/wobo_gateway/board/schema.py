@@ -192,7 +192,22 @@ _VISIBLE_BY_NAME: dict[str, bool] = {
 
 #: Where one field name means two different things depending on the kind. ``table.rows`` is the
 #: text in the cells; ``grid.rows`` is how many lines to rule.
-_VISIBLE_OVERRIDES: dict[tuple[str, str], bool] = {("grid", "rows"): False}
+#:
+#: The same split runs through ``value``. On a ``number`` (or a label, or a table cell) it is a
+#: quantity Wobo is ASSERTING, and the verified-number law rightly demands the check that signed
+#: it. On a control it is the STATE OF THE VARIABLE THE LEARNER DRIVES — where the knob sits now
+#: — and ``geometry.ts`` is the arbiter this table names: a slider's value becomes the knob's
+#: position along the track, a toggle's picks which end the knob rests at, a drag's is an ``[dx,
+#: dy]`` offset for the handle. None of the three ever reaches ``writeText``, so none of them is
+#: a numeral on the board, and no verifier could sign one anyway — the learner changes it with
+#: their thumb a moment later. ``input.value`` is the exception that proves it: geometry DOES
+#: write that one out as glyphs, so it stays visible and stays under the law.
+_VISIBLE_OVERRIDES: dict[tuple[str, str], bool] = {
+    ("grid", "rows"): False,
+    ("slider", "value"): False,
+    ("toggle", "value"): False,
+    ("drag", "value"): False,
+}
 
 
 def is_visible_field(kind: str, name: str) -> bool:

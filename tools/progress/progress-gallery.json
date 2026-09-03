@@ -1,112 +1,252 @@
 [
- {
-  "src": "~/Documents/wobo-design-2026-09-02/lv6-hero.png",
-  "caption": "Landing v6 \u00b7 hero: Wobo (head only) with the pen, the live card, the sticker, floats at three depths.",
-  "group": "Newest, for your eye"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/lv6-ribbon.png",
-  "caption": "Landing v6 \u00b7 the ribbon: one continuous highlighter stroke that tapers and fades.",
-  "group": "Newest, for your eye"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/lv6-night-1.png",
-  "caption": "Landing v6 \u00b7 Tuesday, 9:40 pm: the room, pinned and scrubbed by scroll.",
-  "group": "Newest, for your eye"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/lv6-night-2.png",
-  "caption": "Landing v6 \u00b7 the camera moves into the phone.",
-  "group": "Newest, for your eye"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/lv6-night-3.png",
-  "caption": "Landing v6 \u00b7 and Wobo draws it out, stroke by stroke as you scroll.",
-  "group": "Newest, for your eye"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/lv6-night-4.png",
-  "caption": "Landing v6 \u00b7 9:46 pm. Oh.",
-  "group": "Newest, for your eye"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/lv6-sunday-2.png",
-  "caption": "Landing v6 \u00b7 Sunday, 6 pm: the envelope opens, the note rises.",
-  "group": "Newest, for your eye"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/lv6-tries.png",
-  "caption": "Landing v6 \u00b7 then she tries one.",
-  "group": "Newest, for your eye"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/lv6-ask-reply.png",
-  "caption": "Landing v6 \u00b7 Ask Wobo about Wobo, near the end of the page.",
-  "group": "Newest, for your eye"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/lv6-devices.png",
-  "caption": "Landing v6 \u00b7 one Wobo, every screen, with the app buttons.",
-  "group": "Newest, for your eye"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/lv6-hero-390.png",
-  "caption": "Landing v6 \u00b7 phone.",
-  "group": "Newest, for your eye"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/states-loading-light.png",
-  "caption": "Loading \u00b7 the pen draws the hairline, the line becomes the orb.",
-  "group": "Newest, for your eye"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/states-e404-light.png",
-  "caption": "404 \u00b7 the path on the map ends in a question mark.",
-  "group": "Newest, for your eye"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/states-e500-dark.png",
-  "caption": "500 \u00b7 the line breaks; Wobo shakes it off (dark).",
-  "group": "Newest, for your eye"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/logo-sheet.png",
-  "caption": "Your wordmark candidates on light. My pick: solid mark as primary, sticker as secondary. Awaiting your go.",
-  "group": "Decisions on the table"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/icon-sheet.png",
-  "caption": "Your icon candidates. My pick: the eyes, with ultramarine pupils. Awaiting your go.",
-  "group": "Decisions on the table"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/wave5-proofs/a2-ink-on-the-frame.png",
-  "caption": "Wave 5 \u00b7 her ink on a paused film, live in the app.",
-  "group": "Already in the app"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/wave5-proofs/b2-plane-complete-light.png",
-  "caption": "Wave 5 \u00b7 the plane over Learn with a derivation.",
-  "group": "Already in the app"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/wave5-proofs/golden/pythagoras-light.png",
-  "caption": "Wave 5 \u00b7 golden board: Pythagoras, every number computed.",
-  "group": "Already in the app"
- },
- {
-  "src": "~/Documents/wobo-design-2026-09-02/wave5-proofs/golden/benzene-light.png",
-  "caption": "Wave 5 \u00b7 golden board: benzene.",
-  "group": "Already in the app"
- },
- {
-  "src": "/private/tmp/claude-501/-Users-depl-Documents-classess-learner/e78e989d-9890-46b7-8ea9-a8b6fca9a943/scratchpad/wave6/proof/01-board-typeahead-tel.png",
-  "caption": "Wave 6 \u00b7 in the app: typing 'tel' finds the Telangana boards, with the 'not listed' door. Old visual language; the re-skin comes next.",
-  "group": "Already in the app"
- },
- {
-  "src": "/private/tmp/claude-501/-Users-depl-Documents-classess-learner/e78e989d-9890-46b7-8ea9-a8b6fca9a943/scratchpad/wave6/proof/04-own-syllabus-personal-plan.png",
-  "caption": "Wave 6 \u00b7 a pasted syllabus becomes a personal plan, unit by unit, each one confirmable.",
-  "group": "Already in the app"
- }
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/onb2-1-d.png",
+    "caption": "Onboarding v2 \u00b7 'Hi. I'm Wobo. Let's make this yours.' Sign in with a code; the provider button waits on your ruling.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/onb2-3-d.png",
+    "caption": "Onboarding v2 \u00b7 the aha: the first question, drawn, thirty seconds in.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/onb2-5-m.png",
+    "caption": "Onboarding v2 on a phone \u00b7 ready: 'That's it, Aanya.' and the allowance.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/lv7-phone-hero.png",
+    "caption": "Landing v7 on a phone, after the sweep: the question, the sub, the two buttons, the card.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/meet-phone-hero.png",
+    "caption": "Meet Wobo on a phone. Every site page carries one layout rule and collapses the same way.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/ab-L-01.png",
+    "caption": "About \u00b7 'We built the tutor we wished we'd had at 9 pm on a Tuesday.' The mission line, pinned, in Wobo's hand.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/ab-L-04.png",
+    "caption": "About \u00b7 a very small team, and one very patient character.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/pl-L-01.png",
+    "caption": "Plans \u00b7 'Free every day. More when exams get close.' India / everywhere toggle; the allowance drawn.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/pl-L-03.png",
+    "caption": "Plans \u00b7 the honest table, and checkout with two plain-words boxes, nothing pre-ticked.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/email-1.png",
+    "caption": "Email \u00b7 the Sunday note to a parent: Wobo's three lines, three tinted numbers, one thing worth saying.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/email-2.png",
+    "caption": "Email \u00b7 welcome, minutes after sign-up: 'Hi Aanya. I'm Wobo.' and three things to try tonight.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/email-3.png",
+    "caption": "Email \u00b7 a win worth a line (never more than once a week): 'Ten days ago you asked what a hypotenuse was.'",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/app-3-m.png",
+    "caption": "App on a phone \u00b7 the lesson board with the bottom tab bar. Same screens, one layout rule.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/how-L-01.png",
+    "caption": "How it works \u00b7 from 'I don't get it' to 'oh.' The three-step strip draws itself.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/how-L-03.png",
+    "caption": "How it works \u00b7 drag the point onto y = 2x + 1 (Wobo rings the gap), and the five practice kinds.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/sub-L-01.png",
+    "caption": "Subjects \u00b7 every subject, your school's way: four drawn tiles, then the board type-ahead.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/sub-L-04.png",
+    "caption": "Subjects \u00b7 English: a paragraph marked up like a good teacher would.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/stu-L-01.png",
+    "caption": "For students \u00b7 'Ask the question you'd never ask in class.' A paused lesson with the loop drawn on it.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/stu-L-03.png",
+    "caption": "For students \u00b7 try one: colour half (Wobo rings the gap), and turn the ray to a right angle (Wobo notices).",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/meet-L-01.png",
+    "caption": "Meet Wobo \u00b7 a tutor with a pen, endless patience, and no opinions about anything but the chapter. The eyes follow your pointer; the first line writes itself.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/meet-L-03.png",
+    "caption": "Meet Wobo \u00b7 it notices what a good teacher notices: the Sunday note, ringed.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/meet-L-04.png",
+    "caption": "Meet Wobo \u00b7 say 'Hey Wobo': hold space, Wobo listens, let go, it answers.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/par-L-01.png",
+    "caption": "For parents \u00b7 'You can't be at the table every evening. Wobo can.' The Sunday note rises from its envelope.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/par-L-02.png",
+    "caption": "For parents \u00b7 the 8 pm drive home, and what you see.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/sec-L-01.png",
+    "caption": "Security and trust \u00b7 'Your child's questions stay between them and Wobo.' The shield draws itself.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/sec-L-04.png",
+    "caption": "Security \u00b7 how a question travels, drawn: device \u2192 Wobo \u2192 model provider without identity \u2192 back.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/sec-L-05.png",
+    "caption": "Security \u00b7 children first, and the who-can-see-what table.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/app-1-light.png",
+    "caption": "App \u00b7 Home: Wobo greets by name, asks what we're figuring out tonight; today's three cards; the week in Wobo's words.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/app-3-light.png",
+    "caption": "App \u00b7 Lesson: the board with the proof drawn in ink, Wobo's line in handwriting, the lesson's five steps beside it.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/app-4-light.png",
+    "caption": "App \u00b7 Practice: colour half; Wobo circles the gap instead of saying wrong.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/app-5-dark.png",
+    "caption": "App \u00b7 You (night): the week in Wobo's words, strengths, the parent link, settings.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/app-2-light.png",
+    "caption": "App \u00b7 Learn: your subjects, your class's chapter this week, the official-syllabus badge.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/lv7-hero.png",
+    "caption": "Landing v7 \u00b7 the headline is the question; the card answers it.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/lv7-night-1.png",
+    "caption": "Landing v7 \u00b7 one Tuesday night, 9:40 pm.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/lv7-night-4.png",
+    "caption": "Landing v7 \u00b7 9:46 pm. It clicked.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/lv7-why.png",
+    "caption": "Landing v7 \u00b7 why it clicks: three things a great tutor does.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/lv7-students.png",
+    "caption": "Landing v7 \u00b7 for students: the question you'd never ask in class.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/lv7-parents.png",
+    "caption": "Landing v7 \u00b7 for parents: you'll know how it's going without asking twice.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/lv7-close.png",
+    "caption": "Landing v7 \u00b7 begin tonight; the first question is on us.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/states-loading-light.png",
+    "caption": "Loading \u00b7 the pen draws the hairline, the line becomes the orb.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/states-e404-light.png",
+    "caption": "404 \u00b7 the path on the map ends in a question mark.",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/states-e500-dark.png",
+    "caption": "500 \u00b7 the line breaks; Wobo shakes it off (dark).",
+    "group": "Newest, for your eye"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/logo-sheet.png",
+    "caption": "Your wordmark candidates on light. My pick: solid mark as primary, sticker as secondary. Awaiting your go.",
+    "group": "Decisions on the table"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/icon-sheet.png",
+    "caption": "Your icon candidates. My pick: the eyes, with ultramarine pupils. Awaiting your go.",
+    "group": "Decisions on the table"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/wave5-proofs/a2-ink-on-the-frame.png",
+    "caption": "Wave 5 \u00b7 her ink on a paused film, live in the app.",
+    "group": "Already in the app"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/wave5-proofs/b2-plane-complete-light.png",
+    "caption": "Wave 5 \u00b7 the plane over Learn with a derivation.",
+    "group": "Already in the app"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/wave5-proofs/golden/pythagoras-light.png",
+    "caption": "Wave 5 \u00b7 golden board: Pythagoras, every number computed.",
+    "group": "Already in the app"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/wave5-proofs/golden/benzene-light.png",
+    "caption": "Wave 5 \u00b7 golden board: benzene.",
+    "group": "Already in the app"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/proofs-wave6/01-board-typeahead-tel.png",
+    "caption": "Wave 6 \u00b7 in the app: typing 'tel' finds the Telangana boards, with the 'not listed' door. Old visual language; the re-skin comes next.",
+    "group": "Already in the app"
+  },
+  {
+    "src": "~/Documents/wobo-design-2026-09-02/proofs-wave6/04-own-syllabus-personal-plan.png",
+    "caption": "Wave 6 \u00b7 a pasted syllabus becomes a personal plan, unit by unit, each one confirmable.",
+    "group": "Already in the app"
+  }
 ]

@@ -476,7 +476,9 @@ def test_wobos_refusal_and_safety_copy_names_no_provider() -> None:
     _clean(json.dumps(gated), "safety refusal copy")
 
 
-def test_the_email_endpoints_error_bodies_are_in_wobos_voice(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_the_email_endpoints_error_bodies_are_in_wobos_voice(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     from fastapi.testclient import TestClient
     from wobo_gateway.app import create_app
 

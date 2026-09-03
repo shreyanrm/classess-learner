@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { acquireVoiceSession } from './voice';
+import { acquireVoiceSession, bargeIn, readServerFrame } from './voice';
 
 /** A microphone stream that reports whether it was actually released. */
 function fakeStream(): MediaStream & { stopped: boolean } {
@@ -107,5 +107,99 @@ describe('the acquisition order and its refusals', () => {
     });
     expect(out.status).toBe('unavailable');
     expect(stream.stopped).toBe(true);
+  });
+});
+
+/**
+ * Barge-in by voice (BOARD.md §4). The relay says `interrupted` the moment the learner talks over
+ * Wobo; the client used to stop only Wobo's audio sources, so the pen kept drawing a plan nobody
+ * was listening to and the object Wobo was cut off on never reached the brain.
+ */
+describe('the learner speaks over Wobo', () => {
+  const audio = () => {
+    const stopped: string[] = [];
+    const sources = new Set([{ stop: () => stopped.push('a') }, { stop: () => stopped.push('b') }]);
+    return { stopped, state: { sources, playhead: 4.25 } };
+  };
+
+  it('lifts the pen with the voice — one interruption, both halves', () => {
+    const { stopped, state } = audio();
+    let lifted = 0;
+    bargeIn(state, { interrupt: () => lifted++ });
+    expect(stopped).toEqual(['a', 'b']); // Wobo stops mid-sentence
+    expect(state.sources.size).toBe(0);
+    expect(state.playhead).toBe(0);
+    expect(lifted).toBe(1); // …and the hand stops mid-stroke on the same beat
+  });
+
+  it('is what the relay frame actually reaches — not a function nobody calls', () => {
+    const seen: string[] = [];
+    const sink = {
+      interrupted: () => seen.push('interrupted'),
+      audio: (b64: string) => seen.push(`audio:${b64}`),
+      heard: (t: string) => seen.push(`heard:${t}`),
+      said: (t: string) => seen.push(`said:${t}`),
+      turnComplete: () => seen.push('done'),
+    };
+    readServerFrame(JSON.stringify({ serverContent: { interrupted: true } }), sink);
+    expect(seen).toEqual(['interrupted']);
+  });
+
+  it('an interrupted frame stops there — no audio, no transcript, no turn close', () => {
+    const seen: string[] = [];
+    readServerFrame(
+      JSON.stringify({
+        serverContent: {
+          interrupted: true,
+          turnComplete: true,
+          outputTranscription: { text: 'a sentence Wobo never finished' },
+          modelTurn: { parts: [{ inlineData: { data: 'AAAA' } }] },
+        },
+      }),
+      {
+        interrupted: () => seen.push('interrupted'),
+        audio: () => seen.push('audio'),
+        heard: () => seen.push('heard'),
+        said: () => seen.push('said'),
+        turnComplete: () => seen.push('done'),
+      },
+    );
+    expect(seen).toEqual(['interrupted']);
+  });
+
+  it('an ordinary frame still carries the words, then the audio, then the close', () => {
+    const seen: string[] = [];
+    readServerFrame(
+      JSON.stringify({
+        serverContent: {
+          inputTranscription: { text: 'why' },
+          outputTranscription: { text: 'because' },
+          modelTurn: { parts: [{ inlineData: { data: 'BBBB' } }] },
+          turnComplete: true,
+        },
+      }),
+      {
+        interrupted: () => seen.push('interrupted'),
+        audio: (b64: string) => seen.push(`audio:${b64}`),
+        heard: (t: string) => seen.push(`heard:${t}`),
+        said: (t: string) => seen.push(`said:${t}`),
+        turnComplete: () => seen.push('done'),
+      },
+    );
+    expect(seen).toEqual(['heard:why', 'said:because', 'audio:BBBB', 'done']);
+  });
+
+  it('rubbish on the wire means nothing — it is dropped, never guessed at', () => {
+    let touched = 0;
+    const sink = {
+      interrupted: () => touched++,
+      audio: () => touched++,
+      heard: () => touched++,
+      said: () => touched++,
+      turnComplete: () => touched++,
+    };
+    readServerFrame('not json at all', sink);
+    readServerFrame(JSON.stringify({ setupComplete: {} }), sink);
+    expect(touched).toBe(0);
   });
 });

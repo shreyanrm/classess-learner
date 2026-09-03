@@ -19,6 +19,8 @@ from collections.abc import Callable
 from typing import Any
 from urllib.parse import urlparse
 
+from wobo_gateway.hospitality.tokens import is_one_click, stop_url
+
 # --- brand-neutral config (WOBO-PLAN §8) ----------------------------------------------
 # Every user-facing name, link base and legal footer is one environment variable, so the
 # domain swap is a deploy change and never a code change. The defaults below name the real
@@ -28,12 +30,31 @@ APP_NAME = os.getenv("APP_NAME", "Wobo")
 # from it, so a second domain is one variable and no code change.
 APP_URL = os.getenv("APP_URL", "https://heywobo.com").rstrip("/")
 # CAN-SPAM and India's DPDP both want a working opt-out and a real postal address on
-# commercial mail. The address has no honest default, so the placeholder says so loudly: it is
-# the owner's to set before EMAIL_MODE=live.
-UNSUBSCRIBE_URL = os.getenv("EMAIL_UNSUBSCRIBE_URL") or f"{APP_URL}/unsubscribe"
-POSTAL_ADDRESS = os.getenv(
-    "EMAIL_POSTAL_ADDRESS", "PLACEHOLDER — set EMAIL_POSTAL_ADDRESS before sending live mail"
-)
+# commercial mail. The list-wide opt-out is the gateway's own stop route (hospitality/tokens.py):
+# without a token it is a page that says so and points at sign-in, never a 404. A send path
+# puts the recipient's signed link in ``data`` and that one wins.
+UNSUBSCRIBE_URL = os.getenv("EMAIL_UNSUBSCRIBE_URL") or stop_url()
+# The notification preferences page — the "you" screen carries the switches (help centre,
+# settings §Notifications). The learner's mail links it as "Email settings" / "Fewer emails".
+PREFERENCES_URL = os.getenv("EMAIL_PREFERENCES_URL") or f"{APP_URL}/you"
+# Read here too (email.py reads the same variable for the envelope) so the "Reply to Wobo" link
+# in the Sunday note and the address on the envelope can never disagree.
+REPLY_TO = os.getenv("EMAIL_REPLY_TO", "support@heywobo.com")
+# The postal address has no honest default, so the placeholder says so loudly: it is the
+# owner's to set before EMAIL_MODE=live — and email.py refuses a live send while it is unset.
+_POSTAL_PLACEHOLDER = "PLACEHOLDER — set EMAIL_POSTAL_ADDRESS before sending live mail"
+
+
+def postal_address_is_set() -> bool:
+    return bool((os.getenv("EMAIL_POSTAL_ADDRESS") or "").strip())
+
+
+def postal_address() -> str:
+    return (os.getenv("EMAIL_POSTAL_ADDRESS") or "").strip() or _POSTAL_PLACEHOLDER
+
+
+# The fallback as it stood at import, for the tests that pin it; the footer reads the live value.
+POSTAL_ADDRESS = postal_address()
 
 
 # Where a link in our mail may point. /v1/email/send is an INTERNAL relay, but its shared key is
@@ -47,6 +68,9 @@ _ALLOWED_LINK_HOSTS: frozenset[str] = frozenset(
     for h in {
         _APP_HOST.lower(),
         (urlparse(UNSUBSCRIBE_URL).hostname or "").lower(),
+        (urlparse(PREFERENCES_URL).hostname or "").lower(),
+        # the signed one-click stop link lives on the gateway origin (hospitality/tokens.py)
+        (urlparse(stop_url()).hostname or "").lower(),
         *(
             h.strip().lower()
             for h in os.getenv("EMAIL_LINK_HOSTS", "").split(",")
@@ -93,7 +117,26 @@ def _unsubscribe(data: dict[str, Any]) -> str:
 
 
 def _postal(data: dict[str, Any]) -> str:
-    return str(data.get("postal_address") or POSTAL_ADDRESS)
+    return str(data.get("postal_address") or postal_address())
+
+
+def _preferences(data: dict[str, Any]) -> str:
+    """The recipient's notification settings. A per-recipient token belongs in ``data``."""
+    return _safe_url(data.get("preferences_url"), PREFERENCES_URL)
+
+
+def _list_unsubscribe(data: dict[str, Any]) -> dict[str, str]:
+    """RFC 8058 headers. Mail clients show their own "unsubscribe" affordance from these, so a
+    reader never has to hunt the footer. The target is the recipient's signed stop link when the
+    send path minted one, else the list-wide opt-out. ``List-Unsubscribe-Post`` — the promise
+    that a bare POST to the target unsubscribes — is made only when the target can keep it: a
+    tokened link on the stop route. A sign-in page or an untokened route is not a one-click
+    endpoint, and Gmail's and Yahoo's bulk-sender checks POST to whatever we name here."""
+    target = _unsubscribe(data)
+    headers = {"List-Unsubscribe": f"<{target}>"}
+    if is_one_click(target):
+        headers["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click"
+    return headers
 
 # --- brand tokens (locked spec) -------------------------------------------------------
 FONT = "'Poppins', 'Helvetica Neue', Arial, sans-serif"
@@ -631,8 +674,555 @@ def premium_surprise(data: dict[str, Any]) -> dict[str, str]:
             "html": html_out, "text": text}
 
 
+# --- the hand-drawn three (design/email-v1.html, ported verbatim), and the wish -----------
+# The Sunday note, the welcome and the win are the owner's design: cream paper, navy ink, the
+# Caveat hand for what Wobo says, marigold and coral for the earned moments, tonal tiles and no
+# border lines (DESIGN.md law v3). The markup below is that file's, table for table and style
+# for style; only the words that belong to one family are swapped in. Every sentence that needs
+# a number the caller did not give is dropped, never filled with a guess (docs/copy/emails).
+_HAND = "Poppins,Arial,sans-serif"
+_HAND_CURSIVE = "Caveat,'Comic Sans MS',cursive"
+_PAPER = "#FAF7F0"
+_PAPER_EDGE = "#E7E1D3"
+_NAVY = "#14142B"
+_WOBO_BLUE = "#2B45FF"
+_MARIGOLD = "#FFB629"
+_CORAL = "#FF6B57"
+_MUTED = "#4E4E66"
+_QUIET = "#8A8A9E"
+_TONAL = "#F1EDE3"
+
+_HAND_FOOT_LINK = 'style="color:#4E4E66"'
+
+
+def _privacy_url() -> str:
+    return f"{APP_URL}/legal/privacy"
+
+
+def _trust_url() -> str:
+    return f"{APP_URL}/legal"
+
+
+def _hand_doc(*, preheader: str, rows: str) -> str:
+    """The document around one hand-drawn card: paper edge, a 640px card, the hidden preheader."""
+    return (
+        "<!DOCTYPE html>"
+        '<html lang="en"><head><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">'
+        '<meta name="x-apple-disable-message-reformatting">'
+        f"<title>{_esc(APP_NAME)}</title></head>"
+        f'<body style="margin:0;padding:0;background:{_PAPER_EDGE};font-family:{_HAND}">'
+        f'<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;color:{_PAPER_EDGE};font-size:1px;line-height:1px;">{_esc(preheader)}</div>'
+        '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" '
+        f'style="background:{_PAPER_EDGE}"><tr><td align="center" style="padding:32px 0">'
+        '<table role="presentation" width="640" cellspacing="0" cellpadding="0" '
+        f'style="width:100%;max-width:640px;background:{_PAPER};border-radius:24px;overflow:hidden;font-family:{_HAND};color:{_NAVY}">'
+        f"{rows}"
+        "</table></td></tr></table></body></html>"
+    )
+
+
+def _hand_head(stamp: str) -> str:
+    """The wordmark and the moment it was written ("Sunday, 6 pm")."""
+    return (
+        '<tr><td style="padding:28px 32px 0">'
+        '<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>'
+        f'<td style="font:700 26px/1 {_HAND};letter-spacing:-1px;color:{_NAVY}">{_esc(APP_NAME.lower())}</td>'
+        f'<td align="right" style="font:400 13px/1 {_HAND};color:{_QUIET}">{_esc(stamp)}</td>'
+        "</tr></table></td></tr>"
+    )
+
+
+def _hand_foot(first_line: str, links: str, postal: str) -> str:
+    """The quiet footer: why you got this, the switches, the legal line, the postal address."""
+    return (
+        f'<tr><td style="padding:28px 32px 26px;font:400 12px/1.6 {_HAND};color:{_QUIET}">'
+        f"{first_line}<br>"
+        f"{_esc(APP_NAME)} &middot; {_esc(_APP_HOST)} &middot; {links}<br>"
+        f"{_esc(postal)}"
+        "</td></tr>"
+    )
+
+
+_ONES = (
+    "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+    "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen",
+    "nineteen",
+)
+_TENS = ("", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety")
+
+
+def _words(n: int) -> str:
+    """A small number the way the design writes it in a sentence ("forty questions a day",
+    "All five lessons"). Past ninety-nine the digits are clearer, and the tiles keep digits."""
+    if n < 0 or n > 99:
+        return str(n)
+    if n < 20:
+        return _ONES[n]
+    tens, ones = divmod(n, 10)
+    return _TENS[tens] + (f"-{_ONES[ones]}" if ones else "")
+
+
+def _count(data: dict[str, Any], key: str) -> int | None:
+    """A whole number the caller actually gave, or None. Never coerces a missing field to 0 —
+    a zero dressed as an achievement is the one thing these emails must never say."""
+    value = data.get(key)
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _tile(bg: str, label: str, value: str, note: str, width: str) -> str:
+    return (
+        f'<td width="{width}" style="background:{bg};border-radius:16px;padding:16px 18px;vertical-align:top">'
+        f'<div style="font:500 11px/1 {_HAND};letter-spacing:1.5px;text-transform:uppercase;color:{_MUTED}">{_esc(label)}</div>'
+        f'<div style="font:700 30px/1 {_HAND};margin-top:8px">{_esc(value)}</div>'
+        + (f'<div style="font:400 12px/1.4 {_HAND};color:{_MUTED};margin-top:6px">{_esc(note)}</div>' if note else "")
+        + "</td>"
+    )
+
+
+def sunday_note(data: dict[str, Any]) -> dict[str, Any]:
+    """01 · The Sunday note, to a linked parent, at 6 pm in the family's own time.
+
+    Numbers come only from ``data`` (lessons, problems, days_active): a tile whose number was not
+    given is not drawn. The words Wobo says (``headline``, ``note``, ``worth_saying``) come from the
+    weekly summary capability; a missing one is left out, the layout closes up around it.
+    """
+    learner = str(data.get("learner_name") or "your child").strip()
+    learner_html = _esc(learner)
+    stamp = str(data.get("stamp") or "Sunday, 6 pm")
+    headline = str(data.get("headline") or "Here is how the week went.")
+    page_url = _link(data, "page_url", "/you")
+    unsub = _unsubscribe(data)
+    # The parent has no account of their own to sign in to, so "Change when it arrives" is
+    # drawn only when the send path gave a page the parent can actually open (a tokened one).
+    prefs = _safe_url(data.get("preferences_url"), "")
+    reply_url = f"mailto:{REPLY_TO}"
+
+    rows = _hand_head(stamp)
+    rows += (
+        '<tr><td style="padding:28px 32px 0">'
+        f'<div style="font:500 12px/1 {_HAND};letter-spacing:2px;text-transform:uppercase;color:{_WOBO_BLUE}">{learner_html}&#8217;s week</div>'
+        f'<div style="font:700 30px/1.1 {_HAND};letter-spacing:-1px;margin-top:10px">{_esc(headline)}</div>'
+        "</td></tr>"
+    )
+
+    # what Wobo says, in Wobo's hand — only when the summary gave it something true to say
+    note = str(data.get("note") or "").strip()
+    accent = str(data.get("note_accent") or "").strip()
+    after = str(data.get("note_after") or "").strip()
+    note_text = ""
+    if note:
+        note_html = _esc(note)
+        if accent:
+            note_html += f' <span style="color:{_CORAL}">{_esc(accent)}</span>'
+        if after:
+            note_html += f" {_esc(after)}"
+        note_text = " ".join(part for part in (note, accent, after) if part)
+        rows += (
+            '<tr><td style="padding:22px 32px 0">'
+            f'<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#FFF1D6;border-radius:18px"><tr><td style="padding:22px 24px">'
+            f'<div style="font:600 27px/1.2 {_HAND_CURSIVE};color:{_NAVY}">{note_html}</div>'
+            '<table role="presentation" cellspacing="0" cellpadding="0" style="margin-top:14px"><tr>'
+            f'<td style="width:36px;height:36px;border-radius:18px;background:{_NAVY};text-align:center;vertical-align:middle">'
+            f'<span style="display:inline-block;width:24px;height:11px;border-radius:6px;background:{_PAPER};position:relative;top:1px;text-align:center">'
+            f'<span style="display:inline-block;width:5px;height:5px;border-radius:3px;background:{_WOBO_BLUE};margin:3px 2px 0"></span>'
+            f'<span style="display:inline-block;width:5px;height:5px;border-radius:3px;background:{_WOBO_BLUE};margin:3px 2px 0"></span>'
+            '</span></td>'
+            + f'<td style="padding-left:10px;font:700 22px/1 {_HAND_CURSIVE};color:{_NAVY}">&mdash; {_esc(APP_NAME)}</td>'
+            "</tr></table></td></tr></table></td></tr>"
+        )
+
+    # the tiles — each drawn only when its number was given
+    tiles: list[tuple[str, str, str, str]] = []
+    lessons = _count(data, "lessons")
+    if lessons is not None:
+        tiles.append(("#E6EAFF", "Lessons", str(lessons), str(data.get("lessons_note") or "")))
+    problems = _count(data, "problems")
+    if problems is not None:
+        tiles.append(("#DDF6EC", "Problems", str(problems), str(data.get("problems_note") or "")))
+    days = _count(data, "days_active")
+    if days is not None:
+        days_of = _count(data, "days_of") or 7
+        tiles.append(("#FFE7E2", "Days", f"{days} of {days_of}", str(data.get("days_note") or "")))
+    if tiles:
+        width = {1: "100%", 2: "49%", 3: "32%"}[len(tiles)]
+        cells = '<td width="2%"></td>'.join(_tile(bg, label, value, note_, width) for bg, label, value, note_ in tiles)
+        rows += (
+            '<tr><td style="padding:18px 32px 0">'
+            f'<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>{cells}</tr></table>'
+            "</td></tr>"
+        )
+
+    worth = str(data.get("worth_saying") or "").strip()
+    if worth:
+        rows += (
+            '<tr><td style="padding:22px 32px 0">'
+            f'<div style="font:500 12px/1 {_HAND};letter-spacing:2px;text-transform:uppercase;color:{_QUIET}">Something worth saying</div>'
+            f'<div style="font:400 15px/1.55 {_HAND};color:{_MUTED};margin-top:8px">{_esc(worth)}</div>'
+            "</td></tr>"
+        )
+
+    rows += (
+        '<tr><td style="padding:24px 32px 0">'
+        '<table role="presentation" cellspacing="0" cellpadding="0"><tr>'
+        f'<td style="background:{_NAVY};border-radius:12px"><a href="{_esc(page_url, quote=True)}" style="display:inline-block;padding:14px 20px;font:500 15px/1 {_HAND};color:{_PAPER};text-decoration:none">See the week</a></td>'
+        f'<td style="padding-left:10px;background:transparent"><a href="{_esc(reply_url, quote=True)}" style="display:inline-block;padding:14px 20px;font:500 15px/1 {_HAND};color:{_NAVY};text-decoration:none;background:{_TONAL};border-radius:12px">Reply to {_esc(APP_NAME)}</a></td>'
+        "</tr></table></td></tr>"
+    )
+    rows += _hand_foot(
+        f"You get this note because {learner_html} linked you as a parent. It comes once a week, on Sunday. "
+        + (f'<a href="{_esc(prefs, quote=True)}" {_HAND_FOOT_LINK}>Change when it arrives</a> &middot; ' if prefs else "")
+        + f'<a href="{_esc(unsub, quote=True)}" {_HAND_FOOT_LINK}>Stop the notes</a>',
+        f'<a href="{_esc(_privacy_url(), quote=True)}" {_HAND_FOOT_LINK}>Privacy</a> &middot; '
+        f'<a href="{_esc(_trust_url(), quote=True)}" {_HAND_FOOT_LINK}>Security and trust</a>',
+        _postal(data),
+    )
+
+    preheader = str(data.get("one_line_summary") or headline)
+    topic = str(data.get("headline_topic") or "").strip()
+    subject = f"{learner}'s week" + (f": {topic}" if topic else "")
+
+    text_lines = [f"{learner}'s week", "", headline, ""]
+    if note_text:
+        text_lines += [note_text, f"— {APP_NAME}", ""]
+    for _bg, label, value, note_ in tiles:
+        text_lines.append(f"{label}: {value}" + (f" ({note_})" if note_ else ""))
+    if tiles:
+        text_lines.append("")
+    if worth:
+        text_lines += ["Something worth saying", worth, ""]
+    text_lines += [
+        f"See the week: {page_url}",
+        f"Reply to {APP_NAME}: {REPLY_TO}",
+        "",
+        f"You get this note because {learner} linked you as a parent. It comes once a week, on Sunday.",
+        *([f"Change when it arrives: {prefs}"] if prefs else []),
+        f"Stop the notes: {unsub}",
+        f"{APP_NAME} · {_APP_HOST} · Privacy: {_privacy_url()}",
+        _postal(data),
+    ]
+    return {
+        "subject": subject,
+        "preheader": preheader,
+        "html": _hand_doc(preheader=preheader, rows=rows),
+        "text": "\n".join(text_lines),
+        "headers": _list_unsubscribe(data),
+    }
+
+
+_WELCOME_THINGS: tuple[tuple[str, str], ...] = (
+    ("Ask the basic thing.", "“What even is a hypotenuse” counts. I never keep score of what you should already know."),
+    ("Hold space and just talk.", "Half a sentence is fine. Or paste question 7 straight from the worksheet."),
+    ("Try one.", "If you’re close, I’ll draw a loop around what you did and wait. I don’t say wrong."),
+)
+
+
+def welcome(data: dict[str, Any]) -> dict[str, Any]:
+    """02 · Welcome, to the learner, minutes after sign-up.
+
+    ``board_short`` and ``class_name`` name the syllabus Wobo loaded; when either is missing the
+    first line becomes the spec's honest fallback ("Tell me what you are studying...") and no
+    chapter is claimed. No plan pitch, no price, no referral ask — this email makes day one work.
+    """
+    name = str(data.get("name") or "").strip()
+    board = str(data.get("board_short") or "").strip()
+    klass = str(data.get("class_name") or "").strip()
+    subject_first = str(data.get("subject") or "").strip()
+    chapter = data.get("chapter")
+    stamp = str(data.get("stamp") or "Just now")
+    cta = _link(data, "cta_url", "/")
+    prefs = _preferences(data)
+    allowance = _count(data, "daily_allowance")
+
+    greeting = f"Hi {name}. I’m {APP_NAME}." if name else f"Hi. I’m {APP_NAME}."
+    if board and klass:
+        setup = f"Class {klass}, {board}" + (f", {subject_first} first." if subject_first else ".")
+        if chapter:
+            setup += " I’ve already found this week’s chapter."
+            if isinstance(chapter, str) and chapter.strip():
+                setup = setup[:-1] + f": {chapter.strip()}."
+        setup += " Ask me anything from it, any time, and I’ll draw the answer instead of reciting it."
+    else:
+        setup = (
+            "Tell me what you are studying and I will load your syllabus. "
+            "Then ask me anything from it, any time, and I’ll draw the answer instead of reciting it."
+        )
+    free_line = (
+        f"Free every day, {_words(allowance)} questions a day, no card and no trial that ends."
+        if allowance
+        else "Free every day, no card and no trial that ends."
+    )
+
+    rows = _hand_head(stamp)
+    rows += (
+        '<tr><td style="padding:32px 32px 0">'
+        f'<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:{_NAVY};border-radius:22px"><tr><td style="padding:30px 28px">'
+        '<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>'
+        '<td style="vertical-align:middle">'
+        f'<div style="font:600 34px/1.05 {_HAND_CURSIVE};color:{_MARIGOLD}">{_esc(greeting)}</div>'
+        f'<div style="font:400 15px/1.55 {_HAND};color:rgba(250,247,240,.78);margin-top:12px">{_esc(setup)}</div>'
+        "</td>"
+        '<td width="110" align="right" style="vertical-align:middle">'
+        '<table role="presentation" cellspacing="0" cellpadding="0"><tr>'
+        '<td style="width:96px;height:96px;border-radius:48px;background:#F3F0E8;text-align:center;vertical-align:middle">'
+        '<span style="display:inline-block;width:64px;height:28px;border-radius:14px;background:#0F1226;position:relative;top:2px;text-align:center">'
+        '<span style="display:inline-block;width:14px;height:14px;border-radius:7px;background:#7C8CFF;margin:7px 5px 0"></span>'
+        '<span style="display:inline-block;width:14px;height:14px;border-radius:7px;background:#7C8CFF;margin:7px 5px 0"></span>'
+        "</span></td></tr></table>"
+        "</td></tr></table></td></tr></table></td></tr>"
+    )
+    things = "".join(
+        f'<tr><td style="padding:12px 0;border-top:2px solid {_TONAL}"><table role="presentation" cellspacing="0" cellpadding="0"><tr>'
+        f'<td style="width:34px;height:34px;border-radius:17px;background:{_MARIGOLD};text-align:center;font:700 18px/34px {_HAND_CURSIVE};color:{_NAVY}">{i}</td>'
+        f'<td style="padding-left:14px"><div style="font:600 15px/1.3 {_HAND}">{_esc(title)}</div>'
+        f'<div style="font:400 14px/1.5 {_HAND};color:{_MUTED}">{_esc(line)}</div></td>'
+        "</tr></table></td></tr>"
+        for i, (title, line) in enumerate(_WELCOME_THINGS, start=1)
+    )
+    rows += (
+        '<tr><td style="padding:26px 32px 0">'
+        f'<div style="font:700 24px/1.15 {_HAND};letter-spacing:-.5px">Three things to try tonight</div>'
+        f'<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:14px">{things}</table>'
+        "</td></tr>"
+    )
+    rows += (
+        '<tr><td style="padding:22px 32px 0">'
+        '<table role="presentation" cellspacing="0" cellpadding="0"><tr>'
+        f'<td style="background:{_WOBO_BLUE};border-radius:12px"><a href="{_esc(cta, quote=True)}" style="display:inline-block;padding:14px 22px;font:500 15px/1 {_HAND};color:#FFFFFF;text-decoration:none">Ask your first question</a></td>'
+        "</tr></table>"
+        f'<div style="font:400 13px/1.5 {_HAND};color:{_QUIET};margin-top:12px">{_esc(free_line)}</div>'
+        "</td></tr>"
+    )
+    rows += _hand_foot(
+        f"You’re getting this because you just made a {_esc(APP_NAME)} account. We’ll email you only when it’s useful: your Sunday note, and account things. "
+        f'<a href="{_esc(prefs, quote=True)}" {_HAND_FOOT_LINK}>Email settings</a>',
+        f'<a href="{_esc(_privacy_url(), quote=True)}" {_HAND_FOOT_LINK}>Privacy</a> &middot; '
+        f'<a href="{_esc(_trust_url(), quote=True)}" {_HAND_FOOT_LINK}>Security and trust</a>',
+        _postal(data),
+    )
+
+    if board and klass:
+        subject = f"{APP_NAME} is set up for {board} class {klass}"
+    elif name:
+        subject = f"You are in, {name}"
+    else:
+        subject = f"Welcome to {APP_NAME}"
+    preheader = "Everything is on your syllabus now. Here is where to start."
+    text = "\n".join(
+        [
+            greeting,
+            "",
+            setup,
+            "",
+            "Three things to try tonight",
+            *(f"{i}. {title} {line}" for i, (title, line) in enumerate(_WELCOME_THINGS, start=1)),
+            "",
+            f"Ask your first question: {cta}",
+            free_line,
+            "",
+            f"You’re getting this because you just made a {APP_NAME} account. We’ll email you only when it’s useful: your Sunday note, and account things.",
+            f"Email settings: {prefs}",
+            f"{APP_NAME} · {_APP_HOST} · Privacy: {_privacy_url()}",
+            _postal(data),
+        ]
+    )
+    return {
+        "subject": subject,
+        "preheader": preheader,
+        "html": _hand_doc(preheader=preheader, rows=rows),
+        "text": text,
+        "headers": _list_unsubscribe(data),
+    }
+
+
+# The only moments a win email exists for (WOBO-PLAN §14.1, "celebrate along the way"). A streak
+# on its own under fourteen days is not one of them — hospitality/jobs enforces that and the
+# once-a-week cap; the template only knows how to draw each kind.
+WIN_MILESTONES: dict[str, tuple[str, str]] = {
+    # kind: (badge, headline when the caller gave none)
+    "chapter_mastered": ("chapter done", "{chapter}. Done."),
+    "first_week": ("first week", "One week with {app}. Done."),
+    "streak_14": ("14 days", "Fourteen days, rest days included."),
+}
+
+
+def win(data: dict[str, Any]) -> dict[str, Any]:
+    """03 · A win worth a line, to the learner. Only real milestones, never more than one a week."""
+    milestone = str(data.get("milestone") or "chapter_mastered")
+    badge_default, headline_default = WIN_MILESTONES.get(milestone, WIN_MILESTONES["chapter_mastered"])
+    chapter = str(data.get("chapter") or "").strip()
+    lessons = _count(data, "lessons")
+    stamp = str(data.get("stamp") or "Just now")
+    badge = str(data.get("badge") or badge_default)
+    headline = str(data.get("headline") or "").strip()
+    if not headline:
+        if milestone == "chapter_mastered":
+            if chapter and lessons:
+                headline = f"{chapter}. All {_words(lessons)} lessons. Done."
+            elif chapter:
+                headline = f"{chapter}. Done."
+            else:
+                headline = "A whole chapter. Done."
+        else:
+            headline = headline_default.format(chapter=chapter, app=APP_NAME)
+    then_line = str(data.get("then_line") or "").strip()
+    note = str(data.get("note") or "").strip()
+    next_label = str(data.get("next_label") or "").strip()
+    next_url = _link(data, "next_url", "/learn")
+    rest_label = str(data.get("rest_label") or "Take the weekend")
+    rest_url = _link(data, "rest_url", "/")
+    prefs, unsub = _preferences(data), _unsubscribe(data)
+
+    rows = _hand_head(stamp)
+    rows += (
+        '<tr><td style="padding:30px 32px 0" align="center">'
+        '<table role="presentation" cellspacing="0" cellpadding="0"><tr>'
+        f'<td style="background:{_MARIGOLD};border-radius:14px;padding:10px 18px;font:700 26px/1 {_HAND_CURSIVE};color:{_NAVY};transform:rotate(-4deg)">{_esc(badge)}</td>'
+        "</tr></table>"
+        f'<div style="font:700 32px/1.1 {_HAND};letter-spacing:-1px;margin-top:18px">{_esc(headline)}</div>'
+        + (f'<div style="font:600 26px/1.2 {_HAND_CURSIVE};color:{_WOBO_BLUE};margin-top:10px">{_esc(then_line)}</div>' if then_line else "")
+        + "</td></tr>"
+    )
+    if note:
+        rows += (
+            '<tr><td style="padding:24px 32px 0">'
+            f'<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:{_TONAL};border-radius:18px"><tr>'
+            f'<td style="padding:20px 22px;font:400 15px/1.55 {_HAND};color:{_MUTED}">{_esc(note)}</td>'
+            "</tr></table></td></tr>"
+        )
+    buttons = ""
+    if next_label:
+        buttons += f'<td style="background:{_NAVY};border-radius:12px"><a href="{_esc(next_url, quote=True)}" style="display:inline-block;padding:14px 22px;font:500 15px/1 {_HAND};color:{_PAPER};text-decoration:none">{_esc(next_label)}</a></td>'
+    buttons += (
+        f'<td style="{"padding-left:10px" if next_label else ""}"><a href="{_esc(rest_url, quote=True)}" style="display:inline-block;padding:14px 20px;font:500 15px/1 {_HAND};color:{_NAVY};text-decoration:none;background:{_TONAL};border-radius:12px">{_esc(rest_label)}</a></td>'
+    )
+    rows += (
+        '<tr><td style="padding:22px 32px 0" align="center">'
+        f'<table role="presentation" cellspacing="0" cellpadding="0"><tr>{buttons}</tr></table>'
+        "</td></tr>"
+    )
+    rows += _hand_foot(
+        f"{_esc(APP_NAME)} writes when something real happens, never more than once a week. "
+        f'<a href="{_esc(prefs, quote=True)}" {_HAND_FOOT_LINK}>Fewer emails</a> &middot; '
+        f'<a href="{_esc(unsub, quote=True)}" {_HAND_FOOT_LINK}>None at all</a>',
+        f'<a href="{_esc(_privacy_url(), quote=True)}" {_HAND_FOOT_LINK}>Privacy</a>',
+        _postal(data),
+    )
+
+    if milestone == "first_week":
+        subject = "Your first week with me"
+    elif milestone == "streak_14":
+        subject = "Fourteen days, rest days included"
+    else:
+        subject = f"{chapter} is finished" if chapter else "A whole chapter, finished"
+    preheader = then_line or headline
+    text_lines = [badge, headline]
+    if then_line:
+        text_lines.append(then_line)
+    text_lines.append("")
+    if note:
+        text_lines += [note, ""]
+    if next_label:
+        text_lines.append(f"{next_label}: {next_url}")
+    text_lines += [
+        f"{rest_label}: {rest_url}",
+        "",
+        f"{APP_NAME} writes when something real happens, never more than once a week.",
+        f"Fewer emails: {prefs}",
+        f"None at all: {unsub}",
+        f"{APP_NAME} · {_APP_HOST} · Privacy: {_privacy_url()}",
+        _postal(data),
+    ]
+    return {
+        "subject": subject,
+        "preheader": preheader,
+        "html": _hand_doc(preheader=preheader, rows=rows),
+        "text": "\n".join(text_lines),
+        "headers": _list_unsubscribe(data),
+    }
+
+
+def wish(data: dict[str, Any]) -> dict[str, Any]:
+    """04 · A festival wish, to the family, in the morning of the day (WOBO-PLAN §14.1, §20).
+
+    One line in Wobo's hand that names the day and wishes well — ``line`` is the calendar's
+    gated copy with the learner's name already in (hospitality/festivals.py) — and nothing
+    attached to it: no lesson, no streak, no plan, no drawing of anything the law forbids. The
+    footer says why it came (the family chose the calendar, or the day is kept where they are)
+    and carries the same two switches as a win. Drawn on the Sunday note's marigold card.
+    """
+    line = str(data.get("line") or "I hope the day is a good one.").strip()
+    festival = str(data.get("festival_name") or "").strip()
+    stamp = str(data.get("stamp") or "This morning")
+    chosen = bool(data.get("chosen_calendar"))
+    prefs, unsub = _preferences(data), _unsubscribe(data)
+
+    rows = _hand_head(stamp)
+    rows += (
+        '<tr><td style="padding:32px 32px 0">'
+        f'<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#FFF1D6;border-radius:18px"><tr><td style="padding:26px 24px">'
+        f'<div style="font:600 30px/1.2 {_HAND_CURSIVE};color:{_NAVY}">{_esc(line)}</div>'
+        '<table role="presentation" cellspacing="0" cellpadding="0" style="margin-top:16px"><tr>'
+        f'<td style="width:36px;height:36px;border-radius:18px;background:{_NAVY};text-align:center;vertical-align:middle">'
+        f'<span style="display:inline-block;width:24px;height:11px;border-radius:6px;background:{_PAPER};position:relative;top:1px;text-align:center">'
+        f'<span style="display:inline-block;width:5px;height:5px;border-radius:3px;background:{_WOBO_BLUE};margin:3px 2px 0"></span>'
+        f'<span style="display:inline-block;width:5px;height:5px;border-radius:3px;background:{_WOBO_BLUE};margin:3px 2px 0"></span>'
+        "</span></td>"
+        f'<td style="padding-left:10px;font:700 22px/1 {_HAND_CURSIVE};color:{_NAVY}">&mdash; {_esc(APP_NAME)}</td>'
+        "</tr></table></td></tr></table></td></tr>"
+    )
+    rows += (
+        '<tr><td style="padding:22px 32px 0">'
+        f'<div style="font:400 15px/1.55 {_HAND};color:{_MUTED}">Nothing to do today. Come back when you come back.</div>'
+        "</td></tr>"
+    )
+    why = (
+        "You get this because your family chose to be wished on these days."
+        if chosen
+        else "You get this because today is a holiday where your family told me you are."
+    )
+    rows += _hand_foot(
+        f"{_esc(why)} "
+        f'<a href="{_esc(prefs, quote=True)}" {_HAND_FOOT_LINK}>Fewer emails</a> &middot; '
+        f'<a href="{_esc(unsub, quote=True)}" {_HAND_FOOT_LINK}>None at all</a>',
+        f'<a href="{_esc(_privacy_url(), quote=True)}" {_HAND_FOOT_LINK}>Privacy</a>',
+        _postal(data),
+    )
+
+    subject = str(data.get("subject") or "").strip() or (
+        f"Happy {festival}" if festival else "A small wish from me"
+    )
+    preheader = line
+    text = "\n".join(
+        [
+            line,
+            f"— {APP_NAME}",
+            "",
+            "Nothing to do today. Come back when you come back.",
+            "",
+            why,
+            f"Fewer emails: {prefs}",
+            f"None at all: {unsub}",
+            f"{APP_NAME} · {_APP_HOST} · Privacy: {_privacy_url()}",
+            _postal(data),
+        ]
+    )
+    return {
+        "subject": subject,
+        "preheader": preheader,
+        "html": _hand_doc(preheader=preheader, rows=rows),
+        "text": text,
+        "headers": _list_unsubscribe(data),
+    }
+
+
 # --- registry -------------------------------------------------------------------------
-TEMPLATES: dict[str, Callable[[dict[str, Any]], dict[str, str]]] = {
+TEMPLATES: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
     "account_created": account_created,
     "verify_email": verify_email,
     "course_ready": course_ready,
@@ -643,11 +1233,21 @@ TEMPLATES: dict[str, Callable[[dict[str, Any]], dict[str, str]]] = {
     "parent_report": parent_report,
     "reengage": reengage,
     "premium_surprise": premium_surprise,
+    "sunday_note": sunday_note,
+    "welcome": welcome,
+    "win": win,
+    "wish": wish,
 }
 
 KINDS = tuple(TEMPLATES)
 
+# The three drawn by hand (design/email-v1.html) and the wish drawn on the same paper; the rest
+# share the ultramarine shell.
+HAND_KINDS = frozenset({"sunday_note", "welcome", "win", "wish"})
 
-def render(kind: str, data: dict[str, Any] | None = None) -> dict[str, str]:
-    """Render one template to {subject, html, text}. Raises KeyError on an unknown kind."""
+
+def render(kind: str, data: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Render one template to {subject, html, text[, preheader, headers]}. Raises KeyError on an
+    unknown kind. ``headers`` (List-Unsubscribe) and ``preheader`` are present on the hand-drawn
+    kinds; the send path forwards ``headers`` to the provider verbatim."""
     return TEMPLATES[kind](data or {})

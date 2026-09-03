@@ -386,8 +386,10 @@ class Onsets:
     first_stroke_ms: float | None
 
     def within_budget(self) -> bool:
-        return (self.first_syllable_ms is None or self.first_syllable_ms <= FIRST_SYLLABLE_BUDGET_MS) and (
-            self.first_stroke_ms is None or self.first_stroke_ms <= FIRST_STROKE_BUDGET_MS
+        syllable = self.first_syllable_ms
+        stroke = self.first_stroke_ms
+        return (syllable is None or syllable <= FIRST_SYLLABLE_BUDGET_MS) and (
+            stroke is None or stroke <= FIRST_STROKE_BUDGET_MS
         )
 
 

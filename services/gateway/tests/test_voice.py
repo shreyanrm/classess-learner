@@ -247,3 +247,100 @@ def test_both_sockets_ask_for_the_same_accent_in_words() -> None:
     # and the default is the fallback, spelled out
     default = voice._setup_message()["setup"]["systemInstruction"]["parts"][0]["text"]
     assert "American English" in default
+
+
+def test_the_one_shot_spoken_line_is_in_the_learners_own_english(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """``POST /v1/voice/tts`` is the third way a learner hears Wobo, and it used to be the one
+    that spoke American English to everybody: it took the typed text and nothing about the
+    learner, so a learner in India heard Indian English through the microphone and an American
+    reading the very same sentence back."""
+    asked: dict[str, Any] = {}
+
+    def fake(text: str, *, instruction: str | None = None) -> dict[str, str]:
+        asked["text"], asked["instruction"] = text, instruction
+        return {"mime": "audio/wav", "b64": "AAAA"}
+
+    monkeypatch.setattr("wobo_gateway.plexus.media.synthesize_narration", fake)
+    headers = {"Authorization": f"Bearer {mint('tts-learner', user_metadata={'country': 'IN'})}"}
+    res = client.post("/v1/voice/tts", json={"text": "Two x equals ten."}, headers=headers)
+
+    assert res.status_code == 200
+    assert res.json()["accent"] == "en-IN", "the learner is told which English they just heard"
+    assert asked["text"] == "Two x equals ten.", "the line itself is never rewritten"
+    assert asked["instruction"] == voice.accent_instruction("en-IN")
+    assert "Indian English" in asked["instruction"]
+
+
+def test_a_learner_we_know_nothing_about_still_hears_american_english(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    asked: dict[str, Any] = {}
+
+    def fake(text: str, *, instruction: str | None = None) -> dict[str, str]:
+        asked["instruction"] = instruction
+        return {"mime": "audio/wav", "b64": "AAAA"}
+
+    monkeypatch.setattr("wobo_gateway.plexus.media.synthesize_narration", fake)
+    headers = {"Authorization": f"Bearer {mint('plain-learner')}"}
+    res = client.post("/v1/voice/tts", json={"text": "Here."}, headers=headers)
+    assert res.json()["accent"] == voice.AMERICAN_ENGLISH
+    assert "American English" in asked["instruction"]
+
+
+def test_the_accent_reaches_the_upstream_as_an_instruction_not_a_setup_field(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The one-shot line is a plain generateContent call, so the accent has to survive the
+    journey into the request body — and as a system instruction, for the same reason the sockets
+    refuse to put it in ``speechConfig``: an unsupported key comes back silent."""
+    import base64
+    import urllib.request
+
+    from wobo_gateway.plexus.media import synthesize_narration
+
+    sent: dict[str, Any] = {}
+
+    class _Resp:
+        def __init__(self) -> None:
+            audio = base64.b64encode(b"\x00\x01" * 8).decode()
+            self._body = json.dumps(
+                {
+                    "candidates": [
+                        {
+                            "content": {
+                                "parts": [
+                                    {"inlineData": {"mimeType": "audio/wav", "data": audio}}
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ).encode()
+
+        def read(self) -> bytes:
+            return self._body
+
+        def __enter__(self) -> _Resp:
+            return self
+
+        def __exit__(self, *exc: Any) -> None:
+            return None
+
+    def fake_urlopen(req: Any, timeout: float = 0) -> _Resp:
+        sent["body"] = json.loads(req.data.decode())
+        return _Resp()
+
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key-not-a-real-one")
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+
+    out = synthesize_narration("Two x equals ten.", instruction=voice.accent_instruction("en-GB"))
+    assert out is not None
+    instruction = sent["body"]["systemInstruction"]["parts"][0]["text"]
+    assert "British English" in instruction
+    assert "speechConfig" not in json.dumps(sent["body"]["systemInstruction"])
+    # a narration that asks for nothing is unchanged — the video sidecar never gains a field
+    sent.clear()
+    synthesize_narration("A quiet line.")
+    assert "systemInstruction" not in sent["body"]

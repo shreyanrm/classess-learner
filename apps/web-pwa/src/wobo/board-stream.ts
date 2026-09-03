@@ -113,6 +113,13 @@ export interface BoardContext {
   drawn?: string[];
   /** Inside a lesson: the board is the screen. */
   lesson?: boolean;
+  /**
+   * A bound control the learner just moved, and what it now reads (docs/BOARD.md §2, §8). Its
+   * companion `recompute` names the objects that declared they depend on it — the question the
+   * brain's verifier answers with fresh ink.
+   */
+  changed?: { variable: string; value: number | boolean | string | [number, number] };
+  recompute?: string[];
 }
 
 export interface BoardTurnHandlers {

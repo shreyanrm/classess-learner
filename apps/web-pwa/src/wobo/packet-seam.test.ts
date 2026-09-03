@@ -25,8 +25,15 @@ class FakeStorage {
 }
 (globalThis as { localStorage?: unknown }).localStorage = new FakeStorage();
 
-const { buildTurnPacket, mindFrom, noteAccount, setTurnFocus, taskFrom, turnFocus, woboTurnPayload } =
-  await import('./capabilities');
+const {
+  buildTurnPacket,
+  mindFrom,
+  noteAccount,
+  setTurnFocus,
+  taskFrom,
+  turnFocus,
+  woboTurnPayload,
+} = await import('./capabilities');
 const { rememberInterests } = await import('../store/mind');
 
 const registry = () => {

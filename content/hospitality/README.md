@@ -240,3 +240,23 @@ When a new source lands, add it to `sources` first, then point the date entries 
 1. **No non-null date may cite a source whose `retrieved` is `not_retrieved`.** Walk every object that carries a `date`, `starts` or `ends` that is not `null`; look its `source` up in `sources`; fail if that source is `not_retrieved` or missing. A `not_retrieved` source may hold nulls and a re-anchor instruction, nothing more.
 2. **Every date entry in `festivals.json` carries `greet`.** Fail on a missing one rather than defaulting it. Fail too where `greet` is `true` and there is neither a `greeting` on the entry nor an `example` on the festival, because that combination has nothing to send.
 3. **Each `exam_season_hints` confidence equals the weakest confidence among the `school-calendar.json` rows for the same board id.** Rank them `official`, `official_reported`, `derived`, `reported`, `conventional`, `unverified`, ignore rows whose dates are all `null`, and fail if the hint reads stronger than the weakest row.
+
+---
+
+## 10. The `rule_engine` block
+
+Added 2026-09-03 (schema 1.1.0) for `services/gateway/src/wobo_gateway/hospitality/festivals.py`, the engine that decides which wish a learner gets on a day. The festival entries are untouched; the block sits beside them and maps each one onto the law in `docs/WOBO-PLAN.md` section 14.1.
+
+| Key | What it does |
+|---|---|
+| `kind_by_tradition`, `kind_overrides` | Every festival gets a `kind`: `civic`, `seasonal`, or `religious`. Civic and seasonal follow the family's country and region and need no choice. Religious (which here means religious *and* cultural) is sent only when the family chose one of its calendars. `requires_opt_in` is exactly `kind == "religious"`. |
+| `calendars` | The closed list a family chooses from in "Festivals we can wish you on". A festival belongs to its tradition's calendar plus whatever `extra_calendars` adds. A calendar marked `community: true` also stands in for the region. |
+| `region_codes`, `community_regions` | The free-text `regions` on a festival, mapped to ISO 3166-2 (or a whole country). A region in neither map narrows the festival, never widens it. |
+| `region_aliases`, `scope_aliases`, `country_groups` | `IN-TS` reads as `IN-TG`; `GB-EAW` covers England and Wales; `GCC` expands to the five Gulf states listed beside the UAE. |
+| `send_confidences`, `human_checked_conventional` | Which confidences may schedule a wish (section 2 of this note), and the conventional dates a person has checked by name. |
+| `default_timezones` | Countries with one civil timezone. Everywhere else the family must set one, or nothing is timed and nothing sends. |
+| `quiet_hours` | Family-local. `MAIL_QUIET_HOURS` in the environment overrides it. The Sunday note and the win emails read the same window; there is one definition of night. |
+| (confirmations) | A festival under `requires_same_day_confirmation` is wished only when `MAIL_CONFIRMED_FESTIVALS` in the gateway's environment names it for that exact date (`eid-al-fitr=2026-03-21,eid-al-adha=2026-05-27`), set by a person on the day the moon is sighted. A stale entry for another date never fires. |
+| `wishes` | The plain-English lines the engine sends: `festival`, `day` (the name used, which must be the festival's name or an alias), `text` with `{name}`. A festival with no line here falls back to its own `greeting` or `greeting_style.example`; every line, from wherever it comes, passes the copy gate in `hospitality/copy.py` (no pronouns, no kinship words, no deity or worship words, no political framing, no transliterated greetings, no exclamation marks) or it is dropped. |
+
+The engine never reads `greet: false` entries, never uses a date under `requires_same_day_confirmation` without that day's confirmation flag, and greets a range on its first day only — the rules in sections 2 and 3 are enforced in code, and `services/gateway/tests/test_hospitality_rules.py` is the table that proves it.

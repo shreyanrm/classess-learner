@@ -70,7 +70,7 @@ footer{padding:48px;border-top:.5px solid var(--hair);display:flex;justify-conte
   <div>
     <div class="eyebrow">A tutor who thinks on a board</div>
     <h1>Ask anything.<br>Watch her <em>draw</em> the answer.</h1>
-    <p>Wobo is an AI wobot who teaches the way a great teacher does: she listens, then picks up a pen. Every explanation is drawn live, in front of you, on your syllabus.</p>
+    <p>Wobo is an AI wobot that teaches the way a great teacher does: it listens, then picks up a pen. Every explanation is drawn live, in front of you, on your syllabus.</p>
     <div class="cta"><a class="btn" href="#try">Start free</a><a class="btn ghost" href="#how">See her teach</a><small>Free every day. No card.</small></div>
   </div>
   <div class="stage" id="stage"><svg viewBox="0 0 600 520" id="hero"></svg><div class="say">hey there, circle anything</div></div>
@@ -116,7 +116,7 @@ footer{padding:48px;border-top:.5px solid var(--hair);display:flex;justify-conte
 <section id="boards">
   <div class="eyebrow">Every board on earth</div>
   <h2>Your syllabus, the real one, this year's.</h2>
-  <p class="lead">Pick your board and class and Wobo teaches to it. Not listed? Type it and she goes and finds the official syllabus. Still nothing? Show her yours and she builds your plan.</p>
+  <p class="lead">Pick your board and class and Wobo teaches to it. Not listed? Type it and Wobo goes and finds the official syllabus. Still nothing? Show it yours and it builds your plan.</p>
   <div class="boards"><span>CBSE</span><span>ICSE</span><span>Telangana</span><span>Maharashtra</span><span>Karnataka</span><span>NIOS</span><span>IB</span><span>Cambridge</span><span>Edexcel</span><span>US states</span><span>UK</span><span>Australia</span><span>Homeschool</span><span>+ yours</span></div>
 </section>
 
@@ -150,7 +150,7 @@ function wobo(svg, look, expr, pen){ const body='#1A1A1F', visor='#fff', eye='#1
   const e = expr==='happy'?`<path d="M${lx-7} ${ey+3} Q${lx} ${ey-8} ${lx+7} ${ey+3}" stroke="${eye}" stroke-width="5.2" fill="none" stroke-linecap="round"/><path d="M${rx-7} ${ey+3} Q${rx} ${ey-8} ${rx+7} ${ey+3}" stroke="${eye}" stroke-width="5.2" fill="none" stroke-linecap="round"/>` : expr==='think'?`<path d="M${lx-7} ${ey}h14 M${rx-7} ${ey}h14" stroke="${eye}" stroke-width="5.2" stroke-linecap="round" fill="none"/>` : `<circle cx="${lx}" cy="${ey}" r="${R}" fill="${eye}"/><circle cx="${rx}" cy="${ey}" r="${R}" fill="${eye}"/>`;
   const p = pen?`<circle cx="98" cy="86" r="8" fill="${body}" stroke="${hair}" stroke-width="1"/><path d="M102 82 L 116 54" stroke="${body}" stroke-width="5" stroke-linecap="round"/><path d="M115 56 L 119 48" stroke="${eye}" stroke-width="5" stroke-linecap="round"/>`:'';
   svg.innerHTML=`<g transform="translate(15 0)"><ellipse cx="60" cy="112" rx="26" ry="3.5" fill="${body}" opacity=".08"/><circle cx="${cx}" cy="${cy}" r="42" fill="${body}" stroke="${hair}" stroke-width="1"/><ellipse cx="40" cy="38" rx="8" ry="4" fill="${visor}" opacity=".16" transform="rotate(-30 40 38)"/><rect x="26" y="50" width="68" height="30" rx="15" fill="${visor}"/>${e}${p}</g>`; }
-// hero: a big Wobo whose eyes follow the cursor, plus a live doodle she draws on load
+// hero: a big Wobo whose eyes follow the cursor, plus a live doodle it draws on load
 const hero=document.getElementById('hero'); let heroLook=[0,0], heroExpr='idle';
 function heroFrame(){ const r=document.getElementById('stage').getBoundingClientRect(); const cx=r.left+r.width*.45, cy=r.top+r.height*.5; const tx2=Math.max(-40,Math.min(40,(mx-cx)/8)), ty=Math.max(-30,Math.min(30,(my-cy)/8)); heroLook[0]+= (tx2-heroLook[0])*.12; heroLook[1]+=(ty-heroLook[1])*.12;
   hero.innerHTML = `<g transform="translate(40 40) scale(2.6)"><g id="hb"></g></g>` + `<g id="doodle">`+doodle()+`</g>`; wobo(hero.querySelector('#hb'), heroLook, heroExpr, true); requestAnimationFrame(heroFrame); }

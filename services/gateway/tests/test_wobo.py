@@ -6,6 +6,8 @@ the verifier grounding that decides where the working breaks, the prompt assembl
 
 from __future__ import annotations
 
+import re
+
 import pytest
 from wobo_gateway.providers import MockProvider
 from wobo_gateway.wobo import (
@@ -89,6 +91,36 @@ def test_no_gender_line_obeys_the_house_style() -> None:
 
     assert "!" not in WOBO_NO_GENDER
     assert WOBO_NO_GENDER.startswith("I'm a wobot")
+
+
+def test_no_prompt_still_describes_wobo_as_the_old_jelly_orb() -> None:
+    """Wave 5b: the character is the ink-visor wobot, and the words follow the rig.
+
+    Every surface Wobo speaks through shares one persona string, so a stale body description
+    there is a stale body description everywhere — and WOBO.md §12 is the prose the persona is
+    written from. Both used to say "a soft, round, molten matte-jelly orb… flickering warm glow"
+    long after the rig had been rebuilt as the ink visor.
+    """
+    from pathlib import Path
+
+    from wobo_gateway.voice import accent_instruction
+    from wobo_gateway.wobo import WOBO_NO_GENDER, WOBO_SYSTEM
+
+    retired = ("jelly", "molten", "orange orb", "warm glow")
+    spoken = (WOBO_SYSTEM, WOBO_INTRO, WOBO_NO_GENDER, accent_instruction("en-IN"))
+    for text in spoken:
+        lowered = text.lower()
+        for word in retired:
+            assert word not in lowered, f"retired body vocabulary in a prompt: {word}"
+
+    law = (Path(__file__).resolve().parents[3] / "WOBO.md").read_text(encoding="utf-8")
+    character = law.split("## 12. Wobo's body")[1].split("\n## ")[0]
+    assert "ink-visor wobot" in character
+    for word in ("jelly", "flickering warm glow"):
+        assert word not in character.lower(), f"WOBO.md §12 still says {word}"
+    # and it says so in words that obey §19: a body, not a gender, and never a gendered pronoun
+    assert "not a gender" in character
+    assert not re.search(r"\b(she|her|hers|he|him|his)\b", character, re.IGNORECASE)
 
 
 def test_prompt_carries_the_targets_and_the_grounding() -> None:
@@ -278,7 +310,7 @@ def test_legacy_capability_endpoint_is_not_a_404(auth) -> None:
 # --- the first meeting (owner copy, 2026-09-02) ---------------------------------------------------
 
 
-def test_persona_calls_her_a_wobot_and_carries_the_exact_intro() -> None:
+def test_persona_calls_wobo_a_wobot_and_carries_the_exact_intro() -> None:
     assert "AI wobot" in WOBO_PERSONA
     assert WOBO_INTRO in WOBO_PERSONA
     assert WOBO_INTRO == (

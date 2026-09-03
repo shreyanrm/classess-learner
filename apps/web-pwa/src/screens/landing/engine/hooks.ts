@@ -7,9 +7,9 @@
  * killed, Lenis is destroyed, the canvas is cleared, and the marks that hide the native cursor
  * come off the page root and `<body>`. A mount/unmount cycle leaves the document as it found it.
  *
- * The pointer is shared by reference count rather than tracked four times (see `pointer.ts`), so
- * the nib, the ribbon, the magnets and the card's tilt all read the same position in the same
- * frame.
+ * The pointer is shared by reference count rather than tracked five times (see `pointer.ts`), so
+ * the nib, the ribbon, the magnets, Wobo's gaze and the card's tilt all read the same position in
+ * the same frame.
  *
  * The ref shapes here are the ones the section components hand out, so a page composes as:
  *
@@ -25,9 +25,11 @@ import { nextBeat } from './choreography';
 import { applyTilt, bubbleGone, createLesson, DEMO_HOLD, DEMO_MS, demoPhase } from './demo';
 import { type Disposer, disposeAll, finePointer, prefersReducedMotion } from './env';
 import {
+  mountBlink,
   mountDepth,
   mountFilmLasso,
   mountFloats,
+  mountGaze,
   mountMagnets,
   mountReveals,
   mountTiles,
@@ -96,7 +98,7 @@ export interface ClayRefs {
   root: Ref<HTMLElement>;
   /** The hero section, which the floats parallax against. Falls back to `#hero`. */
   hero?: Ref<HTMLElement>;
-  /** The fixed layer holding the blurred colour blobs. Falls back to `.lv6-depth`. */
+  /** The fixed layer holding the blurred colour blobs. Falls back to `#depth`. */
   depth?: Ref<HTMLElement>;
   /** The tile holding the film still, whose lasso draws on entry. Falls back to `#filmTile`. */
   film?: Ref<HTMLElement>;
@@ -104,7 +106,8 @@ export interface ClayRefs {
 
 /**
  * The clay the page is shaped from: inertia scroll, section reveals, tile springs, highlight
- * sweeps, drifting depth blobs, parallaxing floats, and buttons that reach for the pointer.
+ * sweeps, drifting depth blobs, parallaxing floats, buttons that reach for the pointer, and every
+ * Wobo on the page watching it and blinking.
  *
  * Reduced motion takes the other path entirely — no Lenis, no triggers, no loop. Everything is
  * placed at its settled state once, and `data-motion="off"` on the page root lets the stylesheet
@@ -127,7 +130,12 @@ export function useClay(refs: ClayRefs): void {
 
     const hero = resolve(heroRef, root, '#hero');
     const film = resolve(filmRef, root, '#filmTile');
-    const depth = depthRef?.current ?? document.querySelector<HTMLElement>('.lv6-depth');
+    // The depth layer is fixed to the viewport, so it is usually portalled to `<body>` rather than
+    // left inside the route's root — look in both places before giving up on it.
+    const depth =
+      depthRef?.current ??
+      root.querySelector<HTMLElement>('#depth') ??
+      document.querySelector<HTMLElement>('#depth');
 
     const scroll = startScroll();
     const disposers: Disposer[] = [];
@@ -139,8 +147,13 @@ export function useClay(refs: ClayRefs): void {
 
     const { state, release } = acquirePointer();
     const magnets = mountMagnets(root, state, finePointer());
+    const gaze = mountGaze(root, state);
+    disposers.push(mountBlink(root));
     let frame = requestAnimationFrame(function loop() {
-      if (!document.hidden) magnets.frame();
+      if (!document.hidden) {
+        magnets.frame();
+        gaze.frame();
+      }
       frame = requestAnimationFrame(loop);
     });
 
@@ -151,6 +164,7 @@ export function useClay(refs: ClayRefs): void {
       cancelAnimationFrame(frame);
       cancelAnimationFrame(measure);
       magnets.dispose();
+      gaze.dispose();
       release();
       disposeAll(disposers);
       scroll.destroy();
@@ -175,13 +189,23 @@ export interface DemoRefs {
   wobo: Ref<SVGElement>;
 }
 
+export interface DemoOptions {
+  /**
+   * Called every frame with where the pen is and the gaze it is asking for, so the real character
+   * rig can watch its own hand. This runs at frame rate: write it into a ref or onto an element,
+   * never into React state.
+   */
+  onPen?: (gaze: { x: number; y: number }, point: { x: number; y: number }) => void;
+}
+
 /**
  * The hero's timed lesson: fourteen seconds of Wobo drawing the proof, three and a half seconds
  * holding the finished board, then again. Under reduced motion the board is simply drawn — the
  * proof is the content, so it is never withheld; only the animation of it is.
  */
-export function useDemo(refs: DemoRefs): void {
+export function useDemo(refs: DemoRefs, options: DemoOptions = {}): void {
   const { demo: cardRef, bubble: bubbleRef, lesson: lessonRef, pen: penRef, wobo: woboRef } = refs;
+  const onPen = options.onPen;
 
   useEffect(() => {
     const lesson = createLesson(lessonRef.current, penRef.current, woboRef.current);
@@ -191,6 +215,7 @@ export function useDemo(refs: DemoRefs): void {
 
     if (prefersReducedMotion()) {
       lesson.draw(1);
+      onPen?.(lesson.penGaze(), lesson.penPoint());
       bubble?.classList.add('gone');
       return () => {
         lesson.reset();
@@ -205,6 +230,7 @@ export function useDemo(refs: DemoRefs): void {
         const p = demoPhase(time - start, DEMO_MS, DEMO_HOLD);
         bubble?.classList.toggle('gone', bubbleGone(p));
         lesson.draw(p);
+        onPen?.(lesson.penGaze(), lesson.penPoint());
         applyTilt(card, state, window);
       }
       frame = requestAnimationFrame(loop);
@@ -218,7 +244,7 @@ export function useDemo(refs: DemoRefs): void {
       card?.style.removeProperty('--rx');
       card?.style.removeProperty('--ry');
     };
-  }, [cardRef, bubbleRef, lessonRef, penRef, woboRef]);
+  }, [cardRef, bubbleRef, lessonRef, penRef, woboRef, onPen]);
 }
 
 // --- The chapters -------------------------------------------------------------------------------
@@ -253,6 +279,11 @@ export interface ScrollBeatRefs {
   sunday: SundaySectionRefs;
   /** Sections whose arrival names the beat, for anything that wants to know where the reader is. */
   beats?: readonly { id: string; ref: Ref<HTMLElement> }[];
+  /**
+   * Called as the night's proof is scrubbed, with the gaze the pen is asking for — the same hook
+   * the hero uses, so the board's Wobo watches its own hand there too. Runs at scrub rate.
+   */
+  onPen?: (gaze: { x: number; y: number }, point: { x: number; y: number }) => void;
 }
 
 /**
@@ -262,7 +293,7 @@ export interface ScrollBeatRefs {
  */
 export function useScrollBeats(refs: ScrollBeatRefs): string | null {
   const [beat, setBeat] = useState<string | null>(null);
-  const { night, sunday, beats } = refs;
+  const { night, sunday, beats, onPen } = refs;
 
   useEffect(() => {
     registerScrollTrigger();
@@ -283,7 +314,10 @@ export function useScrollBeats(refs: ScrollBeatRefs): string | null {
           question: night.question.current,
           captions: night.captions.map((caption) => caption.current),
         },
-        (p) => lesson.draw(p),
+        (p) => {
+          lesson.draw(p);
+          onPen?.(lesson.penGaze(), lesson.penPoint());
+        },
         { reduced },
       ),
     );
@@ -324,7 +358,7 @@ export function useScrollBeats(refs: ScrollBeatRefs): string | null {
       disposeAll(disposers);
       lesson.reset();
     };
-  }, [night, sunday, beats]);
+  }, [night, sunday, beats, onPen]);
 
   return beat;
 }

@@ -43,6 +43,8 @@ from wobo_gateway.auth import (
 )
 from wobo_gateway.cache import CacheBackend, CacheEntry, InMemoryCache, cache_key
 from wobo_gateway.email import register_email
+from wobo_gateway.hospitality.api import register_mail_preferences
+from wobo_gateway.hospitality.jobs import welcome_after_first_meeting
 from wobo_gateway.providers import Provider, build_provider
 from wobo_gateway.registry import (
     ConsentTier,
@@ -64,6 +66,7 @@ from wobo_gateway.safety import (
 )
 from wobo_gateway.telemetry import MetricsSink, TelemetryEvent, emit
 from wobo_gateway.voice import register_voice
+from wobo_gateway.wobo import is_first_meeting
 
 logger = logging.getLogger("wobo.gateway")
 
@@ -367,9 +370,15 @@ def build_gateway() -> Gateway:
 # its own shared key, but it is NOT skipped here any more — the middleware authenticates it
 # when a learner token rides along (without refusing when one does not), so the endpoint's
 # "you may only mail your own address" rule has a subject to check against instead of None.
-_OPEN_PATHS = frozenset({"/healthz"})
+# The one-click mail stop is open on purpose: it is reached from a mail footer with no session,
+# and its signed token (hospitality/tokens.py) is the only authority it needs.
+_OPEN_PATHS = frozenset({"/healthz", "/v1/mail/stop"})
 # Authenticated when we can, never refused here: the route itself is the door (internal key).
-_SOFT_AUTH_PATHS = frozenset({"/v1/email/send"})
+# The two cron doors (hospitality/jobs.py: the Sunday note, the festival wishes) share that key
+# and that posture.
+_SOFT_AUTH_PATHS = frozenset(
+    {"/v1/email/send", "/v1/internal/mail/sunday", "/v1/internal/mail/wishes"}
+)
 
 # A request body is a context packet, not a file. Past this it is either a mistake or an attempt
 # to buy a frontier context window out of one metered turn (the prompt builder caps its own
@@ -682,6 +691,10 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
             or path == "/v1/me/erase"
             or path == "/v1/voice/session"
             or path == "/v1/voice/tts"
+            # The mail dials write to the database, and the stop link is unauthenticated by
+            # design — both are bounded per caller (the stop link on the stranger's dial).
+            or path == "/v1/me/mail-preferences"
+            or path == "/v1/mail/stop"
             or path in _SOFT_AUTH_PATHS
         )
         oversized = _too_large(request)
@@ -859,6 +872,13 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
         # Derived, never declared: the tier comes from the learner's stored record.
         profile = consent.get_profile(principal.subject, anonymous=principal.anonymous)
 
+        # Sign-up completion (WOBO-PLAN §14.1, "confirm everything"): the learner's first meeting
+        # with Wobo is the moment the account became real. The welcome goes out on a background
+        # thread from here — before the turn is served, independent of how it is served — to
+        # the address the verified token carries. It never blocks and never raises.
+        if name == "wobo.turn" and is_first_meeting(request.payload):
+            welcome_after_first_meeting(principal, request.payload)
+
         # The board (BOARD.md §4). Same route, same door, same meter — only the body differs.
         if name == "wobo.turn" and wants_event_stream(http):
             return stream_board_turn(gw, name, request, http, profile)
@@ -986,6 +1006,7 @@ def create_app(gateway: Gateway | None = None) -> FastAPI:
 
     register_voice(app)
     register_email(app)
+    register_mail_preferences(app)
 
     return app
 

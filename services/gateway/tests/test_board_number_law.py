@@ -73,6 +73,93 @@ def test_a_grids_row_count_is_a_ruler_not_a_claim() -> None:
     )
 
 
+def test_a_controls_own_value_is_the_learners_hand_not_wobos_claim() -> None:
+    """The third hole, and the one that made a whole kind unusable.
+
+    ``value`` was classified once, for every kind at once. On a ``number`` or a label it is a
+    quantity Wobo asserts and the law is right to demand the check that signed it. On a CONTROL
+    it is where the knob sits — the state of a variable the learner is about to change with their
+    thumb, which no verifier could sign and which ``geometry.ts`` never writes as glyphs. So
+    every slider Wobo could draw was refused for showing a numeral it does not show, and the
+    interactive board could not be streamed at all.
+    """
+    slider = {
+        "id": "x-handle",
+        "kind": "slider",
+        "anchor": {"board": [290, 590]},
+        "variable": "a",
+        "min": 0.4,
+        "max": 2.6,
+        "value": 1.5,
+        "step": 0.1,
+        "w": 420,
+        "label": "x",
+    }
+    assert schema.validate_object(slider) == []
+    assert "1.5" not in schema.visible_text(slider)
+    # a toggle's value is which end the knob rests at; a drag's is a handle offset
+    assert (
+        schema.validate_object(
+            {
+                "id": "t",
+                "kind": "toggle",
+                "anchor": {"board": [10, 10]},
+                "variable": "b",
+                "value": 1,
+            }
+        )
+        == []
+    )
+    assert (
+        schema.validate_object(
+            {
+                "id": "d",
+                "kind": "drag",
+                "anchor": {"board": [10, 10]},
+                "variable": "c",
+                "value": [12, 40],
+            }
+        )
+        == []
+    )
+
+
+def test_the_law_still_holds_on_the_one_control_that_is_written_out() -> None:
+    """``input.value`` is the exception that proves the rule: geometry DOES send it through
+    ``writeText``, so a numeral in it is a numeral on the board and still needs its check."""
+    typed = {
+        "id": "answer",
+        "kind": "input",
+        "anchor": {"board": [10, 10]},
+        "variable": "n",
+        "value": "42",
+    }
+    assert schema.validate_object(typed) == [
+        "an object showing a number must name the check that verified it (check: ...)"
+    ]
+    assert schema.validate_object({**typed, "check": "board.numbers_agree:the count"}) == []
+
+
+def test_a_number_still_cannot_hide_in_a_sliders_label() -> None:
+    """The relaxation is the control's own state and nothing else — the label beside it is
+    handwriting like any other, and a numeral there is still a claim under the law."""
+    problems = schema.validate_object(
+        {
+            "id": "x-handle",
+            "kind": "slider",
+            "anchor": {"board": [290, 590]},
+            "variable": "a",
+            "min": 0,
+            "max": 3,
+            "value": 1.5,
+            "label": "x = 1.5",
+        }
+    )
+    assert problems == [
+        "an object showing a number must name the check that verified it (check: ...)"
+    ]
+
+
 def test_every_board_field_is_classified_as_visible_or_not() -> None:
     """A new field on a kind must be answered for, or the law quietly forgets it again."""
     unclassified = {

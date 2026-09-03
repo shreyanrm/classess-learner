@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wobo onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAF7F0; --paper-2:#F1EDE3; --paper-3:#E7E1D3; --ink:#14142B; --ink-2:#4E4E66; --ink-3:#8A8A9E;
+  --pig:#2B45FF; --violet:#7C5CFF; --rose:#FF6B57; --marigold:#FFB629; --mint:#22C48B; --lilac:#B7A6FF;
+  --pig-w:#E6EAFF; --rose-w:#FFE7E2; --marigold-w:#FFF1D6; --mint-w:#DDF6EC; --lilac-w:#EFEBFF;
+  --body:#14142B; --body-hi:#3A3A5C; --visor:#FAF7F0; --visor-lo:#E7E1D3; --eye:#2B45FF;
+  --sans:'Poppins',system-ui,-apple-system,sans-serif; --hand:'Caveat',cursive;
+}
+[data-theme="dark"]{
+  --paper:#0F1226; --paper-2:#181C3A; --paper-3:#22264A; --ink:#F3F0E8; --ink-2:#B8B6C6; --ink-3:#7C7B92;
+  --pig:#7C8CFF; --violet:#A996FF; --rose:#FF8A78; --marigold:#FFC85A; --mint:#4FE3BD; --lilac:#C9BDFF;
+  --pig-w:#1E2650; --rose-w:#3E2431; --marigold-w:#3E3320; --mint-w:#16362E; --lilac-w:#2A2650;
+  --body:#F3F0E8; --body-hi:#FFFFFF; --visor:#0F1226; --visor-lo:#1E2650; --eye:#7C8CFF;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper-2);color:var(--ink);font:400 16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+h1,h2{margin:0;letter-spacing:-.025em;text-wrap:balance}
+p{margin:0}
+.hand{font-family:var(--hand);font-weight:600}
+.btn{font:500 15px/1 var(--sans);padding:15px 22px;border-radius:12px;border:0;background:var(--ink);color:var(--paper);display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;cursor:pointer;width:100%}
+.btn.pig{background:var(--pig);color:#fff}.btn.quiet{background:var(--paper-2);color:var(--ink)}.btn.link{background:transparent;color:var(--ink-2);min-height:40px;font-weight:400}
+.btn:focus-visible,input:focus-visible{outline:3px solid var(--marigold);outline-offset:2px}
+.blink{transform-origin:center;animation:blink 5s infinite}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+
+/* review chrome */
+.board{width:min(1440px,100%);margin:32px auto}
+.board .name{font:600 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:0 24px 10px}
+
+/* the step screen */
+.screen{background:var(--paper);min-height:860px;display:grid;grid-template-rows:auto 1fr;position:relative;overflow:hidden;border-radius:28px}
+.top{display:flex;align-items:center;justify-content:space-between;padding:22px 28px}
+.top .wm svg{height:22px;fill:var(--ink)}
+.top .dots{display:flex;gap:8px}
+.top .dots i{width:10px;height:10px;border-radius:50%;background:var(--paper-3)}
+.top .dots i.on{background:var(--pig);width:26px;border-radius:5px}
+.top .dots i.done{background:var(--mint)}
+.top .skip{font:500 14px/1 var(--sans);color:var(--ink-3)}
+.body{display:grid;place-items:center;padding:0 24px 60px}
+.card{width:min(560px,100%);display:grid;gap:22px;justify-items:center;text-align:center}
+.card .wobo{width:120px;filter:drop-shadow(0 16px 24px rgba(20,20,43,.16))}
+.card .bub{background:var(--paper-2);border-radius:18px 18px 18px 4px;padding:12px 18px;font-family:var(--hand);font-weight:700;font-size:26px;line-height:1.1;color:var(--ink);max-width:420px}
+.card h1{font:700 clamp(28px,3.6vw,40px)/1.08 var(--sans)}
+.card p.sub{color:var(--ink-2);font-size:17px;max-width:44ch}
+.form{width:100%;display:grid;gap:10px}
+.field{display:grid;gap:6px;text-align:left}
+.field label{font:500 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.field input{font:400 17px/1.4 var(--sans);padding:14px 16px;border-radius:12px;border:0;background:var(--paper-2);color:var(--ink);width:100%}
+.field input::placeholder{color:var(--ink-3)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fine{font-size:13px;color:var(--ink-3);max-width:44ch}
+.or{display:flex;align-items:center;gap:12px;font:500 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);width:100%}
+.or::before,.or::after{content:"";flex:1;height:3px;border-radius:2px;background:var(--paper-2)}
+
+/* type-ahead */
+.ta{position:relative;text-align:left}
+.ta .list{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--paper);border-radius:14px;box-shadow:0 18px 40px rgba(20,20,43,.14);padding:6px;z-index:2;display:grid;gap:4px}
+.ta .opt{display:flex;justify-content:space-between;padding:10px 12px;border-radius:10px;font-size:15px}
+.ta .opt.on{background:var(--pig-w)}
+.ta .opt span{font-size:12px;color:var(--ink-3)}
+.ta .opt mark{background:transparent;color:var(--pig);font-weight:700}
+.ta .own{padding:10px 12px;font-size:13px;color:var(--ink-2)}
+.ta .own b{color:var(--pig);font-weight:600}
+
+/* chips (class) */
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chips span{font:500 14px/1 var(--sans);padding:12px 16px;border-radius:999px;background:var(--paper-2);color:var(--ink-2);min-width:52px}
+.chips span.on{background:var(--ink);color:var(--paper)}
+
+/* the aha */
+.aha{width:100%;background:var(--paper-2);border-radius:22px;padding:14px;display:grid;gap:10px;text-align:left}
+.aha .bar{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-3);padding:2px 6px}
+.aha .bar b{color:var(--ink-2);font-weight:500}
+.aha .live{color:var(--rose);display:inline-flex;align-items:center;gap:6px}
+.aha .live i{width:8px;height:8px;border-radius:50%;background:var(--rose)}
+.aha .canvas{background:var(--paper);border-radius:16px;height:260px;position:relative;overflow:hidden}
+.aha .canvas svg{position:absolute;inset:0;width:100%;height:100%}
+.ink{fill:none;stroke:var(--ink);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.ink.pig{stroke:var(--pig)}.ink.thin{stroke-width:2.5}
+.hw{font-family:var(--hand);font-weight:600;fill:var(--ink)}.hw.pig{fill:var(--pig)}
+.draw{stroke-dasharray:700;stroke-dashoffset:700;animation:draw 2.2s cubic-bezier(.6,0,.2,1) .6s forwards}
+.draw.d2{animation-delay:1.8s}.draw.d3{animation-delay:2.8s}
+@keyframes draw{to{stroke-dashoffset:0}}
+.aha .ask{display:flex;gap:8px;background:var(--paper);border-radius:14px;padding:6px 6px 6px 14px;align-items:center}
+.aha .ask input{flex:1;border:0;background:transparent;font:400 15px/1.4 var(--sans);color:var(--ink);outline:none;min-width:0}
+.aha .ask .btn{width:auto;min-height:38px;padding:10px 14px;font-size:14px}
+.chipsq{display:flex;flex-wrap:wrap;gap:8px}
+.chipsq span{font:500 13px/1 var(--sans);padding:9px 12px;border-radius:999px;background:var(--paper);color:var(--ink-2)}
+
+/* parent */
+.parent{width:100%;display:grid;gap:12px;text-align:left}
+.note{background:var(--marigold-w);border-radius:16px;padding:16px 18px;font-family:var(--hand);font-weight:600;font-size:22px;line-height:1.15}
+.note em{font-style:normal;color:var(--rose)}
+.note small{display:block;font:400 12px/1.4 var(--sans);color:var(--ink-3);margin-top:8px}
+
+/* ready */
+.allow{width:100%;background:var(--paper-2);border-radius:20px;padding:20px;display:grid;gap:10px;text-align:left}
+.allow b{font-weight:600}
+.allow .bar{height:12px;border-radius:6px;background:var(--paper-3);overflow:hidden}
+.allow .bar i{display:block;height:100%;width:100%;background:var(--marigold);border-radius:6px}
+.allow span{font-size:13px;color:var(--ink-3)}
+.confetti{position:absolute;inset:0;pointer-events:none}
+.confetti i{position:absolute;width:12px;height:12px;border-radius:3px;opacity:.9;transform:rotate(15deg)}
+@media (max-width:600px){.screen{border-radius:0;min-height:100vh}.body{padding:0 16px 40px}.row2{grid-template-columns:1fr}.card .wobo{width:96px}}
+@media (prefers-reduced-motion:reduce){.blink{animation:none}.draw{animation:none;stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<radialGradient id="hg" cx="36%" cy="30%" r="80%"><stop offset="0" style="stop-color:var(--body-hi)"/><stop offset="1" style="stop-color:var(--body)"/></radialGradient>
+<linearGradient id="vg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--visor)"/><stop offset="1" style="stop-color:var(--visor-lo)"/></linearGradient>
+<symbol id="head" viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="url(#hg)"/><rect x="18" y="41" width="84" height="38" rx="19" fill="url(#vg)"/><g class="blink"><circle cx="43" cy="61" r="9" fill="var(--eye)"/><circle cx="77" cy="61" r="9" fill="var(--eye)"/><circle cx="40" cy="58" r="3" fill="var(--paper)" opacity=".85"/><circle cx="74" cy="58" r="3" fill="var(--paper)" opacity=".85"/></g></symbol>
+<symbol id="head-happy" viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="url(#hg)"/><rect x="18" y="41" width="84" height="38" rx="19" fill="url(#vg)"/><path d="M34 64 c4 -10 14 -10 18 0 M68 64 c4 -10 14 -10 18 0" fill="none" stroke="var(--eye)" stroke-width="6" stroke-linecap="round"/></symbol>
+<symbol id="wm" viewBox="0 0 1160 340"><text x="0" y="300" font-family="Poppins,sans-serif" font-weight="700" font-size="330" letter-spacing="-12">wobo</text></symbol>
+</defs></svg>
+
+<!-- 1 · SIGN IN -->
+<div class="board"><div class="name">1 of 5 · Sign in</div>
+<div class="screen">
+  <div class="top"><span class="wm"><svg viewBox="0 0 1160 340" style="width:90px"><use href="#wm"/></svg></span><span class="dots"><i class="on"></i><i></i><i></i><i></i><i></i></span><span class="skip">Already have an account? Sign in</span></div>
+  <div class="body"><div class="card">
+    <svg class="wobo" viewBox="0 0 120 120"><use href="#head"/></svg>
+    <div class="bub">Hi. I'm Wobo. Let's make this yours.</div>
+    <h1>Sign in so everything stays with you, on any device.</h1>
+    <p class="sub">That's the only reason I'm asking. No newsletter, no card.</p>
+    <div class="form">
+      <div class="field"><label>Email or phone</label><input placeholder="you@example.com or +91 …"></div>
+      <button class="btn pig">Send me a code</button>
+      <div class="or">or</div>
+      <button class="btn quiet">Continue with a sign-in provider</button>
+      <p class="fine">Under 13, or under 18 in India? A parent signs in first. I'll explain why in one line when you get there.</p>
+    </div>
+  </div></div>
+</div></div>
+
+<!-- 2 · WHO'S LEARNING -->
+<div class="board"><div class="name">2 of 5 · Who's learning</div>
+<div class="screen">
+  <div class="top"><span class="wm"><svg viewBox="0 0 1160 340" style="width:90px"><use href="#wm"/></svg></span><span class="dots"><i class="done"></i><i class="on"></i><i></i><i></i><i></i></span><span class="skip"></span></div>
+  <div class="body"><div class="card">
+    <svg class="wobo" viewBox="0 0 120 120"><use href="#head"/></svg>
+    <div class="bub">Tell me once. I'll find your exact chapter every week after.</div>
+    <h1>Who's learning, and where?</h1>
+    <div class="form">
+      <div class="field"><label>First name</label><input placeholder="What should I call you?" value="Aanya"></div>
+      <div class="field"><label>Class</label><div class="chips"><span>4</span><span>5</span><span>6</span><span>7</span><span class="on">8</span><span>9</span><span>10</span><span>11</span><span>12</span></div></div>
+      <div class="field ta"><label>Board</label><input value="tel" aria-label="Board">
+        <div class="list"><div class="opt on"><b><mark>Tel</mark>angana State Board (BSE)</b><span>classes 6–10</span></div><div class="opt"><b><mark>Tel</mark>angana Intermediate (TSBIE)</b><span>classes 11–12</span></div><div class="own">Not listed? <b>Paste your school's syllabus</b> and I'll build the plan from that.</div></div>
+      </div>
+      <div style="height:176px"></div>
+      <button class="btn pig">That's me</button>
+    </div>
+  </div></div>
+</div></div>
+
+<!-- 3 · THE AHA -->
+<div class="board"><div class="name">3 of 5 · The first question (the aha)</div>
+<div class="screen">
+  <div class="top"><span class="wm"><svg viewBox="0 0 1160 340" style="width:90px"><use href="#wm"/></svg></span><span class="dots"><i class="done"></i><i class="done"></i><i class="on"></i><i></i><i></i></span><span class="skip">Skip for now</span></div>
+  <div class="body"><div class="card">
+    <h1>Ask me anything from Class 8, Telangana Board. I'll draw it.</h1>
+    <p class="sub">Try one of these, or type your own. This is the whole thing, in thirty seconds.</p>
+    <div class="aha">
+      <div class="bar"><b>Wobo · with Aanya</b><span class="live"><i></i> drawing</span></div>
+      <div class="canvas"><svg viewBox="0 0 520 260" aria-label="Wobo drawing the answer">
+        <path class="ink draw" d="M110 220 L230 220 L110 130 Z"/><path class="ink thin" d="M110 200 h20 v20"/>
+        <text class="hw" x="160" y="250" font-size="22">4</text><text class="hw" x="84" y="180" font-size="22">3</text>
+        <path class="ink pig draw d2" d="M230 220 L320 100 L200 10 L110 130"/>
+        <text class="hw pig" x="250" y="130" font-size="24">c²</text>
+        <text class="hw" x="330" y="160" font-size="28">9 + 16 = 25</text><text class="hw pig" x="330" y="205" font-size="30">c = 5</text>
+        <path class="ink pig draw d3" d="M322 176 c-10 18 -4 40 28 42 s60 -6 58 -28 s-22 -36 -52 -32 s-30 8 -34 18"/>
+      </svg></div>
+      <div class="ask"><input value="why does a² + b² = c²?"><button class="btn pig">Ask</button></div>
+      <div class="chipsq"><span>What's the difference between speed and velocity?</span><span>Why is the sky blue?</span><span>Explain fractions with a chocolate bar</span></div>
+    </div>
+    <button class="btn">That was it. Keep going</button>
+  </div></div>
+</div></div>
+
+<!-- 4 · A PARENT -->
+<div class="board"><div class="name">4 of 5 · A parent (optional)</div>
+<div class="screen">
+  <div class="top"><span class="wm"><svg viewBox="0 0 1160 340" style="width:90px"><use href="#wm"/></svg></span><span class="dots"><i class="done"></i><i class="done"></i><i class="done"></i><i class="on"></i><i></i></span><span class="skip">Not now</span></div>
+  <div class="body"><div class="card">
+    <svg class="wobo" viewBox="0 0 120 120"><use href="#head"/></svg>
+    <div class="bub">On Sundays I write three lines home. Want someone to get them?</div>
+    <h1>Link a parent, if you'd like.</h1>
+    <p class="sub">They'll see your lessons, your progress and the Sunday note. Your questions word for word stay yours unless you choose to share them.</p>
+    <div class="parent">
+      <div class="note">Aanya asked for help twice after a miss this week, <em>which is exactly how learning looks.</em><small>a sample of the Sunday note</small></div>
+      <div class="field"><label>Parent's email or phone</label><input placeholder="They get an invite, nothing else"></div>
+      <button class="btn pig">Send the invite</button>
+      <button class="btn link">I'll do this later</button>
+    </div>
+  </div></div>
+</div></div>
+
+<!-- 5 · READY -->
+<div class="board"><div class="name">5 of 5 · Ready</div>
+<div class="screen">
+  <div class="confetti" aria-hidden="true"><i style="left:12%;top:12%;background:var(--marigold)"></i><i style="left:26%;top:7%;background:var(--pig);transform:rotate(-20deg)"></i><i style="left:78%;top:9%;background:var(--rose)"></i><i style="left:64%;top:15%;background:var(--mint);transform:rotate(40deg)"></i><i style="left:88%;top:18%;background:var(--lilac)"></i><i style="left:36%;top:17%;background:var(--violet);transform:rotate(-35deg)"></i></div>
+  <div class="top"><span class="wm"><svg viewBox="0 0 1160 340" style="width:90px"><use href="#wm"/></svg></span><span class="dots"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="on"></i></span><span class="skip"></span></div>
+  <div class="body"><div class="card">
+    <svg class="wobo" viewBox="0 0 120 120"><use href="#head-happy"/></svg>
+    <h1>That's it, Aanya. Class 8, Telangana Board, triangles this week.</h1>
+    <p class="sub">Forty questions a day, every day, for free. Hold space to talk to me, or just type. I'll be here at 10 pm and at 6 am.</p>
+    <div class="allow"><b>Today's allowance</b><div class="bar"><i></i></div><span>40 of 40 questions · resets 6:00 am</span></div>
+    <button class="btn pig">Begin tonight</button>
+    <p class="fine">You can change the class, the board or the parent link any time in Settings.</p>
+  </div></div>
+</div></div>
+
+<script>
+const t = new URLSearchParams(location.search).get('theme'); if (t) document.documentElement.setAttribute('data-theme', t);
+</script>
+</body>
+</html>

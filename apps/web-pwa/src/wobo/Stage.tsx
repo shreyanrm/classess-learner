@@ -131,7 +131,10 @@ export function WoboStage(props: WoboStageProps) {
         onLearnerFocus={onLearnerFocus}
         {...(props.onVariableChange ? { onVariableChange: props.onVariableChange } : {})}
       />
-      <LessonBoard {...(title ? { title } : {})} />
+      <LessonBoard
+        {...(title ? { title } : {})}
+        {...(props.onVariableChange ? { onVariableChange: props.onVariableChange } : {})}
+      />
       <BoardKeeper {...(title ? { title } : {})} route={route} />
       <ShowMeCursor />
       <RegistryInspector />
@@ -181,7 +184,16 @@ function usePlaneTarget(): void {
  * Inside a lesson the board is the screen (docs/BOARD.md §5). It arrives only once Wobo has actually
  * drawn something, and there is always a way back to the lesson — the board is never a trap.
  */
-function LessonBoard({ title }: { title?: string }) {
+function LessonBoard({
+  title,
+  onVariableChange,
+}: {
+  title?: string;
+  onVariableChange?: (
+    variable: string,
+    value: number | boolean | string | [number, number],
+  ) => void;
+}) {
   const state = useSyncExternalStore(boardTurn.subscribe, boardTurn.get, boardTurn.get);
   const objects = useSyncExternalStore(
     lessonStore.subscribe,
@@ -218,6 +230,7 @@ function LessonBoard({ title }: { title?: string }) {
         store={lessonStore}
         {...(title ? { title } : {})}
         targets={boardTargets}
+        {...(onVariableChange ? { onVariableChange } : {})}
         onShare={shareImage}
       />
       <button

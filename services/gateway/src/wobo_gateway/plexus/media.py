@@ -23,8 +23,14 @@ _HTTP_TIMEOUT_S = 60.0
 _VOICE = "Kore"
 
 
-def synthesize_narration(text: str) -> dict[str, str] | None:
-    """Narration audio for a motion piece. ``{"mime", "b64"}`` or ``None``."""
+def synthesize_narration(text: str, *, instruction: str | None = None) -> dict[str, str] | None:
+    """Narration audio for a motion piece. ``{"mime", "b64"}`` or ``None``.
+
+    ``instruction`` is an optional system instruction carried with the line — how it is to be
+    spoken, never what is said. The read-aloud path uses it for the learner's accent
+    (``wobo_gateway.voice.accent_instruction``), so a one-shot spoken line lands in the same
+    English as the live microphone; a narration that asks for nothing is unchanged.
+    """
     import urllib.error
     import urllib.request
 
@@ -34,13 +40,18 @@ def synthesize_narration(text: str) -> dict[str, str] | None:
         logger.warning("tts: no key present (checked GEMINI_API_KEY, GOOGLE_AI_API_KEY)")
         return None
 
-    body = {
+    body: dict[str, object] = {
         "contents": [{"parts": [{"text": text}]}],
         "generationConfig": {
             "responseModalities": ["AUDIO"],
             "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": _VOICE}}},
         },
     }
+    if instruction and instruction.strip():
+        # An instruction, never a setup field: the accent is asked for in words for the same
+        # reason the sockets ask for it in words (see wobo_gateway.voice) — an unsupported
+        # config key is rejected by the upstream and the line comes back silent.
+        body["systemInstruction"] = {"parts": [{"text": instruction.strip()}]}
     req = urllib.request.Request(
         _TTS_URL,
         data=json.dumps(body).encode(),

@@ -37,6 +37,16 @@ SKIP_PREFIXES: tuple[tuple[str, str], ...] = (
         "documented in.",
     ),
     (
+        "design/workflows/",
+        "the wave orchestration scripts, and the audit sweep they were driven from. Their prompt "
+        "strings are the record of the instructions as they were issued: wobo-rebrand.workflow.js "
+        "names the old brand because renaming it is what that run commissioned, and carries the "
+        "pre-§19 introduction line because §19 did not exist on the day it ran; "
+        "sweep-open-tasks.md quotes each finding's file path as it stood when the audit raised it. "
+        "They are one-shot drivers that ship nothing, so rewriting them would forge the record the "
+        "rebrand is documented in — the same reason docs/history/ is carved out above.",
+    ),
+    (
         ".playwright-mcp/",
         "browser-snapshot output from QA runs. Already in .gitignore; the tracked copies predate "
         "that rule and are queued for `git rm --cached`.",
@@ -335,6 +345,49 @@ PRONOUNS: tuple[Allowed, ...] = (
         "docs/copy/voice.md",
         "| She'll walk you through it. |",
         "the don't-write-this column of the voice guide's before/after table.",
+    ),
+    # The Tuesday-night chapter. The landing page tells one story about one named learner, Aanya,
+    # and the owner wrote her into it in the third person. §19 is a rule about WOBO — Wobo is "it"
+    # in every one of these sentences — so the pronoun here is the child's, not the wobot's. It
+    # only trips the gate because "Wobo" happens to sit inside the 60-character window. Each
+    # needle is the whole sentence, and `excused_at` requires the pronoun to fall inside it, so
+    # none of these can excuse a real slip that lands on the same line.
+    *(
+        Allowed(glob, needle, "the named learner Aanya in the Tuesday-night chapter; Wobo is 'it'.")
+        for glob in (
+            "apps/web-pwa/src/screens/landing/page-copy.ts",
+            "apps/web-pwa/src/screens/landing/page-copy.test.ts",
+            "design/prototypes/*.html",
+        )
+        for needle in (
+            "She asks Wobo the way she'd ask a friend.",
+            "She asks Wobo the way she'd ask you.",
+            "She saw it, not just heard it",
+            "Then she tries one",
+            "In its own hand, at her pace",
+            "When she's close, Wobo draws the difference on her answer. When she gets it",
+        )
+    ),
+    # The two comments that state the rule this file is being read against. Neither calls Wobo
+    # anything; both quote the forbidden pronouns in order to forbid them, which is the same
+    # exception already granted to §19's own text in WOBO-PLAN.md, WOBO.md and wobo.py above.
+    Allowed(
+        "apps/web-pwa/src/screens/landing/page-copy.ts",
+        'WOBO IS NEVER "he" OR "she"',
+        "the §19 rule restated at the top of the copy module.",
+    ),
+    Allowed(
+        "apps/web-pwa/src/screens/landing/page-copy.test.ts",
+        'calling WOBO "he" or "she" would be',
+        "the §19 rule restated in the test that asserts it.",
+    ),
+    # A suite that enforces §19 on its own subject matter has to spell the pronouns it refuses,
+    # exactly as this gate's own patterns do (allowlisted by file above). The needle is the whole
+    # compiled alternation, so it excuses the pattern and nothing else on the line.
+    Allowed(
+        "services/gateway/tests/test_hospitality_jobs.py",
+        r'r"\b(she|he|her|him|his|hers)\b"',
+        "the pattern the hand-drawn-email suite uses to hold its own copy to §19.",
     ),
     Allowed(".github/workflows/ci.yml", "gate_pronouns", "the gate's own filename."),
     Allowed("scripts/gates.sh", "gate_pronouns", "the gate's own filename."),

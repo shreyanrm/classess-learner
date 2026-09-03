@@ -51,7 +51,7 @@ test("onboarding walks Wobo's beats and opens the home", async ({ page }, info) 
   // A visitor who has never started meets the landing page first — it is the unauthenticated front
   // door, and every one of its doors leads to onboarding. Walk the real path rather than deep-link.
   await page
-    .getByRole('button', { name: 'Start free', exact: true })
+    .getByRole('button', { name: 'Start learning for free', exact: true })
     .first()
     .click({ timeout: 15_000 });
 

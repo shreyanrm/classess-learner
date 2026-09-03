@@ -154,7 +154,7 @@ main{display:grid;grid-template-columns:720px 1fr;gap:28px;padding:26px 28px}
 <script>
   const app=document.getElementById('app');
   const states={1:'s1',2:'s2',3:'s3',4:'s4'};
-  const caps={1:'1 · the learner pauses and circles the top of the arc',2:'2 · Wobo answers on the frame: an arrow and a line in her hand',3:'3 · it needs more, so the plane slides in and she draws the physics',4:'4 · the finished board: pinnable, shrinkable, hers and the learner\'s'};
+  const caps={1:'1 · the learner pauses and circles the top of the arc',2:'2 · Wobo answers on the frame: an arrow and a line in its hand',3:'3 · it needs more, so the plane slides in and Wobo draws the physics',4:'4 · the finished board: pinnable, shrinkable, Wobo\'s and the learner\'s'};
   const q=new URLSearchParams(location.search); const t=Number(q.get('t')||0);
   function go(n){ app.className='app'; for(let i=1;i<=n;i++) app.classList.add(states[i]); document.getElementById('cap').textContent=caps[n]||''; }
   if(t) go(t); else { let n=0; const seq=[800,1400,2600,6200]; seq.forEach((ms,i)=>setTimeout(()=>go(i+1),seq.slice(0,i+1).reduce((a,b)=>a+b,0))); }

@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wobo plans</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAF7F0; --paper-2:#F1EDE3; --paper-3:#E7E1D3; --ink:#14142B; --ink-2:#4E4E66; --ink-3:#8A8A9E;
+  --pig:#2B45FF; --violet:#7C5CFF; --rose:#FF6B57; --marigold:#FFB629; --mint:#22C48B; --lilac:#B7A6FF;
+  --pig-w:#E6EAFF; --rose-w:#FFE7E2; --marigold-w:#FFF1D6; --mint-w:#DDF6EC; --lilac-w:#EFEBFF;
+  --body:#14142B; --body-hi:#3A3A5C; --visor:#FAF7F0; --visor-lo:#E7E1D3; --eye:#2B45FF;
+  --sans:'Poppins',system-ui,-apple-system,sans-serif; --hand:'Caveat',cursive;
+  --s1:8px; --s2:16px; --s3:24px; --s4:40px; --s5:64px; --s6:120px;
+}
+[data-theme="dark"]{
+  --paper:#0F1226; --paper-2:#181C3A; --paper-3:#22264A; --ink:#F3F0E8; --ink-2:#B8B6C6; --ink-3:#7C7B92;
+  --pig:#7C8CFF; --violet:#A996FF; --rose:#FF8A78; --marigold:#FFC85A; --mint:#4FE3BD; --lilac:#C9BDFF;
+  --pig-w:#1E2650; --rose-w:#3E2431; --marigold-w:#3E3320; --mint-w:#16362E; --lilac-w:#2A2650;
+  --body:#F3F0E8; --body-hi:#FFFFFF; --visor:#0F1226; --visor-lo:#1E2650; --eye:#7C8CFF;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{margin:0;letter-spacing:-.025em;text-wrap:balance}
+p{margin:0}
+.hand{font-family:var(--hand);font-weight:600}
+.wrap{width:min(1120px,calc(100% - 48px));margin:0 auto}
+.label{font:500 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--pig)}
+.btn{font:500 15px/1 var(--sans);padding:14px 20px;border-radius:12px;border:0;background:var(--ink);color:var(--paper);display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;cursor:pointer}
+.btn.pig{background:var(--pig);color:#fff}.btn.quiet{background:var(--paper-2);color:var(--ink)}.btn.marigold{background:var(--marigold);color:#14142B}
+.btn:focus-visible,input:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--marigold);outline-offset:2px}
+header{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--paper) 78%,transparent)}
+header .wrap{display:flex;align-items:center;gap:var(--s3);height:72px}
+header .wm svg{height:26px;width:auto;fill:var(--ink);display:block}
+header nav{margin-left:auto;display:flex;gap:4px;background:var(--paper-2);padding:4px;border-radius:999px}
+header nav a{padding:10px 16px;border-radius:999px;font:500 14px/1 var(--sans);color:var(--ink-2)}
+header nav a.on{background:var(--ink);color:var(--paper)}
+header .cta{display:flex;gap:8px}
+@media (max-width:900px){header nav{display:none}}
+.blink{transform-origin:center;animation:blink 5s infinite}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+.reveal{opacity:1;transform:none;transition:opacity .6s ease,transform .6s ease}
+.reveal.pre{opacity:0;transform:translateY(18px)}
+
+/* hero */
+.hero{padding:var(--s5) 0 var(--s4);text-align:center}
+.hero h1{font:700 clamp(38px,5.4vw,64px)/1.0 var(--sans);letter-spacing:-.035em;margin:var(--s2) auto 0;max-width:18ch}
+.hero h1 em{font-style:normal;color:var(--pig)}
+.hero p.sub{font-size:19px;color:var(--ink-2);max-width:52ch;margin:var(--s3) auto 0}
+.region{display:inline-flex;background:var(--paper-2);border-radius:999px;padding:4px;gap:4px;margin-top:var(--s4)}
+.region button{border:0;background:transparent;font:500 14px/1 var(--sans);color:var(--ink-2);padding:10px 16px;border-radius:999px;cursor:pointer}
+.region button.on{background:var(--ink);color:var(--paper)}
+
+/* allowance drawing */
+.allow{margin:var(--s4) auto 0;max-width:560px;background:var(--paper-2);border-radius:24px;padding:var(--s3);text-align:left;display:grid;gap:12px;position:relative}
+.allow b{font-weight:600}
+.allow .bar{height:14px;border-radius:7px;background:var(--paper-3);overflow:hidden;position:relative}
+.allow .bar i{position:absolute;left:0;top:0;height:100%;border-radius:7px;background:var(--marigold);width:0;transition:width 1.4s cubic-bezier(.6,0,.2,1)}
+.allow.on .bar i{width:62%}
+.allow span{font-size:13px;color:var(--ink-3)}
+.allow .hand{font-size:24px;color:var(--pig)}
+.allow .sticker{position:absolute;right:-14px;top:-16px;background:var(--marigold);color:#14142B;font-family:var(--hand);font-weight:700;font-size:22px;padding:6px 14px;border-radius:12px;transform:rotate(6deg);box-shadow:0 10px 20px rgba(20,20,43,.12)}
+
+/* plans */
+section{padding:var(--s5) 0}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);align-items:start}
+.plan{border-radius:28px;padding:var(--s3);display:grid;gap:14px;background:var(--paper-2);position:relative}
+.plan.pro{background:var(--pig-w)}.plan.max{background:var(--ink);color:var(--paper)}
+.plan .name{font:600 14px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.plan.max .name{color:rgba(250,247,240,.6)}
+.plan .price{font:700 44px/1 var(--sans);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.plan .price small{font:500 15px/1 var(--sans);letter-spacing:0;color:var(--ink-3);margin-left:6px}
+.plan.max .price small{color:rgba(250,247,240,.6)}
+.plan .x{font-family:var(--hand);font-weight:700;font-size:26px;color:var(--pig);line-height:1}
+.plan.max .x{color:var(--marigold)}
+.plan p{font-size:15px;color:var(--ink-2)}
+.plan.max p{color:rgba(250,247,240,.75)}
+.plan ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.plan li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:15px}
+.plan li i{width:22px;height:22px;border-radius:50%;background:var(--mint);display:grid;place-items:center}
+.plan li i svg{width:12px;height:12px;fill:none;stroke:#14142B;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.plan .btn{margin-top:6px}
+.plan.max .btn{background:var(--marigold);color:#14142B}
+.plan .best{position:absolute;right:18px;top:-14px;background:var(--marigold);color:#14142B;font-family:var(--hand);font-weight:700;font-size:20px;padding:5px 12px;border-radius:10px;transform:rotate(4deg);box-shadow:0 10px 20px rgba(20,20,43,.12)}
+.plan .fine{font-size:13px;color:var(--ink-3)}
+.plan.max .fine{color:rgba(250,247,240,.5)}
+@media (max-width:900px){.plans{grid-template-columns:1fr}}
+
+/* honest table */
+.head{display:grid;gap:var(--s2);max-width:64ch;margin-bottom:var(--s4)}
+.head h2{font:700 clamp(28px,3.4vw,42px)/1.08 var(--sans)}
+.head p{color:var(--ink-2);font-size:18px}
+.tbl{border-radius:24px;overflow:hidden;background:var(--paper-2)}
+.tbl .r{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;align-items:center}
+.tbl .r+.r{border-top:2px solid var(--paper)}
+.tbl .r>div{padding:14px var(--s3);font-size:15px}
+.tbl .r.h>div{font:500 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);background:var(--paper-3);padding:var(--s2) var(--s3)}
+.tbl .r>div:first-child{font-weight:500}
+.tbl .same{color:var(--ink-3)}
+.tbl .y{display:inline-flex;align-items:center;gap:6px}
+.tbl .y i{width:10px;height:10px;border-radius:50%;background:var(--mint)}
+@media (max-width:900px){.tbl{overflow-x:auto}.tbl .r{min-width:640px}}
+
+/* checkout preview */
+.checkout{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4);align-items:center}
+.checkout .card{background:var(--paper);border-radius:24px;padding:var(--s3);box-shadow:0 18px 40px rgba(20,20,43,.10);display:grid;gap:14px}
+.checkout .row{display:flex;justify-content:space-between;font-size:15px}
+.checkout .row b{font-weight:600}
+.checkout label{display:grid;grid-template-columns:26px 1fr;gap:12px;align-items:start;font-size:14px;color:var(--ink-2);padding:12px;border-radius:14px;background:var(--paper-2)}
+.checkout label input{width:22px;height:22px;accent-color:var(--pig);margin:1px 0 0}
+.checkout label b{color:var(--ink);font-weight:600;display:block}
+.checkout .total{display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid var(--paper-2);padding-top:12px}
+.checkout .total b{font:700 28px/1 var(--sans)}
+.checkout .say{font-family:var(--hand);font-weight:600;font-size:26px;line-height:1.15;margin-top:var(--s3)}
+.checkout .say em{font-style:normal;color:var(--rose)}
+@media (max-width:900px){.checkout{grid-template-columns:1fr}}
+
+/* gift */
+.gift{background:var(--marigold-w);border-radius:28px;padding:var(--s4);display:grid;grid-template-columns:1.1fr .9fr;gap:var(--s4);align-items:center}
+.gift h2{font:700 clamp(26px,3vw,36px)/1.08 var(--sans)}
+.gift p{color:var(--ink-2);margin-top:var(--s2)}
+.gift .row{display:flex;gap:var(--s2);margin-top:var(--s3);flex-wrap:wrap}
+.gift .btn.quiet{background:var(--paper)}
+.gift svg{width:min(100%,300px);justify-self:center;overflow:visible;filter:drop-shadow(0 20px 30px rgba(20,20,43,.14))}
+@media (max-width:900px){.gift{grid-template-columns:1fr}}
+
+/* faq */
+.faq{display:grid;gap:10px}
+.faq details{background:var(--paper-2);border-radius:18px;padding:0 var(--s3)}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:var(--s2);padding:18px 0;font-weight:500;font-size:17px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font:600 24px/1 var(--sans);color:var(--pig);transition:transform .3s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{color:var(--ink-2);padding:0 0 18px;max-width:64ch}
+
+/* close, footer */
+.close{margin:var(--s5) 0 0;background:var(--ink);color:var(--paper);padding:var(--s6) 0;text-align:center}
+.close h2{font:700 clamp(34px,5vw,60px)/1.02 var(--sans);letter-spacing:-.035em}
+.close .hand{font-size:30px;color:var(--marigold);display:block;margin-top:var(--s2)}
+.close .row{display:flex;gap:var(--s2);justify-content:center;margin-top:var(--s4);flex-wrap:wrap}
+.close .btn{background:var(--marigold);color:#14142B}
+.close .btn.q{background:rgba(255,255,255,.12);color:var(--paper)}
+footer{background:var(--ink);color:rgba(250,247,240,.6);padding:var(--s4) 0 var(--s5);font-size:14px}
+footer .wrap{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:var(--s3)}
+footer b{display:block;color:var(--paper);font-weight:600;margin-bottom:10px}
+footer a{display:block;padding:4px 0}
+footer .wm svg{height:24px;fill:var(--paper)}
+@media (max-width:900px){footer .wrap{grid-template-columns:1fr 1fr}}
+@media (prefers-reduced-motion:reduce){.blink{animation:none}.allow .bar i{transition:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<radialGradient id="hg" cx="36%" cy="30%" r="80%"><stop offset="0" style="stop-color:var(--body-hi)"/><stop offset="1" style="stop-color:var(--body)"/></radialGradient>
+<linearGradient id="vg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--visor)"/><stop offset="1" style="stop-color:var(--visor-lo)"/></linearGradient>
+<symbol id="head" viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="url(#hg)"/><rect x="18" y="41" width="84" height="38" rx="19" fill="url(#vg)"/><g class="blink"><circle cx="43" cy="61" r="9" fill="var(--eye)"/><circle cx="77" cy="61" r="9" fill="var(--eye)"/><circle cx="40" cy="58" r="3" fill="var(--paper)" opacity=".85"/><circle cx="74" cy="58" r="3" fill="var(--paper)" opacity=".85"/></g></symbol>
+<symbol id="wm" viewBox="0 0 1160 340"><text x="0" y="300" font-family="Poppins,sans-serif" font-weight="700" font-size="330" letter-spacing="-12">wobo</text></symbol>
+</defs></svg>
+
+<header><div class="wrap">
+  <a class="wm" href="#"><svg viewBox="0 0 1160 340"><use href="#wm"/></svg></a>
+  <nav><a href="#">Meet Wobo</a><a href="#">How it works</a><a href="#">For parents</a><a href="#">For students</a><a href="#">Subjects</a><a class="on" href="#">Plans</a></nav>
+  <div class="cta"><a class="btn quiet" href="#">Sign in</a><a class="btn pig" href="#">Get started</a></div>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <span class="label">Plans</span>
+  <h1>Free every day. <em>More when exams get close.</em></h1>
+  <p class="sub">Every learner gets a daily allowance of questions, forever, with no card and no trial that ends. Pro and Max raise the allowance for the weeks that need it. Cancelling takes as many taps as subscribing.</p>
+  <div class="region" role="group" aria-label="Show prices for"><button class="on" data-r="in">India · ₹</button><button data-r="ww">Everywhere else · $</button></div>
+  <div class="allow reveal" id="allow"><span class="sticker">free, every day</span><b>Today's allowance</b><div class="bar"><i></i></div><span>25 of 40 questions left · resets 6:00 am</span><div class="hand">enough for a normal evening, and the next one, and the one after</div></div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="plans reveal">
+    <div class="plan">
+      <div class="name">Free</div>
+      <div class="price"><span data-in="₹0" data-ww="$0">₹0</span><small>forever</small></div>
+      <div class="x">1× allowance</div>
+      <p>Forty questions a day, every subject, every class, the Sunday note, a linked parent. The whole tutor.</p>
+      <ul>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>40 questions a day</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Every subject, class 4 to 12</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Practice, the week, the Sunday note</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>One linked parent</li>
+      </ul>
+      <a class="btn quiet" href="#" style="background:var(--paper)">Start learning for free</a>
+      <div class="fine">No card. No trial that ends.</div>
+    </div>
+    <div class="plan pro">
+      <span class="best">most families</span>
+      <div class="name">Pro</div>
+      <div class="price"><span data-in="₹1,999" data-ww="$20">₹1,999</span><small>a month</small></div>
+      <div class="x">5× allowance</div>
+      <p>For the term that has a test every fortnight. Two hundred questions a day, and Wobo reads answers aloud.</p>
+      <ul>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>200 questions a day</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Voice replies, in your accent</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Longer lessons on the full board</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Everything in Free</li>
+      </ul>
+      <a class="btn pig" href="#">Choose Pro</a>
+      <div class="fine">Monthly. Cancel in two taps, keep it till the month ends.</div>
+    </div>
+    <div class="plan max">
+      <div class="name">Max</div>
+      <div class="price"><span data-in="₹3,999" data-ww="$50">₹3,999</span><small>a month</small></div>
+      <div class="x">20× allowance</div>
+      <p>Board year. Eight hundred questions a day, so nobody counts, and two learners on one plan.</p>
+      <ul>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>800 questions a day</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Two learners, two Sunday notes</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Past-paper practice sets</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Everything in Pro</li>
+      </ul>
+      <a class="btn" href="#">Choose Max</a>
+      <div class="fine">Monthly. Same two taps to cancel.</div>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="head reveal"><span class="label">The honest table</span><h2>What changes between plans, and what never does.</h2><p>Most of Wobo is the same on every plan. The allowance changes. The tutor doesn't.</p></div>
+  <div class="tbl reveal">
+    <div class="r h"><div>Every day</div><div>Free</div><div>Pro</div><div>Max</div></div>
+    <div class="r"><div>Questions a day</div><div>40</div><div>200</div><div>800</div></div>
+    <div class="r"><div>Learners on the plan</div><div>1</div><div>1</div><div>2</div></div>
+    <div class="r"><div>Voice replies</div><div class="same">—</div><div><span class="y"><i></i>yes</span></div><div><span class="y"><i></i>yes</span></div></div>
+    <div class="r"><div>Past-paper sets</div><div class="same">—</div><div class="same">—</div><div><span class="y"><i></i>yes</span></div></div>
+    <div class="r"><div>Every subject, class 4 to 12</div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div></div>
+    <div class="r"><div>The drawn board, practice, the week</div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div></div>
+    <div class="r"><div>The Sunday note and a linked parent</div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div></div>
+    <div class="r"><div>No ads, no selling, no opinions</div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="checkout reveal">
+    <div><span class="label">At checkout</span><h2 style="font:700 clamp(28px,3.4vw,42px)/1.08 var(--sans);margin-top:10px">Two boxes, both in plain words.</h2><p style="color:var(--ink-2);margin-top:var(--s2);max-width:46ch">We ask for exactly two things before taking money: that the person paying is an adult who agrees to the terms, and that they know what a month costs and how to stop it. Nothing pre-ticked.</p><div class="say">Same price for everyone in your country. <em>Always.</em></div></div>
+    <div class="card">
+      <div class="row"><span>Pro · one learner</span><b data-in="₹1,999 / month" data-ww="$20 / month">₹1,999 / month</b></div>
+      <div class="row"><span>Starts</span><b>today</b></div>
+      <div class="row"><span>Renews</span><b>3 October, unless you cancel</b></div>
+      <label><input type="checkbox"><div><b>I'm 18 or over and I agree to the terms.</b>The terms, in plain words first, are one tap away.</div></label>
+      <label><input type="checkbox"><div><b>I understand this renews monthly and I can cancel in Settings, in two taps, any time.</b>You keep Pro until the month you paid for ends.</div></label>
+      <div class="total"><span>Today</span><b data-in="₹1,999" data-ww="$20">₹1,999</b></div>
+      <button class="btn pig">Pay with the payment provider</button>
+      <div style="font-size:13px;color:var(--ink-3)">Card or UPI, on the provider's own page. We never see or store the details.</div>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="gift reveal">
+    <div><span class="label" style="color:var(--ink-2)">Gift Wobo</span><h2 style="margin-top:8px">The smartest gift for a child who's about to have a hard term.</h2><p>Three, six or twelve months of Pro, sent to a parent with a note in your words. No account needed to buy. It arrives the day you choose.</p><div class="row"><a class="btn" href="#">Choose a gift</a><a class="btn quiet" href="#">How gifting works</a></div></div>
+    <svg viewBox="0 0 300 260" aria-hidden="true"><rect x="40" y="90" width="220" height="150" rx="18" fill="var(--pig)"/><rect x="30" y="70" width="240" height="44" rx="14" fill="var(--violet)"/><rect x="138" y="70" width="24" height="170" fill="var(--marigold)"/><path d="M150 70 c-30 -50 -70 -30 -40 0 M150 70 c30 -50 70 -30 40 0" fill="none" stroke="var(--marigold)" stroke-width="12" stroke-linecap="round"/><g transform="translate(230 40)"><svg viewBox="0 0 120 120" width="70" height="70" x="-35" y="-35"><use href="#head"/></svg></g></svg>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="head reveal"><span class="label">Questions</span><h2>The money questions, answered straight.</h2></div>
+  <div class="faq reveal">
+    <details open><summary>What happens when the free allowance runs out for the day?</summary><p>Wobo tells you kindly, shows the time it resets (6 am), and offers to save your question for the morning. Nothing you've done is lost, and nothing nags you to upgrade mid-lesson.</p></details>
+    <details><summary>Is the Sunday note only on paid plans?</summary><p>No. The note, the parent link, the practice, the drawn board and every subject are on Free. Paid plans change the allowance, voice, and a few extras. They never change the tutor.</p></details>
+    <details><summary>How do I cancel?</summary><p>Settings → Your plan → Cancel. Two taps, no call, no "are you sure" maze. You keep the plan until the month you paid for ends.</p></details>
+    <details><summary>Do prices change by country?</summary><p>Yes, by country, never by person. Everyone in India sees ₹1,999 and ₹3,999. Everyone elsewhere sees $20 and $50. We don't vary prices by behaviour, device or history.</p></details>
+    <details><summary>Can two children share Pro?</summary><p>Pro is for one learner, because the Sunday note and the memory are personal. Max includes two learners, each with their own note. Families with three or more: write to us and we'll sort it.</p></details>
+    <details><summary>Are there discounts for schools?</summary><p>Schools get a separate plan with a teacher's view and a data-processing agreement. It's on the Schools page, or write to us.</p></details>
+  </div>
+</div></section>
+
+<div class="close"><div class="wrap">
+  <h2>Start free. Decide later.</h2>
+  <span class="hand">The first question is on us. So is the fortieth.</span>
+  <div class="row"><a class="btn" href="#">Start learning for free</a><a class="btn q" href="#">Gift Wobo</a></div>
+</div></div>
+<footer><div class="wrap">
+  <div><div class="wm"><svg viewBox="0 0 1160 340" style="width:120px"><use href="#wm"/></svg></div><p style="margin-top:10px;max-width:28ch">A tutor that draws, never judges, and is always there.</p></div>
+  <div><b>Wobo</b><a href="#">Meet Wobo</a><a href="#">How it works</a><a href="#">Subjects</a><a href="#" style="color:var(--paper)">Plans</a><a href="#">Gift Wobo</a></div>
+  <div><b>For</b><a href="#">Parents</a><a href="#">Students</a><a href="#">Schools</a></div>
+  <div><b>Help</b><a href="#">Help centre</a><a href="#">Contact</a><a href="#">Questions</a></div>
+  <div><b>Company</b><a href="#">About</a><a href="#">Security and trust</a><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Children's privacy</a><a href="#">Cookies</a><a href="#">Accessibility</a></div>
+</div></footer>
+
+<script>
+const t = new URLSearchParams(location.search).get('theme'); if (t) document.documentElement.setAttribute('data-theme', t);
+const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (!rm && 'IntersectionObserver' in window) {
+  const els=[...document.querySelectorAll('.reveal')];
+  els.forEach(e=>{ if (e.getBoundingClientRect().top > innerHeight) e.classList.add('pre'); });
+  const io=new IntersectionObserver(en=>en.forEach(x=>{ if(x.isIntersecting){ x.target.classList.remove('pre'); x.target.classList.add('on'); io.unobserve(x.target);} }),{threshold:.18});
+  els.forEach(e=>io.observe(e));
+} else { document.querySelectorAll('.reveal').forEach(e=>e.classList.add('on')); }
+document.querySelectorAll('.region button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.region button').forEach(x=>x.classList.toggle('on',x===b));
+  const r=b.dataset.r; document.querySelectorAll('[data-in]').forEach(el=>{ el.textContent = el.dataset[r]; });
+}));
+</script>
+</body>
+</html>

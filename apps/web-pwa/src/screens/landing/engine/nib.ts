@@ -36,6 +36,18 @@ export const NIB_HOVER_SELECTOR = 'a,button,[role=button]';
 export const CURSOR_ON_CLASS = 'cursor-on';
 
 /**
+ * The class that makes the nib VISIBLE, and the reason it is a second switch.
+ *
+ * `display` is decided by the device (a fine pointer, no reduced motion) but visibility has to wait
+ * for the pointer to actually be somewhere. Until the first move the state is parked at the centre
+ * of the viewport with `has: false`, and a nib shown at that moment paints an ultramarine dot in
+ * the top-left corner of a page nobody has touched yet — which is exactly what a screenshot of the
+ * page at rest caught. The prototype gates the same way (`#nib.on`), so this is the port, not an
+ * addition: the pen appears with the first movement and never before it.
+ */
+export const NIB_VISIBLE_CLASS = 'on';
+
+/**
  * The scoped form of the same switch: `data-cursor="on"` on the landing page's own root, which is
  * what the page's stylesheet keys `cursor: none` off. Scoped rather than global so that every
  * other screen in the app keeps its cursor even while this one is mounted.
@@ -103,6 +115,9 @@ export function mountNib(el: HTMLElement | null, options: NibOptions): NibHandle
     nx = lerp(nx, pointer.x, ease);
     ny = lerp(ny, pointer.y, ease);
     el.style.transform = nibTransform(nx, ny);
+    // Latched, never toggled back: once the pen has been carried it stays the cursor for the page,
+    // and leaving the document is the `mouseleave` fade below rather than a reset to invisible.
+    if (pointer.has) el.classList.add(NIB_VISIBLE_CLASS);
   };
 
   const over = (event: Event) => el.classList.toggle('hover', isHoverTarget(event.target));
@@ -145,7 +160,7 @@ export function mountNib(el: HTMLElement | null, options: NibOptions): NibHandle
       doc.removeEventListener('mouseenter', enter);
       doc.body?.classList.remove(CURSOR_ON_CLASS);
       options.scope?.removeAttribute(CURSOR_ON_ATTRIBUTE);
-      el.classList.remove('hover', 'press');
+      el.classList.remove('hover', 'press', NIB_VISIBLE_CLASS);
       el.style.opacity = '';
       el.style.transform = '';
     },

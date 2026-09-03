@@ -46,7 +46,9 @@ def test_every_link_defaults_under_our_domain(clean_env) -> None:
     # reads to the linter as a Yoda condition however it is written.
     app_url, unsubscribe_url = templates.APP_URL, templates.UNSUBSCRIBE_URL
     assert app_url == f"https://{DOMAIN}"
-    assert unsubscribe_url == f"https://{DOMAIN}/unsubscribe"
+    # the list-wide opt-out is the gateway's own stop route (hospitality/tokens.py): a page that
+    # says so and points at sign-in, never a 404 — and still under our domain
+    assert unsubscribe_url == f"https://api.{DOMAIN}/v1/mail/stop"
     html = templates.render("account_created")["html"]
     assert f"https://{DOMAIN}/" in html
     # No host from a platform we merely rent may appear in mail we send.

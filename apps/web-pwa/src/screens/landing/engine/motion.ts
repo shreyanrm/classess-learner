@@ -259,3 +259,147 @@ export function settleStill(root: ParentNode): void {
   gsap.set(all(root, '.lasso text'), { opacity: 1 });
   gsap.set(all(root, '.chip'), { opacity: 1, y: 0 });
 }
+
+// --- Wobo's attention ---------------------------------------------------------------------------
+
+/** How far Wobo's eyes travel from centre, in px, once the pointer is a room away. */
+export const GAZE_REACH = 5;
+
+/** How far the pointer has to be for the eyes to be at full reach. */
+export const GAZE_RANGE = 500;
+
+/** How long the lid takes to close, and how long Wobo holds the blink shut, in ms. */
+export const BLINK_SHUT_MS = 90;
+export const BLINK_HOLD_MS = 110;
+
+/** The shortest wait between blinks, and the random spread on top of it. */
+export const BLINK_MIN_MS = 3200;
+export const BLINK_SPREAD_MS = 3200;
+
+/** How long after the page settles Wobo blinks for the first time. */
+export const BLINK_FIRST_MS = 1800;
+
+/**
+ * How far the eyes ride toward a point, in px. Direction is the unit vector to it; the amount
+ * grows with distance and stops at `reach`, so a pointer resting on Wobo's face does not push the
+ * eyes off it, and a pointer across the room does not pull them further than an eye can go.
+ */
+export function gazeOffset(
+  dx: number,
+  dy: number,
+  d: number,
+  reach = GAZE_REACH,
+  range = GAZE_RANGE,
+): { x: number; y: number } {
+  const length = d || 1;
+  const k = Math.min(1, length / range) * reach;
+  return { x: (dx / length) * k, y: (dy / length) * k };
+}
+
+/** The same attention as a -1..1 pair, which is the shape the character rig takes as its `gaze`. */
+export function gazeVector(
+  dx: number,
+  dy: number,
+  d: number,
+  range = GAZE_RANGE,
+): { x: number; y: number } {
+  const offset = gazeOffset(dx, dy, d, 1, range);
+  return { x: offset.x, y: offset.y };
+}
+
+/** The wait before the next blink, from a 0..1 sample. Pure so the rhythm is a tested range. */
+export function nextBlinkDelay(random: number): number {
+  const r = Number.isFinite(random) ? Math.min(1, Math.max(0, random)) : 0;
+  return BLINK_MIN_MS + r * BLINK_SPREAD_MS;
+}
+
+/**
+ * Every Wobo on the page watches the pointer.
+ *
+ * Two things are written per head: the `.eyes` group is translated, exactly as the prototype does,
+ * and `--gaze-x`/`--gaze-y` are set on the head itself in -1..1. The custom properties are what
+ * lets the real character rig be driven from the same reading as the drawn heads, without a React
+ * render per frame.
+ */
+export function mountGaze(root: ParentNode, pointer: PointerState): FrameHandle {
+  // The heads are SVG groups in the drawn Wobos and elements in the real rig — both carry a box,
+  // an inline style and an `.eyes` child, which is all this touches.
+  const heads = all<SVGGraphicsElement | HTMLElement>(root, '.wobo');
+  return {
+    frame() {
+      if (!pointer.has) return;
+      for (const head of heads) {
+        const rect = head.getBoundingClientRect();
+        if (!rect.width) continue;
+        const { dx, dy, d } = vectorTo(
+          pointer,
+          rect.left + rect.width / 2,
+          rect.top + rect.height / 2,
+        );
+        const offset = gazeOffset(dx, dy, d);
+        const eyes = head.querySelector<SVGGElement>('.eyes');
+        if (eyes) eyes.style.transform = `translate(${offset.x}px, ${offset.y}px)`;
+        const unit = gazeVector(dx, dy, d);
+        head.style.setProperty('--gaze-x', unit.x.toFixed(3));
+        head.style.setProperty('--gaze-y', unit.y.toFixed(3));
+      }
+    },
+    dispose() {
+      for (const head of heads) {
+        const eyes = head.querySelector<SVGGElement>('.eyes');
+        if (eyes) eyes.style.transform = '';
+        head.style.removeProperty('--gaze-x');
+        head.style.removeProperty('--gaze-y');
+      }
+    },
+  };
+}
+
+/**
+ * Wobo blinks. Every head carrying `.blink` squashes for a tenth of a second on an uneven rhythm,
+ * which is the whole difference between a character and a logo. Timers only — no frame loop — and
+ * every one of them is cleared on dispose.
+ */
+export function mountBlink(
+  root: ParentNode,
+  options: { random?: () => number; first?: number } = {},
+): Disposer {
+  const random = options.random ?? Math.random;
+  const lids = all<SVGGraphicsElement | HTMLElement>(root, '.blink');
+  if (!lids.length) return () => {};
+  const timers = new Set<ReturnType<typeof setTimeout>>();
+  let live = true;
+
+  const later = (fn: () => void, ms: number) => {
+    const timer = setTimeout(() => {
+      timers.delete(timer);
+      if (live) fn();
+    }, ms);
+    timers.add(timer);
+  };
+
+  const blink = () => {
+    for (const lid of lids) {
+      lid.style.transition = `transform ${(BLINK_SHUT_MS / 1000).toFixed(2)}s`;
+      lid.style.transformOrigin = 'center';
+      lid.style.transform = 'scaleY(.08)';
+    }
+    later(() => {
+      for (const lid of lids) lid.style.transform = '';
+    }, BLINK_HOLD_MS);
+    later(blink, nextBlinkDelay(random()));
+  };
+
+  later(blink, options.first ?? BLINK_FIRST_MS);
+
+  return () => {
+    live = false;
+    for (const timer of timers) clearTimeout(timer);
+    timers.clear();
+    for (const lid of lids) {
+      lid.style.transition = '';
+      lid.style.transform = '';
+      lid.style.transformOrigin = '';
+    }
+  };
+}
