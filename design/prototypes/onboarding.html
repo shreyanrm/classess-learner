@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wobo — the first five minutes</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#fff;--paper2:#F7F7F9;--ink:#0D0D10;--ink2:#4A4A55;--ink3:#8A8A94;--hair:#E6E6EB;--blue:#1F35E0;--sans:Poppins,system-ui,sans-serif;--hand:Caveat,cursive}
+*{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);overflow:hidden}
+.app{position:relative;width:1280px;height:800px;overflow:hidden}
+.beat{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:60px}
+.beat.on{display:flex} .beat[data-b="4"].on{display:block}
+h1{font-size:34px;font-weight:600;letter-spacing:-.02em;margin:18px 0 8px;text-wrap:balance}
+p{font-size:15.5px;color:var(--ink2);max-width:52ch;line-height:1.6;margin:0}
+.hand{font-family:var(--hand);font-size:30px;color:var(--ink2);margin-top:8px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 20px;border-radius:3px;background:var(--ink);color:#fff;font-weight:500;font-size:14.5px;border:0;font-family:inherit}
+.btn.ghost{background:#fff;color:var(--ink);border:.5px solid var(--hair)}
+.row{display:flex;gap:10px;margin-top:26px;justify-content:center;flex-wrap:wrap}
+.orb{width:120px;height:120px}
+.orb svg{width:100%;height:100%}
+.input{width:520px;font:inherit;font-size:17px;padding:16px 18px;border:.5px solid var(--hair);border-radius:3px;background:#fff;margin-top:22px;text-align:left;color:var(--ink3);display:flex;justify-content:space-between;align-items:center}
+.input b{font-weight:400;color:var(--ink)}
+.input .ic{display:flex;gap:10px;color:var(--ink3);font-size:12px}
+.chips{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+.chip{font-size:13px;padding:9px 13px;border:.5px solid var(--hair);border-radius:3px;background:#fff;color:var(--ink2)}
+.chip.pick{border-color:var(--blue);color:var(--blue);background:#EEF0FC}
+.skip{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:13px;color:var(--ink3)}
+.step{position:absolute;top:22px;left:0;right:0;text-align:center;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+/* aha board */
+.board{width:760px;height:380px;border:.5px solid var(--hair);border-radius:3px;background:#fff;position:relative;margin-top:16px;overflow:hidden}
+.board svg{width:100%;height:100%}
+.bd{stroke:var(--ink);stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.bd.acc{stroke:var(--blue)}.bd.thin{stroke:#B8B8C2;stroke-width:1.4}
+.bt{font-family:var(--hand);font-weight:600;font-size:28px;fill:var(--ink)}.bt.acc{fill:var(--blue)}
+/* tour: a mock home with callouts */
+.home{position:absolute;inset:0;background:var(--paper)}
+.home header{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;border-bottom:.5px solid var(--hair)}
+.wm{font-weight:700;font-size:22px;letter-spacing:-.03em}.wm i{color:var(--blue);font-style:normal;font-size:11px;vertical-align:top}
+.home .greet{text-align:center;margin-top:60px}.home .greet h2{font-size:40px;font-weight:500;letter-spacing:-.02em;margin:0}
+.home .composer{width:560px;margin:26px auto 0;border:.5px solid var(--hair);border-radius:3px;padding:16px 18px;color:var(--ink3);display:flex;justify-content:space-between}
+.home .doors{display:flex;gap:12px;justify-content:center;margin-top:22px}
+.door{padding:14px 32px;border:.5px solid var(--hair);border-radius:3px;font-weight:500}
+.home .thread{position:absolute;left:0;right:0;top:400px;text-align:center}
+.home .stop{display:inline-block;border:.5px solid var(--hair);border-radius:3px;padding:12px 16px;text-align:left;width:300px;background:#fff}
+.home .stop b{display:block;font-weight:600}.home .stop span{font-size:12.5px;color:var(--ink3)}
+.dock{position:absolute;right:36px;bottom:30px;width:84px;height:84px}
+.callout{position:absolute;background:var(--ink);color:#fff;font-size:13px;padding:10px 12px;border-radius:3px;max-width:260px;line-height:1.5}
+.callout .h{font-family:var(--hand);font-size:20px;display:block;margin-bottom:2px;color:#9AA6FF}
+.cursor{position:absolute;width:26px;height:26px;pointer-events:none}
+.cursor svg{width:100%;height:100%}
+.ring{position:absolute;border:2px solid var(--blue);border-radius:3px;box-shadow:0 0 0 6px rgba(31,53,224,.12);pointer-events:none}
+.tourbar{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:10px;padding:14px;background:rgba(255,255,255,.85);border-top:.5px solid var(--hair);font-size:13px;color:var(--ink3);align-items:center}
+.tourbar .dots{display:flex;gap:6px}.tourbar .dots i{width:6px;height:6px;border-radius:50%;background:var(--hair);display:block}.tourbar .dots i.on{background:var(--blue)}
+/* endowed progress */
+.map{width:720px;height:340px;margin-top:10px}
+.map svg{width:100%;height:100%}
+.q{display:flex;gap:10px;margin-top:16px}.q .chip{font-size:14px;padding:12px 16px}
+</style></head>
+<body><div class="app" id="app">
+
+<!-- 1 sign in -->
+<div class="beat" data-b="1"><div class="step">1 of 5 · sign in</div>
+  <div class="orb"><svg viewBox="0 0 150 124" data-orb="happy"></svg></div>
+  <h1>Lovely. Let's make this yours.</h1>
+  <p>Sign in so everything we do stays with you, on any device. That's the only reason I'm asking.</p>
+  <div class="row"><button class="btn">Continue with Google</button><button class="btn ghost">Use my phone number</button></div>
+  <div class="skip">You're 12 or under? Your parent signs in first, and I'll explain why in one line.</div>
+</div>
+
+<!-- 2 what are you studying -->
+<div class="beat" data-b="2"><div class="step">2 of 5 · what are you studying</div>
+  <div class="orb"><svg viewBox="0 0 150 124" data-orb="listen"></svg></div>
+  <h1>What are you studying right now?</h1>
+  <p>Say it, type it, or show me a page from your textbook. I'll work out the board, the class and the chapter.</p>
+  <div class="input"><b>class 9 maths, linear equations, CBSE</b><span class="ic">🎙 voice · 📷 photo</span></div>
+  <div class="chips"><span class="chip pick">CBSE · Class 9 · Mathematics</span><span class="chip">Not CBSE?</span><span class="chip">Show me my syllabus</span></div>
+  <div class="skip">One tap to confirm. If I got it wrong, tap the right one.</div>
+</div>
+
+<!-- 3 the aha -->
+<div class="beat" data-b="3"><div class="step">3 of 5 · the aha</div>
+  <h1 style="margin-top:0">Before anything else, watch this.</h1>
+  <p>Linear equations, the way nobody drew them for me.</p>
+  <div class="board"><svg viewBox="0 0 760 380" id="aha">
+    <path class="bd thin" d="M90 300 H 670"/>
+    <path class="bd" d="M380 300 V 120"/>
+    <path class="bd" d="M180 150 L 580 150"/>
+    <path class="bd" d="M380 150 L 372 128 L 388 128 Z"/>
+    <path class="bd" d="M180 150 V 190 M580 150 V 190"/>
+    <path class="bd" d="M140 190 H 220 M540 190 H 620"/>
+    <text class="bt" x="150" y="230">x + 3</text><text class="bt" x="548" y="230">7</text>
+    <path class="bd acc" d="M175 262 c 20 -30, 60 -30, 80 0"/><path class="bd acc" d="M545 262 c 20 -30, 60 -30, 80 0"/>
+    <text class="bt acc" x="150" y="290">take 3 off</text><text class="bt acc" x="545" y="290">both sides</text>
+    <text class="bt" x="330" y="350" style="font-size:34px">x = 4</text>
+    <text class="bt acc" x="470" y="330" style="font-size:22px">a balance, not a trick</text>
+  </svg><div class="dock" style="right:14px;bottom:12px;width:70px;height:70px"><svg viewBox="0 0 150 124" data-orb="draw"></svg></div></div>
+  <div class="row"><button class="btn">I get it</button><button class="btn ghost">Show me again, slower</button></div>
+</div>
+
+<!-- 4 guided tour -->
+<div class="beat" data-b="4" style="padding:0">
+  <div class="home">
+    <header><div class="wm">Wobo<i>✦</i></div><div style="display:flex;gap:8px"><span class="chip">Did you know</span><span class="chip">0 xp</span><span class="chip">You</span></div></header>
+    <div class="greet"><div style="font-size:11px;letter-spacing:.14em;color:var(--ink3);text-transform:uppercase">Wednesday 2 September</div><h2>Good afternoon, Aanya</h2><div class="hand">begin anywhere; it all connects</div></div>
+    <div class="composer" id="composer"><span>Talk to Wobo…</span><span>◉</span></div>
+    <div class="doors"><span class="door" id="learn">Learn</span><span class="door" id="practice">Practice</span></div>
+    <div class="thread"><div class="stop" id="stop"><b>Linear equations · continue</b><span>you already cracked x = 4</span></div></div>
+    <div class="dock" id="dock"><svg viewBox="0 0 150 124" data-orb="point"></svg></div>
+    <div class="ring" id="ring"></div>
+    <div class="cursor" id="cur"><svg viewBox="0 0 26 26"><path d="M4 2 L 22 13 L 13 15 L 9 24 Z" fill="#0D0D10" stroke="#fff" stroke-width="1.5"/></svg></div>
+    <div class="callout" id="co"><span class="h"></span><span class="t"></span></div>
+    <div class="tourbar"><span id="tourlabel">the tour · 1 of 5</span><div class="dots" id="dots"></div><span>·</span><span>press space to try it, or skip</span></div>
+  </div>
+</div>
+
+<!-- 5 endowed progress -->
+<div class="beat" data-b="5"><div class="step">5 of 5 · your map</div>
+  <div class="orb"><svg viewBox="0 0 150 124" data-orb="happy"></svg></div>
+  <h1>Three quick ones, and your map lights up.</h1>
+  <p>Not a test. I just want to know what you already own, so I never make you sit through it.</p>
+  <div class="q"><span class="chip">2x = 10 → x is…</span><span class="chip pick">5</span><span class="chip">20</span><span class="chip">8</span></div>
+  <div class="map"><svg viewBox="0 0 720 340" id="map"></svg></div>
+</div>
+
+</div>
+<script>
+function orb(svg, mood){ const body='#1A1A1F', visor='#fff', eye='#1F35E0', hair='rgba(255,255,255,.55)'; const cx=60,cy=66; let look=[0,0], e='', pen='';
+  if(mood==='happy') e=`<path d="M40 70 Q47 60 54 70 M66 70 Q73 60 80 70" stroke="${eye}" stroke-width="5.2" fill="none" stroke-linecap="round"/>`;
+  else if(mood==='listen') e=`<ellipse cx="47" cy="65" rx="7.6" ry="8.8" fill="${eye}"/><ellipse cx="73" cy="65" rx="7.6" ry="8.8" fill="${eye}"/>`;
+  else if(mood==='draw'||mood==='point'){ look=[14,10]; e=`<circle cx="52" cy="68" r="7" fill="${eye}"/><circle cx="78" cy="68" r="7" fill="${eye}"/>`; pen=`<circle cx="98" cy="86" r="8" fill="${body}" stroke="${hair}" stroke-width="1"/><path d="M102 82 L 116 54" stroke="${body}" stroke-width="5" stroke-linecap="round"/><path d="M115 56 L 119 48" stroke="${eye}" stroke-width="5" stroke-linecap="round"/>`; }
+  else e=`<circle cx="47" cy="65" r="7.4" fill="${eye}"/><circle cx="73" cy="65" r="7.4" fill="${eye}"/>`;
+  svg.innerHTML=`<g transform="translate(15 0)"><ellipse cx="60" cy="112" rx="26" ry="3.5" fill="${body}" opacity=".08"/><circle cx="${cx}" cy="${cy}" r="42" fill="${body}" stroke="${hair}" stroke-width="1"/><ellipse cx="40" cy="38" rx="8" ry="4" fill="${visor}" opacity=".16" transform="rotate(-30 40 38)"/><rect x="26" y="50" width="68" height="30" rx="15" fill="${visor}"/>${e}${pen}</g>`; }
+document.querySelectorAll('[data-orb]').forEach(s=>orb(s,s.dataset.orb));
+// tour steps: target id, callout text, cursor offset
+const TOUR=[
+  {t:'composer', h:'this is me', b:'Ask anything here, or hold the orb and talk. I answer by drawing.'},
+  {t:'learn', h:'Learn', b:'Your real syllabus, chapter by chapter. Nothing you already own.'},
+  {t:'practice', h:'Practice', b:'Short sets and boss battles on the board. I grade your working, not just the answer.'},
+  {t:'stop', h:'the thread', b:'Your day as one path. Tap a stop and it opens on its own page.'},
+  {t:'dock', h:'circle anything', b:'I live here. Circle any part of any screen and ask why. I read exactly what you circled.'},
+];
+let ti=0;
+function tour(i){ ti=i; const s=TOUR[i]; const el=document.getElementById(s.t); const a=document.getElementById('app').getBoundingClientRect(); const r=el.getBoundingClientRect(); const ring=document.getElementById('ring'); ring.style.left=(r.left-a.left-6)+'px'; ring.style.top=(r.top-a.top-6)+'px'; ring.style.width=(r.width+12)+'px'; ring.style.height=(r.height+12)+'px';
+  const cur=document.getElementById('cur'); cur.style.left=(r.left-a.left+r.width*.5)+'px'; cur.style.top=(r.top-a.top+r.height*.5)+'px'; cur.style.transition='left .9s cubic-bezier(.2,.9,.2,1), top .9s cubic-bezier(.2,.9,.2,1)';
+  const co=document.getElementById('co'); co.querySelector('.h').textContent=s.h; co.querySelector('.t').textContent=s.b; const below = r.top-a.top+r.height+16; co.style.left=Math.min(1280-290, Math.max(20, r.left-a.left+r.width*.5-130))+'px'; co.style.top=(s.t==='dock'? r.top-a.top-110 : below)+'px';
+  document.getElementById('tourlabel').textContent=`the tour · ${i+1} of ${TOUR.length}`; document.getElementById('dots').innerHTML=TOUR.map((_,k)=>`<i class="${k<=i?'on':''}"></i>`).join(''); }
+// map: constellation ignite
+(function(){ const s=document.getElementById('map'); const nodes=[[80,200],[170,120],[260,230],[350,110],[440,210],[530,120],[630,200],[300,300],[480,300]]; const lit=[0,1,2]; let h=''; const edges=[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[2,7],[4,8],[7,8]]; edges.forEach(([a,b])=>{ const on=lit.includes(a)&&lit.includes(b); h+=`<line x1="${nodes[a][0]}" y1="${nodes[a][1]}" x2="${nodes[b][0]}" y2="${nodes[b][1]}" stroke="${on?'#1F35E0':'#E6E6EB'}" stroke-width="${on?2:1}"/>`; }); nodes.forEach((n,i)=>{ const on=lit.includes(i); h+=`<circle cx="${n[0]}" cy="${n[1]}" r="${on?9:6}" fill="${on?'#1F35E0':'#fff'}" stroke="${on?'#1F35E0':'#B8B8C2'}" stroke-width="1.5"/>`; if(on) h+=`<circle cx="${n[0]}" cy="${n[1]}" r="16" fill="#1F35E0" opacity=".12"/>`; }); h+=`<text x="60" y="60" font-family="Caveat" font-weight="600" font-size="24" fill="#1F35E0">already yours</text><text x="560" y="60" font-family="Caveat" font-weight="600" font-size="24" fill="#8A8A94">next</text>`; s.innerHTML=h; })();
+const q=new URLSearchParams(location.search); const b=Number(q.get('beat')||1); document.querySelector(`.beat[data-b="${b}"]`).classList.add('on'); if(b===4){ document.fonts.ready.then(()=>setTimeout(()=>tour(Number(q.get('tour')||0)),350)); }
+document.addEventListener('keydown',e=>{ if(e.key===' '&&b===4){ e.preventDefault(); tour((ti+1)%TOUR.length); } });
+</script>
+</body></html>

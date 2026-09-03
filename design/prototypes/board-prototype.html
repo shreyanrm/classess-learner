@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Wobo board prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FFFFFF; --paper-2:#F7F7F9; --ink:#0D0D10; --ink-2:#55555F; --ink-3:#8A8A94; --hair:#E6E6EB;
+  --brand:#1F35E0; --molten:#FF5A1F; --wobo-ink:#0D0D10; --wobo-accent:#FF5A1F;
+  --sans:"Poppins",system-ui,sans-serif; --hand:"Caveat",cursive;
+}
+*{box-sizing:border-box} html,body{margin:0;height:100%;background:var(--paper);color:var(--ink);font-family:var(--sans);overflow:hidden}
+.app{position:relative;width:1280px;height:800px;background:var(--paper)}
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:.5px solid var(--hair)}
+.wm{display:flex;align-items:baseline;gap:6px;font-weight:700;font-size:22px;letter-spacing:-.03em}
+.wm .spark{color:var(--brand);font-size:12px;transform:translateY(-8px)}
+.chips{display:flex;gap:8px}.chip{font-size:12.5px;padding:7px 12px;border:.5px solid var(--hair);border-radius:3px;color:var(--ink-2);background:var(--paper-2)}
+main{display:grid;grid-template-columns:720px 1fr;gap:28px;padding:26px 28px}
+.video{position:relative;border:.5px solid var(--hair);border-radius:3px;background:#0F1014;height:405px;overflow:hidden}
+.video svg{width:100%;height:100%}
+.video .bar{position:absolute;left:0;right:0;bottom:0;padding:10px 14px;display:flex;align-items:center;gap:12px;background:linear-gradient(to top,rgba(0,0,0,.55),transparent);color:#fff;font-size:12px}
+.video .bar .track{flex:1;height:3px;background:rgba(255,255,255,.25);border-radius:2px;position:relative}.video .bar .track i{position:absolute;left:0;top:0;bottom:0;width:38%;background:#fff;border-radius:2px}
+.video .paused{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.video .paused span{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.14);backdrop-filter:blur(6px);display:grid;place-items:center;color:#fff;font-size:20px}
+.lesson h2{font-size:26px;font-weight:600;letter-spacing:-.02em;margin:0 0 10px;text-wrap:balance}
+.lesson p{color:var(--ink-2);font-size:14.5px;line-height:1.6;margin:0 0 12px;max-width:44ch}
+.lesson .beat{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:10px}
+.btn{display:inline-block;margin-top:8px;padding:11px 18px;background:var(--ink);color:#fff;border-radius:3px;font-size:14px;font-weight:500}
+/* orb */
+.orb{position:absolute;right:40px;bottom:36px;width:76px;height:76px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#FFA24A 0,#FF5A1F 42%,#C93A7A 100%);box-shadow:0 0 0 12px rgba(255,90,31,.08);}
+.orb::before,.orb::after{content:"";position:absolute;top:24px;width:15px;height:18px;border-radius:50%;background:#fff}
+.orb::before{left:19px}.orb::after{left:41px}
+.orb i{position:absolute;top:31px;width:8px;height:8px;border-radius:50%;background:#1A1215}.orb i:first-child{left:24px}.orb i:last-child{left:46px}
+.orb u{position:absolute;left:29px;top:48px;width:18px;height:8px;border:2.5px solid #1A1215;border-top:0;border-radius:0 0 12px 12px}
+/* learner ink + wobo ink layers */
+.ink{position:absolute;inset:0;pointer-events:none}
+.ink svg{width:100%;height:100%;overflow:visible}
+.learner{stroke:#1F35E0;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-dasharray:6 7;opacity:0;transition:opacity .4s}
+.s1 .learner{opacity:.9}
+.focuschip{position:absolute;left:236px;top:98px;font-size:12.5px;padding:6px 10px;background:var(--ink);color:#fff;border-radius:3px;opacity:0;transform:translateY(4px);transition:all .35s}
+.s1 .focuschip{opacity:1;transform:none}
+.wobo{stroke:var(--wobo-accent);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len)}
+.s2 .draw.a1,.s3 .draw.a1,.s4 .draw.a1{animation:draw .9s cubic-bezier(.3,.7,.2,1) forwards}
+.s2 .draw.a2,.s3 .draw.a2,.s4 .draw.a2{animation:draw .5s .9s cubic-bezier(.3,.7,.2,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.hand{font-family:var(--hand);font-weight:600;fill:var(--wobo-accent);font-size:26px}
+.hand.write tspan{opacity:0}.s2 .hand.write tspan,.s3 .hand.write tspan,.s4 .hand.write tspan{animation:pop .05s forwards}
+@keyframes pop{to{opacity:1}}
+.pen{position:absolute;width:26px;height:26px;opacity:0;transition:opacity .2s}
+.pen svg{width:100%;height:100%}
+/* the plane */
+.plane{position:absolute;left:340px;top:78px;width:880px;height:640px;border-radius:3px;background:rgba(255,255,255,.72);backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);border:.5px solid rgba(13,13,16,.14);transform:translate(560px,560px) scale(.08);opacity:0;transition:transform .7s cubic-bezier(.2,.9,.2,1.05),opacity .35s;transform-origin:100% 100%;overflow:hidden}
+.s3 .plane,.s4 .plane{transform:none;opacity:1}
+.plane .tb{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:.5px solid rgba(13,13,16,.1);font-size:12px;color:var(--ink-3)}
+.plane .tb b{color:var(--ink);font-weight:600}
+.plane .tb .ctl{display:flex;gap:6px}.plane .tb .ctl span{width:26px;height:22px;border:.5px solid var(--hair);border-radius:3px;display:grid;place-items:center;font-size:11px;color:var(--ink-2);background:#fff}
+.board{position:absolute;inset:44px 0 0 0}
+.board svg{width:100%;height:100%}
+.bd{stroke:var(--wobo-ink);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:var(--len);stroke-dashoffset:var(--len)}
+.bd.acc{stroke:var(--wobo-accent)}
+.bd.thin{stroke-width:1.4;stroke:#9A9AA6}
+.s3 .bd,.s4 .bd{animation:draw var(--dur,.8s) var(--delay,0s) cubic-bezier(.3,.7,.2,1) forwards}
+.bt{font-family:var(--hand);font-weight:600;font-size:30px;fill:var(--wobo-ink)}
+.bt.acc{fill:var(--wobo-accent)}
+.bt tspan{opacity:0}.s3 .bt tspan,.s4 .bt tspan{animation:pop .04s forwards}
+.lab{font-family:var(--sans);font-size:12px;fill:var(--ink-3);letter-spacing:.06em}
+.wobo-note{position:absolute;right:130px;bottom:52px;font-family:var(--hand);font-size:22px;color:var(--ink-2);opacity:0;transition:opacity .4s}
+.s3 .wobo-note,.s4 .wobo-note{opacity:1}
+.tour{position:absolute;right:40px;bottom:126px;width:190px;font-size:12px;color:var(--ink-3);text-align:right;opacity:0}
+.s4 .tour{opacity:1}
+.captions{position:absolute;left:28px;bottom:24px;font-size:12px;color:var(--ink-3)}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header>
+    <div class="wm">Wobo<span class="spark">✦</span></div>
+    <div class="chips"><span class="chip">Physics · Motion · Projectiles</span><span class="chip">Beat 3 of 7</span></div>
+  </header>
+  <main>
+    <div class="video" id="video">
+      <svg viewBox="0 0 720 405">
+        <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#151827"/><stop offset="1" stop-color="#0F1014"/></linearGradient></defs>
+        <rect width="720" height="405" fill="url(#sky)"/>
+        <line x1="60" y1="330" x2="660" y2="330" stroke="#3A3D4D" stroke-width="2"/>
+        <path d="M90 330 Q 360 20 630 330" stroke="#8FB4FF" stroke-width="3" fill="none" stroke-dasharray="4 8"/>
+        <circle cx="360" cy="175" r="9" fill="#FFB35A"/>
+        <line x1="360" y1="175" x2="440" y2="175" stroke="#FFB35A" stroke-width="3"/><polygon points="440,175 430,170 430,180" fill="#FFB35A"/>
+        <text x="372" y="160" fill="#C7CCE0" font-family="Poppins" font-size="13">v</text>
+        <circle cx="90" cy="330" r="9" fill="#FFB35A" opacity=".5"/>
+        <text x="60" y="360" fill="#7C8098" font-family="Poppins" font-size="12">launch</text>
+        <text x="600" y="360" fill="#7C8098" font-family="Poppins" font-size="12">landing</text>
+      </svg>
+      <div class="paused"><span>❚❚</span></div>
+      <div class="bar"><span>1:04</span><div class="track"><i></i></div><span>2:48</span></div>
+    </div>
+    <section class="lesson">
+      <div class="beat">Watching · why the ball slows at the top</div>
+      <h2>At the highest point, what is the ball still doing?</h2>
+      <p>Pause anywhere and ask. Circle the thing you're unsure about and Wobo reads exactly what you circled, not a screenshot of it.</p>
+      <p>She'll answer right on the frame if it's a small thing, or pull up her board if it needs a proper explanation.</p>
+      <span class="btn">Continue</span>
+    </section>
+  </main>
+
+  <!-- learner lasso + focus chip -->
+  <div class="ink"><svg viewBox="0 0 1280 800">
+    <path class="learner" d="M352 226 C 330 210, 336 176, 372 168 C 410 160, 452 176, 448 210 C 444 244, 400 258, 372 250 C 356 245, 350 236, 352 226 Z"/>
+  </svg></div>
+  <div class="focuschip">Ask Wobo about this ↵</div>
+
+  <!-- wobo ink on the frame -->
+  <div class="ink"><svg viewBox="0 0 1280 800">
+    <path class="wobo draw a1" style="--len:420" d="M760 300 C 640 300, 560 270, 470 220"/>
+    <path class="wobo draw a2" style="--len:40" d="M482 214 L 470 220 L 478 232"/>
+    <text class="hand write" x="770" y="306"><tspan style="animation-delay:.95s">o</tspan><tspan style="animation-delay:1.0s">n</tspan><tspan style="animation-delay:1.05s">l</tspan><tspan style="animation-delay:1.1s">y</tspan><tspan style="animation-delay:1.15s"> </tspan><tspan style="animation-delay:1.2s">s</tspan><tspan style="animation-delay:1.25s">i</tspan><tspan style="animation-delay:1.3s">d</tspan><tspan style="animation-delay:1.35s">e</tspan><tspan style="animation-delay:1.4s">w</tspan><tspan style="animation-delay:1.45s">a</tspan><tspan style="animation-delay:1.5s">y</tspan><tspan style="animation-delay:1.55s">s</tspan><tspan style="animation-delay:1.6s"> </tspan><tspan style="animation-delay:1.65s">u</tspan><tspan style="animation-delay:1.7s">p</tspan><tspan style="animation-delay:1.75s"> </tspan><tspan style="animation-delay:1.8s">h</tspan><tspan style="animation-delay:1.85s">e</tspan><tspan style="animation-delay:1.9s">r</tspan><tspan style="animation-delay:1.95s">e</tspan></text>
+  </svg></div>
+
+  <!-- the plane -->
+  <div class="plane" id="plane">
+    <div class="tb"><span><b>Wobo's board</b> · projectiles · at the top</span><div class="ctl"><span>pin</span><span>—</span><span>new</span><span>✕</span></div></div>
+    <div class="board"><svg viewBox="0 0 880 596">
+      <!-- axes -->
+      <path class="bd thin" style="--len:520;--dur:.6s;--delay:.05s" d="M80 460 H 600"/>
+      <path class="bd thin" style="--len:400;--dur:.5s;--delay:.25s" d="M80 460 V 80"/>
+      <text class="lab" x="596" y="480">x</text><text class="lab" x="62" y="84">y</text>
+      <!-- parabola -->
+      <path class="bd" style="--len:640;--dur:1.2s;--delay:.6s" d="M110 460 Q 340 60 570 460"/>
+      <!-- apex + vectors -->
+      <circle cx="340" cy="260" r="6" fill="#FF5A1F" opacity="0"><animate attributeName="opacity" begin="1.8s" dur=".2s" to="1" fill="freeze"/></circle>
+      <path class="bd acc" style="--len:120;--dur:.5s;--delay:1.9s" d="M340 260 H 450"/>
+      <path class="bd acc" style="--len:30;--dur:.2s;--delay:2.35s" d="M438 252 L 450 260 L 438 268"/>
+      <text class="bt acc" x="458" y="252"><tspan style="animation-delay:2.5s">v</tspan><tspan style="animation-delay:2.55s" font-size="18" dy="8">x</tspan></text>
+      <path class="bd thin" style="--len:200;--dur:.4s;--delay:2.6s" d="M340 260 V 460" stroke-dasharray="4 6"/>
+      <!-- derivation, written line by line -->
+      <text class="bt" x="600" y="150"><tspan style="animation-delay:2.8s">a</tspan><tspan style="animation-delay:2.83s">t</tspan><tspan style="animation-delay:2.86s"> </tspan><tspan style="animation-delay:2.89s">t</tspan><tspan style="animation-delay:2.92s">h</tspan><tspan style="animation-delay:2.95s">e</tspan><tspan style="animation-delay:2.98s"> </tspan><tspan style="animation-delay:3.01s">t</tspan><tspan style="animation-delay:3.04s">o</tspan><tspan style="animation-delay:3.07s">p</tspan><tspan style="animation-delay:3.1s">:</tspan></text>
+      <text class="bt acc" x="600" y="200"><tspan style="animation-delay:3.2s">v</tspan><tspan style="animation-delay:3.23s" font-size="18" dy="8">y</tspan><tspan style="animation-delay:3.26s" dy="-8"> = 0</tspan></text>
+      <text class="bt" x="600" y="260"><tspan style="animation-delay:3.5s">v</tspan><tspan style="animation-delay:3.53s" font-size="18" dy="8">x</tspan><tspan style="animation-delay:3.56s" dy="-8"> = v cos θ</tspan></text>
+      <text class="bt" x="600" y="320"><tspan style="animation-delay:3.9s">s</tspan><tspan style="animation-delay:3.93s">o</tspan><tspan style="animation-delay:3.96s"> </tspan><tspan style="animation-delay:3.99s">i</tspan><tspan style="animation-delay:4.02s">t</tspan><tspan style="animation-delay:4.05s"> </tspan><tspan style="animation-delay:4.08s">n</tspan><tspan style="animation-delay:4.11s">e</tspan><tspan style="animation-delay:4.14s">v</tspan><tspan style="animation-delay:4.17s">e</tspan><tspan style="animation-delay:4.2s">r</tspan><tspan style="animation-delay:4.23s"> </tspan><tspan style="animation-delay:4.26s">s</tspan><tspan style="animation-delay:4.29s">t</tspan><tspan style="animation-delay:4.32s">o</tspan><tspan style="animation-delay:4.35s">p</tspan><tspan style="animation-delay:4.38s">s</tspan></text>
+      <path class="bd acc" style="--len:150;--dur:.5s;--delay:4.5s" d="M600 332 C 650 342, 700 342, 760 334"/>
+      <text class="bt" x="600" y="410"><tspan style="animation-delay:4.8s">t</tspan><tspan style="animation-delay:4.83s" font-size="18" dy="8">up</tspan><tspan style="animation-delay:4.86s" dy="-8"> = v sin θ / g</tspan></text>
+      <!-- learner's own mark she reads -->
+      <path class="learner" style="opacity:.9" d="M600 372 C 640 366, 700 366, 740 372" />
+    </svg></div>
+  </div>
+  <div class="wobo-note">I'll draw it — watch the top</div>
+  <div class="tour">pin · shrink · fresh board · say "board" any time</div>
+  <div class="orb"><i></i><i></i><u></u></div>
+  <div class="captions" id="cap"></div>
+</div>
+<script>
+  const app=document.getElementById('app');
+  const states={1:'s1',2:'s2',3:'s3',4:'s4'};
+  const caps={1:'1 · the learner pauses and circles the top of the arc',2:'2 · Wobo answers on the frame: an arrow and a line in her hand',3:'3 · it needs more, so the plane slides in and she draws the physics',4:'4 · the finished board: pinnable, shrinkable, hers and the learner\'s'};
+  const q=new URLSearchParams(location.search); const t=Number(q.get('t')||0);
+  function go(n){ app.className='app'; for(let i=1;i<=n;i++) app.classList.add(states[i]); document.getElementById('cap').textContent=caps[n]||''; }
+  if(t) go(t); else { let n=0; const seq=[800,1400,2600,6200]; seq.forEach((ms,i)=>setTimeout(()=>go(i+1),seq.slice(0,i+1).reduce((a,b)=>a+b,0))); }
+</script>
+</body>
+</html>

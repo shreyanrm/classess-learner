@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hey Wobo</title>
+<meta name="description" content="Wobo is the tutor that draws it for you. On your syllabus, in its own hand, on any screen.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBFBF9; --ink:#1A1A1F; --ink-2:#5C5C66; --ink-3:#9A9AA6; --hair:rgba(26,26,31,.14); --hair-2:rgba(26,26,31,.08);
+  --pig:#1F35E0; --pig-frost:rgba(31,53,224,.06); --pig-soft:rgba(31,53,224,.16);
+  --body:#1A1A1F; --visor:#FFFFFF; --eye:#1F35E0;
+  --sans:'Poppins',system-ui,-apple-system,sans-serif; --hand:'Caveat',cursive;
+  --pig-rgb:31,53,224;
+}
+[data-theme="dark"]{
+  --paper:#0D0D10; --ink:#EDEDF1; --ink-2:#A9A9B4; --ink-3:#6E6E7A; --hair:rgba(237,237,241,.14); --hair-2:rgba(237,237,241,.08);
+  --pig:#7B8CFF; --pig-frost:rgba(123,140,255,.08); --pig-soft:rgba(123,140,255,.2);
+  --body:#EDEDF1; --visor:#0D0D10; --eye:#7B8CFF;
+  --pig-rgb:123,140,255;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.55 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+@media (pointer:fine){body.cursor-on, body.cursor-on a, body.cursor-on button{cursor:none}}
+a{color:inherit}
+h1,h2,h3{margin:0;letter-spacing:-.02em;text-wrap:balance}
+p{margin:0;text-wrap:pretty}
+.hand{font-family:var(--hand);font-weight:600;color:var(--pig)}
+.wrap{width:min(1180px,calc(100% - 48px));margin:0 auto}
+.eyebrow{font:500 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.hairline{height:1px;background:var(--hair)}
+.btn{font:500 15px/1 var(--sans);padding:15px 22px;border-radius:3px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);text-decoration:none;min-height:44px;display:inline-flex;align-items:center;gap:8px;transition:transform .25s cubic-bezier(.2,.8,.2,1),background .2s}
+.btn:hover{transform:translateY(-1px)}
+.btn.quiet{background:transparent;color:var(--ink);border-color:var(--hair)}
+.btn:focus-visible,a:focus-visible,button:focus-visible{outline:2px solid var(--pig);outline-offset:3px}
+button{font:inherit}
+
+/* ---------- intro ---------- */
+#intro{position:fixed;inset:0;z-index:50;pointer-events:none}
+#intro .line{position:absolute;left:0;top:64px;height:1.5px;width:0;background:var(--pig);transition:width .9s cubic-bezier(.5,0,.2,1)}
+body.ready #intro .line{width:100%}
+body.ready.settled #intro{display:none}
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+body.ready .reveal{opacity:1;transform:none}
+body.ready .reveal.d1{transition-delay:.15s}body.ready .reveal.d2{transition-delay:.3s}body.ready .reveal.d3{transition-delay:.45s}body.ready .reveal.d4{transition-delay:.6s}
+
+/* ---------- header ---------- */
+header{position:fixed;top:0;left:0;right:0;height:64px;z-index:40;display:flex;align-items:center;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:color-mix(in srgb,var(--paper) 72%,transparent)}
+header .wrap{display:flex;align-items:center;gap:28px}
+.wordmark{font:700 22px/1 var(--sans);letter-spacing:-.03em;text-decoration:none;display:inline-flex;align-items:center}
+.wordmark .o{display:inline-block;width:.58em;height:.58em;vertical-align:-.02em;margin:0 .02em}
+nav.main{display:flex;gap:22px;margin-left:8px}
+nav.main a{font:500 14px/1 var(--sans);text-decoration:none;color:var(--ink-2);padding:8px 2px;border-bottom:1px solid transparent}
+nav.main a:hover{color:var(--ink);border-color:var(--pig)}
+header .right{margin-left:auto;display:flex;gap:10px;align-items:center}
+header .right a.sign{font:500 14px/1 var(--sans);text-decoration:none;color:var(--ink);padding:10px 8px}
+header .btn{padding:11px 16px;font-size:14px;min-height:40px}
+@media (max-width:820px){nav.main{display:none}header .right a.sign{display:none}}
+
+/* ---------- field ---------- */
+#field{position:fixed;inset:0;z-index:0;pointer-events:none}
+#trail{position:fixed;inset:0;z-index:45;pointer-events:none}
+#cursor{position:fixed;left:0;top:0;z-index:46;pointer-events:none;width:0;height:0;display:none}
+@media (pointer:fine){#cursor{display:block}}
+#cursor .dot{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:var(--pig);transition:transform .2s}
+#cursor .ring{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;border:1px solid var(--pig);opacity:.55;transition:transform .25s cubic-bezier(.2,.8,.2,1),opacity .2s}
+#cursor.hover .ring{transform:scale(1.5);opacity:.9}
+#cursor.hover .dot{transform:scale(.4)}
+#cursor.hand .ring{transform:scale(2);opacity:.9;border-style:dashed}
+
+main{position:relative;z-index:1}
+section.beat{position:relative}
+
+/* ---------- hero ---------- */
+#hero{min-height:100svh;display:grid;align-items:center;padding-top:64px}
+#hero .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:end}
+@media (max-width:820px){#hero .grid{grid-template-columns:1fr}}
+#hero h1{font:700 clamp(64px,11vw,168px)/.95 var(--sans);letter-spacing:-.045em;display:flex;flex-wrap:wrap;align-items:baseline;column-gap:.18em}
+#hero h1 .word{display:inline-flex;align-items:baseline}
+#hero h1 .o{display:inline-block;width:.6em;height:.6em;vertical-align:-.03em;margin:0 .015em}
+#hero .sub{font:400 clamp(18px,2.2vw,24px)/1.4 var(--sans);color:var(--ink-2);max-width:26ch;margin-top:22px}
+#hero .cta{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap;align-items:center}
+#hero .note{font-size:13px;color:var(--ink-3);margin-left:6px}
+#hero .stage{position:relative;height:min(52vh,440px);display:grid;place-items:end center;padding-bottom:18px}
+#hero .stage::after{content:'';position:absolute;left:10%;right:10%;bottom:14px;height:1px;background:var(--hair)}
+#hero .orb{width:min(230px,50vw);height:auto;transform:translateY(6px)}
+@media (max-width:820px){#hero .stage{height:200px;place-items:end start;padding-bottom:0}#hero .orb{width:150px}#hero .stage::after{left:0;right:auto;width:220px}#hero .cue{position:static;margin-top:18px}}
+#hero .cue{position:absolute;left:0;bottom:24px;display:flex;align-items:center;gap:10px;color:var(--ink-3);font-size:13px}
+#hero .cue svg{width:26px;height:40px}
+.scrollhint{font-family:var(--hand);font-size:22px;color:var(--pig)}
+
+/* ---------- pinned beats ---------- */
+.pin{height:320vh;position:relative}
+.pin .sticky{position:sticky;top:0;height:100svh;display:grid;align-items:center;overflow:hidden}
+.pin .layout{display:grid;grid-template-columns:.9fr 1.1fr;gap:40px;align-items:center}
+@media (max-width:820px){.pin .layout{grid-template-columns:1fr;gap:18px;align-content:start;padding-top:84px}}
+.caps{position:relative;min-height:9em}
+.caps .cap{position:absolute;inset:0;opacity:0;transform:translateY(10px);transition:opacity .35s ease,transform .35s ease}
+.caps .cap.on{opacity:1;transform:none}
+.caps h2{font:600 clamp(28px,3.6vw,44px)/1.1 var(--sans);margin-bottom:12px}
+.caps p{color:var(--ink-2);max-width:36ch;font-size:clamp(16px,1.4vw,19px)}
+.step{font:500 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--pig);margin-bottom:14px;display:block}
+.plane{position:relative;border:1px solid var(--hair);border-radius:3px;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);aspect-ratio:16/11;overflow:hidden}
+.plane .bar{height:36px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid var(--hair-2);font-size:12px;color:var(--ink-3)}
+.plane .bar b{font-weight:500;color:var(--ink-2)}
+.plane .bar .chip{margin-left:auto;border:1px solid var(--hair);border-radius:3px;padding:3px 8px;font-size:11px}
+.plane svg.board{position:absolute;left:0;top:36px;width:100%;height:calc(100% - 36px)}
+.plane .wobo-mini{position:absolute;right:14px;bottom:12px;width:56px;height:56px}
+.ink{fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ink.pig{stroke:var(--pig)}
+.ink.thin{stroke-width:1.5;stroke:var(--ink-2)}
+.hw{font-family:var(--hand);font-weight:600;fill:var(--ink)}
+.hw.pig{fill:var(--pig)}
+.penTip{fill:var(--pig)}
+
+/* ---------- film beat ---------- */
+.film{position:relative;border:1px solid var(--hair);border-radius:3px;background:var(--paper);aspect-ratio:16/10;overflow:hidden}
+.film .frame{position:absolute;inset:0;display:grid;place-items:center}
+.film .bars{display:flex;align-items:flex-end;gap:38px;height:46%;padding-bottom:6px}
+.film .bars i{display:block;width:56px;background:var(--pig);opacity:.9}
+.film .bars i.k{background:var(--ink)}
+.film .title{position:absolute;top:10%;left:0;right:0;text-align:center;font:500 22px/1 var(--sans);color:var(--ink-2)}
+.film .controls{position:absolute;left:0;right:0;bottom:0;height:40px;display:flex;align-items:center;gap:10px;padding:0 12px;border-top:1px solid var(--hair-2);font-size:12px;color:var(--ink-3)}
+.film .controls .prog{flex:1;height:2px;background:var(--hair);position:relative}
+.film .controls .prog i{position:absolute;left:0;top:0;bottom:0;width:38%;background:var(--ink)}
+.film svg.lasso{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.film .chip{position:absolute;left:8%;bottom:16%;font:500 13px/1 var(--sans);border:1px solid var(--hair);background:var(--paper);padding:10px 12px;border-radius:3px;opacity:0;transition:opacity .3s}
+.film .chip.on{opacity:1}
+
+/* ---------- boards beat ---------- */
+#boards{padding:22vh 0}
+#boards .grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+@media (max-width:820px){#boards .grid{grid-template-columns:1fr;gap:28px}}
+.search{border:1px solid var(--ink);border-radius:3px;padding:14px 16px;display:flex;align-items:center;gap:12px;font-size:18px;background:var(--paper);max-width:520px}
+.search .caret{width:1.5px;height:1.2em;background:var(--pig);animation:caret 1s steps(2) infinite}
+@keyframes caret{50%{opacity:0}}
+.search .ph{color:var(--ink-3)}
+.results{max-width:520px;border:1px solid var(--hair);border-top:0;border-radius:0 0 3px 3px}
+.results div{padding:12px 16px;border-top:1px solid var(--hair-2);display:flex;justify-content:space-between;gap:12px;opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s}
+.results div.on{opacity:1;transform:none}
+.results div b{font-weight:500}
+.results div span{color:var(--ink-3);font-size:13px}
+.results div em{font-style:normal;color:var(--pig);font-family:var(--hand);font-size:18px}
+.wall{display:flex;flex-wrap:wrap;gap:8px 14px;max-width:560px;margin-top:22px}
+.wall span{font-size:13px;color:var(--ink-3);border-bottom:1px solid var(--hair-2);padding:2px 0}
+#boards h2{font:600 clamp(28px,3.6vw,44px)/1.1 var(--sans);margin:12px 0 14px}
+#boards p{color:var(--ink-2);max-width:40ch}
+
+/* ---------- doing beat ---------- */
+#doing{padding:14vh 0 22vh}
+#doing .grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+@media (max-width:820px){#doing .grid{grid-template-columns:1fr;gap:28px}}
+#doing h2{font:600 clamp(28px,3.6vw,44px)/1.1 var(--sans);margin:12px 0 14px}
+#doing p{color:var(--ink-2);max-width:40ch}
+.puzzle{border:1px solid var(--hair);border-radius:3px;padding:28px;display:grid;gap:18px;justify-items:center;position:relative;background:color-mix(in srgb,var(--paper) 92%,transparent)}
+.puzzle .q{font-size:18px;justify-self:start}
+.puzzle .q i{font-style:normal;font-family:var(--hand);color:var(--pig);font-size:24px}
+.cells{display:grid;grid-template-columns:repeat(2,96px);grid-template-rows:repeat(2,96px);border:2px solid var(--ink);position:relative}
+.cells button{border:1px solid var(--ink);background:transparent;padding:0;transition:background .15s}
+.cells button[aria-pressed="true"]{background:var(--pig-soft)}
+.cells button:hover{background:var(--pig-frost)}
+.cells svg{position:absolute;inset:-30px;width:calc(100% + 60px);height:calc(100% + 60px);pointer-events:none;overflow:visible}
+.puzzle .row{display:flex;gap:10px;align-items:center}
+.puzzle .say{font-family:var(--hand);font-size:26px;color:var(--pig);min-height:1.2em;justify-self:start}
+.puzzle .reset{font-size:13px;color:var(--ink-3);background:none;border:0;padding:6px;text-decoration:underline}
+
+/* ---------- week beat ---------- */
+#week{padding:8vh 0 22vh}
+#week h2{font:600 clamp(28px,3.6vw,44px)/1.1 var(--sans);margin:12px 0 14px;max-width:16ch}
+#week p.lead{color:var(--ink-2);max-width:44ch;margin-bottom:38px}
+.timeline{position:relative;padding:40px 0 10px}
+.timeline svg{width:100%;height:auto;overflow:visible}
+.timeline .hw{font-size:22px}
+@media (max-width:820px){.timeline .hw{font-size:26px}}
+
+/* ---------- plans ---------- */
+#plans{padding:6vh 0 20vh}
+#plans h2{font:600 clamp(28px,3.6vw,44px)/1.1 var(--sans);margin:12px 0 30px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:820px){.cards{grid-template-columns:1fr}}
+.card{border:1px solid var(--hair);border-radius:3px;padding:26px;display:grid;gap:12px;align-content:start;min-height:280px;position:relative}
+.card.pop{border-color:var(--ink)}
+.card .name{font:600 20px/1.2 var(--sans)}
+.card .price{font:600 32px/1 var(--sans);font-variant-numeric:tabular-nums}
+.card .price small{font:400 14px/1 var(--sans);color:var(--ink-3)}
+.card ul{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:8px;color:var(--ink-2);font-size:15px}
+.card ul li::before{content:"";display:inline-block;width:14px;height:1.5px;background:var(--pig);margin-right:10px;vertical-align:middle}
+.card .tag{position:absolute;top:-11px;left:22px;font-family:var(--hand);font-size:20px;color:var(--pig);background:var(--paper);padding:0 6px}
+.card .btn{margin-top:auto;justify-content:center}
+.foot{font-size:13px;color:var(--ink-3);margin-top:16px;max-width:64ch}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--hair);padding:56px 0 40px;position:relative;z-index:1;background:var(--paper)}
+footer .grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:24px}
+@media (max-width:820px){footer .grid{grid-template-columns:1fr 1fr}}
+footer h4{font:500 13px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0 0 14px}
+footer a{display:block;text-decoration:none;color:var(--ink-2);font-size:14px;padding:5px 0}
+footer a:hover{color:var(--ink)}
+footer .wake{font-family:var(--hand);font-size:30px;color:var(--pig)}
+footer .small{font-size:12px;color:var(--ink-3);margin-top:34px;display:flex;gap:18px;flex-wrap:wrap}
+
+@media (prefers-reduced-motion:reduce){
+  .reveal{transition:none;opacity:1;transform:none}
+  #intro{display:none}
+  .caps .cap{transition:none}
+  .search .caret{animation:none}
+}
+</style>
+</head>
+<body class="cursor-on">
+<div id="intro" aria-hidden="true"><div class="line"></div></div>
+<canvas id="field" aria-hidden="true"></canvas>
+<canvas id="trail" aria-hidden="true"></canvas>
+<div id="cursor" aria-hidden="true"><div class="ring"></div><div class="dot"></div></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="wobo-head">
+      <circle cx="60" cy="60" r="44" fill="var(--body)"/>
+      <rect x="26" y="44" width="68" height="30" rx="15" fill="var(--visor)"/>
+      <g class="eyes"><g class="blink"><circle class="eyeL" cx="46" cy="59" r="7" fill="var(--eye)"/><circle class="eyeR" cx="74" cy="59" r="7" fill="var(--eye)"/></g></g>
+    </g>
+    <symbol id="eye-o" viewBox="0 0 100 100"><circle cx="50" cy="50" r="36" fill="none" stroke="currentColor" stroke-width="26"/><circle class="pupil" cx="50" cy="50" r="12" fill="var(--pig)"/></symbol>
+  </defs>
+</svg>
+
+<header>
+  <div class="wrap">
+    <a class="wordmark reveal" href="#" aria-label="Wobo home">w<svg class="o eye"><use href="#eye-o"/></svg>b<svg class="o eye"><use href="#eye-o"/></svg></a>
+    <nav class="main reveal d1" aria-label="Site">
+      <a href="#draws">How it draws</a><a href="#boards">Boards</a><a href="#doing">Practice</a><a href="#plans">Plans</a><a href="#help">Help</a>
+    </nav>
+    <div class="right reveal d2"><a class="sign" href="#signin">Sign in</a><a class="btn" href="#start">Start free</a></div>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="beat" id="hero">
+    <div class="wrap grid">
+      <div>
+        <h1 class="reveal d1" aria-label="Hey Wobo">
+          <span class="word">Hey</span>
+          <span class="word">W<svg class="o eye big"><use href="#eye-o"/></svg>b<svg class="o eye big"><use href="#eye-o"/></svg></span>
+        </h1>
+        <p class="sub reveal d2">The tutor that draws it for you. On your syllabus, in its own hand, on any screen.</p>
+        <div class="cta reveal d3">
+          <a class="btn" href="#start">Start free</a>
+          <a class="btn quiet" href="#draws">Watch it draw</a>
+          <span class="note">Free every day. No card.</span>
+        </div>
+      </div>
+      <div class="stage reveal d4">
+        <svg class="orb" viewBox="0 0 120 120" aria-label="Wobo, looking at you"><g id="heroWobo" class="wobo"><circle cx="60" cy="60" r="44" fill="var(--body)"/><rect x="26" y="44" width="68" height="30" rx="15" fill="var(--visor)"/><g class="eyes"><g class="blink"><circle cx="46" cy="59" r="7" fill="var(--eye)"/><circle cx="74" cy="59" r="7" fill="var(--eye)"/></g></g></g></svg>
+      </div>
+      <div class="cue reveal d4" aria-hidden="true">
+        <svg viewBox="0 0 26 40" fill="none" stroke="var(--pig)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 v30 M5 26 l8 8 l8 -8"/></svg>
+        <span class="scrollhint">scroll, I'll draw</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEAT 1: IT DRAWS -->
+  <section class="beat pin" id="draws" data-pin>
+    <div class="sticky">
+      <div class="wrap layout">
+        <div class="caps">
+          <div class="cap" data-at="0"><span class="step">01 · Ask anything</span><h2>Why does a² + b² = c²?</h2><p>Type it, say it, or circle it. Wobo answers the way a teacher at a board would.</p></div>
+          <div class="cap" data-at="0.3"><span class="step">02 · It draws as it speaks</span><h2>Ink lands with the words</h2><p>Every stroke is drawn live for you, in Wobo's own hand, not played from a video.</p></div>
+          <div class="cap" data-at="0.62"><span class="step">03 · Every number checked</span><h2>Nothing is drawn until it's verified</h2><p>The maths is computed and checked before the pen touches the board. If it can't be sure, it says so.</p></div>
+        </div>
+        <div class="plane" id="plane1">
+          <div class="bar"><b>Wobo</b> · on the plane <span class="chip">pin</span></div>
+          <svg class="board" viewBox="0 0 640 400" aria-label="Wobo draws the proof of Pythagoras">
+            <g id="lesson">
+              <path class="ink" data-s="0" data-e=".12" d="M110 260 L230 260 L230 140 Z"/>
+              <path class="ink thin" data-s=".12" data-e=".2" d="M110 260 L110 380 L230 380 L230 260"/>
+              <text class="hw" x="150" y="330" font-size="26" data-s=".18" data-e=".22">a²</text>
+              <path class="ink thin" data-s=".22" data-e=".3" d="M230 140 L340 140 L340 260 L230 260"/>
+              <text class="hw" x="270" y="210" font-size="26" data-s=".28" data-e=".32">b²</text>
+              <path class="ink pig" data-s=".32" data-e=".45" d="M110 260 L230 140 L330 245 L210 365 Z"/>
+              <text class="hw pig" x="238" y="262" font-size="26" data-s=".43" data-e=".47">c²</text>
+              <text class="hw" x="400" y="120" font-size="40" data-s=".48" data-e=".56">a² + b² = c²</text>
+              <text class="hw" x="400" y="180" font-size="30" data-s=".58" data-e=".64">4² + 3² = 25</text>
+              <text class="hw" x="400" y="232" font-size="30" data-s=".66" data-e=".72">c² = 25</text>
+              <path class="ink pig" data-s=".72" data-e=".76" d="M398 244 L520 246"/>
+              <text class="hw pig" x="400" y="300" font-size="34" data-s=".78" data-e=".86">so c = 5</text>
+              <path class="ink pig" data-s=".86" data-e=".96" d="M392 268 c-16 22 -10 52 30 54 s90 6 120 -10 s10 -46 -30 -54 s-100 -8 -120 10"/>
+            </g>
+            <g id="pen" opacity="0"><path class="penTip" d="M0 0 l-5 -22 l4 -2 l5 22 z"/><rect x="-4" y="-84" width="7" height="62" rx="2" fill="var(--ink)" transform="rotate(-9)"/></g>
+          </svg>
+          <svg class="wobo-mini" viewBox="0 0 120 120"><g id="planeWobo" class="wobo"><circle cx="60" cy="60" r="44" fill="var(--body)"/><rect x="26" y="44" width="68" height="30" rx="15" fill="var(--visor)"/><g class="eyes"><g class="blink"><circle cx="46" cy="59" r="7" fill="var(--eye)"/><circle cx="74" cy="59" r="7" fill="var(--eye)"/></g></g></g></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEAT 2: ON ANYTHING -->
+  <section class="beat pin" id="anything" data-pin style="height:260vh">
+    <div class="sticky">
+      <div class="wrap layout">
+        <div class="caps">
+          <div class="cap" data-at="0"><span class="step">On anything</span><h2>Pause a video. Circle the part. Ask why.</h2><p>Wobo can see what's on your screen and draw right on it: a film, a worksheet, a page you're reading.</p></div>
+          <div class="cap" data-at="0.55"><span class="step">Right there</span><h2>The answer lands where the question was</h2><p>No new window, no copy-paste. The ink goes on the thing you pointed at.</p></div>
+        </div>
+        <div class="film" id="film">
+          <div class="frame"><div class="title">Photosynthesis</div><div class="bars"><i style="height:100%"></i><i class="k" style="height:62%"></i></div></div>
+          <div class="controls"><span>⏸</span><div class="prog"><i></i></div><span>0:07 / 0:19</span></div>
+          <svg class="lasso" viewBox="0 0 640 400" aria-hidden="true">
+            <path class="ink pig" id="lassoPath" d="M150 90 c-60 40 -70 190 40 220 s280 10 330 -60 s-20 -180 -170 -190 s-150 -10 -200 30"/>
+            <text class="hw pig" id="startHere" x="440" y="352" font-size="34" opacity="0">start here</text>
+          </svg>
+          <div class="chip" id="askChip">Ask Wobo about this</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEAT 3: BOARDS -->
+  <section class="beat" id="boards">
+    <div class="wrap grid">
+      <div>
+        <span class="eyebrow">Your board, your class</span>
+        <h2>Every board on earth, on demand</h2>
+        <p>Pick your board and class and Wobo teaches to that syllabus, unit by unit. If yours isn't listed, Wobo finds the official one, or you hand it your own.</p>
+        <div class="wall" aria-hidden="true"><span>CBSE</span><span>ICSE</span><span>ISC</span><span>NIOS</span><span>Telangana</span><span>Andhra Pradesh</span><span>Maharashtra</span><span>Karnataka</span><span>Tamil Nadu</span><span>Kerala</span><span>IB</span><span>Cambridge</span><span>Edexcel</span><span>AP</span><span>Common Core</span><span>GCSE</span><span>ACARA</span><span>Singapore MOE</span><span>CAPS</span><span>your own</span></div>
+      </div>
+      <div>
+        <div class="search" role="search"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="5.5"/><path d="M12.5 12.5 L16 16"/></svg><span id="typed"></span><span class="caret"></span><span class="ph" id="ph">Which board?</span></div>
+        <div class="results" id="results">
+          <div><b>Telangana State Board</b><span>Class 4–12 · verified</span><em>this one?</em></div>
+          <div><b>Telangana · Intermediate</b><span>Class 11–12 · verified</span></div>
+          <div><b>Not listed? Tell Wobo</b><span>finds the official syllabus</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEAT 4: ANSWERING IS DOING -->
+  <section class="beat" id="doing">
+    <div class="wrap grid">
+      <div class="puzzle" aria-label="Try one">
+        <div class="q">Colour <i>½</i> of the shape.</div>
+        <div class="cells" id="cells">
+          <button aria-pressed="false" aria-label="top left"></button><button aria-pressed="false" aria-label="top right"></button>
+          <button aria-pressed="false" aria-label="bottom left"></button><button aria-pressed="false" aria-label="bottom right"></button>
+          <svg viewBox="-30 -30 256 256" aria-hidden="true"><path class="ink pig" id="tick" d="M-10 96 l30 30 l60 -70" opacity="0"/><path class="ink pig" id="ring" d="M-6 -8 c-14 40 -14 90 6 112 s90 22 104 -6 s6 -96 -12 -108 s-84 -12 -98 2" opacity="0"/></svg>
+        </div>
+        <div class="row"><button class="btn" id="check">Check</button><button class="reset" id="reset">Start over</button></div>
+        <div class="say" id="say" aria-live="polite"></div>
+      </div>
+      <div>
+        <span class="eyebrow">Answering is doing</span>
+        <h2>You don't pick a letter. You shade the half.</h2>
+        <p>Practice is a thing you do with your hands: shade it, drag it, draw it, build it. When you're close, Wobo draws the difference right on your answer instead of marking it wrong.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEAT 5: THE WEEK -->
+  <section class="beat" id="week">
+    <div class="wrap">
+      <span class="eyebrow">Wobo remembers</span>
+      <h2>A tutor who notices</h2>
+      <p class="lead">Your wins are marked on the spot, your gaps are quietly picked up, your birthday and the festivals you chose get a line in Wobo's hand, and your parents get the week in one honest note.</p>
+      <div class="timeline" id="timeline">
+        <svg viewBox="0 0 1180 260" aria-label="One week with Wobo">
+          <path class="ink thin" id="tl" d="M20 150 H1160"/>
+          <g class="day" data-x="90"><path class="ink pig" d="M84 150 v-40"/><text class="hw" x="60" y="94">first lesson done</text><path class="ink pig" d="M62 108 l8 8 l14 -18"/><text x="90" y="182" text-anchor="middle" font-size="12" fill="var(--ink-3)" font-family="var(--sans)">MON</text></g>
+          <g class="day" data-x="340"><path class="ink pig" d="M340 150 v-40"/><text class="hw" x="300" y="94">asked for help after a miss</text><text class="hw pig" x="300" y="122" font-size="20">that's resilience</text><text x="340" y="182" text-anchor="middle" font-size="12" fill="var(--ink-3)" font-family="var(--sans)">WED</text></g>
+          <g class="day" data-x="620"><path class="ink pig" d="M620 150 v40"/><text class="hw pig" x="560" y="222" font-size="28">Happy birthday, Aanya</text><text x="620" y="130" text-anchor="middle" font-size="12" fill="var(--ink-3)" font-family="var(--sans)">SAT</text></g>
+          <g class="day" data-x="900"><path class="ink pig" d="M900 150 v-40"/><text class="hw" x="860" y="94">your week, for your parents</text><path class="ink thin" d="M862 104 h150 v50 h-150 z M862 104 l75 40 l75 -40"/><text x="900" y="182" text-anchor="middle" font-size="12" fill="var(--ink-3)" font-family="var(--sans)">SUN</text></g>
+          <g class="day" data-x="1100"><path class="ink pig" d="M1100 150 v40"/><text class="hw pig" x="1040" y="222" font-size="24">streak: 7 days</text><text x="1100" y="130" text-anchor="middle" font-size="12" fill="var(--ink-3)" font-family="var(--sans)">TODAY</text></g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLANS -->
+  <section class="beat" id="plans">
+    <div class="wrap">
+      <span class="eyebrow">Plans</span>
+      <h2>Free every day. More when you want it.</h2>
+      <div class="cards">
+        <div class="card"><div class="name">Free</div><div class="price">₹0 <small>forever</small></div><ul><li>Lessons on your syllabus</li><li>Wobo draws every day, with a daily limit</li><li>Practice and progress</li></ul><a class="btn quiet" href="#start">Start free</a></div>
+        <div class="card pop"><span class="tag">most families</span><div class="name">Plus</div><div class="price">₹— <small>per month, billed yearly</small></div><ul><li>Unlimited turns with Wobo</li><li>Voice and the board on any screen</li><li>Parent link and weekly note</li></ul><a class="btn" href="#plans">See Plus</a></div>
+        <div class="card"><div class="name">Family</div><div class="price">₹— <small>per month, up to 4 learners</small></div><ul><li>Everything in Plus</li><li>Each learner their own Wobo</li><li>One parent view for all</li></ul><a class="btn quiet" href="#plans">See Family</a></div>
+      </div>
+      <p class="foot">Prices shown at launch. Billed as one payment, renews yearly, cancel anytime from settings. The price never changes based on how you behave; only the gifts do.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="grid">
+      <div><div class="wake">"Hey Wobo"</div><p style="color:var(--ink-3);font-size:14px;margin-top:8px;max-width:30ch">Say it, or hold space, anywhere in the app. Wobo listens and draws.</p></div>
+      <div><h4>Product</h4><a href="#draws">How it draws</a><a href="#boards">Boards</a><a href="#plans">Plans</a><a href="#gift">Gift Wobo</a></div>
+      <div><h4>Help</h4><a href="#help">Help centre</a><a href="#contact">Contact</a><a href="#parents">For parents</a><a href="#schools">For schools</a></div>
+      <div><h4>Company</h4><a href="#about">About</a><a href="#legal/terms">Terms</a><a href="#legal/privacy">Privacy</a><a href="#legal/children">Children's privacy</a></div>
+    </div>
+    <div class="small"><span>© 2026 Wobo</span><span>heywobo.com</span><span>Made for learners in classes 4 to 13</span></div>
+  </div>
+</footer>
+
+<script type="module">
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fine = matchMedia('(pointer: fine)').matches;
+const dark = () => document.documentElement.getAttribute('data-theme') === 'dark';
+const t = new URLSearchParams(location.search).get('theme'); if (t) document.documentElement.setAttribute('data-theme', t);
+const lerp = (a, b, k) => a + (b - a) * k;
+const clamp01 = v => Math.max(0, Math.min(1, v));
+
+/* ---------------- intro ---------------- */
+requestAnimationFrame(() => { document.body.classList.add('ready'); setTimeout(() => document.body.classList.add('settled'), 1400); });
+
+/* ---------------- pointer ---------------- */
+const mouse = { x: innerWidth / 2, y: innerHeight * .4, vx: 0, vy: 0, has: false };
+const trail = [];
+addEventListener('pointermove', e => { if (e.pointerType !== 'mouse' && e.pointerType !== 'pen') return; mouse.vx = e.clientX - mouse.x; mouse.vy = e.clientY - mouse.y; mouse.x = e.clientX; mouse.y = e.clientY; mouse.has = true; }, { passive: true });
+
+/* custom cursor */
+const cur = document.getElementById('cursor');
+if (fine && !reduce) {
+  let cx = mouse.x, cy = mouse.y;
+  const hov = () => document.elementFromPoint(mouse.x, mouse.y);
+  const tick = () => { cx = lerp(cx, mouse.x, .35); cy = lerp(cy, mouse.y, .35); cur.style.transform = `translate(${cx}px,${cy}px)`; requestAnimationFrame(tick); };
+  tick();
+  addEventListener('pointerover', e => { const el = e.target.closest('a,button,[role=search]'); cur.classList.toggle('hover', !!el); cur.classList.toggle('hand', !!e.target.closest('.film,.plane,.cells')); });
+} else { document.body.classList.remove('cursor-on'); }
+
+/* ink trail (2D canvas) */
+const tc = document.getElementById('trail'), tctx = tc.getContext('2d');
+const pts = [];
+function sizeTrail() { const d = Math.min(devicePixelRatio || 1, 2); tc.width = innerWidth * d; tc.height = innerHeight * d; tc.style.width = innerWidth + 'px'; tc.style.height = innerHeight + 'px'; tctx.setTransform(d, 0, 0, d, 0, 0); }
+sizeTrail(); addEventListener('resize', sizeTrail);
+function drawTrail() {
+  if (!fine || reduce) return;
+  const now = performance.now();
+  if (mouse.has) pts.push({ x: mouse.x, y: mouse.y, t: now, v: Math.hypot(mouse.vx, mouse.vy) });
+  while (pts.length && now - pts[0].t > 520) pts.shift();
+  tctx.clearRect(0, 0, innerWidth, innerHeight);
+  const pig = dark() ? '123,140,255' : '31,53,224';
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1], b = pts[i], age = (now - b.t) / 520;
+    tctx.strokeStyle = `rgba(${pig},${(1 - age) * .55})`;
+    tctx.lineWidth = Math.max(.6, 3.2 - Math.min(b.v, 40) * .06) * (1 - age * .6);
+    tctx.lineCap = 'round'; tctx.beginPath(); tctx.moveTo(a.x, a.y); tctx.lineTo(b.x, b.y); tctx.stroke();
+  }
+}
+
+/* ---------------- eyes ---------------- */
+const eyeSvgs = [...document.querySelectorAll('svg.eye')];
+const heads = [...document.querySelectorAll('.wobo')];
+function lookAt() {
+  for (const s of eyeSvgs) {
+    const r = s.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    const dx = mouse.x - cx, dy = mouse.y - cy, d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 400) * 14;
+    const p = s.querySelector('use'); p.style.transform = `translate(${dx / d * k}%, ${dy / d * k}%)`;
+  }
+  for (const h of heads) {
+    const r = h.getBoundingClientRect(); if (!r.width) continue;
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    const dx = mouse.x - cx, dy = mouse.y - cy, d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 500) * 7;
+    const eyes = h.querySelector('.eyes'); if (eyes) eyes.style.transform = `translate(${dx / d * k}px, ${dy / d * k}px)`;
+  }
+}
+/* blink */
+function blinkLoop() {
+  const targets = [...document.querySelectorAll('.blink'), ...eyeSvgs.map(s => s.querySelector('use'))];
+  const go = () => {
+    for (const el of targets) { el.style.transition = 'transform .09s'; el.style.transformOrigin = 'center'; const prev = el.style.transform || ''; el.dataset.prev = prev; el.style.transform = prev + ' scaleY(.08)'; }
+    setTimeout(() => { for (const el of targets) el.style.transform = el.dataset.prev || ''; }, 110);
+    setTimeout(go, 3200 + Math.random() * 3200);
+  };
+  if (!reduce) setTimeout(go, 1800);
+}
+blinkLoop();
+
+/* ---------------- WebGL ink field ---------------- */
+const canvas = document.getElementById('field');
+const gl = canvas.getContext('webgl2', { alpha: true, antialias: true, premultipliedAlpha: true });
+let fieldOK = !!gl && !reduce;
+let uni = {}, N = 0;
+if (fieldOK) {
+  const vs = `#version 300 es
+  precision highp float;
+  in vec2 a_corner; in float a_seed;
+  uniform vec2 u_res; uniform float u_time; uniform vec2 u_trail[24]; uniform float u_shape; uniform float u_morph; uniform float u_scroll; uniform float u_dpr;
+  out vec2 v_uv; out float v_a;
+  float hash(float n){ return fract(sin(n)*43758.5453123); }
+  vec2 hash2(float n){ return vec2(hash(n), hash(n+1.37)); }
+  vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;} vec2 mod289(vec2 x){return x-floor(x*(1.0/289.0))*289.0;} vec3 permute(vec3 x){return mod289(((x*34.0)+1.0)*x);}
+  float snoise(vec2 v){ const vec4 C=vec4(0.211324865405187,0.366025403784439,-0.577350269189626,0.024390243902439); vec2 i=floor(v+dot(v,C.yy)); vec2 x0=v-i+dot(i,C.xx); vec2 i1=(x0.x>x0.y)?vec2(1.0,0.0):vec2(0.0,1.0); vec4 x12=x0.xyxy+C.xxzz; x12.xy-=i1; i=mod289(i); vec3 p=permute(permute(i.y+vec3(0.0,i1.y,1.0))+i.x+vec3(0.0,i1.x,1.0)); vec3 m=max(0.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.0); m=m*m; m=m*m; vec3 x=2.0*fract(p*C.www)-1.0; vec3 h=abs(x)-0.5; vec3 ox=floor(x+0.5); vec3 a0=x-ox; m*=1.79284291400159-0.85373472095314*(a0*a0+h*h); vec3 g; g.x=a0.x*x0.x+h.x*x0.y; g.yz=a0.yz*x12.xz+h.yz*x12.yw; return 130.0*dot(m,g); }
+  vec2 curl(vec2 p){ float e=0.01; float n1=snoise(p+vec2(0.0,e)), n2=snoise(p-vec2(0.0,e)), n3=snoise(p+vec2(e,0.0)), n4=snoise(p-vec2(e,0.0)); return vec2((n1-n2)/(2.0*e), -(n3-n4)/(2.0*e)); }
+  void main(){
+    vec2 r = hash2(a_seed*7.13);
+    float t = u_time*0.035 + a_seed*0.0001;
+    vec2 base = r*u_res;
+    vec2 q = base/u_res*3.0;
+    vec2 f = curl(q + t*0.6);
+    vec2 drift = vec2(fract(r.x + t*0.08*(0.4+hash(a_seed*3.1))), fract(r.y + f.y*0.02 + t*0.02))*u_res;
+    vec2 p = drift + f*38.0;
+    // formations act on ORIENTATION, and only a little on position
+    vec2 c = u_res*0.5;
+    float k = hash(a_seed*9.7);
+    vec2 tdir = f;
+    vec2 target = p;
+    if(u_shape > 0.5 && u_shape < 1.5){ // graph paper: strokes turn horizontal or vertical
+      tdir = (k < 0.5) ? vec2(0.0,1.0) : vec2(1.0,0.0);
+      float g = 64.0; target = (k < 0.5) ? vec2(floor(p.x/g)*g + 0.5*g, p.y) : vec2(p.x, floor(p.y/g)*g + 0.5*g);
+    } else if(u_shape > 1.5 && u_shape < 2.5){ // a slow whirl around the centre
+      vec2 d = p - c; tdir = normalize(vec2(-d.y, d.x) + 0.0001);
+    } else if(u_shape > 2.5){ // a long wave across the page
+      float x = p.x/u_res.x*12.56; tdir = normalize(vec2(1.0, cos(x + t*2.0)*0.9));
+      target = vec2(p.x, mix(p.y, c.y + sin(x + t*2.0)*u_res.y*0.16, 0.5));
+    }
+    p = mix(p, target, u_morph*0.3);
+    // the pen: a soft ripple — strokes lean away and brighten a little
+    float glow = 0.0; vec2 push = vec2(0.0);
+    for(int i=0;i<24;i++){ vec2 d = p - u_trail[i]; float dist = length(d)+1.0; float w = float(24-i)/24.0; float fall = smoothstep(150.0, 0.0, dist); glow += w*fall; push += normalize(d) * (w*fall*14.0); }
+    glow = clamp(glow*0.35, 0.0, 1.0);
+    p += push*0.35;
+    vec2 dir = normalize(mix(f + vec2(0.001), tdir, u_morph));
+    float len = 9.0 + 11.0*hash(a_seed*5.3) + glow*5.0; float wid = 0.65 + glow*0.35;
+    vec2 nrm = vec2(-dir.y, dir.x);
+    vec2 pos = p + dir*a_corner.x*len + nrm*a_corner.y*wid;
+    vec2 ndc = (pos/u_res)*2.0-1.0; ndc.y = -ndc.y;
+    // quieter in the middle where the words live, fuller at the edges
+    float edge = smoothstep(0.12, 0.62, length((p - c)/u_res));
+    v_uv = a_corner; v_a = (0.05 + 0.06*hash(a_seed*1.9)) * (0.4 + 0.6*edge) + glow*0.22;
+    gl_Position = vec4(ndc,0.0,1.0);
+  }`;
+  const fs = `#version 300 es
+  precision highp float; in vec2 v_uv; in float v_a; uniform vec3 u_color; out vec4 o;
+  void main(){ float ax = 1.0 - smoothstep(0.75, 1.0, abs(v_uv.x)); float ay = 1.0 - smoothstep(0.35, 1.0, abs(v_uv.y)); float a = ax*ay*v_a; o = vec4(u_color*a, a); }`;
+  const sh = (ty, src) => { const s = gl.createShader(ty); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(s)); fieldOK = false; } return s; };
+  const prog = gl.createProgram(); gl.attachShader(prog, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { console.error(gl.getProgramInfoLog(prog)); fieldOK = false; }
+  if (fieldOK) {
+    gl.useProgram(prog);
+    const quad = new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]);
+    const qb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, qb); gl.bufferData(gl.ARRAY_BUFFER, quad, gl.STATIC_DRAW);
+    const aCorner = gl.getAttribLocation(prog, 'a_corner'); gl.enableVertexAttribArray(aCorner); gl.vertexAttribPointer(aCorner, 2, gl.FLOAT, false, 0, 0);
+    N = Math.min(4200, Math.floor((innerWidth * innerHeight) / 380));
+    const seeds = new Float32Array(N); for (let i = 0; i < N; i++) seeds[i] = i + 1;
+    const sb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, sb); gl.bufferData(gl.ARRAY_BUFFER, seeds, gl.STATIC_DRAW);
+    const aSeed = gl.getAttribLocation(prog, 'a_seed'); gl.enableVertexAttribArray(aSeed); gl.vertexAttribPointer(aSeed, 1, gl.FLOAT, false, 0, 0); gl.vertexAttribDivisor(aSeed, 1);
+    for (const n of ['u_res','u_time','u_trail','u_shape','u_morph','u_scroll','u_dpr','u_color']) uni[n] = gl.getUniformLocation(prog, n);
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+  }
+}
+function sizeField() { if (!fieldOK) return; const d = Math.min(devicePixelRatio || 1, 1.5); canvas.width = innerWidth * d; canvas.height = innerHeight * d; canvas.style.width = innerWidth + 'px'; canvas.style.height = innerHeight + 'px'; gl.viewport(0, 0, canvas.width, canvas.height); }
+sizeField(); addEventListener('resize', sizeField);
+const trailU = new Float32Array(48); let shapeTarget = 0, morphTarget = 0, shapeNow = 0, morphNow = 0;
+const trailPts = Array.from({ length: 24 }, () => ({ x: -9999, y: -9999 }));
+function drawField(time) {
+  if (!fieldOK) return;
+  // trail ring buffer, smoothed
+  trailPts.pop(); trailPts.unshift({ x: mouse.has ? mouse.x : -9999, y: mouse.has ? mouse.y : -9999 });
+  for (let i = 0; i < 24; i++) { trailU[i * 2] = trailPts[i].x; trailU[i * 2 + 1] = trailPts[i].y; }
+  morphNow = lerp(morphNow, morphTarget, .04); if (Math.abs(shapeNow - shapeTarget) > .001) shapeNow = shapeTarget;
+  gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.uniform2f(uni.u_res, innerWidth, innerHeight); gl.uniform1f(uni.u_time, time / 1000); gl.uniform2fv(uni.u_trail, trailU);
+  gl.uniform1f(uni.u_shape, shapeNow); gl.uniform1f(uni.u_morph, morphNow); gl.uniform1f(uni.u_scroll, scrollY); gl.uniform1f(uni.u_dpr, devicePixelRatio || 1);
+  const c = dark() ? [123/255, 140/255, 1] : [31/255, 53/255, 224/255]; gl.uniform3f(uni.u_color, c[0], c[1], c[2]);
+  gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, N);
+}
+
+/* ---------------- scroll choreography ---------------- */
+const pins = [...document.querySelectorAll('[data-pin]')];
+function pinProgress(el) { const r = el.getBoundingClientRect(); const total = el.offsetHeight - innerHeight; return clamp01(-r.top / Math.max(1, total)); }
+function caps(el, p) { const cs = [...el.querySelectorAll('.cap')]; let on = cs[0]; for (const c of cs) if (p >= +c.dataset.at) on = c; for (const c of cs) c.classList.toggle('on', c === on); }
+
+/* lesson drawing */
+const lessonEls = [...document.querySelectorAll('#lesson [data-s]')];
+const pen = document.getElementById('pen'); const planeWobo = document.getElementById('planeWobo');
+for (const el of lessonEls) { if (el.tagName === 'path') { const L = el.getTotalLength(); el.dataset.len = L; el.style.strokeDasharray = L; el.style.strokeDashoffset = L; } else { el.style.opacity = 0; } }
+let penX = 0, penY = 0, penTX = 0, penTY = 0, penOn = 0;
+function drawLesson(p) {
+  let active = null, activeK = 0;
+  for (const el of lessonEls) {
+    const s = +el.dataset.s, e = +el.dataset.e, k = clamp01((p - s) / (e - s));
+    if (el.tagName === 'path') el.style.strokeDashoffset = el.dataset.len * (1 - k); else el.style.opacity = k > 0 ? Math.min(1, k * 1.6) : 0;
+    if (k > 0 && k < 1) { active = el; activeK = k; }
+  }
+  if (active) {
+    penOn = 1;
+    if (active.tagName === 'path') { const pt = active.getPointAtLength(active.dataset.len * activeK); penTX = pt.x; penTY = pt.y; }
+    else { const b = active.getBBox(); penTX = b.x + b.width * activeK; penTY = b.y + b.height * .85; }
+  } else penOn = lerp(penOn, 0, .2);
+  penX = lerp(penX, penTX, .35); penY = lerp(penY, penTY, .35);
+  pen.setAttribute('transform', `translate(${penX} ${penY})`); pen.setAttribute('opacity', penOn.toFixed(2));
+  // wobo on the plane looks at the pen
+  const eyes = planeWobo.querySelector('.eyes'); const dx = penX - 560, dy = penY - 340, d = Math.hypot(dx, dy) || 1; eyes.style.transform = `translate(${dx / d * 7}px, ${dy / d * 7}px)`;
+}
+/* lasso */
+const lasso = document.getElementById('lassoPath'); const LL = lasso.getTotalLength(); lasso.style.strokeDasharray = LL; lasso.style.strokeDashoffset = LL;
+const startHere = document.getElementById('startHere'), askChip = document.getElementById('askChip');
+function drawLasso(p) { const k = clamp01((p - .12) / .4); lasso.style.strokeDashoffset = LL * (1 - k); startHere.setAttribute('opacity', clamp01((p - .5) / .12).toFixed(2)); askChip.classList.toggle('on', p > .58); }
+
+/* type-ahead */
+const typed = document.getElementById('typed'), ph = document.getElementById('ph'), results = [...document.querySelectorAll('#results div')];
+let typedDone = false;
+function typeDemo() {
+  if (typedDone) return; typedDone = true; ph.style.display = 'none';
+  const word = 'tel'; let i = 0;
+  const step = () => { typed.textContent = word.slice(0, ++i); if (i < word.length) setTimeout(step, 260); else results.forEach((r, j) => setTimeout(() => r.classList.add('on'), 280 + j * 160)); };
+  setTimeout(step, 300);
+}
+
+/* puzzle */
+const cells = [...document.querySelectorAll('#cells button')], tick = document.getElementById('tick'), ring = document.getElementById('ring'), say = document.getElementById('say');
+for (const el of [tick, ring]) { const L = el.getTotalLength(); el.style.strokeDasharray = L; el.style.strokeDashoffset = L; el.dataset.len = L; }
+cells.forEach(b => b.addEventListener('click', () => { b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true'); }));
+function drawOn(el, ms) { el.setAttribute('opacity', 1); el.style.transition = `stroke-dashoffset ${ms}ms cubic-bezier(.5,0,.2,1)`; requestAnimationFrame(() => el.style.strokeDashoffset = 0); }
+function clearInk(el) { el.style.transition = 'none'; el.style.strokeDashoffset = el.dataset.len; el.setAttribute('opacity', 0); }
+document.getElementById('check').addEventListener('click', () => {
+  const n = cells.filter(b => b.getAttribute('aria-pressed') === 'true').length;
+  clearInk(tick); clearInk(ring);
+  if (n === 2) { drawOn(tick, 520); say.textContent = 'there we go'; }
+  else if (n === 1) { drawOn(ring, 700); say.textContent = 'that\'s a quarter. one more'; }
+  else if (n === 0) { say.textContent = 'shade a part first'; }
+  else { say.textContent = n === 4 ? 'that\'s the whole thing' : 'that\'s three quarters'; }
+});
+document.getElementById('reset').addEventListener('click', () => { cells.forEach(b => b.setAttribute('aria-pressed', 'false')); clearInk(tick); clearInk(ring); say.textContent = ''; });
+
+/* timeline */
+const tl = document.getElementById('tl'), tlL = tl.getTotalLength(); tl.style.strokeDasharray = tlL; tl.style.strokeDashoffset = tlL;
+const days = [...document.querySelectorAll('#timeline .day')]; days.forEach(d => { d.style.opacity = 0; d.style.transition = 'opacity .5s'; });
+let tlOn = false;
+function timelineIn() { if (tlOn) return; tlOn = true; tl.style.transition = 'stroke-dashoffset 1.8s cubic-bezier(.5,0,.2,1)'; tl.style.strokeDashoffset = 0; days.forEach((d, i) => setTimeout(() => d.style.opacity = 1, 300 + i * 320)); }
+
+/* sections that just reveal */
+const io = new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) { if (e.target.id === 'boards') { typeDemo(); shapeTarget = 2; morphTarget = .8; } if (e.target.id === 'week') timelineIn(); if (e.target.id === 'doing') { shapeTarget = 1; morphTarget = .9; } if (e.target.id === 'plans') { morphTarget = 0; } if (e.target.id === 'hero') { morphTarget = 0; } } }, { threshold: .35 });
+for (const id of ['hero','boards','doing','week','plans']) io.observe(document.getElementById(id));
+
+/* main loop */
+let last = 0;
+function frame(time) {
+  if (document.hidden) { requestAnimationFrame(frame); return; }
+  const p1 = pinProgress(document.getElementById('draws')); caps(document.getElementById('draws'), p1); drawLesson(p1);
+  const p2 = pinProgress(document.getElementById('anything')); caps(document.getElementById('anything'), p2); drawLasso(p2);
+  const r1 = document.getElementById('draws').getBoundingClientRect();
+  if (r1.top < innerHeight && r1.bottom > 0) { shapeTarget = 1; morphTarget = .9 * clamp01(p1 * 3); }
+  const r2 = document.getElementById('anything').getBoundingClientRect();
+  if (r2.top < innerHeight * .5 && r2.bottom > 0) { shapeTarget = 3; morphTarget = .8; }
+  lookAt(); drawTrail(); drawField(time);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

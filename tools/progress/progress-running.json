@@ -1,0 +1,14 @@
+[
+ {
+  "title": "Wave 7c \u00b7 the landing page into the app",
+  "detail": "Porting landing v6 (GSAP ScrollTrigger + Lenis, the Tuesday and Sunday chapters, Ask Wobo, the ribbon) into the app's front door, with a side-by-side comparison against the prototype and a performance gate."
+ },
+ {
+  "title": "Wave 5b \u00b7 the seams",
+  "detail": "Closing the wired-but-dead seams from the Wave 5 reconciliation: packet fields, bidirectional board controls, timeline scrub, barge-in stops ink, the hotkey starts voice, memory erase on the brain side, accent by country, the speech-latency metric, the identity lock."
+ },
+ {
+  "title": "Queued \u00b7 the re-skin and the internal pages",
+  "detail": "Every app screen and every public page to the bold-ink law and palette v4, on a component kit; then Meet Wobo, How it works, For parents, For students, Subjects, Security per docs/SITE.md."
+ }
+]

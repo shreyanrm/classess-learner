@@ -1,0 +1,112 @@
+[
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/lv6-hero.png",
+  "caption": "Landing v6 \u00b7 hero: Wobo (head only) with the pen, the live card, the sticker, floats at three depths.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/lv6-ribbon.png",
+  "caption": "Landing v6 \u00b7 the ribbon: one continuous highlighter stroke that tapers and fades.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/lv6-night-1.png",
+  "caption": "Landing v6 \u00b7 Tuesday, 9:40 pm: the room, pinned and scrubbed by scroll.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/lv6-night-2.png",
+  "caption": "Landing v6 \u00b7 the camera moves into the phone.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/lv6-night-3.png",
+  "caption": "Landing v6 \u00b7 and Wobo draws it out, stroke by stroke as you scroll.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/lv6-night-4.png",
+  "caption": "Landing v6 \u00b7 9:46 pm. Oh.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/lv6-sunday-2.png",
+  "caption": "Landing v6 \u00b7 Sunday, 6 pm: the envelope opens, the note rises.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/lv6-tries.png",
+  "caption": "Landing v6 \u00b7 then she tries one.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/lv6-ask-reply.png",
+  "caption": "Landing v6 \u00b7 Ask Wobo about Wobo, near the end of the page.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/lv6-devices.png",
+  "caption": "Landing v6 \u00b7 one Wobo, every screen, with the app buttons.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/lv6-hero-390.png",
+  "caption": "Landing v6 \u00b7 phone.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/states-loading-light.png",
+  "caption": "Loading \u00b7 the pen draws the hairline, the line becomes the orb.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/states-e404-light.png",
+  "caption": "404 \u00b7 the path on the map ends in a question mark.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/states-e500-dark.png",
+  "caption": "500 \u00b7 the line breaks; Wobo shakes it off (dark).",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/logo-sheet.png",
+  "caption": "Your wordmark candidates on light. My pick: solid mark as primary, sticker as secondary. Awaiting your go.",
+  "group": "Decisions on the table"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/icon-sheet.png",
+  "caption": "Your icon candidates. My pick: the eyes, with ultramarine pupils. Awaiting your go.",
+  "group": "Decisions on the table"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/wave5-proofs/a2-ink-on-the-frame.png",
+  "caption": "Wave 5 \u00b7 her ink on a paused film, live in the app.",
+  "group": "Already in the app"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/wave5-proofs/b2-plane-complete-light.png",
+  "caption": "Wave 5 \u00b7 the plane over Learn with a derivation.",
+  "group": "Already in the app"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/wave5-proofs/golden/pythagoras-light.png",
+  "caption": "Wave 5 \u00b7 golden board: Pythagoras, every number computed.",
+  "group": "Already in the app"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/wave5-proofs/golden/benzene-light.png",
+  "caption": "Wave 5 \u00b7 golden board: benzene.",
+  "group": "Already in the app"
+ },
+ {
+  "src": "/private/tmp/claude-501/-Users-depl-Documents-classess-learner/e78e989d-9890-46b7-8ea9-a8b6fca9a943/scratchpad/wave6/proof/01-board-typeahead-tel.png",
+  "caption": "Wave 6 \u00b7 in the app: typing 'tel' finds the Telangana boards, with the 'not listed' door. Old visual language; the re-skin comes next.",
+  "group": "Already in the app"
+ },
+ {
+  "src": "/private/tmp/claude-501/-Users-depl-Documents-classess-learner/e78e989d-9890-46b7-8ea9-a8b6fca9a943/scratchpad/wave6/proof/04-own-syllabus-personal-plan.png",
+  "caption": "Wave 6 \u00b7 a pasted syllabus becomes a personal plan, unit by unit, each one confirmable.",
+  "group": "Already in the app"
+ }
+]

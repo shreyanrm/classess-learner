@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Wobo rig — expressions and behaviours</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#fff;--ink:#0D0D10;--blue:#1F35E0;--soft:#8A8A94}
+html[data-theme=dark]{--paper:#0D0D10;--ink:#F3F3F6;--blue:#7B8CFF;--soft:#8A8A96}
+body{margin:0;background:var(--paper);font-family:Poppins,system-ui,sans-serif;color:var(--ink);transition:background .3s}
+.wrap{width:1400px;padding:30px 40px;box-sizing:border-box}
+h1{font-size:20px;font-weight:700;letter-spacing:-.02em;margin:0 0 2px}
+.sub{font-size:12.5px;color:var(--soft);margin-bottom:18px}
+.stage{display:grid;grid-template-columns:440px 1fr;gap:26px;align-items:start}
+.big{height:440px;border:.5px solid rgba(128,128,140,.25);border-radius:3px;position:relative;overflow:hidden;cursor:default;user-select:none}
+.big svg{position:absolute;left:0;top:0;width:100%;height:100%}
+.cap{position:absolute;left:14px;bottom:10px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.note{position:absolute;right:16px;bottom:14px;font-family:Caveat,cursive;font-size:22px;color:var(--soft)}
+.idle{position:absolute;left:14px;top:10px;font-size:11px;color:var(--soft)}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.cell{border:.5px solid rgba(128,128,140,.25);border-radius:3px;padding:8px 4px 6px;text-align:center;cursor:pointer}
+.cell:hover{border-color:var(--blue)}
+.cell svg{width:104px;height:104px;display:block;margin:0 auto}
+.cell span{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.beh{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px}
+.beh button{font:inherit;font-size:12px;padding:6px 10px;border:.5px solid rgba(128,128,140,.35);background:transparent;color:var(--ink);border-radius:3px;cursor:pointer}
+.beh button:hover{border-color:var(--blue);color:var(--blue)}
+.legend{margin-top:12px;font-size:11.5px;color:var(--soft);line-height:1.6;max-width:90ch}
+</style></head>
+<body><div class="wrap">
+<h1>Wobo rig — expressions, idle life, reactions</h1>
+<div class="sub">Move the mouse and she looks and leans. Hover: she perks up. Click: squash and a smile. Double-click: hop. Hold: listening. Drag her around. Leave her alone: she glances about, gets bored, yawns, dozes off, and wakes with a start when you come back. T toggles the theme.</div>
+<div class="stage">
+  <div class="big" id="big"><svg viewBox="0 0 150 124" id="bigsvg"></svg><div class="idle" id="idle"></div><div class="cap" id="cap">idle</div><div class="note" id="note"></div></div>
+  <div>
+    <div class="grid" id="grid"></div>
+    <div class="beh" id="beh"></div>
+    <div class="legend"><b>Idle life</b>: after 4 s she glances around; 12 s bored (half lids, slow sway); 20 s a yawn or a sigh; 35 s dozes (lids close, slow breath); any motion wakes her with a surprised blink. Random double-blinks throughout. <b>Reactions</b>: hover perks her up and she leans in; click squashes her and she smiles; double-click hops; hold turns her to listening; drag carries her, body stretching toward where she's going; release settles with a wobble.</div>
+  </div>
+</div>
+<script>
+const EXPR = {
+  idle:        { l:{k:'dot'},        r:{k:'dot'},        tilt:0,  lean:0,  note:'' },
+  listening:   { l:{k:'wide',s:1.12},r:{k:'wide',s:1.12},tilt:4,  lean:6,  note:'go on' },
+  thinking:    { l:{k:'dash'},       r:{k:'dash'},       tilt:-5, lean:-4, note:'hmm', look:[-6,-8] },
+  computing:   { l:{k:'equals'},     r:{k:'equals'},     tilt:0,  lean:0,  note:'checking that' },
+  aha:         { l:{k:'wide',s:1.3}, r:{k:'wide',s:1.3}, tilt:0,  lean:0,  note:'oh!', spark:true },
+  explaining:  { l:{k:'dot',s:.95},  r:{k:'dot',s:.95},  tilt:3,  lean:8,  note:'see this part', look:[10,4] },
+  drawing:     { l:{k:'dot',s:.9},   r:{k:'dot',s:.9},   tilt:6,  lean:10, note:'', pen:true, look:[14,10] },
+  celebrating: { l:{k:'arc'},        r:{k:'arc'},        tilt:0,  lean:0,  note:'you did it', bounce:true },
+  encouraging: { l:{k:'arc',s:.8},   r:{k:'arc',s:.8},   tilt:2,  lean:3,  note:'nearly there' },
+  curious:     { l:{k:'dot',s:1.15}, r:{k:'dash'},       tilt:8,  lean:2,  note:'wait, what?' },
+  surprised:   { l:{k:'wide',s:1.45},r:{k:'wide',s:1.45},tilt:0,  lean:-3, note:'' },
+  wink:        { l:{k:'dot'},        r:{k:'wink'},       tilt:-3, lean:0,  note:'' },
+  supportive:  { l:{k:'sad'},        r:{k:'sad'},        tilt:3,  lean:4,  note:'that one was hard' },
+  bored:       { l:{k:'half'},       r:{k:'half'},       tilt:2,  lean:-2, note:'', sway:true, look:[0,4] },
+  sleepy:      { l:{k:'closed'},     r:{k:'closed'},     tilt:3,  lean:0,  note:'rest is part of learning', breathe:true },
+  loading:     { l:{k:'scan'},       r:{k:'scan'},       tilt:0,  lean:0,  note:'' },
+  proud:       { l:{k:'arc',s:.9},   r:{k:'arc',s:.9},   tilt:-2, lean:-2, note:'', chest:true },
+  shy:         { l:{k:'dot',s:.8},   r:{k:'dot',s:.8},   tilt:6,  lean:-6, note:'', look:[-8,6] },
+  focused:     { l:{k:'dot',s:.85},  r:{k:'dot',s:.85},  tilt:0,  lean:5,  note:'', narrow:true },
+  happy:       { l:{k:'arc',s:.9},   r:{k:'arc',s:.9},   tilt:0,  lean:0,  note:'' },
+};
+const ORDER = Object.keys(EXPR);
+const R = 7.4; // eye radius (bigger eyes)
+function eyePath(cx, cy, e, blink){
+  const s=(e.s||1); const k = blink>0.85 ? 'closed' : e.k;
+  switch(k){
+    case 'dot':   return `<circle cx="${cx}" cy="${cy}" r="${R*s}" />`;
+    case 'wide':  return `<ellipse cx="${cx}" cy="${cy}" rx="${R*s}" ry="${(R+1.6)*s}" />`;
+    case 'half':  return `<path d="M${cx-R} ${cy+1} A${R} ${R} 0 0 0 ${cx+R} ${cy+1} Z" />`;
+    case 'dash':  return `<path d="M${cx-7} ${cy} h14" stroke-width="5.2" stroke-linecap="round" fill="none"/>`;
+    case 'equals':return `<path d="M${cx-7} ${cy-3.5} h14 M${cx-7} ${cy+3.5} h14" stroke-width="3.6" stroke-linecap="round" fill="none"/>`;
+    case 'arc':   return `<path d="M${cx-7} ${cy+3} Q${cx} ${cy-8*s} ${cx+7} ${cy+3}" stroke-width="5.2" stroke-linecap="round" fill="none"/>`;
+    case 'sad':   return `<path d="M${cx-7} ${cy-2} Q${cx} ${cy+6} ${cx+7} ${cy-2}" stroke-width="5" stroke-linecap="round" fill="none"/>`;
+    case 'closed':return `<path d="M${cx-7} ${cy+1} Q${cx} ${cy+5} ${cx+7} ${cy+1}" stroke-width="4.6" stroke-linecap="round" fill="none"/>`;
+    case 'wink':  return `<path d="M${cx-7} ${cy+2} Q${cx} ${cy-4} ${cx+7} ${cy+2}" stroke-width="5" stroke-linecap="round" fill="none"/>`;
+    case 'scan':  return `<circle cx="${cx + Math.sin(performance.now()/180)*6}" cy="${cy}" r="5" />`;
+  }
+}
+function render(svg, st){
+  const th = document.documentElement.dataset.theme==='dark';
+  const body = th ? '#EDEDF1' : '#1A1A1F', visor = th ? '#0D0D10' : '#FFFFFF', eye = th ? '#7B8CFF' : '#1F35E0', hair = th ? 'rgba(13,13,16,.4)' : 'rgba(255,255,255,.55)';
+  const e = st.expr, look = st.look; const cx=60, cy=66;
+  const lx = cx-13+look[0]*.36, rx = cx+13+look[0]*.36, ey = cy-.5+look[1]*.32;
+  const eyes = `<g fill="${eye}" stroke="${eye}">${eyePath(lx,ey,e.l,st.blink)}${eyePath(rx,ey,e.r,st.blink)}</g>`;
+  const narrow = e.narrow ? `<rect x="26" y="50" width="68" height="9" fill="${body}" opacity=".85"/>` : '';
+  const pen = st.pen>0.02 ? `<g transform="translate(${(1-st.pen)*14} ${(1-st.pen)*14}) scale(${.6+.4*st.pen})" opacity="${st.pen}"><circle cx="98" cy="86" r="8" fill="${body}" stroke="${hair}" stroke-width="1"/><path d="M102 82 L 116 54" stroke="${body}" stroke-width="5" stroke-linecap="round"/><path d="M115 56 L 119 48" stroke="${eye}" stroke-width="5" stroke-linecap="round"/></g>` : '';
+  const spark = st.spark>0.02 ? `<g fill="${eye}" opacity="${st.spark}" transform="translate(60 66) scale(${.6+st.spark}) translate(-60 -66)"><path d="M100 22 l1.5 4.2 4.2 1.5 -4.2 1.5 -1.5 4.2 -1.5 -4.2 -4.2 -1.5 4.2 -1.5z"/><circle cx="20" cy="30" r="1.8"/><circle cx="106" cy="46" r="1.4"/><circle cx="14" cy="50" r="1.2"/></g>` : '';
+  const zz = st.zz>0.02 ? `<g fill="${eye}" opacity="${st.zz}" font-family="Caveat" font-weight="600"><text x="100" y="${34 - st.zz*10}" font-size="12">z</text><text x="108" y="${24 - st.zz*14}" font-size="9">z</text></g>` : '';
+  const shadow = `<ellipse cx="60" cy="112" rx="${26*st.sx}" ry="3.5" fill="${body}" opacity=".10"/>`;
+  svg.innerHTML = `<g transform="translate(${15+st.dx} ${st.dy})">${shadow}<g transform="translate(60 108) scale(${st.sx} ${st.sy}) rotate(${st.rot}) translate(-60 -108)">
+    <circle cx="${cx}" cy="${cy}" r="42" fill="${body}" stroke="${hair}" stroke-width="1"/>
+    <ellipse cx="40" cy="38" rx="8" ry="4" fill="${visor}" opacity=".16" transform="rotate(-30 40 38)"/>
+    <rect x="26" y="50" width="68" height="30" rx="15" fill="${visor}"/>${eyes}${narrow}${pen}</g>${spark}${zz}</g>`;
+}
+function spring(v, target, vel, k=0.12, d=0.72){ const a=(target-v)*k; vel=(vel+a)*d; return [v+vel, vel]; }
+const S = { expr: EXPR.idle, name:'idle', look:[0,0], sx:1, sy:1, rot:0, dx:0, dy:0, blink:0, pen:0, spark:0, zz:0, vel:{sx:0,sy:0,rot:0,dx:0,dy:0,lx:0,ly:0,pen:0,spark:0,zz:0}, beh:null, hover:false, pressAt:0, drag:null, lastInput:performance.now(), idleStage:0, glance:null, glanceUntil:0, tempExpr:null, tempUntil:0 };
+const big = document.getElementById('bigsvg');
+const el = document.getElementById('big');
+let mouse=null;
+function touched(){ S.lastInput=performance.now(); if(S.idleStage>=2){ setTemp('surprised',700); play('startle'); } S.idleStage=0; S.zzTarget=0; if(S.name==='bored'||S.name==='sleepy') setExpr('idle'); }
+el.addEventListener('mousemove', ev=>{ const r=el.getBoundingClientRect(); mouse=[(ev.clientX-r.left)/r.width-0.5,(ev.clientY-r.top)/r.height-0.5]; if(S.drag){ S.drag.x=ev.clientX-S.drag.ox; S.drag.y=ev.clientY-S.drag.oy; } touched(); });
+el.addEventListener('mouseenter', ()=>{ S.hover=true; touched(); });
+el.addEventListener('mouseleave', ()=>{ mouse=null; S.hover=false; S.drag=null; });
+el.addEventListener('mousedown', ev=>{ S.pressAt=performance.now(); S.drag={ox:ev.clientX-S.dx*3.6, oy:ev.clientY-S.dy*3.6, x:S.dx*3.6, y:S.dy*3.6, moved:false, sx:ev.clientX, sy:ev.clientY}; touched(); });
+el.addEventListener('mouseup', ev=>{ const held=performance.now()-S.pressAt; const d=S.drag; S.drag=null; if(d && (Math.abs(ev.clientX-d.sx)>6||Math.abs(ev.clientY-d.sy)>6)){ play('settle'); return; } if(held>450){ setExpr('idle'); return; } play('tap'); setTemp('happy',650); });
+el.addEventListener('dblclick', ()=>{ play('hop'); setTemp('celebrating',900); });
+function setTemp(name, ms){ S.tempExpr=EXPR[name]; S.tempUntil=performance.now()+ms; document.getElementById('cap').textContent=name; }
+let nextBlink = performance.now()+2200, blinkPhase=0, doubleBlink=false;
+function setExpr(name){ S.expr=EXPR[name]; S.name=name; document.getElementById('cap').textContent=name; document.getElementById('note').textContent=EXPR[name].note||''; if(EXPR[name].spark){ S.spark=1; } S.tempExpr=null; }
+const BEH = {
+  tap:     { sx:[1.22,0.86,1], sy:[0.82,1.1,1], dur:420 },
+  nod:     { rot:[6,-2,0], dy:[3,0], dur:520 },
+  hop:     { dy:[-18,0,-7,0], sx:[0.9,1.08,1], sy:[1.12,0.94,1], dur:720 },
+  lean:    { rot:[-10,0], dx:[-8,0], dur:900 },
+  peek:    { dx:[44,-3,0], rot:[-12,2,0], dur:800 },
+  shrink:  { sx:[0.55,0.6], sy:[0.55,0.6], dy:[24,24], dur:600, hold:true },
+  grow:    { sx:[1.15,1], sy:[1.15,1], dur:500 },
+  wiggle:  { rot:[-8,8,-6,6,-3,0], dur:700 },
+  yawn:    { sy:[1.1,0.95,1], rot:[0,4,0], dur:1500, expr:'sleepy' },
+  sigh:    { sy:[1.06,0.97,1], dy:[-2,2,0], dur:1300, expr:'bored' },
+  shake:   { dx:[-5,5,-4,4,-2,0], dur:520 },
+  point:   { rot:[8,6], dx:[6,4], dur:400, pen:1 },
+  startle: { sy:[1.14,0.94,1], sx:[0.92,1.06,1], dy:[-6,0], dur:500 },
+  settle:  { rot:[4,-3,2,0], sy:[0.94,1.04,1], dur:600 },
+  stretch: { sy:[1.12,1], sx:[0.95,1], rot:[-3,0], dur:1100 },
+};
+function play(name){ const b=BEH[name]; if(!b) return; S.beh={...b, start:performance.now()}; if(b.expr) setTemp(b.expr, b.dur); }
+function evalTrack(arr, p){ if(!arr) return null; const n=arr.length; if(n===1) return arr[0]; const i=Math.min(n-2, Math.floor(p*(n-1))); const q=p*(n-1)-i; const a=arr[i], b=arr[i+1]; return a+(b-a)*(1-Math.cos(q*Math.PI))/2; }
+function idleLife(now){
+  const since = now - S.lastInput; const stage = since>35000?4: since>20000?3: since>12000?2: since>4000?1:0;
+  if(stage!==S.idleStage){
+    S.idleStage=stage;
+    if(stage===2) setExpr('bored');
+    if(stage===3){ play(Math.random()<0.5?'yawn':'sigh'); }
+    if(stage===4){ setExpr('sleepy'); }
+    if(stage===1 && S.name==='idle') { /* start glancing */ }
+  }
+  // glances while idle (stages 1-2)
+  if((stage===1||stage===2) && now>S.glanceUntil){ S.glance=[(Math.random()-.5)*44,(Math.random()-.5)*26]; S.glanceUntil=now+900+Math.random()*1800; if(Math.random()<0.15) doubleBlink=true; if(Math.random()<0.08) play('stretch'); }
+  if(stage===0) S.glance=null;
+  document.getElementById('idle').textContent = stage? `idle ${Math.round(since/1000)}s · ${['','glancing','bored','yawning','dozing'][stage]}` : '';
+  S.zzTarget = stage===4 ? 1 : 0;
+}
+function tick(){
+  const now=performance.now();
+  idleLife(now);
+  if(S.tempExpr && now>S.tempUntil){ S.tempExpr=null; document.getElementById('cap').textContent=S.name; }
+  const e = S.tempExpr || S.expr;
+  const lt = mouse ? [mouse[0]*44, mouse[1]*32] : (S.glance || e.look || [0,0]);
+  [S.look[0],S.vel.lx]=spring(S.look[0],lt[0],S.vel.lx,.14,.7); [S.look[1],S.vel.ly]=spring(S.look[1],lt[1],S.vel.ly,.14,.7);
+  let tsx=1,tsy=1,trot=e.tilt||0,tdx=(e.lean||0)*.6 + (mouse?mouse[0]*12:0),tdy=0, tpen=e.pen?1:0;
+  if(S.hover && !S.drag){ tsx*=1.04; tsy*=1.04; }
+  if(e.breathe||S.name==='idle'||S.name==='sleepy'||S.name==='bored'){ tsy *= 1 + Math.sin(now/(S.name==='sleepy'?1900:1200))*0.018; }
+  if(e.sway){ trot += Math.sin(now/900)*3; }
+  if(e.bounce){ tdy = -Math.abs(Math.sin(now/260))*10; }
+  if(e.chest){ tsx=1.06; tsy=1.03; tdy=-3; }
+  if(S.drag){ tdx = S.drag.x/3.6; tdy = S.drag.y/3.6; const vx=S.drag.x-(S.prevDragX||S.drag.x), vy=S.drag.y-(S.prevDragY||S.drag.y); S.prevDragX=S.drag.x; S.prevDragY=S.drag.y; trot = Math.max(-18, Math.min(18, vx*0.9)); tsy = 1+Math.min(0.12, Math.abs(vy)*0.006); tsx = 1-Math.min(0.08, Math.abs(vy)*0.004); if(!S.drag.moved && (Math.abs(vx)>2||Math.abs(vy)>2)){S.drag.moved=true;} }
+  if(S.drag && now-S.pressAt>450 && !S.drag.moved && S.name!=='listening'){ setExpr('listening'); }
+  if(S.beh){ const p=Math.min(1,(now-S.beh.start)/S.beh.dur); const v=k=>evalTrack(S.beh[k],p); if(v('sx')!=null) tsx*=v('sx'); if(v('sy')!=null) tsy*=v('sy'); if(v('rot')!=null) trot+=v('rot'); if(v('dx')!=null) tdx+=v('dx'); if(v('dy')!=null) tdy+=v('dy'); if(S.beh.pen) tpen=1; if(p>=1 && !S.beh.hold) S.beh=null; }
+  [S.sx,S.vel.sx]=spring(S.sx,tsx,S.vel.sx,.2,.65); [S.sy,S.vel.sy]=spring(S.sy,tsy,S.vel.sy,.2,.65);
+  [S.rot,S.vel.rot]=spring(S.rot,trot,S.vel.rot,.12,.72); [S.dx,S.vel.dx]=spring(S.dx,tdx,S.vel.dx,S.drag?.3:.12,S.drag?.6:.72); [S.dy,S.vel.dy]=spring(S.dy,tdy,S.vel.dy,S.drag?.3:.14,S.drag?.6:.7);
+  [S.pen,S.vel.pen]=spring(S.pen,tpen,S.vel.pen,.18,.7); [S.spark,S.vel.spark]=spring(S.spark,0,S.vel.spark,.04,.9); [S.zz,S.vel.zz]=spring(S.zz,S.zzTarget||0,S.vel.zz,.05,.8);
+  if(now>nextBlink){ blinkPhase=1e-6; nextBlink=now+2400+Math.random()*3200; }
+  if(blinkPhase>0){ S.blink = Math.sin(Math.min(1,blinkPhase)*Math.PI); blinkPhase+=0.12; if(blinkPhase>=1){ blinkPhase=0; S.blink=0; if(doubleBlink){ doubleBlink=false; nextBlink=now+140; } } }
+  render(big, {...S, expr:e});
+  requestAnimationFrame(tick);
+}
+const grid=document.getElementById('grid');
+ORDER.forEach(n=>{ const d=document.createElement('div'); d.className='cell'; d.innerHTML=`<svg viewBox="0 0 150 124"></svg><span>${n}</span>`; d.onclick=()=>{ setExpr(n); touched(); }; grid.appendChild(d); });
+function paintGrid(){ document.querySelectorAll('.cell').forEach((c,i)=>{ const n=ORDER[i]; render(c.querySelector('svg'),{expr:EXPR[n],look:EXPR[n].look||[0,0],sx:1,sy:1,rot:EXPR[n].tilt||0,dx:0,dy:0,blink:0,pen:EXPR[n].pen?1:0,spark:EXPR[n].spark?1:0,zz:n==='sleepy'?1:0}); }); }
+paintGrid();
+const beh=document.getElementById('beh'); Object.keys(BEH).forEach(n=>{ const b=document.createElement('button'); b.textContent=n; b.onclick=()=>{ play(n); }; beh.appendChild(b); });
+document.addEventListener('keydown',e=>{ if(e.key==='t'||e.key==='T'){ const h=document.documentElement; h.dataset.theme = h.dataset.theme==='dark'?'':'dark'; paintGrid(); } });
+const q=new URLSearchParams(location.search); if(q.get('theme')==='dark') document.documentElement.dataset.theme='dark'; if(q.get('expr')) setExpr(q.get('expr')); if(q.get('beh')) setTimeout(()=>play(q.get('beh')),300); if(q.get('idle')) S.lastInput = performance.now()-Number(q.get('idle'))*1000;
+tick();
+</script>
+</div></body></html>

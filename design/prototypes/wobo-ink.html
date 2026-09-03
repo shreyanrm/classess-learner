@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Ink Wobo</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#fff;font-family:Poppins,system-ui,sans-serif;color:#0D0D10}
+.sheet{width:1400px;padding:34px 44px;box-sizing:border-box}
+h1{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:0 0 4px}
+.sub{font-size:13px;color:#7C7C88;margin-bottom:22px;max-width:90ch}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.tile{border-radius:3px;padding:18px;border:.5px solid #E6E6EB}
+.tile.dark{background:#0D0D10;border-color:#26262D}
+.tile h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin:0 0 12px;color:#8A8A94}
+.states{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.st{text-align:center}.st svg{width:100px;height:100px;display:block;margin:0 auto}
+.st span{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#8A8A94}
+.ctx{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.mock{border:.5px solid #E6E6EB;border-radius:3px;height:250px;position:relative;overflow:hidden;background:#fff}
+.mock.dark{background:#0D0D10;border-color:#26262D}
+.mock .wm{position:absolute;left:18px;top:14px;font-weight:700;font-size:18px;letter-spacing:-.03em;color:#0D0D10}
+.mock.dark .wm{color:#F3F3F6}.mock .wm i{color:#1F35E0;font-style:normal;font-size:10px;vertical-align:top}
+.mock .line{position:absolute;left:18px;height:8px;border-radius:2px;background:#ECECF1}.mock.dark .line{background:#1C1C22}
+.mock .note{position:absolute;right:120px;bottom:28px;font-family:Caveat,cursive;font-size:20px;color:#55555F}.mock.dark .note{color:#A0A0AA}
+.mock .orb{position:absolute;right:26px;bottom:22px;width:84px;height:84px}
+.icons{display:flex;gap:16px;align-items:center;margin-top:14px}
+.icons svg{border-radius:22%}
+.icons span{font-size:11px;color:#8A8A94}
+</style></head>
+<body><div class="sheet">
+<h1>Ink Wobo — black on paper in light, paper on ink in dark</h1>
+<div class="sub">One body, one visor, one colour. The body is ink in light and paper in dark; the visor is the opposite; the eyes are always ultramarine, the only pigment on the screen. A half-pixel hairline in the opposite tone keeps her legible over any content, including the frosted plane over a dark video. Warmth comes from the eyes and the motion, not from colour.</div>
+<script>
+function w(body, visor, eye, hair, mood, extra){
+  const eyes = mood==='idle' ? `<circle cx="48" cy="65" r="5.4" fill="${eye}"/><circle cx="72" cy="65" r="5.4" fill="${eye}"/>`
+   : mood==='think' ? `<path d="M42 66h12" stroke="${eye}" stroke-width="4.4" stroke-linecap="round"/><path d="M66 66h12" stroke="${eye}" stroke-width="4.4" stroke-linecap="round"/>`
+   : mood==='happy' ? `<path d="M42 70 Q48 60 54 70" stroke="${eye}" stroke-width="4.4" fill="none" stroke-linecap="round"/><path d="M66 70 Q72 60 78 70" stroke="${eye}" stroke-width="4.4" fill="none" stroke-linecap="round"/>`
+   : mood==='listen' ? `<ellipse cx="48" cy="65" rx="6.4" ry="7" fill="${eye}"/><ellipse cx="72" cy="65" rx="6.4" ry="7" fill="${eye}"/>`
+   : mood==='rest' ? `<path d="M42 66 Q48 70 54 66" stroke="${eye}" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M66 66 Q72 70 78 66" stroke="${eye}" stroke-width="4" fill="none" stroke-linecap="round"/>`
+   : `<circle cx="46" cy="65" r="5.4" fill="${eye}"/><circle cx="70" cy="65" r="5.4" fill="${eye}"/>`; // draw: eyes look at pen
+  const tilt = mood==='think' ? 'rotate(-5 60 66)' : mood==='listen' ? 'rotate(4 60 66) translate(0 2)' : mood==='happy' ? 'translate(0 -5)' : mood==='draw' ? 'rotate(6 60 66)' : '';
+  const pen = mood==='draw' ? `<circle cx="98" cy="86" r="8" fill="${body}" stroke="${hair}" stroke-width="1"/><path d="M102 82 L 116 54" stroke="${body}" stroke-width="5" stroke-linecap="round"/><path d="M115 56 L 119 48" stroke="${eye}" stroke-width="5" stroke-linecap="round"/>` : '';
+  return `<svg viewBox="0 0 124 124"><g transform="${tilt}"><circle cx="60" cy="66" r="42" fill="${body}" stroke="${hair}" stroke-width="1"/><ellipse cx="40" cy="38" rx="8" ry="4" fill="${visor}" opacity=".18" transform="rotate(-30 40 38)"/><rect x="28" y="52" width="64" height="26" rx="13" fill="${visor}"/>${eyes}${pen}${extra||''}</g></svg>`;
+}
+const L = { body:'#0D0D10', visor:'#FFFFFF', eye:'#1F35E0', hair:'rgba(255,255,255,.55)' };
+const D = { body:'#F3F3F6', visor:'#0D0D10', eye:'#7B8CFF', hair:'rgba(13,13,16,.4)' };
+const moods=[['idle','idle'],['listen','listening'],['think','thinking'],['draw','drawing'],['happy','celebrating'],['rest','resting']];
+function tile(t, cls, title){ return `<div class="tile ${cls}"><h2>${title}</h2><div class="states">${moods.map(m=>`<div class="st">${w(t.body,t.visor,t.eye,t.hair,m[0])}<span>${m[1]}</span></div>`).join('')}</div></div>`; }
+function mock(t, cls){ return `<div class="mock ${cls}"><div class="wm">Wobo<i>✦</i></div><div class="line" style="top:52px;width:280px"></div><div class="line" style="top:70px;width:220px"></div><div class="line" style="top:88px;width:250px"></div><div class="note">watch the top</div><div class="orb">${w(t.body,t.visor,t.eye,t.hair,'draw')}</div></div>`; }
+function icon(t, size, bg){ return `<svg width="${size}" height="${size}" viewBox="0 0 124 124" style="background:${bg}"><circle cx="62" cy="66" r="44" fill="${t.body}" stroke="${t.hair}" stroke-width="1"/><rect x="28" y="52" width="68" height="28" rx="14" fill="${t.visor}"/><circle cx="49" cy="66" r="6" fill="${t.eye}"/><circle cx="75" cy="66" r="6" fill="${t.eye}"/></svg>`; }
+document.write(`<div class="row">${tile(L,'','Light theme · ink body, paper visor')}${tile(D,'dark','Dark theme · paper body, ink visor')}</div>
+<div class="ctx">${mock(L,'')}${mock(D,'dark')}</div>
+<div class="icons">${icon(L,64,'#fff')}${icon(L,40,'#fff')}${icon(L,24,'#fff')}<span>app icon (light)</span>${icon(D,64,'#0D0D10')}${icon(D,40,'#0D0D10')}${icon(D,24,'#0D0D10')}<span>tinted / dark icon</span></div>`);
+</script>
+</div></body></html>

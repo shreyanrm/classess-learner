@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Visor Wobo colourways</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#fff;font-family:Poppins,system-ui,sans-serif;color:#0D0D10}
+.sheet{width:1400px;padding:34px 44px;box-sizing:border-box}
+h1{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:0 0 4px}
+.sub{font-size:13px;color:#7C7C88;margin-bottom:22px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.col h2{font-size:14px;font-weight:600;margin:0 0 2px}
+.col p{font-size:12px;color:#55555F;line-height:1.5;margin:0 0 10px;min-height:54px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tile{border-radius:3px;padding:14px 8px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;border:.5px solid #E6E6EB}
+.tile.light{background:#fff}.tile.dark{background:#0D0D10;border-color:#26262D}
+.tile svg{width:132px;height:132px}
+.tile span{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#8A8A94}
+.tile.dark span{color:#8A8A96}
+.small{display:flex;gap:10px;align-items:center;margin-top:8px}
+.small svg{width:20px;height:20px}.small svg.m{width:32px;height:32px}
+.small span{font-size:11px;color:#8A8A94}
+</style></head>
+<body><div class="sheet">
+<h1>Visor Wobo — three colourways</h1>
+<div class="sub">Same body and visor. Body is a considered solid with a soft lower shade, not a gradient. Left tile light theme, right tile dark. Below: the icon at 20 and 32 px.</div>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <radialGradient id="shadeO" cx="38%" cy="30%" r="85%"><stop offset="0" stop-color="#FF8A5C"/><stop offset=".55" stop-color="#FF6A3D"/><stop offset="1" stop-color="#D9482A"/></radialGradient>
+  <radialGradient id="shadeB" cx="38%" cy="30%" r="85%"><stop offset="0" stop-color="#5566FF"/><stop offset=".55" stop-color="#2A3FE8"/><stop offset="1" stop-color="#1424A8"/></radialGradient>
+  <radialGradient id="shadeP" cx="38%" cy="30%" r="85%"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#F3F1EC"/><stop offset="1" stop-color="#D9D5CC"/></radialGradient>
+</defs></svg>
+<script>
+function wobo(fill, eye, mood, extra){
+  const eyes = mood==='idle' ? `<circle cx="48" cy="65" r="5.2" fill="${eye}"/><circle cx="72" cy="65" r="5.2" fill="${eye}"/>`
+    : mood==='think' ? `<path d="M42 66h12" stroke="${eye}" stroke-width="4.2" stroke-linecap="round"/><path d="M66 66h12" stroke="${eye}" stroke-width="4.2" stroke-linecap="round"/>`
+    : `<path d="M42 70 Q48 60 54 70" stroke="${eye}" stroke-width="4.2" fill="none" stroke-linecap="round"/><path d="M66 70 Q72 60 78 70" stroke="${eye}" stroke-width="4.2" fill="none" stroke-linecap="round"/>`;
+  return `<svg viewBox="0 0 120 120"><circle cx="60" cy="66" r="42" fill="${fill}"/><rect x="28" y="52" width="64" height="26" rx="13" fill="#15151A"/>${eyes}<ellipse cx="40" cy="38" rx="8" ry="4" fill="#fff" opacity=".28" transform="rotate(-30 40 38)"/>${extra||''}</svg>`;
+}
+function icon(fill, eye, size){ return `<svg class="${size===32?'m':''}" viewBox="0 0 120 120"><circle cx="60" cy="66" r="44" fill="${fill}"/><rect x="26" y="50" width="68" height="28" rx="14" fill="#15151A"/><circle cx="47" cy="64" r="6" fill="${eye}"/><circle cx="73" cy="64" r="6" fill="${eye}"/></svg>`; }
+const ways = [
+  { name:'1 · Wobo orange, ultramarine eyes', blurb:'Warm, unclaimed in edtech, friendly for kids. The eyes glow in a light ultramarine so she carries both brand colours; the pen is ultramarine too.', fill:'url(#shadeO)', flat:'#FF6A3D', eye:'#8C9BFF' },
+  { name:'2 · Ultramarine body, warm eyes', blurb:'The brand pigment as the body. Unified with the wordmark, premium, but blue is the default colour of every robot and reads cooler to a child.', fill:'url(#shadeB)', flat:'#2A3FE8', eye:'#FFB07A' },
+  { name:'3 · Paper body, ultramarine eyes', blurb:'A calm chalk-white body like the board itself, near-black visor, ultramarine eyes. Very premium and quiet; the least playful of the three on a white screen.', fill:'url(#shadeP)', flat:'#F3F1EC', eye:'#5566FF' },
+];
+document.write('<div class="grid">'+ways.map(w=>`
+<div class="col"><h2>${w.name}</h2><p>${w.blurb}</p>
+<div class="pair">
+  <div class="tile light">${wobo(w.fill,w.eye,'idle')}<span>light · idle</span>${wobo(w.fill,w.eye,'happy')}<span>light · happy</span></div>
+  <div class="tile dark">${wobo(w.fill,w.eye,'think')}<span>dark · thinking</span>${wobo(w.fill,w.eye,'idle')}<span>dark · idle</span></div>
+</div>
+<div class="small">${icon(w.flat,w.eye,20)}${icon(w.flat,w.eye,32)}<span>app icon at 20 / 32 px</span></div>
+</div>`).join('')+'</div>');
+</script>
+</div></body></html>

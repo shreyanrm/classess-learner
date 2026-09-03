@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hey Wobo</title><!-- v4: bold ink on good paper -->
+<meta name="description" content="Wobo is the patient tutor that draws every answer out for your child, on their school's syllabus, at any hour.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBFBF9; --ink:#1A1A1F; --ink-2:#5C5C66; --ink-3:#9A9AA6; --hair:rgba(26,26,31,.14); --hair-2:rgba(26,26,31,.07);
+  --pig:#1F35E0; --violet:#6B4CFF; --rose:#F0578C; --marigold:#F5A623; --mint:#1FB98A;
+  --pig-frost:rgba(31,53,224,.08); --rose-frost:rgba(240,87,140,.12); --marigold-frost:rgba(245,166,35,.16); --mint-frost:rgba(31,185,138,.14);
+  --paper-2:#F2F2EE; --paper-3:#E9E9E4; --shadow:0 12px 40px rgba(31,53,224,.10); --lift:0 6px 20px rgba(26,26,31,.08);
+  --body:#1A1A1F; --visor:#FFFFFF; --eye:#1F35E0;
+  --sans:'Poppins',system-ui,-apple-system,sans-serif; --hand:'Caveat',cursive;
+}
+[data-theme="dark"]{
+  --paper:#0D0D10; --ink:#EDEDF1; --ink-2:#A9A9B4; --ink-3:#6E6E7A; --hair:rgba(237,237,241,.14); --hair-2:rgba(237,237,241,.07);
+  --pig:#7B8CFF; --violet:#A08BFF; --rose:#FF7FAB; --marigold:#FFC24D; --mint:#4FE3BD;
+  --pig-frost:rgba(123,140,255,.1); --rose-frost:rgba(255,127,171,.14); --marigold-frost:rgba(255,194,77,.18); --mint-frost:rgba(79,227,189,.16);
+  --paper-2:#17171C; --paper-3:#202027; --shadow:0 16px 48px rgba(0,0,0,.5); --lift:0 8px 24px rgba(0,0,0,.4);
+  --body:#EDEDF1; --visor:#0D0D10; --eye:#7B8CFF;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.55 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+h1,h2,h3{margin:0;letter-spacing:-.02em;text-wrap:balance}
+p{margin:0;text-wrap:pretty}
+.hand{font-family:var(--hand);font-weight:600}
+.wrap{width:min(1180px,calc(100% - 48px));margin:0 auto}
+.eyebrow{font:500 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.btn{font:500 15px/1 var(--sans);padding:16px 24px;border-radius:12px;border:0;background:var(--ink);color:var(--paper);text-decoration:none;min-height:48px;display:inline-flex;align-items:center;gap:8px;transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+.btn:hover{box-shadow:var(--lift)}
+.btn:hover{transform:translateY(-1px)}
+.btn.quiet{background:var(--paper-2);color:var(--ink)}
+.btn.pig{background:var(--pig);color:#fff}
+.btn:focus-visible,a:focus-visible,button:focus-visible{outline:2px solid var(--pig);outline-offset:3px}
+button{font:inherit}
+
+/* intro */
+#intro{position:fixed;inset:0;z-index:50;pointer-events:none}
+#intro .line{position:absolute;left:0;top:68px;height:3px;width:0;background:var(--pig);border-radius:0 3px 3px 0;transition:width .9s cubic-bezier(.5,0,.2,1)}
+body.ready #intro .line{width:100%}
+body.settled #intro{display:none}
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+body.ready .reveal{opacity:1;transform:none}
+body.ready .d1{transition-delay:.15s}body.ready .d2{transition-delay:.3s}body.ready .d3{transition-delay:.45s}body.ready .d4{transition-delay:.6s}
+
+/* header */
+header{position:fixed;top:0;left:0;right:0;height:68px;z-index:40;display:flex;align-items:center;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:color-mix(in srgb,var(--paper) 78%,transparent)}
+header .wrap{display:flex;align-items:center;gap:28px}
+.wordmark{display:inline-flex;align-items:center;text-decoration:none;color:var(--ink)}
+.wordmark svg{height:22px;width:auto;display:block;fill:currentColor}
+nav.main{display:flex;gap:22px;margin-left:8px}
+nav.main a{font:500 14px/1 var(--sans);text-decoration:none;color:var(--ink-2);padding:9px 12px;border-radius:999px}
+nav.main a:hover{color:var(--ink);background:var(--paper-2)}
+header .right{margin-left:auto;display:flex;gap:10px;align-items:center}
+header .right a.sign{font:500 14px/1 var(--sans);text-decoration:none;color:var(--ink);padding:10px 8px}
+header .btn{padding:12px 18px;font-size:14px;min-height:42px;border-radius:10px}
+@media (max-width:820px){nav.main{display:none}header .right a.sign{display:none}}
+
+/* layers */
+
+/* the pen of light: a small solid nib, a soft halo, and a comet trace that follows and fades */
+@media (pointer:fine){body.cursor-on, body.cursor-on a, body.cursor-on button{cursor:none}}
+#trace{position:fixed;inset:0;z-index:45;pointer-events:none}
+#nib{position:fixed;left:0;top:0;z-index:46;pointer-events:none;width:0;height:0;display:none}
+@media (pointer:fine){#nib{display:block}}
+#nib .core{position:absolute;left:-5px;top:-5px;width:10px;height:10px;border-radius:50%;background:var(--pig);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+#nib.hover .core{transform:scale(1.8);opacity:.85}
+#nib.press .core{transform:scale(.7)}
+#trace{mix-blend-mode:multiply}
+[data-theme="dark"] #trace{mix-blend-mode:screen}
+
+#trail{position:fixed;inset:0;z-index:45;pointer-events:none}
+#cursor{position:fixed;left:0;top:0;z-index:46;pointer-events:none;width:0;height:0;display:none}
+@media (pointer:fine){#cursor{display:block}}
+#cursor .dot{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:var(--pig);transition:transform .2s}
+#cursor .ring{position:absolute;left:-13px;top:-13px;width:26px;height:26px;border-radius:50%;border:1px solid var(--pig);opacity:.5;transition:transform .25s cubic-bezier(.2,.8,.2,1),opacity .2s}
+#cursor.hover .ring{transform:scale(1.5);opacity:.9}#cursor.hover .dot{transform:scale(.4)}
+main{position:relative;z-index:1}
+section.beat{position:relative}
+
+/* hero */
+#hero{min-height:100svh;display:grid;align-items:center;padding-top:64px}
+#hero .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:center}
+@media (max-width:820px){#hero .grid{grid-template-columns:1fr}}
+#hero h1{font:700 clamp(58px,9.6vw,148px)/.95 var(--sans);letter-spacing:-.045em;margin-top:14px}
+#hero .sub{font:400 clamp(18px,2.1vw,23px)/1.45 var(--sans);color:var(--ink-2);max-width:30ch;margin-top:22px}
+#hero .cta{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap;align-items:center}
+#hero .note{font-size:13px;color:var(--ink-3);margin-left:6px}
+#hero .stage{position:relative;height:min(64vh,560px);display:grid;place-items:center}
+#hero .bloom{position:absolute;inset:8% 4%;border-radius:50%;background:radial-gradient(closest-side, var(--rose-frost), transparent 70%), radial-gradient(closest-side at 30% 30%, var(--pig-frost), transparent 60%);filter:blur(10px);animation:breathe 7s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.06)}}
+.hero-wobo{width:min(360px,70%);height:auto;position:relative}
+.bob{animation:bob 4.5s ease-in-out infinite;transform-origin:center}
+@keyframes bob{50%{transform:translateY(-8px)}}
+.arm{animation:wave 3.2s ease-in-out 1.2s infinite}
+@keyframes wave{0%,70%,100%{transform:rotate(0)}78%{transform:rotate(-14deg)}86%{transform:rotate(8deg)}94%{transform:rotate(-8deg)}}
+#hero h1 .under{display:block;height:14px;margin-top:2px}
+#hero h1 .under path{stroke:var(--marigold);stroke-width:9;stroke-linecap:round;fill:none;stroke-dasharray:420;stroke-dashoffset:420;animation:draw 1s cubic-bezier(.5,0,.2,1) 1.1s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@media (max-width:820px){#hero .stage{height:300px}}
+#hero .cue{position:absolute;left:0;bottom:22px;display:flex;align-items:center;gap:10px}
+#hero .cue svg{width:26px;height:40px}
+.scrollhint{font-family:var(--hand);font-size:22px;color:var(--pig)}
+
+/* pinned chapters */
+.pin{height:300vh;position:relative}
+.pin.short{height:200vh}
+.pin .sticky{position:sticky;top:0;height:100svh;display:grid;align-items:center;overflow:hidden}
+.pin .layout{display:grid;grid-template-columns:.9fr 1.1fr;gap:44px;align-items:center}
+@media (max-width:820px){.pin .layout{grid-template-columns:1fr;gap:18px;align-content:start;padding-top:84px}}
+.chapter{font:500 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--pig);display:block;margin-bottom:14px}
+.caps{position:relative;min-height:10em}
+.caps .cap{position:absolute;inset:0;opacity:0;transform:translateY(10px);transition:opacity .35s ease,transform .35s ease}
+.caps .cap.on{opacity:1;transform:none}
+.caps h2{font:600 clamp(28px,3.6vw,46px)/1.1 var(--sans);margin-bottom:12px}
+.caps p{color:var(--ink-2);max-width:36ch;font-size:clamp(16px,1.4vw,19px)}
+.frame{position:relative;border-radius:24px;background:var(--paper-2);box-shadow:var(--shadow);aspect-ratio:16/11;overflow:hidden}
+.frame .bar{height:40px;display:flex;align-items:center;gap:8px;padding:0 16px;font-size:12px;color:var(--ink-3)}
+.frame .bar b{font-weight:500;color:var(--ink-2)}
+.frame svg.board{position:absolute;left:0;top:40px;width:100%;height:calc(100% - 40px)}
+.frame .mini{position:absolute;right:14px;bottom:12px;width:56px;height:56px}
+.bubble{position:absolute;left:5%;top:14%;max-width:56%;font:400 15px/1.4 var(--sans);border-radius:14px 14px 14px 4px;padding:12px 14px;background:var(--paper);box-shadow:var(--lift);opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s}
+.bubble.on{opacity:1;transform:none}
+.bubble .who{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:4px}
+.ink{fill:none;stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.ink.pig{stroke:var(--pig)}.ink.rose{stroke:var(--rose)}.ink.thin{stroke-width:2.5;stroke:var(--ink-2)}
+.hw{font-family:var(--hand);font-weight:600;fill:var(--ink)}
+.scene{width:100%;max-width:440px;height:auto;display:block}
+.scene.wide{max-width:100%}
+.scene.small{max-width:160px}
+#tuesday .scene{max-width:300px;margin-bottom:22px}
+.hw.pig{fill:var(--pig)}.hw.rose{fill:var(--rose)}
+.penTip{fill:var(--pig)}
+
+/* meet */
+#meet .intro{font-family:var(--hand);font-weight:600;font-size:clamp(28px,4vw,52px);line-height:1.15;color:var(--ink);max-width:16ch}
+#meet .intro span{opacity:0;transition:opacity .12s}
+#meet .intro span.on{opacity:1}
+#meet .said{margin-top:26px;font-size:15px;color:var(--ink-3);opacity:0;transition:opacity .4s}
+#meet .said.on{opacity:1}
+
+/* tries */
+#tries{padding:16vh 0 20vh}
+#tries .grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+@media (max-width:820px){#tries .grid{grid-template-columns:1fr;gap:28px}}
+#tries h2,#note h2,#home h2,#safe h2,#plans h2{font:600 clamp(28px,3.6vw,46px)/1.1 var(--sans);margin:12px 0 14px}
+#tries p,#note p.lead,#home p.lead,#safe p.lead{color:var(--ink-2);max-width:40ch}
+.puzzle{border-radius:24px;padding:32px;display:grid;gap:18px;justify-items:center;position:relative;background:var(--paper-2)}
+.puzzle .q{font-size:18px;justify-self:start}
+.puzzle .q i{font-style:normal;font-family:var(--hand);color:var(--pig);font-size:24px}
+.cells{display:grid;grid-template-columns:repeat(2,104px);grid-template-rows:repeat(2,104px);gap:6px;padding:6px;border-radius:16px;background:var(--ink);position:relative}
+.cells button{border:0;border-radius:10px;background:var(--paper);padding:0;transition:background .15s}
+.cells button[aria-pressed="true"]{background:rgba(31,53,224,.18)}
+[data-theme="dark"] .cells button[aria-pressed="true"]{background:rgba(123,140,255,.22)}
+.cells button:hover{background:var(--pig-frost)}
+.cells svg{position:absolute;inset:-34px;width:calc(100% + 68px);height:calc(100% + 68px);pointer-events:none;overflow:visible}
+.puzzle .row{display:flex;gap:10px;align-items:center}
+.puzzle .say{font-family:var(--hand);font-size:26px;color:var(--pig);min-height:1.2em;justify-self:start}
+.puzzle .say.win{color:var(--marigold)}
+.puzzle .reset{font-size:13px;color:var(--ink-2);background:var(--paper);border:0;padding:12px 16px;border-radius:10px}
+
+/* note */
+#note{padding:6vh 0 20vh}
+#note .grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+@media (max-width:820px){#note .grid{grid-template-columns:1fr;gap:28px}}
+.letter{border-radius:24px;padding:34px 36px;background:var(--paper-2);box-shadow:var(--shadow);position:relative;max-width:540px;transform:rotate(-1.2deg)}
+.letter .to{font:500 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px}
+.letter .body{font-family:var(--hand);font-weight:600;font-size:26px;line-height:1.25;color:var(--ink)}
+.letter .body em{font-style:normal;color:var(--rose)}
+.letter .body b{font-weight:600;color:var(--pig)}
+.letter .sig{margin-top:18px;font-family:var(--hand);font-size:24px;color:var(--pig)}
+.letter .stamp{position:absolute;right:22px;top:22px;width:44px;height:44px}
+
+/* home */
+#home{padding:8vh 0 18vh}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:34px}
+@media (max-width:820px){.two{grid-template-columns:1fr}}
+.col h3{font:600 20px/1.2 var(--sans);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.col h3 i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.col ul{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.col li{display:grid;grid-template-columns:36px 1fr;gap:12px;align-items:start;color:var(--ink-2);font-size:16px}
+.col li svg{width:36px;height:36px}
+.col li b{display:block;color:var(--ink);font-weight:500}
+
+/* safe */
+#safe{padding:6vh 0 18vh}
+.quiet{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:30px}
+@media (max-width:820px){.quiet{grid-template-columns:1fr}}
+.quiet div{background:var(--paper-2);border-radius:16px;padding:22px 24px;color:var(--ink-2);font-size:16px}
+.quiet div b{display:block;color:var(--ink);font-weight:500;margin-bottom:4px}
+
+/* plans */
+#plans{padding:6vh 0 18vh}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:26px}
+@media (max-width:820px){.cards{grid-template-columns:1fr}}
+.card{border-radius:24px;padding:30px;display:grid;gap:12px;align-content:start;min-height:300px;position:relative;background:var(--paper-2);transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s}
+.card:hover{transform:translateY(-3px);box-shadow:var(--lift)}
+.card.pop{background:var(--ink);color:var(--paper)}
+.card.pop ul{color:color-mix(in srgb,var(--paper) 78%,transparent)}
+.card.pop .price small{color:color-mix(in srgb,var(--paper) 60%,transparent)}
+.card .name{font:600 20px/1.2 var(--sans)}
+.card .price{font:600 32px/1 var(--sans);font-variant-numeric:tabular-nums}
+.card .price small{font:400 14px/1 var(--sans);color:var(--ink-3)}
+.card ul{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:8px;color:var(--ink-2);font-size:15px}
+.card ul li::before{content:"";display:inline-block;width:14px;height:1.5px;background:var(--pig);margin-right:10px;vertical-align:middle}
+.card .tag{position:absolute;top:-14px;left:26px;font-family:var(--hand);font-size:22px;color:var(--paper);background:var(--marigold);padding:2px 12px;border-radius:999px;transform:rotate(-3deg)}
+.card .btn{margin-top:auto;justify-content:center}
+.foot{font-size:13px;color:var(--ink-3);margin-top:16px;max-width:64ch}
+
+/* close */
+#close{min-height:82svh;display:grid;align-items:center;text-align:center}
+#close .say{font-family:var(--hand);font-weight:700;font-size:clamp(64px,12vw,170px);line-height:1;color:var(--pig);position:relative;display:inline-block}
+#close .say .under{position:absolute;left:-2%;right:-2%;bottom:-6px;width:104%;height:30px}
+#close .say .under .mark{stroke:var(--marigold);stroke-width:22;stroke-linecap:round;fill:none;opacity:.55;stroke-dasharray:920;stroke-dashoffset:920;transition:stroke-dashoffset 1.2s cubic-bezier(.5,0,.2,1) .3s}
+#close .say.in .under .mark{stroke-dashoffset:0}
+#close p{color:var(--ink-2);margin:12px auto 26px;max-width:34ch}
+
+footer{padding:56px 0 40px;position:relative;z-index:1;background:var(--paper-2);border-radius:32px 32px 0 0}
+footer .grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:24px}
+@media (max-width:820px){footer .grid{grid-template-columns:1fr 1fr}}
+footer h4{font:500 13px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0 0 14px}
+footer a{display:block;text-decoration:none;color:var(--ink-2);font-size:14px;padding:5px 0}
+footer .wordmark svg{height:26px}
+footer .small{font-size:12px;color:var(--ink-3);margin-top:34px;display:flex;gap:18px;flex-wrap:wrap}
+
+.rise{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.2,.8,.2,1),transform .7s cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--i,0)*90ms)}
+.rise.in{opacity:1;transform:none}
+.scene .draw{stroke-dasharray:var(--len,600);stroke-dashoffset:var(--len,600);transition:stroke-dashoffset 1.4s cubic-bezier(.5,0,.2,1)}
+.scene.in .draw{stroke-dashoffset:0}
+.scene .wash{opacity:0;transition:opacity .6s ease .8s}
+.scene.in .wash{opacity:1}
+.px{will-change:transform}
+@media (prefers-reduced-motion:reduce){.reveal,.rise{transition:none;opacity:1;transform:none}#intro{display:none}.caps .cap{transition:none}.scene .draw{stroke-dashoffset:0;transition:none}.scene .wash{opacity:1}.bob,.arm,#hero .bloom{animation:none}}
+</style>
+</head>
+<body class="cursor-on">
+<div id="intro" aria-hidden="true"><div class="line"></div></div>
+<canvas id="trace" aria-hidden="true"></canvas>
+<div id="nib" aria-hidden="true"><div class="core"></div></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="wm" viewBox="170 560 1160 340"><path transform="matrix(1 0 0 1 173.553 879.375)" d="M 80.328125 5.296875 C 63.648438 5.296875 50.5 1.769531 40.875 -5.28125 C 31.257812 -12.34375 24.207031 -21.5625 19.71875 -32.9375 C 15.226562 -44.320312 12.421875 -56.75 11.296875 -70.21875 C 10.179688 -83.6875 9.625 -96.832031 9.625 -109.65625 L 9.625 -234.234375 L 113.03125 -234.234375 L 113.984375 -133.703125 C 113.984375 -127.296875 115.265625 -122.164062 117.828125 -118.3125 C 120.398438 -114.46875 124.25 -113.664062 129.375 -115.90625 C 130.976562 -116.550781 132.5 -117.429688 133.9375 -118.546875 C 135.382812 -119.671875 136.429688 -121.679688 137.078125 -124.578125 L 137.078125 -234.234375 L 240.96875 -234.234375 L 241.921875 -133.703125 C 241.921875 -127.296875 243.285156 -122.164062 246.015625 -118.3125 C 248.742188 -114.46875 252.671875 -113.664062 257.796875 -115.90625 C 259.398438 -116.550781 261.003906 -117.59375 262.609375 -119.03125 C 264.210938 -120.476562 265.175781 -122.804688 265.5 -126.015625 L 263.09375 -234.234375 L 380.453125 -234.234375 L 372.75 -0.484375 L 287.140625 -0.484375 L 283.296875 -48.09375 C 279.765625 -40.082031 274.867188 -31.90625 268.609375 -23.5625 C 262.359375 -15.226562 254.34375 -8.332031 244.5625 -2.875 C 234.789062 2.570312 222.691406 5.296875 208.265625 5.296875 C 191.265625 5.296875 177.953125 1.683594 168.328125 -5.53125 C 158.710938 -12.75 151.660156 -21.96875 147.171875 -33.1875 C 141.078125 -23.25 132.660156 -14.347656 121.921875 -6.484375 C 111.179688 1.367188 97.316406 5.296875 80.328125 5.296875 Z"/><path transform="matrix(1 0 0 1 549.669 879.375)" d="M 132.75 2.890625 C 109.976562 2.890625 89.296875 -0.957031 70.703125 -8.65625 C 52.109375 -16.351562 37.28125 -29.097656 26.21875 -46.890625 C 15.15625 -64.691406 9.625 -88.820312 9.625 -119.28125 C 9.625 -149.414062 15.15625 -173.460938 26.21875 -191.421875 C 37.28125 -209.378906 52.109375 -222.445312 70.703125 -230.625 C 89.296875 -238.800781 109.976562 -242.890625 132.75 -242.890625 C 155.832031 -242.890625 176.671875 -238 195.265625 -228.21875 C 213.867188 -218.4375 228.617188 -204.40625 239.515625 -186.125 C 250.421875 -167.851562 255.875 -145.570312 255.875 -119.28125 C 255.875 -91.707031 250.421875 -68.859375 239.515625 -50.734375 C 228.617188 -32.617188 213.867188 -19.148438 195.265625 -10.328125 C 176.671875 -1.515625 155.832031 2.890625 132.75 2.890625 Z M 110.625 -98.125 C 110.625 -89.78125 112.785156 -83.925781 117.109375 -80.5625 C 121.441406 -77.195312 126.65625 -75.515625 132.75 -75.515625 C 139.15625 -75.515625 144.523438 -77.4375 148.859375 -81.28125 C 153.191406 -85.132812 155.359375 -90.75 155.359375 -98.125 C 155.359375 -104.851562 153.191406 -110.0625 148.859375 -113.75 C 144.523438 -117.4375 139.15625 -119.28125 132.75 -119.28125 C 126.65625 -119.28125 121.441406 -117.753906 117.109375 -114.703125 C 112.785156 -111.660156 110.625 -106.132812 110.625 -98.125 Z"/><path transform="matrix(1 0 0 1 801.215 879.375)" d="M 153.90625 0 C 142.363281 0 131.378906 -2.960938 120.953125 -8.890625 C 110.535156 -14.828125 102.125 -22.125 95.71875 -30.78125 L 93.3125 -0.484375 L 12.984375 -0.484375 L 9.625 -132.75 L 13.953125 -307.34375 L 101 -307.34375 L 103.40625 -221.25 C 110.457031 -227.019531 118.710938 -231.664062 128.171875 -235.1875 C 137.628906 -238.71875 148.613281 -240.484375 161.125 -240.484375 C 191.582031 -240.484375 215.546875 -231.425781 233.015625 -213.3125 C 250.492188 -195.195312 259.234375 -164.171875 259.234375 -120.234375 C 259.234375 -90.421875 254.664062 -66.773438 245.53125 -49.296875 C 236.394531 -31.828125 223.96875 -19.242188 208.25 -11.546875 C 192.539062 -3.847656 174.425781 0 153.90625 0 Z M 117.84375 -98.59375 C 117.84375 -91.21875 119.925781 -85.765625 124.09375 -82.234375 C 128.257812 -78.710938 133.390625 -76.953125 139.484375 -76.953125 C 145.578125 -76.953125 150.707031 -78.554688 154.875 -81.765625 C 159.039062 -84.972656 161.125 -90.582031 161.125 -98.59375 C 161.125 -106.613281 159.039062 -112.222656 154.875 -115.421875 C 150.707031 -118.628906 145.578125 -120.234375 139.484375 -120.234375 C 133.390625 -120.234375 128.257812 -118.390625 124.09375 -114.703125 C 119.925781 -111.023438 117.84375 -105.65625 117.84375 -98.59375 Z"/><path transform="matrix(1 0 0 1 1060.937 879.375)" d="M 132.75 2.890625 C 109.976562 2.890625 89.296875 -0.957031 70.703125 -8.65625 C 52.109375 -16.351562 37.28125 -29.097656 26.21875 -46.890625 C 15.15625 -64.691406 9.625 -88.820312 9.625 -119.28125 C 9.625 -149.414062 15.15625 -173.460938 26.21875 -191.421875 C 37.28125 -209.378906 52.109375 -222.445312 70.703125 -230.625 C 89.296875 -238.800781 109.976562 -242.890625 132.75 -242.890625 C 155.832031 -242.890625 176.671875 -238 195.265625 -228.21875 C 213.867188 -218.4375 228.617188 -204.40625 239.515625 -186.125 C 250.421875 -167.851562 255.875 -145.570312 255.875 -119.28125 C 255.875 -91.707031 250.421875 -68.859375 239.515625 -50.734375 C 228.617188 -32.617188 213.867188 -19.148438 195.265625 -10.328125 C 176.671875 -1.515625 155.832031 2.890625 132.75 2.890625 Z M 110.625 -98.125 C 110.625 -89.78125 112.785156 -83.925781 117.109375 -80.5625 C 121.441406 -77.195312 126.65625 -75.515625 132.75 -75.515625 C 139.15625 -75.515625 144.523438 -77.4375 148.859375 -81.28125 C 153.191406 -85.132812 155.359375 -90.75 155.359375 -98.125 C 155.359375 -104.851562 153.191406 -110.0625 148.859375 -113.75 C 144.523438 -117.4375 139.15625 -119.28125 132.75 -119.28125 C 126.65625 -119.28125 121.441406 -117.753906 117.109375 -114.703125 C 112.785156 -111.660156 110.625 -106.132812 110.625 -98.125 Z"/></symbol>
+</defs></svg>
+
+<header>
+  <div class="wrap">
+    <a class="wordmark reveal" href="#" aria-label="Wobo home"><svg><use href="#wm"/></svg></a>
+    <nav class="main reveal d1" aria-label="Site"><a href="#meet">Meet Wobo</a><a href="#tuesday">A lesson</a><a href="#home">For parents</a><a href="#plans">Plans</a><a href="#help">Help</a></nav>
+    <div class="right reveal d2"><a class="sign" href="#signin">Sign in</a><a class="btn" href="#start">Get started</a></div>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="beat" id="hero">
+    <div class="wrap grid">
+      <div>
+        <span class="eyebrow reveal d1">For classes 4 to 12 · free every single day</span>
+        <h1 class="reveal d1">Hey Wobo<svg class="under" viewBox="0 0 420 14" preserveAspectRatio="none" aria-hidden="true"><path d="M4 9 C 120 2, 260 12, 416 6"/></svg></h1>
+        <p class="sub reveal d2">The patient tutor that draws every answer out for your child, on their school's syllabus, at any hour.</p>
+        <div class="cta reveal d3"><a class="btn" href="#start">Start learning for free</a><a class="btn quiet" href="#tuesday">Watch a lesson</a><span class="note">No card needed. Leave whenever you like.</span></div>
+      </div>
+      <div class="stage reveal d4" id="stage" aria-label="Wobo, waving">
+        <div class="bloom" aria-hidden="true"></div>
+        <svg viewBox="0 0 320 340" class="hero-wobo" aria-hidden="true">
+          <g id="heroWobo" class="wobo bob">
+            <ellipse cx="160" cy="318" rx="86" ry="12" fill="var(--ink)" opacity=".08"/>
+            <path d="M92 206 c-14 40 -6 80 20 96 c30 18 66 18 96 0 c26 -16 34 -56 20 -96 z" fill="var(--body)"/>
+            <circle cx="160" cy="150" r="104" fill="var(--body)"/>
+            <rect x="80" y="112" width="160" height="70" rx="35" fill="var(--visor)"/>
+            <g class="eyes"><g class="blink"><circle cx="128" cy="147" r="16" fill="var(--eye)"/><circle cx="192" cy="147" r="16" fill="var(--eye)"/></g></g>
+            <g class="arm" style="transform-origin:236px 232px"><path d="M236 232 c26 -6 46 -28 52 -56" stroke="var(--body)" stroke-width="18" stroke-linecap="round" fill="none"/><g transform="translate(288 176) rotate(-30)"><rect x="-6" y="-70" width="12" height="62" rx="4" fill="var(--ink)"/><path d="M-6 -8 l6 18 l6 -18 z" fill="var(--pig)"/></g></g>
+          </g>
+        </svg>
+      </div>
+      <div class="cue reveal d4" aria-hidden="true"><svg viewBox="0 0 26 40" fill="none" stroke="var(--pig)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 v30 M5 26 l8 8 l8 -8"/></svg><span class="scrollhint">scroll to meet Wobo</span></div>
+    </div>
+  </section>
+
+  <!-- MEET -->
+  <section class="beat pin short" id="meet" data-pin>
+    <div class="sticky"><div class="wrap layout">
+      <div>
+        <span class="chapter">Meet Wobo</span>
+        <p class="intro" id="introLine" aria-label="Hey there. I'm Wobo, your AI wobot. I'll help you learn, and I'll be with you every step of the way."></p>
+        <p class="said" id="said">That's the first thing Wobo says to every learner. Then it asks their name, and their class. Let me show you a Tuesday.</p>
+      </div>
+      <div id="meetStage" class="rise" style="display:grid;place-items:center"><svg viewBox="0 0 320 340" style="width:min(300px,60%)" aria-hidden="true"><g class="wobo bob"><ellipse cx="160" cy="318" rx="86" ry="12" fill="var(--ink)" opacity=".08"/><path d="M92 206 c-14 40 -6 80 20 96 c30 18 66 18 96 0 c26 -16 34 -56 20 -96 z" fill="var(--body)"/><circle cx="160" cy="150" r="104" fill="var(--body)"/><rect x="80" y="112" width="160" height="70" rx="35" fill="var(--visor)"/><g class="eyes"><g class="blink"><circle cx="128" cy="147" r="16" fill="var(--eye)"/><circle cx="192" cy="147" r="16" fill="var(--eye)"/></g></g></g></svg></div>
+    </div></div>
+  </section>
+
+  <!-- TUESDAY -->
+  <section class="beat pin" id="tuesday" data-pin>
+    <div class="sticky"><div class="wrap layout">
+      <div><svg class="scene px" data-px="0.06" viewBox="0 0 420 300" aria-label="A desk at night: a lamp, a notebook, a phone with Wobo on it">
+  <ellipse class="wash" cx="150" cy="190" rx="150" ry="70" fill="var(--marigold)" opacity=".22"/>
+  <g class="ink" stroke-width="4"><path d="M40 250 H400"/><path d="M76 250 V120 c0 -40 60 -50 80 -20 l18 26"/><path d="M160 108 l40 -12 l20 44 l-46 4 z"/><path d="M60 250 h32 M64 244 h24"/></g>
+  <g class="ink thin"><path d="M120 250 l18 -60 h120 l-6 60 z"/><path d="M148 214 h70 M144 226 h60 M140 238 h74"/><path d="M196 200 l16 -14 l16 14 z"/></g>
+  <path d="M232 250 l70 -6 v-70 l-66 4 z" fill="var(--paper)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>
+  <g transform="translate(266 214) scale(.42)"><circle cx="0" cy="0" r="44" fill="var(--body)"/><rect x="-34" y="-16" width="68" height="30" rx="15" fill="var(--visor)"/><circle cx="-14" cy="-1" r="7" fill="var(--eye)"/><circle cx="14" cy="-1" r="7" fill="var(--eye)"/></g>
+  <g class="ink"><path d="M330 250 v-40 h40 v40 M370 220 c14 0 14 20 0 20"/><path class="thin" d="M340 198 c-4 -8 4 -12 0 -20 M352 196 c-4 -8 4 -12 0 -20" stroke="var(--ink-3)"/></g>
+  <path d="M300 236 l30 -70" stroke="var(--rose)" stroke-width="5" stroke-linecap="round"/><path d="M330 166 l4 -10 l4 10" fill="var(--rose)"/>
+  <text class="hw" x="300" y="112" font-size="20" fill="var(--ink-3)">9:40 pm</text>
+</svg><div class="caps">
+        <div class="cap" data-at="0"><span class="chapter">Tuesday, 9:40 pm</span><h2 class="rise" style="--i:1">Aanya has a test on Friday. Question 7 makes no sense.</h2><p>Class 8, the last chapter. It's late, and nobody at home remembers this one.</p></div>
+        <div class="cap" data-at=".22"><span class="chapter">She asks</span><h2 class="rise" style="--i:1">Out loud, or typed. It's fine to ask twice.</h2><p>No queue, no judgement, no "we did this in class".</p></div>
+        <div class="cap" data-at=".45"><span class="chapter">Wobo draws it out</span><h2 class="rise" style="--i:1">In its own hand, at her pace</h2><p>Every line lands with the words, and every number is checked before the pen touches the board.</p></div>
+        <div class="cap" data-at=".8"><span class="chapter">9:46 pm</span><h2 class="rise" style="--i:1">"Oh. That's why."</h2><p>Six minutes. She saw it, not just heard it. Friday looks different now.</p></div>
+      </div></div>
+      <div class="frame" id="frame1">
+        <div class="bar"><b>Wobo</b> · with Aanya</div>
+        <div class="bubble" id="bubbleQ"><span class="who">Aanya</span>why is a² + b² = c²? i don't get where the squares come from</div>
+        <svg class="board" viewBox="0 0 640 400" aria-label="Wobo draws the proof of Pythagoras">
+          <g id="lesson">
+            <path class="ink" data-s=".2" data-e=".3" d="M110 262 L230 262 L230 142 Z"/>
+            <path class="ink thin" data-s=".3" data-e=".36" d="M110 262 L110 382 L230 382 L230 262"/>
+            <text class="hw" x="150" y="332" font-size="26" data-s=".35" data-e=".38">a²</text>
+            <path class="ink thin" data-s=".38" data-e=".44" d="M230 142 L340 142 L340 262 L230 262"/>
+            <text class="hw" x="270" y="212" font-size="26" data-s=".43" data-e=".46">b²</text>
+            <path class="ink pig" data-s=".46" data-e=".56" d="M110 262 L230 142 L330 247 L210 367 Z"/>
+            <text class="hw pig" x="238" y="264" font-size="26" data-s=".55" data-e=".58">c²</text>
+            <text class="hw" x="400" y="130" font-size="40" data-s=".58" data-e=".65">a² + b² = c²</text>
+            <text class="hw" x="400" y="188" font-size="30" data-s=".66" data-e=".71">4² + 3² = 25</text>
+            <text class="hw" x="400" y="238" font-size="30" data-s=".72" data-e=".76">c² = 25</text>
+            <text class="hw pig" x="400" y="300" font-size="34" data-s=".78" data-e=".84">so c = 5</text>
+            <path class="ink pig" data-s=".84" data-e=".9" d="M392 268 c-16 22 -10 52 30 54 s90 6 120 -10 s10 -46 -30 -54 s-100 -8 -120 10"/>
+            <text class="hw rose" x="420" y="360" font-size="30" data-s=".9" data-e=".97">oh. that's why.</text>
+          </g>
+          <g id="pen" opacity="0"><path class="penTip" d="M0 0 l-5 -22 l4 -2 l5 22 z"/><rect x="-4" y="-84" width="7" height="62" rx="2" fill="var(--ink)" transform="rotate(-9)"/></g>
+        </svg>
+        <svg class="mini" viewBox="0 0 120 120"><g id="frameWobo" class="wobo"><circle cx="60" cy="60" r="44" fill="var(--body)"/><rect x="26" y="44" width="68" height="30" rx="15" fill="var(--visor)"/><g class="eyes"><g class="blink"><circle cx="46" cy="59" r="7" fill="var(--eye)"/><circle cx="74" cy="59" r="7" fill="var(--eye)"/></g></g></g></svg>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- TRIES -->
+  <section class="beat" id="tries">
+    <div class="wrap grid">
+      <div class="puzzle rise" aria-label="Try one">
+        <div class="q">Colour <i>½</i> of the shape.</div>
+        <div class="cells" id="cells">
+          <button aria-pressed="false" aria-label="top left"></button><button aria-pressed="false" aria-label="top right"></button>
+          <button aria-pressed="false" aria-label="bottom left"></button><button aria-pressed="false" aria-label="bottom right"></button>
+          <svg viewBox="-34 -34 264 264" aria-hidden="true">
+            <path class="ink" id="tick" d="M-10 96 l30 30 l60 -70" opacity="0" style="stroke:var(--mint)"/>
+            <path class="ink pig" id="ring" d="M-6 -8 c-14 40 -14 90 6 112 s90 22 104 -6 s6 -96 -12 -108 s-84 -12 -98 2" opacity="0"/>
+            <g id="burst" opacity="0" stroke="var(--marigold)" stroke-width="2.2" stroke-linecap="round" fill="none"><path d="M98 -26 l0 -18"/><path d="M128 -18 l10 -14"/><path d="M68 -18 l-10 -14"/><path d="M150 10 l16 -8"/><path d="M46 10 l-16 -8"/></g>
+          </svg>
+        </div>
+        <div class="row"><button class="btn" id="check">Check</button><button class="reset" id="reset">Start over</button></div>
+        <div class="say" id="say" aria-live="polite"></div>
+      </div>
+      <div>
+        <span class="chapter rise">Then she tries one</span>
+        <h2 class="rise" style="--i:1">Wobo never says "wrong". It rings the gap, and waits.</h2>
+        <p>Practice is something you do with your hands: shade it, drag it, draw it. When she's close, Wobo draws the difference on her answer. When she gets it, it makes a small fuss. Try it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOTE -->
+  <section class="beat" id="note">
+    <div class="wrap grid">
+      <div>
+        <span class="chapter rise">Sunday, 6 pm</span>
+        <h2 class="rise" style="--i:1">You get the week in one honest note</h2>
+        <p class="lead rise" style="--i:2">No dashboard to decode, no streak to police. What she learned, where she asked for help, and what's next. Written by the tutor who was there.</p>
+      </div>
+      <div class="letter rise" id="letter" style="--i:2">
+        <svg class="stamp" viewBox="0 0 120 120" aria-hidden="true"><g class="wobo"><circle cx="60" cy="60" r="44" fill="var(--body)"/><rect x="26" y="44" width="68" height="30" rx="15" fill="var(--visor)"/><g class="eyes"><g class="blink"><circle cx="46" cy="59" r="7" fill="var(--eye)"/><circle cx="74" cy="59" r="7" fill="var(--eye)"/></g></g></g></svg>
+        <div class="to">To Aanya's parents</div>
+        <div class="body">This week Aanya did three lessons and fourteen problems. She asked for help twice after a miss, <em>which is exactly how learning looks.</em> Friday's test is on triangles, and she's ready for the first half. Next week we do the rest, <b>ten minutes a day.</b></div>
+        <div class="sig">— Wobo</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOME -->
+  <section class="beat" id="home">
+    <div class="wrap">
+      <span class="chapter rise">What changes at home</span>
+      <h2 class="rise" style="--i:1">A tutor in the house, without the 8 pm drive across town</h2>
+      <p class="lead rise" style="--i:2">Wobo teaches what your child's school teaches, this week, and it's there when the question comes, not when the slot is.</p>
+      <div style="margin-top:34px"><svg class="scene wide px" data-px="0.04" viewBox="0 0 900 300" aria-label="A kitchen table with a tablet showing Wobo drawing, a bowl of fruit, a school bag">
+  <g class="ink" stroke-width="4"><path d="M40 230 H860"/><path d="M90 230 v50 M810 230 v50"/></g>
+  <rect x="330" y="120" width="240" height="110" rx="6" fill="var(--paper)" stroke="var(--ink)" stroke-width="2"/>
+  <g transform="translate(345 135)"><path d="M20 78 L100 78 L100 18 Z" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/><path d="M20 78 L100 18" stroke="var(--pig)" stroke-width="2"/><text class="hw pig" x="64" y="72" font-size="18">c²</text><text class="hw" x="120" y="40" font-size="20">a² + b² = c²</text><g transform="translate(200 72) scale(.32)"><circle r="44" fill="var(--body)"/><rect x="-34" y="-16" width="68" height="30" rx="15" fill="var(--visor)"/><circle cx="-14" cy="-1" r="7" fill="var(--eye)"/><circle cx="14" cy="-1" r="7" fill="var(--eye)"/></g></g>
+  <g><path d="M150 230 c0 -30 110 -30 110 0 z" fill="none" stroke="var(--ink)" stroke-width="2"/><circle cx="185" cy="200" r="14" fill="var(--marigold)"/><circle cx="215" cy="196" r="14" fill="var(--rose)"/><circle cx="200" cy="212" r="12" fill="var(--mint)"/></g>
+  <g class="ink"><path d="M640 230 v-24 h44 v24 M650 206 c0 -14 24 -14 24 0"/></g>
+  <g class="ink"><path d="M740 230 l6 -80 h70 l6 80 z M760 150 c0 -20 40 -20 40 0"/><path class="thin" d="M756 180 h60" stroke="var(--pig)"/></g>
+  <g class="ink thin"><path d="M60 60 h120 v90 h-120 z"/><path d="M120 60 v90 M60 105 h120"/></g><circle cx="150" cy="86" r="10" fill="var(--paper)" stroke="var(--ink-3)" stroke-width="1.5"/>
+  <text class="hw" x="560" y="80" font-size="22" fill="var(--ink-3)">any hour, any table</text>
+</svg></div>
+      <div class="two">
+        <div class="col rise" style="--i:3">
+          <h3><i style="background:var(--pig)"></i>For parents</h3>
+          <ul>
+            <li><svg viewBox="0 0 36 36" fill="none" stroke="var(--pig)" stroke-width="1.6" stroke-linecap="round"><path d="M6 26 h24 M8 26 v-10 l10 -8 l10 8 v10"/></svg><div><b>Any hour, any device</b>A phone at the kitchen table, a tablet in the car, the laptop at night.</div></li>
+            <li><svg viewBox="0 0 36 36" fill="none" stroke="var(--pig)" stroke-width="1.6" stroke-linecap="round"><path d="M7 27 l6 -8 l6 4 l10 -13"/></svg><div><b>You see the week, not just the marks</b>One note on Sunday. What was learned, what was hard, what's next.</div></li>
+            <li><svg viewBox="0 0 36 36" fill="none" stroke="var(--pig)" stroke-width="1.6" stroke-linecap="round"><circle cx="18" cy="18" r="11"/><path d="M13 18 l4 4 l7 -8"/></svg><div><b>Calm, patient, never shaming</b>No red crosses. The gap gets drawn, the effort gets noticed.</div></li>
+            <li><svg viewBox="0 0 36 36" fill="none" stroke="var(--pig)" stroke-width="1.6" stroke-linecap="round"><path d="M8 12 h20 v14 h-20 z M8 17 h20"/></svg><div><b>Free every day</b>Upgrade only if you want more of it. The price is the price.</div></li>
+          </ul>
+        </div>
+        <div class="col rise" style="--i:4">
+          <h3><i style="background:var(--rose)"></i>For students</h3>
+          <ul>
+            <li><svg viewBox="0 0 36 36" fill="none" stroke="var(--rose)" stroke-width="1.6" stroke-linecap="round"><path d="M9 24 c0 -8 18 -8 18 0 M12 13 h12"/></svg><div><b>Ask the basic thing</b>Without anyone in the room knowing you had to.</div></li>
+            <li><svg viewBox="0 0 36 36" fill="none" stroke="var(--rose)" stroke-width="1.6" stroke-linecap="round"><path d="M8 26 l14 -14 l4 4 l-14 14 z M20 14 l4 4"/></svg><div><b>It draws, it doesn't lecture</b>Watch the idea appear instead of reading about it.</div></li>
+            <li><svg viewBox="0 0 36 36" fill="none" stroke="var(--rose)" stroke-width="1.6" stroke-linecap="round"><path d="M9 10 h18 v18 h-18 z M13 16 h10 M13 21 h6"/></svg><div><b>It knows what your class is doing</b>This chapter, this week, your school's way.</div></li>
+            <li><svg viewBox="0 0 36 36" fill="none" stroke="var(--rose)" stroke-width="1.6" stroke-linecap="round"><path d="M18 8 l3 7 l7 1 l-5 5 l1 7 l-6 -4 l-6 4 l1 -7 l-5 -5 l7 -1 z"/></svg><div><b>It notices</b>When you're stuck, and when you nail it.</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SAFE -->
+  <section class="beat" id="safe">
+    <div class="wrap">
+      <div style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end"><div><span class="chapter">Safe by design</span>
+      <h2 class="rise" style="--i:1">Built the way we'd want it built for our own children</h2></div><svg class="scene small px" data-px="0.05" viewBox="0 0 200 200" aria-label="A hand-drawn shield with Wobo's eyes inside">
+  <path d="M100 20 c30 16 50 18 70 18 v60 c0 44 -32 76 -70 92 c-38 -16 -70 -48 -70 -92 v-60 c20 0 40 -2 70 -18 z" fill="var(--mint-frost)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+  <g transform="translate(100 96)"><rect x="-34" y="-15" width="68" height="30" rx="15" fill="var(--ink)"/><circle cx="-14" cy="0" r="7" fill="var(--paper)"/><circle cx="14" cy="0" r="7" fill="var(--paper)"/></g>
+  <path d="M74 140 l14 12 l38 -30" fill="none" stroke="var(--mint)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></div>
+      <div class="quiet">
+        <div class="rise" style="--i:1"><b>Nothing is sold on your child's data</b>No ads, no tracking across the web, no selling of anything.</div>
+        <div class="rise" style="--i:2"><b>The price never changes based on behaviour</b>No countdown timers, no fake scarcity, nothing that preys on a twelve-year-old.</div>
+        <div class="rise" style="--i:3"><b>Neutral on everything that isn't the syllabus</b>Wobo teaches what the board teaches, and keeps its opinions to itself.</div>
+        <div class="rise" style="--i:4"><b>You can read everything Wobo said</b>Every lesson is there for a parent to see, any time.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLANS -->
+  <section class="beat" id="plans">
+    <div class="wrap">
+      <span class="chapter rise">Plans</span>
+      <h2 class="rise" style="--i:1">Free every day. More when the exams get close.</h2>
+      <div class="cards">
+        <div class="card rise" style="--i:1"><div class="name">Free</div><div class="price">₹0 <small>every day, forever</small></div><ul><li>Lessons on your child's syllabus</li><li>Wobo draws every day, with a daily allowance</li><li>Practice, and the Sunday note</li></ul><a class="btn quiet" href="#start">Start for free</a></div>
+        <div class="card pop rise" style="--i:2"><span class="tag">most families</span><div class="name">Pro</div><div class="price">₹1,999 <small>a month</small></div><ul><li>Five times the daily allowance</li><li>Voice, and the board on any screen</li><li>Everything in Free</li></ul><a class="btn pig" href="#plans">Choose Pro</a></div>
+        <div class="card rise" style="--i:3"><div class="name">Max</div><div class="price">₹3,999 <small>a month</small></div><ul><li>Twenty times the daily allowance</li><li>For the exam year, or two learners at once</li><li>Everything in Pro</li></ul><a class="btn quiet" href="#plans">Choose Max</a></div>
+      </div>
+      <p class="foot">Outside India, Pro is $20 and Max is $50 a month. Billed monthly, cancel anytime from settings. The price never changes based on how you behave.</p>
+    </div>
+  </section>
+
+  <!-- CLOSE -->
+  <section class="beat" id="close">
+    <div class="wrap">
+      <div class="say rise">Begin tonight.<svg class="under" viewBox="0 0 900 30" preserveAspectRatio="none" aria-hidden="true"><path class="mark" d="M10 18 C 200 4, 600 28, 890 12"/></svg></div>
+      <p>It takes a minute to set up, and the first question is on us. Wobo will be waiting in the corner of the screen.</p>
+      <a class="btn" href="#start">Start learning for free</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="grid">
+      <div><a class="wordmark" href="#" aria-label="Wobo"><svg><use href="#wm"/></svg></a><p style="color:var(--ink-3);font-size:14px;margin-top:12px;max-width:30ch">Say "Hey Wobo", or hold space, anywhere in the app.</p></div>
+      <div><h4>Wobo</h4><a href="#meet">Meet Wobo</a><a href="#tuesday">A lesson</a><a href="#plans">Plans</a><a href="#gift">Gift Wobo</a></div>
+      <div><h4>Help</h4><a href="#help">Help centre</a><a href="#contact">Contact</a><a href="#parents">For parents</a><a href="#schools">For schools</a></div>
+      <div><h4>Company</h4><a href="#about">About</a><a href="#legal/terms">Terms</a><a href="#legal/privacy">Privacy</a><a href="#legal/children">Children's privacy</a></div>
+    </div>
+    <div class="small"><span>© 2026 Wobo</span><span>heywobo.com</span><span>For learners in classes 4 to 12</span></div>
+  </div>
+</footer>
+
+<script type="module">
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fine = matchMedia('(pointer: fine)').matches;
+const dark = () => document.documentElement.getAttribute('data-theme') === 'dark';
+const t = new URLSearchParams(location.search).get('theme'); if (t) document.documentElement.setAttribute('data-theme', t);
+const lerp = (a, b, k) => a + (b - a) * k, clamp01 = v => Math.max(0, Math.min(1, v));
+requestAnimationFrame(() => { document.body.classList.add('ready'); setTimeout(() => document.body.classList.add('settled'), 1400); });
+
+/* pointer */
+const mouse = { x: innerWidth * .7, y: innerHeight * .45, has: false, moving: 0 };
+addEventListener('pointermove', e => { if (e.pointerType === 'touch') return; mouse.x = e.clientX; mouse.y = e.clientY; mouse.has = true; mouse.moving = performance.now(); }, { passive: true });
+
+/* the nib */
+const nib = document.getElementById('nib');
+if (fine && !reduce) {
+  let nx = mouse.x, ny = mouse.y;
+  const tick = () => { nx = lerp(nx, mouse.x, .55); ny = lerp(ny, mouse.y, .55); nib.style.transform = `translate(${nx}px,${ny}px)`; requestAnimationFrame(tick); }; tick();
+  addEventListener('pointerover', e => nib.classList.toggle('hover', !!e.target.closest('a,button,[role=button]')));
+  addEventListener('pointerdown', () => nib.classList.add('press')); addEventListener('pointerup', () => nib.classList.remove('press'));
+  document.addEventListener('mouseleave', () => nib.style.opacity = 0); document.addEventListener('mouseenter', () => nib.style.opacity = 1);
+} else document.body.classList.remove('cursor-on');
+
+/* the highlighter: a flat marker stroke that follows the pointer and fades, like a marker dragged across paper */
+const tr = document.getElementById('trace'), trx = tr.getContext('2d');
+function sizeTrace() { const d = Math.min(devicePixelRatio || 1, 2); tr.width = innerWidth * d; tr.height = innerHeight * d; tr.style.width = innerWidth + 'px'; tr.style.height = innerHeight + 'px'; trx.setTransform(d, 0, 0, d, 0, 0); }
+sizeTrace(); addEventListener('resize', sizeTrace);
+const mark = []; let mx = mouse.x, my = mouse.y; const LIFE = 760;
+function drawMarker() {
+  if (!fine || reduce) return;
+  const now = performance.now();
+  mx = lerp(mx, mouse.x, .6); my = lerp(my, mouse.y, .6);
+  if (mouse.has) { const last = mark[mark.length - 1]; if (!last || Math.hypot(mx - last.x, my - last.y) > 2) mark.push({ x: mx, y: my, t: now }); }
+  while (mark.length && now - mark[0].t > LIFE) mark.shift();
+  trx.clearRect(0, 0, innerWidth, innerHeight);
+  if (mark.length < 2) return;
+  const c = dark() ? '123,140,255' : '245,166,35';
+  trx.lineCap = 'butt'; trx.lineJoin = 'round';
+  for (let i = 1; i < mark.length; i++) {
+    const a = mark[i - 1], b = mark[i], age = (now - b.t) / LIFE, k = 1 - age;
+    trx.strokeStyle = `rgba(${c},${(dark() ? .5 : .42) * Math.pow(k, .9)})`; trx.lineWidth = 16 + 6 * k;
+    trx.beginPath(); trx.moveTo(a.x, a.y); trx.lineTo(b.x, b.y); trx.stroke();
+  }
+}
+/* eyes */
+const heads = [...document.querySelectorAll('.wobo')];
+function lookAt(target) {
+  for (const h of heads) { const r = h.getBoundingClientRect(); if (!r.width) continue; const cx = r.left + r.width / 2, cy = r.top + r.height / 2; const tx = target ? target.x : mouse.x, ty = target ? target.y : mouse.y; const dx = tx - cx, dy = ty - cy, d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 500) * 7; const eyes = h.querySelector('.eyes'); if (eyes) eyes.style.transform = `translate(${dx / d * k}px, ${dy / d * k}px)`; }
+}
+(function blink() { const go = () => { const els = document.querySelectorAll('.blink'); els.forEach(el => { el.style.transition = 'transform .09s'; el.style.transformOrigin = 'center'; el.style.transform = 'scaleY(.08)'; }); setTimeout(() => els.forEach(el => el.style.transform = ''), 110); setTimeout(go, 3200 + Math.random() * 3200); }; if (!reduce) setTimeout(go, 1800); })();
+
+/* ---------------- choreography ---------------- */
+const pinProgress = el => { const r = el.getBoundingClientRect(); return clamp01(-r.top / Math.max(1, el.offsetHeight - innerHeight)); };
+const caps = (el, p) => { const cs = [...el.querySelectorAll('.cap')]; let on = cs[0]; for (const c of cs) if (p >= +c.dataset.at) on = c; for (const c of cs) c.classList.toggle('on', c === on); };
+/* meet: handwriting */
+const introText = "Hey there. I'm Wobo, your AI wobot. I'll help you learn, and I'll be with you every step of the way.";
+const introEl = document.getElementById('introLine');
+introText.split('').forEach(ch => { const s = document.createElement('span'); s.textContent = ch; introEl.appendChild(s); });
+const introSpans = [...introEl.querySelectorAll('span')];
+function drawIntro(p) { const n = Math.floor(clamp01((p - .05) / .6) * introSpans.length); introSpans.forEach((s, i) => s.classList.toggle('on', i < n)); document.getElementById('said').classList.toggle('on', p > .72); }
+/* tuesday: the lesson */
+const lessonEls = [...document.querySelectorAll('#lesson [data-s]')]; const pen = document.getElementById('pen'); const frameWobo = document.getElementById('frameWobo');
+for (const el of lessonEls) { if (el.tagName === 'path') { const L = el.getTotalLength(); el.dataset.len = L; el.style.strokeDasharray = L; el.style.strokeDashoffset = L; } else el.style.opacity = 0; }
+let penX = 0, penY = 0, penTX = 0, penTY = 0, penOn = 0;
+function drawLesson(p) {
+  document.getElementById('bubbleQ').classList.toggle('on', p > .1);
+  let active = null, k = 0;
+  for (const el of lessonEls) { const s = +el.dataset.s, e = +el.dataset.e, kk = clamp01((p - s) / (e - s)); if (el.tagName === 'path') el.style.strokeDashoffset = el.dataset.len * (1 - kk); else el.style.opacity = kk > 0 ? Math.min(1, kk * 1.6) : 0; if (kk > 0 && kk < 1) { active = el; k = kk; } }
+  if (active) { penOn = 1; if (active.tagName === 'path') { const pt = active.getPointAtLength(active.dataset.len * k); penTX = pt.x; penTY = pt.y; } else { const b = active.getBBox(); penTX = b.x + b.width * k; penTY = b.y + b.height * .85; } } else penOn = lerp(penOn, 0, .2);
+  penX = lerp(penX, penTX, .35); penY = lerp(penY, penTY, .35);
+  pen.setAttribute('transform', `translate(${penX} ${penY})`); pen.setAttribute('opacity', penOn.toFixed(2));
+  const eyes = frameWobo.querySelector('.eyes'); const dx = penX - 560, dy = penY - 340, d = Math.hypot(dx, dy) || 1; eyes.style.transform = `translate(${dx / d * 7}px, ${dy / d * 7}px)`;
+}
+/* puzzle */
+const cells = [...document.querySelectorAll('#cells button')], tick = document.getElementById('tick'), ring = document.getElementById('ring'), burst = document.getElementById('burst'), say = document.getElementById('say');
+for (const el of [tick, ring]) { const L = el.getTotalLength(); el.style.strokeDasharray = L; el.style.strokeDashoffset = L; el.dataset.len = L; }
+cells.forEach(b => b.addEventListener('click', () => b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true')));
+const drawOn = (el, ms) => { el.setAttribute('opacity', 1); el.style.transition = `stroke-dashoffset ${ms}ms cubic-bezier(.5,0,.2,1)`; requestAnimationFrame(() => el.style.strokeDashoffset = 0); };
+const clearInk = el => { el.style.transition = 'none'; el.style.strokeDashoffset = el.dataset.len; el.setAttribute('opacity', 0); };
+document.getElementById('check').addEventListener('click', () => {
+  const n = cells.filter(b => b.getAttribute('aria-pressed') === 'true').length; clearInk(tick); clearInk(ring); burst.setAttribute('opacity', 0); say.classList.remove('win');
+  if (n === 2) { drawOn(tick, 520); say.textContent = 'there we go'; say.classList.add('win'); setTimeout(() => burst.setAttribute('opacity', 1), 380); }
+  else if (n === 1) { drawOn(ring, 700); say.textContent = "that's a quarter. one more"; }
+  else if (n === 0) say.textContent = 'shade a part first';
+  else say.textContent = n === 4 ? "that's the whole thing" : "that's three quarters";
+});
+document.getElementById('reset').addEventListener('click', () => { cells.forEach(b => b.setAttribute('aria-pressed', 'false')); clearInk(tick); clearInk(ring); burst.setAttribute('opacity', 0); say.textContent = ''; say.classList.remove('win'); });
+
+/* scroll choreography: rise on entry, scenes draw on, parallax */
+const io = new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }, { threshold: .18 });
+document.querySelectorAll('.rise, .scene').forEach(el => io.observe(el));
+document.querySelectorAll('.scene path, .scene circle, .scene rect').forEach(el => { if (el.getAttribute('fill') && el.getAttribute('fill') !== 'none' && !el.classList.contains('ink')) return; if (el.tagName === 'path' && el.getTotalLength) { const L = el.getTotalLength(); el.style.setProperty('--len', L); el.classList.add('draw'); } });
+const pxEls = [...document.querySelectorAll('.px')];
+function parallax() { if (reduce) return; for (const el of pxEls) { const r = el.getBoundingClientRect(); const c = (r.top + r.height / 2 - innerHeight / 2) / innerHeight; el.style.transform = `translateY(${(-c * innerHeight * (+el.dataset.px || .05)).toFixed(1)}px)`; } }
+
+/* main loop */
+function frame(time) {
+  if (document.hidden) { requestAnimationFrame(frame); return; }
+  const hero = document.getElementById('hero').getBoundingClientRect();
+  const meet = document.getElementById('meet'); const pm = pinProgress(meet); drawIntro(pm);
+  const tue = document.getElementById('tuesday'); const pt = pinProgress(tue); caps(tue, pt); drawLesson(pt);
+  lookAt(null); drawMarker(); parallax();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

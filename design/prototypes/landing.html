@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wobo</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#fff;--paper2:#F7F7F9;--ink:#0D0D10;--ink2:#4A4A55;--ink3:#8A8A94;--hair:#E6E6EB;--blue:#1F35E0;--sans:Poppins,system-ui,sans-serif;--hand:Caveat,cursive}
+*{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);cursor:none;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+#trail{position:fixed;inset:0;pointer-events:none;z-index:50}
+#cursor{position:fixed;left:0;top:0;width:14px;height:14px;border-radius:50%;background:var(--ink);pointer-events:none;z-index:51;transform:translate(-50%,-50%);transition:width .15s,height .15s,background .15s}
+body.hot #cursor{width:22px;height:22px;background:var(--blue)}
+nav{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:18px 48px;background:rgba(255,255,255,.72);backdrop-filter:blur(14px);border-bottom:.5px solid var(--hair)}
+.wm{font-weight:800;font-size:22px;letter-spacing:-.03em}.wm i{color:var(--blue);font-style:normal;font-size:11px;vertical-align:top}
+nav .links{display:flex;gap:26px;font-size:13.5px;color:var(--ink2)}
+.btn{display:inline-block;padding:12px 20px;border-radius:3px;background:var(--ink);color:#fff;font-weight:500;font-size:14px}
+.btn.ghost{background:transparent;color:var(--ink);border:.5px solid var(--hair)}
+section{padding:96px 48px}
+.hero{min-height:88vh;display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:40px;padding-top:40px}
+.hero h1{font-size:clamp(40px,6vw,76px);font-weight:800;letter-spacing:-.04em;line-height:1;margin:0 0 20px;text-wrap:balance}
+.hero h1 em{font-style:normal;color:var(--blue)}
+.hero p{font-size:19px;color:var(--ink2);max-width:46ch;line-height:1.55;margin:0 0 28px}
+.hero .cta{display:flex;gap:12px;align-items:center}.hero .cta small{font-size:12.5px;color:var(--ink3);margin-left:8px}
+.stage{position:relative;height:520px}
+.stage svg{width:100%;height:100%}
+.stage .say{position:absolute;left:54%;top:18%;font-family:var(--hand);font-size:26px;color:var(--ink2);opacity:0;transition:opacity .5s}
+.stage.said .say{opacity:1}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:600;margin-bottom:14px}
+h2{font-size:clamp(28px,3.6vw,44px);font-weight:700;letter-spacing:-.03em;line-height:1.1;margin:0 0 14px;text-wrap:balance}
+.lead{font-size:17px;color:var(--ink2);max-width:58ch;line-height:1.6;margin:0 0 28px}
+/* scroll lesson */
+.lesson{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.lesson .sticky{position:sticky;top:110px;height:70vh}
+.lesson .sticky svg{width:100%;height:100%}
+.steps{padding-top:10vh}
+.step{min-height:60vh;display:flex;flex-direction:column;justify-content:center;opacity:.28;transition:opacity .4s}
+.step.on{opacity:1}
+.step h3{font-size:24px;font-weight:600;letter-spacing:-.02em;margin:0 0 8px}
+.step p{font-size:16px;color:var(--ink2);max-width:40ch;line-height:1.6;margin:0}
+.step .hand{font-family:var(--hand);font-size:24px;color:var(--blue);margin-top:10px}
+.bd{stroke:var(--ink);stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:var(--len);stroke-dashoffset:var(--len)}
+.bd.acc{stroke:var(--blue)}.bd.thin{stroke:#B8B8C2;stroke-width:1.4}
+.bt{font-family:var(--hand);font-weight:600;font-size:30px;fill:var(--ink);opacity:0;transition:opacity .3s}.bt.acc{fill:var(--blue)}.bt.on{opacity:1}
+/* try it */
+.try{background:var(--paper2);border-top:.5px solid var(--hair);border-bottom:.5px solid var(--hair)}
+.try .box{display:grid;grid-template-columns:380px 1fr;gap:28px;align-items:start}
+.try input{width:100%;font:inherit;font-size:16px;padding:14px 16px;border:.5px solid var(--hair);border-radius:3px;background:#fff;color:var(--ink)}
+.try .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.chip{font-size:12.5px;padding:7px 11px;border:.5px solid var(--hair);border-radius:3px;background:#fff;color:var(--ink2)}
+.chip:hover{border-color:var(--blue);color:var(--blue)}
+.plane{background:rgba(255,255,255,.8);border:.5px solid var(--hair);border-radius:3px;height:420px;position:relative;overflow:hidden}
+.plane .tb{display:flex;justify-content:space-between;padding:10px 14px;border-bottom:.5px solid var(--hair);font-size:12px;color:var(--ink3)}.plane .tb b{color:var(--ink);font-weight:600}
+.plane svg{position:absolute;inset:40px 0 0 0;width:100%;height:calc(100% - 40px)}
+/* story */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.card{border-top:.5px solid var(--hair);padding-top:18px}.card h3{font-size:18px;font-weight:600;margin:0 0 8px;letter-spacing:-.01em}.card p{font-size:14.5px;color:var(--ink2);line-height:1.6;margin:0}
+.boards{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}.boards span{font-size:12.5px;padding:7px 11px;border:.5px solid var(--hair);border-radius:3px;color:var(--ink2)}
+.price{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:760px}
+.tier{border:.5px solid var(--hair);border-radius:3px;padding:26px}.tier.plus{border-color:var(--blue)}
+.tier h3{margin:0 0 4px;font-size:18px;font-weight:600}.tier .p{font-size:34px;font-weight:700;letter-spacing:-.03em;margin:10px 0 2px}.tier .p small{font-size:13px;font-weight:400;color:var(--ink3)}
+.tier ul{margin:14px 0 18px;padding-left:18px;color:var(--ink2);font-size:14px;line-height:1.7}
+footer{padding:48px;border-top:.5px solid var(--hair);display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink3)}
+.orb-wrap{position:absolute;right:28px;bottom:-10px;width:120px;height:120px}
+@media (prefers-reduced-motion: reduce){ .bd{stroke-dashoffset:0!important;transition:none} .bt{opacity:1!important} #trail{display:none} body{cursor:auto} #cursor{display:none} }
+@media (max-width:900px){ .hero,.lesson,.try .box,.grid3,.price{grid-template-columns:1fr} .stage{height:360px} section{padding:64px 22px} nav{padding:14px 22px} body{cursor:auto} #cursor,#trail{display:none} }
+</style></head>
+<body>
+<canvas id="trail"></canvas><div id="cursor"></div>
+<nav><div class="wm">Wobo<i>✦</i></div><div class="links"><a href="#how">How it works</a><a href="#boards">Every board</a><a href="#parents">For parents</a><a href="#pricing">Pricing</a></div><a class="btn ghost" href="#try">Sign in</a></nav>
+
+<section class="hero">
+  <div>
+    <div class="eyebrow">A tutor who thinks on a board</div>
+    <h1>Ask anything.<br>Watch her <em>draw</em> the answer.</h1>
+    <p>Wobo is an AI wobot who teaches the way a great teacher does: she listens, then picks up a pen. Every explanation is drawn live, in front of you, on your syllabus.</p>
+    <div class="cta"><a class="btn" href="#try">Start free</a><a class="btn ghost" href="#how">See her teach</a><small>Free every day. No card.</small></div>
+  </div>
+  <div class="stage" id="stage"><svg viewBox="0 0 600 520" id="hero"></svg><div class="say">hey there, circle anything</div></div>
+</section>
+
+<section id="how">
+  <div class="eyebrow">How it works</div>
+  <h2>Scroll, and she teaches you Pythagoras.</h2>
+  <p class="lead">You control the pace. This is exactly what happens inside Wobo, on any question, on any topic in your syllabus.</p>
+  <div class="lesson">
+    <div class="sticky"><svg viewBox="0 0 640 520" id="board">
+      <path class="bd thin" id="b0" style="--len:1200" d="M60 460 H 580 M60 460 V 60"/>
+      <path class="bd" id="b1" style="--len:720" d="M120 420 H 420 V 180 Z"/>
+      <path class="bd acc" id="b2" style="--len:60" d="M120 420 h30 v-30"/>
+      <text class="bt" id="t1" x="255" y="452">a</text><text class="bt" id="t2" x="436" y="310">b</text><text class="bt acc" id="t3" x="240" y="290">c</text>
+      <path class="bd thin" id="b3" style="--len:1300" d="M120 420 v90 h300 v-90 M420 180 h90 v240 h-90 M120 420 l-60 -60 l 240 -300 l 120 120 l -300 240"/>
+      <text class="bt" id="t4" x="70" y="140">a² + b² = c²</text>
+      <text class="bt acc" id="t5" x="70" y="185" style="font-size:24px">that's why</text>
+      <path class="bd acc" id="b4" style="--len:200" d="M70 195 C 130 205, 190 205, 260 195"/>
+    </svg></div>
+    <div class="steps">
+      <div class="step"><h3>Start with what you can see</h3><p>She draws a right triangle and names the sides as she says them. No formula yet.</p><div class="hand">a, b… and the long one is c</div></div>
+      <div class="step"><h3>Build the squares</h3><p>A square on each side, drawn stroke by stroke. Now the question is about areas, not letters.</p><div class="hand">watch the big one</div></div>
+      <div class="step"><h3>Then the formula appears, earned</h3><p>The two small squares fit exactly into the big one. She writes the line only once you've seen it.</p><div class="hand">a² + b² = c²</div></div>
+      <div class="step"><h3>Your turn</h3><p>She hands you the pen. Circle a step, ask why, drag a corner. Her numbers update because they are computed, not remembered.</p><div class="hand">circle anything</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="try" id="try">
+  <div class="box">
+    <div>
+      <div class="eyebrow">Try it</div>
+      <h2>Ask her something.</h2>
+      <p class="lead">Type a question or pick one. She'll draw it on the board, right here.</p>
+      <input id="q" placeholder="draw a right triangle and prove Pythagoras" aria-label="Ask Wobo">
+      <div class="chips"><span class="chip" data-q="parabola">Why does a ball slow at the top?</span><span class="chip" data-q="benzene">Draw benzene</span><span class="chip" data-q="cell">Label a plant cell</span></div>
+    </div>
+    <div class="plane" id="plane"><div class="tb"><span><b>Wobo's board</b> · <span id="ptitle">waiting</span></span><span>pin · shrink · new</span></div><svg viewBox="0 0 800 380" id="psvg"></svg><div class="orb-wrap"><svg viewBox="0 0 150 124" id="orb2"></svg></div></div>
+  </div>
+</section>
+
+<section id="boards">
+  <div class="eyebrow">Every board on earth</div>
+  <h2>Your syllabus, the real one, this year's.</h2>
+  <p class="lead">Pick your board and class and Wobo teaches to it. Not listed? Type it and she goes and finds the official syllabus. Still nothing? Show her yours and she builds your plan.</p>
+  <div class="boards"><span>CBSE</span><span>ICSE</span><span>Telangana</span><span>Maharashtra</span><span>Karnataka</span><span>NIOS</span><span>IB</span><span>Cambridge</span><span>Edexcel</span><span>US states</span><span>UK</span><span>Australia</span><span>Homeschool</span><span>+ yours</span></div>
+</section>
+
+<section id="parents" class="try">
+  <div class="grid3">
+    <div class="card"><h3>She never hands over the answer</h3><p>Hints fade as you get stronger. Struggle is protected because that is where learning happens.</p></div>
+    <div class="card"><h3>Every number is checked</h3><p>Before she draws a quantity, code verifies it. A wrong answer to a child is not acceptable, so it doesn't ship.</p></div>
+    <div class="card"><h3>Parents see the real thing</h3><p>A weekly artifact drawn from your child's own boards. What they cracked, in their handwriting and hers.</p></div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="eyebrow">Pricing</div>
+  <h2>Free every day. More when you want more.</h2>
+  <div class="price">
+    <div class="tier"><h3>Free</h3><div class="p">₹0</div><ul><li>A daily learning budget</li><li>Your real syllabus</li><li>Wobo on every screen</li><li>Boards, practice, boss battles</li></ul><a class="btn ghost" href="#try">Start free</a></div>
+    <div class="tier plus"><h3>Plus</h3><div class="p">₹XXX<small> / month, billed yearly</small></div><ul><li>Unlimited boards and voice</li><li>Custom courses on anything</li><li>Parent artifacts every week</li><li>Priority verification</li></ul><a class="btn" href="#try">Go Plus</a></div>
+  </div>
+</section>
+<footer><span>Wobo · made for curious minds</span><span>Terms · Privacy · Parents · Contact</span></footer>
+
+<script>
+// ---- chalk cursor trail (canvas 2D, additive fade) ----
+const tc=document.getElementById('trail'), tx=tc.getContext('2d'); let pts=[]; function rs(){tc.width=innerWidth*devicePixelRatio;tc.height=innerHeight*devicePixelRatio;tx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0)} rs(); addEventListener('resize',rs);
+const cur=document.getElementById('cursor'); let mx=innerWidth/2,my=innerHeight/2;
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;pts.push({x:mx,y:my,t:performance.now()}); cur.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`;});
+document.querySelectorAll('a,button,.chip,input,h1,h2').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('hot'));el.addEventListener('mouseleave',()=>document.body.classList.remove('hot'));});
+function trail(){ const now=performance.now(); pts=pts.filter(p=>now-p.t<700); tx.clearRect(0,0,innerWidth,innerHeight); if(pts.length>1){ for(let i=1;i<pts.length;i++){ const a=pts[i-1],b=pts[i]; const age=(now-b.t)/700; tx.strokeStyle=`rgba(31,53,224,${(1-age)*.55})`; tx.lineWidth=(1-age)*6+1; tx.lineCap='round'; tx.beginPath(); tx.moveTo(a.x,a.y); tx.lineTo(b.x,b.y); tx.stroke(); } } requestAnimationFrame(trail);} trail();
+// ---- the character (ink visor), shared renderer ----
+function wobo(svg, look, expr, pen){ const body='#1A1A1F', visor='#fff', eye='#1F35E0', hair='rgba(255,255,255,.55)'; const cx=60,cy=66,lx=cx-13+look[0]*.36,rx=cx+13+look[0]*.36,ey=cy-.5+look[1]*.32; const R=7.4;
+  const e = expr==='happy'?`<path d="M${lx-7} ${ey+3} Q${lx} ${ey-8} ${lx+7} ${ey+3}" stroke="${eye}" stroke-width="5.2" fill="none" stroke-linecap="round"/><path d="M${rx-7} ${ey+3} Q${rx} ${ey-8} ${rx+7} ${ey+3}" stroke="${eye}" stroke-width="5.2" fill="none" stroke-linecap="round"/>` : expr==='think'?`<path d="M${lx-7} ${ey}h14 M${rx-7} ${ey}h14" stroke="${eye}" stroke-width="5.2" stroke-linecap="round" fill="none"/>` : `<circle cx="${lx}" cy="${ey}" r="${R}" fill="${eye}"/><circle cx="${rx}" cy="${ey}" r="${R}" fill="${eye}"/>`;
+  const p = pen?`<circle cx="98" cy="86" r="8" fill="${body}" stroke="${hair}" stroke-width="1"/><path d="M102 82 L 116 54" stroke="${body}" stroke-width="5" stroke-linecap="round"/><path d="M115 56 L 119 48" stroke="${eye}" stroke-width="5" stroke-linecap="round"/>`:'';
+  svg.innerHTML=`<g transform="translate(15 0)"><ellipse cx="60" cy="112" rx="26" ry="3.5" fill="${body}" opacity=".08"/><circle cx="${cx}" cy="${cy}" r="42" fill="${body}" stroke="${hair}" stroke-width="1"/><ellipse cx="40" cy="38" rx="8" ry="4" fill="${visor}" opacity=".16" transform="rotate(-30 40 38)"/><rect x="26" y="50" width="68" height="30" rx="15" fill="${visor}"/>${e}${p}</g>`; }
+// hero: a big Wobo whose eyes follow the cursor, plus a live doodle she draws on load
+const hero=document.getElementById('hero'); let heroLook=[0,0], heroExpr='idle';
+function heroFrame(){ const r=document.getElementById('stage').getBoundingClientRect(); const cx=r.left+r.width*.45, cy=r.top+r.height*.5; const tx2=Math.max(-40,Math.min(40,(mx-cx)/8)), ty=Math.max(-30,Math.min(30,(my-cy)/8)); heroLook[0]+= (tx2-heroLook[0])*.12; heroLook[1]+=(ty-heroLook[1])*.12;
+  hero.innerHTML = `<g transform="translate(40 40) scale(2.6)"><g id="hb"></g></g>` + `<g id="doodle">`+doodle()+`</g>`; wobo(hero.querySelector('#hb'), heroLook, heroExpr, true); requestAnimationFrame(heroFrame); }
+let t0=performance.now();
+function doodle(){ const p=Math.min(1,(performance.now()-t0-800)/2600); if(p<=0) return ''; const L=560; const o=L*(1-p); const lab = p>0.75?`<text x="470" y="150" font-family="Caveat" font-weight="600" font-size="30" fill="#1F35E0">y = x²</text>`:''; if(p>0.9) document.getElementById('stage').classList.add('said'); return `<path d="M380 380 H 590 M380 380 V 120" stroke="#B8B8C2" stroke-width="1.4" fill="none"/><path d="M395 372 Q 480 40 585 372" stroke="#0D0D10" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-dasharray="${L}" stroke-dashoffset="${o}"/>${lab}`; }
+heroFrame();
+// ---- scroll lesson ----
+const steps=[...document.querySelectorAll('.step')];
+const draw = (id, p)=>{ const el=document.getElementById(id); const len=parseFloat(getComputedStyle(el).getPropertyValue('--len'))||el.getTotalLength(); el.style.strokeDashoffset = len*(1-Math.max(0,Math.min(1,p))); };
+const show=(id,on)=>document.getElementById(id).classList.toggle('on',on);
+function lessonFrame(){ const vh=innerHeight; const prog = steps.map(s=>{ const r=s.getBoundingClientRect(); return Math.max(0,Math.min(1,(vh*0.7 - r.top)/(r.height*0.8))); });
+  steps.forEach((s,i)=>s.classList.toggle('on', prog[i]>0.25 && (i===steps.length-1 || prog[i+1]<0.25)));
+  draw('b0',prog[0]*2); draw('b1',prog[0]); draw('b2',prog[0]>0.9?1:0); show('t1',prog[0]>0.5); show('t2',prog[0]>0.7); show('t3',prog[0]>0.9);
+  draw('b3',prog[1]); show('t4',prog[2]>0.4); show('t5',prog[2]>0.7); draw('b4',prog[2]>0.8?1:0);
+  requestAnimationFrame(lessonFrame); } lessonFrame();
+// ---- try-it board (canned plans for the prototype) ----
+const PL={ pythagoras:{title:'pythagoras', svg:`<path class="bd" style="--len:700" d="M140 320 H 400 V 120 Z"/><path class="bd acc" style="--len:60" d="M140 320 h26 v-26"/><text class="bt on" x="255" y="352">a</text><text class="bt on" x="414" y="230">b</text><text class="bt acc on" x="250" y="210">c</text><text class="bt on" x="480" y="180">a² + b² = c²</text><text class="bt acc on" x="480" y="230" style="font-size:24px">the squares fit</text>`},
+  parabola:{title:'projectiles · at the top', svg:`<path class="bd thin" style="--len:900" d="M80 320 H 720 M80 320 V 60"/><path class="bd" style="--len:900" d="M110 320 Q 380 40 650 320"/><circle cx="380" cy="180" r="6" fill="#1F35E0"/><path class="bd acc" style="--len:120" d="M380 180 H 480"/><text class="bt acc on" x="490" y="172">vₓ</text><text class="bt on" x="520" y="240">v_y = 0 at the top</text><text class="bt acc on" x="520" y="290" style="font-size:24px">so it never stops</text>`},
+  benzene:{title:'benzene', svg:`<path class="bd" style="--len:600" d="M400 90 L 487 140 L 487 240 L 400 290 L 313 240 L 313 140 Z"/><path class="bd acc" style="--len:300" d="M412 108 L 470 142 M470 232 L 412 266 M330 232 L 330 148"/><text class="bt on" x="520" y="140">C₆H₆</text><text class="bt acc on" x="520" y="190" style="font-size:24px">alternating, shared</text>`},
+  cell:{title:'plant cell', svg:`<path class="bd" style="--len:800" d="M180 90 H 520 V 300 H 180 Z"/><path class="bd thin" style="--len:800" d="M196 106 H 504 V 284 H 196 Z"/><circle class="bd" style="--len:200" cx="300" cy="200" r="32"/><ellipse class="bd acc" style="--len:200" cx="430" cy="160" rx="34" ry="20"/><text class="bt on" x="230" y="70">cell wall</text><text class="bt acc on" x="470" y="130" style="font-size:24px">chloroplast</text><text class="bt on" x="250" y="250" style="font-size:24px">nucleus</text>`} };
+const psvg=document.getElementById('psvg'), orb2=document.getElementById('orb2'); wobo(orb2,[0,0],'idle',false);
+function ask(key){ const p=PL[key]||PL.pythagoras; document.getElementById('ptitle').textContent=p.title; psvg.innerHTML=p.svg; wobo(orb2,[14,10],'think',true); requestAnimationFrame(()=>{ psvg.querySelectorAll('.bd').forEach((el,i)=>{ el.style.transition=`stroke-dashoffset ${.6+i*.25}s ${i*.3}s cubic-bezier(.3,.7,.2,1)`; el.style.strokeDashoffset=0; }); setTimeout(()=>wobo(orb2,[0,0],'happy',false), 1800); }); }
+document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>ask(c.dataset.q)));
+document.getElementById('q').addEventListener('keydown',e=>{ if(e.key==='Enter'){ const v=e.target.value.toLowerCase(); ask(v.includes('ball')||v.includes('top')?'parabola':v.includes('benz')?'benzene':v.includes('cell')?'cell':'pythagoras'); } });
+const qp=new URLSearchParams(location.search); if(qp.get('ask')) ask(qp.get('ask'));
+</script>
+</body></html>

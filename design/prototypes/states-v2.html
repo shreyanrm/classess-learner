@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wobo states</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBFBF9; --ink:#1A1A1F; --ink-2:#5C5C66; --ink-3:#9A9AA6; --hair:rgba(26,26,31,.14);
+  --pig:#1F35E0; --pig-frost:rgba(31,53,224,.08); --paper-2:#F2F2EE; --violet:#6B4CFF; --rose:#F0578C; --marigold:#F5A623; --mint:#1FB98A; --shadow:0 12px 40px rgba(31,53,224,.10);
+  --body:#1A1A1F; --visor:#FFFFFF; --eye:#1F35E0;
+  --sans:'Poppins',system-ui,-apple-system,sans-serif; --hand:'Caveat',cursive;
+}
+[data-theme="dark"]{
+  --paper:#0D0D10; --ink:#EDEDF1; --ink-2:#A9A9B4; --ink-3:#6E6E7A; --hair:rgba(237,237,241,.14);
+  --pig:#7B8CFF; --pig-frost:rgba(123,140,255,.1); --paper-2:#17171C; --violet:#A08BFF; --rose:#FF7FAB; --marigold:#FFC24D; --mint:#4FE3BD; --shadow:0 16px 48px rgba(0,0,0,.5);
+  --body:#EDEDF1; --visor:#0D0D10; --eye:#7B8CFF;
+}
+*{box-sizing:border-box} html,body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.5 var(--sans)}
+.scene{min-height:100vh;display:grid;place-items:center;padding:32px 24px;position:relative;overflow:hidden}
+.card{width:min(560px,100%);text-align:center;display:grid;justify-items:center;gap:0}
+svg{display:block;overflow:visible;width:min(420px,100%);height:auto}
+h1{font:600 clamp(28px,4vw,40px)/1.15 var(--sans);letter-spacing:-.02em;margin:30px 0 10px;text-wrap:balance}
+p{margin:0;color:var(--ink-2);max-width:42ch;text-wrap:pretty}
+.hand{font:600 clamp(22px,3vw,28px)/1.2 var(--hand);color:var(--pig)}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:24px}
+.btn{font:500 15px/1 var(--sans);padding:15px 22px;border-radius:12px;border:0;background:var(--ink);color:var(--paper);text-decoration:none;min-height:46px;display:inline-flex;align-items:center;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.btn:hover{transform:translateY(-1px)}
+.btn.quiet{background:var(--paper-2);color:var(--ink)}
+.btn:focus-visible{outline:2px solid var(--pig);outline-offset:3px}
+.code{position:absolute;top:24px;left:24px;font:500 12px/1 var(--sans);letter-spacing:.14em;color:var(--ink-3);text-transform:uppercase}
+.tiny{font-size:13px;color:var(--ink-3);margin-top:12px}
+.wordmark{position:absolute;top:22px;right:24px;color:var(--ink)}
+.wordmark svg{height:22px;width:auto;display:block;fill:currentColor}
+/* ink draw-on */
+.draw{stroke-dasharray:var(--len,1000);stroke-dashoffset:var(--len,1000);animation:draw var(--dur,1.6s) cubic-bezier(.5,0,.2,1) var(--delay,0s) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.fade{opacity:0;animation:fade .6s ease var(--delay,0s) forwards}
+@keyframes fade{to{opacity:1}}
+/* character */
+.wobo .blink{transform-origin:center;animation:blink 5.2s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
+.wobo .eyes{animation:glance 6s ease-in-out infinite}
+@keyframes glance{0%,40%,100%{transform:translate(0,0)}50%,70%{transform:translate(6px,-2px)}80%{transform:translate(-4px,1px)}}
+/* loader */
+.loader .pen{animation:pen 1.8s cubic-bezier(.5,0,.2,1) forwards}
+@keyframes pen{0%{transform:translate(-240px,0) rotate(-30deg)}60%{transform:translate(0,0) rotate(-30deg)}100%{transform:translate(0,-6px) rotate(-30deg);opacity:0}}
+.loader .doodle{animation:doodle 6s linear 2.2s infinite}
+@keyframes doodle{0%{stroke-dashoffset:var(--len)}40%{stroke-dashoffset:0;opacity:1}55%{opacity:1}70%{opacity:0;stroke-dashoffset:0}100%{opacity:0;stroke-dashoffset:var(--len)}}
+.loader .line{animation:linegrow 1.6s cubic-bezier(.5,0,.2,1) forwards}
+@keyframes linegrow{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
+.loader .word{display:block;min-height:1.4em}
+.loader .word span{display:inline-block;opacity:0;animation:fade .25s ease forwards}
+/* dizzy */
+.dizzy .spiral{transform-origin:center;animation:spin 1.4s linear 1.1s 2}
+@keyframes spin{to{transform:rotate(360deg)}}
+.dizzy .eyes{animation:none}
+.dizzy .recover{opacity:0;animation:fade .3s ease 3.9s forwards}
+.dizzy .spiralgrp{animation:fade .3s ease 3.9s reverse forwards;animation-fill-mode:forwards}
+/* hourglass */
+.sand{animation:sand 4s linear 1.2s infinite}
+@keyframes sand{0%{transform:translateY(0)}100%{transform:translateY(14px)}}
+.turn{transform-origin:center;animation:turn 4s cubic-bezier(.6,0,.2,1) 1.2s infinite}
+@keyframes turn{0%,70%{transform:rotate(0)}85%,100%{transform:rotate(180deg)}}
+/* plane */
+.plane{animation:plane 3.2s cubic-bezier(.4,0,.2,1) .8s infinite}
+@keyframes plane{0%{transform:translate(0,0) rotate(0)}45%{transform:translate(120px,-30px) rotate(-8deg)}60%{transform:translate(150px,-18px) rotate(12deg)}100%{transform:translate(150px,60px) rotate(40deg);opacity:0}}
+/* spanner */
+.spanner{transform-origin:38px 38px;animation:wrench 1.6s ease-in-out 1s infinite}
+@keyframes wrench{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(14deg)}}
+/* seal */
+.seal{animation:seal 2.4s ease 1.2s forwards}
+@keyframes seal{to{opacity:.18}}
+@media (prefers-reduced-motion:reduce){.draw{animation:none;stroke-dashoffset:0}.fade{animation:none;opacity:1}.wobo .blink,.wobo .eyes,.loader .pen,.loader .doodle,.dizzy .spiral,.sand,.turn,.plane,.spanner{animation:none}.loader .pen{opacity:0}}
+nav.tabs{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:4px;background:var(--paper-2);border-radius:999px;padding:6px;z-index:9;box-shadow:var(--shadow)}
+nav.tabs a{font:500 12px/1 var(--sans);padding:9px 12px;color:var(--ink-2);text-decoration:none;border-radius:999px}
+nav.tabs a:hover{background:var(--pig-frost);color:var(--ink)}
+</style>
+</head>
+<body>
+
+<!-- shared character symbol: ink-visor wobo, 120 units -->
+<svg width="0" height="0" style="position:absolute">
+  <defs><symbol id="wm" viewBox="170 560 1160 340"><path transform="matrix(1 0 0 1 173.553 879.375)" d="M 80.328125 5.296875 C 63.648438 5.296875 50.5 1.769531 40.875 -5.28125 C 31.257812 -12.34375 24.207031 -21.5625 19.71875 -32.9375 C 15.226562 -44.320312 12.421875 -56.75 11.296875 -70.21875 C 10.179688 -83.6875 9.625 -96.832031 9.625 -109.65625 L 9.625 -234.234375 L 113.03125 -234.234375 L 113.984375 -133.703125 C 113.984375 -127.296875 115.265625 -122.164062 117.828125 -118.3125 C 120.398438 -114.46875 124.25 -113.664062 129.375 -115.90625 C 130.976562 -116.550781 132.5 -117.429688 133.9375 -118.546875 C 135.382812 -119.671875 136.429688 -121.679688 137.078125 -124.578125 L 137.078125 -234.234375 L 240.96875 -234.234375 L 241.921875 -133.703125 C 241.921875 -127.296875 243.285156 -122.164062 246.015625 -118.3125 C 248.742188 -114.46875 252.671875 -113.664062 257.796875 -115.90625 C 259.398438 -116.550781 261.003906 -117.59375 262.609375 -119.03125 C 264.210938 -120.476562 265.175781 -122.804688 265.5 -126.015625 L 263.09375 -234.234375 L 380.453125 -234.234375 L 372.75 -0.484375 L 287.140625 -0.484375 L 283.296875 -48.09375 C 279.765625 -40.082031 274.867188 -31.90625 268.609375 -23.5625 C 262.359375 -15.226562 254.34375 -8.332031 244.5625 -2.875 C 234.789062 2.570312 222.691406 5.296875 208.265625 5.296875 C 191.265625 5.296875 177.953125 1.683594 168.328125 -5.53125 C 158.710938 -12.75 151.660156 -21.96875 147.171875 -33.1875 C 141.078125 -23.25 132.660156 -14.347656 121.921875 -6.484375 C 111.179688 1.367188 97.316406 5.296875 80.328125 5.296875 Z"/><path transform="matrix(1 0 0 1 549.669 879.375)" d="M 132.75 2.890625 C 109.976562 2.890625 89.296875 -0.957031 70.703125 -8.65625 C 52.109375 -16.351562 37.28125 -29.097656 26.21875 -46.890625 C 15.15625 -64.691406 9.625 -88.820312 9.625 -119.28125 C 9.625 -149.414062 15.15625 -173.460938 26.21875 -191.421875 C 37.28125 -209.378906 52.109375 -222.445312 70.703125 -230.625 C 89.296875 -238.800781 109.976562 -242.890625 132.75 -242.890625 C 155.832031 -242.890625 176.671875 -238 195.265625 -228.21875 C 213.867188 -218.4375 228.617188 -204.40625 239.515625 -186.125 C 250.421875 -167.851562 255.875 -145.570312 255.875 -119.28125 C 255.875 -91.707031 250.421875 -68.859375 239.515625 -50.734375 C 228.617188 -32.617188 213.867188 -19.148438 195.265625 -10.328125 C 176.671875 -1.515625 155.832031 2.890625 132.75 2.890625 Z M 110.625 -98.125 C 110.625 -89.78125 112.785156 -83.925781 117.109375 -80.5625 C 121.441406 -77.195312 126.65625 -75.515625 132.75 -75.515625 C 139.15625 -75.515625 144.523438 -77.4375 148.859375 -81.28125 C 153.191406 -85.132812 155.359375 -90.75 155.359375 -98.125 C 155.359375 -104.851562 153.191406 -110.0625 148.859375 -113.75 C 144.523438 -117.4375 139.15625 -119.28125 132.75 -119.28125 C 126.65625 -119.28125 121.441406 -117.753906 117.109375 -114.703125 C 112.785156 -111.660156 110.625 -106.132812 110.625 -98.125 Z"/><path transform="matrix(1 0 0 1 801.215 879.375)" d="M 153.90625 0 C 142.363281 0 131.378906 -2.960938 120.953125 -8.890625 C 110.535156 -14.828125 102.125 -22.125 95.71875 -30.78125 L 93.3125 -0.484375 L 12.984375 -0.484375 L 9.625 -132.75 L 13.953125 -307.34375 L 101 -307.34375 L 103.40625 -221.25 C 110.457031 -227.019531 118.710938 -231.664062 128.171875 -235.1875 C 137.628906 -238.71875 148.613281 -240.484375 161.125 -240.484375 C 191.582031 -240.484375 215.546875 -231.425781 233.015625 -213.3125 C 250.492188 -195.195312 259.234375 -164.171875 259.234375 -120.234375 C 259.234375 -90.421875 254.664062 -66.773438 245.53125 -49.296875 C 236.394531 -31.828125 223.96875 -19.242188 208.25 -11.546875 C 192.539062 -3.847656 174.425781 0 153.90625 0 Z M 117.84375 -98.59375 C 117.84375 -91.21875 119.925781 -85.765625 124.09375 -82.234375 C 128.257812 -78.710938 133.390625 -76.953125 139.484375 -76.953125 C 145.578125 -76.953125 150.707031 -78.554688 154.875 -81.765625 C 159.039062 -84.972656 161.125 -90.582031 161.125 -98.59375 C 161.125 -106.613281 159.039062 -112.222656 154.875 -115.421875 C 150.707031 -118.628906 145.578125 -120.234375 139.484375 -120.234375 C 133.390625 -120.234375 128.257812 -118.390625 124.09375 -114.703125 C 119.925781 -111.023438 117.84375 -105.65625 117.84375 -98.59375 Z"/><path transform="matrix(1 0 0 1 1060.937 879.375)" d="M 132.75 2.890625 C 109.976562 2.890625 89.296875 -0.957031 70.703125 -8.65625 C 52.109375 -16.351562 37.28125 -29.097656 26.21875 -46.890625 C 15.15625 -64.691406 9.625 -88.820312 9.625 -119.28125 C 9.625 -149.414062 15.15625 -173.460938 26.21875 -191.421875 C 37.28125 -209.378906 52.109375 -222.445312 70.703125 -230.625 C 89.296875 -238.800781 109.976562 -242.890625 132.75 -242.890625 C 155.832031 -242.890625 176.671875 -238 195.265625 -228.21875 C 213.867188 -218.4375 228.617188 -204.40625 239.515625 -186.125 C 250.421875 -167.851562 255.875 -145.570312 255.875 -119.28125 C 255.875 -91.707031 250.421875 -68.859375 239.515625 -50.734375 C 228.617188 -32.617188 213.867188 -19.148438 195.265625 -10.328125 C 176.671875 -1.515625 155.832031 2.890625 132.75 2.890625 Z M 110.625 -98.125 C 110.625 -89.78125 112.785156 -83.925781 117.109375 -80.5625 C 121.441406 -77.195312 126.65625 -75.515625 132.75 -75.515625 C 139.15625 -75.515625 144.523438 -77.4375 148.859375 -81.28125 C 153.191406 -85.132812 155.359375 -90.75 155.359375 -98.125 C 155.359375 -104.851562 153.191406 -110.0625 148.859375 -113.75 C 144.523438 -117.4375 139.15625 -119.28125 132.75 -119.28125 C 126.65625 -119.28125 121.441406 -117.753906 117.109375 -114.703125 C 112.785156 -111.660156 110.625 -106.132812 110.625 -98.125 Z"/></symbol>
+    <g id="wobo-head">
+      <circle cx="60" cy="60" r="44" fill="var(--body)"/>
+      <rect x="26" y="44" width="68" height="30" rx="15" fill="var(--visor)"/>
+      <g class="eyes">
+        <g class="blink"><circle cx="46" cy="59" r="6.5" fill="var(--eye)"/><circle cx="74" cy="59" r="6.5" fill="var(--eye)"/></g>
+      </g>
+    </g>
+  </defs>
+</svg>
+
+<!-- ============ LOADING ============ -->
+<section class="scene loader" id="loading">
+  <div class="wordmark"><svg><use href="#wm"/></svg></div>
+  <div class="card">
+    <svg width="360" height="220" viewBox="0 0 360 220" aria-label="Wobo is drawing the page">
+      <!-- the hairline being drawn -->
+      <path class="line" d="M20 150 H340" stroke="var(--pig)" stroke-width="4" fill="none" stroke-linecap="round" style="--len:320;stroke-dasharray:320;stroke-dashoffset:320"/>
+      <!-- the line loops up into the body -->
+      <path class="draw" d="M180 150 c-34 0 -52 -20 -52 -46 s22 -46 52 -46 s52 20 52 46 s-18 46 -52 46" stroke="var(--pig)" stroke-width="3.5" fill="none" style="--len:300;--dur:1.2s;--delay:1.2s"/>
+      <!-- body settles -->
+      <g class="wobo fade" style="--delay:2.2s" transform="translate(120 44)">
+        <use href="#wobo-head"/>
+      </g>
+      <!-- pen -->
+      <g class="pen" transform="translate(-240 0)">
+        <g transform="translate(340 150)">
+          <path d="M0 0 l-6 -26 l4 -2 l6 26 z" fill="var(--pig)"/>
+          <rect x="-4.5" y="-96" width="7" height="70" rx="2" fill="var(--ink)" transform="rotate(-8)"/>
+        </g>
+      </g>
+      <!-- idle doodles after settle: a triangle, a benzene, a parabola, cycling -->
+      <g stroke="var(--ink-3)" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path class="doodle" d="M48 122 l22 -34 l22 34 z" style="--len:120;stroke-dasharray:120;stroke-dashoffset:120"/>
+        <path class="doodle" d="M270 88 l14 -8 l14 8 v16 l-14 8 l-14 -8 z m6 3 a10 10 0 1 0 16 0" style="--len:130;stroke-dasharray:130;stroke-dashoffset:130;animation-delay:4.2s"/>
+        <path class="doodle" d="M60 210 q60 -70 120 0" style="--len:150;stroke-dasharray:150;stroke-dashoffset:150;animation-delay:6.2s"/>
+      </g>
+    </svg>
+    <span class="hand word" id="loadword" aria-live="polite"></span>
+    <p class="tiny">Your place is saved</p>
+  </div>
+</section>
+
+<!-- ============ 404 ============ -->
+<section class="scene" id="e404">
+  <div class="code">404</div><div class="wordmark"><svg><use href="#wm"/></svg></div>
+  <div class="card">
+    <svg width="360" height="220" viewBox="0 0 360 220" aria-label="A dotted path drawn on a map ends at a question mark; Wobo looks for it">
+      <g class="wobo" transform="translate(30 70)"><use href="#wobo-head"/></g>
+      <!-- map path -->
+      <path class="draw" d="M150 150 c30 -60 70 -60 100 -20 s60 40 80 -10" stroke="var(--ink)" stroke-width="3.5" fill="none" stroke-dasharray="4 7" stroke-linecap="round" style="--len:280;--dur:1.8s;--delay:.3s"/>
+      <g class="fade" style="--delay:2s">
+        <text x="322" y="102" font-family="var(--hand)" font-size="64" font-weight="700" fill="var(--pig)" text-anchor="middle">?</text>
+      </g>
+      <!-- little landmarks -->
+      <g stroke="var(--ink)" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path class="draw" d="M160 190 l10 -16 l10 16 z" fill="var(--marigold)" fill-opacity=".35" style="--len:60;--dur:.8s;--delay:1s"/>
+        <path class="draw" d="M230 60 v14 h12 v-14 z M236 60 v-8" style="--len:60;--dur:.8s;--delay:1.3s"/>
+        <path class="draw" d="M280 170 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0" style="--len:60;--dur:.8s;--delay:1.6s"/>
+      </g>
+    </svg>
+    <h1>This page isn't here</h1>
+    <p>Wobo looked around and couldn't find it. It may have moved, or the link had a slip in it.</p>
+    <div class="row"><a class="btn" href="#">Back to learning</a><a class="btn quiet" href="#">Ask Wobo</a></div>
+  </div>
+</section>
+
+<!-- ============ 500 ============ -->
+<section class="scene dizzy" id="e500">
+  <div class="code">500</div><div class="wordmark"><svg><use href="#wm"/></svg></div>
+  <div class="card">
+    <svg width="360" height="220" viewBox="0 0 360 220" aria-label="A line Wobo was drawing wobbles and breaks; Wobo shakes it off">
+      <path class="draw" d="M30 150 c40 0 60 -6 90 -4 s40 12 60 -6 s10 -30 30 -24" stroke="var(--pig)" stroke-width="3.5" fill="none" stroke-linecap="round" style="--len:260;--dur:1.1s"/>
+      <path class="draw" d="M214 116 l8 -18 l-14 6 l10 -16" stroke="var(--pig)" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="--len:70;--dur:.5s;--delay:1s"/>
+      <g class="wobo" transform="translate(230 40)">
+        <circle cx="60" cy="60" r="44" fill="var(--body)"/>
+        <rect x="26" y="44" width="68" height="30" rx="15" fill="var(--visor)"/>
+        <g class="spiralgrp">
+          <path class="spiral" d="M46 59 m0 -1 a1 1 0 0 1 2 0 a2.5 2.5 0 0 1 -5 0 a4 4 0 0 1 8 0 a5.5 5.5 0 0 1 -11 0" stroke="var(--eye)" stroke-width="3.5" fill="none" stroke-linecap="round" style="transform-origin:46px 59px"/>
+          <path class="spiral" d="M74 59 m0 -1 a1 1 0 0 1 2 0 a2.5 2.5 0 0 1 -5 0 a4 4 0 0 1 8 0 a5.5 5.5 0 0 1 -11 0" stroke="var(--eye)" stroke-width="3.5" fill="none" stroke-linecap="round" style="transform-origin:74px 59px"/>
+        </g>
+        <g class="recover"><circle cx="46" cy="59" r="6.5" fill="var(--eye)"/><circle cx="74" cy="59" r="6.5" fill="var(--eye)"/></g>
+      </g>
+    </svg>
+    <h1>Something on our side broke</h1>
+    <p>Not you. Wobo has already told us, and your place is saved. Try again in a moment.</p>
+    <div class="row"><a class="btn" href="#">Try again</a><a class="btn quiet" href="#">Back to learning</a></div>
+    <p class="tiny">If it keeps happening, the flag in the corner sends us the details.</p>
+  </div>
+</section>
+
+<!-- ============ OFFLINE ============ -->
+<section class="scene" id="offline">
+  <div class="code">Offline</div><div class="wordmark"><svg><use href="#wm"/></svg></div>
+  <div class="card">
+    <svg width="360" height="220" viewBox="0 0 360 220" aria-label="A paper plane Wobo threw drifts and drops; it will fly when the connection returns">
+      <g class="wobo" transform="translate(20 60)"><use href="#wobo-head"/></g>
+      <path class="draw" d="M140 110 c40 -30 80 -30 120 -20" stroke="var(--ink-3)" stroke-width="3.5" fill="none" stroke-dasharray="3 6" stroke-linecap="round" style="--len:140;--dur:1.2s;--delay:.6s"/>
+      <g class="plane">
+        <path d="M150 112 l40 -14 l-10 26 l-8 -8 z" fill="var(--pig)" fill-opacity=".18" stroke="var(--pig)" stroke-width="3.5" stroke-linejoin="round"/>
+        <path d="M180 116 l-8 8" stroke="var(--pig)" stroke-width="3.5" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <h1>You're offline</h1>
+    <p>Your place is saved and nothing is lost. Wobo will pick up exactly here the moment you're back.</p>
+    <div class="row"><a class="btn quiet" href="#">Try again</a></div>
+    <p class="tiny">Lessons you've opened before still work offline.</p>
+  </div>
+</section>
+
+<!-- ============ 429 / BUDGET ============ -->
+<section class="scene" id="e429">
+  <div class="code">Daily limit</div><div class="wordmark"><svg><use href="#wm"/></svg></div>
+  <div class="card">
+    <svg width="360" height="220" viewBox="0 0 360 220" aria-label="An hourglass drawn in ink; Wobo turns it over">
+      <g class="wobo" transform="translate(40 60)"><use href="#wobo-head"/></g>
+      <g class="turn" style="transform-origin:250px 120px">
+        <path class="draw" d="M222 70 h56 M222 170 h56 M226 72 c0 26 22 38 22 48 s-22 22 -22 48 M274 72 c0 26 -22 38 -22 48 s22 22 22 48" stroke="var(--ink)" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="--len:360;--dur:1.2s"/>
+        <path class="fade" d="M232 164 h36 l-18 -22 z" fill="var(--pig)" style="--delay:1.1s"/>
+        <circle class="sand" cx="250" cy="122" r="1.6" fill="var(--pig)"/>
+        <circle class="sand" cx="250" cy="130" r="1.6" fill="var(--pig)" style="animation-delay:1.9s"/>
+      </g>
+    </svg>
+    <h1>That's a lot of learning for one day</h1>
+    <p>You've used today's free turns. They come back at 6:00 tomorrow morning, and your streak is safe.</p>
+    <div class="row"><a class="btn" href="#">See Wobo Plus</a><a class="btn quiet" href="#">Review today's notes</a></div>
+    <p class="tiny">Practice you've already opened still works.</p>
+  </div>
+</section>
+
+<!-- ============ EXPIRED LINK ============ -->
+<section class="scene" id="expired">
+  <div class="code">Link expired</div><div class="wordmark"><svg><use href="#wm"/></svg></div>
+  <div class="card">
+    <svg width="360" height="220" viewBox="0 0 360 220" aria-label="An envelope drawn in ink; its seal fades">
+      <g class="wobo" transform="translate(30 60)"><use href="#wobo-head"/></g>
+      <g stroke="var(--ink)" stroke-width="3.5" fill="none" stroke-linejoin="round" stroke-linecap="round">
+        <path class="draw" d="M170 80 h140 v90 h-140 z" fill="var(--rose)" fill-opacity=".14" style="--len:460;--dur:1.2s"/>
+        <path class="draw" d="M170 80 l70 56 l70 -56" style="--len:180;--dur:.8s;--delay:1s"/>
+      </g>
+      <circle class="seal" cx="240" cy="136" r="11" fill="var(--pig)"/>
+      <path class="draw" d="M236 136 l3 3 l6 -7" stroke="var(--paper)" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="--len:20;--dur:.4s;--delay:1.6s"/>
+    </svg>
+    <h1>This link has expired</h1>
+    <p>Sign-in links only live for fifteen minutes, to keep your account yours. Ask for a fresh one and it'll be in your inbox in a moment.</p>
+    <div class="row"><a class="btn" href="#">Send a new link</a></div>
+  </div>
+</section>
+
+<!-- ============ MAINTENANCE ============ -->
+<section class="scene" id="e503">
+  <div class="code">Back soon</div><div class="wordmark"><svg><use href="#wm"/></svg></div>
+  <div class="card">
+    <svg width="360" height="220" viewBox="0 0 360 220" aria-label="Wobo tightens a bolt with a spanner">
+      <g class="wobo" transform="translate(40 60)"><use href="#wobo-head"/></g>
+      <g transform="translate(212 84)">
+        <path class="draw" d="M38 38 m-16 0 a16 16 0 1 0 32 0 a16 16 0 1 0 -32 0 m8 0 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0" stroke="var(--ink)" stroke-width="3.5" fill="none" style="--len:160;--dur:1s"/>
+        <g class="spanner">
+          <path class="draw" d="M38 38 l52 -52 m-6 -6 a10 10 0 1 1 12 12 l-6 -6" stroke="var(--pig)" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="--len:120;--dur:.8s;--delay:.8s"/>
+        </g>
+      </g>
+    </svg>
+    <h1>Wobo is tightening a few bolts</h1>
+    <p>We're doing planned work and expect to be back by 02:30. Your place is saved and your streak is safe.</p>
+    <div class="row"><a class="btn quiet" href="#">Check again</a></div>
+  </div>
+</section>
+
+<nav class="tabs" aria-label="Scenes">
+  <a href="#loading">Loading</a><a href="#e404">404</a><a href="#e500">500</a><a href="#offline">Offline</a><a href="#e429">Limit</a><a href="#expired">Expired</a><a href="#e503">Maintenance</a>
+</nav>
+
+<script>
+  // loader words: rotate handwritten lines letter by letter
+  const words=['sharpening the pencil','warming up the ink','reading your syllabus','drawing your board','finding your place'];
+  const el=document.getElementById('loadword'); let i=0;
+  function show(w){ el.innerHTML=''; [...w].forEach((ch,k)=>{const s=document.createElement('span'); s.textContent=ch===' '?' ':ch; s.style.animationDelay=(k*28)+'ms'; el.appendChild(s);}); }
+  show(words[0]); setInterval(()=>{ i=(i+1)%words.length; show(words[i]); }, 2600);
+  // theme via ?theme=dark
+  const t=new URLSearchParams(location.search).get('theme'); if(t) document.documentElement.setAttribute('data-theme',t);
+</script>
+</body>
+</html>
