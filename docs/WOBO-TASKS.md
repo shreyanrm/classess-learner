@@ -478,6 +478,7 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 - [ ] **Edge cases** — Google return in the same tab, offline mid-onboarding, unsupported board, under-age with no parent yet
 
 ### 7.5 UI raise (**design**)
+- [ ] **Element inventory per screen (design, owner law)** — for every surface (landing, auth, onboarding beats, home, Learn, Subject, Course, Practice, Progress, You, the plane, settings, emails): list every visible element with the learner task it serves and the evidence it is needed; remove anything without a reason; copy written from the learner's side; owner reviews the main surfaces before rollout
 - [ ] **Typography** — Poppins for UI, Caveat for her hand; tokens updated; Google Sans references removed
 - [ ] **Tokens** — light and dark complete; every surface through tokens; no hardcoded whites; one hit of pigment; no shadows; 3 px radius
 - [ ] **Chrome** — header, palette, doors, cards, buttons, inputs, chips, toasts, sheets redesigned to one system

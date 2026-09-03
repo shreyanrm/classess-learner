@@ -191,3 +191,7 @@ Marketing is a product surface, not a campaign. Every tactic is behaviour-timed,
 - **Acquisition.** Programmatic SEO pages per board, class, subject and chapter with a live mini-board on each; the landing page as the board's first performance; app-store optimisation; build-in-public; velvet-rope invites with insider lore at launch.
 - **The engine underneath.** Every lever flaggable and A/B-testable; the adaptive tactic engine selects copy, reward type, framing and timing per archetype; attribution and cohort retention tracked; a fraud and integrity layer on referrals and sponsored seats.
 - **Compliance rails.** Marketing consent lives with the parent for minors; DPDP-clean; no dark patterns in cancel flows; every message has an off switch.
+
+## 15. Every element earns its place (owner law, 2026-09-03)
+
+User experience is one of the highest priorities. Everything on every page must make sense and have a valid reason to be there. Concretely: for every screen we ship, an element inventory names each visible thing (control, label, chip, card, line of copy, animation) and states the learner task it serves and the evidence it is needed; anything without a reason is removed, not restyled. One screen, one intention (DESIGN.md law 1); the simple thing first, depth on request (law 6). Copy is written from the learner's side of the screen and says exactly what happens. Every wave's QA includes this audit; the Wave 7 UI raise starts from the inventory, not from the existing layout. The owner reviews the inventory for the main surfaces before rollout.
