@@ -1,4 +1,4 @@
-import hashlib, json, os, re, ssl, sys, time, urllib.request
+import hashlib, json, os, re, ssl, sys, time, urllib.parse, urllib.request
 sys.path.insert(0, os.path.dirname(__file__))
 import minipdf
 
@@ -21,14 +21,28 @@ def fetch(url, key=None, timeout=90):
     mpath = os.path.join(META, key + ".json")
     if os.path.exists(mpath):
         return json.load(open(mpath))
+    # TLS is verified by default: these fetches are the provenance of a syllabus, so a
+    # man-in-the-middle must not be able to hand us a fake one. A government portal with
+    # a broken certificate chain can be allowed explicitly, per host, and the record says so.
+    host = urllib.parse.urlparse(url).hostname or ""
+    insecure_hosts = {h.strip().lower() for h in os.environ.get("WOBO_FETCH_INSECURE_HOSTS", "").split(",") if h.strip()}
+    tls_verified = host.lower() not in insecure_hosts
     ctx = ssl.create_default_context()
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
+    if not tls_verified:
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "*/*"})
-    with urllib.request.urlopen(req, timeout=timeout, context=ctx) as r:
-        raw = r.read()
-        final = r.geturl()
-        ctype = r.headers.get("Content-Type", "")
+    try:
+        with urllib.request.urlopen(req, timeout=timeout, context=ctx) as r:
+            raw = r.read()
+            final = r.geturl()
+            ctype = r.headers.get("Content-Type", "")
+    except ssl.SSLCertVerificationError as e:
+        raise RuntimeError(
+            "certificate verification failed for %s (%s). If this official portal really has a broken chain, "
+            "allow it explicitly with WOBO_FETCH_INSECURE_HOSTS=%s and the document record will carry tls_verified=false."
+            % (host, e.reason if hasattr(e, "reason") else e, host)
+        ) from e
     ext = ".pdf" if (raw[:5] == b"%PDF-" or "pdf" in ctype.lower()) else ".html"
     open(os.path.join(SRC, key + ext), "wb").write(raw)
     if ext == ".pdf":
@@ -50,6 +64,7 @@ def fetch(url, key=None, timeout=90):
         "text_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
         "fetched_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "content_type": ctype,
+        "tls_verified": tls_verified,
     }
     json.dump(meta, open(mpath, "w"), indent=2)
     return meta

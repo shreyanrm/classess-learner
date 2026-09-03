@@ -407,6 +407,7 @@ Legend: **owner** = only the owner can do it · **design** = Fable's own hand ·
 ## Wave 6 — Curriculum
 
 ### 6.1 Registry of boards and curricula
+- [ ] **Re-verify syllabus provenance over verified TLS** — the writers' fetch tool skipped certificate verification (fixed 2026-09-03: verification on by default, per-host explicit opt-out recorded as tls_verified=false); re-fetch every 'verified' document with verification on, confirm document_sha256 matches, and downgrade any mismatch to provisional
 - [ ] **Data model** — `framework { id, name, aliases[], country, region, kind (national|state|international|open|homeschool|online), levels[], official_site, sources[] }`
 - [ ] **Seed list** — national boards, every Indian state board, NIOS, IB (PYP/MYP/DP), Cambridge (Primary/Lower Secondary/IGCSE/A Level), Edexcel, AP, US states, UK nations, Australian states, Canadian provinces, Singapore, common homeschool programmes; drafted by Opus, verified by Sonnet against official sites
 - [ ] **Type-to-select search** — aliases, fuzzy matching, country hint from locale; "not listed? tell me" path always visible
