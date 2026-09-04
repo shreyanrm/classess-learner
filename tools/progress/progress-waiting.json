@@ -16,10 +16,6 @@
   "detail": "POST /v1/internal/mail/sunday and /v1/internal/mail/wishes with header X-Wobo-Internal; set EMAIL_MODE=live, EMAIL_REPLY_TO=help@heywobo.com, EMAIL_POSTAL_ADDRESS (your legal address), MAIL_LOG_PATH on a volume."
  },
  {
-  "title": "Plans page extras: approve or strike",
-  "detail": "Pro adds voice replies and longer full-board lessons; Max adds two learners and past-paper sets. Your multipliers (5\u00d7, 20\u00d7) and prices are as set."
- },
- {
   "title": "22 festival wishes need your line",
   "detail": "Durga Puja/Navratri, Ganesh Chaturthi, Eid al-Adha, Good Friday, Nowruz, Passover, Dashain and others send nothing until a one-line English wish passes the neutral gate."
  },

@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wobo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<style>
+/* ── LAW v5 ────────────────────────────────────────────────────────────────────
+   White paper. Ink. Colour only where it does a job: the accent that points, the
+   highlighter that marks, the tick that confirms. No tinted section grounds. */
+:root{
+  --paper:#FFFFFF; --paper-2:#F6F6F8; --paper-3:#ECECF0; --line:#E4E4EA;
+  --ink:#14142B; --ink-2:#55556B; --ink-3:#8A8A9E;
+  --pig:#2B45FF; --pig-soft:#EDF0FF; --marigold:#FFB629; --rose:#FF6B57; --mint:#12B981; --violet:#7C5CFF;
+  --body:#14142B; --body-hi:#3A3A5C; --visor:#FFFFFF; --visor-lo:#EDEDF2; --eye:#2B45FF;
+  --sans:'Poppins',system-ui,-apple-system,sans-serif; --hand:'Caveat',cursive;
+  --s1:8px; --s2:16px; --s3:24px; --s4:40px; --s5:72px; --s6:128px;
+  /* one vertical rhythm for the whole page, tied to the viewport so a phone never
+     inherits a desktop's air and a wide screen never feels cramped */
+  --gutter:clamp(20px, 5vw, 48px);
+  --band:clamp(72px, 9vw, 132px);      /* space between one section and the next */
+  --colgap:clamp(32px, 5vw, 80px);     /* space between the two halves of a row   */
+  --shadow:0 24px 60px rgba(20,20,43,.10); --lift:0 10px 28px rgba(20,20,43,.07);
+}
+[data-theme="dark"]{
+  --paper:#0E0E16; --paper-2:#17171F; --paper-3:#1F1F29; --line:#26262F;
+  --ink:#F4F4F7; --ink-2:#B4B4C2; --ink-3:#7E7E90;
+  --pig:#7C8CFF; --pig-soft:#1A1E3A; --marigold:#FFC85A; --rose:#FF8A78; --mint:#3DD9A4; --violet:#A996FF;
+  --body:#F4F4F7; --body-hi:#FFFFFF; --visor:#0E0E16; --visor-lo:#1F1F29; --eye:#7C8CFF;
+  --shadow:0 24px 60px rgba(0,0,0,.5); --lift:0 10px 28px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;min-width:0}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{margin:0;letter-spacing:-.028em;text-wrap:balance}
+p{margin:0}
+.hand{font-family:var(--hand);font-weight:600}
+.wrap{width:min(1180px,calc(100% - var(--gutter) * 2));margin:0 auto}
+.eyebrow{font:500 12px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+.eyebrow b{color:var(--pig);font-weight:500}
+section{padding:calc(var(--band) / 2) 0;position:relative;scroll-margin-top:96px}
+h2.t{font:700 clamp(30px,3.8vw,50px)/1.06 var(--sans)}
+/* The highlighter is painted ON the span, not behind it, so a long phrase wraps like
+   any other text instead of forcing the page sideways. box-decoration-break makes the
+   mark continue onto the next line the way a real highlighter would. */
+h2.t .hl{
+  background-image:linear-gradient(color-mix(in srgb,var(--marigold) 46%,transparent),color-mix(in srgb,var(--marigold) 46%,transparent));
+  background-repeat:no-repeat;background-position:0 88%;background-size:0% .40em;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;padding:0 .06em;margin:0 -.06em;border-radius:3px;
+}
+h2.t .hl.lit{background-size:100% .40em;transition:background-size .72s cubic-bezier(.2,.8,.2,1)}
+.lede{font-size:clamp(16px,1.15vw,19px);color:var(--ink-2);max-width:46ch;margin-top:var(--s3)}
+
+/* buttons — magnet is a translate on an INNER span, so the hit box never moves */
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font:500 15px/1 var(--sans);min-height:50px;padding:0 24px;border-radius:14px;border:0;cursor:pointer;
+  background:var(--ink);color:var(--paper);overflow:hidden;isolation:isolate}
+.btn > span{display:inline-flex;align-items:center;gap:8px;will-change:transform}
+.btn.pig{background:var(--pig);color:#fff}
+.btn.quiet{background:var(--paper-2);color:var(--ink)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--line)}
+.btn::after{content:"";position:absolute;inset:0;background:currentColor;opacity:0;transition:opacity .25s;z-index:-1}
+.btn:hover::after{opacity:.08}
+.btn:focus-visible{outline:3px solid var(--marigold);outline-offset:3px}
+
+/* header — simple, real routes */
+header{position:sticky;top:0;z-index:60;background:color-mix(in srgb,var(--paper) 86%,transparent);backdrop-filter:blur(14px) saturate(1.4)}
+header .bar{display:flex;align-items:center;gap:var(--s4);height:74px}
+header .wm svg{height:24px;width:auto;fill:var(--ink);display:block}
+header nav{display:flex;gap:var(--s3);margin-left:var(--s2)}
+header nav a{font:500 15px/1 var(--sans);color:var(--ink-2);padding:8px 0;position:relative}
+header nav a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--pig);border-radius:2px;transform:scaleX(0);transform-origin:left;transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+header nav a:hover{color:var(--ink)}
+header nav a:hover::after{transform:scaleX(1)}
+header .right{margin-left:auto;display:flex;align-items:center;gap:var(--s2)}
+header .right .sign{font:500 15px/1 var(--sans);color:var(--ink-2)}
+header .btn{min-height:44px;padding:0 20px;border-radius:12px;font-size:14px}
+@media (max-width:980px){header nav{display:none}header .right .sign{display:none}}
+
+/* hero */
+#hero{padding:clamp(32px,5vw,64px) 0 calc(var(--band) / 2);overflow:visible}
+#hero .grid{display:grid;grid-template-columns:1.02fr .98fr;gap:var(--colgap);align-items:center;min-height:min(76vh,720px)}
+#hero h1{font:700 clamp(40px,5.4vw,68px)/1.0 var(--sans);letter-spacing:-.04em;margin-top:var(--s2)}
+#hero h1 .wake{display:block;font-family:var(--hand);font-weight:700;font-size:.62em;color:var(--pig);letter-spacing:0;margin-bottom:.08em}
+#hero .cta{display:flex;gap:12px;margin-top:var(--s4);flex-wrap:wrap;align-items:center}
+#hero .under{display:flex;gap:var(--s3);margin-top:var(--s3);flex-wrap:wrap;color:var(--ink-3);font-size:14px}
+#hero .under span{display:inline-flex;align-items:center;gap:8px}
+#hero .under i{width:7px;height:7px;border-radius:50%;background:var(--mint)}
+@media (max-width:980px){
+  #hero .grid{grid-template-columns:1fr;gap:var(--s4)}
+  #hero .stagewrap{max-width:560px}
+  #hero h1{font-size:clamp(34px,8vw,52px)}
+}
+
+/* the device: one question, answered three ways */
+.device{position:relative;border-radius:26px;background:var(--paper);box-shadow:var(--shadow);padding:14px;border:1px solid var(--line)}
+.device .top{display:flex;align-items:center;gap:10px;padding:4px 8px 12px;font-size:13px;color:var(--ink-3)}
+.device .top b{color:var(--ink-2);font-weight:500}
+.device .top .live{margin-left:auto;display:inline-flex;align-items:center;gap:6px;color:var(--rose);font-size:12px}
+.device .top .live i{width:7px;height:7px;border-radius:50%;background:var(--rose)}
+.device .stage{position:relative;border-radius:18px;background:var(--paper-2);height:clamp(320px,42vw,420px);overflow:hidden}
+.device .stage > div{position:absolute;inset:0;opacity:0;display:grid;place-items:center}
+.device .stage > div.on{opacity:1}
+.device .rail{display:flex;gap:8px;padding:12px 6px 2px}
+.device .rail button{flex:1;border:0;background:transparent;padding:8px 4px 10px;cursor:pointer;font:500 12px/1.2 var(--sans);color:var(--ink-3);border-top:2px solid var(--line);transition:color .2s}
+.device .rail button.on{color:var(--ink);border-top-color:var(--pig)}
+.ink{fill:none;stroke:var(--ink);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.ink.pig{stroke:var(--pig)}.ink.thin{stroke-width:2.6;stroke:var(--ink-3)}.ink.rose{stroke:var(--rose)}.ink.mint{stroke:var(--mint)}
+.hw{font-family:var(--hand);font-weight:600;fill:var(--ink)}.hw.pig{fill:var(--pig)}.hw.rose{fill:var(--rose)}.hw.dim{fill:var(--ink-3)}
+.draw{stroke-dasharray:var(--len,900);stroke-dashoffset:var(--len,900)}
+
+/* floats */
+.float{position:absolute;pointer-events:none;filter:drop-shadow(0 10px 20px rgba(20,20,43,.10))}
+.float svg{display:block}
+
+/* the loop strip */
+.loop{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(10px,1.2vw,16px);margin-top:var(--s4)}
+.loop .step{background:var(--paper-2);border-radius:20px;padding:clamp(16px,1.6vw,22px);display:grid;gap:10px;align-content:start;position:relative;opacity:1}
+.loop .step .n{font:500 11px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.loop .step > b{font:600 17px/1.2 var(--sans)}
+.loop .step > p{font-size:14px;color:var(--ink-2)}
+.loop .step svg{width:40px;height:40px;fill:none;stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.loop .step .acc{stroke:var(--pig)}
+@media (max-width:1080px){.loop{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:720px){.loop{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.loop{grid-template-columns:1fr}}
+
+/* two-column row */
+.row{display:grid;grid-template-columns:1fr 1fr;gap:var(--colgap);align-items:center}
+.row.flip .art{order:-1}
+@media (max-width:980px){
+  .row{grid-template-columns:1fr;gap:var(--s4)}
+  .row.flip .art{order:0}
+  .art{min-height:0;padding:var(--s3)}
+}
+@media (max-width:640px){
+  .art{padding:var(--s2);border-radius:20px}
+  h2.t{font-size:clamp(26px,7.4vw,34px)}
+  .grid4{grid-template-columns:repeat(2,84px);grid-template-rows:repeat(2,84px)}
+  .try{padding:var(--s3) var(--s2)}
+  .report .kpis{grid-template-columns:1fr}
+  .report .kpi{display:flex;align-items:baseline;gap:10px}
+  .report .kpi b{margin-top:0;font-size:22px}
+  .device .stage{height:clamp(240px,58vw,320px)}
+  .device .rail button{font-size:11px}
+  #close{padding:var(--s5) var(--s3);border-radius:24px}
+  #close input{min-width:0;width:100%}
+  #close form{flex-direction:column;align-items:stretch}
+}
+.art{position:relative;border-radius:24px;background:var(--paper-2);padding:var(--s3);min-height:min(420px,52vw);display:grid;place-items:center;justify-items:stretch;overflow:hidden}
+.art > svg{width:100%;height:auto;overflow:visible}
+.claims{display:grid;gap:14px;margin-top:var(--s4)}
+.claims > div{display:grid;grid-template-columns:30px minmax(0,1fr);gap:14px;align-items:start}
+.claims > div > div{display:block}
+.claims i{width:30px;height:30px;border-radius:50%;background:var(--pig-soft);display:grid;place-items:center;font:600 13px/1 var(--sans);color:var(--pig);font-style:normal}
+.claims > div > div > b{font-weight:600;display:block}
+.claims > div > div > span{color:var(--ink-2);font-size:15px;display:block;margin-top:2px}
+
+/* answer-forms carousel (scroll driven) */
+.forms{position:relative;width:100%;height:clamp(360px,44vw,460px);border-radius:24px;background:var(--paper-2);overflow:hidden}
+.forms .card{position:absolute;inset:0;display:grid;place-items:center;padding:var(--s3);opacity:0}
+.forms .card svg{width:min(100%,620px);height:auto;overflow:visible}
+.forms .label{position:absolute;left:24px;bottom:20px;display:flex;align-items:center;gap:10px;font:500 13px/1 var(--sans);color:var(--ink-2)}
+.forms .label i{width:8px;height:8px;border-radius:50%;background:var(--pig)}
+.formsnav{display:flex;gap:8px;margin-top:var(--s3);flex-wrap:wrap}
+.formsnav > span{font:500 13px/1 var(--sans);padding:9px 14px;border-radius:999px;background:var(--paper-2);color:var(--ink-3)}
+.formsnav > span.on{background:var(--ink);color:var(--paper)}
+
+/* video moment */
+.player{position:relative;width:100%;border-radius:20px;overflow:hidden;background:var(--ink);box-shadow:var(--shadow)}
+.player .frame{position:relative;aspect-ratio:16/10;background:var(--paper)}
+.player .frame svg{position:absolute;inset:0;width:100%;height:100%}
+.player .bar{display:flex;align-items:center;gap:10px;padding:10px 14px;color:rgba(255,255,255,.72);font-size:12px}
+.player .bar .pp{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center}
+.player .bar .pp svg{width:10px;height:10px;fill:#fff}
+.player .bar .track{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.18);position:relative;overflow:hidden}
+.player .bar .track i{position:absolute;inset:0;transform-origin:left;transform:scaleX(0);background:var(--marigold);will-change:transform}
+.bubble{position:absolute;background:var(--ink);color:var(--paper);border-radius:14px 14px 14px 4px;padding:10px 14px;font:500 14px/1.3 var(--sans);box-shadow:var(--lift);opacity:0}
+.bubble.hand{font-family:var(--hand);font-weight:700;font-size:20px;background:var(--marigold);color:#14142B;border-radius:14px}
+
+/* practice */
+.try{width:100%;border-radius:24px;background:var(--paper-2);padding:var(--s4);display:grid;gap:var(--s3);justify-items:center;text-align:center;position:relative;overflow:hidden}
+.try .q{font:600 22px/1.3 var(--sans)}
+.try .q i{font-style:normal;font-family:var(--hand);color:var(--pig);font-size:1.35em}
+.grid4{display:grid;grid-template-columns:repeat(2,104px);grid-template-rows:repeat(2,104px);gap:8px;padding:8px;border-radius:22px;background:var(--ink);position:relative}
+.grid4 button{border:0;border-radius:15px;background:var(--paper);padding:0;cursor:pointer;transition:transform .18s cubic-bezier(.34,1.56,.64,1),background .2s}
+.grid4 button:hover{transform:translateY(-2px)}
+.grid4 button.on{background:var(--pig)}
+.grid4 svg{position:absolute;inset:-44px;width:calc(100% + 88px);height:calc(100% + 88px);pointer-events:none;overflow:visible}
+.try .row2{display:flex;gap:10px}
+.try .say{font-family:var(--hand);font-weight:700;font-size:26px;color:var(--pig);min-height:1.3em}
+.try .say.win{color:var(--mint)}
+.spark{position:absolute;width:9px;height:9px;border-radius:2px;opacity:0;pointer-events:none}
+
+/* parents: the report */
+.report{width:100%;border-radius:24px;background:var(--paper);border:1px solid var(--line);box-shadow:var(--shadow);padding:var(--s3);display:grid;gap:var(--s3)}
+.report .head{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-3)}
+.report .head b{color:var(--ink);font:600 15px/1 var(--sans)}
+.report .head .tag{margin-left:auto;font:500 12px/1 var(--sans);color:var(--mint);background:color-mix(in srgb,var(--mint) 12%,transparent);padding:6px 10px;border-radius:999px}
+.report .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.report .kpi{background:var(--paper-2);border-radius:16px;padding:14px}
+.report .kpi > span{font:500 11px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);display:block}
+.report .kpi > b{display:block;font:700 26px/1 var(--sans);margin-top:8px;font-variant-numeric:tabular-nums}
+.report .kpi > b span{font:inherit;letter-spacing:0;text-transform:none;color:inherit}
+.report .kpi > em{font-style:normal;font-size:12px;color:var(--ink-2);display:block;margin-top:6px}
+.report .chart{position:relative;height:150px}
+.report .chart svg{width:100%;height:100%;overflow:visible}
+.report .note{background:var(--paper-2);border-radius:16px;padding:16px 18px;font-family:var(--hand);font-weight:600;font-size:21px;line-height:1.2}
+.report .note em{font-style:normal;color:var(--rose)}
+.badges{display:flex;gap:10px;flex-wrap:wrap}
+.badges > div{display:inline-flex;align-items:center;gap:8px;background:var(--paper-2);border-radius:999px;padding:8px 14px;font:500 13px/1 var(--sans);color:var(--ink-2)}
+.badges svg{width:16px;height:16px;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+
+/* subjects */
+.stages{display:grid;gap:12px;margin-top:var(--s4)}
+.stage{background:var(--paper-2);border-radius:20px;padding:clamp(16px,1.8vw,24px);display:grid;grid-template-columns:190px 1fr;gap:var(--s3);align-items:start}
+.stage .who{display:grid;gap:4px}
+.stage .who > b{font:600 17px/1.2 var(--sans)}
+.stage .who > span{font-size:13px;color:var(--ink-3)}
+.stage .subs{display:flex;flex-wrap:wrap;gap:8px}
+.stage .subs > span{font:500 13px/1 var(--sans);background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:9px 13px;color:var(--ink-2)}
+.stage .subs span.acc{border-color:transparent;background:var(--pig-soft);color:var(--pig)}
+@media (max-width:760px){.stage{grid-template-columns:1fr}}
+
+/* safe: depth */
+.safe{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);margin-top:var(--s4)}
+.safe .item{display:grid;grid-template-columns:52px 1fr;gap:16px;align-items:start;padding:var(--s3) 0;border-top:1px solid var(--line)}
+.safe .item svg{width:52px;height:52px;fill:none;stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.safe .item .acc{stroke:var(--pig)}
+.safe .item > div > b{display:block;font:600 18px/1.25 var(--sans)}
+.safe .item > div > p{color:var(--ink-2);font-size:15px;margin-top:6px}
+.safe .item .proof{margin-top:10px;font:500 13px/1 var(--sans);color:var(--pig);display:inline-flex;align-items:center;gap:6px}
+@media (max-width:860px){.safe{grid-template-columns:1fr}}
+
+/* ask blocks */
+.ask{border-radius:24px;background:var(--paper-2);padding:var(--s4);display:grid;grid-template-columns:auto 1fr;gap:var(--s3);align-items:center}
+.ask svg.w{width:96px}
+.ask .box{display:flex;gap:10px;background:var(--paper);border-radius:16px;padding:8px 8px 8px 20px;align-items:center;margin-top:var(--s2);box-shadow:var(--lift)}
+.ask input{flex:1;border:0;background:transparent;font:400 16px/1.4 var(--sans);color:var(--ink);outline:none;min-width:0}
+.ask .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ask .chips > span{font:500 13px/1 var(--sans);padding:9px 13px;border-radius:999px;background:var(--paper);color:var(--ink-2)}
+.ask .answer{margin-top:14px;font-family:var(--hand);font-weight:600;font-size:22px;line-height:1.25;color:var(--ink);min-height:1.3em}
+@media (max-width:860px){.ask{grid-template-columns:1fr}.ask svg.w{width:64px}}
+
+.others{margin-top:var(--s3);display:grid;gap:var(--s2)}
+.others .line{font-size:15px;color:var(--ink-2)}
+.models{display:flex;gap:10px;flex-wrap:wrap}
+.models a{display:inline-flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 16px;font:500 14px/1 var(--sans);color:var(--ink);transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s}
+.models a:hover{transform:translateY(-2px);box-shadow:var(--lift)}
+.models svg{width:18px;height:18px}
+
+/* faq */
+.faq{display:grid;gap:8px;margin-top:var(--s4)}
+.faq details{background:var(--paper-2);border-radius:16px;padding:0 var(--s3)}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:var(--s2);padding:20px 0;font-weight:500}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font:400 24px/1 var(--sans);color:var(--pig);transition:transform .3s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq p{color:var(--ink-2);padding:0 0 20px;max-width:66ch}
+
+/* devices */
+.devices{display:flex;gap:10px;flex-wrap:wrap;margin-top:var(--s3)}
+.devices a{display:inline-flex;align-items:center;gap:10px;background:var(--paper-2);border-radius:14px;padding:12px 16px;font:500 14px/1 var(--sans);color:var(--ink-2)}
+.devices a.live{background:var(--ink);color:var(--paper)}
+.devices a > small{font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase}
+
+/* close: promotion */
+#close{background:var(--ink);color:#fff;border-radius:32px;padding:var(--band) var(--s4);text-align:center;position:relative;overflow:hidden;margin-bottom:var(--band)}
+#close h2{font:700 clamp(34px,4.6vw,58px)/1.02 var(--sans);letter-spacing:-.035em;color:#fff}
+#close .sub{color:rgba(255,255,255,.72);margin:var(--s3) auto 0;max-width:48ch}
+#close form{display:flex;gap:10px;justify-content:center;margin-top:var(--s4);flex-wrap:wrap}
+#close input{font:400 16px/1 var(--sans);padding:0 20px;height:52px;border-radius:14px;border:0;background:rgba(255,255,255,.1);color:#fff;min-width:min(340px,80vw)}
+#close input::placeholder{color:rgba(255,255,255,.5)}
+#close .btn{background:var(--marigold);color:#14142B}
+#close .fine{color:rgba(255,255,255,.5);font-size:13px;margin-top:var(--s2)}
+#close .glow{position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(43,69,255,.35),transparent 70%);filter:blur(20px);pointer-events:none}
+
+footer{padding:0 0 var(--band);color:var(--ink-3);font-size:14px}
+footer .grid{display:grid;grid-template-columns:1.6fr repeat(4,1fr);gap:var(--s3)}
+footer b{display:block;color:var(--ink);font-weight:600;margin-bottom:12px;font-size:14px}
+footer a{display:block;padding:5px 0;color:var(--ink-2)}
+footer .wm svg{height:22px;fill:var(--ink)}
+@media (max-width:860px){footer .grid{grid-template-columns:1fr 1fr}}
+
+.blink{transform-origin:center;animation:blink 5.5s infinite}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+@media (prefers-reduced-motion:reduce){
+  .blink{animation:none}
+  .draw{stroke-dashoffset:0 !important}
+  h2.t .hl{background-size:100% .40em}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<radialGradient id="hg" cx="36%" cy="30%" r="78%"><stop offset="0" style="stop-color:var(--body-hi)"/><stop offset="1" style="stop-color:var(--body)"/></radialGradient>
+<linearGradient id="vg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--visor)"/><stop offset="1" style="stop-color:var(--visor-lo)"/></linearGradient>
+<symbol id="head" viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="url(#hg)"/><rect x="18" y="41" width="84" height="38" rx="19" fill="url(#vg)"/><g class="blink"><circle cx="43" cy="61" r="9" fill="var(--eye)"/><circle cx="77" cy="61" r="9" fill="var(--eye)"/><circle cx="40" cy="58" r="3" fill="var(--paper)" opacity=".9"/><circle cx="74" cy="58" r="3" fill="var(--paper)" opacity=".9"/></g></symbol>
+<symbol id="wm" viewBox="0 0 1160 340"><text x="0" y="300" font-family="Poppins,sans-serif" font-weight="700" font-size="330" letter-spacing="-12">wobo</text></symbol>
+</defs></svg>
+
+<header><div class="wrap bar">
+  <a class="wm" href="/" aria-label="Wobo"><svg viewBox="0 0 1160 340"><use href="#wm"/></svg></a>
+  <nav>
+    <a href="/how-it-works">How it works</a>
+    <a href="/subjects">Subjects</a>
+    <a href="/for-parents">For parents</a>
+    <a href="/for-students">For students</a>
+    <a href="/plans">Plans</a>
+  </nav>
+  <div class="right">
+    <a class="sign" href="/sign-in">Sign in</a>
+    <a class="btn pig mag" href="#early"><span>Get early access</span></a>
+  </div>
+</div></header>
+
+<!-- ══ HERO ══ -->
+<section id="hero"><div class="wrap grid">
+  <div>
+    <div class="eyebrow reveal">Every subject · every board · <b>free every day</b></div>
+    <h1 class="reveal"><span class="wake">Hey Wobo,</span>why do plants need sunlight?</h1>
+    <p class="lede reveal">A tutor that hears the question, works out where it sits in your syllabus, and answers it the way the idea needs: drawn, animated, spoken, or handed to you to try. At 10 pm, at 6 am, as many times as you like.</p>
+    <div class="cta reveal">
+      <a class="btn pig mag" href="#early"><span>Get early access</span></a>
+      <a class="btn ghost mag" href="/how-it-works"><span>See how it works</span></a>
+    </div>
+    <div class="under reveal">
+      <span><i></i>Free every single day</span>
+      <span><i></i>No card, no trial that ends</span>
+    </div>
+  </div>
+  <div class="stagewrap" style="position:relative">
+    <div class="float f1" style="left:-4%;top:-6%;width:66px"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="var(--marigold)"/><path d="M32 18 v14 l10 6" fill="none" stroke="#14142B" stroke-width="4" stroke-linecap="round"/></svg></div>
+    <div class="float f2" style="right:-3%;top:-8%;width:58px"><svg viewBox="0 0 64 64"><rect x="8" y="8" width="48" height="48" rx="14" fill="var(--pig)"/><path d="M20 32 l8 9 l16 -18" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="device" id="device">
+      <div class="top"><b>Wobo</b> · live <span class="live" id="liveTag"><i></i> <span>drawing</span></span></div>
+      <div class="stage" id="heroStage">
+        <div class="on" data-form="draw"><svg viewBox="0 0 520 380" aria-label="Wobo draws the leaf and where the light goes">
+          <path class="ink draw" id="d-leaf" d="M170 250 C170 170 240 120 320 118 C320 200 258 254 176 254 Z"/>
+          <path class="ink thin draw" id="d-vein" d="M176 252 C230 220 280 176 318 122"/>
+          <g id="d-rays" opacity="0">
+            <path class="ink pig" d="M120 60 l34 44"/><path class="ink pig" d="M180 46 l20 52"/><path class="ink pig" d="M244 44 l4 54"/>
+          </g>
+          <text class="hw pig" id="d-lbl1" x="330" y="90" font-size="26" opacity="0">light in</text>
+          <path class="ink mint draw" id="d-arrow" d="M300 250 C350 250 360 220 396 214"/>
+          <path class="ink mint" id="d-head" d="M386 206 l12 8 l-12 8" opacity="0"/>
+          <text class="hw" id="d-lbl2" x="330" y="300" font-size="24" opacity="0">sugar out</text>
+          <text class="hw dim" id="d-cap" x="60" y="340" font-size="20" opacity="0">light + water + air → food the plant can use</text>
+        </svg></div>
+        <div data-form="video"><svg viewBox="0 0 520 380" aria-label="The same idea as a short film">
+          <rect x="60" y="50" width="400" height="230" rx="14" fill="var(--paper)"/>
+          <circle cx="150" cy="150" r="40" fill="var(--mint)" opacity=".18"/><circle cx="150" cy="150" r="26" fill="var(--mint)" opacity=".35"/>
+          <path class="ink" d="M300 200 C300 150 340 120 390 120"/>
+          <circle cx="390" cy="120" r="16" fill="var(--marigold)"/>
+          <path class="ink thin" d="M120 250 h280"/>
+          <rect x="60" y="296" width="400" height="8" rx="4" fill="var(--paper-3)"/><rect x="60" y="296" width="180" height="8" rx="4" fill="var(--marigold)"/>
+          <text class="hw dim" x="60" y="340" font-size="20">watch it happen, 40 seconds</text>
+        </svg></div>
+        <div data-form="try"><svg viewBox="0 0 520 380" aria-label="Now you try one">
+          <rect x="110" y="60" width="300" height="180" rx="16" fill="var(--paper)"/>
+          <text class="hw" x="140" y="110" font-size="24">which one makes the food?</text>
+          <rect x="140" y="130" width="110" height="44" rx="12" fill="var(--pig)"/><text x="195" y="158" text-anchor="middle" font-family="Poppins" font-size="15" fill="#fff">the leaf</text>
+          <rect x="266" y="130" width="110" height="44" rx="12" fill="var(--paper-3)"/><text x="321" y="158" text-anchor="middle" font-family="Poppins" font-size="15" fill="var(--ink-2)">the root</text>
+          <path class="ink mint" d="M150 200 l14 14 l26 -30"/>
+          <text class="hw" x="200" y="214" font-size="22" fill="var(--mint)">that's it</text>
+          <text class="hw dim" x="110" y="300" font-size="20">Wobo never says wrong. It rings the gap and waits.</text>
+        </svg></div>
+        <div data-form="say"><svg viewBox="0 0 520 380" aria-label="Wobo says it out loud">
+          <g transform="translate(150 80)"><svg viewBox="0 0 120 120" width="120" height="120"><use href="#head"/></svg></g>
+          <g id="wave" transform="translate(120 240)">
+            <rect x="0" y="-18" width="7" height="36" rx="3.5" fill="var(--pig)"/><rect x="16" y="-28" width="7" height="56" rx="3.5" fill="var(--pig)"/>
+            <rect x="32" y="-12" width="7" height="24" rx="3.5" fill="var(--pig)"/><rect x="48" y="-34" width="7" height="68" rx="3.5" fill="var(--pig)"/>
+            <rect x="64" y="-20" width="7" height="40" rx="3.5" fill="var(--pig)"/><rect x="80" y="-10" width="7" height="20" rx="3.5" fill="var(--pig)"/>
+            <rect x="96" y="-26" width="7" height="52" rx="3.5" fill="var(--pig)"/><rect x="112" y="-14" width="7" height="28" rx="3.5" fill="var(--pig)"/>
+          </g>
+          <text class="hw" x="80" y="330" font-size="24">“The leaf is the kitchen. Sunlight is the stove.”</text>
+        </svg></div>
+      </div>
+      <div class="rail" id="heroRail">
+        <button class="on" data-go="draw">Drawn</button>
+        <button data-go="video">Filmed</button>
+        <button data-go="try">Tried</button>
+        <button data-go="say">Spoken</button>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══ THE LOOP ══ -->
+<section id="loop"><div class="wrap">
+  <div class="eyebrow reveal">What actually happens</div>
+  <h2 class="t reveal">One question in. <span class="hl">A whole lesson out.</span></h2>
+  <p class="lede reveal">Drawing is one of five things Wobo does with a question. Here is the rest of it.</p>
+  <div class="loop">
+    <div class="step"><svg viewBox="0 0 40 40"><rect class="acc" x="15" y="5" width="10" height="18" rx="5"/><path d="M10 19 a10 10 0 0 0 20 0 M20 29 v6"/></svg><div class="n">01 · Ask</div><b>However you want</b><p>Out loud, typed, a photo of the worksheet, or a circle drawn around the part that lost you.</p></div>
+    <div class="step"><svg viewBox="0 0 40 40"><path d="M6 10 h28 v20 h-28 z"/><path class="acc" d="M11 17 h14 M11 23 h9"/></svg><div class="n">02 · Place it</div><b>In your syllabus</b><p>Your board, your year, the chapter your class is on this week. Not a course built for everyone.</p></div>
+    <div class="step"><svg viewBox="0 0 40 40"><path d="M7 33 l4 -1 l19 -19 l-3 -3 l-19 19 z"/><path class="acc" d="M27 10 l3 3"/><path d="M7 6 h10 M12 1 v10" opacity=".5"/></svg><div class="n">03 · Show it</div><b>In the right form</b><p>A drawn board, a short film, a thing you can drag, a worked example, or a sentence marked up.</p></div>
+    <div class="step"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="14"/><path class="acc" d="M13 20 l5 5 l9 -11"/></svg><div class="n">04 · Try it</div><b>Until it sticks</b><p>Practice in the kinds your exam uses. Close gets a ring, never a red cross.</p></div>
+    <div class="step"><svg viewBox="0 0 40 40"><rect x="6" y="10" width="28" height="20" rx="4"/><path class="acc" d="M6 13 l14 10 l14 -10"/></svg><div class="n">05 · Remember</div><b>And report</b><p>What clicked, what did not, and one honest note home on Sunday.</p></div>
+  </div>
+</div></section>
+
+<!-- ══ ANSWER FORMS ══ -->
+<section id="forms"><div class="wrap">
+  <div class="row">
+    <div>
+      <div class="eyebrow reveal">More than a whiteboard</div>
+      <h2 class="t reveal">Some ideas are drawn. Some are <span class="hl">filmed, built or spoken.</span></h2>
+      <p class="lede reveal">Wobo picks the form the idea needs, then keeps going until you have it. The same question, four ways, as you scroll.</p>
+      <div class="formsnav reveal" id="formsNav">
+        <span class="on">A drawn proof</span><span>A short film</span><span>A thing you can drag</span><span>A page marked up</span>
+      </div>
+    </div>
+    <div class="art" style="padding:0;background:transparent">
+      <div class="forms" id="formsBox">
+        <div class="card" data-i="0"><svg viewBox="0 0 620 380" aria-label="A drawn proof">
+          <path class="ink" d="M150 280 L330 280 L150 150 Z"/><path class="ink thin" d="M150 258 h22 v22"/>
+          <path class="ink pig" d="M330 280 L440 148 L308 40 L150 150"/>
+          <text class="hw pig" x="352" y="140" font-size="26">the big square</text>
+          <text class="hw" x="200" y="316" font-size="24">= the two small ones, added</text>
+        </svg><div class="label"><i></i>Geometry, drawn as it is reasoned</div></div>
+        <div class="card" data-i="1"><svg viewBox="0 0 620 380" aria-label="A short film">
+          <rect x="90" y="50" width="440" height="250" rx="16" fill="var(--paper)"/>
+          <circle cx="220" cy="175" r="52" fill="var(--rose)" opacity=".16"/><circle cx="220" cy="175" r="30" fill="var(--rose)" opacity=".3"/>
+          <path class="ink pig" d="M300 240 C340 150 420 130 470 130"/>
+          <circle cx="470" cy="130" r="14" fill="var(--marigold)"/>
+          <rect x="90" y="316" width="440" height="8" rx="4" fill="var(--paper-3)"/><rect x="90" y="316" width="250" height="8" rx="4" fill="var(--marigold)"/>
+        </svg><div class="label"><i></i>A reaction you can watch happen</div></div>
+        <div class="card" data-i="2"><svg viewBox="0 0 620 380" aria-label="A thing you can drag">
+          <path class="ink thin" d="M110 300 h420 M140 330 v-260"/>
+          <path class="ink pig" d="M140 280 C230 260 310 150 520 96"/>
+          <circle cx="330" cy="182" r="13" fill="var(--rose)"/>
+          <path class="ink rose" d="M330 182 v118" stroke-dasharray="6 8"/>
+          <text class="hw" x="352" y="176" font-size="24">drag me</text>
+          <text class="hw dim" x="352" y="212" font-size="20">every number under it moves</text>
+        </svg><div class="label"><i></i>A model that answers back</div></div>
+        <div class="card" data-i="3"><svg viewBox="0 0 620 380" aria-label="A page marked up">
+          <g font-family="Poppins" font-size="19" fill="var(--ink)"><text x="110" y="130">The monsoon arrived like a rumour, first in</text><text x="110" y="168">the smell of the air, then everywhere at once,</text><text x="110" y="206">the streets were rivers by evening.</text></g>
+          <rect x="308" y="112" width="150" height="24" rx="6" fill="var(--marigold)" opacity=".55"/>
+          <text class="hw pig" x="466" y="106" font-size="22">simile</text>
+          <path class="ink rose" d="M240 214 c-8 14 2 26 26 26 s86 -2 106 -8 s12 -28 -12 -30 s-96 -4 -120 12"/>
+          <text class="hw rose" x="380" y="252" font-size="22">two sentences, one comma</text>
+        </svg><div class="label"><i></i>Your own writing, with the pen on it</div></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══ MID-VIDEO QUESTION ══ -->
+<section id="students"><div class="wrap">
+  <div class="row flip">
+    <div>
+      <div class="eyebrow reveal">For students</div>
+      <h2 class="t reveal">Stop it anywhere. <span class="hl">Ask the thing you would not ask in class.</span></h2>
+      <p class="lede reveal">Pause the film halfway. Circle the bit that lost you. Wobo picks up exactly there, on the same frame, and explains it without a sigh and without telling anyone.</p>
+      <div class="claims reveal">
+        <div><i>1</i><div><b>It answers on what you are looking at</b><span>Not a search result. The frame, the diagram, the line of your own working.</span></div></div>
+        <div><i>2</i><div><b>It knows what your class did this week</b><span>So the answer uses the words your teacher used.</span></div></div>
+        <div><i>3</i><div><b>It notices when you get it</b><span>A small, specific fuss. Never a leaderboard.</span></div></div>
+      </div>
+    </div>
+    <div class="art" id="videoArt">
+      <div class="player" id="player">
+        <div class="frame"><svg viewBox="0 0 520 330" aria-label="A lesson film, paused, with a question circled on it">
+          <text class="hw dim" x="40" y="46" font-size="22">Photosynthesis · 0:19</text>
+          <path class="ink thin" d="M60 270 h400 M90 290 v-200"/>
+          <rect x="150" y="150" width="52" height="120" rx="6" fill="var(--pig)"/>
+          <rect x="230" y="196" width="52" height="74" rx="6" fill="var(--mint)"/>
+          <rect x="310" y="120" width="52" height="150" rx="6" fill="var(--marigold)"/>
+          <text class="hw dim" x="150" y="296" font-size="18">light</text><text class="hw dim" x="232" y="296" font-size="18">dark</text><text class="hw dim" x="310" y="296" font-size="18">more light</text>
+          <path class="ink pig" id="lasso" d="M126 132 c-30 40 -14 118 62 126 s112 -12 108 -68 s-40 -84 -104 -80 s-58 12 -66 22"/>
+        </svg>
+        <div class="bubble" id="b1" style="left:8%;bottom:16%">Ask Wobo about this</div>
+        <div class="bubble hand" id="b2" style="right:6%;top:12%">why does more light make more?</div>
+        <div class="bubble" id="b3" style="left:10%;top:14%;max-width:58%">Because light is the fuel. Past a point the leaf runs out of water, and the bar stops growing.</div>
+        </div>
+        <div class="bar"><span class="pp"><svg viewBox="0 0 12 12"><rect x="2" y="1" width="3" height="10" rx="1"/><rect x="7" y="1" width="3" height="10" rx="1"/></svg></span><span class="track"><i id="track"></i></span><span id="tstamp">0:07 / 0:19</span></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══ PRACTICE ══ -->
+<section id="practice"><div class="wrap">
+  <div class="row">
+    <div class="art" style="background:transparent;padding:0">
+      <div class="try" id="tryBox">
+        <div class="q">Colour <i>½</i> of the shape.</div>
+        <div class="grid4" id="grid">
+          <button aria-label="top left"></button><button aria-label="top right"></button>
+          <button aria-label="bottom left"></button><button aria-label="bottom right"></button>
+          <svg viewBox="-44 -44 304 304" aria-hidden="true"><path id="ring" class="ink pig draw" d="" style="--len:700"/><text id="ringtxt" class="hw pig" font-size="26" opacity="0"></text></svg>
+        </div>
+        <div class="row2"><button class="btn" id="check"><span>Check</span></button><button class="btn quiet" id="reset"><span>Start over</span></button></div>
+        <div class="say" id="say">tap two, then check</div>
+      </div>
+    </div>
+    <div>
+      <div class="eyebrow reveal">Practice that plays fair</div>
+      <h2 class="t reveal">Try one. Wobo <span class="hl">never says wrong.</span></h2>
+      <p class="lede reveal">Shade it, drag it, draw it, order it, type it. When you are close, Wobo rings the difference on your own answer and waits. When you get it, it makes a small fuss and moves on. Go on, colour half.</p>
+      <div class="claims reveal">
+        <div><i>✓</i><div><b>The kinds your exam uses</b><span>Not multiple choice pretending to be understanding.</span></div></div>
+        <div><i>✓</i><div><b>Nothing to copy</b><span>The answer does not exist until you have done the thinking.</span></div></div>
+        <div><i>✓</i><div><b>It comes back tomorrow</b><span>What you missed returns when you are about to forget it, not before.</span></div></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══ PARENTS ══ -->
+<section id="parents"><div class="wrap">
+  <div class="row flip">
+    <div>
+      <div class="eyebrow reveal">For parents</div>
+      <h2 class="t reveal">Not a dashboard to decode. <span class="hl">A picture you can read in ten seconds.</span></h2>
+      <p class="lede reveal">Minutes that actually happened, chapters that are genuinely done, what is getting stronger, and where this pace lands before the exam. Then one honest note, in Wobo's words.</p>
+      <div class="claims reveal">
+        <div><i>✓</i><div><b>Progress, not points</b><span>Mastery per chapter, measured by what came back right a week later.</span></div></div>
+        <div><i>✓</i><div><b>A line to the exam</b><span>At this pace, here is where the syllabus stands on the day.</span></div></div>
+        <div><i>✓</i><div><b>Nothing to police</b><span>No streak guilt, no midnight nudges, no scores your child did not ask for.</span></div></div>
+      </div>
+    </div>
+    <div class="art" style="background:transparent;padding:0">
+      <div class="report" id="report">
+        <div class="head"><svg viewBox="0 0 120 120" width="30" height="30"><use href="#head"/></svg><b>This week</b><span class="tag">on track</span></div>
+        <div class="kpis">
+          <div class="kpi"><span>Minutes</span><b class="count" data-to="96">0</b><em>across five evenings</em></div>
+          <div class="kpi"><span>Chapters done</span><b><span class="count" data-to="7">0</span>/14</b><em>maths, this term</em></div>
+          <div class="kpi"><span>Held a week later</span><b><span class="count" data-to="82">0</span>%</b><em>up from 61%</em></div>
+        </div>
+        <div class="chart"><svg viewBox="0 0 460 150" aria-label="Minutes a day this week, and the line to the exam">
+          <g id="bars">
+            <rect x="16" y="150" width="34" height="0" rx="6" fill="var(--pig)" data-h="52"/>
+            <rect x="66" y="150" width="34" height="0" rx="6" fill="var(--pig)" data-h="74"/>
+            <rect x="116" y="150" width="34" height="0" rx="6" fill="var(--pig)" data-h="40"/>
+            <rect x="166" y="150" width="34" height="0" rx="6" fill="var(--pig)" data-h="96"/>
+            <rect x="216" y="150" width="34" height="0" rx="6" fill="var(--pig)" data-h="66"/>
+            <rect x="266" y="150" width="34" height="0" rx="6" fill="var(--paper-3)" data-h="18"/>
+            <rect x="316" y="150" width="34" height="0" rx="6" fill="var(--paper-3)" data-h="18"/>
+          </g>
+          <path id="proj" class="ink mint draw" d="M370 120 C400 96 420 70 452 34" style="--len:200" stroke-dasharray="6 7"/>
+          <text class="hw" x="352" y="24" font-size="20" fill="var(--mint)">ready by</text>
+          <text class="hw" x="352" y="46" font-size="20" fill="var(--mint)">the test</text>
+          <g class="hw dim" font-size="14"><text x="24" y="146">M</text><text x="74" y="146">T</text><text x="124" y="146">W</text><text x="174" y="146">T</text><text x="224" y="146">F</text><text x="274" y="146">S</text><text x="324" y="146">S</text></g>
+        </svg></div>
+        <div class="badges">
+          <div><svg viewBox="0 0 16 16" stroke="var(--mint)"><path d="M2 8 l4 4 l8 -10"/></svg>Asked for help after a miss</div>
+          <div><svg viewBox="0 0 16 16" stroke="var(--marigold)"><path d="M8 1 l2 5 l5 .4 l-4 3.4 l1.3 5 l-4.3 -3 l-4.3 3 l1.3 -5 l-4 -3.4 l5 -.4 z"/></svg>Chapter mastered</div>
+          <div><svg viewBox="0 0 16 16" stroke="var(--pig)"><circle cx="8" cy="8" r="6"/><path d="M8 4 v4 l3 2"/></svg>Ten minutes, five days</div>
+        </div>
+        <div class="note">Three lessons and fourteen problems, and help was asked for twice after a miss, <em>which is exactly how learning looks.</em></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══ SUBJECTS ══ -->
+<section id="subjects"><div class="wrap">
+  <div class="eyebrow reveal">Every subject your board sets</div>
+  <h2 class="t reveal">If your school sets it, <span class="hl">Wobo teaches it.</span></h2>
+  <p class="lede reveal">Tell Wobo the board and the class once. From then on it follows that syllabus, chapter by chapter, in the order your textbook uses.</p>
+  <div class="stages">
+    <div class="stage reveal"><div class="who"><b>Mathematics</b><span>counting to calculus</span></div><div class="subs">
+      <span class="acc">Numbers and fractions</span><span class="acc">Algebra</span><span class="acc">Geometry</span><span class="acc">Trigonometry</span><span>Statistics</span><span>Probability</span><span>Calculus</span><span>Applied maths</span></div></div>
+    <div class="stage reveal"><div class="who"><b>The sciences</b><span>seen, not recited</span></div><div class="subs">
+      <span class="acc">Environmental studies</span><span class="acc">General science</span><span class="acc">Physics</span><span class="acc">Chemistry</span><span class="acc">Biology</span><span>Earth science</span></div></div>
+    <div class="stage reveal"><div class="who"><b>Languages</b><span>reading, writing, grammar</span></div><div class="subs">
+      <span class="acc">English</span><span class="acc">Hindi</span><span>Sanskrit</span><span>Telugu</span><span>Tamil</span><span>Marathi</span><span>Bengali</span><span>Kannada</span><span>and your school's second language</span></div></div>
+    <div class="stage reveal"><div class="who"><b>Humanities</b><span>the map before the story</span></div><div class="subs">
+      <span class="acc">History</span><span class="acc">Geography</span><span class="acc">Civics</span><span class="acc">Political science</span><span>Sociology</span><span>Psychology</span></div></div>
+    <div class="stage reveal"><div class="who"><b>Commerce and computing</b><span>the senior streams</span></div><div class="subs">
+      <span class="acc">Accountancy</span><span class="acc">Business studies</span><span class="acc">Economics</span><span class="acc">Computer science</span><span>Information technology</span></div></div>
+  </div>
+  <p class="lede reveal" style="max-width:58ch">CBSE, ICSE and every state board we hold the official syllabus for. Yours missing? Paste your school's list in and Wobo builds the plan from that.</p>
+</div></section>
+
+<!-- ══ SAFE ══ -->
+<section id="safe"><div class="wrap">
+  <div class="eyebrow reveal">Safe by design</div>
+  <h2 class="t reveal">A tutor a ten-year-old talks to alone <span class="hl">has to be built differently.</span></h2>
+  <p class="lede reveal">Not a promise page. Six decisions, each one visible in the product, each one checkable.</p>
+  <div class="safe">
+    <div class="item reveal"><svg viewBox="0 0 52 52"><rect x="9" y="22" width="34" height="23" rx="6"/><path class="acc" d="M16 22 v-6 a10 10 0 0 1 20 0 v6"/></svg><div><b>Your child's questions are not a product</b><p>No ads, no tracking pixels, no third-party cookies, nothing sold in aggregate. The company is paid by families, so there is nothing to monetise sideways.</p><span class="proof">Read what we hold →</span></div></div>
+    <div class="item reveal"><svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="17"/><path class="acc" d="M12 26 h28 M26 9 c-8 9 -8 25 0 34 c8 -9 8 -25 0 -34"/></svg><div><b>Neutral on everything but the chapter</b><p>Politics, religion, anything contested: Wobo names the textbook's position and steers back. It has no opinions to give a child.</p><span class="proof">The neutral rule →</span></div></div>
+    <div class="item reveal"><svg viewBox="0 0 52 52"><path d="M8 40 c6 -12 32 -12 38 0"/><circle class="acc" cx="27" cy="18" r="9"/><path d="M40 12 l6 6"/></svg><div><b>A parent sees the learning, not the diary</b><p>Lessons, progress and the Sunday note, always. Questions word for word only if the child shares them. Trust runs both ways or it is not trust.</p><span class="proof">Who sees what →</span></div></div>
+    <div class="item reveal"><svg viewBox="0 0 52 52"><path d="M26 6 L42 12 C42 30 35 40 26 46 C17 40 10 30 10 12 Z"/><path class="acc" d="M19 25 l5 5 l10 -12"/></svg><div><b>Encrypted, and locked at the row</b><p>Everything travels over TLS and sits encrypted at rest, with access rules inside the database itself: a learner's rows are reachable only by that learner, even if our own code slipped.</p><span class="proof">How it is protected →</span></div></div>
+    <div class="item reveal"><svg viewBox="0 0 52 52"><path d="M12 14 h28 v28 h-28 z"/><path class="acc" d="M20 26 l5 5 l9 -11"/><path d="M12 14 l-4 -4 M40 14 l4 -4"/></svg><div><b>Erase everything, in one tap</b><p>Memory, progress, account. Gone from live systems at once and from backups inside thirty days, for the learner or a linked parent.</p><span class="proof">The erase button →</span></div></div>
+    <div class="item reveal"><svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="17"/><path class="acc" d="M26 17 v10"/><circle cx="26" cy="34" r="2.4" fill="var(--pig)" stroke="none"/></svg><div><b>No child's work trains anything</b><p>Questions and drawings are never used to train a model unless a parent turns that on, explicitly, and it can be turned off again the same day.</p><span class="proof">What we never do →</span></div></div>
+  </div>
+</div></section>
+
+<!-- ══ ASK ══ -->
+<section id="ask"><div class="wrap">
+  <div class="ask reveal">
+    <svg class="w" viewBox="0 0 120 120"><use href="#head"/></svg>
+    <div>
+      <div class="eyebrow">Still wondering?</div>
+      <h2 class="t" style="font-size:clamp(26px,3vw,38px);margin-top:8px">Ask Wobo. It answers for itself.</h2>
+      <div class="box"><input id="askIn" placeholder="Is Wobo any good for a child who hates maths?" aria-label="Ask Wobo"><button class="btn pig mag" id="askGo"><span>Ask</span></button></div>
+      <div class="chips" id="askChips"><span>Does it follow my school's syllabus?</span><span>What happens when my child gets stuck?</span><span>Is it safe to use alone?</span><span>What does free include?</span></div>
+      <div class="answer" id="askOut"></div>
+    </div>
+  </div>
+  <div class="others reveal">
+    <div class="line">Or ask an assistant you already trust. It will read the site and tell you what it finds.</div>
+    <div class="models" id="models"></div>
+  </div>
+</div></section>
+
+<!-- ══ FAQ ══ -->
+<section id="faq"><div class="wrap">
+  <div class="eyebrow reveal">Questions</div>
+  <h2 class="t reveal">What families ask first.</h2>
+  <div class="faq reveal">
+    <details open><summary>Will it just hand my child the answers?</summary><p>No. Wobo shows the reasoning and stops at the step your child has to take. When they are close it rings the gap on their own working and waits. There is nothing to copy, because the answer does not exist until the thinking is done.</p></details>
+    <details><summary>Does it follow our school's syllabus?</summary><p>Yes. You pick the board and class once, and Wobo teaches the chapter your class is on, in your textbook's order. If your school does something differently, tell Wobo and it reorders, adds or drops a chapter.</p></details>
+    <details><summary>Is it safe for a ten-year-old alone?</summary><p>It is built for exactly that. Wobo stays inside school subjects, holds no opinions on anything contested, shows no ads, and never makes a child feel small. Voice is not stored. The whole of it is written out on the security page.</p></details>
+    <details><summary>What does free actually include?</summary><p>The whole tutor: every subject, the drawn board, the films, the practice, the memory and the Sunday note, with a daily allowance of questions that resets every morning. Paid plans raise the allowance for exam season. They do not unlock the teacher.</p></details>
+    <details><summary>Which languages does it speak?</summary><p>English today, with the accent set by where you are. More languages follow the boards that ask for them.</p></details>
+  </div>
+</div></section>
+
+<!-- ══ EVERYWHERE ══ -->
+<section id="devices"><div class="wrap">
+  <div class="row">
+    <div>
+      <div class="eyebrow reveal">Everywhere you study</div>
+      <h2 class="t reveal">The same tutor on <span class="hl">every screen in the house.</span></h2>
+      <p class="lede reveal">Start a question on the phone at the bus stop, finish it on the laptop at the table. Your board, your place in the chapter and your memory travel with you.</p>
+      <div class="devices reveal">
+        <a class="live" href="#early"><span>Use it in the browser</span></a>
+        <a href="#early"><span>iPhone and iPad</span><small>soon</small></a>
+        <a href="#early"><span>Android</span><small>soon</small></a>
+        <a href="#early"><span>Mac and Windows</span><small>soon</small></a>
+      </div>
+    </div>
+    <div class="art">
+      <svg viewBox="0 0 560 360" aria-label="The same lesson on a laptop, a tablet and a phone">
+        <rect x="40" y="60" width="300" height="190" rx="14" fill="var(--paper)"/><rect x="24" y="250" width="332" height="12" rx="6" fill="var(--paper-3)"/>
+        <path class="ink thin" d="M70 210 h240 M96 226 v-130"/><path class="ink pig" d="M96 196 C160 176 210 120 316 96"/>
+        <rect x="368" y="96" width="120" height="164" rx="14" fill="var(--paper)"/><path class="ink thin" d="M386 232 h84 M398 244 v-110"/><path class="ink pig" d="M398 224 C424 210 442 176 476 152"/>
+        <rect x="504" y="150" width="44" height="86" rx="10" fill="var(--paper)"/><path class="ink pig" d="M512 222 C520 214 528 200 540 186"/>
+        <g transform="translate(300 268)"><svg viewBox="0 0 120 120" width="56" height="56"><use href="#head"/></svg></g>
+      </svg>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══ CLOSE — PROMOTION ══ -->
+<div class="wrap"><div id="close">
+  <div class="glow" style="left:-8%;top:-20%"></div>
+  <div class="glow" style="right:-10%;bottom:-30%;background:radial-gradient(circle,rgba(255,182,41,.28),transparent 70%)"></div>
+  <h2 class="reveal">Wobo opens to families this term.</h2>
+  <p class="sub reveal">Leave an address and you are in the first group, free, with the whole tutor from day one. No card, and we will write once when it is your turn.</p>
+  <form class="reveal" id="early" onsubmit="event.preventDefault();this.querySelector('.btn span').textContent='You are on the list.';">
+    <input type="email" required placeholder="you@example.com" aria-label="Your email">
+    <button class="btn mag" type="submit"><span>Get early access</span></button>
+  </form>
+  <div class="fine reveal">Every subject · every major board · one email, never a list</div>
+</div></div>
+
+<footer><div class="wrap grid">
+  <div><div class="wm"><svg viewBox="0 0 1160 340" style="width:110px"><use href="#wm"/></svg></div><p style="margin-top:12px;max-width:30ch">A tutor that draws, films, listens and never judges.</p></div>
+  <div><b>Wobo</b><a href="/meet-wobo">Meet Wobo</a><a href="/how-it-works">How it works</a><a href="/subjects">Subjects</a><a href="/plans">Plans</a><a href="/gift">Gift Wobo</a></div>
+  <div><b>For</b><a href="/for-parents">Parents</a><a href="/for-students">Students</a><a href="/contact">Schools</a></div>
+  <div><b>Help</b><a href="/help">Help centre</a><a href="/contact">Contact</a><a href="/help">Questions</a></div>
+  <div><b>Company</b><a href="/about">About</a><a href="/security">Security and trust</a><a href="/legal/terms-of-service">Terms</a><a href="/legal/privacy-policy">Privacy</a><a href="/legal/childrens-privacy">Children's privacy</a><a href="/legal/accessibility-statement">Accessibility</a></div>
+</div></footer>
+
+<script>
+const theme = new URLSearchParams(location.search).get('theme'); if (theme) document.documentElement.setAttribute('data-theme', theme);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fine = matchMedia('(pointer: fine)').matches;
+
+/* with motion off, the drawn answer is simply already there */
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  document.querySelectorAll('#heroStage [id^="d-"]').forEach((el) => {
+    el.style.strokeDashoffset = '0'; el.style.opacity = '1';
+  });
+}
+
+/* ── ask your own assistant ─────────────────────────────────────────────────── */
+const Q = encodeURIComponent("Visit https://heywobo.com and tell me what Wobo is, who it is for, and whether it is any good for a school child.");
+const MODELS = [
+  ['ChatGPT', `https://chatgpt.com/?q=${Q}&hints=search`, '<circle cx="9" cy="9" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6 9.5 l2.2 2 L12.4 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'],
+  ['Claude', `https://claude.ai/new?q=${Q}`, '<path d="M4 13 L9 4 l5 9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.4 10.6 h5.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>'],
+  ['Gemini', `https://gemini.google.com/app?q=${Q}`, '<path d="M9 1.5 C9.6 5.6 12.4 8.4 16.5 9 C12.4 9.6 9.6 12.4 9 16.5 C8.4 12.4 5.6 9.6 1.5 9 C5.6 8.4 8.4 5.6 9 1.5 Z" fill="currentColor"/>'],
+  ['Perplexity', `https://www.perplexity.ai/search?q=${Q}`, '<circle cx="9" cy="9" r="7.4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9 2.6 v12.8 M3.2 6 h11.6 M3.2 12 h11.6" stroke="currentColor" stroke-width="1.2"/>'],
+  ['Grok', `https://grok.com/?q=${Q}`, '<path d="M3.5 14.5 L14.5 3.5 M8 14.5 L14.5 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>'],
+];
+document.getElementById('models').innerHTML = MODELS.map(([n, href, ic]) =>
+  `<a href="${href}" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 18 18" aria-hidden="true">${ic}</svg>${n}</a>`).join('');
+
+/* ── magnetic buttons: the INNER span moves, never the box ──────────────────── */
+/* the jitter in the old build came from translating the element itself: the box
+   moved out from under the pointer, the pointer left, the transform reset, and the
+   box came back — a loop. Moving a child leaves the hit area exactly where it was. */
+if (fine && !reduce) {
+  document.querySelectorAll('.btn.mag').forEach((btn) => {
+    const inner = btn.querySelector('span'); let raf = 0, tx = 0, ty = 0, cx = 0, cy = 0;
+    const tick = () => { cx += (tx - cx) * .18; cy += (ty - cy) * .18;
+      inner.style.transform = `translate(${cx.toFixed(2)}px, ${cy.toFixed(2)}px)`;
+      if (Math.abs(tx - cx) > .05 || Math.abs(ty - cy) > .05) raf = requestAnimationFrame(tick); else raf = 0; };
+    const run = () => { if (!raf) raf = requestAnimationFrame(tick); };
+    btn.addEventListener('pointermove', (e) => { const r = btn.getBoundingClientRect();
+      tx = (e.clientX - (r.left + r.width / 2)) * .28; ty = (e.clientY - (r.top + r.height / 2)) * .34; run(); });
+    btn.addEventListener('pointerleave', () => { tx = 0; ty = 0; run(); });
+  });
+}
+
+/* ── scroll engine ─────────────────────────────────────────────────────────── */
+if (!reduce && window.gsap) {
+  gsap.registerPlugin(ScrollTrigger);
+  // Every scrubbed value is a TRANSFORM or an opacity — never a layout property — and GSAP
+  // owns each one alone. A CSS transition on the same property is what makes a scrubbed
+  // element stutter: the browser eases toward a value GSAP has already moved past.
+  gsap.config({ force3D: true });
+  ScrollTrigger.config({ ignoreMobileResize: true });
+  if (window.Lenis) {
+    const lenis = new Lenis({ lerp: .095 });
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((t) => lenis.raf(t * 1000)); gsap.ticker.lagSmoothing(0);
+  }
+  const q = (s, r = document) => Array.from(r.querySelectorAll(s));
+
+  // reveals — visible at rest, lifted on entry
+  q('.reveal').forEach((el) => gsap.from(el, {
+    y: 24, opacity: 0, duration: .75, ease: 'power3.out',
+    scrollTrigger: { trigger: el, start: 'top 86%', once: true },
+    onStart() { el.style.willChange = 'transform, opacity'; },
+    onComplete() { el.style.willChange = 'auto'; el.style.transform = ''; },
+  }));
+  q('h2.t .hl').forEach((el) => ScrollTrigger.create({
+    trigger: el, start: 'top 80%', once: true, onEnter: () => el.classList.add('lit'),
+  }));
+
+  // hero card: the answer builds itself, then the rail cycles the four forms
+  const lens = (sel) => { const p = document.querySelector(sel); if (p && p.getTotalLength) { const l = p.getTotalLength(); p.style.setProperty('--len', l); } };
+  ['#d-leaf', '#d-vein', '#d-arrow'].forEach(lens);
+  const heroTl = gsap.timeline({ delay: .25 });
+  heroTl.to('#d-leaf', { strokeDashoffset: 0, duration: 1.1, ease: 'power2.inOut' })
+    .to('#d-vein', { strokeDashoffset: 0, duration: .7, ease: 'power2.out' }, '-=.45')
+    .to('#d-rays', { opacity: 1, duration: .4 }, '-=.35')
+    .to('#d-lbl1', { opacity: 1, duration: .35 }, '-=.2')
+    .to('#d-arrow', { strokeDashoffset: 0, duration: .7, ease: 'power2.out' }, '-=.1')
+    .to(['#d-head', '#d-lbl2'], { opacity: 1, duration: .3 }, '-=.25')
+    .to('#d-cap', { opacity: 1, duration: .45 });
+
+  // floats drift
+  q('.float').forEach((el, i) => gsap.to(el, {
+    y: -60 - i * 26, ease: 'none', scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: .8 },
+  }));
+
+  // ANSWER FORMS: scroll swaps the card
+  const cards = q('#formsBox .card'), navs = q('#formsNav span');
+  gsap.set(cards[0], { opacity: 1 });
+  let shown = 0;
+  ScrollTrigger.create({
+    trigger: '#forms', start: 'top top', end: '+=2400', pin: true, pinSpacing: true,
+    anticipatePin: 1, invalidateOnRefresh: true,
+    onUpdate(self) {
+      const i = Math.min(cards.length - 1, Math.floor(self.progress * cards.length * .999));
+      if (i === shown) return;                 // one tween per change, never one per frame
+      gsap.to(cards[shown], { opacity: 0, duration: .3, overwrite: 'auto' });
+      gsap.to(cards[i], { opacity: 1, duration: .35, overwrite: 'auto' });
+      navs.forEach((s, n) => s.classList.toggle('on', n === i));
+      shown = i;
+    },
+  });
+
+  // THE FILM: plays, pauses, is circled, is answered
+  const filmTl = gsap.timeline({ scrollTrigger: { trigger: '#students', start: 'top 60%', end: '+=1800', scrub: .8 } });
+  const lasso = document.querySelector('#lasso');
+  if (lasso) { const l = lasso.getTotalLength(); lasso.style.strokeDasharray = l; lasso.style.strokeDashoffset = l; }
+  filmTl.to('#track', { scaleX: .38, duration: 1, ease: 'none' })
+    .to('#tstamp', { duration: .01, onComplete() { document.getElementById('tstamp').textContent = '0:07 / 0:19'; } })
+    .to('#b1', { opacity: 1, y: -6, duration: .4 })
+    .to('#lasso', { strokeDashoffset: 0, duration: 1.1 }, '-=.1')
+    .to('#b1', { opacity: 0, duration: .3 })
+    .to('#b2', { opacity: 1, y: 6, duration: .4 })
+    .to('#b3', { opacity: 1, duration: .5 }, '+=.3')
+    .to('#track', { scaleX: .62, duration: .8, ease: 'none' });
+
+  // PARENTS: numbers count, bars grow, the projection draws
+  ScrollTrigger.create({
+    trigger: '#report', start: 'top 76%', once: true,
+    onEnter() {
+      q('.count').forEach((el) => { const to = +el.dataset.to;
+        gsap.to({ v: 0 }, { v: to, duration: 1.2, ease: 'power2.out', onUpdate() { el.textContent = Math.round(this.targets()[0].v); } }); });
+      q('#bars rect').forEach((r, i) => { const h = +r.dataset.h;
+        gsap.to(r, { attr: { height: h, y: 150 - h }, duration: .8, delay: i * .07, ease: 'power3.out' }); });
+      lens('#proj'); gsap.to('#proj', { strokeDashoffset: 0, duration: 1.1, delay: .7, ease: 'power2.out' });
+    },
+  });
+}
+
+/* ── hero rail: click or auto-cycle the four answer forms ───────────────────── */
+const stage = document.getElementById('heroStage'), rail = document.getElementById('heroRail');
+const LIVE = { draw: 'drawing', video: 'playing', try: 'your turn', say: 'speaking' };
+let formIdx = 0, timer = 0;
+function showForm(key, manual) {
+  Array.from(stage.children).forEach((c) => c.classList.toggle('on', c.dataset.form === key));
+  Array.from(rail.children).forEach((b) => b.classList.toggle('on', b.dataset.go === key));
+  document.querySelector('#liveTag span').textContent = LIVE[key];
+  if (manual) { clearInterval(timer); timer = 0; }
+}
+rail.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) showForm(b.dataset.go, true); });
+if (!reduce) timer = setInterval(() => { const keys = Object.keys(LIVE); formIdx = (formIdx + 1) % keys.length; showForm(keys[formIdx]); }, 3800);
+
+/* ── practice: a real moment, not a picture ─────────────────────────────────── */
+const grid = document.getElementById('grid'), cells = Array.from(grid.querySelectorAll('button'));
+const ring = document.getElementById('ring'), ringtxt = document.getElementById('ringtxt'), say = document.getElementById('say');
+const WORDS = ['nothing yet', "that's a quarter", '', "that's three quarters", "that's the whole thing"];
+function loopFor(sel) {
+  const pos = [[0, 0], [1, 0], [0, 1], [1, 1]];
+  const xs = sel.map((i) => pos[i][0]), ys = sel.map((i) => pos[i][1]);
+  const x0 = Math.min(...xs) * 112 - 6, x1 = Math.max(...xs) * 112 + 110;
+  const y0 = Math.min(...ys) * 112 - 6, y1 = Math.max(...ys) * 112 + 110;
+  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, rx = (x1 - x0) / 2 + 16, ry = (y1 - y0) / 2 + 16;
+  return `M${cx - rx} ${cy} C${cx - rx} ${cy - ry * 1.34}, ${cx + rx} ${cy - ry * 1.34}, ${cx + rx} ${cy} S${cx - rx * .9} ${cy + ry * 1.4}, ${cx - rx - 6} ${cy + 8}`;
+}
+function clearRing() { ring.setAttribute('d', ''); ringtxt.setAttribute('opacity', 0); }
+cells.forEach((c) => c.addEventListener('click', () => { c.classList.toggle('on'); clearRing(); say.className = 'say'; say.textContent = ''; }));
+function burst() {
+  const box = document.getElementById('tryBox'), colors = ['var(--marigold)', 'var(--pig)', 'var(--mint)', 'var(--rose)', 'var(--violet)'];
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('i'); s.className = 'spark';
+    s.style.background = colors[i % colors.length]; s.style.left = '50%'; s.style.top = '46%';
+    box.appendChild(s);
+    const a = (i / 14) * Math.PI * 2, d = 70 + Math.random() * 90;
+    if (window.gsap) gsap.fromTo(s, { opacity: 1, x: 0, y: 0, scale: 1 },
+      { opacity: 0, x: Math.cos(a) * d, y: Math.sin(a) * d - 30, scale: .4, rotate: 180, duration: .9, ease: 'power2.out', onComplete: () => s.remove() });
+    else s.remove();
+  }
+}
+document.getElementById('check').addEventListener('click', () => {
+  const sel = cells.map((c, i) => (c.classList.contains('on') ? i : -1)).filter((i) => i >= 0);
+  if (sel.length === 2) { say.className = 'say win'; say.textContent = "that's half. nice."; clearRing(); burst(); return; }
+  if (!sel.length) { say.className = 'say'; say.textContent = 'colour something first'; return; }
+  ring.setAttribute('d', loopFor(sel));
+  if (ring.getTotalLength) { const l = ring.getTotalLength(); ring.style.setProperty('--len', l); ring.style.strokeDasharray = l; ring.style.strokeDashoffset = l;
+    if (window.gsap) gsap.to(ring, { strokeDashoffset: 0, duration: .9, ease: 'power2.out' }); else ring.style.strokeDashoffset = 0; }
+  ringtxt.setAttribute('x', 112); ringtxt.setAttribute('y', 258); ringtxt.setAttribute('text-anchor', 'middle');
+  ringtxt.textContent = `${WORDS[sel.length]}, not half`; ringtxt.setAttribute('opacity', 1);
+  say.className = 'say'; say.textContent = 'close. go again.';
+});
+document.getElementById('reset').addEventListener('click', () => {
+  cells.forEach((c) => c.classList.remove('on')); clearRing(); say.className = 'say'; say.textContent = 'tap two, then check';
+});
+
+/* ── ask wobo (the prototype answers from the help copy) ────────────────────── */
+const ANSWERS = {
+  "Does it follow my school's syllabus?": "Yes. You pick the board and class once, and I teach the chapter your class is on, in your textbook's order.",
+  'What happens when my child gets stuck?': "I draw the step they are missing, then hand the next one back to them. Close gets a ring, never a cross.",
+  'Is it safe to use alone?': "That is what I am built for: school subjects only, no ads, no opinions, and nothing said that would make a child feel small.",
+  'What does free include?': "The whole tutor, every day, with a daily allowance of questions that resets each morning.",
+};
+const out = document.getElementById('askOut'), input = document.getElementById('askIn');
+function answer(q) {
+  const text = ANSWERS[q] || "I answer from the help centre here. Ask me one of those, or write to a person at support@heywobo.com.";
+  out.textContent = ''; let i = 0;
+  const tick = () => { out.textContent = text.slice(0, ++i); if (i < text.length) setTimeout(tick, 12); };
+  tick();
+}
+document.getElementById('askChips').addEventListener('click', (e) => {
+  const s = e.target.closest('span'); if (!s) return; input.value = s.textContent; answer(s.textContent);
+});
+document.getElementById('askGo').addEventListener('click', () => answer(input.value.trim()));
+input.addEventListener('keydown', (e) => { if (e.key === 'Enter') answer(input.value.trim()); });
+</script>
+</body>
+</html>
