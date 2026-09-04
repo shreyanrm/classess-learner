@@ -45,7 +45,7 @@ Written for a parent, a school IT lead and a journalist at once. Sentence case, 
 6. **What we never do.** Sell data, track across the web, show ads, vary prices by behaviour, use dark patterns, train models on a child's data without explicit consent.
 7. **Compliance posture.** Today: the controls above. Scheduled: independent penetration test, SOC 2 Type I then Type II, ISO 27001 readiness; kidSAFE-style seal evaluated. Dates only when they are real.
 8. **Sub-processors.** Categories with regions and the change-notice promise.
-9. **Report a concern.** security@heywobo.com, a responsible-disclosure promise, a 72-hour acknowledgement.
+9. **Report a concern.** support@heywobo.com, a responsible-disclosure promise, a 72-hour acknowledgement.
 10. **Documents.** Privacy policy, children's privacy, terms, DPA on request, the data-flow diagram drawn in ink.
 
 ## 4. Build order

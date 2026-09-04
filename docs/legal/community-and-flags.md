@@ -84,11 +84,11 @@ If we remove something you contributed or shared:
 
 ## 6. If you are a rights holder
 
-Write to legal@heywobo.com with what the material is, where it is in Wobo, what right you hold, and how to reach you. We will look at it promptly and remove anything we should not have. Where the law provides a formal notice route, we follow it, and the person who contributed the material can give a counter-notice. [REVIEW: DMCA agent registration and the safe-harbour requirements in the US, the EU Digital Single Market Directive Article 17 position, and the Indian intermediary rules and their takedown timelines.]
+Write to support@heywobo.com with what the material is, where it is in Wobo, what right you hold, and how to reach you. We will look at it promptly and remove anything we should not have. Where the law provides a formal notice route, we follow it, and the person who contributed the material can give a counter-notice. [REVIEW: DMCA agent registration and the safe-harbour requirements in the US, the EU Digital Single Market Directive Article 17 position, and the Indian intermediary rules and their takedown timelines.]
 
 ## 7. Reporting
 
 - Content that is wrong: the flag control.
 - Someone at risk, or something that worries you: safety@heywobo.com.
-- A rights complaint: legal@heywobo.com.
+- A rights complaint: support@heywobo.com.
 - Anything else: support@heywobo.com.

@@ -42,11 +42,11 @@ They are meant to be read together and they cross-reference each other. Three of
 
 | Placeholder | Where |
 |---|---|
-| `[Company legal name]` | every document |
-| `[postal address]` | every document |
+| `Dot eVentures Pvt Ltd` | every document |
+| `141 Prashasan Nagar, Jubilee Hills, Hyderabad, Telangana 500033, India` | every document |
 | `[governing law]`, `[courts]` | terms, section 14 |
-| `[DPO name]`, `dpo@heywobo.com` | privacy policy, children's privacy |
-| `[Grievance officer name]` and contact, for India | privacy policy, refunds |
+| `Data protection contact`, `support@heywobo.com` | privacy policy, children's privacy |
+| `Grievance officer, Dot eVentures Pvt Ltd` and contact, for India | privacy policy, refunds |
 | `[EU representative]`, `[UK representative]` | privacy policy |
 | `[regions]` where data is stored | privacy policy, section 6 |
 | every retention period in square brackets | privacy policy, section 7 |

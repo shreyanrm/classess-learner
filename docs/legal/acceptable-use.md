@@ -82,7 +82,7 @@ You can appeal any of it by writing to support@heywobo.com. A person, not a syst
 
 ## 6. Security research
 
-If you think you have found a vulnerability, write to security@heywobo.com before you do anything else. Do not access another person's data, do not run tests that degrade the service for others, and give us reasonable time to fix it. We will not pursue good-faith research that follows those rules, and we will credit you if you want. [REVIEW: safe-harbour wording, and whether a formal disclosure policy or bug bounty is needed.]
+If you think you have found a vulnerability, write to support@heywobo.com before you do anything else. Do not access another person's data, do not run tests that degrade the service for others, and give us reasonable time to fix it. We will not pursue good-faith research that follows those rules, and we will credit you if you want. [REVIEW: safe-harbour wording, and whether a formal disclosure policy or bug bounty is needed.]
 
 ## 7. Reporting a problem
 

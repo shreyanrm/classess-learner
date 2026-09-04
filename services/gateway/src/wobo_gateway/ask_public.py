@@ -74,7 +74,7 @@ OPEN_PATHS: frozenset[str] = frozenset({"/v1/ask", "/v1/ask/suggestions"})
 LIMITED_PATHS: frozenset[str] = OPEN_PATHS
 
 #: Where a person answers when Wobo cannot. Config, like every address in the gateway.
-HELP_EMAIL = os.getenv("ASK_HELP_EMAIL", "help@heywobo.com")
+HELP_EMAIL = os.getenv("ASK_HELP_EMAIL", "support@heywobo.com")
 
 #: The one honest line (SITE.md: Wobo says what it does not know rather than guessing).
 HONEST_LINE = f"I don't know that one — a person can: {HELP_EMAIL}"

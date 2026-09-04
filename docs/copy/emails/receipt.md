@@ -3,7 +3,7 @@
 **Kind:** transactional
 **Trigger:** any successful charge
 **To:** the account holder who paid
-**From:** Wobo <hello@heywobo.com> · **Reply-to:** help@heywobo.com
+**From:** Wobo <hello@heywobo.com> · **Reply-to:** support@heywobo.com
 **Send:** immediately
 **Category:** billing. Not switchable off.
 

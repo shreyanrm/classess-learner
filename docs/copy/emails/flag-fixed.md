@@ -3,7 +3,7 @@
 **Kind:** transactional
 **Trigger:** a flagged item is corrected, or the flag is closed without a change
 **To:** the learner who flagged it
-**From:** Wobo <hello@heywobo.com> · **Reply-to:** help@heywobo.com
+**From:** Wobo <hello@heywobo.com> · **Reply-to:** support@heywobo.com
 **Send:** when the flag is resolved
 **Category:** account. Not switchable off.
 

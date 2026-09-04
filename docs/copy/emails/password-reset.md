@@ -5,7 +5,7 @@
 **Kind:** transactional
 **Trigger:** a password reset is requested for an account that has a password set
 **To:** the account's verified email address
-**From:** Wobo <hello@heywobo.com> · **Reply-to:** help@heywobo.com
+**From:** Wobo <hello@heywobo.com> · **Reply-to:** support@heywobo.com
 **Send:** immediately
 **Category:** account. Not switchable off.
 
@@ -24,7 +24,7 @@ Someone asked to reset the password for the Wobo account on {{email_address}}.
 
 The link works for {{expiry_minutes}} minutes and once only.
 
-If it was not you, you do not need to do anything. Your password has not changed and nobody can get in with this link once it expires. If you would like us to check the account, write to help@heywobo.com.
+If it was not you, you do not need to do anything. Your password has not changed and nobody can get in with this link once it expires. If you would like us to check the account, write to support@heywobo.com.
 
 You can also sign in without a password at any time, with a code sent to {{email_address}} or to your phone number.
 

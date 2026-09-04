@@ -51,7 +51,7 @@ This is the wording. It appears on one page, in plain language, before anything 
 
 [Child's name] wants to learn with Wobo. Wobo is a tutor that explains school topics by drawing on a board and talking.
 
-We are [Company legal name], of [postal address]. You can reach us at privacy@heywobo.com.
+We are Dot eVentures Pvt Ltd, of 141 Prashasan Nagar, Jubilee Hills, Hyderabad, Telangana 500033, India. You can reach us at support@heywobo.com.
 
 **Wobo can teach your child without any of this.** Everything below is optional, and your child keeps full access to lessons either way.
 
@@ -68,7 +68,7 @@ To answer your child, some of what they type, say or photograph is sent to third
 
 We do not sell your child's data, we do not advertise inside Wobo, and we do not track your child anywhere else.
 
-You can change any of this, or delete everything, at any time, from the parent controls or by writing to privacy@heywobo.com.
+You can change any of this, or delete everything, at any time, from the parent controls or by writing to support@heywobo.com.
 
 By continuing, you confirm that you are the parent or legal guardian of [Child's name] and that you are over 18.
 
@@ -90,7 +90,7 @@ At any time, and without giving a reason, you can:
 
 | You want to | How |
 |---|---|
-| See everything Wobo holds about your child | parent controls, or privacy@heywobo.com |
+| See everything Wobo holds about your child | parent controls, or support@heywobo.com |
 | See what Wobo remembers about how your child learns | the memory page, which lists it item by item |
 | Correct something wrong | in the app, or by writing to us |
 | Download it all in a portable file | parent controls, export |
@@ -110,4 +110,4 @@ Where the learner is under the age of consent, the parent decides. Where the lea
 
 ## 7. Guardians, and adults who are not parents
 
-A legal guardian has the same rights as a parent. Where a learner has a guardian appointed by a court, or a carer acting under an arrangement recognised by law, we can accept their consent with reasonable proof. Write to privacy@heywobo.com. [REVIEW: proof standards, and the DPDP Act's provisions for persons with disability and lawful guardians.]
+A legal guardian has the same rights as a parent. Where a learner has a guardian appointed by a court, or a carer acting under an arrangement recognised by law, we can accept their consent with reasonable proof. Write to support@heywobo.com. [REVIEW: proof standards, and the DPDP Act's provisions for persons with disability and lawful guardians.]

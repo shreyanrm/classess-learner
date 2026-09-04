@@ -3,7 +3,7 @@
 **Kind:** transactional
 **Trigger:** a learner submits a flag on a lesson, question, board or diagram
 **To:** the learner who flagged it
-**From:** Wobo <hello@heywobo.com> · **Reply-to:** help@heywobo.com
+**From:** Wobo <hello@heywobo.com> · **Reply-to:** support@heywobo.com
 **Send:** immediately
 **Category:** account. Not switchable off; it is the receipt for something the learner did.
 

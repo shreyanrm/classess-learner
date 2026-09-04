@@ -16,7 +16,7 @@ Draft of 3 September 2026. Version 0.1. Written by the Wobo team, not yet review
 
 ## 1. Who we are
 
-Wobo is operated by [Company legal name], registered at [postal address]. In these terms, "we", "us" and "our" mean [Company legal name]. "You" means the person using Wobo. Where the person using Wobo is under 18, "you" also means the parent or guardian who agreed to these terms.
+Wobo is operated by Dot eVentures Pvt Ltd, registered at 141 Prashasan Nagar, Jubilee Hills, Hyderabad, Telangana 500033, India. In these terms, "we", "us" and "our" mean Dot eVentures Pvt Ltd. "You" means the person using Wobo. Where the person using Wobo is under 18, "you" also means the parent or guardian who agreed to these terms.
 
 You can reach us at support@heywobo.com.
 
@@ -126,7 +126,7 @@ In the European Union and the European Economic Area, you can take a complaint t
 ## 15. The rest
 
 - If one part of these terms turns out not to be enforceable, the rest still stands.
-- **How we reach each other.** We write to you at the email address or phone number on your account, and in the app. You write to us at support@heywobo.com, or by post to [postal address]. A notice sent by email or shown in the app counts as given on the day it is sent, unless it bounces; a notice sent by post counts as given [5 working days] after posting. Keep your contact details current, because a notice we cannot deliver still counts. [REVIEW: whether electronic notice alone is sufficient for a change of terms, a price change and an account closure, in each jurisdiction, and whether a minor's parent must be notified separately.]
+- **How we reach each other.** We write to you at the email address or phone number on your account, and in the app. You write to us at support@heywobo.com, or by post to 141 Prashasan Nagar, Jubilee Hills, Hyderabad, Telangana 500033, India. A notice sent by email or shown in the app counts as given on the day it is sent, unless it bounces; a notice sent by post counts as given [5 working days] after posting. Keep your contact details current, because a notice we cannot deliver still counts. [REVIEW: whether electronic notice alone is sufficient for a change of terms, a price change and an account closure, in each jurisdiction, and whether a minor's parent must be notified separately.]
 - **If we do not enforce something once**, we have not given it up, and we can still enforce it later.
 - **Things outside anyone's control.** Neither of us is responsible for a failure caused by something genuinely beyond our reasonable control, such as a network or power failure, a natural event, an act of government, or the failure of a third-party AI or infrastructure provider we do not control. This does not touch anything in section 13, and it does not take away a consumer's right to a refund for a service we did not supply. [REVIEW: force majeure against consumer law, and whether a consumer may still terminate and be refunded for a prolonged outage.]
 - We can transfer these terms to another company as part of a sale or reorganisation, and we will tell you if that happens. You can transfer them only with our agreement.

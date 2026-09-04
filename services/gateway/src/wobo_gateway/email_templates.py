@@ -40,17 +40,18 @@ PREFERENCES_URL = os.getenv("EMAIL_PREFERENCES_URL") or f"{APP_URL}/you"
 # Read here too (email.py reads the same variable for the envelope) so the "Reply to Wobo" link
 # in the Sunday note and the address on the envelope can never disagree.
 REPLY_TO = os.getenv("EMAIL_REPLY_TO", "support@heywobo.com")
-# The postal address has no honest default, so the placeholder says so loudly: it is the
-# owner's to set before EMAIL_MODE=live — and email.py refuses a live send while it is unset.
-_POSTAL_PLACEHOLDER = "PLACEHOLDER — set EMAIL_POSTAL_ADDRESS before sending live mail"
+# The sender's postal identity. Anti-spam law (CAN-SPAM §5, and the same expectation under
+# India's consumer rules) requires a real address in every commercial mail; the mail providers
+# check for it too. The company default ships so a missing variable can never send a placeholder.
+_POSTAL_DEFAULT = "Dot eVentures Pvt Ltd, 141 Prashasan Nagar, Jubilee Hills, Hyderabad, Telangana 500033, India"
 
 
 def postal_address_is_set() -> bool:
-    return bool((os.getenv("EMAIL_POSTAL_ADDRESS") or "").strip())
+    return bool(postal_address())
 
 
 def postal_address() -> str:
-    return (os.getenv("EMAIL_POSTAL_ADDRESS") or "").strip() or _POSTAL_PLACEHOLDER
+    return (os.getenv("EMAIL_POSTAL_ADDRESS") or "").strip() or _POSTAL_DEFAULT
 
 
 # The fallback as it stood at import, for the tests that pin it; the footer reads the live value.

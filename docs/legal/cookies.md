@@ -63,10 +63,10 @@ In California and other US states, the relevant question is whether any of this 
 
 ## 6. Third parties
 
-Our optional analytics and crash reporting are provided by analytics and crash reporting providers, acting on our instructions, under contract, and they may not use what they see for their own purposes. That is a separate category from the third-party AI and infrastructure providers who run the tutoring itself; the canonical list of recipient categories is the table in `privacy-policy.md` section 5, and every other document uses its names. We name categories rather than companies, for the reason given in `privacy-policy.md` section 5. A named list is available on request at privacy@heywobo.com. [REVIEW: whether a named list is required in the cookie notice itself in the EU and the UK.]
+Our optional analytics and crash reporting are provided by analytics and crash reporting providers, acting on our instructions, under contract, and they may not use what they see for their own purposes. That is a separate category from the third-party AI and infrastructure providers who run the tutoring itself; the canonical list of recipient categories is the table in `privacy-policy.md` section 5, and every other document uses its names. We name categories rather than companies, for the reason given in `privacy-policy.md` section 5. A named list is available on request at support@heywobo.com. [REVIEW: whether a named list is required in the cookie notice itself in the EU and the UK.]
 
 ## 7. Changes
 
 If we add a purpose, we will ask again before we store anything for it. Old versions of this notice stay available.
 
-Questions: privacy@heywobo.com.
+Questions: support@heywobo.com.

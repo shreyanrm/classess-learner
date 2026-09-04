@@ -183,7 +183,7 @@ def test_a_question_outside_the_articles_gets_the_honest_line(client: TestClient
         assert res.status_code == 200, res.text
         assert res.json()["answer"] == HONEST_LINE
         assert res.json()["sources"] == []
-    assert HONEST_LINE == "I don't know that one — a person can: help@heywobo.com"
+    assert HONEST_LINE == "I don't know that one — a person can: support@heywobo.com"
 
 
 def test_an_empty_index_answers_everything_honestly(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -294,7 +294,7 @@ def test_the_day_is_counted_too_and_a_new_day_resets(
     assert ask(client, "Why is it free?").json()["remaining"] == 0
     res = ask(client, "Why is it free?")
     assert res.status_code == 429
-    assert "today" in res.json()["message"] and "help@heywobo.com" in res.json()["message"]
+    assert "today" in res.json()["message"] and "support@heywobo.com" in res.json()["message"]
     assert res.json()["reset_at"] == "2026-09-05T00:00:00+00:00"
     set_clock(lambda: day + timedelta(hours=1))  # 00:30 the next day
     res = ask(client, "Why is it free?")

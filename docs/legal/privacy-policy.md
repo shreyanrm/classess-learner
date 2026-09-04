@@ -12,23 +12,23 @@ Draft of 3 September 2026. Version 0.1. Written by the Wobo team, not yet review
 >
 > You can see what Wobo remembers about you, change it, download it, and delete it. If you are under 18, your parent or guardian can do the same.
 >
-> If anything here worries you, write to privacy@heywobo.com and a person will answer.
+> If anything here worries you, write to support@heywobo.com and a person will answer.
 
 ---
 
 ## 1. Who is responsible for your data
 
-[Company legal name], of [postal address], decides how and why your personal data is used. Under the EU and UK GDPR we are the controller. Under India's Digital Personal Data Protection Act 2023 we are the Data Fiduciary. Under California law we are a business. [REVIEW: confirm entity, registration, and whether a separate entity is needed for India or the EU.]
+Dot eVentures Pvt Ltd, of 141 Prashasan Nagar, Jubilee Hills, Hyderabad, Telangana 500033, India, decides how and why your personal data is used. Under the EU and UK GDPR we are the controller. Under India's Digital Personal Data Protection Act 2023 we are the Data Fiduciary. Under California law we are a business. [REVIEW: confirm entity, registration, and whether a separate entity is needed for India or the EU.]
 
 Contacts:
 
 | Purpose | Who | Where |
 |---|---|---|
-| Anything about privacy | Privacy team | privacy@heywobo.com |
-| Data protection officer | [DPO name] | dpo@heywobo.com, [postal address] |
-| India: grievance officer | [Grievance officer name] | [grievance email], [postal address] |
-| EU representative (Article 27) | [EU representative name and address] | [contact] |
-| UK representative (Article 27) | [UK representative name and address] | [contact] |
+| Anything about privacy | Privacy team | support@heywobo.com |
+| Data protection officer | Data protection contact | support@heywobo.com, 141 Prashasan Nagar, Jubilee Hills, Hyderabad, Telangana 500033, India |
+| India: grievance officer | Grievance officer, Dot eVentures Pvt Ltd | support@heywobo.com, 141 Prashasan Nagar, Jubilee Hills, Hyderabad, Telangana 500033, India |
+| EU representative (Article 27) | [EU representative name and address] | support@heywobo.com |
+| UK representative (Article 27) | [UK representative name and address] | support@heywobo.com |
 | Safety concerns | Safety team | safety@heywobo.com |
 
 [REVIEW: whether a DPO is legally required given large-scale processing of children's data; whether Article 27 representatives are required in the EU and UK; whether an Indian grievance officer and a Consent Manager registration are required under the DPDP Act.]
@@ -95,7 +95,7 @@ Where the law where you live sets a lower age at which you can consent for yours
 
 Wobo profiles you in one narrow sense: it forms a picture of what you understand, so it can choose what to teach next, when to offer a hint, and when a topic is ready. That picture is visible to you on the memory page and you can correct or clear it.
 
-Wobo does not make decisions with a legal or similarly significant effect on you. It does not grade you for a school, decide admissions, set a price, or restrict access to anything outside the app. Where you want a human to look at something Wobo concluded about your learning, write to privacy@heywobo.com. [REVIEW: GDPR Article 22 and recital 71 on profiling of children; whether the tutoring profile needs a DPIA, which we assume it does.]
+Wobo does not make decisions with a legal or similarly significant effect on you. It does not grade you for a school, decide admissions, set a price, or restrict access to anything outside the app. Where you want a human to look at something Wobo concluded about your learning, write to support@heywobo.com. [REVIEW: GDPR Article 22 and recital 71 on profiling of children; whether the tutoring profile needs a DPIA, which we assume it does.]
 
 For learners under 18 we do not carry out behavioural advertising, tracking, or monitoring beyond what the tutoring itself requires and what safety requires. [REVIEW: DPDP Act section 9(3) prohibition on tracking, behavioural monitoring and targeted advertising directed at children, and the exemptions rules.]
 
@@ -115,7 +115,7 @@ We use service providers who process data only on our instructions, under contra
 | Security and abuse prevention | protect the service from attack and abuse |
 | Professional advisers, auditors, insurers | advise us, under professional duties of confidence |
 
-We name the categories and not the companies. This is deliberate: which providers sit behind Wobo is our engineering choice and changes over time. A named list is available to regulators, to schools carrying out procurement, and to any user who asks at privacy@heywobo.com. [REVIEW: GDPR Article 13(1)(e) requires categories of recipients as a minimum; confirm that category-level disclosure plus a list on request satisfies the EU, the UK, India and California, especially for children's data.]
+We name the categories and not the companies. This is deliberate: which providers sit behind Wobo is our engineering choice and changes over time. A named list is available to regulators, to schools carrying out procurement, and to any user who asks at support@heywobo.com. [REVIEW: GDPR Article 13(1)(e) requires categories of recipients as a minimum; confirm that category-level disclosure plus a list on request satisfies the EU, the UK, India and California, especially for children's data.]
 
 We also share:
 
@@ -130,7 +130,7 @@ We store data in [regions], and our providers may process it in other countries,
 
 - For transfers out of the EEA and the UK we rely on the European Commission's standard contractual clauses, the UK addendum or the international data transfer agreement, and we carry out transfer risk assessments. [REVIEW: adequacy decisions in force, the correct SCC modules, and whether any transfer needs supplementary measures.]
 - For India we comply with any restriction on transfers to countries the government has restricted. [REVIEW: DPDP Act section 16 and the notified list.]
-- You can ask us for a copy of the safeguards at privacy@heywobo.com.
+- You can ask us for a copy of the safeguards at support@heywobo.com.
 
 ## 7. How long we keep it
 
@@ -173,7 +173,7 @@ Additional rights by place:
 
 **Other US states.** Where your state gives you similar rights, we honour them and use the same forms. [REVIEW: Virginia, Colorado, Connecticut, Utah, Texas and the rest of the state privacy laws, and the universal opt-out signal requirement.]
 
-To use any of these rights, write to privacy@heywobo.com, or use the buttons in settings. We will ask for enough information to be sure it is you, and we will not charge, unless a request is repetitive or excessive. If you are under 18, your parent or guardian can make a request for you, and, depending on your age and the law where you live, we may ask you too.
+To use any of these rights, write to support@heywobo.com, or use the buttons in settings. We will ask for enough information to be sure it is you, and we will not charge, unless a request is repetitive or excessive. If you are under 18, your parent or guardian can make a request for you, and, depending on your age and the law where you live, we may ask you too.
 
 ## 9. Children
 
@@ -199,4 +199,4 @@ If we change anything that matters, we will tell you in the app and by email at 
 
 ## 13. Talking to us
 
-privacy@heywobo.com, or [postal address], marked for the attention of the privacy team. A person reads it.
+support@heywobo.com, or 141 Prashasan Nagar, Jubilee Hills, Hyderabad, Telangana 500033, India, marked for the attention of the privacy team. A person reads it.

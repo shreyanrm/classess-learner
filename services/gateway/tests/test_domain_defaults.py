@@ -74,11 +74,13 @@ def test_the_gateway_falls_back_to_the_same_origin_as_the_mail(clean_env) -> Non
     assert gateway_default == templates.APP_URL
 
 
-def test_the_postal_address_default_is_visibly_a_placeholder(clean_env) -> None:
-    """A legal footer that quietly renders a wrong address is worse than one that shouts."""
+def test_the_postal_address_default_is_the_company_the_mail_is_actually_from(clean_env) -> None:
+    """Anti-spam law wants a real postal address on every commercial mail, so the company's own
+    is the default: a forgotten variable can never strip the footer or ship a placeholder."""
     _, templates = clean_env
-    assert "PLACEHOLDER" in templates.POSTAL_ADDRESS
-    assert "EMAIL_POSTAL_ADDRESS" in templates.POSTAL_ADDRESS
+    assert "Dot eVentures Pvt Ltd" in templates.POSTAL_ADDRESS
+    assert "Hyderabad" in templates.POSTAL_ADDRESS
+    assert "PLACEHOLDER" not in templates.POSTAL_ADDRESS
 
 
 def test_shipped_code_names_no_hosting_provider() -> None:

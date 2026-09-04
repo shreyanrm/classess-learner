@@ -14,7 +14,7 @@ Specs for every message Wobo sends. Each file carries the trigger, the recipient
 - Sentence case. No emoji. No exclamation marks. Under 120 words unless the message carries a summary.
 - Wobo by name; they and them only when a pronoun is unavoidable; Wobo writes as "I".
 - No provider, model or vendor name anywhere, including in error explanations. In legal text the only permitted phrase is "third-party AI and infrastructure providers".
-- Sender name and address come from configuration, not from a hard-coded string. Intended values: Wobo, from hello@heywobo.com, reply-to help@heywobo.com. Transactional mail may use a no-reply address only where a reply cannot be handled; every such message still says where to write instead.
+- Sender name and address come from configuration, not from a hard-coded string. Intended values: Wobo, from hello@heywobo.com, reply-to support@heywobo.com. Transactional mail may use a no-reply address only where a reply cannot be handled; every such message still says where to write instead.
 - Every non-transactional message carries its category and a one-tap way to turn that category off. Categories are the ones in settings: progress moments, weekly summaries, exam reminders, and festival greetings, which has its own switch separate from other progress mail. Billing and account mail is not switchable and is not a category with an off switch.
 - **Minors.** Marketing and lifecycle mail to a learner under 18 goes only where consent covers it, and anything about money is addressed to the adult who pays, never to the child. No message asks a child to ask a parent for money.
 - **No manufactured urgency.** No countdown, no scarcity, no "you are about to lose". Renewal and payment mail states facts and dates.

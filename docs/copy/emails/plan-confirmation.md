@@ -3,7 +3,7 @@
 **Kind:** transactional
 **Trigger:** a Plus or family plan starts
 **To:** the account holder who paid
-**From:** Wobo <hello@heywobo.com> · **Reply-to:** help@heywobo.com
+**From:** Wobo <hello@heywobo.com> · **Reply-to:** support@heywobo.com
 **Send:** immediately
 **Category:** billing. Not switchable off.
 
@@ -28,7 +28,7 @@ Your {{plan_name}} plan is active.
 
 {{family_block}}
 
-Your receipt is in a separate email. Questions about billing go to help@heywobo.com and a person answers.
+Your receipt is in a separate email. Questions about billing go to support@heywobo.com and a person answers.
 
 ## Variables
 | Variable | Example | Notes |

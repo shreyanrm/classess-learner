@@ -3,7 +3,7 @@
 **Kind:** transactional
 **Trigger:** an email address is added to an account, or used to sign in for the first time
 **To:** the address being verified
-**From:** Wobo <hello@heywobo.com> · **Reply-to:** help@heywobo.com
+**From:** Wobo <hello@heywobo.com> · **Reply-to:** support@heywobo.com
 **Send:** immediately
 **Category:** account. Not switchable off.
 
@@ -24,7 +24,7 @@ It works for {{expiry_minutes}} minutes and once only.
 
 [Or confirm with one tap]
 
-If you did not ask for this, nothing has happened to your account and you can ignore this message. If it keeps arriving, write to help@heywobo.com and we will look.
+If you did not ask for this, nothing has happened to your account and you can ignore this message. If it keeps arriving, write to support@heywobo.com and we will look.
 
 ## Variables
 | Variable | Example | Notes |

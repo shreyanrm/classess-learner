@@ -3,7 +3,7 @@
 **Kind:** hospitality
 **Trigger:** every topic in a unit or chapter is mastered
 **To:** the learner
-**From:** Wobo <hello@heywobo.com> · **Reply-to:** help@heywobo.com
+**From:** Wobo <hello@heywobo.com> · **Reply-to:** support@heywobo.com
 **Send:** within an hour, never between 22:00 and 07:00 local
 **Category:** progress moments. Off switch in footer.
 

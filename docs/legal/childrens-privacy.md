@@ -93,7 +93,7 @@ At any time, without giving a reason, a parent or guardian can:
 - **refuse further collection** while letting the child carry on learning in the basic state;
 - **turn off** the weekly summary, notifications, and any optional feature.
 
-How to do it is in `parental-consent.md`. Requests go to privacy@heywobo.com, or through the parent controls in settings.
+How to do it is in `parental-consent.md`. Requests go to support@heywobo.com, or through the parent controls in settings.
 
 We do not make a parent create an account of their own to exercise these rights, and we do not charge for them.
 
@@ -107,4 +107,4 @@ If a school gives Wobo to a class, the school decides the purpose and we act on 
 
 ## 9. Complaints
 
-Write to privacy@heywobo.com or to our data protection officer at dpo@heywobo.com. If you are not happy with our answer, you can complain to your data protection authority: the Data Protection Board of India, your national supervisory authority in the EU, the Information Commissioner's Office in the UK, the Federal Trade Commission or your state attorney general in the United States. [REVIEW: confirm each route and add the addresses.]
+Write to support@heywobo.com or to our data protection officer at support@heywobo.com. If you are not happy with our answer, you can complain to your data protection authority: the Data Protection Board of India, your national supervisory authority in the EU, the Information Commissioner's Office in the UK, the Federal Trade Commission or your state attorney general in the United States. [REVIEW: confirm each route and add the addresses.]

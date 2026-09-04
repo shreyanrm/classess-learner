@@ -9,6 +9,7 @@ from typing import Any
 
 import pytest
 from wobo_gateway import email as email_mod
+from wobo_gateway import email_templates as templates
 from wobo_gateway.app import create_app
 from wobo_gateway.email import MailLog, idempotency_key, mail_log, send_email
 from wobo_gateway.email_templates import HAND_KINDS, KINDS, PAPER_KINDS, render
@@ -483,9 +484,15 @@ def test_nothing_leaves_live_without_a_postal_line_or_an_off_switch(
         raise AssertionError("a held send must never reach the provider")
 
     monkeypatch.setattr(email_mod.urllib.request, "urlopen", _boom)
+    # The company's own address is the default, so an unset variable still mails lawfully;
+    # the guard is what stands between us and a send with NO address at all.
     monkeypatch.delenv("EMAIL_POSTAL_ADDRESS", raising=False)
+    assert "Dot eVentures Pvt Ltd" in templates.postal_address()
+    assert "Hyderabad" in templates.postal_address()
+    monkeypatch.setattr(templates, "_POSTAL_DEFAULT", "")
     held = send_email("account_created", "kid@example.test", learner_id="L1", period="once")
     assert held["queued"] is True and held["error"] == "no_postal_address"
+    monkeypatch.setattr(templates, "_POSTAL_DEFAULT", "Dot eVentures Pvt Ltd, Hyderabad, India")
     monkeypatch.setenv("EMAIL_POSTAL_ADDRESS", "12 Example Road, Bengaluru 560001, India")
     # a hospitality mail with no signed stop link (no signing key in this process)
     monkeypatch.delenv("SUPABASE_JWT_SECRET", raising=False)

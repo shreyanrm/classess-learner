@@ -3,7 +3,7 @@
 **Kind:** transactional
 **Trigger:** a plan is cancelled, or lapses after a failed payment
 **To:** the account holder who paid
-**From:** Wobo <hello@heywobo.com> · **Reply-to:** help@heywobo.com
+**From:** Wobo <hello@heywobo.com> · **Reply-to:** support@heywobo.com
 **Send:** immediately on cancellation
 **Category:** billing. Not switchable off.
 

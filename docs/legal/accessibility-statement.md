@@ -58,7 +58,7 @@ We test with [screen readers], [browsers] and [operating systems], on a phone, a
 
 Write to accessibility@heywobo.com. Tell us what you were trying to do, what got in the way, and what you use. We will reply within [5 working days], tell you what we are going to do, and give you a way to get the thing done in the meantime.
 
-If our answer is not good enough, you can escalate to [named person or role] at [contact], and, where you have one, to the enforcement body in your country. [REVIEW: name the enforcement route per jurisdiction, which the EU accessibility statement format requires.]
+If our answer is not good enough, you can escalate to [named person or role] at support@heywobo.com, and, where you have one, to the enforcement body in your country. [REVIEW: name the enforcement route per jurisdiction, which the EU accessibility statement format requires.]
 
 ## 7. How this document is kept honest
 
