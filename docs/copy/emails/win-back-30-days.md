@@ -29,7 +29,7 @@ If Wobo was not what you needed, that is a real answer and I would rather know i
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `first_name` | Aditi | |
+| `first_name` | (from the account) | |
 | `topics_count` | 12 | Must be a real number greater than zero, or this email does not send |
 | `last_topic_name` | Circles | Drop the clause if there is no saved place |
 | `new_thing_line` | Since you were last here I can read your handwritten working on the board and mark the step, not just the answer. | One genuine change since their last session. If nothing changed, drop the line rather than inventing one. |

@@ -29,7 +29,7 @@ I drew this while you worked through it. It is the whole chapter on one board, w
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `first_name` | Aditi | |
+| `first_name` | (from the account) | |
 | `unit_name` | Quadrilaterals | The learner's own syllabus wording |
 | `subject_name` | Mathematics | |
 | `topics_count` | 6 | |

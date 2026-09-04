@@ -8,27 +8,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* LAW v5 (DESIGN.md §0) — white paper, colour with a job. The ground is #FFFFFF; a section
-     never gets a tint to say it is a section. Character for character the token block at the top
-     of landing-v8.html, plus the washes and lilac these site pages already name. */
-  --paper:#FFFFFF; --paper-2:#F6F6F8; --paper-3:#ECECF0; --line:#E4E4EA;
-  --ink:#14142B; --ink-2:#55556B; --ink-3:#8A8A9E;
-  --pig:#2B45FF; --pig-soft:#EDF0FF; --marigold:#FFB629; --rose:#FF6B57; --mint:#12B981; --violet:#7C5CFF; --lilac:#B7A6FF;
-  --pig-w:#EDF0FF; --violet-w:#EFEBFF; --rose-w:#FFEDEB; --marigold-w:#FFF6E5; --mint-w:#E3F7F0; --lilac-w:#F6F4FF;
-  --body:#14142B; --body-hi:#3A3A5C; --visor:#FFFFFF; --visor-lo:#EDEDF2; --eye:#2B45FF;
+  --paper:#FAF7F0; --paper-2:#F1EDE3; --paper-3:#E7E1D3; --ink:#14142B; --ink-2:#4E4E66; --ink-3:#8A8A9E;
+  --pig:#2B45FF; --violet:#7C5CFF; --rose:#FF6B57; --marigold:#FFB629; --mint:#22C48B; --lilac:#B7A6FF;
+  --pig-w:#E6EAFF; --rose-w:#FFE7E2; --marigold-w:#FFF1D6; --mint-w:#DDF6EC; --lilac-w:#EFEBFF;
+  --body:#14142B; --body-hi:#3A3A5C; --visor:#FAF7F0; --visor-lo:#E7E1D3; --eye:#2B45FF;
   --sans:'Poppins',system-ui,-apple-system,sans-serif; --hand:'Caveat',cursive;
-  --s1:8px; --s2:16px; --s3:24px; --s4:40px; --s5:72px; --s6:128px;
-  --gutter:clamp(20px, 5vw, 48px); --band:clamp(72px, 9vw, 132px); --colgap:clamp(32px, 5vw, 80px);
-  --shadow:0 24px 60px rgba(20,20,43,.10); --lift:0 10px 28px rgba(20,20,43,.07);
+  --s1:8px; --s2:16px; --s3:24px; --s4:40px; --s5:64px; --s6:120px;
 }
 [data-theme="dark"]{
-  /* night, designed on its own and never inverted */
-  --paper:#0E0E16; --paper-2:#17171F; --paper-3:#1F1F29; --line:#26262F;
-  --ink:#F4F4F7; --ink-2:#B4B4C2; --ink-3:#7E7E90;
-  --pig:#7C8CFF; --pig-soft:#1A1E3A; --marigold:#FFC85A; --rose:#FF8A78; --mint:#3DD9A4; --violet:#A996FF; --lilac:#C9BDFF;
-  --pig-w:#1A1E3A; --violet-w:#2C293E; --rose-w:#38272C; --marigold-w:#383027; --mint-w:#1C3232; --lilac-w:#302E3E;
-  --body:#F4F4F7; --body-hi:#FFFFFF; --visor:#0E0E16; --visor-lo:#1F1F29; --eye:#7C8CFF;
-  --shadow:0 24px 60px rgba(0,0,0,.5); --lift:0 10px 28px rgba(0,0,0,.35);
+  --paper:#0F1226; --paper-2:#181C3A; --paper-3:#22264A; --ink:#F3F0E8; --ink-2:#B8B6C6; --ink-3:#7C7B92;
+  --pig:#7C8CFF; --violet:#A996FF; --rose:#FF8A78; --marigold:#FFC85A; --mint:#4FE3BD; --lilac:#C9BDFF;
+  --pig-w:#1E2650; --rose-w:#3E2431; --marigold-w:#3E3320; --mint-w:#16362E; --lilac-w:#2A2650;
+  --body:#F3F0E8; --body-hi:#FFFFFF; --visor:#0F1226; --visor-lo:#1E2650; --eye:#7C8CFF;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -44,7 +35,7 @@ p{margin:0}
 .btn:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid var(--marigold);outline-offset:2px}
 header{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--paper) 78%,transparent)}
 header .wrap{display:flex;align-items:center;gap:var(--s3);height:72px}
-header .wm svg{height:26px;width:auto;fill:var(--ink);display:block}
+header .wm svg{height:22px;width:auto;color:var(--ink);display:block}
 header nav{margin-left:auto;display:flex;gap:4px;background:var(--paper-2);padding:4px;border-radius:999px}
 header nav a{padding:10px 16px;border-radius:999px;font:500 14px/1 var(--sans);color:var(--ink-2)}
 header nav a.on{background:var(--ink);color:var(--paper)}
@@ -67,9 +58,9 @@ header .cta{display:flex;gap:8px}
 .hero h1 em{font-style:normal;color:var(--pig)}
 .hero p.sub{font-size:19px;color:var(--ink-2);max-width:52ch;margin:var(--s3) auto 0}
 .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2);margin-top:var(--s5)}
-.tiles a{border-radius:24px;padding:var(--s3);background:var(--paper-2);display:grid;gap:12px;justify-items:start;text-align:left;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;position:relative}
+.tiles a{border-radius:24px;padding:var(--s3);display:grid;gap:12px;justify-items:start;text-align:left;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;position:relative}
 .tiles a:hover{transform:translateY(-6px) rotate(-1deg);box-shadow:0 22px 44px rgba(20,20,43,.14)}
-/* law v5: a wash tints a pill, a tick or a selected row — never a card, a tile, a panel or a section. Surfaces are paper-2. */
+.tiles a.pig{background:var(--pig-w)}.tiles a.mint{background:var(--mint-w)}.tiles a.marigold{background:var(--marigold-w)}.tiles a.lilac{background:var(--lilac-w)}
 .tiles svg{width:100%;height:auto;aspect-ratio:4/3;overflow:visible}
 .tiles b{font:600 20px/1.2 var(--sans)}
 .tiles span{font-size:14px;color:var(--ink-2)}
@@ -106,11 +97,22 @@ section{padding:var(--s5) 0}
 .chapter .span b{display:block;color:var(--ink);font-weight:600;font-size:15px;margin-bottom:4px}
 .chapter .say{margin-top:var(--s3);font-family:var(--hand);font-weight:600;font-size:26px;line-height:1.15;color:var(--ink)}
 .chapter .say em{font-style:normal;color:var(--rose)}
-.art{border-radius:28px;padding:var(--s3);background:var(--paper-2);position:relative;min-height:360px;display:grid;place-items:center}
-/* law v5: a wash tints a pill, a tick or a selected row — never a card, a tile, a panel or a section. Surfaces are paper-2. */
+.art{border-radius:28px;padding:var(--s3);position:relative;min-height:360px;display:grid;place-items:center}
+.art.pig{background:var(--pig-w)}.art.mint{background:var(--mint-w)}.art.marigold{background:var(--marigold-w)}.art.rose{background:var(--rose-w)}.art.lilac{background:var(--lilac-w)}
 .art > svg{width:100%;height:auto;overflow:visible}
 .sticker{position:absolute;background:var(--marigold);color:#14142B;font-family:var(--hand);font-weight:700;font-size:22px;padding:6px 14px;border-radius:12px;transform:rotate(-6deg);box-shadow:0 10px 20px rgba(20,20,43,.12)}
 @media (max-width:900px){.chapter{grid-template-columns:1fr;gap:var(--s3)}.chapter.flip .art{order:0}.art{min-height:0}.chapter .span{grid-template-columns:1fr}}
+
+/* the marked-up paragraph — every mark rides its own words, so none can drift */
+.marked{width:100%;background:var(--paper);border-radius:18px;padding:26px 28px;display:grid;gap:16px}
+.marked p{font:400 18px/1.9 var(--sans);color:var(--ink);margin:0}
+.marked mark.hl{background:color-mix(in srgb,var(--marigold) 52%,transparent);color:inherit;padding:.06em .08em;border-radius:3px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.marked .tag{font-family:var(--hand);font-weight:700;font-size:19px;color:var(--pig);margin-left:8px;white-space:nowrap}
+.marked .circled{position:relative;display:inline-block}
+.marked .circled::after{content:"";position:absolute;left:-.35em;right:-.35em;top:-.16em;bottom:-.2em;border:2.6px solid var(--rose);border-radius:50%;transform:rotate(-1.4deg);pointer-events:none}
+.marked .note{font-family:var(--hand);font-weight:600;font-size:20px;color:var(--rose)}
+.marked .fix{font-family:var(--hand);font-weight:700;font-size:21px;color:var(--pig)}
+.marked .foot{font-family:var(--hand);font-weight:600;font-size:18px;color:var(--ink-3)}
 
 /* ask, close, footer */
 .ask{background:var(--paper-2);border-radius:28px;padding:var(--s4);display:grid;grid-template-columns:auto 1fr;gap:var(--s3);align-items:center}
@@ -131,7 +133,7 @@ footer{background:var(--ink);color:rgba(250,247,240,.6);padding:var(--s4) 0 var(
 footer .wrap{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:var(--s3)}
 footer b{display:block;color:var(--paper);font-weight:600;margin-bottom:10px}
 footer a{display:block;padding:4px 0}
-footer .wm svg{height:24px;fill:var(--paper)}
+footer .wm svg{height:22px;color:var(--paper)}
 @media (max-width:900px){footer .wrap{grid-template-columns:1fr 1fr}}
 @media (prefers-reduced-motion:reduce){.blink,.typeahead .in i{animation:none}.draw{stroke-dashoffset:0}.tiles a:hover{transform:none}}
 </style>
@@ -141,7 +143,7 @@ footer .wm svg{height:24px;fill:var(--paper)}
 <radialGradient id="hg" cx="36%" cy="30%" r="80%"><stop offset="0" style="stop-color:var(--body-hi)"/><stop offset="1" style="stop-color:var(--body)"/></radialGradient>
 <linearGradient id="vg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--visor)"/><stop offset="1" style="stop-color:var(--visor-lo)"/></linearGradient>
 <symbol id="head" viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="url(#hg)"/><rect x="18" y="41" width="84" height="38" rx="19" fill="url(#vg)"/><g class="blink"><circle cx="43" cy="61" r="9" fill="var(--eye)"/><circle cx="77" cy="61" r="9" fill="var(--eye)"/><circle cx="40" cy="58" r="3" fill="var(--paper)" opacity=".85"/><circle cx="74" cy="58" r="3" fill="var(--paper)" opacity=".85"/></g></symbol>
-<symbol id="wm" viewBox="0 0 1160 340"><text x="0" y="300" font-family="Poppins,sans-serif" font-weight="700" font-size="330" letter-spacing="-12">wobo</text></symbol>
+<symbol id="wm" viewBox="183.18 572.03 1133.63 312.64"><defs><g/></defs><g fill="currentColor" ><g transform="translate(173.553291, 879.374904)"><g><path d="M 80.328125 5.296875 C 63.648438 5.296875 50.5 1.769531 40.875 -5.28125 C 31.257812 -12.34375 24.207031 -21.5625 19.71875 -32.9375 C 15.226562 -44.320312 12.421875 -56.75 11.296875 -70.21875 C 10.179688 -83.6875 9.625 -96.832031 9.625 -109.65625 L 9.625 -234.234375 L 113.03125 -234.234375 L 113.984375 -133.703125 C 113.984375 -127.296875 115.265625 -122.164062 117.828125 -118.3125 C 120.398438 -114.46875 124.25 -113.664062 129.375 -115.90625 C 130.976562 -116.550781 132.5 -117.429688 133.9375 -118.546875 C 135.382812 -119.671875 136.429688 -121.679688 137.078125 -124.578125 L 137.078125 -234.234375 L 240.96875 -234.234375 L 241.921875 -133.703125 C 241.921875 -127.296875 243.285156 -122.164062 246.015625 -118.3125 C 248.742188 -114.46875 252.671875 -113.664062 257.796875 -115.90625 C 259.398438 -116.550781 261.003906 -117.59375 262.609375 -119.03125 C 264.210938 -120.476562 265.175781 -122.804688 265.5 -126.015625 L 263.09375 -234.234375 L 380.453125 -234.234375 L 372.75 -0.484375 L 287.140625 -0.484375 L 283.296875 -48.09375 C 279.765625 -40.082031 274.867188 -31.90625 268.609375 -23.5625 C 262.359375 -15.226562 254.34375 -8.332031 244.5625 -2.875 C 234.789062 2.570312 222.691406 5.296875 208.265625 5.296875 C 191.265625 5.296875 177.953125 1.683594 168.328125 -5.53125 C 158.710938 -12.75 151.660156 -21.96875 147.171875 -33.1875 C 141.078125 -23.25 132.660156 -14.347656 121.921875 -6.484375 C 111.179688 1.367188 97.316406 5.296875 80.328125 5.296875 Z M 80.328125 5.296875 "/></g></g></g><g fill="currentColor" ><g transform="translate(549.669146, 879.374904)"><g><path d="M 132.75 2.890625 C 109.976562 2.890625 89.296875 -0.957031 70.703125 -8.65625 C 52.109375 -16.351562 37.28125 -29.097656 26.21875 -46.890625 C 15.15625 -64.691406 9.625 -88.820312 9.625 -119.28125 C 9.625 -149.414062 15.15625 -173.460938 26.21875 -191.421875 C 37.28125 -209.378906 52.109375 -222.445312 70.703125 -230.625 C 89.296875 -238.800781 109.976562 -242.890625 132.75 -242.890625 C 155.832031 -242.890625 176.671875 -238 195.265625 -228.21875 C 213.867188 -218.4375 228.617188 -204.40625 239.515625 -186.125 C 250.421875 -167.851562 255.875 -145.570312 255.875 -119.28125 C 255.875 -91.707031 250.421875 -68.859375 239.515625 -50.734375 C 228.617188 -32.617188 213.867188 -19.148438 195.265625 -10.328125 C 176.671875 -1.515625 155.832031 2.890625 132.75 2.890625 Z M 110.625 -98.125 C 110.625 -89.78125 112.785156 -83.925781 117.109375 -80.5625 C 121.441406 -77.195312 126.65625 -75.515625 132.75 -75.515625 C 139.15625 -75.515625 144.523438 -77.4375 148.859375 -81.28125 C 153.191406 -85.132812 155.359375 -90.75 155.359375 -98.125 C 155.359375 -104.851562 153.191406 -110.0625 148.859375 -113.75 C 144.523438 -117.4375 139.15625 -119.28125 132.75 -119.28125 C 126.65625 -119.28125 121.441406 -117.753906 117.109375 -114.703125 C 112.785156 -111.660156 110.625 -106.132812 110.625 -98.125 Z M 110.625 -98.125 "/></g></g></g><g fill="currentColor" ><g transform="translate(801.21461, 879.374904)"><g><path d="M 153.90625 0 C 142.363281 0 131.378906 -2.960938 120.953125 -8.890625 C 110.535156 -14.828125 102.125 -22.125 95.71875 -30.78125 L 93.3125 -0.484375 L 12.984375 -0.484375 L 9.625 -132.75 L 13.953125 -307.34375 L 101 -307.34375 L 103.40625 -221.25 C 110.457031 -227.019531 118.710938 -231.664062 128.171875 -235.1875 C 137.628906 -238.71875 148.613281 -240.484375 161.125 -240.484375 C 191.582031 -240.484375 215.546875 -231.425781 233.015625 -213.3125 C 250.492188 -195.195312 259.234375 -164.171875 259.234375 -120.234375 C 259.234375 -90.421875 254.664062 -66.773438 245.53125 -49.296875 C 236.394531 -31.828125 223.96875 -19.242188 208.25 -11.546875 C 192.539062 -3.847656 174.425781 0 153.90625 0 Z M 117.84375 -98.59375 C 117.84375 -91.21875 119.925781 -85.765625 124.09375 -82.234375 C 128.257812 -78.710938 133.390625 -76.953125 139.484375 -76.953125 C 145.578125 -76.953125 150.707031 -78.554688 154.875 -81.765625 C 159.039062 -84.972656 161.125 -90.582031 161.125 -98.59375 C 161.125 -106.613281 159.039062 -112.222656 154.875 -115.421875 C 150.707031 -118.628906 145.578125 -120.234375 139.484375 -120.234375 C 133.390625 -120.234375 128.257812 -118.390625 124.09375 -114.703125 C 119.925781 -111.023438 117.84375 -105.65625 117.84375 -98.59375 Z M 117.84375 -98.59375 "/></g></g></g><g fill="currentColor" ><g transform="translate(1060.936512, 879.374904)"><g><path d="M 132.75 2.890625 C 109.976562 2.890625 89.296875 -0.957031 70.703125 -8.65625 C 52.109375 -16.351562 37.28125 -29.097656 26.21875 -46.890625 C 15.15625 -64.691406 9.625 -88.820312 9.625 -119.28125 C 9.625 -149.414062 15.15625 -173.460938 26.21875 -191.421875 C 37.28125 -209.378906 52.109375 -222.445312 70.703125 -230.625 C 89.296875 -238.800781 109.976562 -242.890625 132.75 -242.890625 C 155.832031 -242.890625 176.671875 -238 195.265625 -228.21875 C 213.867188 -218.4375 228.617188 -204.40625 239.515625 -186.125 C 250.421875 -167.851562 255.875 -145.570312 255.875 -119.28125 C 255.875 -91.707031 250.421875 -68.859375 239.515625 -50.734375 C 228.617188 -32.617188 213.867188 -19.148438 195.265625 -10.328125 C 176.671875 -1.515625 155.832031 2.890625 132.75 2.890625 Z M 110.625 -98.125 C 110.625 -89.78125 112.785156 -83.925781 117.109375 -80.5625 C 121.441406 -77.195312 126.65625 -75.515625 132.75 -75.515625 C 139.15625 -75.515625 144.523438 -77.4375 148.859375 -81.28125 C 153.191406 -85.132812 155.359375 -90.75 155.359375 -98.125 C 155.359375 -104.851562 153.191406 -110.0625 148.859375 -113.75 C 144.523438 -117.4375 139.15625 -119.28125 132.75 -119.28125 C 126.65625 -119.28125 121.441406 -117.753906 117.109375 -114.703125 C 112.785156 -111.660156 110.625 -106.132812 110.625 -98.125 Z M 110.625 -98.125 "/></g></g></g></symbol>
 </defs></svg>
 
 <header><div class="wrap">
@@ -153,7 +155,7 @@ footer .wm svg{height:24px;fill:var(--paper)}
 <section class="hero"><div class="wrap">
   <span class="label">Subjects</span>
   <h1>Every subject. <em>Your school's way.</em></h1>
-  <p class="sub">Every subject your board sets, taught in the order your textbook uses and the words your exam expects. Pick a subject to see what a lesson looks like.</p>
+  <p class="sub">Mathematics, Science, Social science and English, from class 4 to 12, taught in the order your textbook uses and the words your exam expects. Pick a subject to see what a lesson looks like.</p>
   <div class="tiles">
     <a class="pig" href="#maths"><svg viewBox="0 0 200 150"><path class="ink" d="M50 120 L140 120 L50 52 Z"/><path class="ink thin" d="M50 104 h16 v16"/><path class="ink pig" d="M140 120 L180 66 L90 -2 L50 52" opacity=".9"/><text class="hw pig" x="118" y="60" font-size="22">c²</text></svg><b>Mathematics</b><span>Number to calculus, drawn.</span><span class="go">See a lesson →</span></a>
     <a class="mint" href="#science"><svg viewBox="0 0 200 150"><path class="ink" d="M100 20 L152 50 L152 110 L100 140 L48 110 L48 50 Z"/><circle class="ink thin" cx="100" cy="80" r="30"/><text class="hw" x="160" y="44" font-size="20">C₆H₆</text></svg><b>Science</b><span>Physics, chemistry, biology, seen.</span><span class="go">See a lesson →</span></a>
@@ -173,56 +175,58 @@ footer .wm svg{height:24px;fill:var(--paper)}
 
 <section id="maths"><div class="wrap">
   <div class="chapter reveal">
-    <div><span class="k"><i></i>Mathematics</span><h2>Every proof drawn, every number computed.</h2><p>A chocolate bar shared into quarters. Why a² + b² = c², instead of memorising it. An integral filling the area under a curve. Same pen, same patience, whatever your board has set this year.</p>
-      <div class="span"><div><b>Early on</b>Fractions as pieces of a real thing, dragged and shaded.</div><div><b>Later</b>Limits, derivatives and integrals, built one step at a time on the graph.</div></div>
+    <div><span class="k"><i></i>Mathematics</span><h2>Every proof drawn, every number computed.</h2><p>Class 4 shares a chocolate bar into quarters. Class 8 sees why a² + b² = c² instead of memorising it. Class 12 watches an integral fill the area under a curve. Same pen, same patience.</p>
+      <div class="span"><div><b>Early on</b>Fractions as pieces of a real thing, dragged and shaded.</div><div><b>Further on</b>Limits, derivatives and integrals, built one step at a time on the graph.</div></div>
       <div class="say">If you can watch it drawn, <em>you can draw it in the exam.</em></div></div>
     <div class="art pig"><svg viewBox="0 0 520 340" aria-hidden="true"><rect class="paper" x="30" y="24" width="460" height="292" rx="22"/>
       <path class="ink thin" d="M70 270 h380 M90 290 v-240"/>
       <path class="ink draw" d="M90 250.0 L105 249.7 L120 248.8 L135 247.2 L150 245.0 L165 242.2 L180 238.8 L195 234.7 L210 230.0 L225 224.7 L240 218.8 L255 212.2 L270 205.0 L285 197.2 L300 188.8 L315 179.7 L330 170.0 L345 159.7 L360 148.8 L375 137.2 L390 125.0 L405 112.2 L420 98.8 L435 84.7 L450 70.0" stroke-linejoin="round"/>
       <path class="draw" d="M170 270 L170 241.1 L180 238.8 L190 236.1 L200 233.2 L210 230.0 L220 226.5 L230 222.8 L240 218.8 L250 214.4 L260 209.9 L270 205.0 L270 270 Z" fill="var(--pig)" opacity=".18" stroke="var(--pig)" stroke-width="3" style="transition-delay:.8s"/>
       <text class="hw pig" x="330" y="100" font-size="30">∫ f(x) dx</text><text class="hw" x="300" y="300" font-size="22">a</text><text class="hw" x="365" y="300" font-size="22">b</text>
-      <text class="hw dim" x="290" y="250" font-size="20">← the area, filled</text></svg><span class="sticker" style="right:22px;top:18px">class 12</span></div>
+      <text class="hw dim" x="290" y="250" font-size="20">← the area, filled</text></svg></div>
   </div>
 </div></section>
 
 <section id="science"><div class="wrap">
   <div class="chapter flip reveal">
     <div><span class="k"><i style="background:var(--mint)"></i>Science</span><h2>Seen, not recited.</h2><p>Benzene as a ring you can rotate. Sound as a wave you can squeeze. A cell you can peel layer by layer. Wobo draws the thing, then asks you to predict what happens when one part changes.</p>
-      <div class="span"><div><b>Class 6 sees</b>Light bouncing off a mirror, angle by angle.</div><div><b>Class 11 sees</b>Bonds, orbitals and equilibrium, animated on the board.</div></div>
+      <div class="span"><div><b>Further on</b>Light bouncing off a mirror, angle by angle.</div><div><b>Further on</b>Bonds, orbitals and equilibrium, animated on the board.</div></div>
       <div class="say">Predict first. <em>Then watch.</em></div></div>
     <div class="art mint"><svg viewBox="0 0 520 340" aria-hidden="true"><rect class="paper" x="30" y="24" width="460" height="292" rx="22"/>
       <g transform="translate(200 170)"><path class="ink draw" d="M0 -90 L78 -45 L78 45 L0 90 L-78 45 L-78 -45 Z"/><circle class="ink thin draw" r="55" style="transition-delay:.7s"/>
         <g class="hw" font-size="20"><text x="-8" y="-98">C</text><text x="82" y="-48">C</text><text x="82" y="56">C</text><text x="-8" y="108">C</text><text x="-98" y="56">C</text><text x="-98" y="-48">C</text></g></g>
       <text class="hw pig" x="320" y="120" font-size="30">C₆H₆</text><text class="hw" x="320" y="160" font-size="22">six carbons, one ring,</text><text class="hw" x="320" y="190" font-size="22">electrons shared all round</text>
-      <path class="ink rose draw" d="M300 210 c-8 20 0 40 30 40 s60 -10 58 -30 s-20 -36 -48 -32 s-34 8 -40 22" style="transition-delay:1.4s"/><text class="hw rose" x="360" y="280" font-size="22">why a ring?</text></svg><span class="sticker" style="left:22px;bottom:18px;transform:rotate(4deg)">class 11</span></div>
+      <path class="ink rose draw" d="M300 210 c-8 20 0 40 30 40 s60 -10 58 -30 s-20 -36 -48 -32 s-34 8 -40 22" style="transition-delay:1.4s"/><text class="hw rose" x="360" y="280" font-size="22">why a ring?</text></svg></div>
   </div>
 </div></section>
 
 <section id="social"><div class="wrap">
   <div class="chapter reveal">
     <div><span class="k"><i style="background:var(--marigold)"></i>Social science</span><h2>History with a timeline, geography with a map, civics with a case.</h2><p>Wobo draws the river before it names the empire that grew beside it, and draws the map the way your own school's atlas draws it. Contested questions get the textbook's words and nothing more.</p>
-      <div class="span"><div><b>Class 5 sees</b>A river, a plain, a port, and why the city is where it is.</div><div><b>Class 10 sees</b>Timelines, resource maps and how a bill becomes law, step by step.</div></div>
+      <div class="span"><div><b>Further on</b>A river, a plain, a port, and why the city is where it is.</div><div><b>Further on</b>Timelines, resource maps and how a bill becomes law, step by step.</div></div>
       <div class="say">The map first, <em>then the story.</em></div></div>
     <div class="art marigold"><svg viewBox="0 0 520 340" aria-hidden="true"><rect class="paper" x="30" y="24" width="460" height="292" rx="22"/>
       <path class="ink thin draw" d="M60 250 c50 -50 90 -20 150 -50 s90 -70 250 -60"/><path class="ink thin draw" d="M60 290 c60 -30 110 0 170 -30 s80 -50 230 -40"/>
       <path class="ink pig draw" d="M120 60 c30 50 80 70 130 60 s90 -10 140 30" style="transition-delay:.8s"/>
       <circle cx="250" cy="120" r="8" fill="var(--rose)"/><text class="hw rose" x="266" y="112" font-size="22">the port</text>
       <text class="hw dim" x="90" y="200" font-size="18">plateau</text><text class="hw pig" x="330" y="76" font-size="20">the river</text>
-      <path class="ink draw" d="M80 300 h360" style="transition-delay:1.2s"/><g class="hw" font-size="16"><text x="80" y="290">1526</text><text x="230" y="290">1707</text><text x="400" y="290">1857</text></g></svg><span class="sticker" style="right:22px;top:18px">class 7</span></div>
+      <path class="ink draw" d="M80 300 h360" style="transition-delay:1.2s"/><g class="hw" font-size="16"><text x="80" y="290">1526</text><text x="230" y="290">1707</text><text x="400" y="290">1857</text></g></svg></div>
   </div>
 </div></section>
 
 <section id="english"><div class="wrap">
   <div class="chapter flip reveal">
     <div><span class="k"><i style="background:var(--lilac)"></i>English</span><h2>A paragraph, marked up like a good teacher would.</h2><p>Wobo underlines the metaphor, circles the comma splice, and rewrites one sentence beside yours so you can see the difference. Grammar as pattern, not as rules to memorise.</p>
-      <div class="span"><div><b>Early on</b>Nouns and verbs coloured in a sentence you wrote.</div><div><b>Later</b>Argument, tone and structure, marked across your whole essay.</div></div>
+      <div class="span"><div><b>Early on</b>Nouns and verbs coloured in a sentence you wrote.</div><div><b>Further on</b>Argument, tone and structure, marked across your whole essay.</div></div>
       <div class="say">Your writing, <em>with the pen on it.</em></div></div>
-    <div class="art lilac"><svg viewBox="0 0 520 340" aria-hidden="true"><rect class="paper" x="30" y="24" width="460" height="292" rx="22"/>
-      <g font-family="Poppins,sans-serif" font-size="17" fill="var(--ink)"><text x="60" y="80">The monsoon arrived like a rumour, first</text><text x="60" y="110">in the smell of the air, then everywhere at</text><text x="60" y="140">once, the streets were rivers by evening.</text></g>
-      <rect x="192" y="64" width="128" height="22" rx="6" fill="var(--marigold)" opacity=".55"/><text class="hw pig" x="330" y="60" font-size="20">simile ✓</text>
-      <path class="ink rose draw" d="M160 146 c-6 12 2 22 20 22 s60 -2 78 -6 s10 -24 -8 -26 s-70 -4 -90 10"/><text class="hw rose" x="270" y="180" font-size="20">two sentences, one comma</text>
-      <text class="hw pig" x="60" y="240" font-size="24">→ "…at once. By evening the streets were rivers."</text>
-      <text class="hw dim" x="60" y="290" font-size="18">Wobo rewrites one line, you fix the rest.</text></svg><span class="sticker" style="left:22px;bottom:18px;transform:rotate(4deg)">class 9</span></div>
+    <div class="art lilac">
+      <div class="marked">
+        <p>The monsoon <mark class="hl">arrived like a rumour</mark><span class="tag">simile &#10003;</span>, first in the smell of the air, then everywhere at once<span class="circled">, the streets were rivers</span> by evening.</p>
+        <div class="note">two sentences, one comma</div>
+        <div class="fix">&#8594; &ldquo;&hellip;at once. By evening the streets were rivers.&rdquo;</div>
+        <div class="foot">Wobo rewrites one line. You fix the rest.</div>
+      </div>
+    </div>
   </div>
 </div></section>
 
@@ -231,20 +235,20 @@ footer .wm svg{height:24px;fill:var(--paper)}
     <svg class="w" viewBox="0 0 120 120"><use href="#head"/></svg>
     <div><span class="label">Still wondering?</span><h2 style="margin-top:8px">Ask Wobo about your subject, your board, your class.</h2>
       <div class="box"><input placeholder="Do you cover ICSE Class 9 physics?"><button class="btn pig" style="min-height:40px;padding:10px 16px">Ask</button></div>
-      <div class="chips"><span>Which chapter is my CBSE maths class on this week?</span><span>Can you teach Hindi?</span><span>My school uses its own books</span></div>
+      <div class="chips"><span>Which chapter is Class 8 CBSE maths on this week?</span><span>Can you teach Hindi?</span><span>My school uses its own books</span></div>
     </div>
   </div>
 </div></section>
 
 <div class="close"><div class="wrap">
-  <h2>Your subject, in the first group.</h2>
-  <span class="hand">Be in the first group, free, with the whole tutor from day one.</span>
-  <div class="row"><a class="btn" href="#">Get early access</a><a class="btn q" href="#">I'm a parent</a></div>
+  <h2>Your subject, tonight.</h2>
+  <span class="hand">The first question is on us.</span>
+  <div class="row"><a class="btn" href="#">Start learning for free</a><a class="btn q" href="#">I'm a parent</a></div>
 </div></div>
 <footer><div class="wrap">
   <div><div class="wm"><svg viewBox="0 0 1160 340" style="width:120px"><use href="#wm"/></svg></div><p style="margin-top:10px;max-width:28ch">A tutor that draws, never judges, and is always there.</p></div>
   <div><b>Wobo</b><a href="#">Meet Wobo</a><a href="#">How it works</a><a href="#" style="color:var(--paper)">Subjects</a><a href="#">Plans</a><a href="#">Gift Wobo</a></div>
-  <div><b>For</b><a href="#">Parents</a><a href="#">Students</a><a href="#">Schools</a></div>
+  <div><b>For</b><a href="#">Parents</a><a href="#">Students</a></div>
   <div><b>Help</b><a href="#">Help centre</a><a href="#">Contact</a><a href="#">Questions</a></div>
   <div><b>Company</b><a href="#">About</a><a href="#">Security and trust</a><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Children's privacy</a><a href="#">Cookies</a><a href="#">Accessibility</a></div>
 </div></footer>

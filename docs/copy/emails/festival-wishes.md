@@ -49,7 +49,7 @@ Examples of the shape it takes:
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `first_name` | Aditi | |
+| `first_name` | (from the account) | |
 | `festival_name` | Diwali | Exact name as used in the learner's region |
 | `greeting_description` | A row of lamps drawn one by one, the last one still being lit. | Preview text and alt text |
 | `artifact_url` | https://heywobo.com/greetings/... | The drawing, sharable as an image |

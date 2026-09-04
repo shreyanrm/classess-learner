@@ -20,14 +20,14 @@ A week's notice: your {{plan_name}} renews on {{renewal_date}} for {{amount}}, c
 
 Keeping it needs nothing from you.
 
-Cancelling takes a minute. We offer you a pause or a smaller plan first, then it is done, and you keep Plus until {{renewal_date}}.
+Cancelling takes a minute. We offer you a pause or a smaller plan first, then it is done, and you keep Pro until {{renewal_date}}.
 
 [Manage your plan]
 
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `plan_name` | Plus annual | |
+| `plan_name` | Pro | |
 | `renewal_date` | 3 September 2027 | |
 | `amount` | [amount] | |
 | `payment_method_last4` | card ending 1180 | |

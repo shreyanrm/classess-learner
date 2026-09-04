@@ -33,7 +33,7 @@ You can stop the weekly page at any time from the page itself, and so can {{lear
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `learner_first_name` | Aditi | |
+| `learner_first_name` | (from the account) | |
 | `page_url` | https://heywobo.com/p/... | Signed, revocable, no account needed to view |
 | `consent_block` | — | Present only where the learner is under 18 and consent is outstanding: one short paragraph explaining what needs consent, what it turns on, and a link. Never bundled with the weekly page; a parent may consent without taking the page, and take the page without consenting. |
 

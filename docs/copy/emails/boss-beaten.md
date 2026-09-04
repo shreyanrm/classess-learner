@@ -29,7 +29,7 @@ Here is your working, with my marks on it.
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `first_name` | Aditi | |
+| `first_name` | (from the account) | |
 | `boss_name` | The bridge problem | The boss's own name |
 | `attempts_line` | Two attempts, no hints. | Preheader; must be accurate |
 | `wobo_note` | You set it up wrong the first time and spotted it yourself before I said anything. That is the part worth noticing. | Generated, specific, behaviour-based |

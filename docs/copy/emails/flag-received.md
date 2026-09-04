@@ -31,7 +31,7 @@ Reference {{flag_reference}} if you need to mention it again.
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `first_name` | Aditi | |
+| `first_name` | (from the account) | |
 | `content_name` | Question 4 | |
 | `unit_name` | Trigonometric ratios | |
 | `learner_note` | The angle in the diagram is 30, not 60. | Quoted back verbatim so they know we have it right |

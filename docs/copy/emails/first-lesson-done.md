@@ -29,7 +29,7 @@ Whenever you want the next one, {{next_topic_name}} follows from this, and I hav
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `first_name` | Aditi | Drop the name if absent |
+| `first_name` | (from the account) | Drop the name if absent |
 | `topic_name` | Linear equations in one variable | The learner's own syllabus wording |
 | `wobo_note` | You got the balance step wrong twice and then asked me why, which is the reason the third one took you ten seconds. | Generated per learner from what actually happened. Two sentences maximum. Behaviour, never flattery. Must be true. |
 | `one_line_about_how_it_went` | The balance step is the one that clicked. | Preheader, generated |

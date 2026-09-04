@@ -10,10 +10,10 @@ Page copy for heywobo.com/about. Sentence case, no emoji, no exclamation marks. 
 About Wobo
 
 **Headline**
-A tutor who draws.
+A tutor that draws, films and listens.
 
 **Subhead**
-Wobo teaches the way a good teacher does: talking and drawing at the same time, on your syllabus, at your pace. Free by default, on every board we can find.
+Wobo teaches the way a good teacher does: talking and showing at the same time, in whichever form the idea needs, on your syllabus, at your pace. Every subject your board sets, free every day.
 
 **Live element**
 Wobo draws the headline's underline as the page settles, then blinks and looks at the cursor. Reduced motion: the underline is already there.
@@ -30,7 +30,7 @@ Most children are taught to a room. The room moves at one pace, on one example, 
 
 A tutor who sits beside you fixes that, and almost nobody can afford one.
 
-Wobo is that tutor, for the price of nothing. Not a video you watch and not a quiz you pass, but someone who listens to what you actually asked, picks up a pen, and works it out with you on a board. On your board's syllabus, in your class, at whatever hour you are awake.
+Wobo is that tutor, for the price of nothing. Not a video you watch and not a quiz you pass, but someone who listens to what you actually asked, then answers it the way the idea needs: drawn on a board, played as a short film, built as a thing you can drag, spoken aloud, or handed back to you to try. On your board's syllabus, in your class, at whatever hour you are awake.
 
 **Pull line**
 The best teaching in the world should not depend on what your parents earn.
@@ -40,41 +40,44 @@ The best teaching in the world should not depend on what your parents earn.
 ## How Wobo teaches
 
 **Section heading**
-Drawn live, not looked up
+Made live, not looked up
 
 **Body**
-Everything Wobo shows you is drawn in the moment, for you.
+Everything Wobo shows you is made in the moment, for you. Drawing is one of the forms it comes in, not the whole of it.
 
-Ask a question anywhere in the app and Wobo answers with ink. A pointer on the thing you circled. A graph built axis by axis while Wobo talks. A derivation written line by line in Wobo's own hand. Wobo points at a thing before saying "this", the way a person does.
+Ask a question anywhere in the app and the answer arrives in the form the idea needs. A graph built axis by axis while Wobo talks. A forty-second film of a reaction, pausable anywhere. A model you can drag until every number under it moves. A page of your own writing marked up. A derivation written line by line in Wobo's own hand. Then practice in the kinds your exam uses, and a memory of what stuck.
 
-**Four points**
+**Five points**
 
-1. **Wobo reads the screen properly.**
+1. **Wobo picks the form, not just the words.**
+   Some ideas are drawn, some are filmed, some are built to be dragged, some are simply said. Wobo chooses, then keeps going in another form if the first one did not land.
+
+2. **Wobo reads the screen properly.**
    Not a screenshot and a guess. Every diagram, slider and simulation on the screen tells Wobo exactly what it is showing, so when you circle a bit of it, Wobo already knows the numbers you are looking at.
 
-2. **Every number is checked by code before it is drawn.**
+3. **Every number is checked by code before it is shown.**
    Wobo does not write an answer from memory. The maths is computed and verified, the units are checked, the equation is balanced. If a check fails, Wobo redraws it or says so. Nothing unverified reaches you.
 
-3. **You draw back.**
-   The board goes both ways. Circle a step, scribble your working, drag the tangent. Wobo reads your ink and answers what you actually meant.
+4. **You answer back.**
+   It goes both ways. Circle a step, scribble your working, drag the tangent, shade half the shape, order the steps, say it out loud. Wobo reads what you did and answers what you actually meant.
 
-4. **When you are wrong, Wobo shows you why.**
+5. **When you are wrong, Wobo shows you why.**
    Not a red cross and the right answer. Wobo takes the belief behind your mistake and breaks it on the board, using your own numbers, so you never make it again.
 
 **Closing line**
-Text is the caption. The lesson is the drawing.
+Text is the caption. The lesson is whatever form makes the idea land.
 
 ---
 
 ## What we cover
 
 **Section heading**
-Every board we can get our hands on
+Every subject your board sets
 
 **Body**
 Pick your board and class and Wobo teaches that syllabus, chapter by chapter, in its own order and its own words.
 
-The list covers national and state boards, international programmes, open schooling, and the common homeschool programmes, from around class 4 to class 12 or 13, wherever a board has them.
+The list covers national and state boards, international programmes, open schooling, and the common homeschool programmes, at every school level a board has.
 
 If your board is not in the list, type it anyway. Wobo goes looking for the official syllabus, reads it, checks it against the source, and builds it, then it is there for the next learner from your school.
 
@@ -84,7 +87,7 @@ If nothing official exists, show Wobo yours. A photo of the syllabus page, a PDF
 Every syllabus in Wobo carries a label that says where it came from and how well we have checked it. A syllabus with no source is never shown as fact.
 
 **Subjects**
-Mathematics, physics, chemistry, biology, science, social science and the rest of the school timetable as each board defines them. School level only. We do not pretend to teach a degree.
+Mathematics, physics, chemistry, biology, science, social science, languages, the humanities, and the rest of the school timetable as each board defines it. School level only. We do not pretend to teach a degree.
 
 ---
 
@@ -106,7 +109,7 @@ No streak threats, no countdown timers, no fake scarcity, no engineered loneline
 Wobo is warm and bounded. There is no always-listening microphone for a child, no private unmonitored channel, and serious matters go to a responsible adult, not to a chatbot. Wobo is a tutor, not a substitute for a person who loves you.
 
 **Promise 5 — Free stays free**
-The free tier is a real product, not a trailer. Plus buys more of Wobo, never the only good parts.
+The free tier is a real product, not a trailer: the whole tutor, every subject, every form, with a daily allowance of questions that resets each morning. Pro and Max raise that allowance for exam season. They do not unlock the teacher.
 
 ---
 
@@ -152,9 +155,9 @@ Help centre · Privacy · Terms · Cookies · Parental consent · Delete your da
 
 | Element | Reason |
 |---|---|
-| Live drawn underline in the hero | Brand and character; it is the product's core move performed on the first screen |
+| Live drawn underline in the hero | Brand and character; it is one of the product's core moves performed on the first screen |
 | Mission section | Learner and parent task: understand why this exists before trusting it with a child |
-| How Wobo teaches, four points | Learner task: the four are the only claims that distinguish us; each is verifiable in the product |
+| How Wobo teaches, five points | Learner task: the five are the only claims that distinguish us; each is verifiable in the product |
 | What we cover | Learner task: the first question a parent asks is "does it do my child's board" |
 | Honesty line under coverage | Brand promise made visible where it costs us something |
 | Our promises, five | Parent task: the trust decision is made here |

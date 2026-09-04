@@ -18,15 +18,15 @@ Before you go, three other options.
 Cancelling is the button at the bottom and it works. These are here in case one of them is what you actually wanted.
 
 **Option: pause**
-Pause for {{pause_months}} months. Billing stops, your progress stays, and Plus comes back on {{resume_date}} unless you cancel before then.
+Pause for {{pause_months}} months. Billing stops, your progress stays, and Pro comes back on {{resume_date}} unless you cancel before then.
 [Pause instead]
 
 **Option: a smaller plan**
-Move to {{smaller_plan_name}} at {{smaller_plan_price}}. Fewer turns than Plus, more than free.
+Move to {{smaller_plan_name}} at {{smaller_plan_price}}. Fewer turns than Pro, more than free.
 [Move to {{smaller_plan_name}}]
 
 **Option: a month on us**
-A month of Plus, free, if the reason is money rather than the product. No card, nothing renews at the end of it, and it is the same offer for everyone in this position.
+A month of Pro, free, if the reason is money rather than the product. No card, nothing renews at the end of it, and it is the same offer for everyone in this position.
 [Take the free month]
 
 **The exit**
@@ -38,7 +38,7 @@ A month of Plus, free, if the reason is money rather than the product. No card, 
 Your {{plan_name}} is cancelled.
 
 **Body**
-Nothing else to do, and you will not be charged again. You keep Plus until {{period_end_date}}, then the account goes back to free with everything you have learnt intact.
+Nothing else to do, and you will not be charged again. You keep Pro until {{period_end_date}}, then the account goes back to free with everything you have learnt intact.
 
 If you want your data, or want the account gone entirely, both are one button here.
 [Export everything] · [Delete my account and data]
@@ -49,7 +49,7 @@ If something specific pushed you out, tell us. A person reads it.
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `plan_name` | Plus annual | |
+| `plan_name` | Pro | |
 | `pause_months` | 3 | Real maximum pause the system supports |
 | `resume_date` | 3 December 2026 | Computed, shown, never vague |
 | `smaller_plan_name` / `smaller_plan_price` | — | Drop the whole option if no smaller paid plan exists |

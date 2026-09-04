@@ -10,7 +10,7 @@ The list shows the country and the levels each one covers, which is usually enou
 
 **Then your class**
 
-Class 4 to class 12 or 13, whatever your board calls them: class, grade, year or stage. Wobo uses your board's own word.
+Every level your board sets, whatever your board calls them: class, grade, year or stage. Wobo uses your board's own word.
 
 **Then your subjects**
 

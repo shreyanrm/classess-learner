@@ -12,13 +12,13 @@
 Alternates: Cancelled, and nothing is lost
 
 ## Preview text
-Plus runs to {{period_end_date}}. Everything learnt stays, free, indefinitely.
+Pro runs to {{period_end_date}}. Everything learnt stays, free, indefinitely.
 
 ## Body
 
 Your {{plan_name}} is cancelled. Nothing else to do, and you will not be charged again.
 
-**Until {{period_end_date}}** you still have Plus.
+**Until {{period_end_date}}** you still have Pro.
 **After that** the account goes back to the free plan. Every topic, board, note and bit of progress stays exactly where it is, free, for as long as you want it.
 
 If you want your data instead, or want the account gone entirely, both are one button in settings, data and privacy. We delete your account, your learning history and your boards, and it cannot be undone. The only thing we keep is the billing records the law requires us to hold, and backups age out within [n] days.
@@ -32,7 +32,7 @@ If something specific pushed you out, reply and tell us. A person reads it.
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `plan_name` | Plus annual | |
+| `plan_name` | Pro | |
 | `period_end_date` | 3 September 2027 | |
 | `settings_url` | https://heywobo.com/settings/privacy | |
 | `come_back_line` | Wobo is here on the free plan whenever you want it. | One line. Never a discount, never an offer, never a countdown. |

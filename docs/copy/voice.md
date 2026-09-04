@@ -27,7 +27,7 @@ A sentence that needs three pronouns is a sentence written wrong. Rewrite it aro
 - **No exclamation marks.** Warmth comes from what we say, not from punctuation. "Nicely done" does the work an exclamation mark pretends to.
 - Proper nouns keep their capitals: Wobo, the name of a board, a learner's name, a subject.
 - One idea per sentence. Full stops over semicolons. A dash separates a label from its explanation in a list; in running prose, use a comma or a full stop instead.
-- Numerals for numbers a learner acts on (3 questions, 7 days, class 9). Words for one and two in prose where it reads better.
+- Numerals for numbers a learner acts on (3 questions, 7 days, 20 minutes). Words for one and two in prose where it reads better.
 
 ## 4. Length and shape
 
@@ -58,7 +58,35 @@ Nobody reading Wobo can tell what is underneath. No provider, model, framework, 
 
 Say "I am thinking harder about this one", never a tier or a model. Say "your card issuer declined it", never a processor. Say "your family's chat app", never an app brand.
 
-## 8. Money and minors
+## 8. The five things a public line may never say (owner, 2026-09-04)
+
+These are the copy law of DESIGN.md §0. They apply to every public surface: the site, the app, an
+email, a push, a prototype, a fixture, a test. `services/gateway/tests/test_copy_law.py` fails the
+build on the first four, with no file exempted: this page states the rules by describing them
+rather than by quoting the strings it forbids, so it passes its own scan.
+
+1. **No invented person.** Never a made-up learner, parent or teacher name, not in a page, an
+   email spec, a variable example or a test fixture. Write "your child", "the learner", or address
+   the reader. A real name only ever arrives as a variable the account fills.
+2. **No grade gate.** Never a class range, a grade range, a year range or an age range on a
+   public surface — no floor, no ceiling, no span. Say **"every subject your board sets"**. Anyone
+   may sign up and see for themselves. A single class named by the reader ("class 9 CBSE, we are
+   on quadrilaterals") is the reader speaking, and is fine.
+3. **No raw allowance.** Never a count of questions a day, in digits or in words. Say what it
+   feels like: "a daily allowance that resets each morning", "enough for a normal evening". Free
+   carries no multiplier at all; **Pro is five times the free allowance**, **Max is twenty
+   times**. Never "unlimited" and never "no daily limit".
+4. **Location is inferred, never asked.** No country switch anywhere. The browser's time zone, or
+   the request's country on the server, chooses the currency. The price never varies by who is
+   looking.
+5. **Drawing is one part.** Never let a line imply the board is the whole product. Wherever a
+   sentence says Wobo draws, a neighbouring line names another form: it films, simulates, speaks,
+   practises, remembers and reports. "Drawing is one of five things Wobo does with a question."
+
+And one more, standing until the product opens: **promote before you invite.** The closing call on
+a marketing surface is early access, not "begin tonight".
+
+## 9. Money and minors
 
 - The price is the same for everyone. What changes is timing and framing, never the number.
 - No urgency invented out of nothing: no fake scarcity, no countdown timers, no "last chance".
@@ -66,19 +94,19 @@ Say "I am thinking harder about this one", never a tier or a model. Say "your ca
 - Cancellation copy makes leaving as easy as joining, and shows the data-deletion path.
 - Every non-transactional message says how to turn that kind of message off, in the message.
 
-## 9. Words
+## 10. Words
 
-**Use:** board (the syllabus, and the drawing surface — context makes it clear), the plane, a lesson, a unit, a topic, practice, boss battle, your place, saved, mastered, a flag, the parent link, your progress, turns, plan.
+**Use:** board (the syllabus, and the drawing surface — context makes it clear), the plane, a lesson, a unit, a topic, practice, boss battle, your place, saved, mastered, a flag, the parent link, your progress, turns, your daily allowance, plan, Free, Pro, Max, early access.
 
 **Avoid:** users, content, engagement, journey, unlock your potential, supercharge, seamless, revolutionary, AI-powered, leverage, gamified, crush it, level up (as praise), oops, uh-oh, sorry for the inconvenience.
 
-**Never:** a gendered pronoun for Wobo, in any form. A provider name. An exclamation mark. An emoji.
+**Never:** a gendered pronoun for Wobo, in any form. A provider name. An exclamation mark. An emoji. An invented learner's name. A class or age range. A raw allowance number. "Unlimited". A country switch. "Begin tonight" while the product is still opening.
 
-## 10. Quick comparisons
+## 11. Quick comparisons
 
 The left column quotes copy we do not ship, so it is the one place in this copy system where an exclamation mark appears on purpose. Nothing in that column may be copied into a product, an email or a page.
 
-**A note for whoever builds the CI gate.** The scans for exclamation marks and for a gendered pronoun near "Wobo" must allowlist three places, because those places state the rules by quoting what they forbid: this file, `docs/copy/README.md`, and WOBO-PLAN §19. Everything else fails the build. File that allowlist as a task now rather than letting the first red build decide it.
+**A note for whoever builds the CI gate.** The scans for exclamation marks and for a gendered pronoun near "Wobo" must allowlist three places, because those places state the rules by quoting what they forbid: this file, `docs/copy/README.md`, and WOBO-PLAN §19. Everything else fails the build. File that allowlist as a task now rather than letting the first red build decide it. The §8 scans are built, live in `services/gateway/tests/test_copy_law.py`, and need no allowlist at all: both this file and `docs/copy/README.md` name what they forbid instead of quoting it.
 
 | Instead of | Write |
 |---|---|
@@ -88,9 +116,14 @@ The left column quotes copy we do not ship, so it is the one place in this copy 
 | A gendered pronoun for Wobo, in any form. | Wobo walks you through it. |
 | Powered by advanced AI models. | I check every number with code before I draw it. |
 | Are you sure you want to exit? | Leave for now? Your place is saved. |
-| Upgrade now to unlock premium features. | Plus gives you unlimited turns. Same price for everyone, cancel any time. |
-| Hey there, learner! | Hello [name]. |
+| Upgrade now to unlock premium features. | Pro gives you five times the free allowance. Same price for everyone, cancel any time. |
+| Hey there, learner! | Hello {{first_name}}. |
+| A class range, or an age range. | Every subject your board sets. |
+| An invented learner's name in an example. | Your child finished the chapter. |
+| A raw allowance count, in digits or in words. | A daily allowance, free, and it resets every morning. |
+| Choose your country. | (Nothing. The time zone already said.) |
+| Begin tonight. | Get early access. |
 
-## 11. The last check
+## 12. The last check
 
 Read the line aloud. If it sounds like a marketing team wrote it for everyone, rewrite it until it sounds like Wobo wrote it for this one person, sitting beside them, with a pen in hand.

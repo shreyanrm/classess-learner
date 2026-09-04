@@ -34,10 +34,8 @@ export interface Mailbox {
 export const MAILBOXES: readonly Mailbox[] = [
   {
     address: 'support@heywobo.com',
-    what: 'anything at all, including anything that looks wrong in a lesson',
+    what: 'anything at all — a bug, a question, a worry, or something that looks wrong in a lesson',
   },
-  { address: 'safety@heywobo.com', what: 'someone at risk, or something that worries you' },
-  { address: 'accessibility@heywobo.com', what: 'anything in Wobo that is in your way' },
 ];
 
 /**

@@ -41,7 +41,7 @@ To change or cancel your plan: settings, then plan. For anything that looks wron
 |---|---|---|
 | `amount` | [amount] | Including tax, in the charged currency |
 | `charge_date` | 3 September 2026 | |
-| `plan_name` | Plus annual | |
+| `plan_name` | Pro | |
 | `period_start` / `period_end` | 3 September 2026 / 3 September 2027 | |
 | `payment_method_last4` | card ending 1180 | Last four only, never a full number, never a card brand where the brand is a vendor name we can avoid |
 | `receipt_number` | WB-2026-0000481 | |

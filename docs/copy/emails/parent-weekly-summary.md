@@ -26,27 +26,27 @@ Here is {{learner_first_name}}'s week.
 
 **The one to look at.** {{highlight_topic}}. {{highlight_reason}}
 
-This is what they drew while working it out. It is worth thirty seconds.
+This is what they worked through: the board they drew on, the film they paused, the practice they got right on the second go. It is worth thirty seconds.
 
 [Open the page]
 
-{{plus_line}}
+{{pro_line}}
 
 You are getting this because {{learner_first_name}} set up a weekly update. [Stop the weekly page] · [Get it less often]
 
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `learner_first_name` | Aditi | |
+| `learner_first_name` | (from the account) | |
 | `headline` / `headline_topic` | trigonometry | Subject-line fragment, lowercase mid-sentence |
 | `topics_count` | 5 | Drop the line if 0; do not send an empty week |
 | `subjects_list` | maths and chemistry | |
 | `active_days` | 4 | |
-| `wobo_note` | Aditi asked me why an answer was wrong nine times this week, which is unusual and is the reason the chapter went quickly. | Behaviour-based, generated, true. Wobo is never pronouned; name the learner rather than pronouning them, so the sentence reads the same for every family. |
+| `wobo_note` | {{learner_first_name}} asked me why an answer was wrong nine times this week, which is unusual and is the reason the chapter went quickly. | Behaviour-based, generated, true. Wobo is never pronouned; use the learner's own name from the account rather than pronouning them, so the sentence reads the same for every family. No example here ever carries an invented name. |
 | `highlight_topic` | Heights and distances | |
 | `highlight_reason` | It took four goes on Tuesday and none on Thursday. | One clause, true |
 | `page_url` | https://heywobo.com/p/... | The read-only progress page |
-| `plus_line` | — | Optional, one calm sentence, only where a limit was actually hit that week: "Aditi ran out of turns on two days this week. Plus removes the daily limit." One line, one link, no urgency, no discount. |
+| `pro_line` | — | Optional, one calm sentence, only where the allowance was actually reached that week: "{{learner_first_name}} ran out of turns on two days this week. Pro carries five times the free allowance." One line, one link, no urgency, no discount, no count of questions. |
 | `one_line_summary` | Four days, five topics, and one chapter that finally clicked. | Preheader |
 
 ## Rules

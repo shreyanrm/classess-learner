@@ -47,7 +47,7 @@ Good luck. You have done the work.
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `first_name` | Aditi | |
+| `first_name` | (from the account) | |
 | `exam_name` | your maths half-yearly | The learner's own words where they gave them |
 | `exam_date` | Tuesday 14 October | Local format |
 | `days_until` | 14 | Gates which body is used |

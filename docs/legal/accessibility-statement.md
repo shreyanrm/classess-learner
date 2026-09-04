@@ -8,7 +8,7 @@ Draft of 3 September 2026. Version 0.1. Written by the Wobo team, not yet review
 >
 > Some of it does that well today. Some of it does not yet, and we would rather name the gaps than claim we are finished.
 >
-> If something in Wobo is in your way, tell us at accessibility@heywobo.com and we will fix it, and give you a way through in the meantime.
+> If something in Wobo is in your way, tell us at support@heywobo.com and we will fix it, and give you a way through in the meantime.
 
 ---
 
@@ -56,7 +56,7 @@ We test with [screen readers], [browsers] and [operating systems], on a phone, a
 
 ## 6. Tell us
 
-Write to accessibility@heywobo.com. Tell us what you were trying to do, what got in the way, and what you use. We will reply within [5 working days], tell you what we are going to do, and give you a way to get the thing done in the meantime.
+Write to support@heywobo.com. Tell us what you were trying to do, what got in the way, and what you use. We will reply within [5 working days], tell you what we are going to do, and give you a way to get the thing done in the meantime.
 
 If our answer is not good enough, you can escalate to [named person or role] at support@heywobo.com, and, where you have one, to the enforcement body in your country. [REVIEW: name the enforcement route per jurisdiction, which the EU accessibility statement format requires.]
 

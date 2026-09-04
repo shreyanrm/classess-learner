@@ -18,7 +18,7 @@ If you do go ahead, Wobo teaches the new thing using only ideas you have actuall
 
 **If you joined mid-school**
 
-Wobo will not send a class 10 learner back to class 8 because a graph exists. Gates are scoped to where you started.
+Wobo will not send you two years back because a graph exists. Gates are scoped to where you started.
 
 **Turning the advice down**
 

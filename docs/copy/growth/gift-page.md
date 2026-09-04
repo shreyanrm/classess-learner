@@ -10,17 +10,17 @@
 Give someone a tutor who sits beside them.
 
 **Sub**
-Plus, for {{gift_length}}, for one learner. They pick their own board and their own subjects; you never see their work unless they show you.
+Pro, for {{gift_length}}, for one learner. They pick their own board and their own subjects; you never see their work unless they show you.
 
 **How it works**
 1. Choose the length and pay once. Nothing renews, ever, for you or for them.
 2. Write a line. We send it with the gift on the day you choose.
 3. They open it, set up their board, and start. It works on a phone, a tablet or a laptop.
 
-[Give Plus]
+[Give Pro]
 
 **What it is**
-A tutor who thinks on a board while talking. Ask a question about anything on the screen and the answer is drawn, not recited. Every number checked by code before it is shown. Their syllabus, their board, their class, in their board's own words.
+A tutor that thinks out loud while it works. Ask a question about anything on the screen and the answer comes in the form the idea needs: drawn on a board, played as a short film, built as a thing to drag, or spoken. Then practice, and a memory of what did not stick. Every number checked by code before it is shown. Their syllabus, their board, their class, in their board's own words.
 
 **What it is not**
 Not a video library. Not a question bank. Not something that will pester them, guilt them about a streak, or sell them anything once you have paid.
@@ -34,11 +34,11 @@ One gift, one learner, {{gift_length}}. Paid once, renews never, refundable with
 
 **Body**
 
-{{recipient_first_name}}, {{giver_first_name}} gave you {{gift_length}} of Wobo Plus.
+{{recipient_first_name}}, {{giver_first_name}} gave you {{gift_length}} of Wobo Pro.
 
 {{giver_message}}
 
-I am a tutor who draws. Tell me what you are studying and I will load your syllabus, in your board's own words, and we can start on whatever is hardest this week.
+I am a tutor. I draw, I film things, I build models you can drag, I talk it through, and I set the practice after. Tell me what you are studying and I will load your syllabus, in your board's own words, and we can start on whatever is hardest this week.
 
 [Open Wobo]
 

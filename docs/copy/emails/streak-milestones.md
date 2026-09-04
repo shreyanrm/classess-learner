@@ -29,7 +29,7 @@ Take tomorrow off if you want it. The week holds one rest day and the count stay
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `first_name` | Aditi | |
+| `first_name` | (from the account) | |
 | `streak_days` | 30 | 7, 30, 100 or 365 only |
 | `wobo_note` | Thirty days is not about the thirty. It is that opening this is now automatic, which is the only part that was ever hard. | Per milestone, generated, warm and short |
 | `milestone_note_short` | The hard part was the first week. | Preheader |

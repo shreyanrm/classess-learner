@@ -23,7 +23,7 @@ This is usually an expired card, a changed number, or a limit on international p
 
 [Update your payment method]
 
-We will try again on {{retry_date}}. Plus stays on until {{grace_end_date}}, and nothing about {{learner_first_name}}'s learning is affected either way.
+We will try again on {{retry_date}}. Pro stays on until {{grace_end_date}}, and nothing about {{learner_first_name}}'s learning is affected either way.
 
 ## Body — final notice
 
@@ -37,9 +37,9 @@ If you would rather leave it, that is fine. The account goes back to the free pl
 | Variable | Example | Notes |
 |---|---|---|
 | `amount` | [amount] | |
-| `plan_name` | Plus annual | |
+| `plan_name` | Pro | |
 | `attempt_date` / `retry_date` / `grace_end_date` | 3 September 2026 | |
-| `learner_first_name` | Aditi | Drop the clause if the payer is the learner |
+| `learner_first_name` | (from the account) | Drop the clause if the payer is the learner |
 | `update_url` | https://heywobo.com/settings/plan | |
 
 ## Rules

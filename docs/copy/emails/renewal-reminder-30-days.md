@@ -29,7 +29,7 @@ The card we will use is {{payment_method_last4}}. If that has changed, update it
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `plan_name` | Plus annual | |
+| `plan_name` | Pro | |
 | `renewal_date` | 3 September 2027 | |
 | `amount` | [amount] | Exactly what will be charged, including tax |
 | `payment_method_last4` | card ending 1180 | |

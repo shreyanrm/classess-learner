@@ -87,5 +87,5 @@ If you think you have found a vulnerability, write to support@heywobo.com before
 ## 7. Reporting a problem
 
 - Content that is wrong: the flag control on the content itself. See `community-and-flags.md`.
-- Someone at risk, or behaviour that worries you: safety@heywobo.com.
+- Someone at risk, or behaviour that worries you: support@heywobo.com.
 - Anything else: support@heywobo.com.

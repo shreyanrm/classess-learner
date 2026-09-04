@@ -27,7 +27,7 @@ If you want to pick up where you stopped, you were partway through {{last_topic_
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `first_name` | Aditi | |
+| `first_name` | (from the account) | |
 | `streak_days` | 23 | The unbroken count |
 | `last_topic_name` | Trigonometric ratios | Drop the whole paragraph and button if there is no saved place |
 | `resume_url` | https://heywobo.com/resume | |

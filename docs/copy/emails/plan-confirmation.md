@@ -1,7 +1,7 @@
 # plan-confirmation
 
 **Kind:** transactional
-**Trigger:** a Plus or family plan starts
+**Trigger:** a paid plan starts
 **To:** the account holder who paid
 **From:** Wobo <hello@heywobo.com> · **Reply-to:** support@heywobo.com
 **Send:** immediately
@@ -19,8 +19,8 @@ Alternates: {{plan_name}} is on
 Your {{plan_name}} plan is active.
 
 **What you pay.** {{plan_price}}, {{billing_period}}. The next charge is on {{renewal_date}} unless you cancel before then.
-**What changes now.** No daily limit on turns.
-**Cancelling.** Settings, plan, cancel. We offer you a pause or a smaller plan first; say no and it is done on the next screen. You keep Plus until {{period_end_date}} and everything you have learnt stays either way.
+**What changes now.** {{allowance_line}}
+**Cancelling.** Settings, plan, cancel. We offer you a pause or a smaller plan first; say no and it is done on the next screen. You keep {{plan_name}} until {{period_end_date}} and everything you have learnt stays either way.
 
 {{renewal_notice_line}}
 
@@ -33,7 +33,8 @@ Your receipt is in a separate email. Questions about billing go to support@heywo
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `plan_name` | Plus annual | |
+| `plan_name` | Pro | "Pro" or "Max". Never a plan name the product does not sell. |
+| `allowance_line` | Five times the free allowance, every day. | Pro: "Five times the free allowance, every day." Max: "Twenty times the free allowance, every day, and a second learner." Never a count of questions, and never "unlimited". |
 | `plan_price` | [amount] | Real amount and currency as charged. Placeholder until the owner sets prices; never a made-up figure in code or screens. |
 | `billing_period` | every year | "every month" or "every year". Gates `renewal_notice_line`. |
 | `renewal_notice_line` | We will write to you 30 days and 7 days before {{renewal_date}} with the amount and the date, so a renewal is never a surprise. | Annual and family only. Monthly plans get: "We will write to you 7 days before {{renewal_date}} with the amount and the date, so a renewal is never a surprise." |

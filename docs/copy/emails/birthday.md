@@ -35,7 +35,7 @@ Wobo draws the number of the learner's new age out of something from a subject t
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `first_name` | Aditi | Required; do not send without it |
+| `first_name` | (from the account) | Required; do not send without it |
 | `age` | 15 | Only if the date of birth is known and reliable. If not, drop the age clause and the drawing counts something else. |
 | `greeting_description` | Fifteen points dropped on a curve, one at a time. | Preview and alt text |
 | `year_line` | You went from not liking graphs to finishing the whole chapter in about six weeks this year. | One true sentence from their own history; drop it for an account under three months old |

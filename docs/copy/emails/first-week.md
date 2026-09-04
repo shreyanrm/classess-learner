@@ -33,7 +33,7 @@ Take a day off when you need one. It does not cost you anything here.
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `first_name` | Aditi | |
+| `first_name` | (from the account) | |
 | `topics_count` | 4 | Drop the line if 0 |
 | `subjects_list` | maths and physics | Natural language list, maximum three, then "and others" |
 | `questions_asked` | 23 | Drop the line if 0 |

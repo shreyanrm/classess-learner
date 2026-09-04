@@ -29,7 +29,7 @@ Contacts:
 | India: grievance officer | Grievance officer, Dot eVentures Pvt Ltd | support@heywobo.com, 141 Prashasan Nagar, Jubilee Hills, Hyderabad, Telangana 500033, India |
 | EU representative (Article 27) | [EU representative name and address] | support@heywobo.com |
 | UK representative (Article 27) | [UK representative name and address] | support@heywobo.com |
-| Safety concerns | Safety team | safety@heywobo.com |
+| Safety concerns | Safety team | support@heywobo.com |
 
 [REVIEW: whether a DPO is legally required given large-scale processing of children's data; whether Article 27 representatives are required in the EU and UK; whether an Indian grievance officer and a Consent Manager registration are required under the DPDP Act.]
 

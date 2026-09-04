@@ -38,7 +38,7 @@ Reference {{flag_reference}}.
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `first_name` | Aditi | |
+| `first_name` | (from the account) | |
 | `content_name` | Question 4 in Trigonometric ratios | |
 | `what_was_wrong` | The diagram labelled the angle 60 degrees while the working used 30. | Plain, specific, no hedging |
 | `what_changed` | The diagram is redrawn with 30 degrees, and the working is unchanged. | |

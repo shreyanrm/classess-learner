@@ -89,6 +89,6 @@ Write to support@heywobo.com with what the material is, where it is in Wobo, wha
 ## 7. Reporting
 
 - Content that is wrong: the flag control.
-- Someone at risk, or something that worries you: safety@heywobo.com.
+- Someone at risk, or something that worries you: support@heywobo.com.
 - A rights complaint: support@heywobo.com.
 - Anything else: support@heywobo.com.

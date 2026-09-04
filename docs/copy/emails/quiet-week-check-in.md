@@ -29,7 +29,7 @@ If something about Wobo was the problem rather than the week, tell me. Reply to 
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `first_name` | Aditi | |
+| `first_name` | (from the account) | |
 | `last_topic_name` | Probability | Drop the subject variant and use "Still here when you want it" if there is no saved place |
 | `resume_url` | https://heywobo.com/resume | |
 

@@ -88,6 +88,6 @@ This is the part we have thought about hardest.
 
 ## 7. Telling us about something
 
-- safety@heywobo.com, read by a person.
+- support@heywobo.com, read by a person.
 - The flag control, for content that is wrong or upsetting.
 - If a child is in immediate danger, contact the emergency services where you are first. Then tell us, so we can help with what we hold.

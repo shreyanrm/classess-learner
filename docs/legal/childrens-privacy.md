@@ -42,7 +42,7 @@ We ask, in a neutral way, during sign-up: a date of birth field with no hint abo
 
 Where the answer places the learner under the age of consent for their country, we move straight into the parental consent flow described in `parental-consent.md` and hold the account in the basic state until it completes.
 
-If we later learn that a child gave us a false age, or that a learner under 13 is holding their own account rather than one held by a parent or guardian, we suspend the extra features, contact the parent where we have a way to, move the account to the parent-held form or delete it, and delete the data we should not have collected. Anyone can tell us about such an account at safety@heywobo.com.
+If we later learn that a child gave us a false age, or that a learner under 13 is holding their own account rather than one held by a parent or guardian, we suspend the extra features, contact the parent where we have a way to, move the account to the parent-held form or delete it, and delete the data we should not have collected. Anyone can tell us about such an account at support@heywobo.com.
 
 We do not use facial age estimation or any biometric age check. [REVIEW: whether any market requires a stronger age-assurance method than self-declaration plus parental verification, particularly the UK code and Indian rules.]
 

@@ -31,7 +31,7 @@ I will not write again unless you come back or something changes on your account
 ## Variables
 | Variable | Example | Notes |
 |---|---|---|
-| `first_name` | Aditi | |
+| `first_name` | (from the account) | |
 | `topics_count` | 12 | |
 | `delete_url` | https://heywobo.com/settings/privacy | |
 | `resume_url` | https://heywobo.com/resume | |

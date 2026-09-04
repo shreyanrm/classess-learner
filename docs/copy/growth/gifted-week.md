@@ -8,26 +8,26 @@
 ## In the product
 
 **Heading**
-A week of Plus, on us.
+A week of Pro, on us.
 
 **Body**
-You looked at Plus and did not take it. Here is a week of it free so the decision is made on the thing itself rather than on a description of it. Nothing is charged at the end, and nothing renews. If you want to keep it after that, the price is the price, the same for everyone.
+You looked at Pro and did not take it. Here is a week of it free so the decision is made on the thing itself rather than on a description of it. Nothing is charged at the end, and nothing renews. If you want to keep it after that, the price is the price, the same for everyone.
 
 [Start the week] · [No thanks]
 
 **After it is taken**
-Plus is on until {{gift_end_date}}. Nothing happens on that date except that it stops.
+Pro is on until {{gift_end_date}}. Nothing happens on that date except that it stops.
 
 ## The email
 
-**Subject:** A week of Plus, free
+**Subject:** A week of Pro, free
 **Preview text:** Nothing renews at the end of it. The price never changes either way.
 
 **Body**
 
-You looked at Plus and did not take it, which is fair.
+You looked at Pro and did not take it, which is fair.
 
-A week of it is yours, free, if you want to see it properly. Nothing is charged at the end and nothing renews. The price of Plus is the same for everyone whatever you decide.
+A week of it is yours, free, if you want to see it properly. Nothing is charged at the end and nothing renews. The price of Pro is the same for everyone whatever you decide.
 
 [Start the week]
 
