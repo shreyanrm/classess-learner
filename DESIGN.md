@@ -4,9 +4,61 @@ Companion to `CONTEXT.md`. This file governs every visual and interaction decisi
 
 Product copy everywhere: sentence case, no emoji, no exclamation marks, calm and certain.
 
+
 ---
 
-## 1. The standard — bold ink on good paper
+## 0. Law v5 — white paper, colour with a job (owner, 2026-09-04, supersedes the cream ground)
+
+The ground is **white**. Colour is an accent, never a wash. A section does not get a tint to
+tell you it is a new section; space and type do that. This replaces the cream paper of law v3
+and v4 everywhere: site, app, email, prototype.
+
+**Paper (light).** `paper #FFFFFF` the ground · `paper-2 #F6F6F8` surfaces (cards, inputs,
+rails) · `paper-3 #ECECF0` pressed · `line #E4E4EA` the one hairline allowed, and only as a
+separator between list rows, never as a box · `ink #14142B` · `ink-2 #55556B` · `ink-3 #8A8A9E`.
+**Night.** `paper #0E0E16` · `paper-2 #17171F` · `paper-3 #1F1F29` · `line #26262F` ·
+`ink #F4F4F7` · `ink-2 #B4B4C2` · `ink-3 #7E7E90`. Designed, never inverted.
+**Accents, each with a job.** `pig #2B45FF` the pointer (one per view) · `marigold #FFB629`
+the highlighter and the earned moment · `mint #12B981` confirmation · `rose #FF6B57` the thing
+that needs care · `violet #7C5CFF` sparingly, for depth. An accent that is not doing one of
+those jobs is decoration; take it out.
+
+**Reference:** `design/prototypes/landing-v8.html` is the built expression of this law and the
+source every surface copies its tokens, spacing rhythm and motion from.
+
+### Spacing and responsiveness
+One rhythm for the whole product: `--gutter clamp(20px,5vw,48px)`, `--band clamp(72px,9vw,132px)`
+between sections (half from each side, so two sections never stack two bands of air), and
+`--colgap clamp(32px,5vw,80px)` between the halves of a row. Every grid child carries
+`min-width:0`. Three widths are the contract: 390, 834, 1440, in both themes, with no
+horizontal scroll at any of them.
+
+### Motion that never stutters
+The jitter has three causes and all three are forbidden:
+1. **A CSS transition on a property GSAP is scrubbing.** One owner per property, always.
+2. **Scrubbing a layout property** (`width`, `height`, `top`). Transform and opacity only.
+3. **A tween created per scroll frame.** Fire on state change, never inside `onUpdate`.
+A magnetic control moves an inner element, never itself: moving the box out from under the
+pointer makes the pointer leave, which resets it, which brings it back — the loop the owner
+saw as jitter on 2026-09-04.
+
+### Copy law (owner, 2026-09-04)
+- **No names.** Never "Aanya", never any invented learner or parent. Say "your child", "the
+  learner", or address the reader directly.
+- **No grade gate.** Never "classes 4 to 12" or any age range on a public surface. Say "every
+  subject your board sets". Anyone may sign up and see for themselves.
+- **No raw allowances.** Never "40 questions a day". Say what it feels like: "enough for a
+  normal evening", "five times the free allowance". Free carries no multiplier at all.
+- **Location is inferred, never asked.** No country switch. Read the browser's time zone, or
+  the request's country on the server, and show that currency.
+- **Promote before you invite.** Until the product opens, the closing call is early access,
+  not "begin tonight".
+- **Drawing is one part.** Never let a surface imply the board is the whole product: it also
+  films, simulates, speaks, practises, remembers and reports.
+
+---
+
+## 1. The standard (law v3, superseded on colour by §0 above) — bold ink on good paper
 
 Wobo looks like something drawn by a confident hand on thick paper: bold ink, warm paper, a few pigments used on purpose, and a character that is alive. Calm, but never thin. Friendly, but never childish. The wordmark sets the tone: round, chunky, sure of itself. Every screen has to feel like it belongs to that logo. When a screen could belong to a generic edtech app, or to a corporate dashboard, it has failed — rebuild it.
 
