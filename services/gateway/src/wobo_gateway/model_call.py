@@ -77,7 +77,9 @@ def complete(**kwargs: Any) -> Any:
     litellm.drop_params = True
     up_front = _refused_up_front(kwargs)
     if up_front:
-        logger.info("model call: dropping %s — a model in the chain refuses it", ", ".join(up_front))
+        logger.info(
+            "model call: dropping %s — a model in the chain refuses it", ", ".join(up_front)
+        )
         kwargs = {k: v for k, v in kwargs.items() if k not in up_front}
     try:
         return litellm.completion(**kwargs)
