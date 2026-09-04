@@ -10,7 +10,12 @@ node_modules
 apps
 packages
 platform
+# docs/ is excluded EXCEPT the public copy the gateway reads at runtime: the help centre and
+# the about page ground the public Ask Wobo (ask_public.py). Without them the index is empty
+# and every question gets the honest line, so they ship in the image.
 docs
+!docs/copy
+!docs/copy/**
 infra
 # content/catalogs and content/factbase STAY in the context: the Dockerfile COPYs
 # concepts.json (plexus/store.py concept registry) and facts.v*.jsonl (the correctness
