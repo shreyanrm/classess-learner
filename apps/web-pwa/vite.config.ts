@@ -18,7 +18,22 @@ export default defineConfig(({ mode }) => {
   // Optional: unset means no canonical/og:url tag at all rather than a wrong one.
   const appUrl = (env.VITE_APP_URL || '').replace(/\/+$/, '');
 
+  // The two faces the FIRST paint is drawn in: the landing's headline is Poppins 700 and the
+  // handwritten half of it is Caveat. Both are self-hosted out of /fonts and declared by
+  // src/ui/tokens.css — which the browser only discovers after the entry CSS has parsed, a whole
+  // round-trip after it could have started fetching them. Preloading the two (and only the two,
+  // so nothing else competes) takes the swap off the critical path on a slow link.
+  const fontPreloads: HtmlTagDescriptor[] = [
+    '/fonts/Poppins-700-latin.woff2',
+    '/fonts/Caveat-latin.woff2',
+  ].map((href) => ({
+    tag: 'link',
+    attrs: { rel: 'preload', href, as: 'font', type: 'font/woff2', crossorigin: '' },
+    injectTo: 'head-prepend' as const,
+  }));
+
   const brandTags: HtmlTagDescriptor[] = [
+    ...fontPreloads,
     { tag: 'meta', attrs: { property: 'og:type', content: 'website' }, injectTo: 'head' },
     { tag: 'meta', attrs: { property: 'og:title', content: appName }, injectTo: 'head' },
     {
@@ -50,6 +65,64 @@ export default defineConfig(({ mode }) => {
     // The frame builder code-splits the real catalogs (content/catalogs/*.json) at the repo root —
     // allow Vite dev to serve from above the app root.
     server: { fs: { allow: ['../..'] } },
+    build: {
+      rollupOptions: {
+        output: {
+          /**
+           * WHO PAYS FOR WHAT.
+           *
+           * Rollup's default is to hoist any module two lazy chunks share into their nearest
+           * common ancestor — which, for an app with one entry, is the entry. That is how a
+           * visitor reading the marketing page came to download Wobo's board renderer, its
+           * handwriting engine and a schema validator: the app needs them and one other page
+           * needs them, so they landed in the chunk everybody loads first.
+           *
+           * Naming them here makes them chunks of their own, fetched beside whatever actually
+           * needs them and cached across every deploy that does not change them.
+           */
+          manualChunks(id: string) {
+            // Vite's dynamic-import helper. Left unnamed it is folded into whichever chunk Rollup
+            // finds convenient — which was the board, making Wobo's whole hand a static dependency
+            // of the entry because the entry has a `lazy()` in it.
+            if (id.includes('vite/preload-helper')) return 'preload';
+            if (id.includes('/node_modules/')) {
+              // React is the one library the entry genuinely needs. Its own chunk so a deploy
+              // that changes the app does not re-download the framework.
+              if (/[\\/]node_modules[\\/](?:react|react-dom|scheduler)[\\/]/.test(id)) {
+                return 'react';
+              }
+              // The two heaviest libraries in the product, each reached by exactly one screen: a
+              // 3D scene and a molecule viewer. Named — not left to Rollup — because the service
+              // worker keeps them OUT of the precache by this name, and a chunk that quietly got
+              // renamed would go back to costing every first visit a megabyte it never opens.
+              if (/[\\/]node_modules[\\/](?:three|@react-three)[\\/]/.test(id))
+                return 'heavy-three';
+              if (id.includes('/node_modules/3dmol/')) return 'heavy-3dmol';
+              // A schema validator, ~150 kB of it, reached only through Wobo's board plans.
+              if (id.includes('/node_modules/zod/')) return 'zod';
+              // Nothing on the public site animates with framer-motion — the site's motion is its
+              // own. Keeping it out of the entry keeps it off a document page entirely.
+              if (/[\\/]node_modules[\\/](?:framer-motion|motion-dom|motion-utils)[\\/]/.test(id)) {
+                return 'motion';
+              }
+              return undefined;
+            }
+            // The design tokens and the motion vocabulary are the two workspace pieces the ENTRY
+            // itself reads. Named, so Rollup does not fold them into whichever big chunk happens
+            // to share them — which is how the board and the answer library came to be static
+            // dependencies of a page that draws neither.
+            if (id.includes('/packages/config/')) return 'tokens';
+            if (id.includes('/packages/motion/')) return 'motion-kit';
+            // Wobo's hand: the plan schema, the geometry, the handwriting, the renderer. The app
+            // draws with it constantly; a help article never does.
+            if (id.includes('/packages/wobo/src/board/')) return 'wobo-board';
+            // Every interactive way a learner answers — a lesson's vocabulary, nothing else's.
+            if (id.includes('/packages/wobo/src/answers/')) return 'wobo-answers';
+            return undefined;
+          },
+        },
+      },
+    },
     plugins: [
       react(),
       brandHtml,
@@ -72,21 +145,33 @@ export default defineConfig(({ mode }) => {
           skipWaiting: true,
           clientsClaim: true,
           cleanupOutdatedCaches: true,
-          // Every screen but the two that can be a FIRST paint (onboarding, home) is behind
-          // React.lazy at App.tsx's single mount point, so each route is its own chunk and a
-          // learner downloads a screen when they walk to it. Three.js/3Dmol/RDKit were already
-          // lazy. The entry that remains is react + framer + the shell + Wobo's hand, which does
-          // load on first visit regardless — so precaching it is the right PWA call. The ceiling
-          // is a little above workbox's 2 MiB default, with room for the largest lazy chunk.
+          // Every screen is behind React.lazy, and the whole app runtime is behind one more, so
+          // each route is its own chunk and a learner downloads a screen when they walk to it.
+          // What IS precached is the product working offline: the entry, the app runtime, every
+          // screen. The ceiling is a little above workbox's 2 MiB default, with room for the
+          // largest chunk that is still worth having offline.
           maximumFileSizeToCacheInBytes: 2.5 * 1024 * 1024,
-          // RDKit's 6.9 MB wasm is lazy-loaded only when a chem structure card renders —
-          // never precache it on every visit; cache it on first real use instead.
-          globIgnores: ['**/RDKit_minimal*.wasm'],
+          // The heaviest on-demand payloads are NOT precached: RDKit's 6.9 MB wasm, three.js and
+          // the molecule viewer — together megabytes that a visitor who opened the marketing page
+          // would download in the background for a screen they may never open. They are
+          // content-hashed and immutable, so the first real use caches them for good. Everything
+          // else — the entry, the runtime, every screen — is still precached, so the product works
+          // offline the way it always has.
+          //
+          // Each ignored pattern has exactly one runtime rule below and nothing else matches them:
+          // a file precached AND runtime-cached is stored twice, in two caches, on a phone whose
+          // storage is the scarce thing.
+          globIgnores: ['**/RDKit_minimal*.wasm', '**/assets/heavy-*'],
           runtimeCaching: [
             {
               urlPattern: /RDKit_minimal.*\.wasm$/,
               handler: 'CacheFirst',
               options: { cacheName: 'rdkit-wasm', expiration: { maxEntries: 2 } },
+            },
+            {
+              urlPattern: /\/assets\/heavy-[^/]*$/,
+              handler: 'CacheFirst',
+              options: { cacheName: 'heavy-engines', expiration: { maxEntries: 8 } },
             },
           ],
         },

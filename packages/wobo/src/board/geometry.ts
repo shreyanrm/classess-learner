@@ -247,6 +247,19 @@ function notePlacement(
  * Build the geometry for one object. Returns null when the thing it anchors to is gone — the
  * renderer fades such a mark out rather than letting it float.
  */
+/**
+ * Chrome ink, in nib multiples — the renderer's nib is 3px (DESIGN.md: ink 3–4px, never under 2.5).
+ * A graph's axes are the boldest rule on the board at 3.5px; the grid behind them is 2.5px, the
+ * thinnest ink the law allows, so the curve on top is what the eye lands on.
+ */
+const AXIS_INK = 3.5 / 3;
+const GRID_INK = 2.5 / 3;
+
+/** A ruled stroke at a chrome weight — the grid and the axes, and nothing else. */
+function chromeRule(points: BoardPoint[], weight: number): Stroke {
+  return { ...ruledStroke(points), weight };
+}
+
 export function geometryOf(object: BoardObject, ctx: BuildContext): ObjectGeometry | null {
   const rng = penRng(object.id, object.kind);
   const anchor = 'anchor' in object ? object.anchor : undefined;
@@ -557,7 +570,7 @@ export function geometryOf(object: BoardObject, ctx: BuildContext): ObjectGeomet
       const end: BoardPoint = horizontal
         ? [p[0] + object.length, p[1]]
         : [p[0], p[1] - object.length];
-      const strokes: Stroke[] = [ruledStroke([p, end])];
+      const strokes: Stroke[] = [chromeRule([p, end], AXIS_INK)];
       strokes.push(arrowHead(end, unit(p, end), 12));
       const span = object.max - object.min;
       const glyphs: HandGlyph[] = [];
@@ -577,7 +590,7 @@ export function geometryOf(object: BoardObject, ctx: BuildContext): ObjectGeomet
                 [at[0] - 6, at[1]],
                 [at[0] + 6, at[1]],
               ];
-          strokes.push(ruledStroke(tick));
+          strokes.push(chromeRule(tick, AXIS_INK));
         }
       }
       if (object.label && ctx.font) {
@@ -604,19 +617,25 @@ export function geometryOf(object: BoardObject, ctx: BuildContext): ObjectGeomet
       for (let c = 0; c <= object.cols; c++) {
         const x = p[0] + c * cw;
         strokes.push(
-          ruledStroke([
-            [x, p[1]],
-            [x, p[1] + object.h],
-          ]),
+          chromeRule(
+            [
+              [x, p[1]],
+              [x, p[1] + object.h],
+            ],
+            GRID_INK,
+          ),
         );
       }
       for (let r = 0; r <= object.rows; r++) {
         const y = p[1] + r * ch;
         strokes.push(
-          ruledStroke([
-            [p[0], y],
-            [p[0] + object.w, y],
-          ]),
+          chromeRule(
+            [
+              [p[0], y],
+              [p[0] + object.w, y],
+            ],
+            GRID_INK,
+          ),
         );
       }
       return {

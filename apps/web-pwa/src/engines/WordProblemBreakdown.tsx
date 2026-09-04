@@ -15,7 +15,7 @@ import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
-import { CardBody, cardTitle, lead, rgba, whisper } from '../screens/course/shared';
+import { CardBody, captionSurface, cardTitle, lead, rgba, whisper } from '../screens/course/shared';
 import { hueForTopic } from '../ui/hues';
 import { sfx } from '../ui/sound';
 
@@ -93,7 +93,7 @@ function Pane({
     <div
       style={{
         border: `0.5px solid ${open ? rgba(hue, 0.5) : 'var(--wobo-hairline-on-paper)'}`,
-        borderRadius: 3,
+        borderRadius: 10,
         padding: '14px 16px',
         background: open ? rgba(hue, 0.04) : 'var(--wobo-paper)',
         transition: 'border-color 0.3s ease, background 0.3s ease',
@@ -210,11 +210,9 @@ export function WordProblemBreakdown({
         <div
           style={{
             ...lead,
+            ...captionSurface,
             color: 'var(--wobo-ink-900)',
             padding: '14px 16px',
-            borderLeft: `2px solid ${hue}`,
-            background: 'var(--wobo-tonal)',
-            borderRadius: 3,
           }}
         >
           {spec.problem}
@@ -304,7 +302,7 @@ export function WordProblemBreakdown({
                   padding: '12px 16px',
                   border: '1px solid var(--wobo-feedback-correct)',
                   background: 'var(--wobo-feedback-correctSoft)',
-                  borderRadius: 3,
+                  borderRadius: 10,
                   fontSize: '1.05rem',
                   fontWeight: 560,
                   color: 'var(--wobo-ink-900)',

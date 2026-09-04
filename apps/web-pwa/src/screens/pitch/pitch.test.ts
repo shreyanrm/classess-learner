@@ -11,8 +11,9 @@
  * component as a prop, still matches its one prototype line, and a sentence with a word changed
  * does not.
  *
- * The one line that is data rather than copy — the security mailbox, which the page reads from
- * the legal set's published addresses — is checked against that source instead.
+ * The one line that is data rather than copy — the mailbox the security page's report panel names,
+ * which the page reads from the legal set's published addresses — is checked against that source
+ * instead.
  */
 
 import { describe, expect, it } from 'bun:test';
@@ -35,7 +36,7 @@ const PAGES: readonly { proto: string; source: string }[] = [
 ];
 
 /** Lines a page renders from data rather than from its own copy. */
-const DATA_LINES = new Set(['security@heywobo.com']);
+const DATA_LINES = new Set(['support@heywobo.com']);
 
 /** Text as both sides are compared: no quotes, no brackets, whitespace folded. */
 function fold(s: string): string {
@@ -90,9 +91,9 @@ describe('the security overview request', () => {
 });
 
 describe('the lines a page reads from data', () => {
-  it('names the security mailbox the legal set publishes', () => {
-    expect(MAILBOXES.some((box) => box.address === 'security@heywobo.com')).toBe(true);
+  it('names the mailbox the legal set publishes, rather than one typed on the page', () => {
+    expect(MAILBOXES.some((box) => box.address === 'support@heywobo.com')).toBe(true);
     const source = readFileSync(join(import.meta.dir, 'Security.tsx'), 'utf8');
-    expect(source).toContain("startsWith('security@')");
+    expect(source).toContain("startsWith('support@')");
   });
 });

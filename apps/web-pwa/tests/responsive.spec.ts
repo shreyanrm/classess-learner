@@ -187,6 +187,10 @@ for (const route of ROUTES) {
       return;
     }
 
+    // Some chrome only exists once something is open, and some addresses only prove themselves by
+    // where they hand over to. That step runs here, on the settled page, before anything is frozen.
+    if (route.open) await route.open(page);
+
     // Boot happened with motion ON — the entrance animations are real. From here the ambient loops
     // are stopped so every measurement below is of a still frame, identical on every run.
     await freezeMotion(page);

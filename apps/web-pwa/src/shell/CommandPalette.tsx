@@ -15,7 +15,6 @@ import { forgetScope } from '../store/scope';
 import { useSdk } from '../store/sdk';
 import { FROST, fluidType, Kbd, SectionLabel, surface } from '../ui/kit';
 import { getThemePref, setThemePref } from '../ui/theme';
-import { loadViewPref, saveViewPref } from '../ui/viewPref';
 import { saveBoardToNotes } from '../wobo/board-notes';
 import { boardTurn } from '../wobo/board-turn';
 import { useWoboChat } from '../wobo/chat';
@@ -221,7 +220,6 @@ export function CommandPalette() {
         ? document.documentElement.dataset.theme === 'dark'
         : getThemePref() === 'dark';
     const muted = isMuted();
-    const adventure = loadViewPref() === 'adventure';
     items.push(
       {
         id: 'act-theme',
@@ -238,14 +236,6 @@ export function CommandPalette() {
         section: 'actions',
         search: 'mute unmute sound voice audio',
         run: () => setMuted(!muted),
-      },
-      {
-        id: 'act-view',
-        label: adventure ? 'Switch to list view' : 'Switch to adventure view',
-        hint: 'Subjects view',
-        section: 'actions',
-        search: 'view list adventure roadmap map layout',
-        run: () => saveViewPref(adventure ? 'list' : 'adventure'),
       },
     );
 

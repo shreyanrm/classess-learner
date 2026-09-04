@@ -18,7 +18,7 @@ import { useMemo, useState } from 'react';
 import { Label } from '../../ui/primitives';
 import { CONTACT } from '../auth/copy';
 import { ClosePanel } from '../site/ClosePanel';
-import { MAILBOXES, OPEN_TERMS } from '../site/identity';
+import { COMPANY, MAILBOXES, OPEN_TERMS, POSTAL_ADDRESS } from '../site/identity';
 import { Reveal } from '../site/Reveal';
 import { SiteShell } from '../site/SiteShell';
 
@@ -85,7 +85,9 @@ export function Contact() {
                 ))}
               </div>
               <p className="st-hint">
-                {`A postal address and a registered company name belong here too. Neither is settled yet (${OPEN_TERMS.join(' and ')}), and the legal set shows both as blanks rather than printing something we would have to correct.`}
+                {OPEN_TERMS.length > 0
+                  ? `A postal address and a registered company name belong here too. Neither is settled yet (${OPEN_TERMS.join(' and ')}), and the legal set shows both as blanks rather than printing something we would have to correct.`
+                  : `${COMPANY}, ${POSTAL_ADDRESS}. Post reaches us there; email reaches us faster.`}
               </p>
             </Reveal>
           </div>

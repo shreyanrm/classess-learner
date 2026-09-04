@@ -207,7 +207,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
       lesson > 0 ? `Lesson ${lesson}` : undefined,
     ].filter((p): p is string => Boolean(p));
     return parts.length > 0 ? parts.join(' · ') : title;
-  }, [sandbox, title, topic, chapter]);
+  }, [sandbox, title, topic, chapter, custom]);
 
   const notes = view === 'notes';
 

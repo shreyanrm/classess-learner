@@ -66,13 +66,28 @@ export const BUILD_THREE_QUARTERS: AnswerSpecOf<'number_pad'> = {
 /** The bar the last item is drawn over, in board units: the thing the line has to cut. */
 export const CUT_BAR: readonly [x: number, y: number, w: number, h: number] = [200, 220, 600, 160];
 
-/** Draw a line that cuts it in half — one stroke down the middle of the bar. */
+/**
+ * Draw a line that cuts it in half — one stroke, and FOUR right answers.
+ *
+ * The bar is a rectangle, so every line through its centre halves it: down the middle, across the
+ * middle, and either diagonal. The item used to want the vertical one and marked the other three
+ * wrong, which is the item being wrong about its own mathematics. All four are listed, and `check`
+ * gives the learner the best of them.
+ */
 export const CUT_IN_HALF: AnswerSpecOf<'draw'> = {
   kind: 'draw',
   id: 'cut-in-half',
   prompt: 'Draw a line that cuts it in half',
   view: [0, 0, 1000, 600],
+  // down the middle — the stroke the prototype draws
   want: { shape: 'segment', from: [500, 200], to: [500, 400], tolerance: 90 },
+  accept: [
+    // across the middle
+    { shape: 'segment', from: [180, 300], to: [820, 300], tolerance: 90 },
+    // corner to corner, both ways
+    { shape: 'segment', from: [200, 220], to: [800, 380], tolerance: 90 },
+    { shape: 'segment', from: [200, 380], to: [800, 220], tolerance: 90 },
+  ],
 };
 
 export const FRACTIONS_SET: readonly [AnswerSpec, ...AnswerSpec[]] = [

@@ -22,9 +22,19 @@ import {
 } from 'react';
 import { MagneticButton } from '../../ui/kit';
 
-/** `rgba()` from a hex hue — stages and ignites need translucent stops of the subject's hue. */
-export function rgba(hex: string, alpha: number): string {
-  const n = Number.parseInt(hex.slice(1), 16);
+/**
+ * A translucent stop of a hue — stages and ignites are built from them.
+ *
+ * Subject hues are palette v4 tokens now (`var(--pig)`), not hexes, so a colour cannot be taken
+ * apart into channels here: the theme decides the channels, in CSS, at paint time. `color-mix`
+ * does the same job in the same place, and a real hex still takes the arithmetic path so nothing
+ * that hands one in changes.
+ */
+export function rgba(color: string, alpha: number): string {
+  if (!color.startsWith('#')) {
+    return `color-mix(in srgb, ${color} ${Math.round(alpha * 100)}%, transparent)`;
+  }
+  const n = Number.parseInt(color.slice(1), 16);
   return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${alpha})`;
 }
 
@@ -82,8 +92,8 @@ export function writeCourseStars(topicId: string, stars: number): void {
   }
 }
 
-/** The one golden accent of the art system. */
-export const GOLD = '#FFC93C';
+/** The one golden accent of the art system — palette v4's marigold, which night lifts a step. */
+export const GOLD = 'var(--marigold)';
 
 // --- Text registers ------------------------------------------------------------------------------
 
@@ -107,6 +117,20 @@ export const lead: CSSProperties = {
   fontSize: '1rem',
   lineHeight: 1.6,
   color: 'var(--wobo-ink-700)',
+};
+
+/**
+ * The line under a scene that says what to do with it.
+ *
+ * It used to be a 2 px rule in the subject's hue down its left edge. DESIGN.md's line clause
+ * forbids border lines outright — "surfaces separate by tone, by space, and by shape" — and puts
+ * the ink floor at 2.5 px, so a 2 px rule broke it twice over. The separation is made the way the
+ * law makes it instead: one tonal step off the card it sits on, at the kit's card radius.
+ */
+export const captionSurface: CSSProperties = {
+  background: 'var(--paper-2)',
+  borderRadius: 16,
+  padding: '12px 14px',
 };
 
 export const equationType: CSSProperties = {

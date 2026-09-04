@@ -809,8 +809,15 @@ export function useCardNarration(): CardNarration {
   return { text: narr.text, ready, progress, gating: narr.gate, replay };
 }
 
-/** Replay button for the course stage — re-speaks the current card. Sits beside mute. */
-export function ReplayButton({ onReplay, size = 17 }: { onReplay: () => void; size?: number }) {
+/**
+ * Replay button for the course stage — re-speaks the current card. Sits beside mute.
+ *
+ * 22 px on a 20-unit viewBox, drawn at 2.4 — the rail's own icon register in
+ * design/prototypes/app-v1.html, and 2.6 px of ink on the page. It used to be 17 px at 1.5, which
+ * lands under a pixel and a half: a photocopy of a pencil, which DESIGN.md's line clause calls a
+ * defect by name.
+ */
+export function ReplayButton({ onReplay, size = 22 }: { onReplay: () => void; size?: number }) {
   return (
     <button
       type="button"
@@ -840,14 +847,14 @@ export function ReplayButton({ onReplay, size = 17 }: { onReplay: () => void; si
           d="M15.5 6.5 A6 6 0 1 0 16.4 11"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1.5"
+          strokeWidth="2.4"
           strokeLinecap="round"
         />
         <path
           d="M15.8 3.4 L16 6.9 L12.5 6.6"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1.5"
+          strokeWidth="2.4"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
@@ -856,8 +863,11 @@ export function ReplayButton({ onReplay, size = 17 }: { onReplay: () => void; si
   );
 }
 
-/** The sound switch — mutes Wobo's voice, never Wobo's words. Lives beside Wobo's name. */
-export function MuteButton({ size = 17 }: { size?: number }) {
+/**
+ * The sound switch — mutes Wobo's voice, never Wobo's words. Lives beside Wobo's name.
+ * Drawn at the same weight as its neighbour, for the same reason.
+ */
+export function MuteButton({ size = 22 }: { size?: number }) {
   const [muted, setMutedState] = useState(isMuted);
   useEffect(() => {
     const sync = () => setMutedState(isMuted());
@@ -899,14 +909,14 @@ export function MuteButton({ size = 17 }: { size?: number }) {
           d="M3.5 7.5 H6.8 L10.6 4.4 V15.6 L6.8 12.5 H3.5 Z"
           fill="currentColor"
           stroke="currentColor"
-          strokeWidth="1.1"
+          strokeWidth="2.4"
           strokeLinejoin="round"
         />
         {muted ? (
           <path
             d="M13.2 7.6 L17 12.4 M17 7.6 L13.2 12.4"
             stroke="currentColor"
-            strokeWidth="1.5"
+            strokeWidth="2.4"
             strokeLinecap="round"
           />
         ) : (
@@ -914,13 +924,13 @@ export function MuteButton({ size = 17 }: { size?: number }) {
             <path
               d="M13.2 7.2 C14.2 8.6 14.2 11.4 13.2 12.8"
               stroke="currentColor"
-              strokeWidth="1.4"
+              strokeWidth="2.4"
               strokeLinecap="round"
             />
             <path
               d="M15.4 5.6 C17.2 7.8 17.2 12.2 15.4 14.4"
               stroke="currentColor"
-              strokeWidth="1.4"
+              strokeWidth="2.4"
               strokeLinecap="round"
               opacity="0.55"
             />

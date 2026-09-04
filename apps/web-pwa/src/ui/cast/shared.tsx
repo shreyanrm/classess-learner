@@ -29,7 +29,7 @@ export const PAINT = {
   coral: '#E2674A',
   slate: '#5B6473',
   silver: '#9AA0AA',
-  ultramarine: '#1F35E0',
+  ultramarine: 'var(--pig)',
 } as const;
 
 /** The face ink — warm near-black, softer than chrome ink, straight from the catalog. */
@@ -39,8 +39,12 @@ export const GROUND_FILL = 'rgba(18,19,22,0.06)';
 
 export type Mood = 'happy' | 'curious' | 'sleepy' | 'delighted' | 'neutral';
 
-export function hexWash(hex: string, alpha: number): string {
-  const n = Number.parseInt(hex.slice(1), 16);
+/** A translucent wash of a paint. A palette token cannot be taken apart, so CSS mixes it. */
+export function hexWash(color: string, alpha: number): string {
+  if (!color.startsWith('#')) {
+    return `color-mix(in srgb, ${color} ${Math.round(alpha * 100)}%, transparent)`;
+  }
+  const n = Number.parseInt(color.slice(1), 16);
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
 }
 

@@ -25,11 +25,8 @@ import { type Route, routeToPath, useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
 import { Avatar, Button, Card, CardFoot, Label, Tile, TopBar, WoboHead } from '../ui/primitives';
 import { defaultSubject, tileLine, unitLine, unitRows, unitState } from './learn/units';
-import { boardName, loadProfile } from './you/profile';
+import { boardName, frameworkLabel, loadProfile } from './you/profile';
 import './learn/Learn.css';
-
-// The older screens' back affordance and the subject scene live on, from here (see learn/legacy).
-export { SubjectSceneBackdrop, Whisper } from './learn/legacy';
 
 export function Learn() {
   const router = useRouter();
@@ -116,10 +113,13 @@ export function Learn() {
   }, [publishPage, active?.name, rows]);
 
   // The crumb: "Learn · Class 8 · CBSE" — then the syllabus's provenance, in the brain's words.
+  // The world's own `frameworkName` is whatever named the framework, and a restore can only pass
+  // on the id it was given, so the board reads through `frameworkLabel` here exactly as it does on
+  // Home and You: a crumb never prints "cbse" where a learner reads a board's name.
   const crumb = [
     'Learn',
     world?.level ?? profile.grade,
-    world?.frameworkName ?? boardName(profile.boardId),
+    frameworkLabel(world?.frameworkName) || boardName(profile.boardId),
   ]
     .filter(Boolean)
     .join(' · ');

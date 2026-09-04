@@ -45,7 +45,7 @@ import {
   useState,
 } from 'react';
 import type { BarState } from '../screens/course/shared';
-import { CardBody, lead, rgba, Stage } from '../screens/course/shared';
+import { CardBody, captionSurface, lead, rgba, Stage } from '../screens/course/shared';
 import { hueForTopic } from '../ui/hues';
 import { sfx } from '../ui/sound';
 import { useWoboChat } from '../wobo/chat';
@@ -532,7 +532,7 @@ function DiscoveryStageView({
               style={{
                 height: 3,
                 width: i === index ? 22 : 10,
-                borderRadius: 3,
+                borderRadius: 10,
                 background: i <= index ? hue : 'var(--wobo-hairline-on-paper-strong)',
                 transition: 'width 0.3s ease, background 0.3s ease',
               }}
@@ -650,8 +650,7 @@ function DiscoveryStageView({
         <div
           style={{
             ...lead,
-            borderLeft: `2px solid ${hue}`,
-            paddingLeft: 14,
+            ...captionSurface,
             color: 'var(--wobo-ink-900)',
           }}
         >
@@ -676,7 +675,7 @@ function DiscoveryStageView({
                 style={{
                   border: '1px solid var(--wobo-feedback-correct)',
                   background: 'var(--wobo-feedback-correctSoft)',
-                  borderRadius: 3,
+                  borderRadius: 10,
                   padding: '14px 16px',
                   fontSize: '1.02rem',
                   lineHeight: 1.6,

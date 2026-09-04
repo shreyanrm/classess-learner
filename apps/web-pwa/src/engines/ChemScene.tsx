@@ -30,7 +30,15 @@ import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
-import { CardBody, cardTitle, lead, Scrubber, Stage, whisper } from '../screens/course/shared';
+import {
+  CardBody,
+  captionSurface,
+  cardTitle,
+  lead,
+  Scrubber,
+  Stage,
+  whisper,
+} from '../screens/course/shared';
 import { sfx } from '../ui/sound';
 import { SafeSvg } from './DiagramView';
 
@@ -543,7 +551,7 @@ function Balancer({
         <div
           style={{
             border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
-            borderRadius: 3,
+            borderRadius: 10,
             padding: '12px 16px',
             display: 'flex',
             flexDirection: 'column',
@@ -605,7 +613,7 @@ function Balancer({
               style={{
                 border: '1px solid var(--wobo-feedback-correct)',
                 background: 'var(--wobo-feedback-correctSoft)',
-                borderRadius: 3,
+                borderRadius: 10,
                 padding: '14px 16px',
                 fontSize: '1rem',
                 lineHeight: 1.6,
@@ -621,8 +629,7 @@ function Balancer({
           <div
             style={{
               ...lead,
-              borderLeft: `2px solid ${hue}`,
-              paddingLeft: 14,
+              ...captionSurface,
               color: 'var(--wobo-ink-900)',
             }}
           >
@@ -993,8 +1000,7 @@ function Titration({
         <div
           style={{
             ...lead,
-            borderLeft: `2px solid ${hue}`,
-            paddingLeft: 14,
+            ...captionSurface,
             color: 'var(--wobo-ink-900)',
           }}
         >

@@ -1,0 +1,139 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`the drawing itself mathematics is unchanged 1`] = `
+{
+  "accent": "var(--pig)",
+  "marker": "var(--marigold)",
+  "marks": [
+    {
+      "d": "M50 120 L140 120 L50 52 Z",
+      "el": "path",
+      "ink": "ink",
+    },
+    {
+      "d": "M50 104 h16 v16",
+      "el": "path",
+      "ink": "thin",
+    },
+    {
+      "d": "M140 120 L180 66 L90 -2 L50 52",
+      "el": "path",
+      "ink": "accent",
+    },
+    {
+      "el": "text",
+      "ink": "accent",
+      "size": 22,
+      "text": "c²",
+      "x": 118,
+      "y": 60,
+    },
+  ],
+  "tint": "var(--pig-w)",
+}
+`;
+
+exports[`the drawing itself science is unchanged 1`] = `
+{
+  "accent": "var(--mint)",
+  "marker": "var(--marigold)",
+  "marks": [
+    {
+      "d": "M100 20 L152 50 L152 110 L100 140 L48 110 L48 50 Z",
+      "el": "path",
+      "ink": "ink",
+    },
+    {
+      "cx": 100,
+      "cy": 80,
+      "el": "circle",
+      "ink": "accent-thin",
+      "r": 30,
+    },
+    {
+      "el": "text",
+      "ink": "ink",
+      "size": 20,
+      "text": "C₆H₆",
+      "x": 160,
+      "y": 44,
+    },
+  ],
+  "tint": "var(--mint-w)",
+}
+`;
+
+exports[`the drawing itself social is unchanged 1`] = `
+{
+  "accent": "var(--pig)",
+  "marker": "var(--marigold)",
+  "marks": [
+    {
+      "d": "M20 110 c30 -30 50 -10 80 -30 s50 -40 90 -30",
+      "el": "path",
+      "ink": "thin",
+    },
+    {
+      "d": "M20 130 c40 -20 70 0 110 -20 s40 -30 60 -20",
+      "el": "path",
+      "ink": "thin",
+    },
+    {
+      "d": "M60 40 c20 30 50 40 80 20",
+      "el": "path",
+      "ink": "accent",
+    },
+    {
+      "cx": 140,
+      "cy": 60,
+      "el": "dot",
+      "r": 6,
+    },
+    {
+      "el": "text",
+      "ink": "ink",
+      "size": 18,
+      "text": "river · plateau · port",
+      "x": 30,
+      "y": 40,
+    },
+  ],
+  "tint": "var(--marigold-w)",
+}
+`;
+
+exports[`the drawing itself english is unchanged 1`] = `
+{
+  "accent": "var(--pig)",
+  "marker": "var(--marigold)",
+  "marks": [
+    {
+      "el": "mark",
+      "h": 18,
+      "rx": 6,
+      "w": 70,
+      "x": 60,
+      "y": 52,
+    },
+    {
+      "d": "M24 40 h150 M24 62 h130 M24 84 h150 M24 106 h100",
+      "el": "path",
+      "ink": "thin",
+    },
+    {
+      "d": "M120 96 c10 -14 30 -14 40 0",
+      "el": "path",
+      "ink": "accent",
+    },
+    {
+      "el": "text",
+      "ink": "accent",
+      "size": 18,
+      "text": "metaphor",
+      "x": 130,
+      "y": 128,
+    },
+  ],
+  "tint": "var(--lilac-w)",
+}
+`;

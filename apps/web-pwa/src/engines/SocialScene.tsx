@@ -23,7 +23,15 @@ import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { Reorder, useReducedMotion } from 'framer-motion';
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
-import { CardBody, cardTitle, equationType, lead, Stage, whisper } from '../screens/course/shared';
+import {
+  CardBody,
+  captionSurface,
+  cardTitle,
+  equationType,
+  lead,
+  Stage,
+  whisper,
+} from '../screens/course/shared';
 import { sfx } from '../ui/sound';
 import { formatSimNumber } from './SimRunner';
 
@@ -501,7 +509,7 @@ function TimelineScene({
                 tryYear(dragYear);
               }
             }}
-            style={{ ...lead, borderLeft: `2px solid ${hue}`, paddingLeft: 14, outlineOffset: 3 }}
+            style={{ ...lead, ...captionSurface, outlineOffset: 3 }}
           >
             {missed
               ? `not quite — ${dragYear} is too far off. slide again and release.`
@@ -512,8 +520,7 @@ function TimelineScene({
           <div
             style={{
               ...lead,
-              borderLeft: `2px solid ${hue}`,
-              paddingLeft: 14,
+              ...captionSurface,
               transition: reduced ? undefined : 'opacity 300ms ease',
             }}
           >
@@ -746,12 +753,12 @@ function EventOrderScene({
         </Reorder.Group>
 
         {wrongAt && (
-          <div style={{ ...lead, borderLeft: '2px solid var(--wobo-ink-500)', paddingLeft: 14 }}>
+          <div style={{ ...lead, ...captionSurface }}>
             not in order yet — the dashed ones sit in the wrong spot.
           </div>
         )}
         {solved && (
-          <div style={{ ...lead, borderLeft: `2px solid ${hue}`, paddingLeft: 14 }}>
+          <div style={{ ...lead, ...captionSurface }}>
             that is the true sequence — the years appear to prove it.
           </div>
         )}
@@ -1158,7 +1165,7 @@ function SupplyDemandScene({
         )}
 
         {eq && eq0 && offset !== 0 && (
-          <div style={{ ...lead, borderLeft: `2px solid ${hue}`, paddingLeft: 14 }}>
+          <div style={{ ...lead, ...captionSurface }}>
             {`the ${shift?.target ?? ''} shift moves the market: price ${
               eq.p > eq0.p ? 'rises' : eq.p < eq0.p ? 'falls' : 'holds'
             } to ${formatSimNumber(eq.p)}, quantity ${

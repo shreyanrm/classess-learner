@@ -252,6 +252,15 @@ fieldset.pl-region{border:0;margin:0;min-width:0}
 .pl-checkout label{display:grid;grid-template-columns:26px 1fr;gap:12px;align-items:start;font-size:14px;color:var(--ink-2);padding:12px;border-radius:14px;background:var(--paper-2)}
 .pl-checkout label input{width:22px;height:22px;accent-color:var(--pig);margin:1px 0 0}
 .pl-checkout label b{color:var(--ink);font-weight:600;display:block}
+/* The consent boxes (checkout, and the sign-up agreement below). The box a learner SEES stays the
+   prototype's 22px; the box a thumb has to HIT is 44 (the touch floor, DESIGN.md §2). A native
+   checkbox cannot do that — its drawn size is its box — so the box is drawn here instead: a tonal
+   well on the label's ground, Wobo blue with a cream tick once it is ticked. */
+.pl-checkout label>input[type=checkbox],.wa-consent>input[type=checkbox]{appearance:none;-webkit-appearance:none;width:44px;height:44px;margin:-11px 0 -11px -11px;padding:0;background:transparent;cursor:pointer;display:grid;grid-template-areas:'box';place-items:center}
+.pl-checkout label>input[type=checkbox]::before,.wa-consent>input[type=checkbox]::before{content:'';grid-area:box;width:22px;height:22px;border-radius:10px;background:var(--paper-3)}
+.pl-checkout label>input[type=checkbox]:checked::before,.wa-consent>input[type=checkbox]:checked::before{background:var(--pig)}
+.pl-checkout label>input[type=checkbox]::after,.wa-consent>input[type=checkbox]::after{content:'';grid-area:box;width:14px;height:14px;background:var(--paper);clip-path:polygon(14% 44%,0 58%,38% 96%,100% 34%,86% 20%,38% 68%);opacity:0}
+.pl-checkout label>input[type=checkbox]:checked::after,.wa-consent>input[type=checkbox]:checked::after{opacity:1}
 .pl-checkout .pl-total{display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid var(--paper-2);padding-top:12px}
 .pl-checkout .pl-total b{font:700 28px/1 var(--sans)}
 .pl-checkout .pl-say{font-family:var(--hand);font-weight:600;font-size:26px;line-height:1.15;margin-top:var(--s3)}
@@ -386,6 +395,8 @@ fieldset.pl-region{border:0;margin:0;min-width:0}
   .st-header .st-wm{display:inline-flex;align-items:center;min-height:44px}
   .st-footer .st-wrap a{display:flex;align-items:center;min-height:44px;padding:0}
   .st-footer .st-wrap{grid-template-columns:1fr 1fr}
+  .hp-search input{min-height:44px}
+  fieldset.pl-region button{min-height:44px}
   .st-ask{grid-template-columns:1fr}
   .st-grid3,.st-grid2{grid-template-columns:1fr}
   .ab-hero .st-wrap{grid-template-columns:1fr}

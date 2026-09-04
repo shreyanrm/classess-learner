@@ -4,10 +4,14 @@
  * The full board (docs/BOARD.md §5) — inside a lesson the board *is* the screen. Same grammar, same
  * renderer, same ink; only the surface changes. Cards are regions on it, the camera follows the ink
  * as the board fills, and the history can be scrubbed and the whole thing shared as an image.
+ *
+ * The chrome is the kit's, restated in `chrome.tsx`: a bar that floats clear of the bottom edge on
+ * a soft shadow (no rule above it), the Practice progress bar as the scrubber, and two quiet
+ * buttons. Nothing here draws a line to separate itself from the paper.
  */
 
-import { hairline, radius } from '@wobo/config';
 import { useCallback, useRef, useState } from 'react';
+import { BoardChromeStyle, ChromeButton, Scrubber } from './chrome';
 import { boardFileName, exportBoardPng } from './export';
 import { BoardSurface, type BoardSurfaceProps } from './renderer';
 import type { BoardStore } from './store';
@@ -56,7 +60,8 @@ export function WoboFullBoard(props: WoboFullBoardProps) {
   const span = Math.max(1, timeline.range.to - timeline.range.from);
 
   return (
-    <div style={{ inset: 0, position: 'absolute', background: 'var(--wobo-page, #FFFFFF)' }}>
+    <div className="wobo-chrome wobo-chrome-full">
+      <BoardChromeStyle />
       <BoardSurface
         store={store}
         svgRef={svgRef}
@@ -73,66 +78,28 @@ export function WoboFullBoard(props: WoboFullBoardProps) {
         {...(props.fontUrl ? { fontUrl: props.fontUrl } : {})}
       />
       {chrome ? (
-        <div
-          style={{
-            alignItems: 'center',
-            borderTop: `0.5px solid ${hairline.onPaper}`,
-            bottom: 0,
-            display: 'flex',
-            gap: 12,
-            left: 0,
-            padding: '10px 16px',
-            position: 'absolute',
-            right: 0,
-          }}
-        >
-          <input
-            type="range"
-            aria-label="scrub the board's history"
+        <div className="wobo-chrome-bar">
+          <Scrubber
+            label="scrub the board's history"
             min={timeline.range.from}
             max={timeline.range.to}
             step={Math.max(1, span / 400)}
             value={timeline.at}
-            onChange={(e) => timeline.seek(Number(e.target.value))}
-            style={{ accentColor: 'var(--wobo-ultramarine, #1F35E0)', flex: '1 1 auto' }}
+            onSeek={(value) => timeline.seek(value)}
           />
-          <button
-            type="button"
+          <ChromeButton
             aria-label={timeline.scrubbing ? 'return to the live board' : 'replay the board'}
             onClick={() => (timeline.scrubbing ? timeline.live() : timeline.play())}
-            style={{
-              appearance: 'none',
-              background: 'transparent',
-              border: `0.5px solid ${hairline.onPaper}`,
-              borderRadius: radius.sm,
-              color: 'var(--wobo-ink-500, #6E6E76)',
-              cursor: 'pointer',
-              font: 'inherit',
-              fontSize: 12,
-              padding: '4px 10px',
-            }}
           >
             {timeline.scrubbing ? 'live' : 'replay'}
-          </button>
-          <button
-            type="button"
+          </ChromeButton>
+          <ChromeButton
             aria-label="share this board as an image"
             onClick={() => void share()}
             disabled={busy}
-            style={{
-              appearance: 'none',
-              background: 'transparent',
-              border: `0.5px solid ${hairline.onPaper}`,
-              borderRadius: radius.sm,
-              color: 'var(--wobo-ink-500, #6E6E76)',
-              cursor: busy ? 'progress' : 'pointer',
-              font: 'inherit',
-              fontSize: 12,
-              padding: '4px 10px',
-            }}
           >
             share
-          </button>
+          </ChromeButton>
         </div>
       ) : null}
     </div>

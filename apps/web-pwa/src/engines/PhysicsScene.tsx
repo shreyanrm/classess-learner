@@ -26,7 +26,15 @@ import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { useReducedMotion } from 'framer-motion';
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
-import { CardBody, cardTitle, equationType, lead, Stage, whisper } from '../screens/course/shared';
+import {
+  CardBody,
+  captionSurface,
+  cardTitle,
+  equationType,
+  lead,
+  Stage,
+  whisper,
+} from '../screens/course/shared';
 import { evaluateExpr, formatSimNumber } from './SimRunner';
 
 // --- The spec ------------------------------------------------------------------------------------
@@ -721,7 +729,7 @@ function FreeBodyScene({
             { id: '__net', label: 'resultant', value: rMag, unit },
           ]}
         />
-        <div ref={ref} style={{ ...lead, borderLeft: `2px solid ${hue}`, paddingLeft: 14 }}>
+        <div ref={ref} style={{ ...lead, ...captionSurface }}>
           {rMag < 0.5
             ? 'the forces balance — the resultant is zero, so the body stays put.'
             : `the net force is ${formatSimNumber(rMag)} ${unit} at ${formatSimNumber(rAngle)}°.`}

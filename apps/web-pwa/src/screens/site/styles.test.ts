@@ -309,3 +309,50 @@ describe('the laws hold over the whole sheet', () => {
     expect(SITE_CSS).not.toContain('`');
   });
 });
+
+/**
+ * WOBO-PLAN §18's touch floor, on the pages the responsive proof flagged: the help search field,
+ * the two region pills on /plans, and the consent boxes on /plans/checkout and /sign-up. Every one
+ * of them is a 44×44 box a thumb can hit — and NONE of them moves a type size to get there.
+ */
+describe('every control on the site clears the 44px floor', () => {
+  const phone = /@media \(max-width:900px\)\{([\s\S]*?)\n\}/.exec(SITE_CSS)?.[1] ?? '';
+
+  it('grows the help search field and the region pills on a phone', () => {
+    expect(phone).toContain('.hp-search input{min-height:44px}');
+    expect(phone).toContain('fieldset.pl-region button{min-height:44px}');
+  });
+
+  it('leaves their type alone', () => {
+    // the ported rules still carry the prototype's sizes; the floor adds height, never font-size
+    expect(site.get('.hp-search input')).toContain('font:400 17px/1.4 var(--sans)');
+    expect(site.get('.pl-region button')).toContain('font:500 14px/1 var(--sans)');
+    expect(phone).not.toMatch(/\.hp-search input\{[^}]*font/);
+    expect(phone).not.toMatch(/pl-region button\{[^}]*font/);
+  });
+
+  it('puts a 44px hit area around a 22px consent box', () => {
+    const hit = site.get('.pl-checkout label>input[type=checkbox]') ?? [];
+    expect(site.get('.wa-consent>input[type=checkbox]')).toEqual(hit);
+    expect(hit).toContain('width:44px');
+    expect(hit).toContain('height:44px');
+    // the negative margin keeps the row exactly as tall as the 22px box it was
+    expect(hit).toContain('margin:-11px 0 -11px -11px');
+
+    const box = site.get('.pl-checkout label>input[type=checkbox]::before') ?? [];
+    expect(box).toContain('width:22px');
+    expect(box).toContain('height:22px');
+  });
+
+  it('draws the box in tone, and the tick with no line of its own', () => {
+    const box = site.get('.pl-checkout label>input[type=checkbox]::before') ?? [];
+    expect(box).toContain('background:var(--paper-3)');
+    expect(site.get('.pl-checkout label>input[type=checkbox]:checked::before')).toContain(
+      'background:var(--pig)',
+    );
+    const tick = site.get('.pl-checkout label>input[type=checkbox]::after') ?? [];
+    expect(tick).toContain('background:var(--paper)');
+    expect(tick.some((d) => d.startsWith('clip-path:'))).toBe(true);
+    expect(tick.some((d) => d.startsWith('border'))).toBe(false);
+  });
+});

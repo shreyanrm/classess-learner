@@ -13,11 +13,13 @@
  * every interaction has a keyboard path; one hit of pigment; no shadows; 3 px corners.
  */
 
-import { frost, hairline, radius, ultramarine, zIndex } from '@wobo/config';
+import { zIndex } from '@wobo/config';
 import { useReducedMotion } from '@wobo/motion';
 import {
   anchorRectOf,
+  BoardChromeStyle,
   BoardSurface,
+  ChromeButton,
   createFocus,
   type FocusObject,
   GestureLayer,
@@ -303,57 +305,36 @@ function BoardKeeper({ title, route }: { title?: string; route: string }) {
 
   return (
     <div
+      className="wobo-chrome wobo-chrome-bar"
       style={{
-        alignItems: 'center',
-        background: frost.onPaper,
-        backdropFilter: `blur(${frost.blur})`,
-        WebkitBackdropFilter: `blur(${frost.blur})`,
-        border: `0.5px solid ${hairline.onPaper}`,
-        borderRadius: radius.sm,
         bottom: 12,
-        display: 'flex',
-        gap: 8,
         left: '50%',
-        padding: '5px 8px',
+        maxWidth: 'calc(100vw - 32px)',
         position: 'fixed',
         transform: 'translateX(-50%)',
         transition: reduced ? 'none' : 'opacity 160ms cubic-bezier(0.2, 0, 0, 1)',
+        width: 'max-content',
         zIndex: zIndex.panel,
       }}
     >
-      <button type="button" onClick={keep} style={keeperButton}>
-        save to notes
-      </button>
+      <BoardChromeStyle />
+      <ChromeButton onClick={keep}>save to notes</ChromeButton>
       {waiting ? (
-        <button
-          type="button"
+        <ChromeButton
           onClick={() => {
             plane.minimize();
             videoHandoff.returnToFrame();
           }}
-          style={keeperButton}
         >
           back to the film
-        </button>
+        </ChromeButton>
       ) : null}
-      <span aria-live="polite" style={{ color: 'var(--wobo-ink-500, #6E6E76)', fontSize: 12 }}>
+      <span aria-live="polite" style={{ color: 'var(--ink-2)', fontSize: 13 }}>
         {kept ?? ''}
       </span>
     </div>
   );
 }
-
-const keeperButton: React.CSSProperties = {
-  appearance: 'none',
-  background: 'transparent',
-  border: `0.5px solid ${hairline.onPaper}`,
-  borderRadius: radius.sm,
-  color: 'var(--wobo-ink-500, #6E6E76)',
-  cursor: 'pointer',
-  font: 'inherit',
-  fontSize: 12,
-  padding: '3px 8px',
-};
 
 // --- "Show me" ---------------------------------------------------------------------------------------
 
@@ -383,7 +364,7 @@ export function ShowMeCursor() {
         data-wobo-cursor={state.tapping ? 'tapping' : 'gliding'}
         data-wobo-cursor-saying={state.saying ?? ''}
         style={{
-          border: `1.5px solid ${ultramarine}`,
+          border: '3px solid var(--pig)',
           borderRadius: '50%',
           height: size,
           left: state.at.x - size / 2,

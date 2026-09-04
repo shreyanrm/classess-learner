@@ -52,6 +52,13 @@ export interface RouteCase {
    * states (the frame theatre welcomes a seeded board, or offers to find an unseeded one).
    */
   ready: string | RegExp;
+  /**
+   * One gesture between arriving and measuring, for chrome that only exists once something is
+   * open. The board's plane is the case that forced it: it draws nothing until it is summoned, so
+   * a matrix that only navigates measured every surface EXCEPT the one a learner sees Wobo work
+   * on. Keep these to something a learner could actually do — a click on a real control.
+   */
+  open?: (page: Page) => Promise<void>;
 }
 
 /**
@@ -65,12 +72,47 @@ export const APP_ROUTES: readonly RouteCase[] = [
   { id: 'learn', path: '/learn', ready: 'Your subjects' },
   { id: 'practice', path: '/practice', ready: 'This set' },
   { id: 'chat', path: '/chat', ready: 'One conversation, always' },
-  { id: 'progress', path: '/progress', ready: 'YOUR REPORT' },
+  // `/progress` is the You screen's address: progress IS You (board 05), so the route hands over.
+  // This row's job is the HANDOVER — `you` below already measures the screen at every width and
+  // both themes, and a row that only re-measured it would count coverage twice. So it asserts the
+  // address actually moved, which nothing else in the suite can see.
+  {
+    id: 'progress',
+    path: '/progress',
+    ready: 'Learning strengths',
+    open: async (page) => {
+      const at = new URL(page.url()).pathname;
+      if (at !== '/you') throw new Error(`/progress did not hand over to /you — landed on ${at}`);
+    },
+  },
   { id: 'you', path: '/you', ready: 'Learning strengths' },
   // The parent's read-only view of the You page, reached from its Parents card.
   { id: 'parent', path: '/parent', ready: 'Questions word for word' },
-  { id: 'subject-math-learn', path: '/subject/math/learn', ready: 'THE CHAPTERS' },
-  { id: 'subject-math-practice', path: '/subject/math/practice', ready: 'THE CHAPTERS' },
+  // A subject door is addressed by the subject's own name — the registry keys subjects by what
+  // the framework calls them, and `/subject/math/...` was a slug from before that was true. The
+  // seeded world teaches Mathematics, so this is the address the tiles themselves link to.
+  { id: 'subject-math-learn', path: '/subject/Mathematics/learn', ready: 'Learn · Mathematics' },
+  {
+    id: 'subject-math-practice',
+    path: '/subject/Mathematics/practice',
+    ready: 'Practice · Mathematics',
+  },
+  // And the address as it was written before subjects were keyed by their own name. Every bookmark,
+  // palette entry and external link still arrives here, so the slug stays watched: it must resolve
+  // to the subject it means and hand over to the canonical address, never print itself as a name.
+  {
+    id: 'subject-slug',
+    path: '/subject/math/learn',
+    ready: 'Learn · Mathematics',
+    open: async (page) => {
+      const at = new URL(page.url()).pathname;
+      if (at !== '/subject/Mathematics/learn') {
+        throw new Error(
+          `/subject/math/learn did not hand over to its canonical address — at ${at}`,
+        );
+      }
+    },
+  },
   {
     id: 'course-m2-1',
     path: '/course/m2-1',
@@ -83,6 +125,23 @@ export const APP_ROUTES: readonly RouteCase[] = [
   // Keyless, the flow opens on step two ("Who's learning"); with an account layer, on step one.
   { id: 'onboarding', path: '/onboarding', ready: /make this yours|Who's learning/ },
   { id: 'building', path: '/building', ready: /Step in|Choose your board/ },
+  // The board's own chrome, on the hermetic bench page — the one address where the full board and
+  // the plane are both mounted and drawing. `WoboFullBoard` and `WoboPlane` are reached from no
+  // app route (the app opens them through the stage), so without this row the frame around Wobo's
+  // ink was the only surface in the product that nothing in the matrix ever measured.
+  {
+    id: 'board-chrome',
+    path: '/board-bench.html#board-bench/pythagoras-handwritten/chrome',
+    // The bench's own status line — the board's name lives in an aria-label and in a <select>,
+    // neither of which is text on the page.
+    ready: /events, \d+ refused/,
+    open: async (page) => {
+      // land the whole plan, then summon the plane: the chrome measured is the frame around ink
+      // that is actually there, on both surfaces at once.
+      await page.getByTestId('bench-instant').click();
+      await page.getByTestId('bench-plane').click();
+    },
+  },
 ] as const;
 
 /**

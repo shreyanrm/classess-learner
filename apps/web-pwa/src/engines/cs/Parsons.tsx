@@ -129,7 +129,7 @@ function LineChip({
         style={{
           width: 24,
           height: 24,
-          borderRadius: 6,
+          borderRadius: 10,
           border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
           background: 'var(--wobo-paper)',
           color: 'var(--wobo-ink-700)',
@@ -428,7 +428,7 @@ export function Parsons({
                     marginTop: 8,
                     padding: '8px 10px',
                     background: 'var(--wobo-paper)',
-                    borderRadius: 6,
+                    borderRadius: 10,
                     fontSize: '0.82rem',
                     fontFamily: 'ui-monospace, Menlo, monospace',
                     color: 'var(--wobo-ink-900)',

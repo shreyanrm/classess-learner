@@ -1,6 +1,12 @@
 /**
  * Subject hue families (owner directive) — pigment for EARNED moments only: sigils, ticks,
  * ignites, and blooms take the owning subject's hue. Chrome never does.
+ *
+ * Every value here is a palette v4 token, never a hex. Palette v4 designs night on its own rather
+ * than inverting light (DESIGN.md §2), so a JS colour constant is a light-theme colour shipped
+ * into both themes — which is what these were. Handing the DOM `var(--pig)` lets the document's
+ * own `data-theme` stamp resolve it, in a stylesheet, once, for both. The one place a variable
+ * cannot go is a `<canvas>`, and `resolvedColor` below reads the live value for exactly that.
  */
 
 import { chapterById, topicById } from '../curriculum/registry';
@@ -11,15 +17,20 @@ export interface SubjectTone {
   wash: string;
 }
 
+/**
+ * The six families on the six pigments, each with its wash. Maths keeps Wobo blue; the rest sit
+ * where their old hue sat on the wheel — violet for physics, mint for biology, coral for computing,
+ * marigold for the social sciences — and chemistry takes the remaining pigment, lilac.
+ */
 export const SUBJECT_HUES: Record<string, SubjectTone> = {
-  math: { hue: '#1F35E0', wash: 'rgba(31,53,224,0.06)' },
-  physics: { hue: '#6D4AE0', wash: 'rgba(109,74,224,0.07)' },
-  chemistry: { hue: '#0FA3B1', wash: 'rgba(15,163,177,0.07)' },
-  biology: { hue: '#1CA363', wash: 'rgba(28,163,99,0.07)' },
-  cs: { hue: '#D6196F', wash: 'rgba(214,25,111,0.06)' },
-  social: { hue: '#E8881A', wash: 'rgba(232,136,26,0.08)' },
-  // ponytail: presentation alias — the clubbed "Science" door (and legacy ids) reads chemistry teal
-  science: { hue: '#0FA3B1', wash: 'rgba(15,163,177,0.07)' },
+  math: { hue: 'var(--pig)', wash: 'var(--pig-w)' },
+  physics: { hue: 'var(--violet)', wash: 'var(--violet-w)' },
+  chemistry: { hue: 'var(--lilac)', wash: 'var(--lilac-w)' },
+  biology: { hue: 'var(--mint)', wash: 'var(--mint-w)' },
+  cs: { hue: 'var(--rose)', wash: 'var(--rose-w)' },
+  social: { hue: 'var(--marigold)', wash: 'var(--marigold-w)' },
+  // ponytail: presentation alias — the clubbed "Science" door (and legacy ids) reads chemistry's
+  science: { hue: 'var(--lilac)', wash: 'var(--lilac-w)' },
 };
 
 export function toneForSubject(subjectId: string): SubjectTone {
@@ -38,4 +49,18 @@ export function hueForTopic(topicId: string): string {
     ? chapterById(topicById(topicId)?.chapterId ?? '')
     : chapterById(topicId);
   return toneForSubject(chapter?.subjectId ?? 'math').hue;
+}
+
+/**
+ * A concrete colour for the one consumer that cannot take a CSS variable: a `<canvas>`, which
+ * takes a colour STRING and silently keeps the last one it understood when handed `var(--pig)`.
+ * Everything else — the DOM, SVG presentation attributes, gradients — takes the variable itself
+ * and resolves per theme for free, so this is deliberately narrow.
+ */
+export function resolvedColor(value: string, fallback = '#2B45FF'): string {
+  const name = /^var\(\s*(--[\w-]+)/.exec(value.trim())?.[1];
+  if (!name) return value;
+  if (typeof document === 'undefined') return fallback;
+  const live = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return live || fallback;
 }

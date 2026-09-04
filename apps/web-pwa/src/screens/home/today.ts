@@ -7,7 +7,7 @@
  * sentence that needs it is left out and the gap is named in a TODO.
  */
 
-import { chapterById, topicById } from '../../curriculum/registry';
+import { chapterById, loadedTopics, topicById } from '../../curriculum/registry';
 import { loadWorld } from '../../curriculum/world';
 import type { Chapter, Topic } from '../../data/model';
 import type { MindState } from '../../store/mind';
@@ -120,8 +120,22 @@ export function continueLine(l: Lesson): string {
   return parts.length > 0 ? `${parts.join(' · ')}.` : '';
 }
 
-// "This week, in Wobo's words" is the You screen's sentence (`you/week.ts`), read from the same
-// ledger — the home and You say one thing, in one voice.
+// "This week, in Wobo's words" is one sentence in one place (`you/ledger.ts`'s `weeklyNote`, over
+// `you/week.ts`) — the home and You read the same note, so they can never say two different things
+// under the same heading.
+
+// --- the home's own words ----------------------------------------------------------------------
+
+/** The one question the home asks, the way the greeting ends it. */
+export const HOME_QUESTION = 'what are we figuring out tonight?';
+
+/** The words in the ask box — the door to the one conversation. */
+export const ASK_PLACEHOLDER = 'Ask anything from your syllabus, or paste question 7';
+
+/** The same sentence, opening a card instead of closing a greeting. */
+export function asHeading(sentence: string): string {
+  return sentence.charAt(0).toUpperCase() + sentence.slice(1);
+}
 
 // --- the streak's week -----------------------------------------------------------------------------
 
@@ -141,9 +155,15 @@ export function calendarWeek(marks: readonly string[], now: Date = new Date()): 
 
 // --- Wobo noticed ------------------------------------------------------------------------------------
 
+/** Which of the learner's own records the observation came from. */
+export type NoticedId = 'helped' | 'chapter' | 'rest';
+
 export interface Noticed {
+  id: NoticedId;
   title: string;
-  /** "today", "yesterday", or the weekday. */
+  /** The observation in Wobo's words. Belongs to THIS observation; there is no default line. */
+  body: string;
+  /** "today", "yesterday", or the weekday. Empty when the record carries no date. */
   when: string;
 }
 
@@ -163,13 +183,90 @@ export function relativeDay(iso: string, now: Date = new Date()): string {
   return WEEKDAYS[at.getUTCDay()] ?? '';
 }
 
+/** What Wobo has to look at before it can claim to have noticed anything. */
+export interface NoticedInput {
+  mind: MindState;
+  /** The ISO days the learner actually showed up — the activity marks. */
+  marks: readonly string[];
+  /** The chain of days the progress store is counting. */
+  streakDays: number;
+  /** The furthest chapter whose every lesson is done, or null — `finishedChapter` below. */
+  chapter: Chapter | null;
+  now?: Date;
+}
+
+/** The unbroken run of marked days ending today, or ending yesterday if today has no mark yet. */
+export function markedRun(marks: readonly string[], now: Date = new Date()): number {
+  const set = new Set(marks);
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  let start = today;
+  if (!set.has(isoDay(start))) start -= DAY_MS;
+  let run = 0;
+  while (set.has(isoDay(start - run * DAY_MS))) run += 1;
+  return run;
+}
+
 /**
- * The thing Wobo noticed: help asked for after a miss (the mind's `helpedAt`) — the one
- * observation the prototype's card carries, and the one its second line ("That's exactly how
- * learning looks. It goes in the Sunday note.") is about. Nothing until it has happened; a
- * different observation under that line would not make sense.
+ * The furthest chapter the learner has finished outright — every one of its lessons complete.
+ * Reads the registry, so it only ever names a chapter this device actually holds.
  */
-export function noticed(mind: MindState, now: Date = new Date()): Noticed | null {
-  if (!mind.helpedAt) return null;
-  return { title: 'You asked for help after a miss', when: relativeDay(mind.helpedAt, now) };
+export function finishedChapter(completed: ReadonlySet<string>): Chapter | null {
+  const seen = new Set<string>();
+  let best: Chapter | null = null;
+  for (const topic of loadedTopics()) {
+    if (seen.has(topic.chapterId)) continue;
+    seen.add(topic.chapterId);
+    const chapter = chapterById(topic.chapterId);
+    if (!chapter || chapter.topics.length === 0) continue;
+    if (!chapter.topics.every((t) => completed.has(t.id))) continue;
+    if (!best || chapter.index > best.index) best = chapter;
+  }
+  return best;
+}
+
+/**
+ * The thing Wobo noticed — REAL, or nothing at all.
+ *
+ * Three observations, each one a record this device actually holds, and each one carrying its own
+ * words. The card used to print one fixed second line under whatever it found, which made the line
+ * a decoration rather than an observation; here the line IS the observation, so a card that cannot
+ * say something true does not appear. The order is the order of what is worth saying: help asked
+ * for after a miss (the prototype's own card), then a chapter finished, then a chain that held
+ * through a quiet day.
+ *
+ * Only the first closes on the Sunday note, because that is the prototype's own sentence. Two
+ * observations ending on the same clause read as one template with the middle swapped, which is
+ * the decoration this function exists to avoid.
+ */
+export function noticed(input: NoticedInput): Noticed | null {
+  const now = input.now ?? new Date();
+  const { mind } = input;
+  if (mind.helpedAt) {
+    return {
+      id: 'helped',
+      title: 'You asked for help after a miss',
+      body: "That's exactly how learning looks. It goes in the Sunday note.",
+      when: relativeDay(mind.helpedAt, now),
+    };
+  }
+  if (input.chapter) {
+    return {
+      id: 'chapter',
+      title: `You finished ${input.chapter.name}`,
+      body: `Every lesson in chapter ${input.chapter.index}, done.`,
+      when: '',
+    };
+  }
+  // The chain the store counts runs longer than the days actually marked: a quiet day was covered
+  // and the streak held. Nothing to say until there is a chain worth keeping.
+  const run = markedRun(input.marks, now);
+  if (input.streakDays >= 2 && input.streakDays > run) {
+    return {
+      id: 'rest',
+      title: 'A rest day did not break your streak',
+      body: `${words(input.streakDays)} days still in a row. Rest days don't break it.`,
+      when: '',
+    };
+  }
+  return null;
 }

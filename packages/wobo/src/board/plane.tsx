@@ -1,18 +1,22 @@
 'use client';
 
 /**
- * The plane (docs/BOARD.md §5) — a frosted board that slides in from Wobo's orb and floats over the
- * screen, so the thing being explained stays visible underneath.
+ * The plane (docs/BOARD.md §5) — a board that slides in from Wobo's orb and floats over the screen,
+ * so the thing being explained stays visible underneath.
  *
  * It can be dragged, resized, pinned, and minimised to a thumbnail that keeps its ink; on a phone
  * it is a sheet. A session can hold several boards ("fresh board" starts another), and any code can
  * summon one by name — that is the summon API the word "board" and the gesture layer both call.
+ *
+ * Its frame is the chrome in `chrome.tsx`: a 24px card, one tonal step off the paper, lifted by a
+ * soft shadow because it floats. No border line, on either theme (DESIGN.md).
  */
 
-import { frost, hairline, radius, zIndex } from '@wobo/config';
+import { zIndex } from '@wobo/config';
 import { useReducedMotion } from '@wobo/motion';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { BoardChromeStyle, ChromeButton } from './chrome';
 import { BoardSurface, type BoardSurfaceProps } from './renderer';
 import { BoardStore } from './store';
 
@@ -221,27 +225,9 @@ function useIsPhone(): boolean {
 }
 
 const chromeButton = (label: string, onClick: () => void, glyph: string) => (
-  <button
-    key={label}
-    type="button"
-    aria-label={label}
-    onClick={onClick}
-    style={{
-      appearance: 'none',
-      background: 'transparent',
-      border: `0.5px solid ${hairline.onPaper}`,
-      borderRadius: radius.sm,
-      color: 'var(--wobo-ink-500, #6E6E76)',
-      cursor: 'pointer',
-      font: 'inherit',
-      fontSize: 12,
-      height: 24,
-      lineHeight: '22px',
-      padding: '0 8px',
-    }}
-  >
+  <ChromeButton key={label} aria-label={label} onClick={onClick}>
     {glyph}
-  </button>
+  </ChromeButton>
 );
 
 export interface WoboPlaneProps
@@ -382,60 +368,27 @@ export function WoboPlane(props: WoboPlaneProps) {
           key="plane"
           role="dialog"
           aria-label={`${state.title}, Wobo's board`}
+          className={`wobo-chrome wobo-chrome-plane${phone ? ' wobo-chrome-sheet' : ''}`}
           initial={reduced ? false : { opacity: 0, scale: 0.86, x: from.x, y: from.y }}
           animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
           exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.9, x: from.x, y: from.y }}
           transition={spring}
-          style={{
-            position: 'fixed',
-            ...frame,
-            zIndex: zIndex.panel,
-            display: 'flex',
-            flexDirection: 'column',
-            background: 'var(--wobo-frost-on-paper, rgba(255,255,255,0.78))',
-            backdropFilter: `blur(${frost.blur})`,
-            WebkitBackdropFilter: `blur(${frost.blur})`,
-            border: `0.5px solid ${hairline.onPaper}`,
-            borderRadius: phone ? `${radius.sm}px ${radius.sm}px 0 0` : radius.sm,
-            overflow: 'hidden',
-          }}
+          style={{ position: 'fixed', ...frame, zIndex: zIndex.panel }}
         >
-          <header
-            style={{
-              alignItems: 'center',
-              borderBottom: `0.5px solid ${hairline.onPaper}`,
-              display: 'flex',
-              flex: '0 0 auto',
-              gap: 8,
-              padding: '8px 10px',
-              userSelect: 'none',
-            }}
-          >
+          <BoardChromeStyle />
+          <header className="wobo-chrome-head">
             {/* The drag handle is a real button, so the board can be moved and resized from the
                 keyboard exactly as it can with a pointer. */}
             <button
               type="button"
+              className="wobo-chrome-title"
               aria-label={`${state.title} — drag to move, arrows to move, alt and arrows to resize`}
               onPointerDown={onDragStart}
               onPointerMove={onDragMove}
               onPointerUp={onDragEnd}
               onPointerCancel={onDragEnd}
               onKeyDown={onChromeKey}
-              style={{
-                appearance: 'none',
-                background: 'transparent',
-                border: 'none',
-                color: 'var(--wobo-ink-500, #6E6E76)',
-                cursor: phone ? 'default' : 'grab',
-                flex: '1 1 auto',
-                font: 'inherit',
-                fontSize: 12,
-                letterSpacing: '0.01em',
-                margin: 0,
-                padding: 0,
-                textAlign: 'left',
-                touchAction: 'none',
-              }}
+              style={phone ? { cursor: 'default' } : undefined}
             >
               {state.title}
             </button>
@@ -449,7 +402,7 @@ export function WoboPlane(props: WoboPlaneProps) {
             {chromeButton('minimise the board', () => plane.minimize(), 'hide')}
             {chromeButton('close the board', () => plane.dismiss(), 'close')}
           </header>
-          <div style={{ flex: '1 1 auto', position: 'relative' }}>
+          <div className="wobo-chrome-canvas">
             <BoardSurface
               store={store}
               capture={props.capture ?? true}
@@ -465,24 +418,12 @@ export function WoboPlane(props: WoboPlaneProps) {
           {phone ? null : (
             <button
               type="button"
+              className="wobo-chrome-grip"
               aria-label="resize the board — drag, or the arrow keys"
               onPointerDown={onResizeStart}
               onPointerMove={onResizeMove}
               onPointerUp={onDragEnd}
               onKeyDown={onResizeKey}
-              style={{
-                appearance: 'none',
-                background: 'transparent',
-                border: 'none',
-                bottom: 0,
-                cursor: 'nwse-resize',
-                height: 18,
-                padding: 0,
-                position: 'absolute',
-                right: 0,
-                touchAction: 'none',
-                width: 18,
-              }}
             />
           )}
         </motion.section>
@@ -491,6 +432,7 @@ export function WoboPlane(props: WoboPlaneProps) {
         <motion.button
           key="thumb"
           type="button"
+          className="wobo-chrome wobo-chrome-thumb"
           aria-label={`open ${state.title}`}
           onClick={() => plane.restore()}
           initial={reduced ? false : { opacity: 0, scale: 0.8 }}
@@ -498,22 +440,14 @@ export function WoboPlane(props: WoboPlaneProps) {
           exit={{ opacity: 0, scale: 0.8 }}
           transition={spring}
           style={{
-            background: 'var(--wobo-frost-on-paper, rgba(255,255,255,0.78))',
-            backdropFilter: `blur(${frost.blur})`,
-            WebkitBackdropFilter: `blur(${frost.blur})`,
-            border: `0.5px solid ${hairline.onPaper}`,
-            borderRadius: radius.sm,
             bottom: 132,
-            cursor: 'pointer',
             height: THUMB * 0.68,
-            overflow: 'hidden',
-            padding: 0,
-            position: 'fixed',
             right: 24,
             width: THUMB,
             zIndex: zIndex.panel,
           }}
         >
+          <BoardChromeStyle />
           <div style={{ inset: 0, position: 'absolute' }}>
             <BoardSurface store={store} label={`${state.title}, minimised`} />
           </div>

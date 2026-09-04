@@ -1,0 +1,23 @@
+/* biome-ignore-all format: the numbers are design/prototypes/app-v1.html's own, kept as written */
+/*
+ * A subject — the Learn board (02) scoped to one subject, with the Practice board's (04) set list
+ * behind its second tab. Both boards' rules already live in Learn.css (`ln-`) and practice.css
+ * (`pr-`); the screen composes them and owns only what neither board had: the tab row, and the
+ * two-column frame the set list sits in (the practice board's own `1fr 360px`).
+ *
+ * src/screens/subject/subject.test.ts holds these three rules to the law.
+ */
+
+/* the two tabs — Learn and Practice, in the board's chips */
+.sb-tabs{display:flex;gap:8px;flex-wrap:wrap}
+
+/* the practice tab: the set list, and how this works — the practice board's own two columns */
+.sb-sets{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
+.sb-sets .wk-card{min-height:0}
+
+/* phone */
+@media (max-width:900px){
+  .sb-sets{grid-template-columns:1fr}
+  /* the touch floor (DESIGN.md §2): a set row is a thumb's target */
+  .sb-sets .pr-set button{min-height:44px}
+}

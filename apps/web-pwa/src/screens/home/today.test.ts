@@ -1,6 +1,17 @@
 import { describe, expect, it } from 'bun:test';
 import type { MindState } from '../../store/mind';
-import { calendarWeek, continueLine, noticed, relativeDay, todayLine, words } from './today';
+import {
+  asHeading,
+  calendarWeek,
+  continueLine,
+  HOME_QUESTION,
+  markedRun,
+  type NoticedInput,
+  noticed,
+  relativeDay,
+  todayLine,
+  words,
+} from './today';
 
 const topic = (id: string, name: string, chapterId = 'c6') => ({
   id,
@@ -143,21 +154,79 @@ describe('what Wobo noticed', () => {
     interests: [],
     facts: [],
   };
-  const now = new Date('2026-09-03T10:00:00Z');
+  const now = new Date('2026-09-03T10:00:00Z'); // a Thursday
+  const look = (patch: Partial<NoticedInput> = {}) =>
+    noticed({ mind: empty, marks: [], streakDays: 0, chapter: null, now, ...patch });
 
   it('is nothing until Wobo has watched something', () => {
-    expect(noticed(empty, now)).toBeNull();
+    expect(look()).toBeNull();
   });
 
   it('is the prototype’s card once help was asked for after a miss', () => {
-    const seen = noticed({ ...empty, helpedAt: '2026-09-02T18:00:00Z' }, now);
-    expect(seen).toEqual({ title: 'You asked for help after a miss', when: 'yesterday' });
+    expect(look({ mind: { ...empty, helpedAt: '2026-09-02T18:00:00Z' } })).toEqual({
+      id: 'helped',
+      title: 'You asked for help after a miss',
+      body: "That's exactly how learning looks. It goes in the Sunday note.",
+      when: 'yesterday',
+    });
   });
 
-  it('says nothing about a wrong answer or a day shown up — the card’s second line is about help', () => {
+  it('names the chapter the learner actually finished, and counts its lessons', () => {
+    const seen = look({ chapter });
+    expect(seen?.id).toBe('chapter');
+    expect(seen?.title).toBe('You finished Triangles and the hypotenuse');
+    expect(seen?.body).toBe('Every lesson in chapter 6, done.');
+    expect(seen?.when).toBe('');
+  });
+
+  it('sees a quiet day the chain survived — the streak outruns the days marked', () => {
+    const seen = look({ marks: ['2026-09-01', '2026-09-02', '2026-09-03'], streakDays: 5 });
+    expect(seen?.id).toBe('rest');
+    expect(seen?.title).toBe('A rest day did not break your streak');
+    expect(seen?.body).toBe("five days still in a row. Rest days don't break it.");
+  });
+
+  it('says nothing about a streak the marks already account for', () => {
+    expect(look({ marks: ['2026-09-01', '2026-09-02', '2026-09-03'], streakDays: 3 })).toBeNull();
+    expect(look({ marks: ['2026-09-03'], streakDays: 1 })).toBeNull();
+  });
+
+  it('says nothing about a wrong answer or a day shown up on its own', () => {
     expect(
-      noticed({ ...empty, slips: [{ nodeId: 'n1', value: 4, at: '2026-09-02T18:00:00Z' }] }, now),
+      look({ mind: { ...empty, slips: [{ nodeId: 'n1', value: 4, at: '2026-09-02' }] } }),
     ).toBeNull();
-    expect(noticed({ ...empty, sessionDays: ['2026-09-01', '2026-09-03'] }, now)).toBeNull();
+    expect(look({ mind: { ...empty, sessionDays: ['2026-09-01', '2026-09-03'] } })).toBeNull();
+  });
+
+  it('carries its own words — no observation shares a body with another', () => {
+    const bodies = [
+      look({ mind: { ...empty, helpedAt: '2026-09-03T09:00:00Z' } })?.body,
+      look({ chapter })?.body,
+      look({ marks: ['2026-09-03'], streakDays: 4 })?.body,
+    ];
+    expect(bodies.every(Boolean)).toBe(true);
+    expect(new Set(bodies).size).toBe(3);
+  });
+});
+
+describe('the run of days actually marked', () => {
+  const now = new Date('2026-09-03T10:00:00Z');
+  it('counts back from today', () => {
+    expect(markedRun(['2026-09-03', '2026-09-02', '2026-09-01'], now)).toBe(3);
+  });
+  it('counts back from yesterday when today has no mark yet', () => {
+    expect(markedRun(['2026-09-02', '2026-09-01'], now)).toBe(2);
+  });
+  it('stops at the first gap', () => {
+    expect(markedRun(['2026-09-03', '2026-09-01'], now)).toBe(1);
+    expect(markedRun([], now)).toBe(0);
+  });
+});
+
+describe('the home’s own words', () => {
+  it('asks one question, and the card opens it as a sentence', () => {
+    expect(HOME_QUESTION).toBe('what are we figuring out tonight?');
+    expect(asHeading(HOME_QUESTION)).toBe('What are we figuring out tonight?');
+    expect(asHeading('')).toBe('');
   });
 });

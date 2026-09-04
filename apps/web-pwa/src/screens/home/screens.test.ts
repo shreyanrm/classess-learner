@@ -14,6 +14,8 @@ const APP = readFileSync(join(REPO, 'design', 'prototypes', 'app-v1.html'), 'utf
 const HOME = readFileSync(join(import.meta.dir, 'Home.css'), 'utf8');
 const LEARN = readFileSync(join(import.meta.dir, '..', 'learn', 'Learn.css'), 'utf8');
 const HOME_TSX = readFileSync(join(import.meta.dir, '..', 'Home.tsx'), 'utf8');
+/** The home's words and its arithmetic; the copy check reads the screen and this together. */
+const TODAY_TS = readFileSync(join(import.meta.dir, 'today.ts'), 'utf8');
 const LEARN_TSX = readFileSync(join(import.meta.dir, '..', 'Learn.tsx'), 'utf8');
 
 /** Every `selector{declarations}` in a stylesheet, media blocks flattened, comments dropped. */
@@ -148,7 +150,7 @@ describe('the copy is the prototype’s', () => {
   for (const line of LINES) {
     it(`home says “${line}”`, () => {
       expect(APP).toContain(line);
-      expect(HOME_TSX).toContain(line);
+      expect(HOME_TSX + TODAY_TS).toContain(line);
     });
   }
   it('learn says its lines', () => {
@@ -191,4 +193,57 @@ describe('the screens keep the law (DESIGN.md §2, §3)', () => {
       expect(css).not.toMatch(/font-family\s*:\s*['"]?(?!var\()/);
     });
   }
+});
+
+/**
+ * The row of three is a row of THREE. A card that renders only when a condition holds leaves a
+ * hole in the row, and a hole is "emptiness that is just absence" (DESIGN.md §2) — the exact thing
+ * the law forbids. Each slot here has a fallback, and the last one's fallback is the ask box's own
+ * question as a card.
+ */
+describe('the today row never has a hole in it', () => {
+  const row = HOME_TSX.slice(
+    HOME_TSX.indexOf('className="hm-today"'),
+    HOME_TSX.indexOf('className="hm-split"'),
+  );
+
+  it('always draws Continue, whatever the learner has started', () => {
+    expect(row).toContain('<Tag>Continue</Tag>');
+    // four readings of "continue": the topic in flight, the next one, the subjects, the board
+    expect(row.match(/<Tag>Continue<\/Tag>/g)?.length).toBe(4);
+    expect(row).toContain('Open your subjects');
+  });
+
+  it('always draws Practice, falling back to the set itself', () => {
+    expect(row).toContain('<Tag>Practice</Tag>');
+    expect(row).toContain('SET_TITLE');
+  });
+
+  it('draws the third card either way — what Wobo noticed, else the door to asking', () => {
+    expect(row).toContain('<Tag>Wobo noticed</Tag>');
+    expect(row).toContain('<Tag>Ask Wobo</Tag>');
+    // a ternary, never a bare `{seen && ...}` that can render nothing
+    expect(row).toContain('{seen ? (');
+    expect(row).not.toContain('{seen && (');
+  });
+
+  it("prints the observation's own words, never a constant sentence", () => {
+    expect(row).toContain('<p>{seen.body}</p>');
+    expect(row).not.toContain("That's exactly how learning looks");
+  });
+});
+
+/** One sentence under "This week, in Wobo's words", computed in exactly one place. */
+describe('the home and You read one weekly note', () => {
+  const YOU_TSX = readFileSync(join(import.meta.dir, '..', 'You.tsx'), 'utf8');
+
+  it('both screens ask weeklyNote, and neither builds its own summary', () => {
+    for (const [name, src] of [
+      ['Home.tsx', HOME_TSX],
+      ['You.tsx', YOU_TSX],
+    ] as const) {
+      expect([name, src.includes('weeklyNote(')]).toEqual([name, true]);
+      expect([name, src.includes('summarise(')]).toEqual([name, false]);
+    }
+  });
 });

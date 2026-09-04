@@ -13,6 +13,7 @@
 import { fontFamily } from '@wobo/config';
 import { motion } from 'framer-motion';
 import { type CSSProperties, useId } from 'react';
+import { rgba } from '../screens/course/shared';
 
 export type MetalTier = 'bronze' | 'silver' | 'gold' | 'prismatic';
 export type TrophyForm = 'cup' | 'medal' | 'shield' | 'laurel';
@@ -343,7 +344,7 @@ export function TrophyPlinth({
           height: 168,
           borderRadius: 3,
           background: earned
-            ? `linear-gradient(180deg, ${hue}14 0%, ${hue}06 46%, transparent 100%)`
+            ? `linear-gradient(180deg, ${rgba(hue, 0.08)} 0%, ${rgba(hue, 0.02)} 46%, transparent 100%)`
             : 'var(--wobo-tonal)',
           border: earned
             ? '1px solid var(--wobo-card-border)'
@@ -366,7 +367,7 @@ export function TrophyPlinth({
               width: 92,
               height: 150,
               clipPath: 'polygon(38% 0, 62% 0, 100% 100%, 0% 100%)',
-              background: `linear-gradient(180deg, ${hue}30, ${hue}00 78%)`,
+              background: `linear-gradient(180deg, ${rgba(hue, 0.19)}, ${rgba(hue, 0)} 78%)`,
               filter: 'blur(4px)',
               pointerEvents: 'none',
             }}
@@ -460,7 +461,7 @@ export interface TrophyAward {
 }
 
 const STREAK_HUE = '#66B300';
-const XP_HUE = '#1F35E0';
+const XP_HUE = 'var(--pig)';
 
 const fmtXp = (n: number) => n.toLocaleString('en-IN');
 const shortXp = (n: number) => (n >= 1000 ? `${n / 1000}k` : `${n}`);

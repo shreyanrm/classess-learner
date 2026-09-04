@@ -260,6 +260,13 @@ export const DrawSpec = z.object({
   ...base,
   kind: z.literal('draw'),
   want: DrawWant,
+  /**
+   * The other right answers. Some questions have more than one: a rectangle is cut in half by a
+   * vertical line, a horizontal one, or either diagonal, and every one of those is correct. The
+   * drawn stroke is measured against `want` and each of these, and the learner is given the best
+   * of them — so an item never marks a right answer wrong because it wanted a different one.
+   */
+  accept: z.array(DrawWant).max(8).optional(),
   /** The extent of the board the learner draws on, in board units. */
   view: AnswerBox.optional(),
   /** Ink already on the board to draw over — the host resolves these ids to board objects. */

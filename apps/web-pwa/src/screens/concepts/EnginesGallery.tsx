@@ -1,11 +1,19 @@
 'use client';
 
 /**
- * EnginesGallery — a dev preview of the "physics of understanding" renderers (type-batch A). Reach
- * it at `#engines`. Each engine renders with its hand-authored demo spec so the surfaces can be QA'd
- * and screenshotted outside a generated course. Not part of the learner flow — a workshop bench.
+ * The engine gallery — a concept, on the lesson plane (board 03 of design/prototypes/app-v1.html).
+ *
+ * It used to be a scroll of every "physics of understanding" renderer stacked on a bare page. It is
+ * now what every other surface is: the plane card with Wobo's bar, the canvas and the say row, and
+ * the side column beside it listing the concept's steps — one step per engine, grouped the way the
+ * batches are, the one on the canvas lit. One board at a time, the way a lesson shows one card at a
+ * time, so an engine is QA'd on the plane it will actually be taught on.
+ *
+ * Each engine still renders with its own hand-authored demo spec. Not part of the learner flow — a
+ * workshop bench, reached at /concept/engines.
  */
 
+import { type ReactNode, useMemo, useState } from 'react';
 import { ANATOMY_DEMOS, AnatomyScene } from '../../engines/AnatomyScene';
 import { ARCADE_DEMO, ArcadeShell } from '../../engines/ArcadeShell';
 import { BIO_DEMOS, BioScene } from '../../engines/BioScene';
@@ -35,238 +43,314 @@ import { PODCAST_DEMO, PodcastPlayer } from '../../engines/PodcastPlayer';
 import { SOCIAL_DEMOS, SocialScene } from '../../engines/SocialScene';
 import { WHATIF_DEMO, WhatIfNumerical } from '../../engines/WhatIfNumerical';
 import { WORDPROBLEM_DEMO, WordProblemBreakdown } from '../../engines/WordProblemBreakdown';
+import { AppFrame } from '../../shell/AppFrame';
 import { hueForTopic } from '../../ui/hues';
-import { whisper } from '../course/shared';
+import { Button, Card, Tag, TopBar, WoboHead } from '../../ui/primitives';
+import '../course/lesson.css';
+import './concept.css';
 
 const noop = () => {};
 // a fixed, valid UUID so the demo engines' evidence events (zUuid node_id) validate on the bench
 const DEMO_NODE = '00000000-0000-7000-8000-00000000b15b';
 
-function Bench({ id, name, children }: { id: string; name: string; children: React.ReactNode }) {
-  return (
-    <section
-      id={id}
-      style={{
-        borderTop: '0.5px solid var(--wobo-hairline-on-paper)',
-        padding: '18px 0 42px',
-      }}
-    >
-      <div style={{ ...whisper, padding: '0 24px', marginBottom: 4 }}>{name}</div>
-      {children}
-    </section>
-  );
+/** What the crumb and the spoken heading call this concept. */
+const TITLE = 'engine gallery';
+
+interface Step {
+  id: string;
+  /** The engine's own line, as the benches always named them. */
+  name: string;
+  board: () => ReactNode;
+}
+
+interface Batch {
+  /** The card's eyebrow in the side column. */
+  tag: string;
+  steps: Step[];
+}
+
+/** Every engine on the bench, in the batches they ship in. Built once — the specs are constants. */
+function buildBatches(): Batch[] {
+  const hue = hueForTopic('phys-electricity');
+  const math = hueForTopic('math');
+  const bio = hueForTopic('bio');
+  const chem = hueForTopic('chem');
+  const social = hueForTopic('social');
+  const mech = hueForTopic('phys-mechanics');
+  return [
+    {
+      tag: 'type-batch a',
+      steps: [
+        {
+          id: 'engine-discovery',
+          name: 'guided discovery — the keystone shell, act-to-reveal',
+          board: () => <Discovery spec={DISCOVERY_DEMO} hue={hue} setBar={noop} onDone={noop} />,
+        },
+        {
+          id: 'engine-perturb',
+          name: 'perturbation sandbox — break it',
+          board: () => (
+            <PerturbationSandbox spec={PERTURB_DEMO} hue={hue} setBar={noop} onDone={noop} />
+          ),
+        },
+        {
+          id: 'engine-whatif',
+          name: 'what-if numerical — every value editable',
+          board: () => (
+            <WhatIfNumerical spec={WHATIF_DEMO} hue={math} setBar={noop} onDone={noop} />
+          ),
+        },
+        {
+          id: 'engine-compare',
+          name: 'compare interactive — dual panel',
+          board: () => (
+            <CompareInteractive spec={COMPARE_DEMO} hue={bio} setBar={noop} onDone={noop} />
+          ),
+        },
+        {
+          id: 'engine-conceptmap',
+          name: 'concept map — seeded, tappable',
+          board: () => <ConceptMap spec={CONCEPTMAP_DEMO} hue={chem} setBar={noop} onDone={noop} />,
+        },
+      ],
+    },
+    {
+      tag: 'math engines',
+      steps: MATHSCENE_DEMOS.map((spec) => ({
+        id: `engine-mathscene-${spec.kind}`,
+        name: `math scene · ${spec.kind} — ${spec.title}`,
+        board: () => <MathScene spec={spec} hue={math} setBar={noop} onDone={noop} />,
+      })),
+    },
+    {
+      tag: 'physics engines',
+      steps: [
+        {
+          id: 'engine-physics-projectile',
+          name: 'physics — projectile, live angle + velocity',
+          board: () => (
+            <PhysicsScene spec={PHYSICS_PROJECTILE_DEMO} hue={mech} setBar={noop} onDone={noop} />
+          ),
+        },
+        {
+          id: 'engine-physics-freebody',
+          name: 'physics — free-body diagram, draggable forces',
+          board: () => (
+            <PhysicsScene spec={PHYSICS_FREEBODY_DEMO} hue={mech} setBar={noop} onDone={noop} />
+          ),
+        },
+        {
+          id: 'engine-physics-wave',
+          name: 'physics — wave superposition',
+          board: () => (
+            <PhysicsScene spec={PHYSICS_WAVE_DEMO} hue={mech} setBar={noop} onDone={noop} />
+          ),
+        },
+      ],
+    },
+    {
+      tag: 'chemistry engines',
+      steps: [
+        {
+          id: 'engine-chem-balance',
+          name: 'chem — equation balancer, live element conservation',
+          board: () => (
+            <ChemScene spec={CHEM_BALANCE_DEMO} hue={chem} setBar={noop} onDone={noop} />
+          ),
+        },
+        {
+          id: 'engine-chem-titration',
+          name: 'chem — titration lab, drop-by-drop pH curve',
+          board: () => (
+            <ChemScene spec={CHEM_TITRATION_DEMO} hue={chem} setBar={noop} onDone={noop} />
+          ),
+        },
+        {
+          id: 'engine-chem-structure',
+          name: 'chem — 2D structure from SMILES, RDKit-js',
+          board: () => (
+            <ChemScene spec={CHEM_STRUCTURE_DEMO} hue={chem} setBar={noop} onDone={noop} />
+          ),
+        },
+      ],
+    },
+    {
+      tag: 'biology engines',
+      steps: [
+        ...BIO_DEMOS.map((spec) => ({
+          id: `engine-bio-${spec.kind}`,
+          name: `biology · ${spec.kind} — ${spec.title}`,
+          board: () => <BioScene spec={spec} hue={bio} setBar={noop} onDone={noop} />,
+        })),
+        ...ANATOMY_DEMOS.map((spec) => ({
+          id: `engine-anatomy-${spec.id}`,
+          name: `anatomy 3d — ${spec.title}, rotatable + tappable labelled parts`,
+          board: () => <AnatomyScene spec={spec} hue={bio} setBar={noop} onDone={noop} />,
+        })),
+      ],
+    },
+    {
+      tag: 'social engines',
+      steps: [
+        ...SOCIAL_DEMOS.map((spec) => ({
+          id: `engine-social-${spec.kind}`,
+          name: `social · ${spec.kind} — ${spec.title}`,
+          board: () => <SocialScene spec={spec} hue={social} setBar={noop} onDone={noop} />,
+        })),
+        ...MAP_DEMOS.map((spec) => ({
+          id: `engine-map-${spec.interaction.mode}`,
+          name: `map · ${spec.interaction.mode} — ${spec.title}`,
+          board: () => <MapScene spec={spec} hue={social} setBar={noop} onDone={noop} />,
+        })),
+      ],
+    },
+    {
+      tag: 'cs ramp',
+      steps: [
+        {
+          id: 'engine-cs-ramp',
+          name: 'cs ramp — blocks → parsons → real python, Pyodide-run',
+          board: () => <CsRampDemos />,
+        },
+      ],
+    },
+    {
+      tag: 'type-batch b',
+      steps: [
+        {
+          id: 'engine-workbook',
+          name: 'mini-workbook — match, fill, order, checked into evidence',
+          board: () => (
+            <MiniWorkbook
+              spec={WORKBOOK_DEMO}
+              hue={chem}
+              nodeId={DEMO_NODE}
+              setBar={noop}
+              onDone={noop}
+            />
+          ),
+        },
+        {
+          id: 'engine-flashcards',
+          name: 'flashcards — spring 3d flip, FSRS on grade',
+          board: () => (
+            <Flashcards
+              spec={FLASHCARDS_DEMO}
+              hue={chem}
+              nodeId={DEMO_NODE}
+              setBar={noop}
+              onDone={noop}
+            />
+          ),
+        },
+        {
+          id: 'engine-derivation',
+          name: 'derivation depth — the ⓘ, nestable one level',
+          board: () => (
+            <DerivationCard spec={DERIVATION_DEMO} hue={math} setBar={noop} onDone={noop} />
+          ),
+        },
+        {
+          id: 'engine-wordproblem',
+          name: 'word-problem breakdown — given · find · plan · solve',
+          board: () => (
+            <WordProblemBreakdown spec={WORDPROBLEM_DEMO} hue={math} setBar={noop} onDone={noop} />
+          ),
+        },
+        {
+          id: 'engine-podcast',
+          name: 'podcast player — chaptered, TTS seam, speed + minimize',
+          board: () => <PodcastPlayer spec={PODCAST_DEMO} hue={hue} setBar={noop} onDone={noop} />,
+        },
+        {
+          id: 'engine-arcade',
+          name: 'arcade — falling-answers catch, wired to real items',
+          board: () => (
+            <ArcadeShell
+              spec={ARCADE_DEMO}
+              hue={chem}
+              nodeId={DEMO_NODE}
+              setBar={noop}
+              onDone={noop}
+            />
+          ),
+        },
+      ],
+    },
+  ];
 }
 
 export function EnginesGallery() {
-  const hue = hueForTopic('phys-electricity');
+  const batches = useMemo(buildBatches, []);
+  const steps = useMemo(() => batches.flatMap((b) => b.steps), [batches]);
+  const [at, setAt] = useState(0);
+  const step = steps[at] ?? steps[0];
+  if (!step) return null;
+
   return (
-    <div
-      style={{
-        width: '100%',
-        height: '100dvh',
-        overflowY: 'auto',
-        background: 'var(--wobo-paper)',
-        color: 'var(--wobo-ink-900)',
-      }}
-    >
-      <div style={{ padding: '28px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
-        <div style={{ ...whisper }}>type-batch a · the physics of understanding</div>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 550, marginTop: 8 }}>engine gallery</h1>
+    <AppFrame active="learn">
+      <h1 className="ls-sr">{TITLE}</h1>
+      <TopBar crumb={`Concept · ${TITLE} · ${at + 1} of ${steps.length}`} />
+      <div className="ls-lesson cn-lesson">
+        <section className="ls-plane cn-plane" aria-label={`${TITLE}, on the plane`}>
+          <div className="ls-bar">
+            <b>Wobo</b> · the physics of understanding
+          </div>
+          <div className="ls-canvas">
+            <div className="ls-stage wobo-scroll-quiet">
+              <div className="cn-board" key={step.id}>
+                {step.board()}
+              </div>
+            </div>
+          </div>
+          <div className="ls-say">
+            <WoboHead size={44} />
+            <div className="hand">{step.name}</div>
+            <div className="ls-actions">
+              <Button
+                size="sm"
+                tone="quiet"
+                disabled={at === 0}
+                onClick={() => setAt((i) => Math.max(0, i - 1))}
+              >
+                Back
+              </Button>
+              <Button
+                size="sm"
+                disabled={at >= steps.length - 1}
+                onClick={() => setAt((i) => Math.min(steps.length - 1, i + 1))}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </section>
+        <aside className="ls-side cn-side">
+          {batches.map((batch) => (
+            <Card key={batch.tag} compact>
+              <Tag>{batch.tag}</Tag>
+              <div className="cn-steps">
+                {batch.steps.map((s) => {
+                  const index = steps.indexOf(s);
+                  const on = index === at;
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      className={on ? 'cn-step cn-on' : 'cn-step'}
+                      aria-current={on ? 'step' : undefined}
+                      onClick={() => setAt(index)}
+                    >
+                      <i>{index + 1}</i>
+                      {s.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </Card>
+          ))}
+        </aside>
       </div>
-      <Bench id="engine-discovery" name="guided discovery — the keystone shell, act-to-reveal">
-        <Discovery spec={DISCOVERY_DEMO} hue={hue} setBar={noop} onDone={noop} />
-      </Bench>
-      <Bench id="engine-perturb" name="perturbation sandbox — break it">
-        <PerturbationSandbox spec={PERTURB_DEMO} hue={hue} setBar={noop} onDone={noop} />
-      </Bench>
-      <Bench id="engine-whatif" name="what-if numerical — every value editable">
-        <WhatIfNumerical spec={WHATIF_DEMO} hue={hueForTopic('math')} setBar={noop} onDone={noop} />
-      </Bench>
-      <Bench id="engine-compare" name="compare interactive — dual panel">
-        <CompareInteractive
-          spec={COMPARE_DEMO}
-          hue={hueForTopic('bio')}
-          setBar={noop}
-          onDone={noop}
-        />
-      </Bench>
-      <Bench id="engine-conceptmap" name="concept map — seeded, tappable">
-        <ConceptMap spec={CONCEPTMAP_DEMO} hue={hueForTopic('chem')} setBar={noop} onDone={noop} />
-      </Bench>
-
-      <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
-        <div style={{ ...whisper }}>
-          math engines · Mafs scenes — draggable, live-bound, Wobo-drivable
-        </div>
-      </div>
-      {MATHSCENE_DEMOS.map((spec) => (
-        <Bench
-          key={spec.id}
-          id={`engine-mathscene-${spec.kind}`}
-          name={`math scene · ${spec.kind} — ${spec.title}`}
-        >
-          <MathScene spec={spec} hue={hueForTopic('math')} setBar={noop} onDone={noop} />
-        </Bench>
-      ))}
-
-      <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
-        <div style={{ ...whisper }}>physics engines · exact closed forms, dimension-checked</div>
-      </div>
-      <Bench id="engine-physics-projectile" name="physics — projectile, live angle + velocity">
-        <PhysicsScene
-          spec={PHYSICS_PROJECTILE_DEMO}
-          hue={hueForTopic('phys-mechanics')}
-          setBar={noop}
-          onDone={noop}
-        />
-      </Bench>
-      <Bench id="engine-physics-freebody" name="physics — free-body diagram, draggable forces">
-        <PhysicsScene
-          spec={PHYSICS_FREEBODY_DEMO}
-          hue={hueForTopic('phys-mechanics')}
-          setBar={noop}
-          onDone={noop}
-        />
-      </Bench>
-      <Bench id="engine-physics-wave" name="physics — wave superposition">
-        <PhysicsScene
-          spec={PHYSICS_WAVE_DEMO}
-          hue={hueForTopic('phys-mechanics')}
-          setBar={noop}
-          onDone={noop}
-        />
-      </Bench>
-
-      <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
-        <div style={{ ...whisper }}>chemistry engines · conservation is law, RDKit + 3Dmol</div>
-      </div>
-      <Bench id="engine-chem-balance" name="chem — equation balancer, live element conservation">
-        <ChemScene spec={CHEM_BALANCE_DEMO} hue={hueForTopic('chem')} setBar={noop} onDone={noop} />
-      </Bench>
-      <Bench id="engine-chem-titration" name="chem — titration lab, drop-by-drop pH curve">
-        <ChemScene
-          spec={CHEM_TITRATION_DEMO}
-          hue={hueForTopic('chem')}
-          setBar={noop}
-          onDone={noop}
-        />
-      </Bench>
-      <Bench id="engine-chem-structure" name="chem — 2D structure from SMILES, RDKit-js">
-        <ChemScene
-          spec={CHEM_STRUCTURE_DEMO}
-          hue={hueForTopic('chem')}
-          setBar={noop}
-          onDone={noop}
-        />
-      </Bench>
-
-      <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
-        <div style={{ ...whisper }}>
-          biology engines · drag-label, punnett (3:1), food web, taxonomy
-        </div>
-      </div>
-      {BIO_DEMOS.map((spec) => (
-        <Bench
-          key={spec.id}
-          id={`engine-bio-${spec.kind}`}
-          name={`biology · ${spec.kind} — ${spec.title}`}
-        >
-          <BioScene spec={spec} hue={hueForTopic('bio')} setBar={noop} onDone={noop} />
-        </Bench>
-      ))}
-      {ANATOMY_DEMOS.map((spec) => (
-        <Bench
-          key={spec.id}
-          id={`engine-anatomy-${spec.id}`}
-          name={`anatomy 3d — ${spec.title}, rotatable + tappable labelled parts`}
-        >
-          <AnatomyScene spec={spec} hue={hueForTopic('bio')} setBar={noop} onDone={noop} />
-        </Bench>
-      ))}
-
-      <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
-        <div style={{ ...whisper }}>
-          social engines · timelines, event-ordering, supply/demand, India maps
-        </div>
-      </div>
-      {SOCIAL_DEMOS.map((spec) => (
-        <Bench
-          key={spec.id}
-          id={`engine-social-${spec.kind}`}
-          name={`social · ${spec.kind} — ${spec.title}`}
-        >
-          <SocialScene spec={spec} hue={hueForTopic('social')} setBar={noop} onDone={noop} />
-        </Bench>
-      ))}
-      {MAP_DEMOS.map((spec) => (
-        <Bench
-          key={spec.id}
-          id={`engine-map-${spec.interaction.mode}`}
-          name={`map · ${spec.interaction.mode} — ${spec.title}`}
-        >
-          <MapScene spec={spec} hue={hueForTopic('social')} setBar={noop} onDone={noop} />
-        </Bench>
-      ))}
-
-      <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
-        <div style={{ ...whisper }}>cs ramp · blocks → parsons → real python, Pyodide-run</div>
-      </div>
-      <CsRampDemos />
-
-      <div style={{ padding: '32px 24px 8px', maxWidth: 640, margin: '0 auto' }}>
-        <div style={{ ...whisper }}>type-batch b · practice & delight</div>
-      </div>
-      <Bench id="engine-workbook" name="mini-workbook — match, fill, order, checked into evidence">
-        <MiniWorkbook
-          spec={WORKBOOK_DEMO}
-          hue={hueForTopic('chem')}
-          nodeId={DEMO_NODE}
-          setBar={noop}
-          onDone={noop}
-        />
-      </Bench>
-      <Bench id="engine-flashcards" name="flashcards — spring 3d flip, FSRS on grade">
-        <Flashcards
-          spec={FLASHCARDS_DEMO}
-          hue={hueForTopic('chem')}
-          nodeId={DEMO_NODE}
-          setBar={noop}
-          onDone={noop}
-        />
-      </Bench>
-      <Bench id="engine-derivation" name="derivation depth — the ⓘ, nestable one level">
-        <DerivationCard
-          spec={DERIVATION_DEMO}
-          hue={hueForTopic('math')}
-          setBar={noop}
-          onDone={noop}
-        />
-      </Bench>
-      <Bench id="engine-wordproblem" name="word-problem breakdown — given · find · plan · solve">
-        <WordProblemBreakdown
-          spec={WORDPROBLEM_DEMO}
-          hue={hueForTopic('math')}
-          setBar={noop}
-          onDone={noop}
-        />
-      </Bench>
-      <Bench id="engine-podcast" name="podcast player — chaptered, TTS seam, speed + minimize">
-        <PodcastPlayer
-          spec={PODCAST_DEMO}
-          hue={hueForTopic('phys-electricity')}
-          setBar={noop}
-          onDone={noop}
-        />
-      </Bench>
-      <Bench id="engine-arcade" name="arcade — falling-answers catch, wired to real items">
-        <ArcadeShell
-          spec={ARCADE_DEMO}
-          hue={hueForTopic('chem')}
-          nodeId={DEMO_NODE}
-          setBar={noop}
-          onDone={noop}
-        />
-      </Bench>
-    </div>
+    </AppFrame>
   );
 }

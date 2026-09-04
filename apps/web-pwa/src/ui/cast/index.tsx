@@ -124,7 +124,7 @@ export interface SceneItem {
 export function Scene({
   items,
   height = 170,
-  hue = '#1F35E0',
+  hue = 'var(--pig)',
   wash = 0.05,
   animate = true,
   baseline = 12,

@@ -33,7 +33,7 @@ import { sfx } from '../ui/sound';
 import { speakLine } from '../wobo/speech';
 import { loadProfile } from './you/profile';
 
-const ULTRA = '#1F35E0';
+const ULTRA = 'var(--pig)';
 const BUILDING_WASH =
   'radial-gradient(46% 40% at 50% 40%, var(--wobo-ultramarine-soft) 0%, transparent 66%),' +
   ' radial-gradient(60% 44% at 50% 42%, rgba(255,201,60,0.04) 0%, transparent 74%)';

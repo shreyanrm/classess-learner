@@ -9,7 +9,6 @@
  */
 
 import {
-  animate,
   motion,
   useMotionTemplate,
   useMotionValue,
@@ -19,7 +18,6 @@ import {
 import {
   type CSSProperties,
   type ReactNode,
-  type RefObject,
   useCallback,
   useEffect,
   useRef,
@@ -33,14 +31,20 @@ import { sfx } from './sound';
 export const surface = {
   page: 'var(--wobo-page)',
   card: 'var(--wobo-card)',
-  cardBorder: 'var(--wobo-card-border)',
   cardHover: 'var(--wobo-card-hover)',
   tonal: 'var(--wobo-tonal)',
   tonalHover: 'var(--wobo-tonal-hover)',
   ink: 'var(--wobo-ink)',
   inkSoft: 'var(--wobo-ink-soft)',
   inkFaint: 'var(--wobo-ink-faint)',
-  radius: { card: 3, control: 3, pill: 3 },
+  /**
+   * DESIGN.md §Shape: `radius-s 10` buttons and inputs, chips are pills, `radius-m 16` cards and
+   * sheets, `radius-l 24` the plane and modals — "nothing sharp, nothing 3 px". These three were
+   * still the v3 register (3 px everywhere), and every legacy surface that reads them — the
+   * discovery cards, the board search, the syllabus editor, the pickers — drew a 3 px corner on a
+   * page whose own kit draws 10, 16 and 24.
+   */
+  radius: { card: 16, control: 10, pill: 999 },
 } as const;
 
 export const inkText: CSSProperties = { color: surface.ink };
@@ -99,8 +103,13 @@ export function SectionLabel({ children, style }: { children: ReactNode; style?:
   );
 }
 
+/**
+ * A rule between two things, at the weight the reference draws one: 2 px of `paper-3`, the same
+ * rule `.wk-toggle` carries in design/prototypes/app-v1.html. A 1 px line is a hairline, and
+ * DESIGN.md's line clause has no hairlines in it.
+ */
 export function Hairline({ style }: { style?: CSSProperties }) {
-  return <div style={{ height: 1, background: surface.cardBorder, ...style }} />;
+  return <div style={{ height: 2, background: 'var(--paper-3)', ...style }} />;
 }
 
 // --- Frost — the one floating-chrome recipe (hoisted from the Expedition, DESIGN.md §2) -----------
@@ -142,48 +151,7 @@ export function AmbientWash({ gradient, style }: { gradient: string; style?: CSS
   );
 }
 
-// --- Parallax — the three depths (MOTION.md §1) ---------------------------------------------------
-/** Scroll rates for the three depth planes. Content is always 1.0 — never parallax what you touch. */
-export const PARALLAX = { sky: 0.08, context: 0.16, content: 1 } as const;
-
-/**
- * Attach the returned ref to ONE decorative plane; it translates at `factor × scroll` on a
- * rAF-throttled scroll listener (MOTION.md §1's canonical pattern from the Expedition). Reduced
- * motion → no transform. Positive factor lags a plane inside scrolling flow (background depth);
- * negative drifts a pinned/fixed plane upward. `max` caps the travel so a plane never slides free.
- * Pass a `scroller` ref for scoped scenes; defaults to the window.
- */
-export function useParallax<T extends HTMLElement>(
-  factor: number,
-  { max = 200, scroller }: { max?: number; scroller?: RefObject<HTMLElement | null> } = {},
-) {
-  const ref = useRef<T | null>(null);
-  const reduced = useReducedMotion() ?? false;
-  useEffect(() => {
-    if (reduced || !factor) return;
-    const src: HTMLElement | Window = scroller?.current ?? window;
-    const readY = () => (scroller?.current ? scroller.current.scrollTop : window.scrollY);
-    let raf = 0;
-    const apply = () => {
-      raf = 0;
-      const el = ref.current;
-      if (!el) return;
-      const y = Math.max(-max, Math.min(max, readY() * factor));
-      el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
-    };
-    const on = () => {
-      if (!raf) raf = requestAnimationFrame(apply);
-    };
-    src.addEventListener('scroll', on, { passive: true });
-    apply();
-    return () => {
-      src.removeEventListener('scroll', on);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, [factor, max, reduced, scroller]);
-  return ref;
-}
-
+// --- Pointer tilt (MOTION.md §1) -----------------------------------------------------------------
 /**
  * Pointer parallax for hero art (MOTION.md §1): desktop only, ±`range`px, spring-lagged. Returns
  * motion values to bind to a `motion` element's `x`/`y`. Coarse pointers and reduced-motion get 0.
@@ -216,44 +184,6 @@ export function usePointerTilt(range = 6) {
   return { x, y };
 }
 
-// --- Spring number — earned counts arrive by spring, never an instant swap (MOTION.md §3) ---------
-/** A number that springs to `value` on every change. Reduced-motion snaps. `format` styles it. */
-export function CountUp({
-  value,
-  format,
-  style,
-}: {
-  value: number;
-  format?: (n: number) => string;
-  style?: CSSProperties;
-}) {
-  const reduced = useReducedMotion() ?? false;
-  const [display, setDisplay] = useState(value);
-  const displayRef = useRef(value);
-  useEffect(() => {
-    if (reduced) {
-      displayRef.current = value;
-      setDisplay(value);
-      return;
-    }
-    const controls = animate(displayRef.current, value, {
-      type: 'spring',
-      stiffness: 90,
-      damping: 20,
-      onUpdate: (v) => {
-        displayRef.current = v;
-        setDisplay(v);
-      },
-    });
-    return () => controls.stop();
-  }, [value, reduced]);
-  return (
-    <span style={{ fontVariantNumeric: 'tabular-nums', ...style }}>
-      {format ? format(display) : Math.round(display).toString()}
-    </span>
-  );
-}
-
 // --- Cards ----------------------------------------------------------------------------------------
 export function Card({
   children,
@@ -277,7 +207,6 @@ export function Card({
       transition={{ type: 'spring', stiffness: 420, damping: 30 }}
       style={{
         background: interactive && hover ? surface.cardHover : surface.card,
-        border: `1px solid ${surface.cardBorder}`,
         borderRadius: surface.radius.card,
         cursor: interactive ? 'pointer' : 'default',
         transition: 'background 0.25s ease, border-color 0.25s ease',
@@ -499,7 +428,6 @@ export function TiltCard({
         rotateY,
         transformPerspective: 900,
         background: surface.card,
-        border: `1px solid ${surface.cardBorder}`,
         borderRadius: surface.radius.card,
         cursor: onClick ? 'pointer' : 'default',
         position: 'relative',
@@ -552,7 +480,10 @@ export function AuroraButton({
   }, []);
   const height = size === 'lg' ? 54 : 42;
   const font = size === 'lg' ? '1.05rem' : '0.95rem';
-  const aurora = 'conic-gradient(from 0deg, #1F35E0, #CC1E7A, #FF5A1F, #66B300, #0FA3B1, #1F35E0)';
+  // Palette v4's own pigments, in a ring — the sweep is the effect, the colours are the palette's
+  // (DESIGN.md §2: no colour outside the six, and night resolves each one a step lighter).
+  const aurora =
+    'conic-gradient(from 0deg, var(--pig), var(--violet), var(--rose), var(--marigold), var(--mint), var(--pig))';
   return (
     <motion.button
       onPointerEnter={() => setLit(true)}
@@ -570,7 +501,6 @@ export function AuroraButton({
         fontFamily: 'inherit',
         color: surface.ink,
         background: surface.card,
-        border: `1px solid ${surface.cardBorder}`,
         borderRadius: 3,
         cursor: 'pointer',
         overflow: 'hidden',
@@ -617,7 +547,9 @@ export function AuroraButton({
       <span
         style={{
           position: 'relative',
-          background: lit ? 'linear-gradient(90deg, #1F35E0, #CC1E7A, #FF5A1F)' : 'none',
+          background: lit
+            ? 'linear-gradient(90deg, var(--pig), var(--violet), var(--rose))'
+            : 'none',
           WebkitBackgroundClip: lit ? 'text' : undefined,
           backgroundClip: lit ? 'text' : undefined,
           WebkitTextFillColor: lit ? 'transparent' : undefined,

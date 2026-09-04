@@ -55,7 +55,6 @@ export function DiscoveryCard({
         gap: 12,
         padding: 16,
         background: surface.card,
-        border: `1px solid ${surface.cardBorder}`,
         borderRadius: surface.radius.card,
       }}
     >
@@ -68,7 +67,7 @@ export function DiscoveryCard({
             style={{
               width: 7,
               height: 7,
-              borderRadius: 2,
+              borderRadius: '50%',
               background: 'var(--wobo-ultramarine)',
             }}
           />
@@ -104,7 +103,6 @@ export function EmptyWorldCard({ onChooseBoard }: { onChooseBoard(): void }) {
         gap: 12,
         padding: 16,
         background: surface.card,
-        border: `1px solid ${surface.cardBorder}`,
         borderRadius: surface.radius.card,
       }}
     >

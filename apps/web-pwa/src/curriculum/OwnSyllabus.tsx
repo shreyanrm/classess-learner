@@ -341,6 +341,5 @@ const fieldStyle: React.CSSProperties = {
   padding: '10px 12px',
   color: surface.ink,
   background: surface.card,
-  border: `1px solid ${surface.cardBorder}`,
   borderRadius: surface.radius.control,
 };

@@ -27,7 +27,14 @@ import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
-import { CardBody, cardTitle, lead, Stage, whisper } from '../screens/course/shared';
+import {
+  CardBody,
+  captionSurface,
+  cardTitle,
+  lead,
+  Stage,
+  whisper,
+} from '../screens/course/shared';
 import { sfx } from '../ui/sound';
 
 // --- the spec (discriminated by `kind`) -----------------------------------------------------------
@@ -349,7 +356,7 @@ const chip: CSSProperties = {
 const revealBox: CSSProperties = {
   border: '1px solid var(--wobo-feedback-correct)',
   background: 'var(--wobo-feedback-correctSoft)',
-  borderRadius: 3,
+  borderRadius: 10,
   padding: '14px 16px',
   fontSize: '1rem',
   lineHeight: 1.6,
@@ -605,7 +612,7 @@ function DragLabel({
             })}
           </AnimatePresence>
           {remaining.length === 0 && (
-            <div style={{ ...lead, borderLeft: `2px solid ${hue}`, paddingLeft: 14 }}>
+            <div style={{ ...lead, ...captionSurface }}>
               every part is labelled — you built the diagram yourself.
             </div>
           )}
@@ -764,7 +771,7 @@ function Punnett({
             : isSelected
               ? `1.5px solid ${hue}`
               : '0.5px solid var(--wobo-hairline-on-paper-strong)',
-          borderRadius: 3,
+          borderRadius: 10,
           cursor: value ? 'default' : 'pointer',
         }}
       >
@@ -858,7 +865,7 @@ function Punnett({
           )}
         </AnimatePresence>
         {!allSolved && (
-          <div style={{ ...lead, borderLeft: `2px solid ${hue}`, paddingLeft: 14 }}>
+          <div style={{ ...lead, ...captionSurface }}>
             {spec.caption ??
               'each cell takes one allele from the top and one from the side — the dominant allele is written first.'}
           </div>
@@ -1091,7 +1098,7 @@ function FoodWeb({
           </svg>
         </Stage>
 
-        <div style={{ ...lead, borderLeft: `2px solid ${hue}`, paddingLeft: 14 }}>
+        <div style={{ ...lead, ...captionSurface }}>
           {removed
             ? collapsedCount > 1
               ? `remove ${spec.nodes.find((n) => n.id === removed)?.label} and ${collapsedCount - 1} other ${collapsedCount - 1 === 1 ? 'organism loses' : 'organisms lose'} their food — energy stops flowing.`

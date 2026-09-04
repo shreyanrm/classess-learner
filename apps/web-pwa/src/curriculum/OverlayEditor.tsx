@@ -229,7 +229,6 @@ const inputStyle: React.CSSProperties = {
   padding: '8px 10px',
   color: surface.ink,
   background: surface.card,
-  border: `1px solid ${surface.cardBorder}`,
   borderRadius: surface.radius.control,
 };
 
@@ -253,7 +252,6 @@ function Tiny({
         padding: '5px 9px',
         color: disabled ? surface.inkFaint : surface.inkSoft,
         background: surface.card,
-        border: `1px solid ${surface.cardBorder}`,
         borderRadius: surface.radius.control,
         cursor: disabled ? 'default' : 'pointer',
         opacity: disabled ? 0.5 : 1,

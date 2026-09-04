@@ -119,7 +119,7 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
     window.setTimeout(() => onForged(id), reduced ? 0 : 620);
   };
 
-  const hue = picks.length > 0 ? hueForTopic(picks[0] ?? '') : '#1F35E0';
+  const hue = picks.length > 0 ? hueForTopic(picks[0] ?? '') : 'var(--pig)';
 
   return (
     <div
@@ -348,7 +348,7 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
                 textAlign: 'left',
                 padding: '11px 14px',
                 borderRadius: 3,
-                border: `0.5px solid ${rgba('#1F35E0', 0.4)}`,
+                border: `0.5px solid ${rgba('var(--pig)', 0.4)}`,
                 background: 'var(--wobo-ultramarine-soft)',
                 cursor: 'pointer',
                 fontFamily: 'inherit',

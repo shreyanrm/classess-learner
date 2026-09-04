@@ -16,7 +16,7 @@ import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
-import { CardBody, cardTitle, lead, rgba, whisper } from '../screens/course/shared';
+import { CardBody, captionSurface, cardTitle, lead, rgba, whisper } from '../screens/course/shared';
 import { sfx } from '../ui/sound';
 
 // --- The spec ------------------------------------------------------------------------------------
@@ -235,7 +235,7 @@ function Panel({
       <div
         style={{
           background: rgba(hue, 0.05),
-          borderRadius: 3,
+          borderRadius: 10,
           padding: 8,
           border: '0.5px solid var(--wobo-hairline-on-paper)',
         }}
@@ -383,7 +383,7 @@ export function CompareInteractive({
                 border: `1px solid ${activeLink.kind === 'diff' ? hue : 'var(--wobo-feedback-correct)'}`,
                 background:
                   activeLink.kind === 'diff' ? rgba(hue, 0.08) : 'var(--wobo-feedback-correctSoft)',
-                borderRadius: 3,
+                borderRadius: 10,
                 padding: '14px 16px',
                 fontSize: '1.02rem',
                 lineHeight: 1.6,
@@ -402,8 +402,7 @@ export function CompareInteractive({
               animate={{ opacity: 1 }}
               style={{
                 ...lead,
-                borderLeft: `2px solid ${hue}`,
-                paddingLeft: 14,
+                ...captionSurface,
                 color: 'var(--wobo-ink-900)',
               }}
             >
@@ -421,7 +420,7 @@ export function CompareInteractive({
               style={{
                 height: 4,
                 width: revealed.has(l.id) ? 20 : 8,
-                borderRadius: 3,
+                borderRadius: 10,
                 background: revealed.has(l.id) ? hue : 'var(--wobo-hairline-on-paper-strong)',
                 transition: 'width 0.3s, background 0.3s',
               }}

@@ -5,9 +5,13 @@
  *
  * Every topic owns a concept sigil: unique geometric line-art derived deterministically from its
  * id — a base polygon, orbiting nodes, and arc traces. Fine ink strokes at rest; the sigil
- * ignites in ultramarine once the concept is mastered. One generator, thousands of distinct
- * artworks, zero authored assets — and the art MEANS something: it is the concept's identity,
- * repeated on its card, its course header, and its star in the twin.
+ * ignites in its subject's pigment once the concept is mastered. One generator, thousands of
+ * distinct artworks, zero authored assets — and the art MEANS something: it is the concept's
+ * identity, repeated on its card, its course header, and its star in the twin.
+ *
+ * Every colour here is a palette v4 token (DESIGN.md §2), never a hex: the drawings hang on app
+ * routes the theme switch reaches, and a hex constant is a light-theme colour painted into night.
+ * The subject glyphs run each family's wash into its pigment, so both themes resolve in CSS.
  */
 
 import { motion } from 'framer-motion';
@@ -212,7 +216,7 @@ export function TopicSigil({
           cx={c + art.orbitR * Math.cos(a)}
           cy={c + art.orbitR * Math.sin(a)}
           r={i === 0 ? (bold ? 3 : 2.2) : bold ? 2 : 1.5}
-          fill={mastered && i === 0 ? hue : bold && i === 0 ? '#FFC93C' : INK}
+          fill={mastered && i === 0 ? hue : bold && i === 0 ? 'var(--marigold)' : INK}
           stroke={bold && i === 0 ? INK : undefined}
           strokeWidth={bold && i === 0 ? 1.2 : undefined}
         />
@@ -246,28 +250,28 @@ export function SubjectGlyph({
     >
       <defs>
         <linearGradient id={`sg-m-${subjectId}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#4257F0" />
-          <stop offset="100%" stopColor="#1F35E0" />
+          <stop offset="0%" stopColor="var(--pig-w)" />
+          <stop offset="100%" stopColor="var(--pig)" />
         </linearGradient>
         <linearGradient id={`sg-s-${subjectId}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#2BC4D3" />
-          <stop offset="100%" stopColor="#0A7E8A" />
+          <stop offset="0%" stopColor="var(--lilac-w)" />
+          <stop offset="100%" stopColor="var(--lilac)" />
         </linearGradient>
         <linearGradient id={`sg-g-${subjectId}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#F0A030" />
-          <stop offset="100%" stopColor="#B26A00" />
+          <stop offset="0%" stopColor="var(--marigold-w)" />
+          <stop offset="100%" stopColor="var(--marigold)" />
         </linearGradient>
         <linearGradient id={`sg-p-${subjectId}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#8E6CF5" />
-          <stop offset="100%" stopColor="#6D4AE0" />
+          <stop offset="0%" stopColor="var(--violet-w)" />
+          <stop offset="100%" stopColor="var(--violet)" />
         </linearGradient>
         <linearGradient id={`sg-b-${subjectId}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#3ECD8C" />
-          <stop offset="100%" stopColor="#1CA363" />
+          <stop offset="0%" stopColor="var(--mint-w)" />
+          <stop offset="100%" stopColor="var(--mint)" />
         </linearGradient>
         <linearGradient id={`sg-c-${subjectId}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#F04A9C" />
-          <stop offset="100%" stopColor="#D6196F" />
+          <stop offset="0%" stopColor="var(--rose-w)" />
+          <stop offset="100%" stopColor="var(--rose)" />
         </linearGradient>
       </defs>
       {sid === 'math' && (
@@ -286,13 +290,13 @@ export function SubjectGlyph({
           <polygon
             points="50,18 78,66 22,66"
             fill="none"
-            stroke="#0D0D10"
+            stroke="var(--ink)"
             strokeWidth={3.4}
             strokeLinejoin="round"
             transform="rotate(6 50 48)"
           />
-          <circle cx={71} cy={30} r={6.5} fill="#FFC93C" />
-          <circle cx={71} cy={30} r={6.5} fill="none" stroke="#0D0D10" strokeWidth={2} />
+          <circle cx={71} cy={30} r={6.5} fill="var(--marigold)" />
+          <circle cx={71} cy={30} r={6.5} fill="none" stroke="var(--ink)" strokeWidth={2} />
         </g>
       )}
       {sid === 'physics' && (
@@ -304,7 +308,7 @@ export function SubjectGlyph({
             rx={31}
             ry={13}
             fill="none"
-            stroke="#0D0D10"
+            stroke="var(--ink)"
             strokeWidth={3}
             transform="rotate(-28 48 48)"
           />
@@ -314,15 +318,15 @@ export function SubjectGlyph({
             rx={31}
             ry={13}
             fill="none"
-            stroke="#0D0D10"
+            stroke="var(--ink)"
             strokeWidth={3}
             transform="rotate(28 48 48)"
           />
           <circle cx={48} cy={48} r={12} fill={`url(#sg-p-${subjectId})`} />
-          <circle cx={48} cy={48} r={12} fill="none" stroke="#0D0D10" strokeWidth={3} />
-          <circle cx={73} cy={31} r={5.5} fill="#FFC93C" />
-          <circle cx={73} cy={31} r={5.5} fill="none" stroke="#0D0D10" strokeWidth={2} />
-          <circle cx={24} cy={64} r={4} fill="#6D4AE0" stroke="#0D0D10" strokeWidth={2} />
+          <circle cx={48} cy={48} r={12} fill="none" stroke="var(--ink)" strokeWidth={3} />
+          <circle cx={73} cy={31} r={5.5} fill="var(--marigold)" />
+          <circle cx={73} cy={31} r={5.5} fill="none" stroke="var(--ink)" strokeWidth={2} />
+          <circle cx={24} cy={64} r={4} fill="var(--violet)" stroke="var(--ink)" strokeWidth={2} />
         </g>
       )}
       {(sid === 'chemistry' || sid === 'science') && (
@@ -330,8 +334,8 @@ export function SubjectGlyph({
           {/* a chunky flask, teal liquid, rising bubbles */}
           <path
             d="M40 20 L40 40 L24 66 C21 72 25 78 32 78 L64 78 C71 78 75 72 72 66 L56 40 L56 20 Z"
-            fill="#EAF7F8"
-            stroke="#0D0D10"
+            fill="var(--lilac-w)"
+            stroke="var(--ink)"
             strokeWidth={3.2}
             strokeLinejoin="round"
           />
@@ -339,11 +343,11 @@ export function SubjectGlyph({
             d="M31 56 L65 56 L72 66 C75 72 71 78 64 78 L32 78 C25 78 21 72 24 66 Z"
             fill={`url(#sg-s-${subjectId})`}
           />
-          <rect x={35} y={16} width={26} height={7} rx={3.5} fill="#0D0D10" />
+          <rect x={35} y={16} width={26} height={7} rx={3.5} fill="var(--ink)" />
           <circle cx={42} cy={66} r={3.4} fill="rgba(255,255,255,0.85)" />
           <circle cx={54} cy={70} r={2.4} fill="rgba(255,255,255,0.7)" />
-          <circle cx={60} cy={44} r={4} fill="#2BC4D3" />
-          <circle cx={68} cy={32} r={2.6} fill="#FFC93C" />
+          <circle cx={60} cy={44} r={4} fill="var(--lilac)" />
+          <circle cx={68} cy={32} r={2.6} fill="var(--marigold)" />
         </g>
       )}
       {sid === 'biology' && (
@@ -352,7 +356,7 @@ export function SubjectGlyph({
           <path
             d="M28 76 C 24 46 42 22 74 18 C 78 50 58 74 28 76 Z"
             fill={`url(#sg-b-${subjectId})`}
-            stroke="#0D0D10"
+            stroke="var(--ink)"
             strokeWidth={3.2}
             strokeLinejoin="round"
           />
@@ -369,8 +373,15 @@ export function SubjectGlyph({
             strokeWidth={2.2}
             strokeLinecap="round"
           />
-          <circle cx={68} cy={68} r={9} fill="#FFFFFF" stroke="#0D0D10" strokeWidth={2.6} />
-          <circle cx={68} cy={68} r={3.6} fill="#FFC93C" stroke="#0D0D10" strokeWidth={1.6} />
+          <circle cx={68} cy={68} r={9} fill="#FFFFFF" stroke="var(--ink)" strokeWidth={2.6} />
+          <circle
+            cx={68}
+            cy={68}
+            r={3.6}
+            fill="var(--marigold)"
+            stroke="var(--ink)"
+            strokeWidth={1.6}
+          />
         </g>
       )}
       {sid === 'cs' && (
@@ -402,7 +413,7 @@ export function SubjectGlyph({
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-          <rect x={44.5} y={39} width={7} height={18} rx={1.5} fill="#FFC93C" />
+          <rect x={44.5} y={39} width={7} height={18} rx={1.5} fill="var(--marigold)" />
           <rect
             x={44.5}
             y={39}
@@ -410,7 +421,7 @@ export function SubjectGlyph({
             height={18}
             rx={1.5}
             fill="none"
-            stroke="#0D0D10"
+            stroke="var(--ink)"
             strokeWidth={2}
           />
         </g>
@@ -434,11 +445,11 @@ export function SubjectGlyph({
             strokeWidth={2.4}
             strokeLinecap="round"
           />
-          <circle cx={46} cy={48} r={27} fill="none" stroke="#0D0D10" strokeWidth={3.2} />
+          <circle cx={46} cy={48} r={27} fill="none" stroke="var(--ink)" strokeWidth={3.2} />
           <path
             d="M72 26 L72 14 L84 17.5 L72 21"
-            fill="#CC1E7A"
-            stroke="#0D0D10"
+            fill="var(--rose)"
+            stroke="var(--ink)"
             strokeWidth={2.2}
             strokeLinejoin="round"
           />
@@ -447,7 +458,7 @@ export function SubjectGlyph({
             y1={14}
             x2={72}
             y2={34}
-            stroke="#0D0D10"
+            stroke="var(--ink)"
             strokeWidth={2.6}
             strokeLinecap="round"
           />
@@ -456,53 +467,6 @@ export function SubjectGlyph({
       {!['math', 'physics', 'chemistry', 'science', 'biology', 'cs', 'social'].includes(
         subjectId,
       ) && <circle cx={48} cy={48} r={26} fill={`url(#sg-m-${subjectId})`} />}
-    </svg>
-  );
-}
-
-/** A thin generative filigree strip — heads a chapter row, derived from its id. */
-export function ChapterFiligree({
-  id,
-  width = 120,
-  height = 10,
-}: {
-  id: string;
-  width?: number;
-  height?: number;
-}) {
-  const marks = useMemo(() => {
-    const r = rng(hash(id));
-    return Array.from({ length: 9 }, (_, i) => ({
-      x: 4 + i * ((width - 8) / 8),
-      kind: r() > 0.6 ? 'dot' : r() > 0.3 ? 'tick' : 'gap',
-    }));
-  }, [id, width]);
-  const cy = height / 2;
-  return (
-    <svg
-      viewBox={`0 0 ${width} ${height}`}
-      width={width}
-      height={height}
-      role="presentation"
-      aria-hidden
-      style={{ display: 'block' }}
-    >
-      <line x1={0} y1={cy} x2={width} y2={cy} stroke={INK_FAINT} strokeWidth={0.8} />
-      {marks.map((m) =>
-        m.kind === 'dot' ? (
-          <circle key={`${id}-mark-${m.x.toFixed(1)}`} cx={m.x} cy={cy} r={1.6} fill={INK_SOFT} />
-        ) : m.kind === 'tick' ? (
-          <line
-            key={`${id}-mark-${m.x.toFixed(1)}`}
-            x1={m.x}
-            y1={cy - 3}
-            x2={m.x}
-            y2={cy + 3}
-            stroke={INK_SOFT}
-            strokeWidth={0.9}
-          />
-        ) : null,
-      )}
     </svg>
   );
 }

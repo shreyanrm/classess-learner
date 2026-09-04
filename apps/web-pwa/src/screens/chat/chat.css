@@ -1,0 +1,41 @@
+/* biome-ignore-all format: the numbers are design/prototypes/app-v1.html's own, kept as written */
+/*
+ * The conversation, on the lesson plane (board 03). Everything structural — the plane card, its
+ * bar, its canvas, its say row and the side column — is lesson.css's `ls-` rules, unchanged. This
+ * file owns only what the board did not have: the thread on the canvas, and the ask box in the say
+ * row where the lesson keeps its button.
+ *
+ * The thread is a PAGE, not a stack of bubbles: the learner's question is a heading, Wobo's answer
+ * is the prose under it, and nothing is aligned to a side.
+ *
+ * src/screens/chat/chat.test.ts holds these rules to the law.
+ */
+
+/*
+ * The plane is a grid with one implicit column, and an implicit column is sized by its content: on
+ * a phone the say row's own width (head + ask box) became the card's width and the card overflowed
+ * itself. An explicit `minmax(0,1fr)` column lets the row shrink instead, which is what the ask
+ * box's own `min-width:0` is waiting for.
+ */
+.ch-plane{grid-template-columns:minmax(0,1fr)}
+
+.ch-thread{display:grid;gap:22px;padding:20px;align-content:start;max-width:760px;margin:0 auto}
+.ch-began{font:700 24px/1 var(--hand);color:var(--ink-3);text-align:center;padding:4px 0 0}
+.ch-turn{display:grid;gap:8px}
+.ch-turn p{font:600 17px/1.5 var(--sans);color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
+.ch-said{font:400 16px/1.7 var(--sans);color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
+.ch-wait{font:400 13px/1.5 var(--sans);color:var(--ink-3)}
+.ch-queued{opacity:.55}
+
+/* the ask box takes the say row's width — the lesson's button sits in the same place */
+.ch-say .wk-ask{margin-top:0;flex:1;min-width:0;max-width:none;background:var(--paper)}
+.ch-say .wk-ask .wk-mic{background:var(--paper-2)}
+
+/* phone */
+@media (max-width:900px){
+  .ch-thread{padding:16px 14px;gap:18px}
+  .ch-turn p{font-size:16px}
+  /* the board hides its corner head on a phone (board 04) — here the room goes to the ask box,
+     and the bar above it already says whose page this is */
+  .ch-say>.wk-head{display:none}
+}

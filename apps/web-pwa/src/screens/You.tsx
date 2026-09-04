@@ -19,7 +19,7 @@ import { OwnSyllabus } from '../curriculum/OwnSyllabus';
 import { DiscoveryCard } from '../curriculum/StatusCard';
 import { UpgradeCard } from '../curriculum/UpgradeCard';
 import { useRouter } from '../shell/router';
-import { eraseFromBrain, lifetimeSnapshot, loadMind } from '../store/mind';
+import { eraseFromBrain, lifetimeSnapshot } from '../store/mind';
 import { useProgress } from '../store/progress';
 import { useSdk } from '../store/sdk';
 import { paintAccess } from '../ui/access';
@@ -32,6 +32,7 @@ import {
   Card,
   CardFoot,
   Chip,
+  HandNote,
   type NavId,
   Pill,
   Segmented,
@@ -42,12 +43,13 @@ import {
 import { setThemePref, type ThemePref, useThemePref } from '../ui/theme';
 import { PLAN_TIERS } from './plans/prices';
 import { GradeBoardPicker } from './you/GradeBoardPicker';
-import { activityCounts, weekTopics } from './you/ledger';
+import { weeklyNote } from './you/ledger';
 import { chosenNames, type MailPrefsView, readMailPrefs, writeCalendars } from './you/mailPrefs';
 import { ParentInvite, PHONE_LINK_LINE } from './you/ParentInvite';
 import { endParentLink, type ParentLinkStatus, readParentLink } from './you/parentLink';
 import {
   boardName,
+  frameworkLabel,
   getFlag,
   loadProfile,
   markToday,
@@ -57,7 +59,7 @@ import {
   setFlag,
   VOICE_KEY,
 } from './you/profile';
-import { barHeight, type Span, strengths, summarise, weekSentence } from './you/week';
+import { barHeight, type Span, strengths, weekSentence } from './you/week';
 import './you/you.css';
 
 const SPANS = [
@@ -161,26 +163,18 @@ export function You() {
     bus.publishLifetime(lifetimeSnapshot());
   };
   const firstName = profile.name.trim().split(/\s+/)[0] ?? '';
-  const board = boardName(profile.boardId);
+  // The board's NAME, never the raw id a world pinned from an id alone carries as its name.
+  const board = frameworkLabel(boardName(profile.boardId));
 
   // --- the week ------------------------------------------------------------------------------------
   const [span, setSpan] = useState<Span>('week');
   const [marks] = useState(() => markToday());
-  // biome-ignore lint/correctness/useExhaustiveDependencies: the registry revision is the trigger
-  const topics = useMemo(() => weekTopics(), [revision]);
+  // THE weekly note (you/ledger.ts) — the same function the home calls, so "This week, in Wobo's
+  // words" is one sentence from one set of facts wherever it is read.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `revision` stands in for the registry's contents
   const summary = useMemo(
-    () =>
-      summarise({
-        now: new Date(),
-        span,
-        marks,
-        counts: activityCounts(),
-        days: loadMind().days ?? {},
-        topics,
-        topicProgress,
-        completed,
-      }),
-    [span, marks, topics, topicProgress, completed],
+    () => weeklyNote({ span, marks, topicProgress, completed }),
+    [span, marks, topicProgress, completed, revision],
   );
   const sentence = weekSentence(summary);
   const praise = strengths(summary);
@@ -467,14 +461,18 @@ export function You() {
         <div ref={weekRef}>
           <Card compact>
             <Tag>{summary.tag}</Tag>
-            <div className="hand" style={{ fontSize: 24, lineHeight: 1.2 }}>
-              {sentence.map((seg, i) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: the segments are a fixed sentence
-                <span key={i} style={seg.em ? { color: 'var(--rose)' } : undefined}>
-                  {seg.text}
-                </span>
-              ))}
-            </div>
+            {/* the same sentence Home prints, typeset by the same primitive — one implementation */}
+            <HandNote>
+              {sentence.map((seg, i) =>
+                seg.em ? (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: the segments are a fixed sentence
+                  <em key={i}>{seg.text}</em>
+                ) : (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: the segments are a fixed sentence
+                  <span key={i}>{seg.text}</span>
+                ),
+              )}
+            </HandNote>
             <div
               className="wy-chart"
               role="img"

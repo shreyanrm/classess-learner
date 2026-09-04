@@ -367,7 +367,7 @@ function FillView({
                     minWidth: 54,
                     margin: '0 3px',
                     padding: '2px 8px',
-                    borderRadius: 6,
+                    borderRadius: 10,
                     border: `1px solid ${graded ? (correct ? 'var(--wobo-feedback-correct)' : 'var(--wobo-feedback-retry)') : val ? hue : 'var(--wobo-hairline-on-paper-strong)'}`,
                     borderBottomWidth: 2,
                     background: val
@@ -781,7 +781,7 @@ export function MiniWorkbook({
                     ? 'var(--wobo-feedback-correctSoft)'
                     : 'var(--wobo-feedback-retrySoft)'
                   : 'var(--wobo-paper)',
-                borderRadius: 3,
+                borderRadius: 10,
                 padding: '16px 18px',
                 display: 'flex',
                 flexDirection: 'column',

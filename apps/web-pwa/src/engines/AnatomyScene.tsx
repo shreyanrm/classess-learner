@@ -25,7 +25,14 @@ import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
-import { CardBody, cardTitle, lead, Stage, whisper } from '../screens/course/shared';
+import {
+  CardBody,
+  captionSurface,
+  cardTitle,
+  lead,
+  Stage,
+  whisper,
+} from '../screens/course/shared';
 import { sfx } from '../ui/sound';
 
 const AnatomyCanvas = lazy(() => import('./AnatomyCanvas'));
@@ -452,8 +459,7 @@ export function AnatomyScene({
               }
               style={{
                 ...lead,
-                borderLeft: `2px solid ${hue}`,
-                paddingLeft: 14,
+                ...captionSurface,
                 color: 'var(--wobo-ink-900)',
               }}
             >

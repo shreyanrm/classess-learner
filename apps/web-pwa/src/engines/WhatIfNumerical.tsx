@@ -19,7 +19,15 @@ import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
-import { CardBody, cardTitle, lead, Scrubber, Stage, whisper } from '../screens/course/shared';
+import {
+  CardBody,
+  captionSurface,
+  cardTitle,
+  lead,
+  Scrubber,
+  Stage,
+  whisper,
+} from '../screens/course/shared';
 import { sfx } from '../ui/sound';
 import { evaluateExpr, formatSimNumber } from './SimRunner';
 
@@ -383,7 +391,7 @@ export function WhatIfNumerical({
         <div
           style={{
             border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
-            borderRadius: 3,
+            borderRadius: 10,
             padding: '14px 18px',
             display: 'flex',
             flexDirection: 'column',
@@ -431,8 +439,7 @@ export function WhatIfNumerical({
         <div
           style={{
             ...lead,
-            borderLeft: `2px solid ${hue}`,
-            paddingLeft: 14,
+            ...captionSurface,
             color: 'var(--wobo-ink-900)',
           }}
         >

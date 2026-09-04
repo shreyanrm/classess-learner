@@ -11,7 +11,14 @@
 import { describe, expect, it } from 'bun:test';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { MAILBOXES, OPEN_TERMS, RESOLVED_SLOTS, resolveSlot } from './identity';
+import {
+  COMPANY,
+  MAILBOXES,
+  OPEN_TERMS,
+  POSTAL_ADDRESS,
+  RESOLVED_SLOTS,
+  resolveSlot,
+} from './identity';
 
 const LEGAL = join(import.meta.dir, '..', '..', '..', '..', '..', 'docs', 'legal');
 const SET = readdirSync(LEGAL)
@@ -28,14 +35,24 @@ const PUBLISHED = new Set(
 
 describe('the decided values', () => {
   it('publishes nothing the legal set does not already publish', () => {
+    // An address must be one the documents print; anything else (the company, its registered
+    // office) must appear in them word for word. Either way the source is the reviewed copy,
+    // never this module — that is the only thing standing between a filled bracket and a
+    // plausible-looking invention.
     for (const [slot, value] of Object.entries(RESOLVED_SLOTS)) {
-      expect([slot, PUBLISHED.has(value.toLowerCase())]).toEqual([slot, true]);
+      const isEmail = value.includes('@');
+      const published = isEmail ? PUBLISHED.has(value.toLowerCase()) : SET.includes(value);
+      expect([slot, published]).toEqual([slot, true]);
     }
+    expect(SET).toContain(COMPANY);
+    expect(SET).toContain(POSTAL_ADDRESS);
   });
 
   it('fills the two slots that were showing as gaps beside a page that printed them', () => {
     expect(resolveSlot('support email')).toBe('support@heywobo.com');
-    expect(resolveSlot('[privacy email]')).toBe('privacy@heywobo.com');
+    // The privacy policy gives support@ as the address a data request goes to, so that is what
+    // the slot resolves to — the module reads the documents, it never picks a mailbox.
+    expect(resolveSlot('[privacy email]')).toBe('support@heywobo.com');
   });
 
   it('leaves an undecided term as an undecided term', () => {
@@ -59,6 +76,14 @@ describe('the mailbox list on /contact', () => {
 
   it('says what each one is for, so a reader picks rather than guesses', () => {
     for (const box of MAILBOXES) expect(box.what.length).toBeGreaterThan(10);
+  });
+
+  it('lists nothing the documents have stopped publishing', () => {
+    // The legal set collapsed onto one mailbox a reader writes to, plus the two it still names
+    // for a specific kind of message. A box that leaves the documents has to leave /contact in
+    // the same breath, or the page prints an address nobody reads.
+    const listed = MAILBOXES.map((b) => b.address.toLowerCase()).sort();
+    expect(listed).toEqual([...PUBLISHED].filter((a) => !a.startsWith('hello@')).sort());
   });
 
   it('lists every address once, support first', () => {

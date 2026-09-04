@@ -21,6 +21,7 @@ import type {
   ChooseVisualSpec,
   CirclePartSpec,
   DrawSpec,
+  DrawWant,
   ExpressionSpec,
   MatchSpec,
   NumberPadSpec,
@@ -376,10 +377,13 @@ function bestRotation(
   return { worst: worstOfBest, offenders };
 }
 
-function checkDraw(spec: DrawSpec, state: State<'draw'>): AnswerCheck {
-  const path = state.path;
-  if (path.length < 2) return empty();
-  const want = spec.want;
+/**
+ * A drawn answer against ONE of the item's right answers.
+ *
+ * Split out because an item may have several: "draw a line that cuts it in half" is answered by a
+ * vertical line, a horizontal one, or either diagonal, and a rectangle does not prefer one of them.
+ */
+function checkDrawWant(want: DrawWant, path: readonly AnswerPoint[]): AnswerCheck {
   const tol = want.tolerance ?? DRAW_TOLERANCE;
   const first = path[0];
   const last = path[path.length - 1];
@@ -450,6 +454,24 @@ function checkDraw(spec: DrawSpec, state: State<'draw'>): AnswerCheck {
     best.offenders.map((at) => ({ on: 'point', at })),
     clamp(1 - best.worst / (tol * 6), 0, 0.99),
   );
+}
+
+/**
+ * The drawn answer, judged against every right answer the item holds — `want` and each of
+ * `accept`. One of them being right makes the answer right; when none is, the learner keeps the
+ * closest reading of what they drew, so the feedback is about their best attempt at an answer
+ * rather than about whichever one the item happened to list first.
+ */
+function checkDraw(spec: DrawSpec, state: State<'draw'>): AnswerCheck {
+  const path = state.path;
+  if (path.length < 2) return empty();
+  let best: AnswerCheck | null = null;
+  for (const want of [spec.want, ...(spec.accept ?? [])]) {
+    const got = checkDrawWant(want, path);
+    if (got.correct) return got;
+    if (!best || (got.partial ?? 0) > (best.partial ?? 0)) best = got;
+  }
+  return best ?? empty();
 }
 
 // --- Circle the part -------------------------------------------------------------------------------

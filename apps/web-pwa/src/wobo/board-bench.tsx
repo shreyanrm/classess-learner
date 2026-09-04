@@ -686,11 +686,12 @@ export function BoardBench(props: { board?: string }) {
           top: 16,
         }}
       >
-        <label style={{ display: 'flex', fontSize: 12, gap: 6 }}>
-          <span style={{ color: 'var(--wobo-ink-300, #72727C)', lineHeight: '24px' }}>board</span>
+        <label style={{ alignItems: 'center', display: 'flex', fontSize: 13, gap: 6 }}>
+          <span style={{ color: 'var(--wobo-ink-300, #72727C)', lineHeight: '44px' }}>board</span>
           <select
             data-testid="bench-picker"
             aria-label="which golden board to play"
+            style={benchControl}
             value={board.name}
             onChange={(e) => {
               window.location.hash = `board-bench/${e.target.value}`;
@@ -703,22 +704,28 @@ export function BoardBench(props: { board?: string }) {
             ))}
           </select>
         </label>
-        <button type="button" onClick={() => start(board.name)} data-testid="bench-replay">
+        <button
+          type="button"
+          onClick={() => start(board.name)}
+          data-testid="bench-replay"
+          style={benchControl}
+        >
           replay
         </button>
         <button
           type="button"
           onClick={() => start(board.name, { instant: true })}
           data-testid="bench-instant"
+          style={benchControl}
         >
           land it all
         </button>
-        <button type="button" onClick={onPlane} data-testid="bench-plane">
+        <button type="button" onClick={onPlane} data-testid="bench-plane" style={benchControl}>
           on the plane
         </button>
         <span
           data-testid="bench-status"
-          style={{ color: 'var(--wobo-ink-300, #72727C)', fontSize: 12, lineHeight: '24px' }}
+          style={{ color: 'var(--wobo-ink-300, #72727C)', fontSize: 13, lineHeight: '44px' }}
         >
           {board.plan.length} events, {store.refused.length} refused
           {instant ? ', landed' : ''}
@@ -731,7 +738,7 @@ export function BoardBench(props: { board?: string }) {
           // sit exactly over the scrubber and swallow every click meant for it.
           bottom: chrome ? 56 : 14,
           color: 'var(--wobo-ink-300, #72727C)',
-          fontSize: 12,
+          fontSize: 13,
           left: 16,
           margin: 0,
           // It is text about the board, never something to press.
@@ -745,6 +752,18 @@ export function BoardBench(props: { board?: string }) {
     </div>
   );
 }
+
+/**
+ * The bench's own controls. It is a dev page, but the responsive matrix walks it now — the board's
+ * chrome is mounted nowhere else — so the harness would report the bench's picker and buttons as
+ * findings about the product. They sit on the same 44px floor and 13px copy floor every control in
+ * the app does, which is also what makes the bench usable on the phone QA actually holds.
+ */
+const benchControl: React.CSSProperties = {
+  fontSize: 13,
+  minHeight: 44,
+  padding: '0 10px',
+};
 
 /**
  * Mount the bench only in dev, only at `#board-bench`. Drop this beside the app's root and QA can

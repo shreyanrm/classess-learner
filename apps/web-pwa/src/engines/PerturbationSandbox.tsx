@@ -19,7 +19,14 @@ import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type CSSProperties, useEffect, useMemo, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
-import { CardBody, cardTitle, lead, Stage, whisper } from '../screens/course/shared';
+import {
+  CardBody,
+  captionSurface,
+  cardTitle,
+  lead,
+  Stage,
+  whisper,
+} from '../screens/course/shared';
 import { sfx } from '../ui/sound';
 import { useWoboChat } from '../wobo/chat';
 import { evaluateExpr, formatSimNumber } from './SimRunner';
@@ -372,8 +379,7 @@ export function PerturbationSandbox({
         <div
           style={{
             ...lead,
-            borderLeft: `2px solid ${hue}`,
-            paddingLeft: 14,
+            ...captionSurface,
             color: 'var(--wobo-ink-900)',
           }}
         >
@@ -394,7 +400,7 @@ export function PerturbationSandbox({
                 style={{
                   border: '1px solid var(--wobo-feedback-correct)',
                   background: 'var(--wobo-feedback-correctSoft)',
-                  borderRadius: 3,
+                  borderRadius: 10,
                   padding: '14px 16px',
                   fontSize: '1.02rem',
                   lineHeight: 1.6,

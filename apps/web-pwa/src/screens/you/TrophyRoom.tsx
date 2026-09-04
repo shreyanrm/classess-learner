@@ -15,7 +15,7 @@ import { toneForSubject } from '../../ui/hues';
 import { STREAK_TIERS, TrophyPlinth, tierForStreak, tierForXp, XP_TIERS } from '../../ui/trophies';
 
 const STREAK_HUE = '#66B300';
-const XP_HUE = '#1F35E0';
+const XP_HUE = 'var(--pig)';
 
 const fmtXp = (n: number) => n.toLocaleString('en-IN');
 const shortXp = (n: number) => (n >= 1000 ? `${n / 1000}k xp` : `${n} xp`);

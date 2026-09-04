@@ -28,7 +28,6 @@ export function UpgradeCard() {
         gap: 12,
         padding: 16,
         background: surface.card,
-        border: `1px solid ${surface.cardBorder}`,
         borderRadius: surface.radius.card,
       }}
     >

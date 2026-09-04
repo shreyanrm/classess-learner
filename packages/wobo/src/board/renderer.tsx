@@ -112,14 +112,14 @@ const BOARD_CSS = `
   --wobo-accent:var(--wobo-ultramarine,#1F35E0);
   --wobo-learner:var(--wobo-ink-500,#6E6E76);
   --wobo-faint:var(--wobo-ink-300,#72727C);
-  --wobo-nib:2;
+  --wobo-nib:3;
   --wobo-ink-opacity:1;
 }
-[data-theme="dark"] .wobo-board{ --wobo-nib:2.6; --wobo-ink-opacity:.86; }
+[data-theme="dark"] .wobo-board{ --wobo-ink-opacity:.86; }
 .wobo-board svg{display:block;overflow:visible}
 .wobo-board .wobo-stroke{fill:none;stroke-linecap:round;stroke-linejoin:round}
 .wobo-board .wobo-hit{fill:transparent;outline:none}
-.wobo-board .wobo-hit:focus-visible{stroke:var(--wobo-accent);stroke-width:1.5;stroke-dasharray:4 3}
+.wobo-board .wobo-hit:focus-visible{stroke:var(--wobo-accent);stroke-width:3;stroke-dasharray:4 3}
 `;
 
 const INK_VAR: Record<InkRole, string> = {
@@ -544,6 +544,12 @@ function buildObjects(states: readonly BoardObjectState[], build: BuildContext):
   return out;
 }
 
+/**
+ * The ink role an object takes when the board did not name one. A grid is chrome, not argument —
+ * it reads ink-3 so the curve on top of it is the thing the eye lands on (DESIGN.md).
+ */
+const CHROME_INK: Partial<Record<BoardObject['kind'], InkRole>> = { grid: 'faint' };
+
 /** One object's element: written text where the font never came, a drawn path everywhere else. */
 function inkNode(
   key: string,
@@ -554,13 +560,14 @@ function inkNode(
   reduced: boolean,
 ): React.ReactNode {
   const geometry = b.geometry as ObjectGeometry;
+  const ink = style?.ink ?? CHROME_INK[b.state.object.kind] ?? 'wobo';
   if (geometry.glyphs.length === 0 && geometry.text) {
     return (
       <WrittenFallback
         key={key}
         id={key}
         text={geometry.text}
-        ink={style?.ink ?? 'wobo'}
+        ink={ink}
         opacity={opacity}
         progress={progress}
       />
@@ -572,7 +579,7 @@ function inkNode(
       key={key}
       id={key}
       geometry={geometry}
-      ink={style?.ink ?? 'wobo'}
+      ink={ink}
       weight={style?.weight ?? 1}
       {...(dash ? { dash } : {})}
       fill={style?.fill ?? 'none'}
@@ -644,7 +651,12 @@ const noTargets = (): readonly BoardTarget[] => [];
 const noFocus = (): readonly { id: string; rect: RectLike | (() => RectLike | null) }[] => [];
 
 /** Base nib width in CSS px. Non-scaling, so zoom never fattens the pen. */
-const NIB_PX = 2;
+/**
+ * The nib, in screen px. DESIGN.md: ink is 3–4px and never under 2.5, on either theme — a board is
+ * the boldest ink in the product, so it sits at the bottom of that range and the night theme reads
+ * the same number rather than a heavier one of its own.
+ */
+const NIB_PX = 3;
 
 /** How far one arrow press moves the keyboard's pen, in board units. */
 const CARET_STEP_UNITS = 16;
@@ -1215,7 +1227,7 @@ export function BoardSurface(props: BoardSurfaceProps) {
               r={6}
               fill="none"
               stroke={inkOf(drawing ? 'accent' : 'learner')}
-              strokeWidth={1.5}
+              strokeWidth={3}
               vectorEffect="non-scaling-stroke"
             />
           </g>

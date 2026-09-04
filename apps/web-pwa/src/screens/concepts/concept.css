@@ -1,0 +1,53 @@
+/* biome-ignore-all format: every rule is design/prototypes/app-v1.html (board 03), kept as written */
+/*
+ * A concept, on the lesson plane (board 03). The plane card, its bar, its canvas, its say row and
+ * the side column are lesson.css's `ls-` rules, unchanged. This file owns only the two things the
+ * board did not have: a step that is a button rather than a line, and the page the concept's own
+ * board sits on inside the canvas.
+ *
+ * `.cn-step` is the prototype's `.steps div` with a button's reset on it — the same grid, the same
+ * numeral, the same lit state — because a step you can open has to be a control.
+ *
+ * src/screens/concepts/concept.test.ts holds these rules to the board's and to the law.
+ */
+
+/*
+ * The plane is a grid with one implicit column, and an implicit column is sized by its content, so
+ * a wide board would set the card's width and overflow it on a phone. An explicit `minmax(0,1fr)`
+ * column lets the canvas shrink and the board scroll inside it instead.
+ */
+.cn-plane{grid-template-columns:minmax(0,1fr)}
+
+/*
+ * The gallery's side column is eight cards of steps, and a grid row is sized by its tallest item —
+ * so the plane was stretched to the list's height and carried well over a thousand pixels of empty
+ * paper inside a card DESIGN.md floats with a shadow. Board 03 has ONE row, exactly the lesson's
+ * own height, and the plane fills it: `minmax(0,1fr)` says that, and the column beside it scrolls
+ * on its own rather than pushing the board. The phone block below hands both back to the flow.
+ *
+ * `grid-auto-rows:min-content` is load-bearing: inside a row of a definite height the column's own
+ * auto rows are squeezed to an equal share of it, which packed eight cards into 81 px each and
+ * spilled every step list out of the card holding it. Each card takes the height its steps need,
+ * and the column scrolls past the ones that do not fit.
+ */
+.cn-lesson{grid-template-rows:minmax(0,1fr)}
+.cn-side{min-height:0;overflow-y:auto;grid-auto-rows:min-content}
+
+.cn-steps{display:grid;gap:8px}
+.cn-step{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:center;font-size:14px;color:var(--ink-2);font-family:inherit;line-height:1.35;background:transparent;border:0;padding:0;cursor:pointer;text-align:left;width:100%}
+.cn-step i{width:26px;height:26px;border-radius:50%;background:var(--paper);display:grid;place-items:center;font:700 13px/1 var(--hand);color:var(--ink);font-style:normal}
+.cn-step.cn-on{color:var(--ink);font-weight:500}
+.cn-step.cn-on i{background:var(--pig);color:#fff}
+
+/* the concept's own board, on the plane's canvas */
+.cn-board{display:grid;gap:16px;padding:18px 0 24px}
+
+/* phone */
+@media (max-width:900px){
+  /* the touch floor (DESIGN.md §2): a step, and any handle the board hands the learner */
+  .cn-step{min-height:44px}
+  .cn-board input[type=range]{min-height:44px}
+  /* one column, and the page itself scrolls — neither half is a scroller of its own on a phone */
+  .cn-lesson{grid-template-rows:auto}
+  .cn-side{overflow-y:visible}
+}

@@ -86,7 +86,6 @@ export function BoardSearch({ onPick, onNotListed, onOwnSyllabus, autoFocus }: B
             padding: '12px 14px',
             color: surface.ink,
             background: surface.card,
-            border: `1px solid ${surface.cardBorder}`,
             borderRadius: surface.radius.control,
             outlineOffset: 2,
           }}
@@ -128,7 +127,6 @@ export function BoardSearch({ onPick, onNotListed, onOwnSyllabus, autoFocus }: B
                   font: 'inherit',
                   color: surface.ink,
                   background: surface.card,
-                  border: `1px solid ${surface.cardBorder}`,
                   borderRadius: surface.radius.card,
                   cursor: 'pointer',
                 }}

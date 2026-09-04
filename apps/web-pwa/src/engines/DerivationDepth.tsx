@@ -15,7 +15,15 @@ import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
-import { CardBody, cardTitle, equationType, lead, rgba, whisper } from '../screens/course/shared';
+import {
+  CardBody,
+  captionSurface,
+  cardTitle,
+  equationType,
+  lead,
+  rgba,
+  whisper,
+} from '../screens/course/shared';
 import { hueForTopic } from '../ui/hues';
 import { sfx } from '../ui/sound';
 
@@ -151,8 +159,7 @@ function DerivationNode({
           >
             <div
               style={{
-                borderLeft: `2px solid ${rgba(hue, 0.5)}`,
-                paddingLeft: 16,
+                ...captionSurface,
                 marginLeft: 2,
                 display: 'flex',
                 flexDirection: 'column',
@@ -296,7 +303,7 @@ export function DerivationCard({
         <div
           style={{
             border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
-            borderRadius: 3,
+            borderRadius: 10,
             padding: '22px 20px',
             background: rgba(hue, 0.04),
           }}

@@ -1,1205 +1,352 @@
 'use client';
 
 /**
- * A subject — second cut. The header is a poster band: the subject glyph XL floating on its
- * hue-washed stage with the layered scene behind it, title overlaid. Chapter rows carry their
- * own sigil stage thumbnails; expanded topics slide in with stagger. Prerequisite gates are
- * suggestions with a proceed-anyway door — advice, never a wall (CONTEXT.md §8). Pigment
- * appears only where mastery is real: ignited sigils and the earned stretch of each filament.
+ * A subject — the Learn board (02 of design/prototypes/app-v1.html) scoped to one subject, on the
+ * kit. Nothing here is a new surface: it is the board the learner just came from, with one subject
+ * in front of them.
+ *
+ *   the crumb                Learn · Mathematics  /  Practice · Mathematics
+ *   the provenance pill      where this syllabus came from, in the brain's own words
+ *   the subject tiles        every subject of their class, this one outlined
+ *   the two tabs             Learn (the chapter rows) and Practice (the set list)
+ *   the chapter rows         done · now · next · later, the mint bar on the one under way
+ *   the set list             board 04's "This set", one row per chapter, ticked once mastered
+ *   Wobo's line              the door to reordering the list, in conversation
+ *
+ * Subjects and chapters are the registry's; states are the progress store's truth; nothing is
+ * seeded. A tap on a chapter opens its course (learn) or its sandbox (practice) — the download
+ * gate lives in the course screen, once, for every path into it.
  */
 
+import { DISCOVERY_COPY, labelFor } from '@wobo/sdk';
 import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useRegistryRevision, useTopics, useUnits, useWorld } from '../curriculum/hooks';
-import { ProvenanceLabel } from '../curriculum/Labels';
-import { OverlayEditor } from '../curriculum/OverlayEditor';
-import {
-  chaptersBySubject,
-  displaySubjectById,
-  subjectById,
-  topicById,
-  unmetPrereqs,
-} from '../curriculum/registry';
-import { DiscoveryCard, EmptyWorldCard } from '../curriculum/StatusCard';
-import type { Chapter, Topic } from '../data/model';
-import { useRouter } from '../shell/router';
-import { useViewport } from '../shell/useViewport';
-import { enqueue as enqueueDownload, useDownload } from '../store/downloads';
+import { chaptersBySubject, type DisplaySubject, displaySubjects } from '../curriculum/registry';
+import { DiscoveryCard } from '../curriculum/StatusCard';
+import { subjectFamily } from '../curriculum/subjects';
+import { AppFrame } from '../shell/AppFrame';
+import { type Route, routeToPath, useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
-import { useSdk } from '../store/sdk';
-import { ChapterFiligree, SubjectGlyph, TopicSigil } from '../ui/art';
-import { hueForTopic, type SubjectTone, toneForSubject } from '../ui/hues';
-import { ChevronIcon } from '../ui/icons';
-import { cascade, MagneticButton, PARALLAX, rise, useParallax } from '../ui/kit';
-import { loadViewPref, type SubjectView, saveViewPref } from '../ui/viewPref';
-import { type BridgePlan, composeBridge, masteredGround } from '../wobo/tutor';
-import { AdventureRoadmap } from './AdventureRoadmap';
-import { SubjectSceneBackdrop, Whisper } from './Learn';
-import { boardName, loadProfile } from './you/profile';
-
-const EXPAND_SPRING = { type: 'spring', stiffness: 320, damping: 32 } as const;
+import {
+  Avatar,
+  Button,
+  Card,
+  CardFoot,
+  Chip,
+  Label,
+  Tag,
+  Tile,
+  TopBar,
+  WoboHead,
+} from '../ui/primitives';
+import { tileLine, type UnitRow, unitLine, unitRows, unitState } from './learn/units';
+import { frameworkLabel, loadProfile } from './you/profile';
+import './learn/Learn.css';
+import './practice/practice.css';
+import './subject/subject.css';
 
 type Intent = 'learn' | 'practice';
 
-/** A topic opens as a course; with practice intent it opens as a sandbox on that topic. */
-function topicRoute(topicId: string, intent: Intent) {
-  return intent === 'practice'
-    ? ({ name: 'sandbox', topicId } as const)
-    : ({ name: 'course', topicId } as const);
-}
-
-function TopicRow({ topic, intent, tone }: { topic: Topic; intent: Intent; tone: SubjectTone }) {
-  const router = useRouter();
-  const sdk = useSdk();
-  const { completed, topicProgress } = useProgress();
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [hover, setHover] = useState(false);
-  const [bridge, setBridge] = useState<'idle' | 'composing' | BridgePlan>('idle');
-  const p = completed.has(topic.id) ? 1 : (topicProgress[topic.id] ?? 0);
-  const fillTint = p >= 0.7 ? 'var(--wobo-feedback-correctSoft)' : 'rgba(178,106,0,0.12)';
-
-  const mastered = completed.has(topic.id);
-  const unmet = mastered ? [] : unmetPrereqs(topic, completed);
-  const gated = unmet.length > 0;
-  const unmetNames = unmet.map((u) => u.name).join(' and ');
-  // the concept-graph bridge stands only on ground the learner already owns
-  const ground = gated ? masteredGround(topic, completed, topicById) : [];
-
-  // download-first (CONTEXT.md content law): a syllabus course that must be composed is generated
-  // on the first tap, in the background — never a spinner the learner waits behind. A prebuilt node
-  // (the atom) plays instantly; practice opens a sandbox (no compose); a mastered course reopens
-  // from the warm cache. Everything else queues, one at a time, and lands a notification when ready.
-  const { entry: dl, position } = useDownload(topic.id);
-  const needsGen = intent === 'learn' && !topic.nodeId && !mastered;
-  const downloading = dl?.status === 'downloading' || dl?.status === 'queued';
-  const ready = dl?.status === 'ready';
-  const slipped = dl?.status === 'failed';
-
-  const open = (topicId: string) => router.navigate(topicRoute(topicId, intent));
-
-  const onTap = () => {
-    if (gated) {
-      setConfirmOpen((o) => !o);
-      return;
-    }
-    // ready, or a course that never needs composing → open it straight away
-    if (!needsGen || ready) {
-      open(topic.id);
-      return;
-    }
-    if (downloading) return; // already on its way — the row shows where it stands in line
-    enqueueDownload(topic.id, topic.name); // first tap (or after a slip) → Wobo starts composing
-  };
-
-  // bridge me there: Wobo composes a lesson that travels only over mastered ground
-  const requestBridge = async () => {
-    setBridge('composing');
-    sdk.events.record('create.request.submitted.v1', {
-      request_id: crypto.randomUUID(),
-      prompt_text: `bridge to ${topic.name} over ${ground.map((g) => g.name).join(', ')}`,
-      input_mode: 'text',
-      moderation_passed: true,
-    });
-    setBridge(await composeBridge(sdk, topic, ground));
-  };
-
-  return (
-    <div>
-      <motion.button
-        type="button"
-        onClick={onTap}
-        onPointerEnter={() => setHover(true)}
-        onPointerLeave={() => setHover(false)}
-        whileHover={{ x: 3, y: -1 }}
-        whileTap={{ scale: 0.99 }}
-        transition={{ type: 'spring', stiffness: 380, damping: 26 }}
-        style={{
-          width: '100%',
-          textAlign: 'left',
-          background:
-            p > 0
-              ? `linear-gradient(90deg, ${fillTint} ${p * 100}%, transparent ${p * 100}%)`
-              : hover
-                ? 'var(--wobo-ink-100)'
-                : 'transparent',
-          border: hover
-            ? '0.5px solid var(--wobo-ink-300)'
-            : '0.5px solid var(--wobo-hairline-on-paper)',
-          borderRadius: 3,
-          padding: '12px 12px',
-          cursor: 'pointer',
-          fontFamily: 'inherit',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 16,
-        }}
-      >
-        {/* the concept's own geometry on its own small stage — ignited once mastered */}
-        <span
-          style={{
-            flexShrink: 0,
-            width: 48,
-            height: 48,
-            borderRadius: 3,
-            background: tone.wash,
-            display: 'grid',
-            placeItems: 'center',
-          }}
-        >
-          <TopicSigil id={topic.id} size={36} mastered={mastered} hue={hueForTopic(topic.id)} />
-        </span>
-        <span style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, flex: 1 }}>
-          <span style={{ fontSize: '0.98rem', fontWeight: 550, color: 'var(--wobo-ink-900)' }}>
-            {topic.name}
-          </span>
-          <span style={{ fontSize: '0.82rem', color: 'var(--wobo-ink-500)', lineHeight: 1.5 }}>
-            {mastered
-              ? 'you own this — walk it again anytime, just for the joy of it'
-              : downloading
-                ? position > 1
-                  ? `${position - 1} ahead in line — Wobo composes one at a time`
-                  : 'wobo is composing this for you — it will land on its own'
-                : ready
-                  ? 'ready when you are — tap to dive in'
-                  : slipped
-                    ? 'that one slipped away — tap to try again'
-                    : topic.blurb}
-          </span>
-        </span>
-
-        {mastered ? (
-          <span
-            style={{
-              flexShrink: 0,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              // the earned tick takes the owning subject's hue
-              color: hueForTopic(topic.id),
-              fontSize: '0.82rem',
-              fontWeight: 600,
-            }}
-          >
-            <svg
-              width="11"
-              height="11"
-              viewBox="0 0 12 12"
-              role="presentation"
-              aria-hidden
-              style={{ display: 'block' }}
-            >
-              <path
-                d="M2 6.4 L4.6 9 L10 3.2"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.4}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            {/* a playful replay affordance — a completed course is always walkable again (no xp) */}
-            {hover ? (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                <svg
-                  width="11"
-                  height="11"
-                  viewBox="0 0 12 12"
-                  role="presentation"
-                  aria-hidden
-                  style={{ display: 'block' }}
-                >
-                  <path
-                    d="M9.5 3.2 A4 4 0 1 0 10 6"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={1.4}
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M9.7 1.4 L9.7 3.4 L7.7 3.4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={1.4}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                replay
-              </span>
-            ) : (
-              'mastered'
-            )}
-          </span>
-        ) : gated ? (
-          <span
-            style={{
-              flexShrink: 0,
-              border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
-              borderRadius: 3,
-              padding: '4px 10px',
-              fontSize: '0.75rem',
-              color: 'var(--wobo-ink-500)',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            builds on {unmet[0]?.name}
-          </span>
-        ) : downloading ? (
-          <span
-            style={{
-              flexShrink: 0,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 7,
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              color: 'var(--wobo-ink-500)',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            <motion.span
-              aria-hidden
-              animate={{ scale: [1, 1.5, 1], opacity: [0.9, 0.4, 0.9] }}
-              transition={{ duration: 1.4, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
-              style={{
-                width: 7,
-                height: 7,
-                borderRadius: 999,
-                background: hueForTopic(topic.id),
-              }}
-            />
-            {position > 1 ? 'in line' : 'downloading'}
-          </span>
-        ) : ready ? (
-          <span
-            style={{
-              flexShrink: 0,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              color: hueForTopic(topic.id),
-              fontSize: '0.78rem',
-              fontWeight: 600,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            ready
-            <ChevronIcon size={13} />
-          </span>
-        ) : slipped ? (
-          <span style={{ flexShrink: 0, fontSize: '0.75rem', color: 'var(--wobo-ink-500)' }}>
-            retry
-          </span>
-        ) : (
-          <span style={{ flexShrink: 0, color: 'var(--wobo-ink-300)' }}>
-            <ChevronIcon size={14} />
-          </span>
-        )}
-      </motion.button>
-
-      {/* Wobo composes on the page — Composing-style skeleton lines while the learner stays here */}
-      <AnimatePresence initial={false}>
-        {downloading && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={EXPAND_SPRING}
-            style={{ overflow: 'hidden' }}
-          >
-            <div
-              style={{
-                margin: '6px 4px 4px 60px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 9,
-              }}
-            >
-              {['72%', '54%', '63%'].map((w, i) => (
-                <motion.div
-                  // biome-ignore lint/suspicious/noArrayIndexKey: skeleton lines are positional
-                  key={i}
-                  animate={{ opacity: [0.4, 0.9, 0.4] }}
-                  transition={{
-                    duration: 1.8,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: 'easeInOut',
-                    delay: i * 0.18,
-                  }}
-                  style={{
-                    height: 9,
-                    width: w,
-                    background: 'var(--wobo-tonal)',
-                    borderRadius: 3,
-                  }}
-                />
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* The gate is advice, never a wall — proceed anyway always works. */}
-      <AnimatePresence initial={false}>
-        {confirmOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={EXPAND_SPRING}
-            style={{ overflow: 'hidden' }}
-          >
-            <div
-              style={{
-                margin: '2px 4px 12px',
-                padding: '14px 16px',
-                border: '0.5px solid var(--wobo-hairline-on-paper)',
-                borderRadius: 3,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 12,
-              }}
-            >
-              <span style={{ fontSize: '0.88rem', color: 'var(--wobo-ink-700)', lineHeight: 1.55 }}>
-                this builds on {unmetNames} — take those first, or proceed anyway
-              </span>
-              {bridge === 'idle' && (
-                <span style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <MagneticButton
-                    size="sm"
-                    variant="primary"
-                    onClick={() => unmet[0] && open(unmet[0].id)}
-                  >
-                    take me there
-                  </MagneticButton>
-                  <MagneticButton size="sm" variant="quiet" onClick={() => open(topic.id)}>
-                    proceed anyway
-                  </MagneticButton>
-                  {/* the bridge door exists only when there is mastered ground to stand on */}
-                  {ground.length > 0 && (
-                    <MagneticButton size="sm" variant="quiet" onClick={() => void requestBridge()}>
-                      bridge me there
-                    </MagneticButton>
-                  )}
-                </span>
-              )}
-              {bridge === 'composing' && (
-                <span style={{ fontSize: '0.85rem', color: 'var(--wobo-ink-500)' }}>
-                  Wobo is composing your bridge — only over ground you already own
-                </span>
-              )}
-              {typeof bridge === 'object' && (
-                <motion.span
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.35, ease: [0.2, 0, 0, 1] }}
-                  style={{ display: 'flex', flexDirection: 'column', gap: 10 }}
-                >
-                  <span style={{ fontSize: '0.78rem', color: 'var(--wobo-ink-500)' }}>
-                    {bridge.seeded
-                      ? 'the bridge, honestly outlined — every stone is already yours'
-                      : 'the bridge, composed and checked'}
-                  </span>
-                  <span style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    {bridge.steps.map((step, i) => (
-                      <span
-                        key={step}
-                        style={{
-                          fontSize: '0.88rem',
-                          color: 'var(--wobo-ink-900)',
-                          lineHeight: 1.5,
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontVariantNumeric: 'tabular-nums',
-                            color: 'var(--wobo-ink-300)',
-                            marginRight: 8,
-                          }}
-                        >
-                          {i + 1}
-                        </span>
-                        {step}
-                      </span>
-                    ))}
-                  </span>
-                  <span>
-                    <MagneticButton size="sm" variant="primary" onClick={() => open(topic.id)}>
-                      cross the bridge
-                    </MagneticButton>
-                  </span>
-                </motion.span>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
+/** Wobo's line under the chapters — the board's own, word for word. */
+const WOBO_LINE =
+  "Something your school does differently? Tell me and I'll reorder, add or drop a chapter for you.";
 
 /**
- * The chapter filament — a thread that lights stop by stop, one stop per topic (DESIGN.md §5,
- * ignition). Completed stops fill the subject's hue; the thread lights up to the last-done stop;
- * the frontier stop breathes a soft ignition halo. Endowed (CONTEXT.md §9): even unstarted, the
- * faint stops render — never an empty void.
+ * Which subject an address means.
+ *
+ * The registry keys subjects by what the framework calls them ("Mathematics"), and the address
+ * used to carry a slug ("math"). Both are in the wild — bookmarks, the command palette, links
+ * shared between learners — so the segment is resolved rather than believed: by the subject's own
+ * id, then by its name however it happens to be cased, then by the canonical family behind both.
+ * An id that means nothing resolves to nothing, and the screen hands the learner back to Learn
+ * rather than printing the URL where a subject's name goes.
  */
-function Filament({ done, total, hue }: { done: number; total: number; hue: string }) {
-  // composed-on-open chapters have no stops yet — a single faint endowed thread stands in
-  if (total <= 0) {
-    return <div style={{ height: 2, background: 'var(--wobo-hairline-on-paper)' }} />;
-  }
-  const lit = Math.min(done, total);
-  const frontier = lit - 1; // index of the last-lit stop (−1 when nothing is done)
-  // the lit thread reaches the frontier stop's position along the row
-  const litPct = total <= 1 ? (lit > 0 ? 100 : 0) : (Math.max(0, frontier) / (total - 1)) * 100;
-  return (
-    <div style={{ position: 'relative', display: 'flex', alignItems: 'center', height: 14 }}>
-      {/* the baseline the stops sit on */}
-      <div
-        style={{
-          position: 'absolute',
-          left: 3,
-          right: 3,
-          top: '50%',
-          height: 1.5,
-          background: 'var(--wobo-hairline-on-paper)',
-          transform: 'translateY(-50%)',
-        }}
-      />
-      {/* the lit stretch — hue only when a stop is genuinely earned */}
-      <motion.div
-        initial={{ width: 0 }}
-        animate={{ width: `${litPct}%` }}
-        transition={{ type: 'spring', stiffness: 120, damping: 26 }}
-        style={{
-          position: 'absolute',
-          left: 3,
-          top: '50%',
-          height: 1.5,
-          maxWidth: 'calc(100% - 6px)',
-          background: lit > 0 ? hue : 'transparent',
-          transform: 'translateY(-50%)',
-        }}
-      />
-      {/* the stops themselves */}
-      <div
-        style={{
-          position: 'relative',
-          display: 'flex',
-          justifyContent: 'space-between',
-          width: '100%',
-        }}
-      >
-        {Array.from({ length: total }, (_, i) => {
-          const on = i < lit;
-          const isFrontier = i === frontier;
-          return (
-            <span
-              // biome-ignore lint/suspicious/noArrayIndexKey: stops are positional by nature
-              key={i}
-              style={{
-                position: 'relative',
-                display: 'grid',
-                placeItems: 'center',
-                width: 8,
-                height: 8,
-              }}
-            >
-              {isFrontier && (
-                <motion.span
-                  aria-hidden
-                  animate={{ scale: [1, 1.9, 1], opacity: [0.5, 0, 0.5] }}
-                  transition={{
-                    duration: 2.4,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: 'easeInOut',
-                  }}
-                  style={{
-                    position: 'absolute',
-                    width: 8,
-                    height: 8,
-                    borderRadius: 999,
-                    background: hue,
-                  }}
-                />
-              )}
-              <span
-                style={{
-                  position: 'relative',
-                  width: on ? 7 : 5,
-                  height: on ? 7 : 5,
-                  borderRadius: 999,
-                  background: on ? hue : 'var(--wobo-paper)',
-                  border: on ? 'none' : '0.5px solid var(--wobo-hairline-on-paper-strong)',
-                }}
-              />
-            </span>
-          );
-        })}
-      </div>
-    </div>
+export function resolveSubject(
+  subjects: readonly DisplaySubject[],
+  segment: string,
+): DisplaySubject | undefined {
+  const raw = segment.trim();
+  if (!raw) return undefined;
+  const lower = raw.toLowerCase();
+  const byId = subjects.find((s) => s.id === raw);
+  if (byId) return byId;
+  const byName = subjects.find(
+    (s) => s.id.toLowerCase() === lower || s.name.trim().toLowerCase() === lower,
   );
+  if (byName) return byName;
+  const family = subjectFamily(raw);
+  if (family === 'general') return undefined;
+  return subjects.find((s) => subjectFamily(s.name) === family || subjectFamily(s.id) === family);
 }
 
-function ChapterRow({
-  chapter,
-  intent,
-  open,
-  onToggle,
-}: {
-  chapter: Chapter;
-  intent: Intent;
-  open: boolean;
-  onToggle: () => void;
-}) {
-  const router = useRouter();
-  const tone = toneForSubject(chapter.subjectId);
-  const { completed } = useProgress();
-  const total = chapter.topics.length;
-  const done = chapter.topics.filter((t) => completed.has(t.id)).length;
-  // Each chapter is its own target: Wobo opens one on request, points at the one they mean, and
-  // anchors ink to the row rather than to the list it happens to be in.
-  const rowRef = useRegisterTarget<HTMLDivElement>(`chapter-${chapter.id}`, {
-    kind: 'chapter',
-    label: `the ${chapter.name} chapter — ${done} of ${total} topics done`,
-    getSceneState: () => ({ chapter: chapter.name, topics: total, done, open }),
-    getValidActions: () => [open ? 'collapse this chapter' : 'open this chapter'],
-    applyTutorAction: (patch) => {
-      if (patch.open === true && !open) onToggle();
-      if (patch.open === false && open) onToggle();
-    },
-  });
-
-  return (
-    <div ref={rowRef} style={{ borderBottom: '0.5px solid var(--wobo-hairline-on-paper)' }}>
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={open}
-        style={{
-          width: '100%',
-          textAlign: 'left',
-          background: 'transparent',
-          border: 'none',
-          padding: '16px 4px 14px',
-          cursor: 'pointer',
-          fontFamily: 'inherit',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 18,
-        }}
-      >
-        {/* the chapter's sigil on its own stage thumbnail — ignited when every topic is done */}
-        <span
-          style={{
-            position: 'relative',
-            flexShrink: 0,
-            width: 56,
-            height: 56,
-            borderRadius: 3,
-            background: tone.wash,
-            display: 'grid',
-            placeItems: 'center',
-            overflow: 'hidden',
-          }}
-        >
-          <TopicSigil
-            id={chapter.id}
-            size={40}
-            mastered={total > 0 && done === total}
-            hue={tone.hue}
-          />
-          <span
-            style={{
-              position: 'absolute',
-              right: 5,
-              bottom: 3,
-              fontSize: '0.6rem',
-              fontWeight: 700,
-              color: tone.hue,
-              fontVariantNumeric: 'tabular-nums',
-              opacity: 0.85,
-            }}
-          >
-            {String(chapter.index).padStart(2, '0')}
-          </span>
-        </span>
-        <span
-          style={{
-            flex: 1,
-            minWidth: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 7,
-          }}
-        >
-          <span style={{ fontSize: '1.05rem', fontWeight: 550, color: 'var(--wobo-ink-900)' }}>
-            {chapter.name}
-          </span>
-          {/* the chapter's own filigree — generative, derived from its id */}
-          <ChapterFiligree id={chapter.id} width={104} height={8} />
-        </span>
-        {done > 0 && (
-          <span
-            style={{
-              fontSize: '0.78rem',
-              color: 'var(--wobo-ink-500)',
-              fontVariantNumeric: 'tabular-nums',
-              flexShrink: 0,
-            }}
-          >
-            {done} of {total}
-          </span>
-        )}
-        <motion.span
-          animate={{ rotate: open ? 90 : 0 }}
-          transition={{ type: 'spring', stiffness: 380, damping: 26 }}
-          style={{ color: 'var(--wobo-ink-300)', flexShrink: 0 }}
-        >
-          <ChevronIcon size={14} />
-        </motion.span>
-      </button>
-
-      <div style={{ margin: '0 4px' }}>
-        <Filament done={done} total={total} hue={tone.hue} />
-      </div>
-
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={EXPAND_SPRING}
-            style={{ overflow: 'hidden' }}
-          >
-            {/* topics slide in with stagger — each rises as the chapter unfolds */}
-            <motion.div
-              variants={cascade}
-              initial="hidden"
-              animate="show"
-              style={{
-                padding: '12px 0 16px 74px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 6,
-              }}
-            >
-              {total === 0 ? (
-                <>
-                  <motion.div
-                    variants={rise}
-                    style={{
-                      fontSize: '0.85rem',
-                      color: 'var(--wobo-ink-500)',
-                      lineHeight: 1.55,
-                      padding: '4px 4px 2px',
-                    }}
-                  >
-                    Wobo composes this chapter's course when you open it
-                  </motion.div>
-                  <motion.button
-                    variants={rise}
-                    type="button"
-                    onClick={() => router.navigate(topicRoute(chapter.id, intent))}
-                    whileHover={{ x: 3 }}
-                    whileTap={{ scale: 0.995 }}
-                    transition={{ type: 'spring', stiffness: 380, damping: 26 }}
-                    style={{
-                      width: '100%',
-                      textAlign: 'left',
-                      background: 'transparent',
-                      border: 'none',
-                      padding: '11px 4px',
-                      cursor: 'pointer',
-                      fontFamily: 'inherit',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: 16,
-                    }}
-                  >
-                    <span
-                      style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--wobo-ink-900)' }}
-                    >
-                      compose
-                    </span>
-                    <span style={{ color: 'var(--wobo-ink-300)' }}>
-                      <ChevronIcon size={14} />
-                    </span>
-                  </motion.button>
-                </>
-              ) : (
-                chapter.topics.map((topic) => (
-                  <motion.div key={topic.id} variants={rise}>
-                    <TopicRow topic={topic} intent={intent} tone={tone} />
-                  </motion.div>
-                ))
-              )}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
+/** A chapter opens as its course; with practice in hand it opens as a sandbox on the same ground. */
+function chapterRoute(row: UnitRow, intent: Intent): Route {
+  const topicId = row.topicId ?? row.chapter.id;
+  return intent === 'practice' ? { name: 'sandbox', topicId } : { name: 'course', topicId };
 }
 
 export function SubjectScreen({ subjectId, intent }: { subjectId: string; intent: Intent }) {
   const router = useRouter();
   const { publishPage } = useWoboBus();
-  const { isDesktop } = useViewport();
-  // the door may be a clubbed display group (CBSE "Science" = physics + chemistry + biology);
-  // chapters keep canonical subjectIds underneath, so each section carries its own hue and glyph
-  const group = displaySubjectById(subjectId);
-  const tone = toneForSubject(subjectId);
-  const { completed, topicProgress } = useProgress();
   const world = useWorld();
-  // Chapters on opening the subject, topics on opening a chapter (CURRICULUM.md §8). Nothing is
-  // fetched ahead of the learner, and nothing appears that the brain did not serve.
-  const units = useUnits(subjectId);
-  const [openChapter, setOpenChapter] = useState<string | null>(null);
-  useTopics(openChapter);
-  // Re-render as each answer lands in the in-memory registry.
-  useRegistryRevision();
-  const [editing, setEditing] = useState(false);
-  // The door IS the subject, in the framework's own naming — the client never clubs or splits a
-  // board's subjects on its behalf.
-  const sections = [
-    {
-      subject: subjectById(subjectId),
-      tone,
-      chapters: chaptersBySubject[subjectId] ?? [],
-    },
-  ];
-  // the thread picks up here too — the furthest in-flight topic gets a continue door on top
-  const inFlight = sections
-    .flatMap((s) => s.chapters.flatMap((ch) => ch.topics.map((t) => ({ chapter: ch, topic: t }))))
-    .filter(({ topic }) => !completed.has(topic.id))
-    .map((x) => ({ ...x, f: topicProgress[x.topic.id] ?? 0 }))
-    .filter((x) => x.f > 0)
-    .sort((a, b) => b.f - a.f)[0];
-  const clubbed = sections.length > 1;
-  const chapterTotal = sections.reduce((n, s) => n + s.chapters.length, 0);
-  const roadmapChapters = sections.flatMap((s) =>
-    s.chapters.map((ch) => ({ chapter: ch, tone: s.tone })),
+  const revision = useRegistryRevision();
+  const { completed, topicProgress } = useProgress();
+  const profile = loadProfile();
+
+  // The board's own subjects for the learner's class, in its own naming and order.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `revision` and the world stand in for the registry's contents
+  const subjects = useMemo(() => displaySubjects(), [world, revision]);
+
+  // The address may be an old slug or another casing. Everything below reads the RESOLVED subject,
+  // so the page shows the subject it means from the first frame; the address catches up in the
+  // effect underneath. Nothing is ever named after a URL segment.
+  const subject = useMemo(() => resolveSubject(subjects, subjectId), [subjects, subjectId]);
+  const openId = subject?.id ?? subjectId;
+
+  // Chapters on opening the subject (CURRICULUM.md §8) — nothing is fetched ahead of the learner.
+  const units = useUnits(openId);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `revision` stands in for the registry's contents
+  const rowsOf = useCallback(
+    (id: string) => unitRows(chaptersBySubject[id] ?? [], { completed, topicProgress }),
+    [completed, topicProgress, revision],
   );
-  // The glyph stage rides the context plane under the scrolling chapter list (MOTION.md §1).
-  const glyphParallax = useParallax<HTMLDivElement>(PARALLAX.context, { max: 44 });
-  const [view, setView] = useState<SubjectView>(loadViewPref);
-  const setViewPref = (v: SubjectView) => {
-    setView(v);
-    saveViewPref(v);
-  };
+
+  // What Wobo and the page call this subject. Empty when the address resolves to none — the code
+  // that reads a page's state has to see "no subject", never a URL segment dressed as a name.
+  const name = subject?.name ?? '';
+  const rows = useMemo(() => rowsOf(openId), [rowsOf, openId]);
+
+  // The address, corrected. A slug hands over to the name the tiles link to; a segment that names
+  // no subject of this class hands back to Learn, which is the page that lists them.
+  useEffect(() => {
+    if (subjects.length === 0) return;
+    if (!subject) {
+      router.replace({ name: 'learn' });
+      return;
+    }
+    if (subject.id !== subjectId) {
+      router.replace({ name: 'subject', subjectId: subject.id, intent });
+    }
+  }, [router, subject, subjects.length, subjectId, intent]);
+
+  // The chapter in front of them — the one under way, else the one up next, else the first. Its
+  // topics are read so the row carries a real lesson count and Continue opens a real lesson.
+  const here =
+    rows.find((r) => r.state === 'now') ?? rows.find((r) => r.state === 'next') ?? rows[0];
+  useTopics(here?.chapter.id ?? null);
+
+  const go = (next: Intent) => router.replace({ name: 'subject', subjectId: openId, intent: next });
+
+  // Wobo reads the page at code level: which subject is open, and where every chapter stands.
   const listRef = useRegisterTarget<HTMLDivElement>('subject-chapters', {
-    kind: 'list',
-    label: `the ${group?.name ?? subjectId} chapter list — a tap expands a chapter into its topics`,
-    // Wobo reads the actual chapters on the page — names, topic counts, which one is open — so Wobo
-    // points at a real chapter instead of the whole list.
+    kind: 'chapters',
+    label: `the chapters of ${name}, each with where the learner stands in it`,
     getSceneState: () => ({
-      subject: group?.name ?? subjectId,
-      open: openChapter,
-      chapters: sections.flatMap((s) =>
-        s.chapters.map((ch) => ({ name: ch.name, topics: ch.topics.length })),
-      ),
+      subject: name,
+      intent,
+      chapters: rows.map((r) => ({
+        index: r.chapter.index,
+        name: r.chapter.name,
+        state: r.state,
+        line: unitLine(r),
+      })),
     }),
   });
 
   useEffect(() => {
     publishPage({
       route: 'subject',
-      state: { subjectId, subject: group?.name, intent, openChapter },
+      state: {
+        title: name,
+        intent,
+        subject: name,
+        chapters: rows.map((r) => `${r.chapter.name} · ${r.state}`),
+      },
     });
-  }, [publishPage, subjectId, group?.name, intent, openChapter]);
+  }, [publishPage, name, intent, rows]);
+
+  // The crumb: "Learn · Mathematics". The pill beside it is the syllabus's provenance, in the
+  // brain's own words — only a verified one wears the mint mark (DESIGN.md §2). With no subject
+  // resolved there is no name to print, and the door alone is the honest crumb — the URL segment
+  // is the app talking to itself.
+  const door = intent === 'practice' ? 'Practice' : 'Learn';
+  const crumb = subject ? `${door} · ${subject.name}` : door;
+  const provenance = world
+    ? world.label.trim() ||
+      labelFor(world.status, { name: world.frameworkName, version: world.versionYear })
+    : '';
+  const initial = profile.name.trim().charAt(0).toUpperCase();
 
   return (
-    <motion.div
-      variants={cascade}
-      initial="hidden"
-      animate="show"
-      style={{ minHeight: '100dvh', padding: '108px 6vw 96px' }}
-    >
-      <Whisper onClick={() => router.back()}>◦ {intent}</Whisper>
+    <AppFrame active={intent === 'practice' ? 'practice' : 'learn'}>
+      <TopBar
+        crumb={crumb}
+        right={
+          <>
+            {provenance && (
+              <span className="ln-prov">
+                {world?.status === 'verified' && <i aria-hidden="true" />}
+                {provenance}
+              </span>
+            )}
+            <Avatar aria-hidden={initial ? undefined : true}>{initial}</Avatar>
+          </>
+        }
+      />
 
-      {/* the poster band — the subject's stage, its scene behind, the glyph XL afloat. The flat
-          wash gains depth (§1 ambient): the hue pools behind the glyph and settles to the wash. */}
-      <motion.div
-        variants={rise}
-        style={{
-          position: 'relative',
-          minHeight: isDesktop ? 300 : 260,
-          borderRadius: 3,
-          background: `radial-gradient(90% 130% at ${isDesktop ? '84%' : '78%'} 34%, color-mix(in srgb, ${tone.hue} 11%, transparent) 0%, ${tone.wash} 46%, ${tone.wash} 100%)`,
-          overflow: 'hidden',
-          display: 'flex',
-          alignItems: 'flex-end',
-        }}
-      >
-        <SubjectSceneBackdrop subjectId={subjectId} wide={isDesktop} />
-        <div
-          ref={glyphParallax}
-          style={{
-            position: 'absolute',
-            right: isDesktop ? '8%' : 16,
-            top: 0,
-            bottom: 0,
-            display: 'flex',
-            alignItems: 'center',
-            pointerEvents: 'none',
-            willChange: 'transform',
-          }}
-        >
-          <motion.div
-            animate={{ y: [0, -9, 0], rotate: [0, -2, 0] }}
-            transition={{ duration: 6.5, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
-          >
-            <SubjectGlyph subjectId={subjectId} size={isDesktop ? 184 : 116} accent />
-          </motion.div>
+      {subject && (
+        <div>
+          <Label>Your subjects</Label>
+          <h1 className="ln-h1">{subject.name}, where your class is this week</h1>
         </div>
-        <div
-          style={{
-            position: 'relative',
-            padding: isDesktop ? '30px 36px' : '22px 22px',
-            maxWidth: isDesktop ? '58%' : '64%',
-          }}
-        >
-          <h1
-            style={{
-              margin: 0,
-              fontSize: isDesktop ? '2rem' : '1.55rem',
-              fontWeight: 650,
-              letterSpacing: '-0.03em',
-              lineHeight: 1.12,
-              color: 'var(--wobo-ink-900)',
-            }}
-          >
-            {group?.name ?? subjectId}
-          </h1>
-          <div style={{ marginTop: 7, fontSize: '0.92rem', color: 'var(--wobo-ink-500)' }}>
-            {group?.line}
-          </div>
-          <div style={{ marginTop: 14, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <span
-              style={{
-                padding: '5px 11px',
-                borderRadius: 3,
-                background: 'var(--wobo-card)',
-                border: '0.5px solid var(--wobo-hairline-on-paper)',
-                fontSize: '0.75rem',
-                fontWeight: 550,
-                color: 'var(--wobo-ink-500)',
-              }}
-            >
-              {boardName(loadProfile().boardId)} · {loadProfile().grade}
-            </span>
-            <span
-              style={{
-                padding: '5px 11px',
-                borderRadius: 3,
-                background: 'var(--wobo-card)',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                color: tone.hue,
-                fontVariantNumeric: 'tabular-nums',
-              }}
-            >
-              {chapterTotal} chapters
-            </span>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* continue — the open course, one tap from the top of the list */}
-      {inFlight && (
-        <motion.button
-          type="button"
-          variants={rise}
-          onClick={() => router.navigate(topicRoute(inFlight.topic.id, intent))}
-          whileHover={{ y: -2 }}
-          whileTap={{ scale: 0.985 }}
-          style={{
-            marginTop: 22,
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 16,
-            padding: '16px 18px',
-            background: 'var(--wobo-card)',
-            border: `1px solid ${hueForTopic(inFlight.topic.id)}33`,
-            borderRadius: 3,
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-            textAlign: 'left',
-          }}
-        >
-          <TopicSigil id={inFlight.topic.id} size={44} hue={hueForTopic(inFlight.topic.id)} />
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div
-              style={{
-                fontSize: '0.7rem',
-                fontWeight: 650,
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase',
-                color: hueForTopic(inFlight.topic.id),
-              }}
-            >
-              Continue · {inFlight.chapter.name}
-            </div>
-            <div
-              style={{
-                marginTop: 4,
-                fontSize: '1.02rem',
-                fontWeight: 600,
-                color: 'var(--wobo-ink-900)',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {inFlight.topic.name}
-            </div>
-            <div
-              style={{
-                marginTop: 8,
-                height: 3,
-                borderRadius: 2,
-                background: 'var(--wobo-tonal)',
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                style={{
-                  width: `${Math.round(inFlight.f * 100)}%`,
-                  height: '100%',
-                  background: hueForTopic(inFlight.topic.id),
-                }}
-              />
-            </div>
-          </div>
-          <span
-            style={{
-              flexShrink: 0,
-              padding: '9px 16px',
-              borderRadius: 3,
-              background: 'var(--wobo-ink)',
-              color: 'var(--wobo-on-ink)',
-              fontSize: '0.84rem',
-              fontWeight: 600,
-            }}
-          >
-            Continue
-          </span>
-        </motion.button>
       )}
 
-      {/* two ways to see the journey: the ledgered list, or the adventure roadmap */}
-      <motion.div
-        variants={rise}
-        style={{
-          marginTop: inFlight ? 26 : 40,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 12,
-        }}
-      >
-        <span
-          style={{
-            fontSize: '0.72rem',
-            fontWeight: 600,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            color: 'var(--wobo-ink-300)',
-          }}
-        >
-          {view === 'adventure' ? 'the adventure' : 'the chapters'}
-        </span>
-        <div
-          role="tablist"
-          aria-label="how to view chapters"
-          style={{
-            display: 'inline-flex',
-            gap: 4,
-            padding: 3,
-            borderRadius: 3,
-            background: 'var(--wobo-tonal)',
-          }}
-        >
-          {(['list', 'adventure'] as const).map((v) => {
-            const on = view === v;
-            return (
-              <button
-                key={v}
-                type="button"
-                role="tab"
-                aria-selected={on}
-                onClick={() => setViewPref(v)}
-                style={{
-                  padding: '6px 14px',
-                  borderRadius: 3,
-                  border: 'none',
-                  background: on ? 'var(--wobo-card)' : 'transparent',
-                  color: on ? 'var(--wobo-ink-900)' : 'var(--wobo-ink-500)',
-                  fontFamily: 'inherit',
-                  fontSize: '0.8rem',
-                  fontWeight: on ? 600 : 450,
-                  cursor: 'pointer',
-                  boxShadow: on ? '0 0 0 0.5px var(--wobo-hairline-on-paper-strong)' : 'none',
-                }}
-              >
-                {v === 'list' ? 'list' : 'roadmap'}
-              </button>
-            );
-          })}
-        </div>
-      </motion.div>
-
-      {view === 'adventure' ? (
-        // The expedition takes the whole viewport through a portal — a world, not a section.
-        <div ref={listRef}>
-          <AdventureRoadmap
-            chapters={roadmapChapters}
-            intent={intent}
-            title={group?.name ?? subjectId}
-            onExit={() => setViewPref('list')}
-          />
-        </div>
+      {!world ? (
+        <Card compact>
+          <p>{DISCOVERY_COPY.empty}</p>
+          <CardFoot>
+            <Button size="sm" onClick={() => router.navigate({ name: 'you' })}>
+              Choose your board
+            </Button>
+          </CardFoot>
+        </Card>
       ) : (
-        <div ref={listRef} style={{ marginTop: 20 }}>
-          {/* §5: how well we know these chapters, before a single one is opened. */}
-          {world && units.view && (
-            <motion.div variants={rise} style={{ marginBottom: 14 }}>
-              <ProvenanceLabel
-                status={world.status}
-                label={units.view.label || world.label}
-                name={world.frameworkName}
-                version={world.versionYear}
-              />
-              {units.offline && (
-                <span style={{ fontSize: '0.76rem', color: 'var(--wobo-ink-300)' }}>
-                  Showing the copy saved on this device
-                </span>
-              )}
-            </motion.div>
-          )}
-
-          {/* Three honest ends: no board, a job still running, or a refusal we can read. */}
-          {!world && (
-            <motion.div variants={rise} style={{ marginBottom: 18 }}>
-              <EmptyWorldCard onChooseBoard={() => router.replace({ name: 'you' })} />
-            </motion.div>
-          )}
-          {world && units.looking && (
-            <motion.div variants={rise} style={{ marginBottom: 18 }}>
-              <DiscoveryCard
-                placeholder={units.view?.placeholder ?? null}
-                onOwnSyllabus={() => router.replace({ name: 'you' })}
-                onFinished={() => units.reload()}
-              />
-            </motion.div>
-          )}
-          {world && units.error && !units.looking && (
-            <motion.p
-              variants={rise}
-              role="alert"
-              style={{ marginBottom: 18, fontSize: '0.88rem', color: 'var(--wobo-ink-500)' }}
-            >
-              {units.error}
-            </motion.p>
-          )}
-
-          {/* The overlay: make the board's list match this school (§6). */}
-          {world && units.units.length > 0 && (
-            <motion.div variants={rise} style={{ marginBottom: 18 }}>
-              <button
-                type="button"
-                onClick={() => setEditing((e) => !e)}
-                style={{
-                  border: 'none',
-                  background: 'transparent',
-                  font: 'inherit',
-                  fontSize: '0.82rem',
-                  color: 'var(--wobo-ink-500)',
-                  cursor: 'pointer',
-                  padding: 4,
-                }}
-              >
-                {editing ? 'Done editing' : 'Make this match my school'}
-              </button>
-              {editing && units.view?.subjectId && (
-                <OverlayEditor
-                  nodes={units.units}
-                  parentId={units.view.subjectId}
-                  kind="unit"
-                  onClose={() => setEditing(false)}
-                />
-              )}
-            </motion.div>
-          )}
-
-          {sections.map((sec, i) => (
-            <div key={sec.subject?.id ?? subjectId}>
-              {/* a clubbed door sections its chapters under the canonical disciplines */}
-              {clubbed && sec.subject && (
-                <motion.div
-                  variants={rise}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    padding: '10px 4px 12px',
-                    marginTop: i === 0 ? 0 : 38,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: 34,
-                      height: 34,
-                      borderRadius: 3,
-                      background: sec.tone.wash,
-                      display: 'grid',
-                      placeItems: 'center',
-                    }}
-                  >
-                    <SubjectGlyph subjectId={sec.subject.id} size={26} />
-                  </span>
-                  <span
-                    style={{
-                      fontSize: '0.95rem',
-                      fontWeight: 650,
-                      letterSpacing: '-0.01em',
-                      color: sec.tone.hue,
-                    }}
-                  >
-                    {sec.subject.name}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: '0.78rem',
-                      color: 'var(--wobo-ink-300)',
-                      fontVariantNumeric: 'tabular-nums',
-                    }}
-                  >
-                    {sec.chapters.length} chapters
-                  </span>
-                </motion.div>
-              )}
-              {sec.chapters.map((ch) => (
-                <motion.div key={ch.id} variants={rise}>
-                  <ChapterRow
-                    chapter={ch}
-                    intent={intent}
-                    open={openChapter === ch.id}
-                    onToggle={() => setOpenChapter((o) => (o === ch.id ? null : ch.id))}
+        <>
+          {subjects.length > 0 && (
+            <div className="ln-subjects">
+              {subjects.map((s) => {
+                const line = tileLine({ id: s.id, name: s.name, line: s.line }, rowsOf(s.id));
+                return (
+                  <Tile
+                    key={s.id}
+                    title={s.name}
+                    {...(line ? { meta: line } : {})}
+                    on={s.id === openId}
+                    onClick={() => router.replace({ name: 'subject', subjectId: s.id, intent })}
                   />
-                </motion.div>
-              ))}
+                );
+              })}
             </div>
-          ))}
-        </div>
+          )}
+
+          <div className="sb-tabs">
+            <Chip on={intent === 'learn'} onClick={() => go('learn')}>
+              Learn
+            </Chip>
+            <Chip on={intent === 'practice'} onClick={() => go('practice')}>
+              Practice
+            </Chip>
+          </div>
+
+          {units.looking ? (
+            <DiscoveryCard
+              placeholder={units.view?.placeholder ?? null}
+              onOwnSyllabus={() => router.navigate({ name: 'you' })}
+              onFinished={() => units.reload()}
+            />
+          ) : rows.length === 0 ? (
+            <Card compact>
+              <p>
+                {units.error ??
+                  (world.level && name
+                    ? `I am fetching the chapters ${frameworkLabel(world.frameworkName)} teaches in ${name}.`
+                    : 'Tell me your class and I will bring your chapters.')}
+              </p>
+            </Card>
+          ) : intent === 'practice' ? (
+            <div className="sb-sets" ref={listRef}>
+              <Card compact>
+                <Tag>This set</Tag>
+                <div className="pr-set">
+                  {rows.map((r) => (
+                    <button
+                      key={r.chapter.id}
+                      type="button"
+                      className={r.state === 'now' ? 'pr-on' : undefined}
+                      aria-current={r.state === 'now' ? 'step' : undefined}
+                      onClick={() => router.navigate(chapterRoute(r, 'practice'))}
+                    >
+                      {r.chapter.name}
+                      {r.state === 'done' ? (
+                        <span className="pr-ok" role="img" aria-label="mastered">
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="var(--ink)"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden="true"
+                          >
+                            <path d="M5 12 l5 5 l9 -10" />
+                          </svg>
+                        </span>
+                      ) : (
+                        <span className="pr-dot" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </Card>
+              <Card tint="marigold" compact>
+                <Tag>How this works</Tag>
+                <p style={{ color: 'var(--ink)' }}>
+                  Wobo never says wrong. When you're close, it draws the difference on your answer
+                  and waits. Get it, and it makes a small fuss.
+                </p>
+              </Card>
+            </div>
+          ) : (
+            <div className="ln-units" ref={listRef}>
+              {rows.map((r) => {
+                const line = unitLine(r);
+                const to = chapterRoute(r, 'learn');
+                if (r.state === 'now') {
+                  return (
+                    <div key={r.chapter.id} className="ln-unit ln-now">
+                      <div className="ln-n">{r.chapter.index}</div>
+                      <div>
+                        <b>{r.chapter.name}</b>
+                        {line && <span>{line}</span>}
+                        <div className="ln-prog" aria-hidden="true">
+                          <i style={{ width: `${Math.round(r.progress * 100)}%` }} />
+                        </div>
+                      </div>
+                      <Button size="sm" onClick={() => router.navigate(to)}>
+                        Continue
+                      </Button>
+                    </div>
+                  );
+                }
+                return (
+                  <a
+                    key={r.chapter.id}
+                    className={r.state === 'done' ? 'ln-unit ln-done' : 'ln-unit'}
+                    href={routeToPath(to)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.navigate(to);
+                    }}
+                  >
+                    <div className="ln-n">{r.chapter.index}</div>
+                    <div>
+                      <b>{r.chapter.name}</b>
+                      {line && <span>{line}</span>}
+                    </div>
+                    {unitState(r.state) && <span className="ln-state">{unitState(r.state)}</span>}
+                  </a>
+                );
+              })}
+            </div>
+          )}
+
+          <div className="ln-wobo">
+            <WoboHead size={28} />
+            {WOBO_LINE}
+          </div>
+        </>
       )}
-    </motion.div>
+    </AppFrame>
   );
 }

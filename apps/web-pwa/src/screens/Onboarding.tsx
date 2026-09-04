@@ -38,7 +38,7 @@ import { classLine } from './You';
 import { boardOf, type ChosenBoard, levelsFor } from './you/GradeBoardPicker';
 import { ParentInvite } from './you/ParentInvite';
 import { looksLikeEmail } from './you/parentLink';
-import { boardName, loadProfile, resolveBoardId, saveProfile } from './you/profile';
+import { boardName, frameworkLabel, loadProfile, resolveBoardId, saveProfile } from './you/profile';
 import './onboarding/onboarding.css';
 
 /** Survives the provider round-trip in this tab: on return, resume signed in. */
@@ -252,7 +252,10 @@ export function Onboarding() {
         grade: level,
         boardId,
       });
-      void adoptFramework({ frameworkId: boardId, name: boardId, level });
+      // A restore only carries the framework's ID. Adopting it as its own NAME is how a crumb
+      // ends up reading "Class 8 · cbse" three screens away, so the label is settled here — at
+      // the one place that knows a name is missing — rather than normalised by every screen.
+      void adoptFramework({ frameworkId: boardId, name: frameworkLabel(boardId), level });
       localStorage.setItem(ONBOARDED_KEY, '1');
       router.replace({ name: 'home' });
       return;

@@ -73,7 +73,9 @@ describe('resolveDestination — Wobo navigates on command', () => {
  * knew — and cost tokens to do it.
  */
 describe('nav intents are resolved before the gateway round-trip', () => {
-  const app = readFileSync(join(import.meta.dir, '..', 'src', 'App.tsx'), 'utf8');
+  // The turn lives in the app RUNTIME (src/AppRuntime.tsx) — the root above it is the public
+  // site's door and holds no conversation at all.
+  const app = readFileSync(join(import.meta.dir, '..', 'src', 'AppRuntime.tsx'), 'utf8');
   const askBody = app.slice(app.indexOf('const ask = async (text: string)'));
 
   it('resolves the destination above the llm.invoke call in ask()', () => {

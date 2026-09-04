@@ -15,7 +15,7 @@ import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import type { BarState } from '../screens/course/shared';
-import { CardBody, cardTitle, lead, rgba, whisper } from '../screens/course/shared';
+import { CardBody, captionSurface, cardTitle, lead, rgba, whisper } from '../screens/course/shared';
 import { sfx } from '../ui/sound';
 
 // --- The spec ------------------------------------------------------------------------------------
@@ -261,7 +261,7 @@ export function ConceptMap({
             width: '100%',
             height: 320,
             background: rgba(hue, 0.05),
-            borderRadius: 3,
+            borderRadius: 10,
             border: '0.5px solid var(--wobo-hairline-on-paper)',
             overflow: 'hidden',
           }}
@@ -323,7 +323,7 @@ export function ConceptMap({
               style={{
                 border: '1px solid var(--wobo-feedback-correct)',
                 background: 'var(--wobo-feedback-correctSoft)',
-                borderRadius: 3,
+                borderRadius: 10,
                 padding: '14px 16px',
                 display: 'flex',
                 flexDirection: 'column',
@@ -361,8 +361,7 @@ export function ConceptMap({
               animate={{ opacity: 1 }}
               style={{
                 ...lead,
-                borderLeft: `2px solid ${hue}`,
-                paddingLeft: 14,
+                ...captionSurface,
                 color: 'var(--wobo-ink-900)',
               }}
             >

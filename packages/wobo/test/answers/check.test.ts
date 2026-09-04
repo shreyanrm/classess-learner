@@ -345,6 +345,89 @@ describe('draw', () => {
   it('a single point is nothing drawn yet', () => {
     expect(codes(check(DRAW_SEGMENT, { kind: 'draw', path: [[500, 100]] }))).toEqual(['empty']);
   });
+
+  /**
+   * An item may hold more than one right answer. A rectangle is cut in half by a vertical line, a
+   * horizontal one, or either diagonal, and it does not prefer one of them; `accept` carries the
+   * rest, and every one of them is right.
+   */
+  describe('a want and the other right answers', () => {
+    const CUT: AnswerSpecOf<'draw'> = {
+      kind: 'draw',
+      id: 'cut-in-half',
+      prompt: 'Draw a line that cuts it in half',
+      view: [0, 0, 1000, 600],
+      want: { shape: 'segment', from: [500, 200], to: [500, 400], tolerance: 90 },
+      accept: [
+        { shape: 'segment', from: [180, 300], to: [820, 300], tolerance: 90 },
+        { shape: 'segment', from: [200, 220], to: [800, 380], tolerance: 90 },
+        { shape: 'segment', from: [200, 380], to: [800, 220], tolerance: 90 },
+      ],
+    };
+    const drawn = (path: [number, number][]) => check(CUT, { kind: 'draw', path });
+
+    it('takes the want itself', () => {
+      expect(
+        drawn([
+          [500, 220],
+          [500, 380],
+        ]).correct,
+      ).toBe(true);
+    });
+
+    it('takes any of the accepted answers, drawn either way round', () => {
+      for (const path of [
+        [
+          [200, 300],
+          [800, 300],
+        ],
+        [
+          [800, 300],
+          [200, 300],
+        ],
+        [
+          [200, 220],
+          [800, 380],
+        ],
+        [
+          [200, 380],
+          [800, 220],
+        ],
+      ] as [number, number][][]) {
+        expect([path, drawn(path).correct]).toEqual([path, true]);
+      }
+    });
+
+    it('still refuses a line that cuts nothing in half', () => {
+      const off = drawn([
+        [220, 240],
+        [320, 260],
+      ]);
+      expect(off.correct).toBe(false);
+      expect(codes(off)).toEqual(['wrong_position']);
+    });
+
+    it('keeps the closest reading of a wrong answer, not the first want listed', () => {
+      // A near-horizontal stroke: its best fit is the horizontal answer, so the partial it keeps
+      // is that one's, which is higher than the vertical want's.
+      const near = drawn([
+        [300, 300],
+        [700, 300],
+      ]);
+      expect(near.correct).toBe(false);
+      const verticalOnly = check(
+        { ...CUT, accept: undefined },
+        {
+          kind: 'draw',
+          path: [
+            [300, 300],
+            [700, 300],
+          ],
+        },
+      );
+      expect((near.partial ?? 0) > (verticalOnly.partial ?? 0)).toBe(true);
+    });
+  });
 });
 
 describe('circle the part', () => {

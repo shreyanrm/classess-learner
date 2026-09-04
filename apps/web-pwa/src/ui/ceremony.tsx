@@ -18,17 +18,20 @@ import { fontFamily } from '@wobo/config';
 import { WoboBody } from '@wobo/wobo';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { GOLD } from '../screens/course/shared';
+import { GOLD, rgba } from '../screens/course/shared';
 import { useRouter } from '../shell/router';
 import { useProgress } from '../store/progress';
 import { speakLine } from '../wobo/speech';
+import { resolvedColor } from './hues';
 import { sfx } from './sound';
 import { Trophy, type TrophyAward } from './trophies';
 
 const PAPER = '#FFFFFF';
 // The three ceremonial colors, exactly (spec): the track hue, gold, and paper-white. No loop.
+// A canvas takes a colour string, not a token, so the two that are tokens are read off the live
+// document here — the one place in the app that has to resolve a variable by hand.
 function confettiColors(hue: string): [string, string, string] {
-  return [hue, GOLD, PAPER];
+  return [resolvedColor(hue), resolvedColor(GOLD, '#FFB629'), PAPER];
 }
 
 /**
@@ -242,7 +245,7 @@ export function Ceremony({ award, onDismiss }: { award: TrophyAward; onDismiss: 
           width: 220,
           height: '62%',
           transformOrigin: 'top center',
-          background: `linear-gradient(180deg, ${award.hue}30 0%, ${award.hue}10 40%, transparent 82%)`,
+          background: `linear-gradient(180deg, ${rgba(award.hue, 0.19)} 0%, ${rgba(award.hue, 0.06)} 40%, transparent 82%)`,
           filter: 'blur(6px)',
           pointerEvents: 'none',
         }}

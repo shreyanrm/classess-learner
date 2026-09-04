@@ -1,41 +1,45 @@
 'use client';
 
 /**
- * The conversation — one page where only chat happens. It is the same never-ending thread the
- * docked Wobo carries everywhere: scroll up and the past pages itself in (the archive loads
- * lazily, WhatsApp-style); type below and Wobo answers from wherever you actually are. Wobo's ink
- * belongs on the other screens — here Wobo speaks in regular type, person to person.
+ * The conversation — NOT a chat app. It is the lesson plane (board 03 of
+ * design/prototypes/app-v1.html) opened in conversation mode: the same plane card with Wobo's bar,
+ * the canvas and the say row, and the same side column beside it. What the canvas holds is the
+ * never-ending thread — the one Wobo carries everywhere — set as a page rather than as bubbles:
+ * the learner's question is the heading, Wobo's answer is the prose under it. Scroll up and the
+ * past pages itself in; ask in the say row, where a lesson keeps its button.
+ *
+ * Wobo's ink belongs on the other screens; here Wobo speaks in regular type, person to person.
  */
 
-import { useRegisterTarget, useWoboBus, WoboBody } from '@wobo/wobo';
-import { AnimatePresence, motion } from 'framer-motion';
-import { type FormEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { armLasso, useRegisterTarget, useWoboBus } from '@wobo/wobo';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { AppFrame } from '../shell/AppFrame';
 import { OFFLINE_LINE } from '../shell/resilience';
-import { useRouter } from '../shell/router';
-import { SendIcon, WaveformIcon } from '../ui/icons';
-import { AmbientWash, FROST, fluidType, MagneticButton } from '../ui/kit';
+import { AskBox, Avatar, Card, Chip, Tag, TopBar, WoboHead } from '../ui/primitives';
 import { useWoboChat } from '../wobo/chat';
+import { holdToTalkEnd, holdToTalkStart } from '../wobo/hold';
 import { TurnAttachments } from '../wobo/paths';
 import { MuteButton } from '../wobo/speech';
 import { useWoboVoice } from '../wobo/voice';
-import { Whisper } from './Learn';
+import './course/lesson.css';
+import './chat/chat.css';
+import { loadProfile } from './you/profile';
 
-// The conversation's atmosphere (§1 ambient depth) — paper warmth at the crown, Wobo's warm
-// molten pool rising at the composer's foot, so the thread sits inside Wobo's light. One layer.
-const CHAT_WASH =
-  'radial-gradient(72% 32% at 50% 0%, rgba(255,201,60,0.05) 0%, transparent 66%),' +
-  ' radial-gradient(64% 30% at 50% 100%, var(--wobo-molten-soft) 0%, transparent 72%)';
+/** The product's own line for what this page is. It is the crumb, so the address explains itself. */
+const CRUMB = 'Wobo · One conversation, always';
 
 export function ChatScreen() {
-  const router = useRouter();
-  const { turns, ask, busy, mood, setMood, hasOlder, loadOlder, offline, pending } = useWoboChat();
+  const { turns, ask, busy, setMood, hasOlder, loadOlder, offline, pending } = useWoboChat();
   const bus = useWoboBus();
   const [draft, setDraft] = useState('');
   const [voiceNote, setVoiceNote] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  // The chat page is the one full-screen route that used to publish nothing — so the bus kept the
-  // last content screen's page/curriculum/canvas, and Wobo would answer about a page already left.
-  // Wobo publishes themself here: the conversation IS the screen, and the course layers are cleared.
+  const sayRef = useRef<HTMLDivElement | null>(null);
+  const learner = useMemo(() => loadProfile().name.trim(), []);
+  const initial = learner.charAt(0).toUpperCase();
+
+  // The conversation IS the screen: Wobo publishes themself here, and the course layers are
+  // cleared, so Wobo never answers about a page already left.
   const threadRef = useRegisterTarget<HTMLDivElement>('chat-thread', {
     kind: 'conversation',
     label: 'the conversation on screen',
@@ -51,19 +55,13 @@ export function ChatScreen() {
     bus.publishCurriculum({});
     bus.publishCanvas(undefined);
   }, [bus, turns.length]);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  // Family N — offline resilience. `offline` + `pending` come from the shared chat layer so nothing
-  // typed with no connection is dropped: it shows as a pending bubble and fires once on reconnect.
+
   // scroll bookkeeping: keep the reader's place when the past prepends, follow the newest line
   const restore = useRef<{ height: number; top: number } | null>(null);
   const lastLen = useRef(turns.length);
   const voice = useWoboVoice({ setMood });
   const voiceOn =
     voice.status === 'listening' || voice.status === 'speaking' || voice.status === 'connecting';
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
 
   // Arrive at the newest line, instantly.
   useEffect(() => {
@@ -95,10 +93,7 @@ export function ChatScreen() {
     }
   };
 
-  const submit = (e: FormEvent) => {
-    e.preventDefault();
-    const text = draft.trim();
-    if (!text) return;
+  const submit = (text: string) => {
     // Offline queueing + reconnect retry live in the shared chat layer (App.tsx `ask`), so the home
     // composer and this one behave identically. When online, don't stack turns while one is in flight.
     if (busy && !offline) return;
@@ -106,8 +101,11 @@ export function ChatScreen() {
     void ask(text);
   };
 
-  const toggleVoice = () => {
-    if (voiceOn) return voice.stop();
+  const toggleVoice = useCallback(() => {
+    if (voiceOn) {
+      voice.stop();
+      return;
+    }
     void voice.start().then((state) => {
       // 'idle' back from start() means getUserMedia was denied/blocked — don't fail silently.
       const note =
@@ -121,285 +119,127 @@ export function ChatScreen() {
         window.setTimeout(() => setVoiceNote(null), 3000);
       }
     });
-  };
+  }, [voice, voiceOn]);
+
+  const focusAsk = () => sayRef.current?.querySelector('input')?.focus();
 
   return (
-    <div
-      style={{
-        height: '100dvh',
-        display: 'flex',
-        flexDirection: 'column',
-        paddingTop: 64,
-        background: 'var(--wobo-card)',
-        position: 'relative',
-        isolation: 'isolate',
-      }}
-    >
-      <AmbientWash gradient={CHAT_WASH} />
-      <Whisper onClick={() => router.back()}>◦ back</Whisper>
-
-      {/* Wobo's presence — small, alive, floating on frosted glass above the thread */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          padding: '10px 0 6px',
-        }}
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-          style={{
-            ...FROST,
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 10,
-            padding: '7px 12px 7px 10px',
-          }}
-        >
-          <WoboBody size={44} mood={busy ? 'thinking' : mood} gaze="pointer" label="Wobo" />
-          <div>
-            <div style={{ fontWeight: 600, color: 'var(--wobo-ink)', lineHeight: 1.1 }}>Wobo</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--wobo-ink-faint)' }}>
-              {busy ? 'Thinking…' : 'One conversation, always'}
+    <AppFrame active="home">
+      <h1 className="ls-sr">Wobo</h1>
+      <TopBar
+        crumb={CRUMB}
+        right={<Avatar aria-hidden={initial ? undefined : true}>{initial}</Avatar>}
+      />
+      <div className="ls-lesson">
+        <section className="ls-plane ch-plane" aria-label="Your conversation with Wobo">
+          <div className="ls-bar">
+            <b>Wobo</b>
+            {learner ? ` · with ${learner}` : null}
+            <span className="ls-voice">
+              <MuteButton />
+            </span>
+            {busy && (
+              <span className="ls-live">
+                <i /> thinking
+              </span>
+            )}
+          </div>
+          <div className="ls-canvas">
+            <div ref={scrollRef} onScroll={onScroll} className="ls-stage wobo-scroll-quiet">
+              {/* the thread is a log: every answer Wobo lands is announced where it lands */}
+              <div className="ch-thread" ref={threadRef} role="log" aria-label="The conversation">
+                {!hasOlder && <div className="ch-began">Where we began</div>}
+                {turns.map((t) =>
+                  t.role === 'user' ? (
+                    <div key={t.id} className="ch-turn">
+                      <Tag>You asked</Tag>
+                      <p>{t.text}</p>
+                    </div>
+                  ) : (
+                    <div key={t.id} className="ch-turn">
+                      <div className="ch-said">{t.text}</div>
+                      {/* the five paths land in the thread itself — sims, drawings, action cards */}
+                      {t.extras && <TurnAttachments turn={t} />}
+                    </div>
+                  ),
+                )}
+                {/* queued while offline — shown so nothing they typed silently vanishes */}
+                {pending.map((q) => (
+                  <div key={q.id} className="ch-turn ch-queued">
+                    <Tag>You asked</Tag>
+                    <p>{q.text}</p>
+                    <div className="ch-wait">Sending when you're back…</div>
+                  </div>
+                ))}
+                {/* offline: one plain line telling them what still works (the dead-end rule) */}
+                {offline && (
+                  <div className="ch-wait" role="status">
+                    {OFFLINE_LINE}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-          <MuteButton />
-        </motion.div>
-      </div>
-
-      {/* offline: one plain line telling them what still works (family N, the dead-end rule) */}
-      {offline && (
-        <div
-          role="status"
-          style={{
-            textAlign: 'center',
-            margin: '0 20px 6px',
-            padding: '8px 14px',
-            fontSize: fluidType.small,
-            lineHeight: 1.5,
-            color: 'var(--wobo-ink)',
-            background: 'var(--wobo-tonal)',
-            borderRadius: 'var(--wobo-radius-md)',
-          }}
-        >
-          {OFFLINE_LINE}
-        </div>
-      )}
-
-      {/* the thread — the page's one scroll, the past paging in above */}
-      <div
-        ref={scrollRef}
-        onScroll={onScroll}
-        style={{ flex: 1, overflowY: 'auto', padding: '10px 20px' }}
-      >
-        <div
-          ref={threadRef}
-          style={{
-            maxWidth: 680,
-            margin: '0 auto',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 20,
-            paddingBottom: 8,
-          }}
-        >
-          {!hasOlder && (
-            <div
-              style={{
-                textAlign: 'center',
-                fontFamily: 'Caveat, cursive',
-                fontSize: 19,
-                color: 'color-mix(in srgb, var(--wobo-ink) 45%, transparent)',
-                padding: '18px 0 6px',
-              }}
-            >
-              Where we began
+          <div className="ls-say ch-say" ref={sayRef}>
+            <WoboHead size={44} mood={busy ? 'thinking' : 'idle'} />
+            <AskBox
+              placeholder="Talk to Wobo…"
+              label="Ask Wobo"
+              value={draft}
+              onChange={setDraft}
+              onAsk={submit}
+              onMic={toggleVoice}
+              micLabel={voiceOn ? 'Stop voice' : 'Talk to Wobo by voice'}
+            />
+          </div>
+        </section>
+        <aside className="ls-side">
+          <Card tint="rose" compact>
+            <Tag>Ask about this</Tag>
+            <p style={{ color: 'var(--ink)' }}>
+              Circle any part of the board and ask why. Or just say it.
+            </p>
+            <div className="ls-tools">
+              <Chip onClick={() => armLasso(true)}>Circle</Chip>
+              <Chip onClick={focusAsk}>Type</Chip>
+              <TalkChip />
             </div>
-          )}
-          {/* Wobo's words sit on the page itself — the outline belongs to the learner's side only */}
-          {turns.map((t) =>
-            t.role === 'user' ? (
-              <div
-                key={t.id}
-                style={{
-                  alignSelf: 'flex-end',
-                  maxWidth: '78%',
-                  padding: '11px 16px',
-                  borderRadius: 'var(--wobo-radius-md)',
-                  fontSize: fluidType.body,
-                  lineHeight: 1.6,
-                  background: 'var(--wobo-ink)',
-                  color: 'var(--wobo-on-ink)',
-                  whiteSpace: 'pre-wrap',
-                  overflowWrap: 'anywhere',
-                }}
-              >
-                {t.text}
-              </div>
-            ) : (
-              <div
-                key={t.id}
-                style={{
-                  alignSelf: 'flex-start',
-                  width: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 10,
-                }}
-              >
-                <div
-                  style={{
-                    maxWidth: '94%',
-                    padding: '2px 2px',
-                    fontSize: fluidType.body,
-                    lineHeight: 1.7,
-                    color: 'var(--wobo-ink)',
-                    whiteSpace: 'pre-wrap',
-                    overflowWrap: 'anywhere',
-                  }}
-                >
-                  {t.text}
-                </div>
-                {/* the five paths land in the thread itself — sims, drawings, action cards */}
-                {t.extras && <TurnAttachments turn={t} />}
-              </div>
-            ),
-          )}
-          {/* queued while offline — shown so nothing they typed silently vanishes */}
-          {pending.map((q) => (
-            <div
-              key={q.id}
-              style={{
-                alignSelf: 'flex-end',
-                maxWidth: '78%',
-                padding: '11px 16px',
-                borderRadius: 'var(--wobo-radius-md)',
-                fontSize: fluidType.body,
-                lineHeight: 1.6,
-                background: 'var(--wobo-ink)',
-                color: 'var(--wobo-on-ink)',
-                opacity: 0.5,
-                whiteSpace: 'pre-wrap',
-                overflowWrap: 'anywhere',
-              }}
-            >
-              {q.text}
-              <span style={{ display: 'block', fontSize: fluidType.small, opacity: 0.8 }}>
-                Sending when you're back…
-              </span>
-            </div>
-          ))}
-          {busy && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              style={{
-                color: 'var(--wobo-ink-faint)',
-                fontSize: fluidType.small,
-                padding: '2px 4px',
-              }}
-            >
-              Wobo is thinking…
-            </motion.div>
-          )}
-        </div>
+          </Card>
+          <Card compact>
+            <Tag>Your place</Tag>
+            <p>Saved as you go. Leave any time, come back to this line.</p>
+            {voiceNote && <div className="ch-wait">{voiceNote}</div>}
+          </Card>
+        </aside>
       </div>
+    </AppFrame>
+  );
+}
 
-      {/* the bar — same hand as the home door: mic inside, ask appears once there is something */}
-      <form
-        onSubmit={submit}
-        style={{
-          display: 'flex',
-          gap: 10,
-          alignItems: 'center',
-          padding: '12px 20px calc(16px + env(safe-area-inset-bottom))',
-          borderTop: '1px solid var(--wobo-tonal)',
-          maxWidth: 760,
-          width: '100%',
-          margin: '0 auto',
-        }}
-      >
-        <div style={{ position: 'relative', flex: 1, display: 'flex' }}>
-          <input
-            ref={inputRef}
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onFocus={() => setMood('listening')}
-            onBlur={() => setMood('idle')}
-            placeholder="Talk to Wobo…"
-            style={{
-              flex: 1,
-              height: 52,
-              padding: '0 52px 0 18px',
-              fontSize: fluidType.body,
-              fontFamily: 'inherit',
-              border: '1px solid var(--wobo-card-border)',
-              borderRadius: 3,
-              background: 'var(--wobo-card)',
-              color: 'var(--wobo-ink)',
-              transition: 'border-color 0.2s ease',
-            }}
-            onFocusCapture={(e) => {
-              e.currentTarget.style.borderColor = 'var(--wobo-faint)';
-            }}
-            onBlurCapture={(e) => {
-              e.currentTarget.style.borderColor = 'var(--wobo-card-border)';
-            }}
-          />
-          <button
-            type="button"
-            onClick={toggleVoice}
-            aria-label={voiceOn ? 'Stop voice' : 'Talk by voice'}
-            style={{
-              position: 'absolute',
-              right: 6,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              width: 44,
-              height: 44,
-              display: 'grid',
-              placeItems: 'center',
-              border: 'none',
-              background: 'transparent',
-              color: voiceOn ? '#FF5A1F' : 'var(--wobo-ink-faint)',
-              cursor: 'pointer',
-              transition: 'color 0.25s ease',
-            }}
-          >
-            <WaveformIcon active={voiceOn} size={19} />
-          </button>
-        </div>
-        <AnimatePresence initial={false}>
-          {draft.trim() && (
-            <motion.span
-              key="ask"
-              initial={{ opacity: 0, scale: 0.88 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.88 }}
-              transition={{ type: 'spring', stiffness: 380, damping: 26 }}
-              style={{ display: 'inline-flex' }}
-            >
-              <MagneticButton variant="primary" onClick={() => {}} ariaLabel="Ask Wobo">
-                <SendIcon size={13} /> Ask
-              </MagneticButton>
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </form>
-      {voiceNote && (
-        <div
-          style={{
-            textAlign: 'center',
-            paddingBottom: 10,
-            color: 'var(--wobo-ink-faint)',
-            fontSize: fluidType.small,
-          }}
-        >
-          {voiceNote}
-        </div>
-      )}
-    </div>
+/** The Talk chip in the ask card — hold it to speak, the same hold as the space bar. */
+function TalkChip() {
+  const held = useRef(false);
+  const start = useCallback((e: React.PointerEvent<HTMLElement>) => {
+    if (held.current) return;
+    held.current = true;
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    holdToTalkStart();
+  }, []);
+  const end = useCallback(() => {
+    if (!held.current) return;
+    held.current = false;
+    holdToTalkEnd();
+  }, []);
+  useEffect(() => end, [end]);
+  return (
+    <Chip
+      onClick={() => {}}
+      aria-label="Hold to talk to Wobo"
+      onPointerDown={start}
+      onPointerUp={end}
+      onPointerCancel={end}
+    >
+      Talk
+    </Chip>
   );
 }

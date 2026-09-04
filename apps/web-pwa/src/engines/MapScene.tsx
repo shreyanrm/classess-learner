@@ -40,7 +40,14 @@ import {
 } from 'react';
 import { feature as topoFeature } from 'topojson-client';
 import type { BarState } from '../screens/course/shared';
-import { CardBody, cardTitle, lead, Stage, whisper } from '../screens/course/shared';
+import {
+  CardBody,
+  captionSurface,
+  cardTitle,
+  lead,
+  Stage,
+  whisper,
+} from '../screens/course/shared';
 import { sfx } from '../ui/sound';
 import rawGeo from './geo/india-lite.json';
 
@@ -497,7 +504,7 @@ function MapSceneImpl({
           <div
             style={{
               border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
-              borderRadius: 3,
+              borderRadius: 10,
               padding: '12px 16px',
               display: 'flex',
               flexDirection: 'column',
@@ -522,7 +529,7 @@ function MapSceneImpl({
                 style={{
                   flex: 1,
                   height: 10,
-                  borderRadius: 2,
+                  borderRadius: 10,
                   background: `linear-gradient(90deg, ${withAlpha(hue, 0.12)}, ${withAlpha(hue, 0.62)})`,
                 }}
               />
@@ -549,7 +556,7 @@ function MapSceneImpl({
               style={{
                 border: '1px solid var(--wobo-feedback-correct)',
                 background: 'var(--wobo-feedback-correctSoft)',
-                borderRadius: 3,
+                borderRadius: 10,
                 padding: '14px 16px',
                 fontSize: '1rem',
                 lineHeight: 1.6,
@@ -564,8 +571,7 @@ function MapSceneImpl({
           <div
             style={{
               ...lead,
-              borderLeft: `2px solid ${hue}`,
-              paddingLeft: 14,
+              ...captionSurface,
               color: 'var(--wobo-ink-900)',
             }}
           >

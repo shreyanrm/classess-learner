@@ -33,9 +33,13 @@ import { ensurePitchStyles } from './styles';
 
 ensurePitchStyles();
 
-/** The mailbox the report panel names — the one the legal set publishes for exactly this. */
+/**
+ * The mailbox the report panel names. The legal set used to publish a security@ box and now
+ * publishes one address a reader writes to, so the panel names that one — read out of the same
+ * list /contact renders, never typed here.
+ */
 const SECURITY_MAILBOX =
-  MAILBOXES.find((box) => box.address.startsWith('security@'))?.address ?? CONTACT.address;
+  MAILBOXES.find((box) => box.address.startsWith('support@'))?.address ?? CONTACT.address;
 
 const Tick = () => (
   <svg viewBox="0 0 12 12" aria-hidden="true">

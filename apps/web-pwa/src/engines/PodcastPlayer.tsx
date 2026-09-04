@@ -391,7 +391,7 @@ export function PodcastPlayer({
               height: 2,
               marginTop: 4,
               background: 'var(--wobo-ink-100)',
-              borderRadius: 2,
+              borderRadius: 10,
               overflow: 'hidden',
             }}
           >
@@ -441,7 +441,7 @@ export function PodcastPlayer({
         <div
           style={{
             border: `0.5px solid ${rgba(hue, 0.5)}`,
-            borderRadius: 3,
+            borderRadius: 10,
             padding: '20px 22px',
             background: rgba(hue, 0.04),
             display: 'flex',
@@ -487,7 +487,7 @@ export function PodcastPlayer({
             style={{
               height: 4,
               background: 'var(--wobo-ink-100)',
-              borderRadius: 4,
+              borderRadius: 10,
               overflow: 'hidden',
             }}
           >
@@ -523,7 +523,7 @@ export function PodcastPlayer({
                 alignItems: 'center',
                 gap: 12,
                 padding: '10px 12px',
-                borderRadius: 6,
+                borderRadius: 10,
                 border: 'none',
                 background: i === chapter ? rgba(hue, 0.08) : 'transparent',
                 cursor: 'pointer',

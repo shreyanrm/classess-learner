@@ -1,233 +1,286 @@
 'use client';
 
 /**
- * The course intro scene — every course opens on its own picture (owner directive: two courses
- * never open identically). The scene is derived deterministically from the topic id: the concept's
- * own sigil geometry (echoed huge and faint behind at a per-topic angle), and a bespoke generative
- * constellation — a fine-line lattice of nodes wired like a quiet circuit, drawn in the subject's
- * own hue with a couple of accent nodes. One generator, a distinct, dignified arrival for every
- * course. No stock characters, no clip-art props: course imagery must be relevant to the topic and
- * premium (owner law). White/paper canvas, 3px radius, low-alpha hue wash — DESIGN.md law.
+ * The lesson arrival card's art — one drawing, from one hand.
+ *
+ * A course used to open on a generative lattice: a faint constellation of nodes wired to their
+ * neighbours behind a washed sigil. It was a texture, not a picture, and it broke the law twice
+ * over — hairline strokes under a pigment wash, and a visual vocabulary that appears nowhere else
+ * in the product.
+ *
+ * What arrives now is what Fable drew on the subjects page (design/prototypes/site-subjects.html):
+ * one object per subject, in 4px outlines on a tonal tile, with exactly one accent pigment in it.
+ * The 3-4-5 triangle and its squares. The benzene ring. The river running to its port. A paragraph
+ * with one phrase marked. The markup below is those four tiles, mark for mark, with the source's
+ * two washes (the pigment square at .9, the highlighter at .6) taken out — DESIGN.md allows a tonal
+ * surface or solid ink, never a shape wearing a wash.
+ *
+ * The drawing is decorative: the card names the course beside it, so nothing here is announced.
  */
 
+import { useReducedMotion } from '@wobo/motion';
 import { motion } from 'framer-motion';
-import { hash, rng, TopicSigil } from './art';
-import { usePointerTilt } from './kit';
+import { chapterById, topicById } from '../curriculum/registry';
+import { subjectFamily } from '../curriculum/subjects';
 
-/** `rgba()` from a hex hue — the wash, the glow, and the hue nodes need translucent stops. */
-function rgba(hex: string, alpha: number): string {
-  const n = Number.parseInt(hex.slice(1), 16);
-  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${alpha})`;
+// --- The library ------------------------------------------------------------------------------
+
+/** The four drawings. A subject family resolves onto one of them; nothing else is drawn. */
+export type SubjectArtKey = 'mathematics' | 'science' | 'social' | 'english';
+
+/** Ink is the drawing; accent is the drawing's one pigment; paper is a marked surface under it. */
+type MarkInk = 'ink' | 'thin' | 'accent' | 'accent-thin';
+
+export type Mark =
+  | { el: 'path'; ink: MarkInk; d: string }
+  | { el: 'circle'; ink: MarkInk; cx: number; cy: number; r: number }
+  | { el: 'dot'; cx: number; cy: number; r: number }
+  | { el: 'mark'; x: number; y: number; w: number; h: number; rx: number }
+  | { el: 'text'; ink: 'ink' | 'accent'; x: number; y: number; size: number; text: string };
+
+export interface SubjectArt {
+  /** The tile tone the drawing sits on — the subject's own wash from the site page. */
+  tint: string;
+  /** The one pigment in the drawing. */
+  accent: string;
+  /** The highlighter's pigment, where the drawing marks its paper. */
+  marker: string;
+  marks: Mark[];
 }
 
-const GOLD = '#FFC93C';
-const FIELD_W = 400;
-const FIELD_H = 300;
+/** Ink weights, in screen px: DESIGN.md — 4px outlines, and nothing thinner than 2.5. */
+export const ART_INK = 4;
+export const ART_THIN = 2.5;
 
-interface Node {
-  x: number;
-  y: number;
-  r: number;
-  kind: 'faint' | 'hue' | 'gold';
-}
-interface Edge {
-  a: number;
-  b: number;
-  hot: boolean;
-}
+/** The drawing's own frame. The site tiles let a label sit outside it; so does the card. */
+export const ART_VIEWBOX = '0 0 200 150';
 
-/** A seeded lattice for a topic — nodes placed off-centre (the sigil owns the core), then wired
- *  to nearest neighbours so it reads as an intelligent circuit rather than scattered dots. */
-function buildField(topicId: string): { nodes: Node[]; edges: Edge[] } {
-  const r = rng(hash(`field:${topicId}`));
-  const cx = FIELD_W / 2;
-  const cy = FIELD_H / 2;
-  const count = 8 + Math.floor(r() * 4); // 8..11
-  const nodes: Node[] = [];
-  let guard = 0;
-  while (nodes.length < count && guard < 500) {
-    guard++;
-    const x = 30 + r() * (FIELD_W - 60);
-    const y = 26 + r() * (FIELD_H - 52);
-    // keep an elliptical core clear so the sigil never fights the field
-    const dx = x - cx;
-    const dy = y - cy;
-    if ((dx * dx) / (108 * 108) + (dy * dy) / (86 * 86) < 1) continue;
-    nodes.push({ x, y, r: 1.5, kind: 'faint' });
+export const SUBJECT_ART: Record<SubjectArtKey, SubjectArt> = {
+  // the 3-4-5 triangle, its right angle, and the square on the hypotenuse
+  mathematics: {
+    tint: 'var(--pig-w)',
+    accent: 'var(--pig)',
+    marker: 'var(--marigold)',
+    marks: [
+      { el: 'path', ink: 'ink', d: 'M50 120 L140 120 L50 52 Z' },
+      { el: 'path', ink: 'thin', d: 'M50 104 h16 v16' },
+      { el: 'path', ink: 'accent', d: 'M140 120 L180 66 L90 -2 L50 52' },
+      { el: 'text', ink: 'accent', x: 118, y: 60, size: 22, text: 'c²' },
+    ],
+  },
+  // the benzene ring: the hexagon, and the ring of shared electrons inside it
+  science: {
+    tint: 'var(--mint-w)',
+    accent: 'var(--mint)',
+    marker: 'var(--marigold)',
+    marks: [
+      { el: 'path', ink: 'ink', d: 'M100 20 L152 50 L152 110 L100 140 L48 110 L48 50 Z' },
+      { el: 'circle', ink: 'accent-thin', cx: 100, cy: 80, r: 30 },
+      { el: 'text', ink: 'ink', x: 160, y: 44, size: 20, text: 'C₆H₆' },
+    ],
+  },
+  // the river, the plateau above it, and the route that ends at the port
+  social: {
+    tint: 'var(--marigold-w)',
+    accent: 'var(--pig)',
+    marker: 'var(--marigold)',
+    marks: [
+      { el: 'path', ink: 'thin', d: 'M20 110 c30 -30 50 -10 80 -30 s50 -40 90 -30' },
+      { el: 'path', ink: 'thin', d: 'M20 130 c40 -20 70 0 110 -20 s40 -30 60 -20' },
+      { el: 'path', ink: 'accent', d: 'M60 40 c20 30 50 40 80 20' },
+      { el: 'dot', cx: 140, cy: 60, r: 6 },
+      { el: 'text', ink: 'ink', x: 30, y: 40, size: 18, text: 'river · plateau · port' },
+    ],
+  },
+  // the paragraph, one phrase highlighted, and the note on what it is doing
+  english: {
+    tint: 'var(--lilac-w)',
+    accent: 'var(--pig)',
+    marker: 'var(--marigold)',
+    marks: [
+      // the highlighter goes on the paper first, so the lines it marks stay readable over it
+      { el: 'mark', x: 60, y: 52, w: 70, h: 18, rx: 6 },
+      { el: 'path', ink: 'thin', d: 'M24 40 h150 M24 62 h130 M24 84 h150 M24 106 h100' },
+      { el: 'path', ink: 'accent', d: 'M120 96 c10 -14 30 -14 40 0' },
+      { el: 'text', ink: 'accent', x: 130, y: 128, size: 18, text: 'metaphor' },
+    ],
+  },
+};
+
+/** Anything a framework calls a language subject reads as the marked-up paragraph. */
+const LANGUAGE = /\b(english|language|literature|hindi|sanskrit|tamil|telugu|marathi|urdu)\b/i;
+
+/** The drawing a subject opens on. An unrecognised subject opens on mathematics, as the hues do. */
+export function artForSubject(subject: string): SubjectArtKey {
+  if (LANGUAGE.test(subject)) return 'english';
+  switch (subjectFamily(subject)) {
+    case 'math':
+    case 'cs':
+      return 'mathematics';
+    case 'physics':
+    case 'chemistry':
+    case 'biology':
+    case 'science':
+      return 'science';
+    case 'social':
+      return 'social';
+    default:
+      return 'mathematics';
   }
-
-  // one golden accent + two hue accents (the view's single hit of pigment lives here)
-  const pick = (): number => Math.floor(r() * nodes.length);
-  const gold = pick();
-  (nodes[gold] as Node).kind = 'gold';
-  (nodes[gold] as Node).r = 2.8;
-  let placed = 0;
-  for (let g = 0; g < nodes.length && placed < 2; g++) {
-    const i = (gold + 1 + g) % nodes.length;
-    if (nodes[i]?.kind === 'faint') {
-      (nodes[i] as Node).kind = 'hue';
-      (nodes[i] as Node).r = 2.4;
-      placed++;
-    }
-  }
-
-  // wire each node to its nearest neighbour(s) — a mesh, not a cloud; drop the long ugly spans
-  const edges: Edge[] = [];
-  const seen = new Set<string>();
-  nodes.forEach((n, i) => {
-    const near = nodes
-      .map((m, j) => ({ j, d: Math.hypot(m.x - n.x, m.y - n.y) }))
-      .filter((e) => e.j !== i)
-      .sort((p, q) => p.d - q.d)
-      .slice(0, 2);
-    for (const { j, d } of near) {
-      if (d > 168) continue;
-      const key = i < j ? `${i}-${j}` : `${j}-${i}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      edges.push({ a: i, b: j, hot: nodes[i]?.kind !== 'faint' || nodes[j]?.kind !== 'faint' });
-    }
-  });
-
-  return { nodes, edges };
 }
 
-function Constellation({ topicId, hue }: { topicId: string; hue: string }) {
-  const { nodes, edges } = buildField(topicId);
+/** The drawing a topic opens on, resolved through its chapter's subject — as `hueForTopic` is. */
+export function artForTopic(topicId: string): SubjectArtKey {
+  const topic = topicById(topicId);
+  const chapter = topic ? chapterById(topic.chapterId) : chapterById(topicId);
+  return artForSubject(chapter?.subjectId ?? 'math');
+}
+
+// --- The drawing ------------------------------------------------------------------------------
+
+const STROKE = { ink: ART_INK, thin: ART_THIN, accent: ART_INK, 'accent-thin': ART_THIN } as const;
+
+/** The hand: a 0.9s draw-on per mark, in the order the marks are listed. Still when asked to be. */
+function drawn(index: number, reduced: boolean) {
+  if (reduced) return { initial: false as const, animate: { opacity: 1, pathLength: 1 } };
+  return {
+    initial: { opacity: 0, pathLength: 0 },
+    animate: { opacity: 1, pathLength: 1 },
+    transition: {
+      pathLength: { duration: 0.9, delay: 0.1 + index * 0.22, ease: [0.2, 0, 0, 1] as const },
+      opacity: { duration: 0.2, delay: 0.1 + index * 0.22 },
+    },
+  };
+}
+
+function Drawing({ art, reduced }: { art: SubjectArt; reduced: boolean }) {
   return (
     <svg
-      viewBox={`0 0 ${FIELD_W} ${FIELD_H}`}
-      preserveAspectRatio="xMidYMid slice"
+      viewBox={ART_VIEWBOX}
       role="presentation"
       aria-hidden
-      style={{
-        position: 'absolute',
-        inset: 0,
-        width: '100%',
-        height: '100%',
-        pointerEvents: 'none',
-      }}
+      style={{ width: '100%', height: 'auto', overflow: 'visible', display: 'block' }}
     >
-      {edges.map((e, i) => {
-        const a = nodes[e.a] as Node;
-        const b = nodes[e.b] as Node;
-        return (
-          <motion.line
-            key={`${e.a}-${e.b}`}
-            x1={a.x}
-            y1={a.y}
-            x2={b.x}
-            y2={b.y}
-            stroke={e.hot ? rgba(hue, 0.32) : 'var(--wobo-ink-100)'}
-            strokeWidth={e.hot ? 1 : 0.8}
-            strokeLinecap="round"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
-            transition={{ duration: 0.9, delay: 0.15 + i * 0.045, ease: [0.2, 0, 0, 1] }}
-          />
-        );
-      })}
-      {nodes.map((n, i) => {
-        const fill = n.kind === 'gold' ? GOLD : n.kind === 'hue' ? hue : 'var(--wobo-ink-300)';
-        const alive = n.kind !== 'faint';
-        return (
-          <motion.circle
-            key={`${n.x.toFixed(1)}-${n.y.toFixed(1)}`}
-            cx={n.x}
-            cy={n.y}
-            r={n.r}
-            fill={fill}
-            initial={{ scale: 0, opacity: 0 }}
-            animate={alive ? { scale: 1, opacity: [0.6, 1, 0.6] } : { scale: 1, opacity: 0.85 }}
-            transition={
-              alive
-                ? {
-                    scale: { type: 'spring', stiffness: 300, damping: 20, delay: 0.5 + i * 0.05 },
-                    opacity: {
-                      duration: 3.6 + (i % 3),
-                      repeat: Number.POSITIVE_INFINITY,
-                      ease: 'easeInOut',
-                    },
-                  }
-                : { type: 'spring', stiffness: 300, damping: 22, delay: 0.5 + i * 0.05 }
-            }
-            style={{ transformOrigin: `${n.x}px ${n.y}px` }}
-          />
-        );
+      {art.marks.map((mark, i) => {
+        const key = `${mark.el}-${i}`;
+        if (mark.el === 'mark') {
+          return (
+            <motion.rect
+              key={key}
+              x={mark.x}
+              y={mark.y}
+              width={mark.w}
+              height={mark.h}
+              rx={mark.rx}
+              fill={art.marker}
+              initial={reduced ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.1 + i * 0.22 }}
+            />
+          );
+        }
+        if (mark.el === 'dot') {
+          return (
+            <motion.circle
+              key={key}
+              cx={mark.cx}
+              cy={mark.cy}
+              r={mark.r}
+              fill={art.accent}
+              initial={reduced ? false : { scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 + i * 0.22 }}
+              style={{ transformOrigin: `${mark.cx}px ${mark.cy}px` }}
+            />
+          );
+        }
+        if (mark.el === 'text') {
+          return (
+            <motion.text
+              key={key}
+              x={mark.x}
+              y={mark.y}
+              fontSize={mark.size}
+              fill={mark.ink === 'accent' ? art.accent : 'var(--ink)'}
+              fontFamily="var(--hand)"
+              fontWeight={600}
+              initial={reduced ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.2 + i * 0.22 }}
+            >
+              {mark.text}
+            </motion.text>
+          );
+        }
+        const stroke = mark.ink.startsWith('accent') ? art.accent : 'var(--ink)';
+        const common = {
+          fill: 'none' as const,
+          stroke,
+          strokeWidth: STROKE[mark.ink],
+          strokeLinecap: 'round' as const,
+          strokeLinejoin: 'round' as const,
+          vectorEffect: 'non-scaling-stroke' as const,
+        };
+        if (mark.el === 'circle') {
+          return (
+            <motion.circle
+              key={key}
+              cx={mark.cx}
+              cy={mark.cy}
+              r={mark.r}
+              {...common}
+              {...drawn(i, reduced)}
+            />
+          );
+        }
+        return <motion.path key={key} d={mark.d} {...common} {...drawn(i, reduced)} />;
       })}
     </svg>
   );
 }
 
-export function CourseIntroScene({
-  topicId,
-  hue,
-  minHeight = 300,
-  sigilSize = 132,
-  bold = true,
-}: {
+export interface CourseIntroSceneProps {
   topicId: string;
-  hue: string;
+  /**
+   * The subject's earned hue. Kept for callers: the drawing takes its one pigment from the subject
+   * tile it was drawn on, not from a passed colour, so two courses in a subject open the same way.
+   */
+  hue?: string;
+  /** Override the drawing — the subject the course belongs to, when the caller already knows it. */
+  subject?: SubjectArtKey;
   minHeight?: number;
+  /** Kept for callers; the drawing sizes itself to the card. */
   sigilSize?: number;
   bold?: boolean;
-}) {
-  const r = rng(hash(`intro:${topicId}`));
-  // hero pointer parallax (MOTION.md §1) — the field drifts behind the still sigil on desktop
-  const tilt = usePointerTilt(8);
-  // the sigil's huge faint echo — placed and turned uniquely per course
-  const echoAngle = Math.round(r() * 360);
-  const echoTop = r() > 0.5;
-  const echoLeft = r() > 0.5;
-  const echoSize = Math.round(minHeight * (0.9 + r() * 0.5));
+}
+
+/**
+ * The card a course opens on: the subject's drawing on the subject's tile, drawing itself once.
+ * No Wobo lives here — the arrival card carries its own head, and one Wobo on screen is the law.
+ */
+export function CourseIntroScene({ topicId, subject, minHeight = 300 }: CourseIntroSceneProps) {
+  const reduced = useReducedMotion();
+  const key = subject ?? artForTopic(topicId);
+  const art = SUBJECT_ART[key];
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.985 }}
+      initial={reduced ? false : { opacity: 0, scale: 0.985 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ type: 'spring', stiffness: 260, damping: 26 }}
       style={{
-        position: 'relative',
         width: '100%',
         minHeight,
-        borderRadius: 3,
-        // a quiet hue wash, lifted by a soft central glow — premium, not a flat pink slab
-        background: `radial-gradient(120% 90% at 50% 42%, ${rgba(hue, 0.09)} 0%, ${rgba(hue, 0.04)} 55%, transparent 100%)`,
-        overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        borderRadius: 24,
+        background: art.tint,
+        padding: 'var(--s3, 24px)',
+        display: 'grid',
+        placeItems: 'center',
       }}
     >
-      {/* the sigil's own geometry, huge and faint — this course's watermark, turned uniquely */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          ...(echoTop ? { top: -echoSize * 0.28 } : { bottom: -echoSize * 0.28 }),
-          ...(echoLeft ? { left: -echoSize * 0.22 } : { right: -echoSize * 0.22 }),
-          opacity: 0.06,
-          transform: `rotate(${echoAngle}deg)`,
-          pointerEvents: 'none',
-        }}
-      >
-        <TopicSigil id={topicId} size={echoSize} hue={hue} bold />
+      <div style={{ width: '100%', maxWidth: 420 }}>
+        <Drawing art={art} reduced={reduced} />
       </div>
-
-      {/* the bespoke generative lattice — a quiet circuit in the subject's hue, on the sky plane */}
-      <motion.div style={{ position: 'absolute', inset: 0, x: tilt.x, y: tilt.y }}>
-        <Constellation topicId={topicId} hue={hue} />
-      </motion.div>
-
-      {/* the concept's sigil, drawing itself — the course's true identity, centred and alive */}
-      <motion.div
-        initial={{ scale: 0.92 }}
-        animate={{ scale: 1 }}
-        transition={{ type: 'spring', stiffness: 230, damping: 26 }}
-        style={{ position: 'relative' }}
-      >
-        <TopicSigil id={topicId} size={sigilSize} draw bold={bold} hue={hue} />
-      </motion.div>
     </motion.div>
   );
 }

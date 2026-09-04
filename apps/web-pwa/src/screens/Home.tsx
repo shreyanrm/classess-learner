@@ -5,9 +5,10 @@
  *
  * The crumb (weekday · class · board), the streak and the learner's initial; the greeting in
  * Wobo's hand and the one question; a situational line built from the day's real plan; the ask
- * box, which is the front door to the one conversation; the three today cards (continue,
- * practice, what Wobo noticed); this week in Wobo's words; and the streak, with the line that
- * says rest days are fine. Every number on the page is the learner's own — the plan comes from the
+ * box, which is the front door to the one conversation; the three today cards (continue, practice,
+ * and either what Wobo noticed or the door to asking — the row never has a hole in it); this week
+ * in Wobo's words, the one note the You screen also reads; and the streak, with the line that says
+ * rest days are fine. Every number on the page is the learner's own — the plan comes from the
  * registry and the progress store, the note from the activity marks, the observation from the mind.
  */
 
@@ -38,16 +39,20 @@ import {
 import { useWoboChat } from '../wobo/chat';
 import { useWoboVoice } from '../wobo/voice';
 import {
+  ASK_PLACEHOLDER,
+  asHeading,
   calendarWeek,
   continueLine,
+  finishedChapter,
+  HOME_QUESTION,
   noticed as noticedBy,
   todayLine,
   todayPlan,
 } from './home/today';
 import { SET_TITLE } from './practice/set';
-import { activityCounts, weekTopics } from './you/ledger';
-import { boardName, loadProfile, markToday } from './you/profile';
-import { summarise, weekSentence } from './you/week';
+import { weeklyNote } from './you/ledger';
+import { boardName, frameworkLabel, loadProfile, markToday } from './you/profile';
+import { weekSentence } from './you/week';
 import './home/Home.css';
 
 export function Home() {
@@ -77,32 +82,42 @@ export function Home() {
   // Showing up is marked once per visit; the week and the note both read the marks.
   const [marks] = useState(() => markToday());
   const week = useMemo(() => calendarWeek(marks), [marks]);
-  // "This week, in Wobo's words" — the You screen's own sentence, from the same ledger, so the
-  // home and You never say two different things under one heading.
+  // "This week, in Wobo's words" — THE weekly note (you/ledger.ts), the same one the You screen
+  // reads. There is no second sentence generator; both screens ask this one function.
   // biome-ignore lint/correctness/useExhaustiveDependencies: `revision` stands in for the registry's contents
   const summary = useMemo(
     () =>
-      summarise({
-        now: new Date(),
+      weeklyNote({
         span: 'week',
         marks,
-        counts: activityCounts(),
-        days: loadMind().days ?? {},
-        topics: weekTopics(),
         topicProgress: progress.topicProgress,
         completed: progress.completed,
       }),
     [marks, progress.topicProgress, progress.completed, revision],
   );
   const sentence = weekSentence(summary);
-  const [seen] = useState(() => noticedBy(loadMind()));
+
+  // What Wobo noticed — a real observation of this learner's own records, or nothing at all.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `revision` stands in for the registry's contents
+  const seen = useMemo(
+    () =>
+      noticedBy({
+        mind: loadMind(),
+        marks,
+        streakDays: progress.streakDays,
+        chapter: finishedChapter(progress.completed),
+      }),
+    [marks, progress.streakDays, progress.completed, revision],
+  );
 
   // The crumb: "Tuesday · Class 8 · CBSE" — the weekday, then the class and board they chose.
   const weekday = new Date().toLocaleDateString('en-GB', { weekday: 'long' });
   const crumb = [
     weekday,
     world?.level ?? profile.grade,
-    world?.frameworkName ?? boardName(profile.boardId),
+    // The board's NAME. A world pinned from an id alone carries that id as its name; the crumb is
+    // read by a learner, so it prints "CBSE", never "cbse".
+    frameworkLabel(world?.frameworkName ?? boardName(profile.boardId)),
   ]
     .filter(Boolean)
     .join(' · ');
@@ -194,12 +209,12 @@ export function Home() {
         <div>
           <h1>
             <span className="hand">Hey{profile.name.trim() ? ` ${profile.name.trim()}` : ''},</span>
-            what are we figuring out tonight?
+            {HOME_QUESTION}
           </h1>
           <p>{line}</p>
           <div ref={composerRef}>
             <AskBox
-              placeholder="Ask anything from your syllabus, or paste question 7"
+              placeholder={ASK_PLACEHOLDER}
               value={draft}
               onChange={setDraft}
               onAsk={submit}
@@ -304,14 +319,28 @@ export function Home() {
           </CardFoot>
         </Card>
 
-        {seen && (
+        {/* The third card is what Wobo actually saw, or the door to asking — never blank paper
+            (DESIGN.md §2: emptiness that is just absence). */}
+        {seen ? (
           <Card tint="marigold">
             <Tag>Wobo noticed</Tag>
             <h3>{seen.title}</h3>
-            <p>That's exactly how learning looks. It goes in the Sunday note.</p>
+            <p>{seen.body}</p>
             <CardFoot>
               <WoboHead size={40} />
               {seen.when && <Pill>{seen.when}</Pill>}
+            </CardFoot>
+          </Card>
+        ) : (
+          <Card tint="marigold">
+            <Tag>Ask Wobo</Tag>
+            <h3>{asHeading(HOME_QUESTION)}</h3>
+            <p>{ASK_PLACEHOLDER}</p>
+            <CardFoot>
+              <Button size="sm" tone="quiet" onClick={() => router.navigate({ name: 'chat' })}>
+                Ask
+              </Button>
+              <WoboHead size={40} />
             </CardFoot>
           </Card>
         )}

@@ -485,7 +485,7 @@ export function ExecViz({
                       }
                       style={{
                         padding: '6px 10px',
-                        borderRadius: 6,
+                        borderRadius: 10,
                         background: i === 0 ? rgba(accent, 0.14) : 'var(--wobo-canvas)',
                         border: `0.5px solid ${i === 0 ? accent : 'var(--wobo-hairline-on-paper)'}`,
                         fontFamily: 'ui-monospace, Menlo, monospace',

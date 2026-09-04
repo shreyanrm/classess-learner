@@ -108,7 +108,12 @@ describe('the command palette has a touch entry point', () => {
 
   it('the home reaches everywhere by touch: the four doors and the ask box', () => {
     expect(home).toContain('<AppFrame active="home">');
-    expect(home).toContain('placeholder="Ask anything from your syllabus, or paste question 7"');
-    expect(read('App.tsx')).toContain('resolveDestination(text)');
+    // The box's words live in one place (screens/home/today.ts), because the card that stands in
+    // for "Wobo noticed" when there is nothing to notice says them too.
+    expect(home).toContain('placeholder={ASK_PLACEHOLDER}');
+    expect(read('screens', 'home', 'today.ts')).toContain(
+      "export const ASK_PLACEHOLDER = 'Ask anything from your syllabus, or paste question 7'",
+    );
+    expect(read('AppRuntime.tsx')).toContain('resolveDestination(text)');
   });
 });

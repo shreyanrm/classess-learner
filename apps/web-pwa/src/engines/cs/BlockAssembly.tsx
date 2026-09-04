@@ -15,7 +15,7 @@ import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
 import { AnimatePresence, motion, Reorder, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { BarState } from '../../screens/course/shared';
-import { CardBody, lead, whisper } from '../../screens/course/shared';
+import { CardBody, captionSurface, lead, whisper } from '../../screens/course/shared';
 import { sfx } from '../../ui/sound';
 
 // --- Spec -----------------------------------------------------------------------------------------
@@ -516,8 +516,7 @@ export function BlockAssembly({
                       </div>
                       <div
                         style={{
-                          paddingLeft: 14,
-                          borderLeft: `2px solid ${hue}`,
+                          ...captionSurface,
                           display: 'flex',
                           flexWrap: 'wrap',
                           gap: 6,
@@ -624,7 +623,7 @@ const stepBtn: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  borderRadius: 6,
+  borderRadius: 10,
   border: '0.5px solid var(--wobo-hairline-on-paper-strong)',
   background: 'var(--wobo-paper)',
   color: 'var(--wobo-ink-700)',
@@ -635,7 +634,7 @@ const stepBtn: React.CSSProperties = {
 
 const miniAdd: React.CSSProperties = {
   padding: '4px 8px',
-  borderRadius: 6,
+  borderRadius: 10,
   border: '0.5px dashed var(--wobo-hairline-on-paper-strong)',
   background: 'transparent',
   color: 'var(--wobo-ink-500)',

@@ -147,8 +147,22 @@ export function boardName(boardId: string): string {
   const id = boardId.trim();
   if (!id) return '';
   const world = loadWorld();
-  if (world?.frameworkId === id) return world.frameworkName;
-  return /^[a-z]{2,6}$/i.test(id) ? id.toUpperCase() : id;
+  return frameworkLabel(world?.frameworkId === id ? world.frameworkName : id);
+}
+
+/**
+ * A framework's name as a learner reads it, never the raw id.
+ *
+ * The world is built from whatever named the framework, and onboarding can only pass on the id it
+ * was given ("cbse") — so the pinned world's own `frameworkName` is sometimes that id, and a crumb
+ * reading "Tuesday · Class 8 · cbse" is the app talking to itself. A bare lowercase id of a board's
+ * length is its initials and is written as such; everything else — a real name, a name the learner
+ * typed, their own syllabus's id — is left exactly as it was given. Idempotent, so it is safe
+ * wherever a name is printed.
+ */
+export function frameworkLabel(name: string | null | undefined): string {
+  const s = (name ?? '').trim();
+  return /^[a-z]{2,6}$/.test(s) ? s.toUpperCase() : s;
 }
 
 /** Reverse of boardName — a stored board (raw id OR display name) resolved against the world. */
