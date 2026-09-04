@@ -4,7 +4,8 @@
 name. A feature names a job; :mod:`registry` maps the job to a tier; the tier resolves to a
 provider id here and nowhere else. Generation runs on the GPT-5.6 family, the latest Claude
 models cross-check and carry the conversation, Gemini stays as it is for voice and imagery,
-and the cheap models take everything basic:
+and the cheap models take everything basic. Every text chain ends at Gemini, so no single
+provider's outage or empty balance can leave a learner with no answer at all:
 
 ===========  ==================================  ==================================
 tier         primary                             fallback
@@ -98,6 +99,11 @@ _TRACK_1: dict[str, str] = {
     # entries are the routing law those seams answer to.
     "tier.voice": "gemini/gemini-2.5-flash",
     "tier.image": "gemini/gemini-2.5-flash-image",
+    # A THIRD provider on every text chain. Two is not redundancy when one account can run
+    # out of credit and the other can refuse a parameter: on 2026-09-04 both happened at once
+    # and a learner got nothing. Gemini already carries voice and imagery on its own key, so
+    # it costs nothing new to let it answer when the other two cannot.
+    "tier.text.last": "gemini/gemini-2.5-flash",
     # --- legacy logical names, kept as ALIASES so the plexus engines keep resolving ------
     # engines._spawn_validation asks for these two by name. They are aliases, not a second
     # opinion about routing: the JUDGE of a generated artifact is the verify tier (Opus 5 —
@@ -122,11 +128,11 @@ _TRACK_2: dict[str, str] = {
 
 # tier -> (primary logical name, fallback chain). Every chain crosses providers.
 _TIER_CHAIN: dict[Tier, tuple[str, tuple[str, ...]]] = {
-    Tier.TINY: ("tier.tiny", ("tier.tiny.fallback",)),
-    Tier.TURN: ("tier.turn", ("tier.generate",)),
-    Tier.GENERATE: ("tier.generate", ("tier.verify",)),
-    Tier.REASON: ("tier.reason", ("tier.verify",)),
-    Tier.VERIFY: ("tier.verify", ("tier.generate",)),
+    Tier.TINY: ("tier.tiny", ("tier.tiny.fallback", "tier.text.last")),
+    Tier.TURN: ("tier.turn", ("tier.generate", "tier.text.last")),
+    Tier.GENERATE: ("tier.generate", ("tier.verify", "tier.text.last")),
+    Tier.REASON: ("tier.reason", ("tier.verify", "tier.text.last")),
+    Tier.VERIFY: ("tier.verify", ("tier.generate", "tier.text.last")),
     Tier.VOICE: ("tier.voice", ()),
     Tier.IMAGE: ("tier.image", ()),
 }

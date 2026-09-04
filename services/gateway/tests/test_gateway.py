@@ -90,7 +90,13 @@ TIER_TABLE = {
 def test_each_tier_resolves_to_the_owners_models(tier: Tier, expected: tuple[str, str]) -> None:
     primary, fallback = expected
     assert tier_model(tier).provider_model == primary
-    assert [resolve_any(n).provider_model for n in tier_fallbacks(tier)] == [fallback]
+    chain = [resolve_any(n).provider_model for n in tier_fallbacks(tier)]
+    # The named fallback is still first. What follows it is a THIRD provider: two is not
+    # redundancy when one account can run dry and the other can refuse a parameter, which is
+    # exactly what happened on 2026-09-04 and left a learner with no answer at all.
+    assert chain[:1] == [fallback]
+    assert chain[-1].startswith("gemini/"), "every text chain ends at a third provider"
+    assert len({m.split("/")[0] for m in [primary, *chain]}) == 3
 
 
 def test_every_fallback_crosses_providers() -> None:

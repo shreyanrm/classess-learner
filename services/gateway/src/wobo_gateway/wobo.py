@@ -533,6 +533,19 @@ def classify_intent(text: str, node_name: str = "") -> dict[str, Any]:
 # --- spec hydration through the verified engines ---------------------------------------------------
 
 
+def _tiny_model() -> str:
+    """The id the TINY tier resolves to right now.
+
+    A capability that writes a provider's name into its own call site is one empty balance
+    away from being silently dead: on 2026-09-04 the pinned model's account had no credit and
+    every drawn answer inside a turn quietly became plain text. The tier owns the choice, and
+    the tier's chain crosses three providers.
+    """
+    from wobo_gateway.routing import Tier, tier_model
+
+    return tier_model(Tier.TINY).provider_model
+
+
 def _hydrate_component(kind: str, concept: str, live: bool) -> dict[str, Any] | None:
     """A component spec always comes from a verified engine artifact, never raw model JSON."""
     # The `create` widening (family C): formula card, maker plan, drawn doodle. Their real content
@@ -544,7 +557,9 @@ def _hydrate_component(kind: str, concept: str, live: bool) -> dict[str, Any] | 
 
     from wobo_gateway.plexus import INTERNAL_GENERATION, run_engine
 
-    model = "anthropic/claude-haiku-4-5"
+    # The tier, not a name: a hard-pinned provider is one empty balance away from a silent
+    # feature, and this one runs inside a turn the learner already paid for.
+    model = _tiny_model()
     try:
         if kind == "sim":
             res = run_engine(
@@ -597,7 +612,7 @@ def _hydrate_viz(kind: str, concept: str, live: bool) -> dict[str, Any] | None:
         res = run_engine(
             capability="engine.diagram",
             payload={"concept": _VIZ_PROMPT[kind].format(c=concept)},
-            provider_model="anthropic/claude-haiku-4-5",
+            provider_model=_tiny_model(),
             live=live,
             subject=INTERNAL_GENERATION,
         )
