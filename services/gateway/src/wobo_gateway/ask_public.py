@@ -968,10 +968,9 @@ def run_help_answer(
     if not question or not articles:
         return {"answer": HONEST_LINE, "sources": []}, 0
 
-    import litellm  # lazy: mock mode and tests never import it
+    from wobo_gateway.model_call import complete  # lazy: mock mode never imports litellm
 
-    litellm.drop_params = True
-    response = litellm.completion(
+    response = complete(
         model=provider_model,
         messages=[
             {"role": "system", "content": HELP_SYSTEM},

@@ -15,6 +15,7 @@ import os
 from dataclasses import dataclass
 from typing import Any, Protocol
 
+from wobo_gateway.model_call import complete as model_complete
 from wobo_gateway.registry import policy
 from wobo_gateway.telemetry import record_cost
 
@@ -212,7 +213,7 @@ def _generate_course(
 
     goal = str(payload.get("goal") or "").strip() or "learn the basics of this topic"
 
-    response = litellm.completion(
+    response = model_complete(
         model=provider_model,
         messages=[
             {"role": "system", "content": _COURSE_SYSTEM},
@@ -279,7 +280,7 @@ def _grade_attempt(
     if expected:
         user += f"\nReference answer: {expected}"
 
-    response = litellm.completion(
+    response = model_complete(
         model=provider_model,
         messages=[
             {"role": "system", "content": _GRADE_SYSTEM},
@@ -458,7 +459,7 @@ class LiveProvider:
             {"role": "user", "content": _user_message(payload)},
         ]
 
-        response = litellm.completion(
+        response = model_complete(
             model=provider_model,
             messages=messages,
             fallbacks=list(fallbacks) or None,
