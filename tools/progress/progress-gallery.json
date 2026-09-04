@@ -1,5 +1,40 @@
 [
  {
+  "src": "~/Documents/wobo-design-2026-09-02/live-heywobo-home.png",
+  "caption": "LIVE at heywobo.com \u2014 the homepage, on your own domain.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/live-heywobo-security.png",
+  "caption": "LIVE at heywobo.com/security \u2014 the trust page, on your own domain.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/live-security.png",
+  "caption": "IN THE APP \u00b7 /security, the whole trust page, live at its route.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/live-subjects.png",
+  "caption": "IN THE APP \u00b7 /subjects, every subject with its own drawn lesson.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/live-how-it-works.png",
+  "caption": "IN THE APP \u00b7 /how-it-works, the six-step timeline with the drag-the-point moment.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/live-practice.png",
+  "caption": "IN THE APP \u00b7 Practice: colour half, and Wobo rings the gap.",
+  "group": "Newest, for your eye"
+ },
+ {
+  "src": "~/Documents/wobo-design-2026-09-02/live-you.png",
+  "caption": "IN THE APP \u00b7 You: the week in Wobo's words, strengths, the parent link, settings.",
+  "group": "Newest, for your eye"
+ },
+ {
   "src": "~/Documents/wobo-design-2026-09-02/app-home-live.png",
   "caption": "IN THE APP \u00b7 Home, rebuilt on the kit from the reference screen. Real data: 'You showed up one day.'",
   "group": "Newest, for your eye"
