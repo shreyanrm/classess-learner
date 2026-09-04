@@ -8,18 +8,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#FAF7F0; --paper-2:#F1EDE3; --paper-3:#E7E1D3; --ink:#14142B; --ink-2:#4E4E66; --ink-3:#8A8A9E;
-  --pig:#2B45FF; --violet:#7C5CFF; --rose:#FF6B57; --marigold:#FFB629; --mint:#22C48B; --lilac:#B7A6FF;
-  --pig-w:#E6EAFF; --rose-w:#FFE7E2; --marigold-w:#FFF1D6; --mint-w:#DDF6EC; --lilac-w:#EFEBFF;
-  --body:#14142B; --body-hi:#3A3A5C; --visor:#FAF7F0; --visor-lo:#E7E1D3; --eye:#2B45FF;
+  /* LAW v5 (DESIGN.md §0) — white paper, colour with a job. The ground is #FFFFFF; a section
+     never gets a tint to say it is a section. Character for character the token block at the top
+     of landing-v8.html, plus the washes and lilac these site pages already name. */
+  --paper:#FFFFFF; --paper-2:#F6F6F8; --paper-3:#ECECF0; --line:#E4E4EA;
+  --ink:#14142B; --ink-2:#55556B; --ink-3:#8A8A9E;
+  --pig:#2B45FF; --pig-soft:#EDF0FF; --marigold:#FFB629; --rose:#FF6B57; --mint:#12B981; --violet:#7C5CFF; --lilac:#B7A6FF;
+  --pig-w:#EDF0FF; --violet-w:#EFEBFF; --rose-w:#FFEDEB; --marigold-w:#FFF6E5; --mint-w:#E3F7F0; --lilac-w:#F6F4FF;
+  --body:#14142B; --body-hi:#3A3A5C; --visor:#FFFFFF; --visor-lo:#EDEDF2; --eye:#2B45FF;
   --sans:'Poppins',system-ui,-apple-system,sans-serif; --hand:'Caveat',cursive;
-  --s1:8px; --s2:16px; --s3:24px; --s4:40px; --s5:64px; --s6:120px;
+  --s1:8px; --s2:16px; --s3:24px; --s4:40px; --s5:72px; --s6:128px;
+  --gutter:clamp(20px, 5vw, 48px); --band:clamp(72px, 9vw, 132px); --colgap:clamp(32px, 5vw, 80px);
+  --shadow:0 24px 60px rgba(20,20,43,.10); --lift:0 10px 28px rgba(20,20,43,.07);
 }
 [data-theme="dark"]{
-  --paper:#0F1226; --paper-2:#181C3A; --paper-3:#22264A; --ink:#F3F0E8; --ink-2:#B8B6C6; --ink-3:#7C7B92;
-  --pig:#7C8CFF; --violet:#A996FF; --rose:#FF8A78; --marigold:#FFC85A; --mint:#4FE3BD; --lilac:#C9BDFF;
-  --pig-w:#1E2650; --rose-w:#3E2431; --marigold-w:#3E3320; --mint-w:#16362E; --lilac-w:#2A2650;
-  --body:#F3F0E8; --body-hi:#FFFFFF; --visor:#0F1226; --visor-lo:#1E2650; --eye:#7C8CFF;
+  /* night, designed on its own and never inverted */
+  --paper:#0E0E16; --paper-2:#17171F; --paper-3:#1F1F29; --line:#26262F;
+  --ink:#F4F4F7; --ink-2:#B4B4C2; --ink-3:#7E7E90;
+  --pig:#7C8CFF; --pig-soft:#1A1E3A; --marigold:#FFC85A; --rose:#FF8A78; --mint:#3DD9A4; --violet:#A996FF; --lilac:#C9BDFF;
+  --pig-w:#1A1E3A; --violet-w:#2C293E; --rose-w:#38272C; --marigold-w:#383027; --mint-w:#1C3232; --lilac-w:#302E3E;
+  --body:#F4F4F7; --body-hi:#FFFFFF; --visor:#0E0E16; --visor-lo:#1F1F29; --eye:#7C8CFF;
+  --shadow:0 24px 60px rgba(0,0,0,.5); --lift:0 10px 28px rgba(0,0,0,.35);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -68,14 +77,14 @@ section{padding:var(--s5) 0}
 .story{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5);align-items:start}
 .story p{color:var(--ink-2);font-size:18px;max-width:52ch}
 .story p+p{margin-top:var(--s2)}
-.story .pull{font-family:var(--hand);font-weight:600;font-size:30px;line-height:1.15;color:var(--ink);background:var(--marigold-w);border-radius:24px;padding:var(--s3)}
+.story .pull{font-family:var(--hand);font-weight:600;font-size:30px;line-height:1.15;color:var(--ink);background:var(--paper-2);border-radius:24px;padding:var(--s3)}
 .story .pull em{font-style:normal;color:var(--rose)}
 @media (max-width:900px){.story{grid-template-columns:1fr}}
 
 /* how it teaches: three tiles */
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2)}
 .tile{border-radius:22px;padding:var(--s3);background:var(--paper-2);display:grid;gap:10px;align-content:start}
-.tile.pig{background:var(--pig-w)}.tile.mint{background:var(--mint-w)}.tile.marigold{background:var(--marigold-w)}.tile.rose{background:var(--rose-w)}.tile.lilac{background:var(--lilac-w)}
+/* law v5: a wash tints a pill, a tick or a selected row — never a card, a tile, a panel or a section. Surfaces are paper-2. */
 .tile h3{font:600 19px/1.25 var(--sans)}
 .tile p{color:var(--ink-2);font-size:15px}
 .tile svg{width:44px;height:44px;fill:none;stroke:var(--ink);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
@@ -143,7 +152,7 @@ footer .wm svg{height:24px;fill:var(--paper)}
   <div>
     <span class="label">About</span>
     <h1>We built the tutor we wished we'd had <em>at 9 pm on a Tuesday.</em></h1>
-    <p class="sub">Wobo is a small company with one job: make sure no child in classes 4 to 12 is stuck alone with a question. Not a content library. Not a chatbot. A tutor that draws, never judges, and is always there.</p>
+    <p class="sub">Wobo is a small company with one job: make sure no child is stuck alone with a question. Not a content library. Not a chatbot. A tutor that draws, never judges, and is always there.</p>
   </div>
   <div class="mission"><span class="pin"></span>
     <div class="hand">Every child deserves a patient teacher at the table, every evening, <em>whether or not the family can afford one.</em> That's the whole company.</div>
@@ -173,7 +182,7 @@ footer .wm svg{height:24px;fill:var(--paper)}
 </div></section>
 
 <section><div class="wrap">
-  <div class="head reveal"><span class="label">What we cover</span><h2>Classes 4 to 12. Mathematics, Science, Social science, English. Your board, your school's order.</h2><p>CBSE, ICSE and the state boards today, with the year's official syllabus behind each one, and the door open for a school's own syllabus. More countries as families ask.</p></div>
+  <div class="head reveal"><span class="label">What we cover</span><h2>Every subject your board sets, in your school's own order.</h2><p>CBSE, ICSE and the state boards today, with the year's official syllabus behind each one, and the door open for a school's own syllabus. More countries as families ask.</p></div>
 </div></section>
 
 <section><div class="wrap">
@@ -210,9 +219,9 @@ footer .wm svg{height:24px;fill:var(--paper)}
 </div></section>
 
 <div class="close"><div class="wrap">
-  <h2>Begin tonight.</h2>
-  <span class="hand">The first question is on us.</span>
-  <div class="row"><a class="btn" href="#">Start learning for free</a><a class="btn q" href="#">I'm a parent</a></div>
+  <h2>Wobo opens to families this term.</h2>
+  <span class="hand">Be in the first group, free, with the whole tutor from day one.</span>
+  <div class="row"><a class="btn" href="#">Get early access</a><a class="btn q" href="#">I'm a parent</a></div>
 </div></div>
 <footer><div class="wrap">
   <div><div class="wm"><svg viewBox="0 0 1160 340" style="width:120px"><use href="#wm"/></svg></div><p style="margin-top:10px;max-width:28ch">A tutor that draws, never judges, and is always there.</p></div>

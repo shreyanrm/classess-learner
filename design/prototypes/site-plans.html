@@ -51,9 +51,7 @@ header .cta{display:flex;gap:8px}
 .hero h1{font:700 clamp(38px,5.4vw,64px)/1.0 var(--sans);letter-spacing:-.035em;margin:var(--s2) auto 0;max-width:18ch}
 .hero h1 em{font-style:normal;color:var(--pig)}
 .hero p.sub{font-size:19px;color:var(--ink-2);max-width:52ch;margin:var(--s3) auto 0}
-.region{display:inline-flex;background:var(--paper-2);border-radius:999px;padding:4px;gap:4px;margin-top:var(--s4)}
-.region button{border:0;background:transparent;font:500 14px/1 var(--sans);color:var(--ink-2);padding:10px 16px;border-radius:999px;cursor:pointer}
-.region button.on{background:var(--ink);color:var(--paper)}
+/* law v5: where someone reads from is inferred from the browser's time zone, never asked. There is no country switch on this page. */
 
 /* allowance drawing */
 .allow{margin:var(--s4) auto 0;max-width:560px;background:var(--paper-2);border-radius:24px;padding:var(--s3);text-align:left;display:grid;gap:12px;position:relative}
@@ -69,7 +67,7 @@ header .cta{display:flex;gap:8px}
 section{padding:var(--s5) 0}
 .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);align-items:start}
 .plan{border-radius:28px;padding:var(--s3);display:grid;gap:14px;background:var(--paper-2);position:relative}
-.plan.pro{background:var(--pig-w)}.plan.max{background:var(--ink);color:var(--paper)}
+.plan.pro{background:var(--paper-2);box-shadow:inset 0 0 0 3px var(--pig)}.plan.max{background:var(--ink);color:var(--paper)}
 .plan .name{font:600 14px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
 .plan.max .name{color:rgba(250,247,240,.6)}
 .plan .price{font:700 44px/1 var(--sans);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
@@ -105,22 +103,8 @@ section{padding:var(--s5) 0}
 .tbl .y i{width:10px;height:10px;border-radius:50%;background:var(--mint)}
 @media (max-width:900px){.tbl{overflow-x:auto}.tbl .r{min-width:640px}}
 
-/* checkout preview */
-.checkout{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4);align-items:center}
-.checkout .card{background:var(--paper);border-radius:24px;padding:var(--s3);box-shadow:0 18px 40px rgba(20,20,43,.10);display:grid;gap:14px}
-.checkout .row{display:flex;justify-content:space-between;font-size:15px}
-.checkout .row b{font-weight:600}
-.checkout label{display:grid;grid-template-columns:26px 1fr;gap:12px;align-items:start;font-size:14px;color:var(--ink-2);padding:12px;border-radius:14px;background:var(--paper-2)}
-.checkout label input{width:22px;height:22px;accent-color:var(--pig);margin:1px 0 0}
-.checkout label b{color:var(--ink);font-weight:600;display:block}
-.checkout .total{display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid var(--paper-2);padding-top:12px}
-.checkout .total b{font:700 28px/1 var(--sans)}
-.checkout .say{font-family:var(--hand);font-weight:600;font-size:26px;line-height:1.15;margin-top:var(--s3)}
-.checkout .say em{font-style:normal;color:var(--rose)}
-@media (max-width:900px){.checkout{grid-template-columns:1fr}}
-
 /* gift */
-.gift{background:var(--marigold-w);border-radius:28px;padding:var(--s4);display:grid;grid-template-columns:1.1fr .9fr;gap:var(--s4);align-items:center}
+.gift{background:var(--paper-2);border-radius:28px;padding:var(--s4);display:grid;grid-template-columns:1.1fr .9fr;gap:var(--s4);align-items:center}
 .gift h2{font:700 clamp(26px,3vw,36px)/1.08 var(--sans)}
 .gift p{color:var(--ink-2);margin-top:var(--s2)}
 .gift .row{display:flex;gap:var(--s2);margin-top:var(--s3);flex-wrap:wrap}
@@ -181,8 +165,8 @@ footer .wm svg{height:24px;fill:var(--paper)}
       <div class="price"><span data-in="₹0" data-ww="$0">₹0</span><small>forever</small></div>
       <p>The whole tutor. Every subject, the drawn board, the films, the practice, the Sunday note and a linked parent, with a daily allowance that resets every morning.</p>
       <ul>
-        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>40 questions a day</li>
-        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Every subject, class 4 to 12</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>A daily allowance, reset each morning</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Every subject your board sets</li>
         <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Practice, the week, the Sunday note</li>
         <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>One linked parent</li>
       </ul>
@@ -193,12 +177,12 @@ footer .wm svg{height:24px;fill:var(--paper)}
       <span class="best">most families</span>
       <div class="name">Pro</div>
       <div class="price"><span data-in="₹1,999" data-ww="$20">₹1,999</span><small>a month</small></div>
-      <div class="x">five times the free allowance</div>
-      <p>For the term with a test every fortnight: several times the questions, and Wobo reads its answers aloud.</p>
+      <div class="x">five times the questions</div>
+      <p>For the term with a test every fortnight. The same tutor, asked five times as often.</p>
       <ul>
-        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>200 questions a day</li>
-        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Voice replies, in your accent</li>
-        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Longer lessons on the full board</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Five times the questions</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>The same tutor, nothing unlocked</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>The same memory and Sunday note</li>
         <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Everything in Free</li>
       </ul>
       <a class="btn pig" href="#">Choose Pro</a>
@@ -207,50 +191,37 @@ footer .wm svg{height:24px;fill:var(--paper)}
     <div class="plan max">
       <div class="name">Max</div>
       <div class="price"><span data-in="₹3,999" data-ww="$50">₹3,999</span><small>a month</small></div>
-      <div class="x">twenty times the free allowance</div>
-      <p>Board year. So many questions that nobody counts them, and two learners on one plan.</p>
+      <div class="x">twenty times the questions</div>
+      <p>Board year. So many questions that nobody counts them.</p>
       <ul>
-        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>800 questions a day</li>
-        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Two learners, two Sunday notes</li>
-        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Past-paper practice sets</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Twenty times the questions</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Nothing rationed on the busiest night</li>
+        <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Everything in Pro, only more of it</li>
         <li><i><svg viewBox="0 0 12 12"><path d="M2 6 l3 3 l5 -6"/></svg></i>Everything in Pro</li>
       </ul>
       <a class="btn" href="#">Choose Max</a>
       <div class="fine">Monthly. Same two taps to cancel.</div>
     </div>
   </div>
+  <p class="lede" style="max-width:60ch;margin:var(--s4) auto 0;text-align:center;color:var(--ink-2)">Same price for everyone in your country, never varied by behaviour or device. Cancelling takes as many taps as subscribing, and you keep the plan until the month you paid for ends.</p>
 </div></section>
 
 <section><div class="wrap">
-  <div class="head reveal"><span class="label">The honest table</span><h2>What changes between plans, and what never does.</h2><p>Most of Wobo is the same on every plan. The allowance changes. The tutor doesn't.</p></div>
+  <div class="head reveal"><span class="label">The honest table</span><h2>One thing changes between plans. Everything else is the same tutor.</h2><p>Nothing is locked behind a price. Every plan has every capability, and every plan is for one learner. Paying only buys more questions in a day.</p></div>
   <div class="tbl reveal">
     <div class="r h"><div>Every day</div><div>Free</div><div>Pro</div><div>Max</div></div>
     <div class="r"><div>Daily allowance</div><div>enough for an evening</div><div>five times</div><div>twenty times</div></div>
-    <div class="r"><div>Learners on the plan</div><div>1</div><div>1</div><div>2</div></div>
-    <div class="r"><div>Voice replies</div><div class="same">—</div><div><span class="y"><i></i>yes</span></div><div><span class="y"><i></i>yes</span></div></div>
-    <div class="r"><div>Past-paper sets</div><div class="same">—</div><div class="same">—</div><div><span class="y"><i></i>yes</span></div></div>
-    <div class="r"><div>Every subject, class 4 to 12</div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div></div>
+    <div class="r"><div>Learners on the plan</div><div>one</div><div>one</div><div>one</div></div>
+    <div class="r"><div>Voice, films, practice, memory</div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div></div>
+    <div class="r"><div>Every capability Wobo has</div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div></div>
+    <div class="r"><div>Every subject your board sets</div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div></div>
     <div class="r"><div>The drawn board, practice, the week</div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div></div>
     <div class="r"><div>The Sunday note and a linked parent</div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div></div>
     <div class="r"><div>No ads, no selling, no opinions</div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div><div><span class="y"><i></i>same</span></div></div>
   </div>
 </div></section>
 
-<section><div class="wrap">
-  <div class="checkout reveal">
-    <div><span class="label">At checkout</span><h2 style="font:700 clamp(28px,3.4vw,42px)/1.08 var(--sans);margin-top:10px">Two boxes, both in plain words.</h2><p style="color:var(--ink-2);margin-top:var(--s2);max-width:46ch">We ask for exactly two things before taking money: that the person paying is an adult who agrees to the terms, and that they know what a month costs and how to stop it. Nothing pre-ticked.</p><div class="say">Same price for everyone in your country. <em>Always.</em></div></div>
-    <div class="card">
-      <div class="row"><span>Pro · one learner</span><b data-in="₹1,999 / month" data-ww="$20 / month">₹1,999 / month</b></div>
-      <div class="row"><span>Starts</span><b>today</b></div>
-      <div class="row"><span>Renews</span><b>3 October, unless you cancel</b></div>
-      <label><input type="checkbox"><div><b>I'm 18 or over and I agree to the terms.</b>The terms, in plain words first, are one tap away.</div></label>
-      <label><input type="checkbox"><div><b>I understand this renews monthly and I can cancel in Settings, in two taps, any time.</b>You keep Pro until the month you paid for ends.</div></label>
-      <div class="total"><span>Today</span><b data-in="₹1,999" data-ww="$20">₹1,999</b></div>
-      <button class="btn pig">Pay with the payment provider</button>
-      <div style="font-size:13px;color:var(--ink-3)">Card or UPI, on the provider's own page. We never see or store the details.</div>
-    </div>
-  </div>
-</div></section>
+
 
 <section><div class="wrap">
   <div class="gift reveal">
@@ -266,7 +237,7 @@ footer .wm svg{height:24px;fill:var(--paper)}
     <details><summary>Is the Sunday note only on paid plans?</summary><p>No. The note, the parent link, the practice, the drawn board and every subject are on Free. Paid plans change the allowance, voice, and a few extras. They never change the tutor.</p></details>
     <details><summary>How do I cancel?</summary><p>Settings → Your plan → Cancel. Two taps, no call, no "are you sure" maze. You keep the plan until the month you paid for ends.</p></details>
     <details><summary>Do prices change by country?</summary><p>By country, never by person. The page shows your country's price without asking where you are. We never vary a price by behaviour, device or history.</p></details>
-    <details><summary>Can two children share Pro?</summary><p>Pro is for one learner, because the Sunday note and the memory are personal. Max includes two learners, each with their own note. Families with three or more: write to us and we'll sort it.</p></details>
+    <details><summary>Can two children share one plan?</summary><p>A plan covers one learner, on every tier, because the memory and the Sunday note are personal to one child. A second child needs their own. Families with three or more: write to us and we will sort something out.</p></details>
     <details><summary>Are there discounts for schools?</summary><p>Schools get a separate plan with a teacher's view and a data-processing agreement. It's on the Schools page, or write to us.</p></details>
   </div>
 </div></section>

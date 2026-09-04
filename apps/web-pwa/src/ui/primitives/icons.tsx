@@ -50,20 +50,8 @@ export function MicIcon() {
   );
 }
 
-/** The wordmark as the rail draws it: Poppins 700, set tight, in the page's ink. */
-export function Wordmark() {
-  return (
-    <svg viewBox="0 0 1160 340" role="img" aria-label="wobo">
-      <text
-        x="0"
-        y="300"
-        fontFamily="Poppins,sans-serif"
-        fontWeight="700"
-        fontSize="330"
-        letterSpacing="-12"
-      >
-        wobo
-      </text>
-    </svg>
-  );
-}
+/**
+ * The wordmark. Re-exported from the one file that holds the artwork, so a surface can never
+ * again ship the product name set in a typeface and pass for the logo.
+ */
+export { Wordmark, WORDMARK_RATIO } from './Wordmark';

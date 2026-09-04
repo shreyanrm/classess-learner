@@ -67,14 +67,28 @@ _PREFIXES: tuple[tuple[str, str], ...] = tuple(
     sorted(CAPABILITY_CLASS.items(), key=lambda item: len(item[0]), reverse=True)
 )
 
+# A plan buys MORE OF THE SAME TUTOR and nothing else (owner, 2026-09-04). There is no
+# capability anywhere in this file, and there must never be one: every learner on every plan
+# gets every capability, and a subscription covers exactly one learner. The only thing a plan
+# changes is how many times a day they can ask.
+_FREE_TURNS, _FREE_GENERATIONS = 40, 8
+_MULTIPLIER: dict[str, int] = {"free": 1, "pro": 5, "max": 20}
+
 _DIALS: dict[tuple[str, str], tuple[str, int]] = {
     # (plan, class) -> (env var, default)
-    ("free", TURN): ("FREE_DAILY_TURNS", 40),
-    ("free", GENERATION): ("FREE_DAILY_GENERATIONS", 8),
+    ("free", TURN): ("FREE_DAILY_TURNS", _FREE_TURNS),
+    ("free", GENERATION): ("FREE_DAILY_GENERATIONS", _FREE_GENERATIONS),
     ("anon", TURN): ("ANON_DAILY_TURNS", 6),
     ("anon", GENERATION): ("ANON_DAILY_GENERATIONS", 1),
-    ("plus", TURN): ("PLUS_DAILY_TURNS", 400),
-    ("plus", GENERATION): ("PLUS_DAILY_GENERATIONS", 60),
+    # The priced plans are the free allowance multiplied, and nothing else.
+    ("pro", TURN): ("PRO_DAILY_TURNS", _FREE_TURNS * _MULTIPLIER["pro"]),
+    ("pro", GENERATION): ("PRO_DAILY_GENERATIONS", _FREE_GENERATIONS * _MULTIPLIER["pro"]),
+    ("max", TURN): ("MAX_DAILY_TURNS", _FREE_TURNS * _MULTIPLIER["max"]),
+    ("max", GENERATION): ("MAX_DAILY_GENERATIONS", _FREE_GENERATIONS * _MULTIPLIER["max"]),
+    # ``plus`` is the name the first paid tier shipped under; it resolves to pro so an
+    # existing subscriber's plan string keeps working.
+    ("plus", TURN): ("PLUS_DAILY_TURNS", _FREE_TURNS * _MULTIPLIER["pro"]),
+    ("plus", GENERATION): ("PLUS_DAILY_GENERATIONS", _FREE_GENERATIONS * _MULTIPLIER["pro"]),
 }
 
 _STORE_MAX = 20_000
@@ -140,8 +154,17 @@ def _dial(plan: str, kind: str) -> int:
 
 
 def limits_for(plan: str = "free", *, anonymous: bool = False) -> dict[str, int]:
-    """The day's allowance. Anonymous learners get the small one whatever their plan says."""
-    key = "anon" if anonymous else ("plus" if plan == "plus" else "free")
+    """The day's allowance, and the ONLY thing a plan changes.
+
+    Anonymous readers get the small one whatever the plan says. An unknown plan name falls to
+    free rather than to a guess: a billing bug should cost a learner questions, never hand out
+    an allowance nobody paid for.
+    """
+    if anonymous:
+        key = "anon"
+    else:
+        name = (plan or "free").strip().lower()
+        key = name if (name, TURN) in _DIALS else "free"
     return {TURN: _dial(key, TURN), GENERATION: _dial(key, GENERATION)}
 
 
