@@ -38,6 +38,22 @@ def _objects_to(exc: Exception, knob: str) -> bool:
     )
 
 
+def _is_bad_request(exc: Exception) -> bool:
+    """A 400 from somewhere in the chain. Not a timeout, not a 5xx, not a network fault: those
+    are worth no second attempt, and retrying them would double the load on an ailing provider.
+
+    Why any 400 and not only one that names the knob: litellm runs the fallback chain itself and
+    raises the LAST failure, so a middle model's "I will not take your temperature" is invisible
+    from out here. Production, 2026-09-04: the refusal came from the fallback, the exception came
+    from the primary's billing, and the learner got nothing. One extra attempt without the
+    optional knobs is the cheapest way to tell those two apart."""
+    name = type(exc).__name__.lower()
+    if "badrequest" in name or "unprocessable" in name:
+        return True
+    text = str(exc).lower()
+    return "badrequest" in text or "400 bad request" in text
+
+
 def _models_in_play(kwargs: dict[str, Any]) -> list[str]:
     """The primary and every fallback: one fussy model anywhere fails the whole chain."""
     models = [str(kwargs.get("model") or "")]
@@ -84,8 +100,13 @@ def complete(**kwargs: Any) -> Any:
     try:
         return litellm.completion(**kwargs)
     except Exception as first:  # noqa: BLE001 — re-raised unless it is the fussy-knob case
-        refused = [k for k in _SAMPLING_KNOBS if k in kwargs and _objects_to(first, k)]
+        named = [k for k in _SAMPLING_KNOBS if k in kwargs and _objects_to(first, k)]
+        sent = [k for k in _SAMPLING_KNOBS if k in kwargs]
+        refused = named or (sent if _is_bad_request(first) else [])
         if not refused:
             raise
         logger.info("model call: retrying without %s", ", ".join(refused))
-        return litellm.completion(**{k: v for k, v in kwargs.items() if k not in refused})
+        try:
+            return litellm.completion(**{k: v for k, v in kwargs.items() if k not in refused})
+        except Exception:  # noqa: BLE001 — the first error is the honest one to report
+            raise first from None

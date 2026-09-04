@@ -71,13 +71,37 @@ def test_a_refused_top_p_is_dropped_too(fake) -> None:
     assert "top_p" not in f.calls[1]
 
 
-def test_an_error_that_is_not_about_a_knob_is_raised_as_it_came(fake) -> None:
-    """No credit, a bad key, a timeout: those are the truth, and hiding them costs more."""
-    billing = Exception("Your credit balance is too low to access the Anthropic API.")
-    f = fake([billing])
-    with pytest.raises(Exception, match="credit balance"):
+def test_a_failure_that_is_not_a_bad_request_is_raised_as_it_came(fake) -> None:
+    """A timeout or a 5xx is the truth, and retrying it would lean on an ailing provider."""
+    down = TimeoutError("Request timed out after 30s")
+    f = fake([down])
+    with pytest.raises(TimeoutError):
         model_call.complete(model="m", temperature=0.2)
     assert len(f.calls) == 1, "a real failure is never retried here"
+
+
+def test_a_bad_request_gets_one_try_without_the_optional_knobs(fake) -> None:
+    """The production shape again: litellm raises the LAST fallback's error, so the refusal that
+    actually broke the chain is invisible. One cheap attempt without the knobs tells them apart."""
+
+    class BadRequestError(Exception):
+        pass
+
+    f = fake([BadRequestError("AnthropicException - credit balance is too low"), "answered"])
+    assert model_call.complete(model="m", fallbacks=["n"], temperature=0.2) == "answered"
+    assert len(f.calls) == 2 and "temperature" not in f.calls[1]
+
+
+def test_when_the_second_try_fails_too_the_first_error_is_what_we_report(fake) -> None:
+    """The learner's log should name the real problem, not the shadow of our own retry."""
+
+    class BadRequestError(Exception):
+        pass
+
+    f = fake([BadRequestError("credit balance is too low"), BadRequestError("still no credit")])
+    with pytest.raises(Exception, match="credit balance is too low"):
+        model_call.complete(model="m", temperature=0.2)
+    assert len(f.calls) == 2
 
 
 def test_a_400_that_merely_mentions_temperature_in_passing_is_not_swallowed(fake) -> None:
