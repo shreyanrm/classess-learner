@@ -8,10 +8,6 @@
   "detail": "Solid wordmark as primary, sticker as secondary; the eyes icon with ultramarine pupils. Say go and I generate the whole icon set."
  },
  {
-  "title": "Company legal name and postal address",
-  "detail": "The legal set and the email footer carry placeholders."
- },
- {
   "title": "Rotate the Railway project token",
   "detail": "It passed through the terminal and this chat. Project settings \u2192 Tokens."
  },
@@ -38,10 +34,6 @@
  {
   "title": "Model credit is empty \u2014 Ask Wobo cannot answer",
   "detail": "The Anthropic account says the credit balance is too low, so covered questions get a 503 and only the honest line works. Add credit or billing."
- },
- {
-  "title": "Anonymous sign-ins are disabled in Supabase",
-  "detail": "The live site tries to mint an anonymous session on load and gets a 422 on every page. Either turn anonymous sign-ins on, or I stop the app asking on public routes."
  },
  {
   "title": "Supabase service role key for the gateway",
