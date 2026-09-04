@@ -2,23 +2,28 @@
 
 Every capability sends a temperature, because a tutor's answers should not wander. Some newer
 models refuse any temperature but their own default and answer 400 rather than ignoring the
-field, and a 400 on the PRIMARY sends the call down the fallback chain — where the next model
-refuses the same field, and the learner gets nothing. Proved in production on 2026-09-04: the
-public Ask Wobo failed with "Unsupported value: 'temperature' does not support 0.2 with this
-model" on the fallback, on top of an unrelated billing failure at the primary.
+field. That refusal is worse than it looks: the same kwargs are reused for every model in the
+fallback chain, so ONE fussy model in the chain fails the whole call, and the caller only ever
+sees the LAST failure — a different error, from a different provider, that says nothing about
+the knob that actually did the damage. Proved in production on 2026-09-04: the public Ask Wobo
+answered 503 while its log carried "Unsupported value: 'temperature' does not support 0.2 with
+this model" from a fallback nobody was looking at.
 
-``complete`` sends the call as the caller wrote it and, only when the provider objects to a
-sampling knob, sends it once more without that knob. Nothing else is retried here: a real
-error (no credit, a bad key, a timeout) is raised as it arrived, because hiding those would
-cost more than it saves.
+So the knob is checked BEFORE the call, against every model in the chain, and dropped if any
+of them will not take it. The error-driven retry stays as a backstop for the case the provider
+table does not know about yet. Nothing else is retried here: a real failure (no credit, a bad
+key, a timeout) is raised as it arrived, because hiding those costs more than it saves.
 """
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
-# The knobs a provider may refuse outright. Dropped one at a time, cheapest first, and only
-# when the provider's own message names them.
+logger = logging.getLogger("wobo.gateway.model")
+
+# The knobs a provider may refuse outright. Optional every one of them: dropping a knob changes
+# how the answer is sampled, never whether there is an answer.
 _SAMPLING_KNOBS = ("temperature", "top_p")
 
 
@@ -33,16 +38,52 @@ def _objects_to(exc: Exception, knob: str) -> bool:
     )
 
 
+def _models_in_play(kwargs: dict[str, Any]) -> list[str]:
+    """The primary and every fallback: one fussy model anywhere fails the whole chain."""
+    models = [str(kwargs.get("model") or "")]
+    for fb in kwargs.get("fallbacks") or []:
+        if isinstance(fb, str):
+            models.append(fb)
+        elif isinstance(fb, dict) and fb.get("model"):
+            models.append(str(fb["model"]))
+    return [m for m in models if m]
+
+
+def _refused_up_front(kwargs: dict[str, Any]) -> list[str]:
+    """Knobs at least one model in the chain will not accept, per the provider table."""
+    try:
+        from litellm import get_supported_openai_params
+    except Exception:  # noqa: BLE001 — an older client just means we lean on the retry
+        return []
+    refused: list[str] = []
+    for knob in _SAMPLING_KNOBS:
+        if knob not in kwargs:
+            continue
+        for model in _models_in_play(kwargs):
+            try:
+                supported = get_supported_openai_params(model=model) or []
+            except Exception:  # noqa: BLE001 — an unknown model is not evidence of anything
+                continue
+            if knob not in supported:
+                refused.append(knob)
+                break
+    return refused
+
+
 def complete(**kwargs: Any) -> Any:
-    """``litellm.completion`` with one retry that drops a sampling knob the provider refused."""
+    """``litellm.completion``, minus any sampling knob a model in the chain would refuse."""
     import litellm
 
     litellm.drop_params = True
+    up_front = _refused_up_front(kwargs)
+    if up_front:
+        logger.info("model call: dropping %s — a model in the chain refuses it", ", ".join(up_front))
+        kwargs = {k: v for k, v in kwargs.items() if k not in up_front}
     try:
         return litellm.completion(**kwargs)
     except Exception as first:  # noqa: BLE001 — re-raised unless it is the fussy-knob case
         refused = [k for k in _SAMPLING_KNOBS if k in kwargs and _objects_to(first, k)]
         if not refused:
             raise
-        retry = {k: v for k, v in kwargs.items() if k not in refused}
-        return litellm.completion(**retry)
+        logger.info("model call: retrying without %s", ", ".join(refused))
+        return litellm.completion(**{k: v for k, v in kwargs.items() if k not in refused})

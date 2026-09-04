@@ -95,3 +95,34 @@ def test_a_second_refusal_is_not_retried_again(fake) -> None:
     with pytest.raises(Exception, match="Unsupported value"):
         model_call.complete(model="m", temperature=0.2)
     assert len(f.calls) == 2
+
+def test_a_knob_the_chain_refuses_is_dropped_before_the_call(fake, monkeypatch) -> None:
+    """The production shape: the PRIMARY takes temperature, a FALLBACK does not, and litellm
+    reuses one set of kwargs for both. Checked up front, the call never fails at all."""
+    f = fake(["answered"])
+    import litellm as installed  # the fake the fixture just put in sys.modules
+
+    monkeypatch.setattr(
+        installed,
+        "get_supported_openai_params",
+        lambda model: ["max_tokens"] if "fussy" in model else ["max_tokens", "temperature"],
+        raising=False,
+    )
+    out = model_call.complete(
+        model="openai/willing", fallbacks=["openai/fussy"], temperature=0.2, max_tokens=220
+    )
+    assert out == "answered"
+    assert len(f.calls) == 1, "no failure, so no retry"
+    assert "temperature" not in f.calls[0]
+    assert f.calls[0]["max_tokens"] == 220
+
+
+def test_a_chain_that_all_accepts_the_knob_keeps_it(fake, monkeypatch) -> None:
+    f = fake(["answered"])
+    import litellm as installed
+
+    monkeypatch.setattr(
+        installed, "get_supported_openai_params", lambda model: ["temperature"], raising=False
+    )
+    model_call.complete(model="a", fallbacks=["b"], temperature=0.2)
+    assert f.calls[0]["temperature"] == 0.2
