@@ -39,7 +39,19 @@ export function resetTime(at: Date): string {
 }
 
 /**
- * What the widget says. One sentence, sentence case, no exclamation, and never a number we did not
+ * How much of today is left, in words. Law v5's copy law (DESIGN.md §0) bans a raw allowance on a
+ * public surface — "40 questions a day" is a number nobody asked for and it makes a generous
+ * allowance sound like a meter — so this says what the day FEELS like and lets the drawn bar carry
+ * the proportion exactly. The reading is still the brain's, never a guess: an allowance nothing
+ * could be read for says so rather than inventing a share.
+ */
+export function allowanceShare(allowance: Allowance): number | null {
+  if (!allowance.known || allowance.remaining === null || !allowance.limit) return null;
+  return Math.max(0, Math.min(1, allowance.remaining / allowance.limit));
+}
+
+/**
+ * What the widget says. One sentence, sentence case, no exclamation, and never a figure we did not
  * read — an unknown allowance says it is unknown.
  */
 export function allowanceLine(
@@ -47,13 +59,15 @@ export function allowanceLine(
   format: (at: Date) => string = resetTime,
 ): string {
   if (!allowance.known || allowance.remaining === null) {
-    return 'Sign in and this shows how many turns are left today, and when they come back.';
+    return 'Sign in and this shows how much of today is left, and when it comes back.';
   }
-  const of = allowance.limit !== null ? ` of ${allowance.limit}` : '';
-  const turns = allowance.remaining === 1 ? '1 turn' : `${allowance.remaining} turns`;
-  const back = allowance.resetsAt ? ` They come back at ${format(allowance.resetsAt)}.` : '';
-  if (allowance.remaining === 0) {
-    return `No turns left today${of ? ` (${allowance.limit} a day)` : ''}.${back || ' They come back when the day rolls over.'}`;
-  }
-  return `${turns}${of} left today.${back}`;
+  const back = allowance.resetsAt
+    ? ` It comes back at ${format(allowance.resetsAt)}.`
+    : ' It comes back when the day rolls over.';
+  if (allowance.remaining === 0) return `Today's allowance is used up.${back}`;
+  const share = allowanceShare(allowance);
+  if (share === null) return `There is still allowance left today.${back}`;
+  if (share > 0.66) return `Most of today's allowance is still there.${back}`;
+  if (share > 0.33) return `About half of today's allowance is left.${back}`;
+  return `Today's allowance is nearly used up.${back}`;
 }

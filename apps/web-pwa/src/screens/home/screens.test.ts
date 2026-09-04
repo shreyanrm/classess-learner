@@ -139,7 +139,7 @@ describe('every learn rule is the prototype’s rule', () => {
 
 describe('the copy is the prototype’s', () => {
   const LINES = [
-    'what are we figuring out tonight?',
+    'what are we figuring out this evening?',
     'Ask anything from your syllabus, or paste question 7',
     "Shade, drag and draw. Wobo rings the gap when you're close.",
     "That's exactly how learning looks. It goes in the Sunday note.",

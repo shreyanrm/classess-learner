@@ -181,7 +181,7 @@ export function MeetWobo() {
                   Say hey to Wobo
                 </a>
                 <SiteLink className="st-btn st-quiet" to={{ name: 'onboarding' }}>
-                  Start learning for free
+                  Get early access
                 </SiteLink>
                 <span className="pt-note">Wobo has no gender. Wobo is just Wobo.</span>
               </div>
@@ -239,7 +239,7 @@ export function MeetWobo() {
                   </li>
                 </ul>
               </div>
-              <div className="pt-art pt-pig">
+              <div className="pt-art">
                 <svg viewBox="0 0 520 360" aria-hidden="true">
                   <rect className="pt-paper" x="30" y="30" width="460" height="300" rx="22" />
                   <text className="pt-hw" x="60" y="86" fontSize="30">
@@ -321,7 +321,7 @@ export function MeetWobo() {
                   </li>
                 </ul>
               </div>
-              <div className="pt-art pt-mint">
+              <div className="pt-art">
                 <svg viewBox="0 0 520 360" aria-hidden="true">
                   <rect className="pt-paper" x="30" y="30" width="460" height="300" rx="22" />
                   <path className="pt-ink pt-thin" d="M70 280 h380 M90 300 v-240" />
@@ -403,7 +403,7 @@ export function MeetWobo() {
                   </li>
                 </ul>
               </div>
-              <div className="pt-art pt-marigold">
+              <div className="pt-art">
                 <svg viewBox="0 0 520 360" aria-hidden="true">
                   <rect
                     className="pt-paper"
@@ -418,7 +418,7 @@ export function MeetWobo() {
                     Sunday, 6 pm
                   </text>
                   <text className="pt-hw" x="100" y="150" fontSize="30">
-                    Aanya asked for help twice
+                    asked for help twice
                   </text>
                   <text className="pt-hw" x="100" y="188" fontSize="30">
                     after a miss this week, <tspan className="pt-hw pt-rose">which is</tspan>
@@ -503,7 +503,7 @@ export function MeetWobo() {
                 placeholder="Do you get annoyed if I ask the same thing twice?"
                 chips={[
                   "Can you help with my school's textbook?",
-                  "What if I don't understand your drawing?",
+                  'Can you say it out loud instead of drawing it?',
                   'Do you remember me?',
                 ]}
               />

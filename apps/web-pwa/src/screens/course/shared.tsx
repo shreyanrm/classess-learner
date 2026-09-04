@@ -280,15 +280,20 @@ export function ActionBar({
           }}
         >
           {gated && (
+            // LAW v5 §8 (DESIGN.md §0): a fill is scrubbed on TRANSFORM, never on width. Animating
+            // width relayouts the button on every frame of the hold, which is the stutter the
+            // owner saw; scaleX from a left origin is the same picture on the compositor.
             <motion.span
               aria-hidden
-              animate={{ width: `${Math.round((gate?.progress ?? 0) * 100)}%` }}
+              animate={{ scaleX: Math.max(0, Math.min(1, gate?.progress ?? 0)) }}
               transition={{ ease: 'linear', duration: 0.12 }}
               style={{
                 position: 'absolute',
                 left: 0,
                 top: 0,
                 bottom: 0,
+                width: '100%',
+                transformOrigin: 'left',
                 background: 'rgba(255,255,255,0.2)',
                 pointerEvents: 'none',
               }}
@@ -353,12 +358,16 @@ export function SegmentedProgress({ fraction, segments }: { fraction: number; se
                 style={{ position: 'absolute', inset: 0, background: 'var(--wobo-ultramarine)' }}
               />
             )}
+            {/* LAW v5 §8: transform and opacity only — a segment fills by scaling, never by
+                growing its box inside a flex row that would then re-measure every sibling. */}
             <motion.div
-              animate={{ width: `${fill * 100}%` }}
+              animate={{ scaleX: fill }}
               transition={{ type: 'spring', stiffness: 120, damping: 26 }}
               style={{
                 position: 'relative',
                 height: '100%',
+                width: '100%',
+                transformOrigin: 'left',
                 // the frontier's growing edge ignites ultramarine; travelled ground settles to ink
                 background: isLead
                   ? 'linear-gradient(90deg, var(--wobo-ink-900) 60%, var(--wobo-ultramarine))'
@@ -445,20 +454,26 @@ export function ChoiceButton({
 // --- The stage — every card's visual subject sits on one ------------------------------------------
 
 /**
- * A subtly hue-tinted panel that holds a card's centerpiece: 3px radius, tonal fill of the
- * subject's hue, generous height. Tonal stages hold the boss door and the day sky — tension
- * comes from composition, never from darkness.
+ * The panel a card's centerpiece sits on: 16px corners, a tonal surface, generous height.
+ *
+ * LAW v5 (DESIGN.md §0): this used to be a 5–7% wash of the card's subject hue, which is exactly
+ * the tint-to-mark-a-section the white ground forbids — and on night it turned every stage into a
+ * differently coloured murk. The ground is now `paper-2` in both themes, and the subject's hue
+ * stays where it does work: in the ink the card draws with, in a tick, in a pill.
+ *
+ * `hue` and `tint` are kept in the signature because the drawing inside a stage still asks for a
+ * hue, and because a caller passing one must not become a type error — neither paints the ground.
  */
 export function Stage({
-  hue = 'var(--wobo-ultramarine)',
-  tint = 0.06,
-  tonal = false,
   minHeight = 300,
   children,
   style,
 }: {
+  /** Kept for the callers that name their subject's hue; the stage no longer paints with it. */
   hue?: string;
+  /** Kept for the same reason; the stage's ground is a tonal surface at every tint. */
   tint?: number;
+  /** Kept for the same reason; every stage is tonal now. */
   tonal?: boolean;
   minHeight?: number;
   children: ReactNode;
@@ -477,7 +492,7 @@ export function Stage({
         width: '100%',
         minHeight,
         borderRadius: 16,
-        background: tonal ? 'var(--wobo-tonal)' : rgba(hue, tint),
+        background: 'var(--paper-2)',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',

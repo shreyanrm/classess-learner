@@ -12,6 +12,10 @@
  * touch targets of 44px or more (the phone block grows every control's box, never its type) and no
  * type under the 13px label size (where the prototype wrote 12px the kit writes 13px). Both are
  * listed in the test's allowance.
+ *
+ * Law v5 (DESIGN.md §0) adds one block of its own at the bottom, before the phone block: the
+ * motion rule every `wk-` class is held to, and `.wk-mag`. Every colour in this file is still a
+ * token, so the whole kit moved from cream to white paper when tokens.css did.
  */
 
 /* Button — ink by default; pig for the one primary action; quiet for the rest; sm for inside cards */
@@ -93,10 +97,16 @@ button.wk-tile{border:0;cursor:pointer;text-align:left;font:inherit;color:inheri
 .wk-streak .wk-days i.wk-on{background:var(--marigold);color:var(--ink)}
 .wk-streak .wk-note{font-size:13px;color:var(--ink-3);display:block;margin-top:8px}
 
-/* AllowanceCard — the rail's bottom slot */
-.wk-allow{background:var(--marigold-w);border-radius:18px;padding:16px;display:grid;gap:8px}
+/* AllowanceCard — the rail's bottom slot.
+   LAW v5 DEPARTURE (DESIGN.md §0), in the words site-parents.html uses for the same rule: "a wash
+   tints a pill, a tick or a selected row — never a card, a tile, a panel or a section". Board 01
+   washes this card in marigold, which on cream read as a second sheet of paper and on the white
+   ground reads as a stain in the corner of every app screen. The card is a tonal surface; the
+   marigold stays where it is doing work — the FILL of the bar, which is what the day has left.
+   The track goes with it: `rgba(20,20,43,.08)` is ink at 8%, invisible on the night ground. */
+.wk-allow{background:var(--paper-2);border-radius:18px;padding:16px;display:grid;gap:8px}
 .wk-allow b{font:600 14px/1.2 var(--sans)}
-.wk-allow .wk-bar{height:8px;border-radius:4px;background:rgba(20,20,43,.08);overflow:hidden}
+.wk-allow .wk-bar{height:8px;border-radius:4px;background:var(--paper-3);overflow:hidden}
 .wk-allow .wk-bar i{display:block;height:100%;background:var(--marigold);border-radius:4px}
 .wk-allow span{font-size:13px;color:var(--ink-2)}
 
@@ -129,6 +139,30 @@ button.wk-tile{border:0;cursor:pointer;text-align:left;font:inherit;color:inheri
 .wk-head{display:inline-block;line-height:0}
 .wk-head.wk-shadow{filter:drop-shadow(0 14px 20px rgba(20,20,43,.16))}
 .wk-head .wobo-rig>svg>g>ellipse:first-child,.wk-head .wobo-rig>svg>g>line:first-child{display:none}
+
+/* ── LAW v5 MOTION (DESIGN.md §0, "Motion that never stutters") ────────────────────────────────
+   ONE OWNER PER ANIMATED PROPERTY. No `wk-` rule may declare a CSS transition on `transform` or
+   `opacity` (or on `all`, which is both of them and everything else): those two are the only
+   properties the scroll engine scrubs, and a transition on a scrubbed property is what makes an
+   element stutter — the browser eases toward a value GSAP has already moved past, every frame.
+   A `wk-` control that needs motion gets it from the property nobody else drives, or from a class
+   below that hands transform to exactly one owner. ui.test.ts fails the build on a transition
+   that names transform, opacity or all.
+
+   The other two halves of the same law, for whoever writes the JS: never scrub a LAYOUT property
+   (width, height, top — transform and opacity only), and never create a tween inside `onUpdate`;
+   fire it on a state change.
+
+   .wk-mag — a magnetic control. The INNER span moves, never the box.
+   From design/prototypes/landing-v8.html: "the jitter in the old build came from translating the
+   element itself: the box moved out from under the pointer, the pointer left, the transform reset,
+   and the box came back — a loop. Moving a child leaves the hit area exactly where it was."
+   The span carries no transition: the rAF lerp in ./magnetic.ts is its one owner. */
+.wk-mag{position:relative;isolation:isolate}
+.wk-mag > span{display:inline-flex;align-items:center;gap:8px;will-change:transform}
+/* a learner who asked for less motion, and any coarse pointer, gets the control at rest */
+@media (prefers-reduced-motion:reduce){.wk-mag > span{transform:none;will-change:auto}}
+[data-motion="reduce"] .wk-mag > span{transform:none;will-change:auto}
 
 /* phone: rail becomes a bottom tab bar */
 @media (max-width:900px){

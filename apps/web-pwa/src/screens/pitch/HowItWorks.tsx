@@ -200,7 +200,7 @@ export function HowItWorks() {
             </p>
             <div className="pt-row">
               <SiteLink className="st-btn st-pig" to={{ name: 'onboarding' }}>
-                Start learning for free
+                Get early access
               </SiteLink>
               <a className="st-btn st-quiet" href="#try">
                 Skip to the bit you can try
@@ -265,7 +265,7 @@ export function HowItWorks() {
                   "wait what's a hypotenuse" <em>is a complete question.</em>
                 </div>
               </div>
-              <div className="pt-art pt-pig">
+              <div className="pt-art">
                 <div className="pt-chat">
                   <div className="pt-t">Tuesday, 9:41 pm</div>
                   <div className="pt-me">
@@ -293,7 +293,7 @@ export function HowItWorks() {
                   You watch the answer <em>get built.</em>
                 </div>
               </div>
-              <div className="pt-art pt-mint">
+              <div className="pt-art">
                 <svg viewBox="0 0 520 340" aria-hidden="true">
                   <rect className="pt-paper" x="30" y="24" width="460" height="292" rx="22" />
                   <path className="pt-ink pt-draw" d="M150 260 L270 260 L150 170 Z" />
@@ -342,7 +342,7 @@ export function HowItWorks() {
                   Close counts. <em>"Close" is what Wobo says.</em>
                 </div>
               </div>
-              <div className="pt-art pt-marigold">
+              <div className="pt-art">
                 <DragPoint />
               </div>
             </Reveal>
@@ -360,7 +360,7 @@ export function HowItWorks() {
                   Nothing to copy, <em>because there's nothing to copy from.</em>
                 </div>
               </div>
-              <div className="pt-art pt-lilac">
+              <div className="pt-art">
                 <div className="hw-kinds">
                   <div>
                     <svg viewBox="0 0 56 56" aria-hidden="true">
@@ -434,7 +434,7 @@ export function HowItWorks() {
                   Consistency is <em>the whole trick.</em>
                 </div>
               </div>
-              <div className="pt-art pt-rose">
+              <div className="pt-art">
                 <div className="hw-week">
                   <div className="hand">
                     Three lessons, fourteen problems, and you asked for help twice after a miss,{' '}
@@ -474,11 +474,11 @@ export function HowItWorks() {
                   Parents know how it's going <em>without asking twice.</em>
                 </div>
               </div>
-              <div className="pt-art pt-marigold">
+              <div className="pt-art">
                 <div className="hw-note">
                   <div className="hw-d">Sunday, 6 pm</div>
                   <div className="hand">
-                    Aanya did three lessons and asked for help twice after a miss,{' '}
+                    Three lessons this week, and help asked for twice after a miss,{' '}
                     <em>which is exactly how learning looks.</em> Triangles: half done. Next: ten
                     minutes a day.
                   </div>

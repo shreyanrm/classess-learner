@@ -34,6 +34,7 @@ import { useWoboChat } from '../wobo/chat';
 import { speakLine } from '../wobo/speech';
 import { callSeam, liveSeams, seamFor } from './auth/client';
 import { ERRORS, SENT } from './auth/copy';
+import { type Allowance, allowanceLine, allowanceShare, readAllowance } from './plans/allowance';
 import { classLine } from './You';
 import { boardOf, type ChosenBoard, levelsFor } from './you/GradeBoardPicker';
 import { ParentInvite } from './you/ParentInvite';
@@ -69,17 +70,6 @@ function normalizePhone(raw: string): string {
   if (digits.startsWith('+')) return digits;
   if (digits.length === 10) return `+91${digits}`;
   return `+${digits}`;
-}
-
-/** "classes 6–10" — the run of school levels a board offers, from its own list. */
-export function levelRange(levels: readonly string[]): string {
-  const grades = schoolLevels(levels)
-    .map(gradeOf)
-    .filter((g): g is number => g !== null);
-  if (grades.length === 0) return '';
-  const lo = Math.min(...grades);
-  const hi = Math.max(...grades);
-  return lo === hi ? `class ${lo}` : `classes ${lo}–${hi}`;
 }
 
 /** The typed prefix, marked in the name it matched. */
@@ -174,11 +164,10 @@ export function Onboarding() {
   // --- ready -----------------------------------------------------------------------------------
   // biome-ignore lint/correctness/useExhaustiveDependencies: the registry revision is the trigger
   const firstTopic = useMemo(() => loadedTopics()[0]?.name ?? null, [revision]);
-  const [allowance, setAllowance] = useState<{
-    left: number;
-    limit: number;
-    reset: string | null;
-  } | null>(null);
+  // The copy law (DESIGN.md §0) forbids a raw allowance anywhere a learner reads one, so this
+  // screen keeps the brain's reading in the SAME shape the rail's card keeps it (screens/plans/
+  // allowance.ts) and says it with the same words. One vocabulary, one sentence, no numbers.
+  const [allowance, setAllowance] = useState<Allowance | null>(null);
   useEffect(() => {
     if (step !== 5) return;
     let cancelled = false;
@@ -186,21 +175,15 @@ export function Onboarding() {
       .me()
       .then((me) => {
         if (cancelled || !me) return;
-        const { limit, remaining } = me.budget.turns;
-        if (limit === null) return;
-        const reset = me.budget.resetAt
-          ? new Date(me.budget.resetAt).toLocaleTimeString(undefined, {
-              hour: 'numeric',
-              minute: '2-digit',
-            })
-          : null;
-        setAllowance({ left: remaining ?? limit, limit, reset });
+        setAllowance(readAllowance(me));
       })
       .catch(() => undefined);
     return () => {
       cancelled = true;
     };
   }, [sdk, step]);
+  /** How much of today is still standing — kept only as a shape, for the bar to draw. */
+  const share = allowance ? allowanceShare(allowance) : null;
 
   const firstName = name.trim().split(/\s+/)[0] ?? '';
   const boardLabel = board?.name ?? boardName(loadProfile().boardId);
@@ -623,8 +606,10 @@ export function Onboarding() {
                         className="ob-opt"
                         onClick={() => pickBoard(boardOf(f))}
                       >
+                        {/* The copy law (DESIGN.md §0): no grade range on any surface. The
+                            board's own classes appear as chips the moment a board is chosen,
+                            which is where the learner actually needs them. */}
                         <Marked name={f.name} query={typed} />
-                        <span>{levelRange(f.levels)}</span>
                       </button>
                     ))}
                     {search.state.error ? <div className="ob-own">{search.state.error}</div> : null}
@@ -779,30 +764,23 @@ export function Onboarding() {
               .
             </h1>
             <p className="ob-sub">
-              {allowance ? `${allowance.limit} questions a day` : 'Forty questions a day'}, every
-              day, for free. Hold space to talk to me, or just type. I'll be here at 10 pm and at 6
-              am.
+              Enough questions for a normal evening, every day, for free. Hold space to talk to me,
+              or just type. I'll be here at 10 pm and at 6 am.
             </p>
             <div className="ob-allow">
               <b>Today's allowance</b>
               <div className="ob-bar" aria-hidden="true">
-                <i
-                  style={
-                    allowance
-                      ? { width: `${Math.round((allowance.left / allowance.limit) * 100)}%` }
-                      : undefined
-                  }
-                />
+                <i style={share === null ? undefined : { width: `${Math.round(share * 100)}%` }} />
               </div>
-              {allowance ? (
-                <span>
-                  {allowance.left} of {allowance.limit} questions
-                  {allowance.reset ? ` · resets ${allowance.reset}` : ''}
-                </span>
-              ) : null}
+              {/* The copy law (DESIGN.md §0): what is left is said in words, never "25 of 40".
+                  The bar draws the same fraction the sentence describes, so the two agree. */}
+              <span>{allowance ? allowanceLine(allowance) : 'Enough for a normal evening.'}</span>
             </div>
+            {/* The prototype's "Start this evening" is the LANDING's call, and the copy law (DESIGN.md
+                §0) keeps a promotional call off a surface only a signed-in learner can reach. Here
+                the button is the action itself. */}
             <button type="button" className="ob-btn ob-pig" onClick={finish}>
-              Begin tonight
+              Begin
             </button>
             <p className="ob-fine">
               You can change the class, the board or the parent link any time in Settings.

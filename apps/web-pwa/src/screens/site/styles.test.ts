@@ -109,11 +109,6 @@ const ASK: Record<string, string> = {
   '.st-ask .st-chips .wk-chip': '.ask .chips span',
   '.st-grid3': '.grid3',
   '.st-tile': '.tile',
-  '.st-tile.st-pig': '.tile.pig',
-  '.st-tile.st-mint': '.tile.mint',
-  '.st-tile.st-marigold': '.tile.marigold',
-  '.st-tile.st-rose': '.tile.rose',
-  '.st-tile.st-lilac': '.tile.lilac',
   '.st-tile h3': '.tile h3',
   '.st-tile p': '.tile p',
   '.st-tile svg': '.tile svg',
@@ -133,7 +128,8 @@ const ABOUT: Record<string, string> = {
   '.ab-story': '.story',
   '.ab-story p': '.story p',
   '.ab-story p+p': '.story p+p',
-  '.ab-story .ab-pull': '.story .pull',
+  // `.story .pull` is not here: the prototype washes the pull quote in marigold and law v5 puts
+  // every card on paper-2. The law wins, and the divergence is asserted in `law-v5.test.ts`.
   '.ab-story .ab-pull em': '.story .pull em',
   '.ab-promises': '.promises',
   '.ab-promise': '.promise',
@@ -156,9 +152,6 @@ const PLANS: Record<string, string> = {
   '.pl-hero h1': '.hero h1',
   '.pl-hero h1 em': '.hero h1 em',
   '.pl-hero p.pl-sub': '.hero p.sub',
-  '.pl-region': '.region',
-  '.pl-region button': '.region button',
-  '.pl-region button.st-on': '.region button.on',
   '.pl-allow': '.allow',
   '.pl-allow b': '.allow b',
   '.pl-allow .pl-bar': '.allow .bar',
@@ -167,7 +160,8 @@ const PLANS: Record<string, string> = {
   '.pl-allow .hand': '.allow .hand',
   '.pl-plans': '.plans',
   '.pl-plan': '.plan',
-  '.pl-plan.pl-pro': '.plan.pro',
+  // `.plan.pro` is not here for the same reason: the prototype washes the recommended card in
+  // pig, and law v5 makes pig POINT at it — a ring on paper-2 — rather than tint it.
   '.pl-plan.pl-max': '.plan.max',
   '.pl-plan .pl-name': '.plan .name',
   '.pl-plan.pl-max .pl-name': '.plan.max .name',
@@ -196,18 +190,11 @@ const PLANS: Record<string, string> = {
   '.pl-tbl .pl-same': '.tbl .same',
   '.pl-tbl .pl-y': '.tbl .y',
   '.pl-tbl .pl-y i': '.tbl .y i',
-  '.pl-checkout': '.checkout',
-  '.pl-checkout .pl-card': '.checkout .card',
-  '.pl-checkout .pl-row': '.checkout .row',
-  '.pl-checkout .pl-row b': '.checkout .row b',
-  '.pl-checkout label': '.checkout label',
-  '.pl-checkout label input': '.checkout label input',
-  '.pl-checkout label b': '.checkout label b',
-  '.pl-checkout .pl-total': '.checkout .total',
-  '.pl-checkout .pl-total b': '.checkout .total b',
-  '.pl-checkout .pl-say': '.checkout .say',
-  '.pl-checkout .pl-say em': '.checkout .say em',
-  '.pl-gift': '.gift',
+  // The checkout preview's rules are the app's own. The prototype dropped that section in its
+  // law-v5 pass; the app keeps it, because two unticked consent boxes shown before a payment
+  // control is a promise the plans page makes in words and has to keep on screen.
+  // `.gift` is not here either: the prototype washes the gift panel in marigold; law v5 sits it
+  // on paper-2 like every other panel and keeps marigold for the ribbon it draws.
   '.pl-gift h2': '.gift h2',
   '.pl-gift p': '.gift p',
   '.pl-gift .pl-row': '.gift .row',
@@ -311,24 +298,22 @@ describe('the laws hold over the whole sheet', () => {
 });
 
 /**
- * WOBO-PLAN §18's touch floor, on the pages the responsive proof flagged: the help search field,
- * the two region pills on /plans, and the consent boxes on /plans/checkout and /sign-up. Every one
- * of them is a 44×44 box a thumb can hit — and NONE of them moves a type size to get there.
+ * WOBO-PLAN §18's touch floor, on the pages the responsive proof flagged: the help search field and
+ * the consent boxes on /plans/checkout and /sign-up. Both are a 44×44 box a thumb can hit — and
+ * NEITHER of them moves a type size to get there. (The two region pills that used to be here went
+ * with the country switch: law v5 infers where a reader is and never asks.)
  */
 describe('every control on the site clears the 44px floor', () => {
   const phone = /@media \(max-width:900px\)\{([\s\S]*?)\n\}/.exec(SITE_CSS)?.[1] ?? '';
 
-  it('grows the help search field and the region pills on a phone', () => {
+  it('grows the help search field on a phone', () => {
     expect(phone).toContain('.hp-search input{min-height:44px}');
-    expect(phone).toContain('fieldset.pl-region button{min-height:44px}');
   });
 
-  it('leaves their type alone', () => {
+  it('leaves its type alone', () => {
     // the ported rules still carry the prototype's sizes; the floor adds height, never font-size
     expect(site.get('.hp-search input')).toContain('font:400 17px/1.4 var(--sans)');
-    expect(site.get('.pl-region button')).toContain('font:500 14px/1 var(--sans)');
     expect(phone).not.toMatch(/\.hp-search input\{[^}]*font/);
-    expect(phone).not.toMatch(/pl-region button\{[^}]*font/);
   });
 
   it('puts a 44px hit area around a 22px consent box', () => {

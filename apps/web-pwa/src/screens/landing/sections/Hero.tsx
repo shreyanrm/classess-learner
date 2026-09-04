@@ -1,186 +1,123 @@
 'use client';
 
 /**
- * The first fold.
+ * The hero: one question, answered four ways.
  *
- * On the left the ask, written the way a learner says it: "Hey Wobo," in Wobo's hand, then the
- * question, with the equation written on over about a second and swept by a marigold highlighter a
- * beat later. Both are CSS animations rather than script, so they play on the first paint and cost
- * nothing; both are off under reduced motion (`styles.ts`).
+ * The card is the argument. It says the thing the whole page has to say before a visitor scrolls —
+ * that Wobo is not a whiteboard with a chatbot bolted on — by answering the same question drawn,
+ * filmed, tried and spoken, and by letting the reader pick.
  *
- * On the right the stage: a tinted card where Wobo draws the proof live on a loop, three floating
- * drawn objects at three parallax depths plus the handwritten a²+b², the "drawn live" sticker, and
- * Wobo standing in front of the card with the pen.
+ * TWO RULES ARE BUILT INTO THIS COMPONENT:
  *
- * The Wobo here is the REAL rig, not a picture — it blinks, it gets bored if nothing happens, and
- * its gaze follows the pointer. The layout sizes it as a share of the stage, so `useBoxWidth`
- * measures the box and hands the rig a pixel size (see `measure.ts`).
- *
- * The card's own small Wobo (`#demoWobo`) stays a drawn head: the scroll engine writes its gaze
- * straight onto the `.eyes` group from the pen's position on the board, thirty times a second, and
- * that is a truer thing to watch than a rig looking at the mouse.
+ *  · THE DRAWN ANSWER IS COMPLETE ON FIRST PAINT. The drawn card is the one that is up when the
+ *    page loads, its own timeline runs immediately (`engine/motion.ts`), and under reduced motion
+ *    the finished drawing is simply there. A visitor never meets an empty stage.
+ *  · THE RAIL IS A CONTROL, NOT A CAROUSEL. It cycles on its own so a visitor who does nothing
+ *    still sees all four, and the moment anyone taps it, the cycling stops for good. An auto-rotate
+ *    that fights the reader is the oldest hostile pattern on the web.
  */
 
-import { WoboBody } from '@wobo/wobo';
-import { type RefObject, useRef } from 'react';
-import { LessonDrawing, WoboHeadGroup } from '../art';
-import { useLastInput } from '../attention';
-import type { DemoRefs } from '../engine';
-import { LandingLink } from '../link';
-import { useBoxWidth, woboSize } from '../measure';
-import { DEMO, HERO } from '../page-copy';
+import { type RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { useMagnet } from '../../../ui/primitives/magnetic';
+import { HeroDrawn, HeroFilmed, HeroFloats, HeroSpoken, HeroTried } from '../art';
+import { earlyAccessHandler, LandingLink } from '../link';
+import { AUTH, HERO, HERO_CYCLE_MS, HERO_FORMS } from '../page-copy';
 
-/** The four floating drawn objects, with the parallax depth each one moves at. */
-function Floats() {
-  return (
-    <>
-      <div className="float f1" data-depth="0.06" aria-hidden="true">
-        <svg viewBox="0 0 80 80" aria-hidden="true">
-          <path d="M40 8 L72 66 L8 66 Z" fill="var(--marigold)" />
-          <path
-            d="M40 8 L72 66 L8 66 Z"
-            fill="none"
-            stroke="var(--ink)"
-            strokeWidth="4"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
-      <div className="float f2" data-depth="0.10" aria-hidden="true">
-        <svg viewBox="0 0 80 80" aria-hidden="true">
-          <circle cx="40" cy="40" r="26" fill="var(--mint)" />
-          <circle cx="40" cy="40" r="26" fill="none" stroke="var(--ink)" strokeWidth="4" />
-          <circle cx="31" cy="31" r="6" fill="var(--paper)" />
-        </svg>
-      </div>
-      <div className="float f3" data-depth="0.04" aria-hidden="true">
-        <svg viewBox="0 0 80 80" aria-hidden="true">
-          <circle cx="40" cy="40" r="24" fill="none" stroke="var(--lilac)" strokeWidth="12" />
-          <circle cx="40" cy="40" r="24" fill="none" stroke="var(--ink)" strokeWidth="4" />
-          <circle cx="40" cy="40" r="12" fill="none" stroke="var(--ink)" strokeWidth="4" />
-        </svg>
-      </div>
-      <div className="float f4" data-depth="0.08" aria-hidden="true">
-        <svg viewBox="0 0 120 60" aria-hidden="true">
-          <text
-            x="4"
-            y="46"
-            fontFamily="var(--hand)"
-            fontWeight="700"
-            fontSize="44"
-            fill="var(--pig)"
-          >
-            a²+b²
-          </text>
-        </svg>
-      </div>
-    </>
-  );
-}
+export function Hero({ sectionRef }: { sectionRef: RefObject<HTMLElement | null> }) {
+  const [form, setForm] = useState(0);
+  // A ref, not state: it is read by the interval, and turning it into state would restart the
+  // interval on every tick.
+  const stopped = useRef(false);
+  const current = HERO_FORMS[form] ?? HERO_FORMS[0];
 
-export function Hero({
-  onStart,
-  refs,
-  sectionRef,
-}: {
-  onStart: () => void;
-  /** The five handles the engine's `useDemo` drives. Created by `Landing`, attached here. */
-  refs: DemoRefs;
-  /** The section itself, which the floats parallax against. */
-  sectionRef: RefObject<HTMLElement | null>;
-}) {
-  const woboBox = useRef<HTMLDivElement>(null);
-  const idleSince = useLastInput();
-  // The prototype's `min(230px, 34%)`: the stylesheet still owns the box, this only turns the box
-  // it produced into the pixel count the rig needs.
-  const size = woboSize(useBoxWidth(woboBox), 1, 230, 88);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const timer = window.setInterval(() => {
+      if (stopped.current) return;
+      setForm((i) => (i + 1) % HERO_FORMS.length);
+    }, HERO_CYCLE_MS);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const pick = useCallback((i: number) => {
+    stopped.current = true;
+    setForm(i);
+  }, []);
 
   return (
-    <section id="hero" ref={sectionRef}>
+    <section id="hero" ref={sectionRef as RefObject<HTMLElement>}>
       <div className="wrap grid">
         <div>
-          <span className="chapter reveal">{HERO.chapter}</span>
+          <div className="eyebrow reveal">
+            {HERO.eyebrow.lead}
+            <b>{HERO.eyebrow.accent}</b>
+          </div>
           <h1 className="reveal">
-            <span className="ask">{HERO.wake}</span> {HERO.askBefore}
-            <em>{HERO.equation}</em>
-            {HERO.askAfter}
+            <span className="wake">{HERO.wake}</span>
+            {HERO.title}
           </h1>
-          <p className="sub reveal">{HERO.sub}</p>
+          <p className="lede reveal">{HERO.lede}</p>
           <div className="cta reveal">
-            <button type="button" className="btn pig" onClick={onStart}>
-              {HERO.primary}
-            </button>
-            <LandingLink className="btn quiet" href="#parents-note">
-              {HERO.secondary}
+            {/* biome-ignore lint/a11y/useValidAnchor: a real in-page anchor, not a button in
+                disguise. `#early` works with no JavaScript, can be copied and shared, and the click
+                handler only eases the scroll and puts the caret in the field. */}
+            <a className="btn pig" href="#early" onClick={earlyAccessHandler()} ref={useMagnet()}>
+              <span>{AUTH.early}</span>
+            </a>
+            <LandingLink className="btn ghost" href={HERO.seeHow.href}>
+              <span>{HERO.seeHow.label}</span>
             </LandingLink>
           </div>
-          <div className="note reveal">
-            {HERO.notes.map((note) => (
-              <span key={note}>{note}</span>
+          <div className="under reveal">
+            {HERO.under.map((line) => (
+              <span key={line}>
+                <i />
+                {line}
+              </span>
             ))}
           </div>
         </div>
-
-        <div className="stage">
-          <div className="sticker reveal" aria-hidden="true">
-            {HERO.sticker}
-          </div>
-          <Floats />
-
-          {/* A picture of the product working, so it is announced as one rather than as an
-              unnamed box full of decorative SVG. */}
-          <div
-            className="demo reveal"
-            id="demo"
-            role="img"
-            aria-label={DEMO.label}
-            ref={refs.demo as RefObject<HTMLDivElement>}
-          >
-            <div className="frame">
-              <div className="bar">
-                <b>{DEMO.who}</b>
-                {DEMO.withWhom}
-                <span className="live">
-                  <i />
-                  {DEMO.live}
-                </span>
-              </div>
-              <div
-                className="bubble"
-                id="demoBubble"
-                ref={refs.bubble as RefObject<HTMLDivElement>}
-              >
-                <span className="who">{DEMO.askedBy}</span>
-                {DEMO.question}
-              </div>
-              <svg className="board" viewBox="0 0 640 400" aria-hidden="true">
-                <LessonDrawing
-                  strokeGroupId="lessonA"
-                  penId="pen"
-                  groupRef={refs.lesson}
-                  penRef={refs.pen}
-                />
-              </svg>
-              <svg className="mini" viewBox="0 0 120 120" aria-hidden="true">
-                <WoboHeadGroup id="demoWobo" headRef={refs.wobo as RefObject<SVGGElement>} />
-              </svg>
+        <div className="stagewrap" style={{ position: 'relative' }}>
+          <HeroFloats />
+          <div className="device" id="device">
+            <div className="top">
+              <b>{HERO.device.who}</b> · {HERO.device.live}
+              <span className="live">
+                <i />
+                {/* Announced politely: the label changes on its own, and a reader on a screen
+                    reader should hear it change without being interrupted mid-sentence. */}
+                <span aria-live="polite">{current?.live}</span>
+              </span>
             </div>
-          </div>
-
-          <div className="heroWobo reveal" ref={woboBox}>
-            {/* `drawing` is what raises the mitt and the ultramarine-tipped pen. The prototype's
-                hero head carries its nib (`#wobo-full`'s `.nib`), and it is the point of the
-                character: Wobo is drawing the proof on the card right behind it. Without it the
-                rig stands there empty-handed and the hero loses the one detail that says what
-                Wobo does. The gaze still follows the pointer — a pinned gaze outranks the
-                expression's own look. */}
-            <WoboBody
-              size={size}
-              mood="drawing"
-              gaze="pointer"
-              idleSince={idleSince}
-              label="Wobo"
-            />
+            <div className="stage" id="heroStage">
+              <div className={form === 0 ? 'on' : undefined} data-form="draw">
+                <HeroDrawn label="Wobo draws the leaf and where the light goes" />
+              </div>
+              <div className={form === 1 ? 'on' : undefined} data-form="video">
+                <HeroFilmed label="The same idea as a short film" caption={HERO.filmed.caption} />
+              </div>
+              <div className={form === 2 ? 'on' : undefined} data-form="try">
+                <HeroTried label="Now you try one" copy={HERO.tried} />
+              </div>
+              <div className={form === 3 ? 'on' : undefined} data-form="say">
+                <HeroSpoken label="Wobo says it out loud" line={HERO.spoken.line} />
+              </div>
+            </div>
+            <div className="rail" id="heroRail">
+              {HERO_FORMS.map((entry, i) => (
+                <button
+                  key={entry.key}
+                  type="button"
+                  className={i === form ? 'on' : undefined}
+                  data-go={entry.key}
+                  aria-pressed={i === form}
+                  onClick={() => pick(i)}
+                >
+                  {entry.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

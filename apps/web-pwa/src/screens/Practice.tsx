@@ -233,7 +233,10 @@ export function Practice() {
               ))}
             </div>
           </Card>
-          <Card tint="marigold" compact>
+          {/* LAW v5 (DESIGN.md §0): an explainer is neither the highlighter nor an earned
+          moment, so it takes no wash. The pigment on this screen stays where it works —
+          the set the learner is standing in, and the tick beside a finished one. */}
+          <Card compact>
             <Tag>How this works</Tag>
             <p style={{ color: 'var(--ink)' }}>
               Wobo never says wrong. When you're close, it draws the difference on your answer and

@@ -310,7 +310,7 @@ function Specimens() {
           }
         />
         <TopBar
-          crumb="You · Aanya · Class 8 · CBSE"
+          crumb="You · Learner · Class 8 · CBSE"
           right={
             <>
               <Segmented options={SPAN} value={span} onChange={setSpan} />

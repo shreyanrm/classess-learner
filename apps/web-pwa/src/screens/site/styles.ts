@@ -18,7 +18,9 @@
  * The laws that hold everywhere (DESIGN.md §2): no border lines — surfaces separate by tone, space
  * and shape; corners 10 / 16 / 24 and up; a soft tinted shadow only under what floats (the pinned
  * mission note, the checkout card, a sticker); Poppins for every word and Caveat only for what
- * Wobo writes; every colour a palette-v4 token.
+ * Wobo writes; every colour a law-v5 token — and, since law v5 (DESIGN.md §0), no tinted section
+ * ground anywhere: the paper is white, a card is `--paper-2`, and a wash may tint a pill, a tick or
+ * a selected row but never a card, a tile, a panel or a section.
  */
 
 const STYLE_ID = 'wobo-site';
@@ -44,7 +46,7 @@ export const SITE_CSS = `
 /* --- the header: sticky, blurred, the wordmark, the pill nav, the two doors ------------------ */
 .st-header{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--paper) 78%,transparent)}
 .st-header .st-wrap{display:flex;align-items:center;gap:var(--s3);height:72px}
-.st-header .st-wm svg{height:26px;width:auto;fill:var(--ink);display:block}
+.st-header .st-wm svg{height:22px;width:auto;color:var(--ink);display:block}
 .st-header nav{margin-left:auto;display:flex;gap:4px;background:var(--paper-2);padding:4px;border-radius:999px}
 .st-header nav a{padding:10px 16px;border-radius:999px;font:500 14px/1 var(--sans);color:var(--ink-2)}
 .st-header nav a.st-on{background:var(--ink);color:var(--paper)}
@@ -62,15 +64,11 @@ export const SITE_CSS = `
 .st-head h2{font:700 clamp(28px,3.4vw,42px)/1.08 var(--sans)}
 .st-head p{color:var(--ink-2);font-size:18px}
 
-/* --- tiles: three across, one wash each --------------------------------------------------- */
+/* --- tiles: three across, every one on paper-2 --------------------------------------------- */
 .st-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2)}
 .st-grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s2)}
 .st-tile{border-radius:22px;padding:var(--s3);background:var(--paper-2);display:grid;gap:10px;align-content:start}
-.st-tile.st-pig{background:var(--pig-w)}
-.st-tile.st-mint{background:var(--mint-w)}
-.st-tile.st-marigold{background:var(--marigold-w)}
-.st-tile.st-rose{background:var(--rose-w)}
-.st-tile.st-lilac{background:var(--lilac-w)}
+/* law v5: a wash tints a pill, a tick or a selected row — never a card, a tile, a panel or a section. Surfaces are paper-2. */
 .st-tile h3{font:600 19px/1.25 var(--sans)}
 .st-tile p{color:var(--ink-2);font-size:15px}
 .st-tile svg{width:44px;height:44px;fill:none;stroke:var(--ink);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
@@ -83,7 +81,7 @@ export const SITE_CSS = `
 .st-ask .st-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .st-ask .st-chips .wk-chip{font:500 13px/1 var(--sans);padding:8px 12px;border-radius:999px;background:var(--paper);color:var(--ink-2)}
 
-/* --- the close panel: begin tonight ----------------------------------------------------------- */
+/* --- the close panel: the early-access promotion ---------------------------------------------- */
 .st-close{margin:var(--s5) 0 0;background:var(--ink);color:var(--paper);padding:var(--s6) 0;text-align:center}
 .st-close h2{font:700 clamp(34px,5vw,60px)/1.02 var(--sans);letter-spacing:-.035em}
 .st-close .hand{font-size:30px;color:var(--marigold);display:block;margin-top:var(--s2)}
@@ -98,7 +96,7 @@ export const SITE_CSS = `
 .st-footer .st-wrap{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:var(--s3)}
 .st-footer b{display:block;color:var(--paper);font-weight:600;margin-bottom:10px}
 .st-footer a{display:block;padding:4px 0}
-.st-footer .st-wm svg{height:24px;fill:var(--paper)}
+.st-footer .st-wm svg{height:22px;color:var(--paper)}
 .st-footer a[aria-current="page"]{color:var(--paper)}
 .st-footer .st-line{margin-top:10px;max-width:28ch}
 
@@ -126,7 +124,7 @@ export const SITE_CSS = `
 .st-grid tr+tr td{border-top:2px solid var(--paper)}
 .st-grid td:first-child{font-weight:500;color:var(--ink)}
 /* the "in plain words" card: the highlighter, Wobo's hand, then the honest summary */
-.st-plain{background:var(--marigold-w);border-radius:24px;padding:var(--s3);margin:0 0 var(--s4)}
+.st-plain{background:var(--paper-2);border-radius:24px;padding:var(--s3);margin:0 0 var(--s4);box-shadow:inset 3px 0 0 var(--marigold)}
 .st-plain .hand{display:block;font-size:26px;color:var(--ink);margin-bottom:var(--s1)}
 .st-plain p{color:var(--ink-2);font-size:17px;margin:0 0 12px}
 .st-plain p:last-child{margin-bottom:0}
@@ -176,7 +174,7 @@ export const SITE_CSS = `
 .ab-story{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5);align-items:start}
 .ab-story p{color:var(--ink-2);font-size:18px;max-width:52ch}
 .ab-story p+p{margin-top:var(--s2)}
-.ab-story .ab-pull{font-family:var(--hand);font-weight:600;font-size:30px;line-height:1.15;color:var(--ink);background:var(--marigold-w);border-radius:24px;padding:var(--s3)}
+.ab-story .ab-pull{font-family:var(--hand);font-weight:600;font-size:30px;line-height:1.15;color:var(--ink);background:var(--paper-2);border-radius:24px;padding:var(--s3)}
 .ab-story .ab-pull em{font-style:normal;color:var(--rose)}
 .ab-promises{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s2)}
 .ab-promise{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start;background:var(--paper-2);border-radius:20px;padding:var(--s3)}
@@ -202,10 +200,7 @@ export const SITE_CSS = `
 .pl-hero h1 em{font-style:normal;color:var(--pig)}
 .pl-hero p.pl-sub{font-size:19px;color:var(--ink-2);max-width:52ch;margin:var(--s3) auto 0}
 .pl-hero .st-row{display:flex;gap:var(--s2);justify-content:center;margin-top:var(--s4);flex-wrap:wrap}
-.pl-region{display:inline-flex;background:var(--paper-2);border-radius:999px;padding:4px;gap:4px;margin-top:var(--s4)}
-.pl-region button{border:0;background:transparent;font:500 14px/1 var(--sans);color:var(--ink-2);padding:10px 16px;border-radius:999px;cursor:pointer}
-.pl-region button.st-on{background:var(--ink);color:var(--paper)}
-fieldset.pl-region{border:0;margin:0;min-width:0}
+/* law v5: where someone reads from is inferred from the browser's time zone, never asked. There is no country switch on this page. */
 .pl-allow{margin:var(--s4) auto 0;max-width:560px;background:var(--paper-2);border-radius:24px;padding:var(--s3);text-align:left;display:grid;gap:12px;position:relative}
 .pl-allow b{font-weight:600}
 .pl-allow .pl-bar{height:14px;border-radius:7px;background:var(--paper-3);overflow:hidden;position:relative}
@@ -215,7 +210,7 @@ fieldset.pl-region{border:0;margin:0;min-width:0}
 .pl-allow .wk-sticker{right:-14px;top:-16px}
 .pl-plans{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);align-items:start}
 .pl-plan{border-radius:28px;padding:var(--s3);display:grid;gap:14px;background:var(--paper-2);position:relative}
-.pl-plan.pl-pro{background:var(--pig-w)}
+.pl-plan.pl-pro{background:var(--paper-2);box-shadow:inset 0 0 0 3px var(--pig)}
 .pl-plan.pl-max{background:var(--ink);color:var(--paper)}
 .pl-plan .pl-name{font:600 14px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
 .pl-plan.pl-max .pl-name{color:color-mix(in srgb,var(--paper) 60%,transparent)}
@@ -268,7 +263,7 @@ fieldset.pl-region{border:0;margin:0;min-width:0}
 .pl-checkout .pl-head h2{font:700 clamp(28px,3.4vw,42px)/1.08 var(--sans);margin-top:10px}
 .pl-checkout .pl-head p{color:var(--ink-2);margin-top:var(--s2);max-width:46ch}
 .pl-checkout .pl-card .st-fine{font-size:13px;color:var(--ink-3)}
-.pl-gift{background:var(--marigold-w);border-radius:28px;padding:var(--s4);display:grid;grid-template-columns:1.1fr .9fr;gap:var(--s4);align-items:center}
+.pl-gift{background:var(--paper-2);border-radius:28px;padding:var(--s4);display:grid;grid-template-columns:1.1fr .9fr;gap:var(--s4);align-items:center}
 .pl-gift h2{font:700 clamp(26px,3vw,36px)/1.08 var(--sans)}
 .pl-gift p{color:var(--ink-2);margin-top:var(--s2)}
 .pl-gift .pl-row{display:flex;gap:var(--s2);margin-top:var(--s3);flex-wrap:wrap}
@@ -298,9 +293,7 @@ fieldset.pl-region{border:0;margin:0;min-width:0}
 .hp-count{font-size:14px;color:var(--ink-3);margin-top:12px}
 .hp-groups{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);align-items:start}
 .hp-group{border-radius:22px;padding:var(--s3);background:var(--paper-2);display:grid;gap:10px;align-content:start}
-.hp-group.st-pig{background:var(--pig-w)}
-.hp-group.st-mint{background:var(--mint-w)}
-.hp-group.st-marigold{background:var(--marigold-w)}
+/* law v5: a wash tints a pill, a tick or a selected row — never a card, a tile, a panel or a section. Surfaces are paper-2. */
 .hp-group h2{font:600 22px/1.2 var(--sans)}
 .hp-group>p{color:var(--ink-2);font-size:15px}
 .hp-mark{width:44px;height:44px;fill:none;stroke:var(--ink);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
@@ -317,7 +310,7 @@ fieldset.pl-region{border:0;margin:0;min-width:0}
 .hp-article{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:var(--s5);align-items:start;padding:var(--s4) 0 var(--s5)}
 .hp-article h1{font:700 clamp(30px,3.6vw,44px)/1.08 var(--sans);letter-spacing:-.03em}
 .hp-lead{font:500 clamp(19px,1.8vw,22px)/1.45 var(--sans);color:var(--ink);margin:var(--s2) 0 var(--s3);max-width:46ch}
-.hp-next{margin-top:var(--s4);background:var(--pig-w);border-radius:20px;padding:var(--s3);display:grid;gap:6px}
+.hp-next{margin-top:var(--s4);background:var(--paper-2);border-radius:20px;padding:var(--s3);display:grid;gap:6px}
 .hp-next a{font:600 19px/1.25 var(--sans);color:var(--ink);display:inline-flex;align-items:center;min-height:44px}
 .hp-next a:hover{color:var(--pig)}
 .hp-aside{position:sticky;top:88px;background:var(--paper-2);border-radius:22px;padding:var(--s3);display:grid;gap:10px}
@@ -370,7 +363,7 @@ fieldset.pl-region{border:0;margin:0;min-width:0}
 .wa-or{display:flex;align-items:center;gap:12px;font:500 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);width:100%}
 .wa-or::before,.wa-or::after{content:"";flex:1;height:3px;border-radius:999px;background:var(--paper-2)}
 .wa-fine{font-size:13px;color:var(--ink-3);max-width:44ch;margin:0 auto}
-.wa-parent{background:var(--pig-w);border-radius:20px;padding:var(--s3);display:grid;gap:8px;text-align:left}
+.wa-parent{background:var(--paper-2);border-radius:20px;padding:var(--s3);display:grid;gap:8px;text-align:left}
 .wa-parent h2{font:600 17px/1.25 var(--sans)}
 .wa-parent p{font-size:15px;color:var(--ink-2)}
 .wa-consent{display:grid;grid-template-columns:26px 1fr;gap:12px;align-items:start;font-size:14px;color:var(--ink-2);padding:12px;border-radius:14px;background:var(--paper-2);text-align:left}
@@ -396,7 +389,6 @@ fieldset.pl-region{border:0;margin:0;min-width:0}
   .st-footer .st-wrap a{display:flex;align-items:center;min-height:44px;padding:0}
   .st-footer .st-wrap{grid-template-columns:1fr 1fr}
   .hp-search input{min-height:44px}
-  fieldset.pl-region button{min-height:44px}
   .st-ask{grid-template-columns:1fr}
   .st-grid3,.st-grid2{grid-template-columns:1fr}
   .ab-hero .st-wrap{grid-template-columns:1fr}

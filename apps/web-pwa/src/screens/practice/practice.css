@@ -12,8 +12,11 @@
 /* the grid: the item card and the side column */
 .pr-prac{display:grid;grid-template-columns:1fr 360px;gap:20px}
 
-/* the item card */
-.pr-item{border-radius:26px;background:var(--mint-w);padding:32px;display:grid;gap:22px;justify-items:center;position:relative;min-height:560px;align-content:center}
+/* the item card. LAW v5 DEPARTURE (DESIGN.md §0): board 04 draws this panel in `--mint-w`, and a
+   560px wash is exactly the tint-to-mark-a-section the white ground forbids — mint's one job is
+   confirmation, and a question that has not been answered yet confirms nothing. The card is a
+   tonal surface; the mint that mattered stays on the tick in the set list. */
+.pr-item{border-radius:26px;background:var(--paper-2);padding:32px;display:grid;gap:22px;justify-items:center;position:relative;min-height:560px;align-content:center}
 .pr-q{font:600 22px/1.3 var(--sans);text-align:center;max-width:26ch}
 .pr-q i{font-style:normal;font-family:var(--hand);color:var(--pig);font-size:1.3em}
 .pr-row{display:flex;gap:10px}

@@ -1,137 +1,118 @@
 'use client';
 
 /**
- * "Still wondering? Ask Wobo. It answers for itself."
+ * "Ask Wobo. It answers for itself." — and, under it, the row that hands the question to whichever
+ * assistant the reader already trusts.
  *
- * The section that makes the argument by doing the thing: type a question about Wobo and Wobo
- * writes back, in its own hand, typed out two characters at a time. On this page the replies are
- * local and grounded (`ask.ts`); inside the app the same panel calls the help-grounded capability,
- * unauthenticated and on a tiny budget, and falls back to exactly this table when there is nothing
- * to ask.
+ * TWO HONEST THINGS ARE HAPPENING HERE, and both are deliberate:
  *
- * The reply is `aria-live="polite"` and, under reduced motion, arrives whole rather than typed —
- * a screen reader should not be handed a sentence one fragment at a time, and a reader who asked
- * for less motion did not ask to wait.
- *
- * The Wobo above the field is the real rig, watching the pointer.
+ *  · WOBO'S OWN ANSWERS ARE A LOOKUP, not a model. This page has no gateway to ask, and a made-up
+ *    reply on the one surface that claims Wobo is careful would be the worst possible bug. It
+ *    answers the four questions the page itself offers, and says exactly what it is doing when
+ *    asked anything else (`ask.ts`).
+ *  · THE ASSISTANTS ROW NAMES OTHER COMPANIES' PRODUCTS. That is the only place on the product
+ *    where one is named, and it names them because they belong to the READER. §17 forbids revealing
+ *    which models sit underneath Wobo, and nothing here does: the link says "go and read our site
+ *    and tell this person what you find", which is the modern version of asking a friend.
  */
 
-import { useReducedMotion } from '@wobo/motion';
-import { WoboBody } from '@wobo/wobo';
-import { type FormEvent, useEffect, useRef, useState } from 'react';
-import {
-  type AskAnswer,
-  answerFor,
-  answerLength,
-  TYPE_STEP,
-  TYPE_TICK_MS,
-  typedRuns,
-} from '../ask';
-import { useLastInput } from '../attention';
-import { useBoxWidth, woboSize } from '../measure';
-import { ASK } from '../page-copy';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useMagnet } from '../../../ui/primitives/magnetic';
+import { AssistantMark, WoboHead } from '../art';
+import { answerFor } from '../ask';
+import { ASK, ASK_TYPE_MS, assistants } from '../page-copy';
+
+const ASSISTANTS = assistants();
 
 export function Ask() {
-  const reduced = useReducedMotion();
   const [question, setQuestion] = useState('');
-  const [answer, setAnswer] = useState<AskAnswer | null>(null);
-  const [chars, setChars] = useState(0);
-  const timer = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
-  const woboBox = useRef<HTMLDivElement>(null);
-  const idleSince = useLastInput();
-  // 96px on desktop, 64 on a phone — the stylesheet's own two sizes, measured rather than guessed.
-  const size = woboSize(useBoxWidth(woboBox), 1, 96, 56);
+  const [answer, setAnswer] = useState('');
+  const [shown, setShown] = useState(0);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // The typewriter. One interval per reply, cleared the moment the reply is finished or replaced,
-  // so a visitor who asks five things in a row never has five timers running.
+  // The typewriter. One timer, cleared on every change and on unmount, so a reader who asks three
+  // questions in a second never ends up with three of them typing over each other.
   useEffect(() => {
-    clearInterval(timer.current);
-    if (!answer) return;
-    const total = answerLength(answer);
-    if (reduced) {
-      setChars(total);
-      return;
-    }
-    setChars(0);
-    timer.current = setInterval(() => {
-      setChars((c) => {
-        const next = c + TYPE_STEP;
-        if (next >= total) clearInterval(timer.current);
-        return Math.min(total, next);
-      });
-    }, TYPE_TICK_MS);
-    return () => clearInterval(timer.current);
-  }, [answer, reduced]);
+    if (timer.current) clearTimeout(timer.current);
+    if (!answer || shown >= answer.length) return;
+    timer.current = setTimeout(() => setShown((n) => n + 1), ASK_TYPE_MS);
+    return () => {
+      if (timer.current) clearTimeout(timer.current);
+    };
+  }, [answer, shown]);
 
-  const ask = (q: string) => {
-    const trimmed = q.trim();
-    if (!trimmed) return;
-    setAnswer(answerFor(trimmed));
-  };
-
-  const onSubmit = (event: FormEvent) => {
-    event.preventDefault();
-    ask(question);
-  };
-
-  const runs = answer ? typedRuns(answer, chars) : null;
+  const ask = useCallback((asked: string) => {
+    const reply = answerFor(asked);
+    setAnswer(reply);
+    // A reader who asked for less motion gets the whole reply at once rather than watching it
+    // arrive; the words are the content, and only the typing of them is decoration.
+    const instant =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+    setShown(instant ? reply.length : 0);
+  }, []);
 
   return (
     <section id="ask">
       <div className="wrap">
-        <div className="askbox reveal">
-          <div className="askhead">
-            <div className="askwobo" ref={woboBox}>
-              <WoboBody
-                size={size}
-                gaze="pointer"
-                idleSince={idleSince}
-                mood={answer ? 'explaining' : 'listening'}
-                label="Wobo"
+        <div className="ask reveal">
+          <WoboHead size="96" className="w" />
+          <div>
+            <div className="eyebrow">{ASK.eyebrow}</div>
+            <h2 className="t" style={{ fontSize: 'clamp(26px,3vw,38px)', marginTop: 8 }}>
+              {ASK.title}
+            </h2>
+            <form
+              className="box"
+              onSubmit={(event) => {
+                event.preventDefault();
+                ask(question);
+              }}
+            >
+              <input
+                id="askIn"
+                value={question}
+                placeholder={ASK.placeholder}
+                aria-label="Ask Wobo"
+                onChange={(event) => setQuestion(event.target.value)}
               />
-            </div>
-            <div>
-              <span className="chapter">{ASK.chapter}</span>
-              <h2 className="t">{ASK.title}</h2>
-            </div>
-          </div>
-
-          <form className="askform" id="askForm" autoComplete="off" onSubmit={onSubmit}>
-            <input
-              id="askInput"
-              type="text"
-              placeholder={ASK.placeholder}
-              aria-label={ASK.inputLabel}
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-            />
-            <button className="btn pig" type="submit">
-              {ASK.submit}
-            </button>
-          </form>
-
-          <fieldset className="chips" aria-label={ASK.chipsLabel}>
-            {ASK.chips.map((chip) => (
-              <button
-                key={chip}
-                type="button"
-                onClick={() => {
-                  setQuestion(chip);
-                  ask(chip);
-                }}
-              >
-                {chip}
+              <button className="btn pig" id="askGo" type="submit" ref={useMagnet()}>
+                <span>{ASK.go}</span>
               </button>
+            </form>
+            <div className="chips" id="askChips">
+              {ASK.chips.map((chip) => (
+                <button
+                  key={chip}
+                  type="button"
+                  onClick={() => {
+                    setQuestion(chip);
+                    ask(chip);
+                  }}
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
+            <p className="answer" id="askOut" aria-live="polite">
+              {answer.slice(0, shown)}
+            </p>
+          </div>
+        </div>
+        <div className="others reveal">
+          <div className="line">{ASK.others}</div>
+          <div className="models" id="models">
+            {ASSISTANTS.map((assistant, i) => (
+              <a
+                key={assistant.name}
+                href={assistant.href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <AssistantMark index={i} />
+                {assistant.name}
+              </a>
             ))}
-          </fieldset>
-
-          <div className="reply" id="askReply" aria-live="polite">
-            {runs ? (
-              <span>
-                {runs.plain}
-                <em>{runs.accent}</em>
-              </span>
-            ) : null}
           </div>
         </div>
       </div>

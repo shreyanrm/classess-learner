@@ -28,15 +28,12 @@ import { useSdk } from '../store/sdk';
 import { SubjectGlyph } from '../ui/art';
 import { Confetti } from '../ui/ceremony';
 import { toneForSubject } from '../ui/hues';
-import { AmbientWash, fluidSpace, MagneticButton } from '../ui/kit';
+import { fluidSpace, MagneticButton } from '../ui/kit';
 import { sfx } from '../ui/sound';
 import { speakLine } from '../wobo/speech';
 import { loadProfile } from './you/profile';
 
 const ULTRA = 'var(--pig)';
-const BUILDING_WASH =
-  'radial-gradient(46% 40% at 50% 40%, var(--wobo-ultramarine-soft) 0%, transparent 66%),' +
-  ' radial-gradient(60% 44% at 50% 42%, rgba(255,201,60,0.04) 0%, transparent 74%)';
 
 type Phase = 'building' | 'welcome' | 'empty';
 
@@ -318,7 +315,9 @@ export function FrameBuilding() {
         textAlign: 'center',
       }}
     >
-      <AmbientWash gradient={BUILDING_WASH} />
+      {/* LAW v5 (DESIGN.md §0): the ground is white, and no surface takes a wash to say it is
+          a surface. The two radial glows that used to sit here were exactly that, and on the
+          white paper they read as a stain. What carries this screen is the constellation. */}
       {phase === 'welcome' && !reduced && <Confetti hue={ULTRA} />}
 
       {/* the constellation stage behind Wobo — the skeleton of the course, forming */}

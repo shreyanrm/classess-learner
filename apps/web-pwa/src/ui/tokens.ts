@@ -1,34 +1,41 @@
 /**
- * Palette v4 in code — the few values the app needs outside a stylesheet, and the bridge that
- * carries the older `--wobo-*` token layer onto the new paper.
+ * Law v5 in code — the few values the app needs outside a stylesheet, and the bridge that carries
+ * the older `--wobo-*` token layer onto the new paper.
  *
  * The palette itself is `tokens.css`; this file never restates a colour the stylesheet does not
- * also declare (tokens.test.ts checks both against design/prototypes/app-v1.html).
+ * also declare (tokens.test.ts checks both against design/prototypes/landing-v8.html).
  */
 
-/** The page colour of each theme — what index.html paints before any JS, and the browser chrome. */
+/**
+ * The page colour of each theme — what index.html paints before any JS, and the browser chrome.
+ * Law v5 (DESIGN.md §0): white by day, not cream; near-black by night, not navy.
+ */
 export const PAGE = Object.freeze({
-  light: '#FAF7F0',
-  dark: '#0F1226',
+  light: '#FFFFFF',
+  dark: '#0E0E16',
 } as const);
 
 /**
  * The bridge: every colour the older `--wobo-*` layer (packages/config) still hands out is
- * re-pointed at a palette v4 token, so a screen that has not been rebuilt yet sits on the same
- * paper as one that has. The values are `var()` references, so both themes come for free from the
- * stamps in tokens.css. Injected AFTER the config layer's own variables (src/main.tsx), so order —
- * not specificity — decides.
+ * re-pointed at a law v5 token, so a screen that has not been rebuilt yet sits on the same paper
+ * as one that has. The values are `var()` references, so both themes come for free from the stamps
+ * in tokens.css. Injected AFTER the config layer's own variables (src/main.tsx), so order — not
+ * specificity — decides.
+ *
+ * This is also how law v5 reaches a screen nobody has touched: a surface token that resolved to
+ * cream now resolves to WHITE (`--paper`) or to the one tonal surface (`--paper-2`), and every
+ * hairline resolves to `--line`, the single separator law v5 allows.
  *
  * What stays as it was: the frost glasses (a blur over whatever is beneath), the spotlight, the
  * beam gradients, and the highlight frost — none of them is a surface or an ink, and each already
- * reads correctly on cream and on navy.
+ * reads correctly on white and on night.
  */
 export const LEGACY_TOKEN_BRIDGE = `:root {
   --wobo-page: var(--paper);
   --wobo-paper: var(--paper);
   --wobo-canvas: var(--paper);
   --wobo-card: var(--paper-2);
-  --wobo-card-border: var(--paper-3);
+  --wobo-card-border: var(--line);
   --wobo-card-hover: var(--paper-3);
   --wobo-tonal: var(--paper-2);
   --wobo-tonal-hover: var(--paper-3);
@@ -48,15 +55,15 @@ export const LEGACY_TOKEN_BRIDGE = `:root {
   --wobo-ink-faint: var(--ink-3);
   --wobo-faint: var(--ink-3);
   --wobo-on-ink: var(--paper);
-  --wobo-hairline-on-paper: var(--paper-3);
-  --wobo-hairline-on-paper-strong: var(--paper-3);
-  --wobo-hairline-on-dark: var(--paper-3);
+  --wobo-hairline-on-paper: var(--line);
+  --wobo-hairline-on-paper-strong: var(--line);
+  --wobo-hairline-on-dark: var(--line);
   --wobo-ultramarine: var(--pig);
   --wobo-ultramarine-base: var(--pig);
   --wobo-ultramarine-hover: var(--pig);
   --wobo-ultramarine-active: var(--pig);
-  --wobo-ultramarine-soft: var(--pig-w);
-  --wobo-ultramarine-wash: var(--pig-w);
+  --wobo-ultramarine-soft: var(--pig-soft);
+  --wobo-ultramarine-wash: var(--pig-soft);
   --wobo-ultramarine-ring: var(--pig);
   --wobo-highlight-ink: var(--pig);
   --wobo-accent-molten: var(--rose);

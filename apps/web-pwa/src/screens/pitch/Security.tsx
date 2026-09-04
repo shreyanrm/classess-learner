@@ -384,7 +384,7 @@ export function Security() {
               </h2>
             </Reveal>
             <Reveal className="st-grid3">
-              <div className="st-tile st-pig">
+              <div className="st-tile">
                 <svg viewBox="0 0 44 44" aria-hidden="true">
                   <rect x="8" y="19" width="28" height="19" rx="5" />
                   <path d="M14 19 v-5 a8 8 0 0 1 16 0 v5" />
@@ -395,7 +395,7 @@ export function Security() {
                   In plain words: nobody on the same Wi-Fi can read it.
                 </span>
               </div>
-              <div className="st-tile st-mint">
+              <div className="st-tile">
                 <svg viewBox="0 0 44 44" aria-hidden="true">
                   <ellipse cx="22" cy="12" rx="13" ry="5" />
                   <path d="M9 12 v20 c0 3 6 5 13 5 s13 -2 13 -5 v-20 M9 22 c0 3 6 5 13 5 s13 -2 13 -5" />
@@ -407,7 +407,7 @@ export function Security() {
                 </p>
                 <span className="sc-gloss">In plain words: a stolen disk is unreadable.</span>
               </div>
-              <div className="st-tile st-marigold">
+              <div className="st-tile">
                 <svg viewBox="0 0 44 44" aria-hidden="true">
                   <circle cx="22" cy="16" r="7" />
                   <path d="M8 38 c2 -9 26 -9 28 0" />
@@ -751,7 +751,7 @@ export function Security() {
         <section className="st-section" id="report">
           <div className="st-wrap">
             <Reveal className="sc-two">
-              <div className="sc-panel sc-rose">
+              <div className="sc-panel">
                 <Label style={{ color: 'var(--rose)' }}>Report a concern</Label>
                 <h3>Found something? Tell us and we'll answer within 72 hours.</h3>
                 <p>
@@ -762,7 +762,7 @@ export function Security() {
                   {SECURITY_MAILBOX}
                 </a>
               </div>
-              <div className="sc-panel sc-pig">
+              <div className="sc-panel">
                 <Label>Documents</Label>
                 <h3>The paperwork, in plain words first.</h3>
                 <div className="sc-docs">
@@ -810,7 +810,7 @@ export function Security() {
           </div>
         </section>
 
-        <ClosePanel title="Confident? Begin tonight." />
+        <ClosePanel title="Satisfied? Ask for early access." />
       </div>
     </SiteShell>
   );

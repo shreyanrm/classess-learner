@@ -63,7 +63,7 @@ describe('giftSections', () => {
 
   it("reads the copy's own button line as a button", () => {
     const button = (sections['How it works'] ?? []).map(isButtonLine).find(Boolean);
-    expect(button).toBe('Give Plus');
+    expect(button).toBe('Give Pro');
   });
 
   it('carries the honest footnote, with the refund window filled in', () => {

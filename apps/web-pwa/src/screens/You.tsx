@@ -41,6 +41,7 @@ import {
   TopBar,
 } from '../ui/primitives';
 import { setThemePref, type ThemePref, useThemePref } from '../ui/theme';
+import { planInWords } from './allowance-words';
 import { PLAN_TIERS } from './plans/prices';
 import { GradeBoardPicker } from './you/GradeBoardPicker';
 import { weeklyNote } from './you/ledger';
@@ -272,8 +273,9 @@ export function You() {
         if (cancelled || !me) return;
         const tier = PLAN_TIERS.find((t) => t.id === me.plan);
         const name = tier?.name ?? me.plan;
-        const limit = me.budget.turns.limit;
-        setPlan({ id: me.plan, line: limit ? `${name} · ${limit} turns a day` : name });
+        // The copy law (DESIGN.md §0): what the day carries is said in words, never as a count of
+        // turns. The multiple is the plan's own (free carries none at all).
+        setPlan({ id: me.plan, line: planInWords(name, tier?.allowanceMultiple ?? 1) });
       })
       .catch(() => undefined);
     return () => {
@@ -515,7 +517,9 @@ export function You() {
 
         {/* parents */}
         <div ref={parentsRef}>
-          <Card compact tint="rose">
+          {/* LAW v5 (DESIGN.md §0): rose is for the thing that needs care. Sharing the week with a
+              parent is a door, not a worry, so it sits on plain paper. */}
+          <Card compact>
             <Tag>Parents</Tag>
             <h3>Share the week with a parent</h3>
             {link && link.status !== 'none' ? (

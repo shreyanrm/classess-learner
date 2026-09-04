@@ -1,12 +1,18 @@
-/* biome-ignore-all format: the two :root blocks are design/prototypes/app-v1.html, kept as written */
+/* biome-ignore-all format: the two :root blocks are design/prototypes/landing-v8.html, kept as written */
 /*
- * The app's token layer — palette v4, bold ink on good paper (DESIGN.md §2).
+ * The app's token layer — LAW v5, white paper and colour with a job (DESIGN.md §0).
  *
- * The two :root blocks are the ones at the top of design/prototypes/app-v1.html, character for
- * character (src/ui/tokens.test.ts holds them to it). Light is the default and is also stamped as
- * [data-theme="light"]; night is stamped as [data-theme="dark"] and, for a document the app has not
- * stamped yet, follows prefers-color-scheme. Both stamps are attribute selectors rather than :root
- * so a panel can carry the other theme for a side-by-side (the /ui-kit gallery does).
+ * The two :root blocks are the ones at the top of design/prototypes/landing-v8.html, character for
+ * character (src/ui/tokens.test.ts holds them to it), plus the handful of names the app uses that a
+ * one-page prototype never needed — the subject washes and lilac. Law v5 supersedes the cream
+ * ground of v3/v4: the paper is WHITE (#FFFFFF by day, #0E0E16 by night), a section never gets a
+ * tint to say it is a section, and every accent is doing one job — pig points, marigold marks,
+ * mint confirms, rose cares.
+ *
+ * Light is the default and is also stamped as [data-theme="light"]; night is stamped as
+ * [data-theme="dark"] and, for a document the app has not stamped yet, follows prefers-color-scheme.
+ * Both stamps are attribute selectors rather than :root so a panel can carry the other theme for a
+ * side-by-side (the /ui-kit gallery does).
  *
  * The two faces are self-hosted out of public/fonts — the same binaries the prototype pulled from
  * a font CDN, subsetted to latin + latin-ext and split by weight. Nothing here leaves our origin.
@@ -23,37 +29,53 @@
 @font-face{font-family:'Poppins';font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/Poppins-700-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
 @font-face{font-family:'Poppins';font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/Poppins-700-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
 
-/* paper (light) — the default, and the explicit light stamp */
+/* paper (light) — law v5's white ground, the default and the explicit light stamp */
 :root,[data-theme="light"]{
-  --paper:#FAF7F0; --paper-2:#F1EDE3; --paper-3:#E7E1D3; --ink:#14142B; --ink-2:#4E4E66; --ink-3:#8A8A9E;
-  --pig:#2B45FF; --violet:#7C5CFF; --rose:#FF6B57; --marigold:#FFB629; --mint:#22C48B; --lilac:#B7A6FF;
-  --pig-w:#E6EAFF; --violet-w:#ECE6FF; --rose-w:#FFE7E2; --marigold-w:#FFF1D6; --mint-w:#DDF6EC; --lilac-w:#EFEBFF;
-  --shadow:0 18px 50px rgba(43,69,255,.13); --lift:0 8px 24px rgba(20,20,43,.10);
-  --body:#14142B; --body-hi:#3A3A5C; --visor:#FAF7F0; --visor-lo:#E7E1D3; --eye:#2B45FF;
+  --paper:#FFFFFF; --paper-2:#F6F6F8; --paper-3:#ECECF0; --line:#E4E4EA;
+  --ink:#14142B; --ink-2:#55556B; --ink-3:#8A8A9E;
+  --pig:#2B45FF; --pig-soft:#EDF0FF; --marigold:#FFB629; --rose:#FF6B57; --mint:#12B981; --violet:#7C5CFF;
+  --body:#14142B; --body-hi:#3A3A5C; --visor:#FFFFFF; --visor-lo:#EDEDF2; --eye:#2B45FF;
   --sans:'Poppins',system-ui,-apple-system,sans-serif; --hand:'Caveat',cursive;
-  --s1:8px; --s2:16px; --s3:24px; --s4:40px; --s5:64px; --s6:120px;
+  --s1:8px; --s2:16px; --s3:24px; --s4:40px; --s5:72px; --s6:128px;
+  /* one vertical rhythm for the whole product, tied to the viewport so a phone never
+     inherits a desktop's air and a wide screen never feels cramped */
+  --gutter:clamp(20px, 5vw, 48px);
+  --band:clamp(72px, 9vw, 132px);      /* space between one section and the next */
+  --colgap:clamp(32px, 5vw, 80px);     /* space between the two halves of a row   */
+  --shadow:0 24px 60px rgba(20,20,43,.10); --lift:0 10px 28px rgba(20,20,43,.07);
+  /* app-only, and not on the landing: the sixth subject hue and the six washes an EARNED
+     moment paints with (src/ui/hues.ts). Rebuilt on white — never a cream tint, and never a
+     section ground: a wash is a sigil, a tick, a bloom, a selected tile. */
+  --lilac:#B7A6FF;
+  --pig-w:#EDF0FF; --violet-w:#EFEBFF; --rose-w:#FFEDEB; --marigold-w:#FFF6E5; --mint-w:#E3F7F0; --lilac-w:#F6F4FF;
 }
 /* night (dark) — designed on its own, never inverted */
 [data-theme="dark"]{
-  --paper:#0F1226; --paper-2:#181C3A; --paper-3:#22264A; --ink:#F3F0E8; --ink-2:#B8B6C6; --ink-3:#7C7B92;
-  --pig:#7C8CFF; --violet:#A996FF; --rose:#FF8A78; --marigold:#FFC85A; --mint:#4FE3BD; --lilac:#C9BDFF;
-  --pig-w:#1E2650; --violet-w:#26214F; --rose-w:#3E2431; --marigold-w:#3E3320; --mint-w:#16362E; --lilac-w:#2A2650;
-  --shadow:0 20px 56px rgba(0,0,0,.55); --lift:0 8px 24px rgba(0,0,0,.4);
-  --body:#F3F0E8; --body-hi:#FFFFFF; --visor:#0F1226; --visor-lo:#1E2650; --eye:#7C8CFF;
+  --paper:#0E0E16; --paper-2:#17171F; --paper-3:#1F1F29; --line:#26262F;
+  --ink:#F4F4F7; --ink-2:#B4B4C2; --ink-3:#7E7E90;
+  --pig:#7C8CFF; --pig-soft:#1A1E3A; --marigold:#FFC85A; --rose:#FF8A78; --mint:#3DD9A4; --violet:#A996FF;
+  --body:#F4F4F7; --body-hi:#FFFFFF; --visor:#0E0E16; --visor-lo:#1F1F29; --eye:#7C8CFF;
+  --shadow:0 24px 60px rgba(0,0,0,.5); --lift:0 10px 28px rgba(0,0,0,.35);
+  --lilac:#C9BDFF;
+  --pig-w:#1A1E3A; --violet-w:#2C293E; --rose-w:#38272C; --marigold-w:#383027; --mint-w:#1C3232; --lilac-w:#302E3E;
 }
 /* a document nobody has stamped yet follows the OS */
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --paper:#0F1226; --paper-2:#181C3A; --paper-3:#22264A; --ink:#F3F0E8; --ink-2:#B8B6C6; --ink-3:#7C7B92;
-    --pig:#7C8CFF; --violet:#A996FF; --rose:#FF8A78; --marigold:#FFC85A; --mint:#4FE3BD; --lilac:#C9BDFF;
-    --pig-w:#1E2650; --violet-w:#26214F; --rose-w:#3E2431; --marigold-w:#3E3320; --mint-w:#16362E; --lilac-w:#2A2650;
-    --shadow:0 20px 56px rgba(0,0,0,.55); --lift:0 8px 24px rgba(0,0,0,.4);
-    --body:#F3F0E8; --body-hi:#FFFFFF; --visor:#0F1226; --visor-lo:#1E2650; --eye:#7C8CFF;
+    --paper:#0E0E16; --paper-2:#17171F; --paper-3:#1F1F29; --line:#26262F;
+    --ink:#F4F4F7; --ink-2:#B4B4C2; --ink-3:#7E7E90;
+    --pig:#7C8CFF; --pig-soft:#1A1E3A; --marigold:#FFC85A; --rose:#FF8A78; --mint:#3DD9A4; --violet:#A996FF;
+    --body:#F4F4F7; --body-hi:#FFFFFF; --visor:#0E0E16; --visor-lo:#1F1F29; --eye:#7C8CFF;
+    --shadow:0 24px 60px rgba(0,0,0,.5); --lift:0 10px 28px rgba(0,0,0,.35);
+    --lilac:#C9BDFF;
+    --pig-w:#1A1E3A; --violet-w:#2C293E; --rose-w:#38272C; --marigold-w:#383027; --mint-w:#1C3232; --lilac-w:#302E3E;
   }
 }
 
-/* the prototype's base — the page itself */
-*{box-sizing:border-box}
+/* the base — the page itself. `min-width:0` is law v5 §0: a grid or flex child defaults to
+   min-width:auto, which is what pushes a long word or a wide table sideways and gives a phone a
+   horizontal scrollbar at 390px. */
+*{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 h1,h2,h3{margin:0;letter-spacing:-.02em}

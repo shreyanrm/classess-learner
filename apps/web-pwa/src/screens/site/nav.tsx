@@ -79,8 +79,12 @@ export const NAV_LINKS: readonly PublicLink[] = [
   { label: 'Plans', href: '/plans', section: 'plans' },
 ];
 
-/** The two doors in the header. */
-export const DOORS = { signIn: 'Sign in', getStarted: 'Get started' } as const;
+/**
+ * The two doors in the header. Law v5's copy law (DESIGN.md §0) — promote before you invite —
+ * makes the loud one an ASK rather than an invitation, because the product has not opened yet;
+ * "Get started" would promise a door that is not there.
+ */
+export const DOORS = { signIn: 'Sign in', getStarted: 'Get early access' } as const;
 
 export interface FooterColumn {
   title: string;

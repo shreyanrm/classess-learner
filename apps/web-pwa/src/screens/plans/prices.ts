@@ -3,15 +3,21 @@
  *
  * The numbers are the owner's, set in WOBO-PLAN §14 ("Prices", owner, 2026-09-03): free every day
  * with a daily allowance; Pro ₹1,999 a month for five times that allowance; Max ₹3,999 a month for
- * twenty times. Outside India, Pro is $20 and Max is $50, chosen by the learner's country. Billed
- * monthly, cancel any time. The words on each card are design/prototypes/site-plans.html.
+ * twenty times. Outside India, Pro is $20 and Max is $50, read from the reader's own browser.
+ * Billed monthly, cancel any time. The words on each card are design/prototypes/site-plans.html.
  *
- * Two laws shape the file rather than decorate it:
+ * Three laws shape the file rather than decorate it:
  *
  *  · §14 — the price NEVER varies by who is looking. There is no behaviour, no cohort and no
  *    experiment in this module: `priceOf` takes a market and nothing else, and the market is the
  *    country the currency belongs to, not a segment. What varies by behaviour is the gift and the
  *    framing, and neither of those lives here.
+ *  · LAW v5's copy law (DESIGN.md §0) — LOCATION IS INFERRED, NEVER ASKED. `readMarket` is the only
+ *    way a surface learns which currency to show: the browser's locale, then its time zone. There
+ *    is no country switch on the plans page or anywhere else, and no setter for a reader to reach.
+ *  · LAW v5's copy law again — NO RAW ALLOWANCES. A tier states its allowance as a multiple of the
+ *    free one and nothing else; free carries no multiplier at all. "Forty questions a day" is a
+ *    number nobody asked for, and it is not in this file or on any surface that reads it.
  *  · §16 — the reference product's three price cards are kept as a SHAPE, and filled with §14's
  *    tiers rather than with its cadences: Free, Pro and Max, and there is no annual card to strike
  *    a price through.
@@ -32,8 +38,6 @@ export interface PlanTier {
   name: string;
   /** What this tier's daily allowance is, as a multiple of the free one (§14). */
   allowanceMultiple: number;
-  /** The allowance, in questions a day. */
-  questionsPerDay: number;
   /** How many learners the plan carries. */
   learners: number;
   /** Null on the free tier, which has no price to state. */
@@ -64,18 +68,17 @@ export const PLAN_TIERS: readonly PlanTier[] = [
     id: 'free',
     name: 'Free',
     allowanceMultiple: 1,
-    questionsPerDay: 40,
     learners: 1,
     price: null,
     blurb:
-      'Forty questions a day, every subject, every class, the Sunday note, a linked parent. The whole tutor.',
+      'The whole tutor. Every subject, the drawn board, the films, the practice, the Sunday note and a linked parent, with a daily allowance that resets every morning.',
     lines: [
-      '40 questions a day',
-      'Every subject, class 4 to 12',
+      'A daily allowance, reset each morning',
+      'Every subject your board sets',
       'Practice, the week, the Sunday note',
       'One linked parent',
     ],
-    cta: 'Start learning for free',
+    cta: 'Get early access',
     fine: 'No card. No trial that ends.',
     recommended: false,
   },
@@ -83,13 +86,12 @@ export const PLAN_TIERS: readonly PlanTier[] = [
     id: 'pro',
     name: 'Pro',
     allowanceMultiple: 5,
-    questionsPerDay: 200,
     learners: 1,
     price: { IN: { currency: 'INR', amount: 1999 }, INTL: { currency: 'USD', amount: 20 } },
     blurb:
-      'For the term that has a test every fortnight. Two hundred questions a day, and Wobo reads answers aloud.',
+      'For the term with a test every fortnight: several times the questions, and Wobo reads its answers aloud.',
     lines: [
-      '200 questions a day',
+      'Five times the free allowance',
       'Voice replies, in your accent',
       'Longer lessons on the full board',
       'Everything in Free',
@@ -102,13 +104,11 @@ export const PLAN_TIERS: readonly PlanTier[] = [
     id: 'max',
     name: 'Max',
     allowanceMultiple: 20,
-    questionsPerDay: 800,
     learners: 2,
     price: { IN: { currency: 'INR', amount: 3999 }, INTL: { currency: 'USD', amount: 50 } },
-    blurb:
-      'Board year. Eight hundred questions a day, so nobody counts, and two learners on one plan.',
+    blurb: 'Board year. So many questions that nobody counts them, and two learners on one plan.',
     lines: [
-      '800 questions a day',
+      'Twenty times the free allowance',
       'Two learners, two Sunday notes',
       'Past-paper practice sets',
       'Everything in Pro',
@@ -125,10 +125,11 @@ export function tierById(id: string): PlanTier | null {
 }
 
 /**
- * Which market a reader is in. The country comes from the browser's own region — the locale first,
- * then the time zone, because a phone set to `en-US` in Chennai still reports `Asia/Kolkata`. It is
- * a display choice and nothing more: the price is the same for everyone in a market, and a learner
- * who is shown the wrong currency sees a different symbol, never a different deal.
+ * Which market a reader is in. Law v5: where someone is reading from is not a question worth
+ * asking, so it is never asked. The country comes from the browser's own region — the locale
+ * first, then the time zone, because a phone set to `en-US` in Chennai still reports
+ * `Asia/Kolkata`. It is a display choice and nothing more: the price is the same for everyone in a
+ * market, and a reader shown the wrong currency sees a different symbol, never a different deal.
  */
 export function marketFromRegion(locale?: string, timeZone?: string): Market {
   if (locale && /-IN\b/i.test(locale)) return 'IN';

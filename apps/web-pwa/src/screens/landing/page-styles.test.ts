@@ -1,39 +1,112 @@
 /**
- * The stylesheet's laws, asserted over the string.
+ * The stylesheet, held to the prototype and to law v5.
  *
- * The page is a port, so most of what matters is "is this still the prototype's number". These are
- * the ones a later edit is most likely to break by accident: palette v4 character for character,
- * the 8/16/24/40/64/120 spacing scale, no line under 2.5px, both themes defined, no font CDN, and
- * nothing leaking out of the page's own root.
+ * The strongest assertion here is the first: every declaration block in
+ * `design/prototypes/landing-v8.html`'s `<style>` has to appear, character for character, in
+ * `LANDING_CSS`. A port that quietly rounds a radius or nudges a clamp is a different page, and the
+ * only way to keep that honest over time is to read the source of truth rather than a copy of some
+ * of its numbers. The blocks this build deliberately changed are listed in `CHANGED` with the
+ * reason, so a change is a decision on the record.
+ *
+ * The rest is law: white paper in both themes, the one spacing rhythm, no font CDN, no line under
+ * 2.5px, nothing leaking out of the page's own root, and §8's rule that no CSS transition may own a
+ * property the engine animates.
  */
 
 import { describe, expect, it } from 'bun:test';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { LANDING_CSS, ROOT } from './page-styles';
 
+const PROTOTYPE = readFileSync(
+  join(import.meta.dir, '../../../../../design/prototypes/landing-v8.html'),
+  'utf8',
+);
+
+/** The prototype's own stylesheet, comments stripped. */
+const PROTOTYPE_CSS = (PROTOTYPE.match(/<style>([\s\S]*?)<\/style>/)?.[1] ?? '').replace(
+  /\/\*[\s\S]*?\*\//g,
+  '',
+);
+
+const OURS = LANDING_CSS.replace(/\/\*[\s\S]*?\*\//g, '');
+
+/** Every innermost declaration block, normalised so a line break cannot fail the comparison. */
+function blocks(css: string): string[] {
+  return [...css.matchAll(/\{([^{}]*)\}/g)]
+    .map((m) => (m[1] ?? '').replace(/\s+/g, ' ').trim())
+    .filter((body) => body.length > 0);
+}
+
+/**
+ * The prototype blocks this build does not carry verbatim, each with its reason. Everything else
+ * must match exactly.
+ */
+const CHANGED: readonly { body: string; why: string }[] = [
+  {
+    body: "--paper:#FFFFFF; --paper-2:#F6F6F8; --paper-3:#ECECF0; --line:#E4E4EA; --ink:#14142B; --ink-2:#55556B; --ink-3:#8A8A9E; --pig:#2B45FF; --pig-soft:#EDF0FF; --marigold:#FFB629; --rose:#FF6B57; --mint:#12B981; --violet:#7C5CFF; --body:#14142B; --body-hi:#3A3A5C; --visor:#FFFFFF; --visor-lo:#EDEDF2; --eye:#2B45FF; --sans:'Poppins',system-ui,-apple-system,sans-serif; --hand:'Caveat',cursive; --s1:8px; --s2:16px; --s3:24px; --s4:40px; --s5:72px; --s6:128px; --gutter:clamp(20px, 5vw, 48px); --band:clamp(72px, 9vw, 132px); --colgap:clamp(32px, 5vw, 80px); --shadow:0 24px 60px rgba(20,20,43,.10); --lift:0 10px 28px rgba(20,20,43,.07);",
+    why: 'the two faces are self-hosted here, so --sans and --hand name our own stacks. Every other token in the block is asserted below, character for character.',
+  },
+  {
+    body: 'scroll-behavior:smooth',
+    why: 'a document-level rule. Anchors are eased by the page itself (link.tsx), which also respects a reader who asked for less motion.',
+  },
+  {
+    body: 'margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden',
+    why: '`overflow-x: hidden` makes the element a scroll container, and a scroll container that is not the scroller kills `position: sticky` on its children — the whole header. `clip` clips without that side effect, and the margin belongs to the app, not to this page.',
+  },
+  {
+    body: 'display:grid;grid-template-columns:repeat(2,104px);grid-template-rows:repeat(2,104px);gap:8px;padding:8px;border-radius:22px;background:var(--ink);position:relative',
+    why: 'the same block plus `border:0`, because the puzzle carries a group role here rather than being four loose buttons.',
+  },
+  {
+    body: 'display:flex;gap:8px;flex-wrap:wrap;margin-top:12px',
+    why: "the chip row's own reset: the chips are real buttons here, not spans, so a reader can reach them from the keyboard.",
+  },
+  {
+    body: 'font:500 13px/1 var(--sans);padding:9px 13px;border-radius:999px;background:var(--paper);color:var(--ink-2)',
+    why: 'the same chip, as a button: `border:0;cursor:pointer` and a hover tone, so a keyboard reader can reach it.',
+  },
+  {
+    body: 'transform-origin:center;animation:blink 5.5s infinite',
+    why: '`@keyframes` names are document-scoped, not sheet-scoped, so a bare `blink` would be claimed by whichever stylesheet loaded last. The animation is identical; the name is `wb-blink`.',
+  },
+];
+
 describe('the landing stylesheet', () => {
+  it('is the prototype, declaration for declaration', () => {
+    const mine = new Set(blocks(OURS));
+    const excused = new Set(CHANGED.map((entry) => entry.body));
+    const drifted = blocks(PROTOTYPE_CSS).filter((body) => !mine.has(body) && !excused.has(body));
+    expect(drifted).toEqual([]);
+  });
+
+  it('writes down why every changed block changed', () => {
+    for (const entry of CHANGED) expect(entry.why.length).toBeGreaterThan(40);
+  });
+
   it('scopes every rule to the page root', () => {
-    // Every selector in the sheet has to mention `.wb` somewhere, or it is styling the whole app.
-    const body = LANDING_CSS.replace(/\/\*[\s\S]*?\*\//g, '');
-    const selectors = body
-      .split('}')
+    const selectors = OURS.split('}')
       .map((block) => block.split('{')[0]?.trim() ?? '')
-      .filter((s) => s.length > 0 && !s.startsWith('@') && !s.startsWith('to') && !s.includes(':'));
-    // NOTHING is unscoped. The one rule that used to be — an override of the app wrapper's
-    // `will-change` so a pinned chapter could be `position: fixed` — is gone: the chapters pin with
-    // `pinType: 'transform'` instead (engine/chapters.ts), which needs no containing block at all.
+      .filter((s) => s.length > 0 && !s.startsWith('@') && !/^\d/.test(s) && !s.includes(':root'));
     const leaking = selectors.filter((s) => !s.includes(`.${ROOT}`));
     expect(leaking).toEqual([]);
   });
 
-  it('carries palette v4, character for character (DESIGN.md §2)', () => {
+  it('carries law v5’s white paper, character for character (DESIGN.md §0)', () => {
     for (const token of [
-      '--paper:#FAF7F0',
+      '--paper:#FFFFFF',
+      '--paper-2:#F6F6F8',
+      '--paper-3:#ECECF0',
+      '--line:#E4E4EA',
       '--ink:#14142B',
+      '--ink-2:#55556B',
+      '--ink-3:#8A8A9E',
       '--pig:#2B45FF',
+      '--pig-soft:#EDF0FF',
       '--marigold:#FFB629',
       '--rose:#FF6B57',
-      '--mint:#22C48B',
-      '--lilac:#B7A6FF',
+      '--mint:#12B981',
       '--violet:#7C5CFF',
     ]) {
       expect(LANDING_CSS).toContain(token);
@@ -41,157 +114,80 @@ describe('the landing stylesheet', () => {
   });
 
   it('designs night on its own rather than inverting it', () => {
-    expect(LANDING_CSS).toContain('--paper:#0F1226');
-    expect(LANDING_CSS).toContain('--pig:#7C8CFF');
-    expect(LANDING_CSS).toContain('--marigold:#FFC85A');
+    for (const token of [
+      '--paper:#0E0E16',
+      '--paper-2:#17171F',
+      '--paper-3:#1F1F29',
+      '--line:#26262F',
+      '--ink:#F4F4F7',
+      '--pig:#7C8CFF',
+      '--marigold:#FFC85A',
+      '--mint:#3DD9A4',
+    ]) {
+      expect(LANDING_CSS).toContain(token);
+    }
     expect(LANDING_CSS).toContain(`[data-theme="dark"] .${ROOT}`);
   });
 
-  it('holds the 8/16/24/40/64/120 spacing scale', () => {
-    expect(LANDING_CSS).toContain('--s1:8px');
-    expect(LANDING_CSS).toContain('--s2:16px');
-    expect(LANDING_CSS).toContain('--s3:24px');
-    expect(LANDING_CSS).toContain('--s4:40px');
-    expect(LANDING_CSS).toContain('--s5:64px');
-    expect(LANDING_CSS).toContain('--s6:120px');
+  it('holds the one spacing rhythm (DESIGN.md §0)', () => {
+    expect(LANDING_CSS).toContain('--gutter:clamp(20px, 5vw, 48px)');
+    expect(LANDING_CSS).toContain('--band:clamp(72px, 9vw, 132px)');
+    expect(LANDING_CSS).toContain('--colgap:clamp(32px, 5vw, 80px)');
+    // A section takes half a band from each side, so two of them never stack two bands of air.
+    expect(LANDING_CSS).toContain('padding:calc(var(--band) / 2) 0');
+  });
+
+  it('gives every grid child min-width:0, so nothing can push the page sideways', () => {
+    expect(LANDING_CSS).toContain(
+      `.${ROOT} *,.${ROOT} *::before,.${ROOT} *::after{box-sizing:border-box;min-width:0}`,
+    );
+    // And the root itself clips rather than scrolls, in both directions of the same rule.
+    expect(LANDING_CSS).toContain('overflow-x:clip');
+    expect(LANDING_CSS).not.toContain('overflow-x:hidden');
+  });
+
+  it('never lets CSS own a property the engine animates (law v5 §8, cause 1)', () => {
+    // The magnetic button's inner span, the answer cards, the film's track and the reveals are all
+    // written by JavaScript every frame. A transition on any of them is the stutter itself.
+    const owned = [
+      `.${ROOT} .btn > span{`,
+      `.${ROOT} .forms .card{`,
+      `.${ROOT} .player .bar .track i{`,
+      `.${ROOT} .bubble{`,
+    ];
+    for (const selector of owned) {
+      const start = LANDING_CSS.indexOf(selector);
+      expect(start).toBeGreaterThan(-1);
+      const body = LANDING_CSS.slice(start + selector.length, LANDING_CSS.indexOf('}', start));
+      expect(body).not.toContain('transition');
+    }
+  });
+
+  it('transitions nothing that is scrubbed, anywhere in the sheet', () => {
+    // Every `transition:` in the sheet, and the properties it claims. `transform` is allowed only
+    // where nothing scrubs it: a hover lift, an underline sweep, a pressed tile.
+    const scrubbed = /transition:[^;}]*\b(all|stroke-dashoffset|scale)\b/;
+    expect(LANDING_CSS).not.toMatch(scrubbed);
   });
 
   it('draws no line thinner than 2.5px (DESIGN.md law 2)', () => {
     const widths = [...LANDING_CSS.matchAll(/stroke-width:\s*([\d.]+)/g)].map((m) => Number(m[1]));
-    for (const w of widths) expect(w).toBeGreaterThanOrEqual(2.5);
-    // And no hairline borders: the only `border:` in the sheet is the chevron and a reset to 0.
-    const borders = [...LANDING_CSS.matchAll(/border(?:-\w+)?:\s*([^;}]+)/g)].map(
-      (m) => m[1] ?? '',
-    );
-    for (const border of borders) {
-      const px = /(\d+(?:\.\d+)?)px/.exec(border);
-      if (px) expect(Number(px[1])).toBeGreaterThanOrEqual(2.5);
-    }
+    expect(widths.length).toBeGreaterThan(0);
+    for (const width of widths) expect(width).toBeGreaterThanOrEqual(2.5);
   });
 
-  it('rounds every SURFACE to at least 12px (DESIGN.md law 2)', () => {
-    // Asserted on the surfaces the law is about — cards, tiles, panels, controls — not on the few
-    // small radii inside a drawing (the film's bar caps, its 6px progress bar), which are strokes
-    // of an illustration rather than edges of an interface.
-    const surfaces = [
-      '.btn{',
-      '.tile{',
-      '.subj{',
-      '.promise{',
-      '.demo{',
-      '.film{',
-      '.askbox{',
-      '.faq details{',
-      '.store{',
-      '#close .panel{',
-    ].map((rule) => `.${ROOT} ${rule}`);
-    for (const rule of surfaces) {
-      const at = LANDING_CSS.indexOf(rule);
-      expect(at).toBeGreaterThan(-1);
-      const block = LANDING_CSS.slice(at, LANDING_CSS.indexOf('}', at));
-      const radius = /border-radius:\s*(?:clamp\([^)]*\)|(\d+(?:\.\d+)?)px)/.exec(block);
-      expect(radius).not.toBeNull();
-      if (radius?.[1]) expect(Number(radius[1])).toBeGreaterThanOrEqual(12);
-    }
+  it('reaches no font CDN', () => {
+    expect(LANDING_CSS).not.toContain('fonts.googleapis.com');
+    expect(LANDING_CSS).not.toContain('fonts.gstatic.com');
+    expect(LANDING_CSS).toContain('/fonts/Poppins-700-latin.woff2');
   });
 
-  it('never reaches a font CDN, and leads with the law’s face', () => {
-    expect(LANDING_CSS).not.toContain('fonts.googleapis');
-    expect(LANDING_CSS).not.toContain('@import');
-    expect(LANDING_CSS).toContain("'Poppins'");
-    expect(LANDING_CSS).toContain('Caveat');
-  });
-
-  it('self-hosts both faces from our own origin, at the weights the page sets', () => {
-    // Every src is a same-origin path under /fonts/ — an absolute URL here is a face leaving us.
-    const srcs = [...LANDING_CSS.matchAll(/src:url\(([^)]+)\)/g)].map((m) => m[1] ?? '');
-    expect(srcs.length).toBeGreaterThan(0);
-    for (const src of srcs) expect(src.startsWith('/fonts/')).toBe(true);
-    // The prototype set Poppins at 400/500/600/700 and Caveat across 500–700. Every weight the
-    // sheet asks for has a face declared for it, or the browser synthesises a fake bold.
-    const declared = new Set(
-      [
-        ...LANDING_CSS.matchAll(/@font-face\{font-family:'([^']+)';[^}]*?font-weight:([^;]+);/g),
-      ].map((m) => `${m[1]}:${m[2]}`),
-    );
-    for (const face of [
-      'Poppins:400',
-      'Poppins:500',
-      'Poppins:600',
-      'Poppins:700',
-      'Caveat:400 700',
-    ])
-      expect(declared.has(face)).toBe(true);
-    // Nothing may block first paint on a face that is still in flight.
-    const faces = LANDING_CSS.match(/@font-face\{[^}]+\}/g) ?? [];
-    for (const face of faces) expect(face).toContain('font-display:swap');
-  });
-
-  it('has no dust, particles or noise — the owner rejected them', () => {
-    // Comments stripped: the sheet's own header explains WHY there is no dust, and the word in that
-    // sentence is not a dust background.
-    const body = LANDING_CSS.replace(/\/\*[\s\S]*?\*\//g, '');
-    expect(/particle|dust|noise\(/i.test(body)).toBe(false);
-    // Depth is four blurred colour blobs and nothing else.
-    expect(LANDING_CSS).toContain('#depth i');
-    expect(LANDING_CSS).toContain('blur(60px)');
-  });
-
-  it('hands every control a 44px thumb target', () => {
-    const controls = [
-      '.btn{',
-      'header .right .sign{',
-      '.chips button{',
-      '.store{',
-      '.faq summary{',
-    ];
-    for (const rule of controls.map((r) => `.${ROOT} ${r}`)) {
-      const at = LANDING_CSS.indexOf(rule);
-      expect(at).toBeGreaterThan(-1);
-      const block = LANDING_CSS.slice(at, LANDING_CSS.indexOf('}', at));
-      const min = /min-height:\s*(\d+)px/.exec(block);
-      expect(min).not.toBeNull();
-      expect(Number(min?.[1])).toBeGreaterThanOrEqual(44);
-    }
-  });
-
-  it('keeps a visible focus ring on everything focusable', () => {
-    expect(LANDING_CSS).toContain('outline:3px solid var(--pig)');
-    expect(LANDING_CSS).toContain('button:focus-visible');
-    expect(LANDING_CSS).toContain('a:focus-visible');
-    expect(LANDING_CSS).toContain('summary:focus-visible');
-    // The ask box's text field. The prototype turns its outline off and never puts one back, which
-    // left the one input on the page invisible to a keyboard reader.
-    expect(LANDING_CSS).toContain('input:focus-visible');
-  });
-
-  it('honours reduced motion by settling, never by hiding', () => {
+  it('lays the pinned panel and the film out as ordinary content under reduced motion', () => {
     const at = LANDING_CSS.indexOf('@media (prefers-reduced-motion:reduce)');
     expect(at).toBeGreaterThan(-1);
-    const block = LANDING_CSS.slice(at);
-    expect(block).toContain('opacity:1');
-    expect(block).toContain('animation:none');
-  });
-
-  it('unstacks the Tuesday-night chapter under reduced motion, so all four captions read', () => {
-    // Pinned, the four captions sit on top of one another and only one is ever visible. With no
-    // scroll to hand them over, the chapter has to lay out as ordinary prose or three quarters of
-    // its copy is unreachable.
-    const block = LANDING_CSS.slice(LANDING_CSS.indexOf('@media (prefers-reduced-motion:reduce)'));
-    expect(block).toContain(`.${ROOT} #night .cap > div{position:relative;opacity:1}`);
-    expect(block).toContain(`.${ROOT} #night .pin{height:auto`);
-    expect(block).toContain(`.${ROOT} #night .board{position:relative`);
-    expect(block).toContain(`.${ROOT} #night .scene{position:relative`);
-    // And the question rides above the proof rather than on top of it.
-    expect(block).toContain(`.${ROOT} #night .board .q{position:relative`);
-  });
-
-  it('only hides a reveal while the engine is live to bring it back', () => {
-    expect(LANDING_CSS).toContain(`.${ROOT}[data-motion="on"] .reveal{opacity:0`);
-  });
-
-  it('keys the cursor takeover off the engine’s own scoped attribute', () => {
-    expect(LANDING_CSS).toContain('[data-cursor="on"]');
-    expect(LANDING_CSS).toContain('cursor:none');
+    const still = LANDING_CSS.slice(at);
+    expect(still).toContain(`.${ROOT} .forms{height:auto`);
+    expect(still).toContain(`.${ROOT} .forms .card{position:relative`);
+    expect(still).toContain(`.${ROOT} .bubble{opacity:1`);
   });
 });

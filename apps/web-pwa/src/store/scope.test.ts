@@ -86,7 +86,7 @@ describe('per-learner storage scope', () => {
     applyScope('subject-a');
     writeArchive(turn('mine'));
     scoped.setItem('wobo-mind-v1', '{"facts":[]}');
-    scoped.setItem('wobo-learner-profile', '{"name":"Aanya"}');
+    scoped.setItem('wobo-learner-profile', '{"name":"Learner"}');
 
     forgetScope('subject-a');
 

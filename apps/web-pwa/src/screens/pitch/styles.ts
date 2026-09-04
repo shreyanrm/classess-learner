@@ -21,7 +21,10 @@
  * line); corners 10 / 16 / 24 and up, except the 4px tail of a speech bubble and the foot of a
  * bar, which the prototypes draw as a tail rather than a corner; a soft tinted shadow only under
  * what floats (the film, the envelope, the note, a sticker, the typeahead); Poppins for every word
- * and Caveat only for what Wobo writes; every colour a palette-v4 token.
+ * and Caveat only for what Wobo writes; every colour a law-v5 token — and, since law v5
+ * (DESIGN.md §0), no tinted section ground anywhere: the paper is white, an art panel and every
+ * card sit on `--paper-2`, and a wash may tint a pill, a tick, a selected row or a node in a drawn
+ * diagram, but never a card, a tile, a panel or a section.
  */
 
 const STYLE_ID = 'wobo-pitch';
@@ -55,8 +58,9 @@ html:has(.pt){scroll-behavior:smooth}
 .pt-chapter p{color:var(--ink-2);font-size:18px;margin-top:var(--s2);max-width:46ch}
 .pt-say{margin-top:var(--s3);font-family:var(--hand);font-weight:600;font-size:28px;line-height:1.15;color:var(--ink)}
 .pt-say em{font-style:normal;color:var(--rose)}
-.pt-art{border-radius:28px;padding:var(--s3);position:relative;min-height:380px;display:grid;place-items:center}
-.pt-art.pt-pig{background:var(--pig-w)}.pt-art.pt-mint{background:var(--mint-w)}.pt-art.pt-marigold{background:var(--marigold-w)}.pt-art.pt-rose{background:var(--rose-w)}.pt-art.pt-lilac{background:var(--lilac-w)}.pt-art.pt-night{background:var(--ink)}
+.pt-art{border-radius:28px;padding:var(--s3);background:var(--paper-2);position:relative;min-height:380px;display:grid;place-items:center}
+/* law v5: a wash tints a pill, a tick or a selected row — never a card, a tile, a panel or a section. Surfaces are paper-2. */
+.pt-art.pt-night{background:var(--ink)}
 .pt-art>svg{width:100%;height:auto;overflow:visible}
 .pt-chat{width:100%;display:grid;gap:10px}
 .pt-chat div{max-width:80%;padding:12px 16px;border-radius:18px;font-size:15px;line-height:1.45}
@@ -115,7 +119,7 @@ html:has(.pt){scroll-behavior:smooth}
 .sc-flow .sc-fdraw{stroke-dasharray:600;stroke-dashoffset:600;transition:stroke-dashoffset 1.6s cubic-bezier(.6,0,.2,1)}
 .sc-flow.pt-on .sc-fdraw{stroke-dashoffset:0}
 .sc-children{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);align-items:center}
-.sc-children .sc-card{background:var(--marigold-w);border-radius:28px;padding:var(--s4);display:grid;gap:var(--s2)}
+.sc-children .sc-card{background:var(--paper-2);border-radius:28px;padding:var(--s4);display:grid;gap:var(--s2)}
 .sc-children .sc-card .hand{font-size:32px;line-height:1.1}
 .sc-children .sc-card .hand em{font-style:normal;color:var(--rose)}
 .sc-children .sc-card p{color:var(--ink-2)}
@@ -141,8 +145,8 @@ html:has(.pt){scroll-behavior:smooth}
 .sc-never b{font-weight:600}
 .sc-never span{font-size:15px;color:var(--ink-2)}
 .sc-posture{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
-.sc-col{border-radius:24px;padding:var(--s3);display:grid;gap:12px;align-content:start}
-.sc-col.sc-today{background:var(--mint-w)}.sc-col.sc-next{background:var(--paper-2)}
+.sc-col{border-radius:24px;padding:var(--s3);background:var(--paper-2);display:grid;gap:12px;align-content:start}
+/* law v5: a wash tints a pill, a tick or a selected row — never a card, a tile, a panel or a section. Surfaces are paper-2. */
 .sc-col h3{font:600 20px/1.2 var(--sans)}
 .sc-posture ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
 .sc-posture li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:15px;color:var(--ink-2)}
@@ -157,8 +161,8 @@ html:has(.pt){scroll-behavior:smooth}
 .sc-subs span{font-size:14px;color:var(--ink-2)}
 .sc-subs .sc-reg{font:500 13px/1 var(--sans);color:var(--ink-3);letter-spacing:.06em}
 .sc-two{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
-.sc-panel{border-radius:28px;padding:var(--s4);display:grid;gap:var(--s2);align-content:start}
-.sc-panel.sc-rose{background:var(--rose-w)}.sc-panel.sc-pig{background:var(--pig-w)}
+.sc-panel{border-radius:28px;padding:var(--s4);background:var(--paper-2);display:grid;gap:var(--s2);align-content:start}
+/* law v5: a wash tints a pill, a tick or a selected row — never a card, a tile, a panel or a section. Surfaces are paper-2. */
 .sc-panel h3{font:600 24px/1.15 var(--sans)}
 .sc-panel p{color:var(--ink-2)}
 .sc-panel .sc-mail{font:600 18px/1 var(--sans);color:var(--ink);display:inline-flex;align-items:center;min-height:44px}
@@ -397,9 +401,9 @@ html:has(.pt){scroll-behavior:smooth}
 .sb-hero h1 em{font-style:normal;color:var(--pig)}
 .sb-hero p.pt-sub{font-size:19px;color:var(--ink-2);max-width:52ch;margin:var(--s3) auto 0}
 .sb-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2);margin-top:var(--s5)}
-.sb-tiles a{border-radius:24px;padding:var(--s3);display:grid;gap:12px;justify-items:start;text-align:left;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;position:relative}
+.sb-tiles a{border-radius:24px;padding:var(--s3);background:var(--paper-2);display:grid;gap:12px;justify-items:start;text-align:left;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;position:relative}
 .sb-tiles a:hover{transform:translateY(-6px) rotate(-1deg);box-shadow:0 22px 44px rgba(20,20,43,.14)}
-.sb-tiles a.sb-pig{background:var(--pig-w)}.sb-tiles a.sb-mint{background:var(--mint-w)}.sb-tiles a.sb-marigold{background:var(--marigold-w)}.sb-tiles a.sb-lilac{background:var(--lilac-w)}
+/* law v5: a wash tints a pill, a tick or a selected row — never a card, a tile, a panel or a section. Surfaces are paper-2. */
 .sb-tiles svg{width:100%;height:auto;aspect-ratio:4/3;overflow:visible}
 .sb-tiles b{font:600 20px/1.2 var(--sans)}
 .sb-tiles span{font-size:14px;color:var(--ink-2)}

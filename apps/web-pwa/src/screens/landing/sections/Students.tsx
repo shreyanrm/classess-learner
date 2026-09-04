@@ -1,85 +1,73 @@
 'use client';
 
 /**
- * "For students" — a paused film with a lasso drawn round the confusing part, and three claims.
+ * "Stop it anywhere." — the film that plays, pauses, is circled, and is answered.
  *
- * The lasso is the whole argument in one gesture: you pause a video, circle the bit that makes no
- * sense, and ask about THAT. The engine draws it on entry (a 1200-unit dash offset unwinding over
- * 1.3s), then the handwritten "start here" fades in, then the chip. Everything here is at rest
- * until it is scrolled to, which is why the dash values live in the stylesheet and not in JSX.
- *
- * The corner Wobo is the real rig: it is a free-standing Wobo watching the reader, so it should be
- * alive rather than drawn.
+ * Every beat is scrubbed by the reader's own scroll (`engine/motion.ts`), and every scrubbed value
+ * is a transform or an opacity: the progress bar is `scaleX`, never `width`, which is cause 2 of
+ * law v5's jitter and the reason the bar is a full-width element scaled from its left edge.
  */
 
-import { WoboBody } from '@wobo/wobo';
-import { useLastInput } from '../attention';
+import { FilmFrame, PauseGlyph } from '../art';
 import { STUDENTS } from '../page-copy';
 
 export function Students() {
-  const idleSince = useLastInput();
+  const film = STUDENTS.film;
   return (
-    <section className="row" id="students">
-      <div className="wrap grid">
-        <div className="tile violet reveal" id="filmTile">
-          <div className="film" id="film">
-            <div className="frame">
-              <div className="title">{STUDENTS.film.title}</div>
-              <div className="bars">
-                <i style={{ height: '100%' }} />
-                <i className="k" style={{ height: '62%' }} />
+    <section id="students">
+      <div className="wrap">
+        <div className="row flip">
+          <div>
+            <div className="eyebrow reveal">{STUDENTS.eyebrow}</div>
+            <h2 className="t reveal">
+              {STUDENTS.title.lead}
+              <span className="hl">{STUDENTS.title.mark}</span>
+            </h2>
+            <p className="lede reveal">{STUDENTS.lede}</p>
+            <div className="claims reveal">
+              {STUDENTS.claims.map((claim, i) => (
+                <div key={claim.title}>
+                  <i>{i + 1}</i>
+                  <div>
+                    <b>{claim.title}</b>
+                    <span>{claim.body}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="art" id="videoArt">
+            <div className="player" id="player">
+              <div className="frame">
+                <FilmFrame
+                  label="A lesson film, paused, with a question circled on it"
+                  slate={film.slate}
+                  bars={film.bars}
+                />
+                <div className="bubble" id="b1" style={{ left: '8%', bottom: '16%' }}>
+                  {film.prompt}
+                </div>
+                <div className="bubble hand" id="b2" style={{ right: '6%', top: '12%' }}>
+                  {film.question}
+                </div>
+                <div
+                  className="bubble"
+                  id="b3"
+                  style={{ left: '10%', top: '14%', maxWidth: '58%' }}
+                >
+                  {film.answer}
+                </div>
+              </div>
+              <div className="bar">
+                <span className="pp">
+                  <PauseGlyph />
+                </span>
+                <span className="track">
+                  <i id="track" />
+                </span>
+                <span id="tstamp">{film.stamp}</span>
               </div>
             </div>
-            <div className="controls">
-              {/* The pause glyph, not an emoji: this is a picture of a paused player. */}
-              <span aria-hidden="true">&#9208;</span>
-              <div className="prog">
-                <i />
-              </div>
-              <span>{STUDENTS.film.time}</span>
-            </div>
-            <svg className="lasso" viewBox="0 0 640 400" aria-hidden="true">
-              <path
-                d="M150 90 c-60 40 -70 190 40 220 s280 10 330 -60 s-20 -180 -170 -190 s-150 -10 -200 30"
-                fill="none"
-                stroke="var(--pig)"
-                strokeWidth="5"
-                strokeLinecap="round"
-              />
-              <text
-                x="430"
-                y="352"
-                fontFamily="var(--hand)"
-                fontWeight="700"
-                fontSize="36"
-                fill="var(--pig)"
-              >
-                {STUDENTS.film.lasso}
-              </text>
-            </svg>
-            <div className="chip">{STUDENTS.film.chip}</div>
-          </div>
-          <div className="corner">
-            {/* Pen up, like every Wobo head in the prototype (see Hero.tsx). */}
-            <WoboBody size={60} mood="drawing" gaze="pointer" idleSince={idleSince} label="Wobo" />
-          </div>
-        </div>
-
-        <div>
-          <span className="chapter reveal">{STUDENTS.chapter}</span>
-          <h2 className="t reveal">
-            {STUDENTS.titleBefore}
-            <span className="hl">{STUDENTS.titleHighlight}</span>
-            {STUDENTS.titleAfter}
-          </h2>
-          <p className="lead reveal">{STUDENTS.lead}</p>
-          <div className="claims reveal">
-            {STUDENTS.claims.map((claim, i) => (
-              <div key={claim}>
-                <i>{i + 1}</i>
-                {claim}
-              </div>
-            ))}
           </div>
         </div>
       </div>

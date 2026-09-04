@@ -1,35 +1,30 @@
 'use client';
 
 /**
- * The header: the owner's wordmark, the pill nav, and the two doors.
+ * The header: the wordmark, five real routes, the quiet sign-in, and the one call to action.
  *
- * Fixed and frosted, at the prototype's 72px. It is rendered into a PORTAL at the front of the
- * document body rather than inside the page, because the app wraps every screen in an element
- * carrying `will-change: transform` — which makes that element the containing block for anything
- * `position: fixed`, and a header left inside it would scroll away with the page instead of
- * staying put. The portal host carries the same `.wb` root class, so every token and every rule in
- * `styles.ts` still applies.
+ * Sticky, not fixed. The prototype's header is `position: sticky` and that is the right call inside
+ * an app: a fixed header would resolve its offsets against whichever ancestor carries a transform
+ * hint, which is why the previous build had to portal its header into `<body>`. Sticky needs no
+ * containing block and no portal — the page root uses `overflow-x: clip` rather than `hidden` so it
+ * never becomes a scroll container and kills it.
  *
- * The nav's four anchors are on this page; Plans is a real route. Sign in and Get started both open
- * Wobo's onboarding, which is where the sign-in beat lives.
- *
- * Nothing in here wears `.reveal`. The prototype faded the header in with the rest of the first
- * fold; here the header lives outside the page root the scroll engine settles, and a bar that fades
- * itself in is chrome animating for its own sake, which DESIGN.md law 5 says not to do.
+ * Every address in the nav is a page that exists. Nothing here is a dead anchor.
  */
 
+import { useMagnet } from '../../../ui/primitives/magnetic';
 import { Wordmark } from '../art';
-import { LandingLink } from '../link';
+import { earlyAccessHandler, LandingLink } from '../link';
 import { AUTH, NAV_LINKS } from '../page-copy';
 
-export function Header({ onStart, onSignIn }: { onStart: () => void; onSignIn: () => void }) {
+export function Header() {
   return (
     <header>
-      <div className="wrap">
-        <a className="wordmark" href="#hero" aria-label="Wobo home">
+      <div className="wrap bar">
+        <a className="wm" href="#hero" aria-label="Wobo">
           <Wordmark />
         </a>
-        <nav className="main" aria-label="Site">
+        <nav aria-label="Site">
           {NAV_LINKS.map((link) => (
             <LandingLink key={link.href} href={link.href}>
               {link.label}
@@ -37,12 +32,15 @@ export function Header({ onStart, onSignIn }: { onStart: () => void; onSignIn: (
           ))}
         </nav>
         <div className="right">
-          <button type="button" className="sign" onClick={onSignIn}>
+          <LandingLink className="sign" href="/sign-in">
             {AUTH.signIn}
-          </button>
-          <button type="button" className="btn" onClick={onStart}>
-            {AUTH.getStarted}
-          </button>
+          </LandingLink>
+          {/* biome-ignore lint/a11y/useValidAnchor: a real in-page anchor, not a button in
+              disguise. `#early` works with no JavaScript, can be copied and shared, and the click
+              handler only eases the scroll and puts the caret in the field. */}
+          <a className="btn pig" href="#early" onClick={earlyAccessHandler()} ref={useMagnet()}>
+            <span>{AUTH.early}</span>
+          </a>
         </div>
       </div>
     </header>

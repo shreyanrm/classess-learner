@@ -21,7 +21,7 @@ import Lenis from 'lenis';
 import { type Disposer, prefersReducedMotion, safeWindow } from './env';
 
 /** How much of the gap Lenis closes each frame. Slow enough to feel like weight, not like lag. */
-export const LENIS_LERP = 0.09;
+export const LENIS_LERP = 0.095;
 
 /** GSAP's own defaults, restored on teardown so the landing page cannot change the whole app. */
 const LAG_SMOOTHING_DEFAULT = [500, 33] as const;

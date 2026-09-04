@@ -2,8 +2,12 @@
 
 /**
  * The ink close panel every site page ends on: a headline, a line in Wobo's hand in marigold, the
- * marigold door and the quiet one. The words default to the prototype's shared close ("Begin
- * tonight.") and a page that closes differently (the plans page, the gift page) passes its own.
+ * marigold door and the quiet one.
+ *
+ * Law v5's copy law (DESIGN.md §0) sets what it says: PROMOTE BEFORE YOU INVITE. Until the product
+ * opens, no surface may close on "begin tonight" — the product is not open, so the closing call is
+ * early access, in landing-v8.html's own words. A page that closes differently (plans, security,
+ * subjects) passes its own title; every one of them still asks for early access.
  */
 
 import type { ReactNode } from 'react';
@@ -20,9 +24,9 @@ export interface CloseAction {
 
 /** The shared close, word for word from the prototypes. */
 export const CLOSE = {
-  title: 'Begin tonight.',
-  hand: 'The first question is on us.',
-  primary: { label: 'Start learning for free', to: { name: 'onboarding' } as Route },
+  title: 'Wobo opens to families this term.',
+  hand: 'Be in the first group, free, with the whole tutor from day one.',
+  primary: { label: 'Get early access', to: { name: 'onboarding' } as Route },
   quiet: { label: "I'm a parent", href: '/for-parents' },
 } as const;
 

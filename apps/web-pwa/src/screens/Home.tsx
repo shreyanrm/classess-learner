@@ -236,15 +236,23 @@ export function Home() {
         </div>
       </div>
 
+      {/*
+        LAW v5 (DESIGN.md §0, and design/prototypes/landing-v8.html, where every panel is paper-2):
+        the three today cards are TONAL SURFACES, never washes. Board 01 of app-v1.html drew them
+        pig / mint / marigold, which on cream read as three sheets of paper and on white reads as a
+        rainbow. A wash now tints only a pill, a tick or a selected row. The one pointer on this
+        view is the pig button inside the first card — the next best action, and nothing else.
+      */}
       <div className="hm-today" ref={todayRef}>
         {plan.continue ? (
-          <Card tint="pig">
+          <Card>
             <Tag>Continue</Tag>
             <h3>{plan.continue.topic.name}</h3>
             <p>{continueLine(plan.continue)}</p>
             <CardFoot>
               <Button
                 size="sm"
+                tone="pig"
                 onClick={() =>
                   plan.continue &&
                   router.navigate({ name: 'course', topicId: plan.continue.topic.id })
@@ -258,13 +266,14 @@ export function Home() {
             </CardFoot>
           </Card>
         ) : plan.next ? (
-          <Card tint="pig">
+          <Card>
             <Tag>Continue</Tag>
             <h3>{plan.next.topic.name}</h3>
             <p>{continueLine(plan.next)}</p>
             <CardFoot>
               <Button
                 size="sm"
+                tone="pig"
                 onClick={() =>
                   plan.next && router.navigate({ name: 'course', topicId: plan.next.topic.id })
                 }
@@ -274,30 +283,30 @@ export function Home() {
             </CardFoot>
           </Card>
         ) : plan.world ? (
-          <Card tint="pig">
+          <Card>
             <Tag>Continue</Tag>
             <h3>Open your subjects</h3>
             <p>Your chapters come from your board when you open one.</p>
             <CardFoot>
-              <Button size="sm" onClick={() => router.navigate({ name: 'learn' })}>
+              <Button size="sm" tone="pig" onClick={() => router.navigate({ name: 'learn' })}>
                 Learn
               </Button>
             </CardFoot>
           </Card>
         ) : (
-          <Card tint="pig">
+          <Card>
             <Tag>Continue</Tag>
             <h3>Tell me your board</h3>
             <p>Then your own syllabus lands here.</p>
             <CardFoot>
-              <Button size="sm" onClick={() => router.navigate({ name: 'you' })}>
+              <Button size="sm" tone="pig" onClick={() => router.navigate({ name: 'you' })}>
                 Choose your board
               </Button>
             </CardFoot>
           </Card>
         )}
 
-        <Card tint="mint">
+        <Card>
           <Tag>Practice</Tag>
           <h3>{practiceTopic?.name ?? SET_TITLE}</h3>
           <p>Shade, drag and draw. Wobo rings the gap when you're close.</p>
@@ -322,7 +331,7 @@ export function Home() {
         {/* The third card is what Wobo actually saw, or the door to asking — never blank paper
             (DESIGN.md §2: emptiness that is just absence). */}
         {seen ? (
-          <Card tint="marigold">
+          <Card>
             <Tag>Wobo noticed</Tag>
             <h3>{seen.title}</h3>
             <p>{seen.body}</p>
@@ -332,7 +341,7 @@ export function Home() {
             </CardFoot>
           </Card>
         ) : (
-          <Card tint="marigold">
+          <Card>
             <Tag>Ask Wobo</Tag>
             <h3>{asHeading(HOME_QUESTION)}</h3>
             <p>{ASK_PLACEHOLDER}</p>

@@ -1,52 +1,98 @@
 'use client';
 
 /**
- * The close: an ink-navy panel, "Begin tonight." in marigold at display size, and Wobo in cream.
+ * The close: a promotion, not an invitation.
  *
- * The panel is ink in light and the night surface in dark, so the last thing on the page is always
- * the darkest thing on it — the page ends the way a lamp-lit desk at 9:40 pm ends. The Wobo beside
- * it is the real rig, wearing the panel's own tones (`#close .big` overrides `--wr-*` in
- * `styles.ts`), because a cream Wobo on a night panel is not the same character as a navy one and
- * the rig should not have to guess.
+ * Law v5's copy rule is explicit — until the product opens, the last thing the page asks for is an
+ * address, not a first lesson. So there is no "begin tonight" here and no door into onboarding: one
+ * field, one button, and a sentence about what happens to what you type.
+ *
+ * WHERE THE ADDRESS GOES, and why the page says so. There is no waitlist endpoint: the gateway's
+ * only mail route is an internal one guarded by a shared key a browser must never hold, so a form
+ * that posted would be posting nowhere. Rather than build the most common lie a marketing page
+ * tells, the address is kept in this browser and the page says that in one line under the button.
+ * The moment there is somewhere to send it, this is the only component that changes.
  */
 
-import { WoboBody } from '@wobo/wobo';
-import { useRef } from 'react';
-import { useLastInput } from '../attention';
-import { useBoxWidth, woboSize } from '../measure';
-import { CLOSING } from '../page-copy';
+import { type FormEvent, useCallback, useState } from 'react';
+import { useMagnet } from '../../../ui/primitives/magnetic';
+import { CLOSE, EARLY_ID } from '../page-copy';
 
-export function Close({ onStart }: { onStart: () => void }) {
-  const woboBox = useRef<HTMLDivElement>(null);
-  // Reading is attention: without this Wobo dozes off beside the page's last door (attention.ts).
-  const idleSince = useLastInput();
-  // The prototype's `min(300px, 70%)`, measured off the box the stylesheet made.
-  const size = woboSize(useBoxWidth(woboBox), 1, 300, 120);
+/** Where a kept address waits. Versioned, so a later shape can be told from this one. */
+export const EARLY_ACCESS_KEY = 'wobo-early-access-v1';
 
+/**
+ * Keep an address on this device. Returns whether it was actually kept — a private window, a
+ * browser with storage switched off, or a full quota all answer false, and the page tells the
+ * truth about that rather than claiming a list it never joined.
+ */
+export function keepAddress(address: string, store: Storage | undefined = safeStorage()): boolean {
+  if (!store) return false;
+  try {
+    store.setItem(EARLY_ACCESS_KEY, JSON.stringify({ address, at: new Date().toISOString() }));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function safeStorage(): Storage | undefined {
+  if (typeof window === 'undefined') return undefined;
+  try {
+    return window.localStorage;
+  } catch {
+    return undefined; // storage blocked entirely; the form still works, it just cannot remember
+  }
+}
+
+export function Close() {
+  const [address, setAddress] = useState('');
+  const [state, setState] = useState<'idle' | 'kept' | 'unkept'>('idle');
+
+  const submit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      setState(keepAddress(address.trim()) ? 'kept' : 'unkept');
+    },
+    [address],
+  );
+
+  const done = state !== 'idle';
   return (
-    <section id="close">
-      <div className="wrap">
-        <div className="panel reveal">
-          <div>
-            <div className="say">{CLOSING.say}</div>
-            <h2>{CLOSING.title}</h2>
-            <p>{CLOSING.body}</p>
-            <button type="button" className="btn" onClick={onStart}>
-              {CLOSING.cta}
-            </button>
-          </div>
-          <div className="big" ref={woboBox}>
-            {/* Pen up, like every Wobo head in the prototype (see Hero.tsx). */}
-            <WoboBody
-              size={size}
-              mood="drawing"
-              gaze="pointer"
-              idleSince={idleSince}
-              label="Wobo"
-            />
-          </div>
-        </div>
+    <div className="wrap">
+      <div id="close">
+        <div className="glow" style={{ left: '-8%', top: '-20%' }} aria-hidden="true" />
+        <div
+          className="glow"
+          style={{
+            right: '-10%',
+            bottom: '-30%',
+            background: 'radial-gradient(circle,rgba(255,182,41,.28),transparent 70%)',
+          }}
+          aria-hidden="true"
+        />
+        <h2 className="reveal">{CLOSE.title}</h2>
+        <p className="sub reveal">{CLOSE.sub}</p>
+        <form className="reveal" id={EARLY_ID} onSubmit={submit}>
+          <input
+            type="email"
+            required
+            value={address}
+            placeholder={CLOSE.placeholder}
+            aria-label="Your email"
+            onChange={(event) => {
+              setAddress(event.target.value);
+              setState('idle');
+            }}
+          />
+          <button className="btn" type="submit" ref={useMagnet()}>
+            <span>{done ? CLOSE.done : CLOSE.submit}</span>
+          </button>
+        </form>
+        <p className="fine reveal" aria-live="polite">
+          {state === 'kept' ? CLOSE.local : CLOSE.fine}
+        </p>
       </div>
-    </section>
+    </div>
   );
 }

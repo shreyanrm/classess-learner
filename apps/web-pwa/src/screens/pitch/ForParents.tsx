@@ -7,9 +7,12 @@
  * view mock), safe by design, what it costs, the questions parents ask, the ask block and the
  * close.
  *
- * The named learner in the chapters is Aanya, written in the third person as the owner wrote
- * the chapter; Wobo is "it" in every sentence (WOBO-PLAN §19). The pronoun gate excuses the one
- * line where the child's pronoun and Wobo's name happen to sit close (scripts/gate_allowlist.py).
+ * Law v5's copy law (DESIGN.md §0) governs every word here. NO NAMES: the learner in the chapters
+ * is "your child", never an invented Aanya, and never "she" or "he" — a parent reading this has
+ * their own child in mind and a made-up name puts someone else's there instead. NO GRADE GATE: the
+ * page says "every subject your board sets", never a range of classes. NO RAW ALLOWANCE: the
+ * drawing says what an evening feels like rather than counting questions. Wobo is "it" in every
+ * sentence (WOBO-PLAN §19).
  */
 
 import { useId } from 'react';
@@ -45,8 +48,8 @@ const FAQ: readonly { q: string; a: string }[] = [
     a: 'Nothing, every day, with a daily allowance of questions. Pro and Max raise that allowance for exam season. The plans page has the numbers for your country.',
   },
   {
-    q: 'Which classes and subjects?',
-    a: 'Classes 4 to 12, in Mathematics, Science, Social science and English, for CBSE, ICSE and the state boards. Other boards and countries are added as families ask.',
+    q: 'Which subjects?',
+    a: 'Every subject your board sets, for CBSE, ICSE and the state boards. Other boards and countries are added as families ask.',
   },
 ];
 
@@ -94,7 +97,7 @@ export function ForParents() {
               </p>
               <div className="pt-row">
                 <SiteLink className="st-btn st-pig" to={{ name: 'onboarding' }}>
-                  Set it up for my child
+                  Get early access
                 </SiteLink>
                 <a className="st-btn st-quiet" href="#see">
                   What you'll see
@@ -124,7 +127,7 @@ export function ForParents() {
                     Sunday, 6 pm
                   </text>
                   <text className="pt-hw" x="116" y="140" fontSize="26">
-                    Aanya asked for help twice
+                    asked for help twice
                   </text>
                   <text className="pt-hw" x="116" y="172" fontSize="26">
                     after a miss, <tspan className="pt-hw pt-rose">which is exactly</tspan>
@@ -170,7 +173,7 @@ export function ForParents() {
                 </p>
                 <div className="pa-caps">
                   <div className="pa-t">Meanwhile, at the table</div>
-                  <div>She asks Wobo the way she'd ask you.</div>
+                  <div>Your child asks Wobo the way they'd ask you.</div>
                   <div>Wobo draws it out, line by line.</div>
                   <div>
                     <em>By the time you park, it's clicked.</em>
@@ -179,36 +182,36 @@ export function ForParents() {
               </div>
               <div className="pt-art pt-night">
                 <svg viewBox="0 0 520 360" aria-hidden="true">
-                  <rect x="40" y="40" width="440" height="280" rx="24" fill="#181C3A" />
-                  <rect x="70" y="70" width="380" height="60" rx="14" fill="#22264A" />
+                  <rect x="40" y="40" width="440" height="280" rx="24" fill="#17171F" />
+                  <rect x="70" y="70" width="380" height="60" rx="14" fill="#1F1F29" />
                   <text
                     x="90"
                     y="96"
                     fontFamily="Poppins,sans-serif"
                     fontWeight="600"
                     fontSize="15"
-                    fill="#F3F0E8"
+                    fill="#F4F4F7"
                   >
                     Wobo
                   </text>
-                  <text x="90" y="116" fontFamily="Poppins,sans-serif" fontSize="13" fill="#B8B6C6">
-                    Aanya just finished triangles, lesson 3. She got c = 5 herself.
+                  <text x="90" y="116" fontFamily="Poppins,sans-serif" fontSize="13" fill="#B4B4C2">
+                    Triangles, lesson 3, finished. Got c = 5 without a hint.
                   </text>
-                  <text x="410" y="96" fontFamily="Poppins,sans-serif" fontSize="12" fill="#7C7B92">
+                  <text x="410" y="96" fontFamily="Poppins,sans-serif" fontSize="12" fill="#7E7E90">
                     8:12 pm
                   </text>
-                  <rect x="70" y="150" width="380" height="60" rx="14" fill="#22264A" />
+                  <rect x="70" y="150" width="380" height="60" rx="14" fill="#1F1F29" />
                   <text
                     x="90"
                     y="176"
                     fontFamily="Poppins,sans-serif"
                     fontWeight="600"
                     fontSize="15"
-                    fill="#F3F0E8"
+                    fill="#F4F4F7"
                   >
-                    Aanya
+                    Your child
                   </text>
-                  <text x="90" y="196" fontFamily="Poppins,sans-serif" fontSize="13" fill="#B8B6C6">
+                  <text x="90" y="196" fontFamily="Poppins,sans-serif" fontSize="13" fill="#B4B4C2">
                     got it!! wobo drew the squares thing. dont need u lol
                   </text>
                   <text
@@ -216,7 +219,7 @@ export function ForParents() {
                     y="176"
                     fontFamily="Poppins,sans-serif"
                     fontSize="12"
-                    fill="#7C7B92"
+                    fill="#7E7E90"
                   >
                     8:14 pm
                   </text>
@@ -262,11 +265,11 @@ export function ForParents() {
                   </div>
                 </div>
               </div>
-              <div className="pt-art pt-lilac">
+              <div className="pt-art">
                 <div className="pa-mock">
                   <div className="pa-top">
                     <WoboHead size={32} />
-                    <b>Aanya</b>· Class 8 · CBSE · this week
+                    <b>Your child</b>· CBSE · this week
                   </div>
                   <div className="pa-row">
                     <div>
@@ -290,7 +293,7 @@ export function ForParents() {
                     <span className="pa-ok pa-next">next</span>
                   </div>
                   <div className="pa-note">
-                    Three lessons, fourteen problems, and she asked for help twice after a miss,{' '}
+                    Three lessons, fourteen problems, and help asked for twice after a miss,{' '}
                     <em>which is exactly how learning looks.</em>
                   </div>
                   <div className="pa-lock">
@@ -298,7 +301,7 @@ export function ForParents() {
                       <rect x="5" y="10" width="14" height="10" rx="3" />
                       <path d="M8 10 v-3 a4 4 0 0 1 8 0 v3" />
                     </svg>
-                    Questions word for word: shared only if Aanya allows
+                    Questions word for word: shared only if your child allows
                   </div>
                 </div>
               </div>
@@ -317,7 +320,7 @@ export function ForParents() {
               </p>
             </Reveal>
             <Reveal className="pa-grid3">
-              <div className="st-tile st-pig">
+              <div className="st-tile">
                 <svg viewBox="0 0 44 44" aria-hidden="true">
                   <path d="M22 6 L36 12 C36 26 30 34 22 39 C14 34 8 26 8 12 Z" />
                 </svg>
@@ -327,7 +330,7 @@ export function ForParents() {
                   chapter.
                 </p>
               </div>
-              <div className="st-tile st-mint">
+              <div className="st-tile">
                 <svg viewBox="0 0 44 44" aria-hidden="true">
                   <rect x="8" y="19" width="28" height="19" rx="5" />
                   <path d="M14 19 v-5 a8 8 0 0 1 16 0 v5" />
@@ -337,7 +340,7 @@ export function ForParents() {
                   Nothing in Wobo is trying to sell your child anything. It's paid for by families.
                 </p>
               </div>
-              <div className="st-tile st-marigold">
+              <div className="st-tile">
                 <svg viewBox="0 0 44 44" aria-hidden="true">
                   <path d="M10 34 l8 -8 l6 6 l12 -14" />
                   <path d="M28 18 h8 v8" />
@@ -379,7 +382,7 @@ export function ForParents() {
                 <div className="pa-bar">
                   <i />
                 </div>
-                <span>25 of 40 questions left · resets 6:00 am</span>
+                <span>Most of today's allowance still there · resets 6:00 am</span>
                 <div className="hand">enough for a normal evening</div>
               </div>
             </Reveal>
@@ -421,9 +424,8 @@ export function ForParents() {
         </section>
 
         <ClosePanel
-          title="Set it up before tonight's homework."
-          hand="Ten minutes now. Every evening after, easier."
-          primary={{ label: 'Set it up for my child', to: { name: 'onboarding' } }}
+          title="Be in the first group when Wobo opens."
+          hand="Ten minutes to set up. Every evening after, easier."
           quiet={{ label: 'See plans', href: '/plans' }}
         />
       </div>

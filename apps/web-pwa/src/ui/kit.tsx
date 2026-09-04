@@ -235,8 +235,16 @@ const BUTTON_LOOK: Record<ButtonVariant, { bg: string; bgHover: string; color: s
 };
 
 /**
- * MagneticButton — the house button. Solid, tonal, or ghost; a capped 4px magnetic pull on
- * hover; tonal press. Heights are fixed per size so rows of buttons always align.
+ * MagneticButton — the house button. Solid, tonal, or ghost; a soft lift on hover, a tonal press.
+ * Heights are fixed per size so rows of buttons always align.
+ *
+ * LAW v5 §8 (DESIGN.md §0, "Motion that never stutters"): this button used to translate ITSELF on
+ * a spring that followed the pointer, which is the exact loop the law names — the box moves out
+ * from under the pointer, the pointer leaves, the spring resets, the box comes back. The pull is
+ * gone. The one magnetic control in the product is `.wk-mag` / `attachMagnet`
+ * (src/ui/primitives/magnetic.ts), which moves an INNER element and leaves the hit area still; it
+ * belongs on the marketing pages, where the cursor is Wobo's. Inside the app the cursor is native
+ * because learners are working (DESIGN.md §2), so what a button owes a pointer here is a shadow.
  */
 export function MagneticButton({
   children,
@@ -257,26 +265,7 @@ export function MagneticButton({
 }) {
   const ref = useRef<HTMLButtonElement | null>(null);
   const [hover, setHover] = useState(false);
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const x = useSpring(mx, { stiffness: 320, damping: 24 });
-  const y = useSpring(my, { stiffness: 320, damping: 24 });
-
-  const onMove = useCallback(
-    (e: React.PointerEvent) => {
-      const el = ref.current;
-      if (!el || disabled) return;
-      const r = el.getBoundingClientRect();
-      mx.set(Math.max(-4, Math.min(4, (e.clientX - (r.left + r.width / 2)) * 0.08)));
-      my.set(Math.max(-4, Math.min(4, (e.clientY - (r.top + r.height / 2)) * 0.08)));
-    },
-    [mx, my, disabled],
-  );
-  const onLeave = useCallback(() => {
-    mx.set(0);
-    my.set(0);
-    setHover(false);
-  }, [mx, my]);
+  const onLeave = useCallback(() => setHover(false), []);
 
   const height = size === 'lg' ? 50 : size === 'sm' ? 34 : 42;
   const padX = size === 'lg' ? 28 : size === 'sm' ? 14 : 20;
@@ -289,7 +278,6 @@ export function MagneticButton({
       aria-label={ariaLabel}
       disabled={disabled}
       aria-disabled={disabled || undefined}
-      onPointerMove={onMove}
       onPointerEnter={() => setHover(true)}
       onPointerLeave={onLeave}
       onClick={
@@ -305,8 +293,9 @@ export function MagneticButton({
         background: hover && !disabled ? look.bgHover : look.bg,
         color: look.color,
         border: 'none',
-        x,
-        y,
+        // the one thing a hover moves is the light on the surface (DESIGN.md §2, shadow-lift);
+        // nothing here transforms the box, so nothing can chase the pointer out of it.
+        boxShadow: hover && !disabled ? 'var(--lift)' : 'none',
         height,
         padding: `0 ${padX}px`,
         fontSize: font,
@@ -320,7 +309,9 @@ export function MagneticButton({
         justifyContent: 'center',
         gap: 8,
         lineHeight: 1,
-        transition: 'background 0.2s ease',
+        // LAW v5 §8: one owner per property. framer-motion owns `transform` here (whileTap), so
+        // this transition names only what nothing else drives.
+        transition: 'background 0.2s ease, box-shadow 0.2s ease',
         ...style,
       }}
     >
@@ -553,7 +544,9 @@ export function AuroraButton({
           WebkitBackgroundClip: lit ? 'text' : undefined,
           backgroundClip: lit ? 'text' : undefined,
           WebkitTextFillColor: lit ? 'transparent' : undefined,
-          transition: 'all 0.25s ease',
+          // LAW v5 §8: never `all` — it owns transform and opacity too, and framer drives both on
+          // this button. Name the one property that changes.
+          transition: 'background 0.25s ease',
         }}
       >
         {children}

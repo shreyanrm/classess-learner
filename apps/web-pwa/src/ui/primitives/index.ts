@@ -24,6 +24,7 @@ export { Button, type ButtonProps, type ButtonTone } from './Button';
 export { Card, CardFoot, type CardProps, type CardTint } from './Card';
 export { Chip, type ChipProps } from './Chip';
 export { MicIcon, NavIcon, type NavIconName, Wordmark } from './icons';
+export { attachMagnet, useMagnet } from './magnetic';
 export { PHONE_QUERY, useMediaQuery, usePhone } from './media';
 export { Segmented, type SegmentedOption, type SegmentedProps } from './Segmented';
 export { type StreakDay, StreakDays, type StreakDaysProps } from './StreakDays';

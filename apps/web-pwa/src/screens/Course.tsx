@@ -222,6 +222,7 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
     <AppFrame active="learn" bottom={<HoldToTalk />}>
       <h1 className="ls-sr">{title}</h1>
       <TopBar
+        className="ls-topbar"
         crumb={crumb}
         right={VIEWS.map((v) => (
           <Chip key={v.id} on={view === v.id} onClick={() => lessonView.view(v.id)}>
@@ -301,7 +302,10 @@ export function Course({ topicId, sandbox = false }: { topicId: string; sandbox?
               </div>
             </Card>
           )}
-          <Card tint="rose" compact>
+          {/* LAW v5 (DESIGN.md §0): rose is for the thing that needs care. The tools that let a
+              learner circle the board and ask are neither a worry nor a highlight, so the card is
+              a tonal surface and the pigment on this screen stays in Wobo's ink. */}
+          <Card compact>
             <Tag>Ask about this</Tag>
             <p style={{ color: 'var(--ink)' }}>
               Circle any part of the board and ask why. Or just say it.

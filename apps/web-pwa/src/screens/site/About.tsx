@@ -54,9 +54,9 @@ export function About() {
               We built the tutor we wished we'd had <em>at 9 pm on a Tuesday.</em>
             </h1>
             <p className="ab-sub">
-              Wobo is a small company with one job: make sure no child in classes 4 to 12 is stuck
-              alone with a question. Not a content library. Not a chatbot. A tutor that draws, never
-              judges, and is always there.
+              Wobo is a small company with one job: make sure no child is stuck alone with a
+              question. Not a content library. Not a chatbot. A tutor that draws, never judges, and
+              is always there.
             </p>
           </div>
           <div className="ab-mission">
@@ -111,7 +111,7 @@ export function About() {
             <h2>Three habits of a great teacher, built in.</h2>
           </Reveal>
           <Reveal className="st-grid3">
-            <div className="st-tile st-pig">
+            <div className="st-tile">
               <svg viewBox="0 0 44 44" aria-hidden="true">
                 <path d="M8 36 l6 -1 l20 -20 l-5 -5 l-20 20 z" />
                 <path d="M26 13 l5 5" />
@@ -122,7 +122,7 @@ export function About() {
                 it. You watch it think.
               </p>
             </div>
-            <div className="st-tile st-mint">
+            <div className="st-tile">
               <svg viewBox="0 0 44 44" aria-hidden="true">
                 <circle cx="22" cy="22" r="14" />
                 <path d="M14 22 l6 6 l10 -12" />
@@ -133,7 +133,7 @@ export function About() {
                 is the word.
               </p>
             </div>
-            <div className="st-tile st-marigold">
+            <div className="st-tile">
               <svg viewBox="0 0 44 44" aria-hidden="true">
                 <rect x="6" y="10" width="32" height="24" rx="5" />
                 <path d="M6 14 l16 10 l16 -10" />
@@ -152,10 +152,7 @@ export function About() {
         <div className="st-wrap">
           <Reveal className="st-head">
             <Label>What we cover</Label>
-            <h2>
-              Classes 4 to 12. Mathematics, Science, Social science, English. Your board, your
-              school's order.
-            </h2>
+            <h2>Every subject your board sets, in your school&rsquo;s own order.</h2>
             <p>
               CBSE, ICSE and the state boards today, with the year's official syllabus behind each
               one, and the door open for a school's own syllabus. More countries as families ask.

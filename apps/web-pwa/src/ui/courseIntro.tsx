@@ -39,7 +39,12 @@ export type Mark =
   | { el: 'text'; ink: 'ink' | 'accent'; x: number; y: number; size: number; text: string };
 
 export interface SubjectArt {
-  /** The tile tone the drawing sits on — the subject's own wash from the site page. */
+  /**
+   * The subject's own wash, kept because the site tiles name it and a caller may still want a
+   * subject's tint for a pill or a tick. LAW v5 (DESIGN.md §0): it is NOT the ground the drawing
+   * sits on any more — a wash never paints a panel — and `CourseIntroScene` below draws on
+   * `paper-2` in both themes.
+   */
   tint: string;
   /** The one pigment in the drawing. */
   accent: string;
@@ -272,7 +277,9 @@ export function CourseIntroScene({ topicId, subject, minHeight = 300 }: CourseIn
         width: '100%',
         minHeight,
         borderRadius: 24,
-        background: art.tint,
+        // LAW v5 (DESIGN.md §0): the arrival card is a tonal surface, not a subject-coloured slab.
+        // The subject still speaks — in `art.accent`, which is the ink the drawing is made of.
+        background: 'var(--paper-2)',
         padding: 'var(--s3, 24px)',
         display: 'grid',
         placeItems: 'center',

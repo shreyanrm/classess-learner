@@ -14,7 +14,7 @@ import type { Topic } from '../../data/model';
 import { toneForSubject } from '../../ui/hues';
 import { STREAK_TIERS, TrophyPlinth, tierForStreak, tierForXp, XP_TIERS } from '../../ui/trophies';
 
-const STREAK_HUE = '#66B300';
+const STREAK_HUE = 'var(--mint)';
 const XP_HUE = 'var(--pig)';
 
 const fmtXp = (n: number) => n.toLocaleString('en-IN');

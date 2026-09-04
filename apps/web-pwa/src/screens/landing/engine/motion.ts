@@ -1,405 +1,370 @@
 /**
- * The page's smaller motions: things arriving, things landing, things drifting, things reaching.
+ * The page's motion, mounted piece by piece.
  *
- * Everything in here is scoped to a root element rather than to the document, because this page is
- * one route inside an app — a global selector would reach into whatever else is mounted. Every
- * mount returns a disposer, and the triggers it creates are handed to the scroll handle so a route
- * change kills them with the rest.
+ * Everything here is scoped to a root element rather than to the document, because this page is one
+ * route inside an app and a global selector would reach into whatever else is mounted. Every mount
+ * returns a disposer; a route change kills the lot.
  *
- * The values are the prototype's, to the digit: a reveal is 0.9 s of `power3.out` staggered by
- * 0.1 from 72% of the viewport, a tile lands on `back.out(1.4)` from 78%, a blob drifts 120 px per
- * layer, a float moves 720 px per unit of depth, and a magnet reaches 120 px and pulls 10.
+ * LAW v5 §8 — THE THREE CAUSES OF JITTER, and how each is avoided here:
+ *
+ *  1. A CSS TRANSITION ON A PROPERTY GSAP IS SCRUBBING. One owner per property. Nothing this module
+ *     animates carries a transition in `page-styles.ts`: the answer cards' opacity, the film track's
+ *     scaleX, the bubbles' opacity and y, the reveals' transform — all GSAP's alone. The magnetic
+ *     button's inner span is the mirror of the same rule: the rAF lerp owns its transform, and the
+ *     stylesheet leaves it alone.
+ *  2. SCRUBBING A LAYOUT PROPERTY. Every scrubbed value below is a transform or an opacity. The two
+ *     places a geometric value moves — the report's bars and the drawn strokes' dash offsets — are
+ *     fired ONCE on entry, not scrubbed, which is what makes them safe.
+ *  3. A TWEEN CREATED PER SCROLL FRAME. The one `onUpdate` on the page compares the card it would
+ *     show against the card it is showing and returns when they match, so a tween is made on a
+ *     change of state and never on a frame.
+ *
+ * The values are `design/prototypes/landing-v8.html`'s, to the digit.
  */
 
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
-  FILM_START_FRACTION,
-  REVEAL_START_FRACTION,
-  startAt,
-  TILE_START_FRACTION,
+  CHART_BASELINE,
+  cardIndex,
+  countAt,
+  FILM_END,
+  FILM_START,
+  FORMS_END,
+  floatDrift,
+  HERO_DELAY,
+  HIGHLIGHT_START,
+  REPORT_START,
+  REVEAL_START,
+  SCRUB,
+  SPARK_MIN,
+  SPARK_SPREAD,
+  SPARKS,
+  sparkVector,
 } from './choreography';
 import type { Disposer } from './env';
-import type { PointerState } from './pointer';
-import { vectorTo } from './pointer';
 
-/** How close the pointer has to come before a button reaches for it. */
-export const MAGNET_RADIUS = 120;
-
-/** How far a button will go to meet it. */
-export const MAGNET_PULL = 10;
-
-/** How far each depth blob drifts over the page — one layer further back per index. */
-export function blobDrift(index: number): number {
-  return -(index + 1) * 120;
-}
-
-/** How far a floating drawn object moves across the hero, from its declared depth. */
-export function floatDrift(depth: number): number {
-  return -180 * depth * 4;
-}
-
-/** The offset a magnetic button takes, or null when the pointer is out of its reach. */
-export function magnetOffset(
-  dx: number,
-  dy: number,
-  d: number,
-  radius = MAGNET_RADIUS,
-  pull = MAGNET_PULL,
-): { x: number; y: number } | null {
-  if (d >= radius) return null;
-  const k = (1 - d / radius) * pull;
-  return { x: (dx / d) * k, y: (dy / d) * k };
-}
+/**
+ * ScrollTrigger's default `pinType` is `'fixed'`, which holds a section still by switching it to
+ * `position: fixed`. The app wraps every screen in an element carrying `will-change: transform`,
+ * and that hint alone makes the wrapper the containing block for every fixed descendant — so a
+ * "fixed" pin resolves against the page rather than the viewport and simply scrolls away.
+ * `'transform'` pins by translating instead, which needs no containing block and is correct inside
+ * any transformed ancestor.
+ */
+const PIN_TYPE = 'transform' as const;
 
 /** Query inside a root, always as an array. */
 function all<T extends Element>(root: ParentNode, selector: string): T[] {
   return [...root.querySelectorAll<T>(selector)];
 }
 
-/**
- * Sections arrive: the hero (and the header with it) on load, everything else as its top crosses
- * the trigger line, with its handwritten headline swept by the marigold highlighter as it lands.
- */
-export function mountReveals(root: ParentNode, hero: Element | null): Disposer {
-  const tweens: gsap.core.Tween[] = [];
-  const triggers: ScrollTrigger[] = [];
-
-  // Which reveals wait for the scroll, and which arrive with the page. Working this out FIRST
-  // matters: a single opening tween over every `.reveal` would record its start values on the next
-  // tick — after the per-section `set` below — and then animate the whole page in at load, leaving
-  // the scroll reveals with nothing left to reveal.
-  const waiting = new Set<Element>();
-  const sections: { section: HTMLElement; els: Element[] }[] = [];
-  for (const section of all<HTMLElement>(root, 'section')) {
-    const els = all(section, '.reveal');
-    if (!els.length || section === hero) continue;
-    for (const el of els) waiting.add(el);
-    sections.push({ section, els });
-    gsap.set(els, { opacity: 0, y: 24 });
-  }
-
-  // The hero and the header arrive on load, in the order they are read.
-  const opening = all(root, '.reveal').filter((el) => !waiting.has(el));
-  if (opening.length) {
-    tweens.push(
-      gsap.to(opening, {
-        opacity: 1,
-        y: 0,
-        duration: 0.9,
-        ease: 'power3.out',
-        stagger: 0.08,
-        delay: 0.1,
-      }),
-    );
-  }
-
-  // Everything else arrives as its section crosses the trigger line, with its headline swept by
-  // the marigold highlighter as it lands.
-  for (const { section, els } of sections) {
-    triggers.push(
-      ScrollTrigger.create({
-        trigger: section,
-        start: startAt(REVEAL_START_FRACTION),
-        once: true,
-        onEnter: () => {
-          tweens.push(
-            gsap.to(els, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', stagger: 0.1 }),
-          );
-          for (const headline of all(section, 'h2.t')) headline.classList.add('in');
-        },
-      }),
-    );
-  }
-
-  return () => {
-    for (const tween of tweens) tween.kill();
-    for (const trigger of triggers) trigger.kill();
-  };
+/** Measure a path and publish its length as `--len`, which is what `.draw` dashes against. */
+export function measureDraw(path: SVGPathElement | null): number {
+  if (!path || typeof path.getTotalLength !== 'function') return 0;
+  const length = path.getTotalLength();
+  path.style.setProperty('--len', String(length));
+  return length;
 }
 
-/** Tiles land with a spring, from below and slightly turned, and settle square. */
-export function mountTiles(root: ParentNode): Disposer {
-  const triggers: ScrollTrigger[] = [];
-  const tweens: gsap.core.Tween[] = [];
-  for (const tile of all<HTMLElement>(root, '.tile')) {
-    gsap.set(tile, { y: 48, scale: 0.94, rotate: -1.5, opacity: 0 });
-    triggers.push(
-      ScrollTrigger.create({
-        trigger: tile,
-        start: startAt(TILE_START_FRACTION),
-        once: true,
-        onEnter: () => {
-          tweens.push(
-            gsap.to(tile, {
-              y: 0,
-              scale: 1,
-              rotate: 0,
-              opacity: 1,
-              duration: 1,
-              ease: 'back.out(1.4)',
-            }),
-          );
-        },
-      }),
-    );
-  }
-  return () => {
-    for (const tween of tweens) tween.kill();
-    for (const trigger of triggers) trigger.kill();
-  };
-}
-
-/** The film's lasso draws itself on entry, then says where to start, then offers the chip. */
-export function mountFilmLasso(tile: Element | null): Disposer {
-  if (!tile) return () => {};
-  const tweens: gsap.core.Tween[] = [];
-  const trigger = ScrollTrigger.create({
-    trigger: tile,
-    start: startAt(FILM_START_FRACTION),
-    once: true,
-    onEnter: () => {
-      tweens.push(
-        gsap.to(all(tile, '.lasso path'), {
-          strokeDashoffset: 0,
-          duration: 1.3,
-          ease: 'power2.inOut',
-          delay: 0.4,
-        }),
-        gsap.to(all(tile, '.lasso text'), { opacity: 1, duration: 0.4, delay: 1.6 }),
-        gsap.to(all(tile, '.chip'), { opacity: 1, y: 0, duration: 0.4, delay: 1.8 }),
-      );
-    },
-  });
-  return () => {
-    for (const tween of tweens) tween.kill();
-    trigger.kill();
-  };
-}
-
-/** The blurred colour blobs behind everything, drifting with the scroll, one layer per blob. */
-export function mountDepth(blobs: readonly Element[]): Disposer {
-  const tweens = blobs.map((blob, i) =>
-    gsap.to(blob, { y: () => blobDrift(i), ease: 'none', scrollTrigger: { scrub: 1 } }),
-  );
+/** Everything a mount hands back, so the caller can take it down without knowing what it made. */
+function killer(tweens: gsap.core.Animation[], triggers: ScrollTrigger[]): Disposer {
   return () => {
     for (const tween of tweens) {
       tween.scrollTrigger?.kill();
       tween.kill();
     }
+    for (const trigger of triggers) trigger.kill();
   };
 }
 
-/** The drawn objects around the product card, at three depths, parallaxing off the hero. */
-export function mountFloats(root: ParentNode, hero: Element | null): Disposer {
-  if (!hero) return () => {};
-  const tweens = all<HTMLElement>(root, '.float').map((float) =>
-    gsap.to(float, {
-      y: () => floatDrift(Number(float.dataset.depth ?? 0)),
-      ease: 'none',
-      scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 0.6 },
+// --- Arrival -----------------------------------------------------------------------------------
+
+/**
+ * Everything marked `.reveal` lifts into place as it crosses the trigger line.
+ *
+ * `gsap.from` rather than a `set` plus a `to`: the element's resting state is the one in the
+ * markup, so a page whose engine never loads is a page that reads correctly rather than a blank
+ * one. `will-change` is set for the duration and cleared after, and the transform is cleared with
+ * it so nothing is left holding a matrix.
+ */
+export function mountReveals(root: ParentNode): Disposer {
+  const tweens = all<HTMLElement>(root, '.reveal').map((el) =>
+    gsap.from(el, {
+      y: 24,
+      opacity: 0,
+      duration: 0.75,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: REVEAL_START, once: true },
+      onStart() {
+        el.style.willChange = 'transform, opacity';
+      },
+      onComplete() {
+        el.style.willChange = 'auto';
+        el.style.transform = '';
+      },
     }),
   );
+  return killer(tweens, []);
+}
+
+/** The marigold highlighter sweeps under the second half of a headline as it lands. */
+export function mountHighlights(root: ParentNode): Disposer {
+  const triggers = all<HTMLElement>(root, 'h2.t .hl').map((el) =>
+    ScrollTrigger.create({
+      trigger: el,
+      start: HIGHLIGHT_START,
+      once: true,
+      onEnter: () => el.classList.add('lit'),
+    }),
+  );
+  return killer([], triggers);
+}
+
+// --- The hero ------------------------------------------------------------------------------------
+
+/**
+ * The hero's card answers its question while you watch: the leaf draws, its vein follows, the light
+ * arrives, the sugar leaves, and the caption lands last. It runs once, on load, so the drawn answer
+ * is complete on first paint rather than waiting for a scroll that may never come.
+ */
+export function mountHeroLesson(root: ParentNode): Disposer {
+  const leaf = root.querySelector<SVGPathElement>('#d-leaf');
+  if (!leaf) return () => {};
+  for (const id of ['#d-leaf', '#d-vein', '#d-arrow']) {
+    measureDraw(root.querySelector<SVGPathElement>(id));
+  }
+  const tl = gsap.timeline({ delay: HERO_DELAY });
+  const at = (id: string) => root.querySelector(id);
+  tl.to(at('#d-leaf'), { strokeDashoffset: 0, duration: 1.1, ease: 'power2.inOut' })
+    .to(at('#d-vein'), { strokeDashoffset: 0, duration: 0.7, ease: 'power2.out' }, '-=.45')
+    .to(at('#d-rays'), { opacity: 1, duration: 0.4 }, '-=.35')
+    .to(at('#d-lbl1'), { opacity: 1, duration: 0.35 }, '-=.2')
+    .to(at('#d-arrow'), { strokeDashoffset: 0, duration: 0.7, ease: 'power2.out' }, '-=.1')
+    .to([at('#d-head'), at('#d-lbl2')], { opacity: 1, duration: 0.3 }, '-=.25')
+    .to(at('#d-cap'), { opacity: 1, duration: 0.45 });
+  return () => tl.kill();
+}
+
+/** The two drawn objects beside the hero card drift as the hero leaves. */
+export function mountFloats(root: ParentNode, hero: Element | null): Disposer {
+  if (!hero) return () => {};
+  const tweens = all<HTMLElement>(root, '.float').map((el, i) =>
+    gsap.to(el, {
+      y: floatDrift(i),
+      ease: 'none',
+      scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 0.8 },
+    }),
+  );
+  return killer(tweens, []);
+}
+
+// --- The four answer forms -----------------------------------------------------------------------
+
+/**
+ * The pinned sequence: the panel holds still while the page scrolls past it, and each quarter of
+ * that distance swaps the card and its label.
+ *
+ * The guard on `shown` is the whole reason this is safe. Without it, `onUpdate` would build a pair
+ * of tweens on every scroll frame — dozens a second, each one fighting the last for the same
+ * opacity — which is cause 3 of law v5's jitter, and is what the owner saw.
+ */
+export function mountForms(root: ParentNode): Disposer {
+  const section = root.querySelector<HTMLElement>('#forms');
+  const cards = all<HTMLElement>(root, '#formsBox .card');
+  const navs = all<HTMLElement>(root, '#formsNav span');
+  const first = cards[0];
+  if (!section || !first) return () => {};
+
+  gsap.set(first, { opacity: 1 });
+  let shown = 0;
+  const trigger = ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: FORMS_END,
+    pin: true,
+    pinSpacing: true,
+    pinType: PIN_TYPE,
+    anticipatePin: 1,
+    invalidateOnRefresh: true,
+    onUpdate(self) {
+      const i = cardIndex(self.progress, cards.length);
+      if (i === shown) return; // one tween per change, never one per frame
+      gsap.to(cards[shown] as HTMLElement, { opacity: 0, duration: 0.3, overwrite: 'auto' });
+      gsap.to(cards[i] as HTMLElement, { opacity: 1, duration: 0.35, overwrite: 'auto' });
+      navs.forEach((nav, n) => {
+        nav.classList.toggle('on', n === i);
+      });
+      shown = i;
+    },
+  });
+
   return () => {
-    for (const tween of tweens) {
-      tween.scrollTrigger?.kill();
-      tween.kill();
-    }
+    trigger.kill();
+    gsap.set(cards, { clearProps: 'opacity' });
   };
 }
 
-export interface FrameHandle {
-  frame(): void;
-  dispose: Disposer;
+// --- The film -------------------------------------------------------------------------------------
+
+/** The film plays, is paused, is circled, and is answered — all of it scrubbed by the reader. */
+export function mountFilm(root: ParentNode): Disposer {
+  const section = root.querySelector<HTMLElement>('#students');
+  const track = root.querySelector<HTMLElement>('#track');
+  if (!section || !track) return () => {};
+
+  const lasso = root.querySelector<SVGPathElement>('#lasso');
+  if (lasso && typeof lasso.getTotalLength === 'function') {
+    const l = lasso.getTotalLength();
+    lasso.style.strokeDasharray = String(l);
+    lasso.style.strokeDashoffset = String(l);
+  }
+
+  const at = (id: string) => root.querySelector(id);
+  const tl = gsap.timeline({
+    scrollTrigger: { trigger: section, start: FILM_START, end: FILM_END, scrub: SCRUB },
+  });
+  tl.to(track, { scaleX: 0.38, duration: 1, ease: 'none' })
+    .to({}, { duration: 0.01 })
+    .to(at('#b1'), { opacity: 1, y: -6, duration: 0.4 })
+    .to(at('#lasso'), { strokeDashoffset: 0, duration: 1.1 }, '-=.1')
+    .to(at('#b1'), { opacity: 0, duration: 0.3 })
+    .to(at('#b2'), { opacity: 1, y: 6, duration: 0.4 })
+    .to(at('#b3'), { opacity: 1, duration: 0.5 }, '+=.3')
+    .to(track, { scaleX: 0.62, duration: 0.8, ease: 'none' });
+
+  return () => {
+    tl.scrollTrigger?.kill();
+    tl.kill();
+  };
 }
 
-/**
- * Buttons reach for the pointer. Driven from the page's one frame loop rather than from a listener
- * per button, and every transform is cleared on dispose so nothing is left displaced.
- */
-export function mountMagnets(
-  root: ParentNode,
-  pointer: PointerState,
-  enabled: boolean,
-): FrameHandle {
-  const buttons = enabled ? all<HTMLElement>(root, '.btn') : [];
-  return {
-    frame() {
-      if (!pointer.has) return;
-      for (const button of buttons) {
-        const rect = button.getBoundingClientRect();
-        const { dx, dy, d } = vectorTo(
-          pointer,
-          rect.left + rect.width / 2,
-          rect.top + rect.height / 2,
+// --- The parent's report --------------------------------------------------------------------------
+
+/** The numbers count, the bars grow, the projection draws — once, as the card arrives. */
+export function mountReport(root: ParentNode): Disposer {
+  const report = root.querySelector<HTMLElement>('#report');
+  if (!report) return () => {};
+  const tweens: gsap.core.Animation[] = [];
+
+  const trigger = ScrollTrigger.create({
+    trigger: report,
+    start: REPORT_START,
+    once: true,
+    onEnter() {
+      for (const el of all<HTMLElement>(report, '.count')) {
+        const to = Number(el.dataset.to ?? 0);
+        // The tween runs 0..1 and the number is derived from it, so the arithmetic that produces
+        // what a parent reads is the pure function `countAt` rather than a rounding buried here.
+        const holder = { k: 0 };
+        tweens.push(
+          gsap.to(holder, {
+            k: 1,
+            duration: 1.2,
+            ease: 'power2.out',
+            onUpdate() {
+              el.textContent = String(countAt(holder.k, to));
+            },
+          }),
         );
-        const offset = magnetOffset(dx, dy, d);
-        if (offset)
-          button.style.transform = `translate(${offset.x.toFixed(1)}px, ${offset.y.toFixed(1)}px)`;
-        else if (button.style.transform) button.style.transform = '';
+      }
+      all<SVGRectElement>(report, '#bars rect').forEach((rect, i) => {
+        const h = Number(rect.dataset.h ?? 0);
+        tweens.push(
+          gsap.to(rect, {
+            attr: { height: h, y: CHART_BASELINE - h },
+            duration: 0.8,
+            delay: i * 0.07,
+            ease: 'power3.out',
+          }),
+        );
+      });
+      const proj = report.querySelector<SVGPathElement>('#proj');
+      if (proj) {
+        measureDraw(proj);
+        tweens.push(
+          gsap.to(proj, { strokeDashoffset: 0, duration: 1.1, delay: 0.7, ease: 'power2.out' }),
+        );
       }
     },
-    dispose() {
-      for (const button of buttons) button.style.transform = '';
-    },
-  };
+  });
+
+  return killer(tweens, [trigger]);
 }
 
+// --- Practice -------------------------------------------------------------------------------------
+
+/** The small, specific fuss when a learner gets it. Fourteen sparks, out and gone. */
+export function burst(box: HTMLElement | null, colors: readonly string[]): void {
+  if (!box) return;
+  for (let i = 0; i < SPARKS; i++) {
+    const spark = document.createElement('i');
+    spark.className = 'spark';
+    spark.style.background = colors[i % colors.length] ?? 'var(--marigold)';
+    spark.style.left = '50%';
+    spark.style.top = '46%';
+    box.appendChild(spark);
+    const { x, y } = sparkVector(i, SPARKS, Math.random());
+    gsap.fromTo(
+      spark,
+      { opacity: 1, x: 0, y: 0, scale: 1 },
+      {
+        opacity: 0,
+        x,
+        y,
+        scale: 0.4,
+        rotate: 180,
+        duration: 0.9,
+        ease: 'power2.out',
+        onComplete: () => spark.remove(),
+      },
+    );
+  }
+}
+
+/** The furthest a spark can travel — read by the test that keeps the burst inside its card. */
+export const SPARK_REACH = SPARK_MIN + SPARK_SPREAD;
+
+/** Wobo rings the difference on the learner's own answer, drawing the loop as it goes. */
+export function drawRing(ring: SVGPathElement | null, d: string): void {
+  if (!ring) return;
+  ring.setAttribute('d', d);
+  if (!d || typeof ring.getTotalLength !== 'function') return;
+  const l = ring.getTotalLength();
+  ring.style.setProperty('--len', String(l));
+  ring.style.strokeDasharray = String(l);
+  ring.style.strokeDashoffset = String(l);
+  gsap.to(ring, { strokeDashoffset: 0, duration: 0.9, ease: 'power2.out' });
+}
+
+// --- The still page --------------------------------------------------------------------------------
+
 /**
- * The still page. Under reduced motion nothing animates in, so everything that would have been
- * revealed is simply put where it belongs, once.
+ * Reduced motion. Nothing animates in, so everything that would have been revealed is simply put
+ * where it belongs: the drawn answer complete, the highlighters swept, the first answer card up.
+ * The stylesheet does the rest (`@media (prefers-reduced-motion: reduce)` in `page-styles.ts`).
  */
 export function settleStill(root: ParentNode): void {
-  // The page's own stylesheet puts the reveals back under `data-motion="off"`; clearing the props
-  // here means nothing this engine wrote is left fighting it.
-  gsap.set(all(root, '.reveal'), { clearProps: 'all' });
-  gsap.set(all(root, '.tile'), { clearProps: 'all' });
-  for (const headline of all(root, 'h2.t')) headline.classList.add('in');
-  gsap.set(all(root, '.lasso path'), { strokeDashoffset: 0 });
-  gsap.set(all(root, '.lasso text'), { opacity: 1 });
-  gsap.set(all(root, '.chip'), { opacity: 1, y: 0 });
-}
-
-// --- Wobo's attention ---------------------------------------------------------------------------
-
-/** How far Wobo's eyes travel from centre, in px, once the pointer is a room away. */
-export const GAZE_REACH = 5;
-
-/** How far the pointer has to be for the eyes to be at full reach. */
-export const GAZE_RANGE = 500;
-
-/** How long the lid takes to close, and how long Wobo holds the blink shut, in ms. */
-export const BLINK_SHUT_MS = 90;
-export const BLINK_HOLD_MS = 110;
-
-/** The shortest wait between blinks, and the random spread on top of it. */
-export const BLINK_MIN_MS = 3200;
-export const BLINK_SPREAD_MS = 3200;
-
-/** How long after the page settles Wobo blinks for the first time. */
-export const BLINK_FIRST_MS = 1800;
-
-/**
- * How far the eyes ride toward a point, in px. Direction is the unit vector to it; the amount
- * grows with distance and stops at `reach`, so a pointer resting on Wobo's face does not push the
- * eyes off it, and a pointer across the room does not pull them further than an eye can go.
- */
-export function gazeOffset(
-  dx: number,
-  dy: number,
-  d: number,
-  reach = GAZE_REACH,
-  range = GAZE_RANGE,
-): { x: number; y: number } {
-  const length = d || 1;
-  const k = Math.min(1, length / range) * reach;
-  return { x: (dx / length) * k, y: (dy / length) * k };
-}
-
-/** The same attention as a -1..1 pair, which is the shape the character rig takes as its `gaze`. */
-export function gazeVector(
-  dx: number,
-  dy: number,
-  d: number,
-  range = GAZE_RANGE,
-): { x: number; y: number } {
-  const offset = gazeOffset(dx, dy, d, 1, range);
-  return { x: offset.x, y: offset.y };
-}
-
-/** The wait before the next blink, from a 0..1 sample. Pure so the rhythm is a tested range. */
-export function nextBlinkDelay(random: number): number {
-  const r = Number.isFinite(random) ? Math.min(1, Math.max(0, random)) : 0;
-  return BLINK_MIN_MS + r * BLINK_SPREAD_MS;
-}
-
-/**
- * Every Wobo on the page watches the pointer.
- *
- * Two things are written per head: the `.eyes` group is translated, exactly as the prototype does,
- * and `--gaze-x`/`--gaze-y` are set on the head itself in -1..1. The custom properties are what
- * lets the real character rig be driven from the same reading as the drawn heads, without a React
- * render per frame.
- */
-export function mountGaze(root: ParentNode, pointer: PointerState): FrameHandle {
-  // The heads are SVG groups in the drawn Wobos and elements in the real rig — both carry a box,
-  // an inline style and an `.eyes` child, which is all this touches.
-  const heads = all<SVGGraphicsElement | HTMLElement>(root, '.wobo');
-  return {
-    frame() {
-      if (!pointer.has) return;
-      for (const head of heads) {
-        const rect = head.getBoundingClientRect();
-        if (!rect.width) continue;
-        const { dx, dy, d } = vectorTo(
-          pointer,
-          rect.left + rect.width / 2,
-          rect.top + rect.height / 2,
-        );
-        const offset = gazeOffset(dx, dy, d);
-        const eyes = head.querySelector<SVGGElement>('.eyes');
-        if (eyes) eyes.style.transform = `translate(${offset.x}px, ${offset.y}px)`;
-        const unit = gazeVector(dx, dy, d);
-        head.style.setProperty('--gaze-x', unit.x.toFixed(3));
-        head.style.setProperty('--gaze-y', unit.y.toFixed(3));
-      }
-    },
-    dispose() {
-      for (const head of heads) {
-        const eyes = head.querySelector<SVGGElement>('.eyes');
-        if (eyes) eyes.style.transform = '';
-        head.style.removeProperty('--gaze-x');
-        head.style.removeProperty('--gaze-y');
-      }
-    },
-  };
-}
-
-/**
- * Wobo blinks. Every head carrying `.blink` squashes for a tenth of a second on an uneven rhythm,
- * which is the whole difference between a character and a logo. Timers only — no frame loop — and
- * every one of them is cleared on dispose.
- */
-export function mountBlink(
-  root: ParentNode,
-  options: { random?: () => number; first?: number } = {},
-): Disposer {
-  const random = options.random ?? Math.random;
-  const lids = all<SVGGraphicsElement | HTMLElement>(root, '.blink');
-  if (!lids.length) return () => {};
-  const timers = new Set<ReturnType<typeof setTimeout>>();
-  let live = true;
-
-  const later = (fn: () => void, ms: number) => {
-    const timer = setTimeout(() => {
-      timers.delete(timer);
-      if (live) fn();
-    }, ms);
-    timers.add(timer);
-  };
-
-  const blink = () => {
-    for (const lid of lids) {
-      lid.style.transition = `transform ${(BLINK_SHUT_MS / 1000).toFixed(2)}s`;
-      lid.style.transformOrigin = 'center';
-      lid.style.transform = 'scaleY(.08)';
-    }
-    later(() => {
-      for (const lid of lids) lid.style.transform = '';
-    }, BLINK_HOLD_MS);
-    later(blink, nextBlinkDelay(random()));
-  };
-
-  later(blink, options.first ?? BLINK_FIRST_MS);
-
-  return () => {
-    live = false;
-    for (const timer of timers) clearTimeout(timer);
-    timers.clear();
-    for (const lid of lids) {
-      lid.style.transition = '';
-      lid.style.transform = '';
-      lid.style.transformOrigin = '';
-    }
-  };
+  for (const el of all<SVGElement>(root, '#hero .draw')) {
+    el.style.strokeDashoffset = '0';
+  }
+  for (const id of ['#d-rays', '#d-lbl1', '#d-head', '#d-lbl2', '#d-cap']) {
+    const el = root.querySelector<SVGElement>(id);
+    if (el) el.setAttribute('opacity', '1');
+  }
+  for (const el of all<HTMLElement>(root, 'h2.t .hl')) el.classList.add('lit');
+  // The counters are the parent's report. A still page that shows 0 minutes and 0 chapters is not a
+  // calmer version of the report, it is a wrong one.
+  for (const el of all<HTMLElement>(root, '.count')) {
+    el.textContent = String(Number(el.dataset.to ?? 0));
+  }
+  for (const el of all<SVGRectElement>(root, '#bars rect')) {
+    const h = Number(el.dataset.h ?? 0);
+    el.setAttribute('height', String(h));
+    el.setAttribute('y', String(CHART_BASELINE - h));
+  }
+  const proj = root.querySelector<SVGPathElement>('#proj');
+  if (proj) proj.style.strokeDashoffset = '0';
+  const nav = root.querySelector<HTMLElement>('#formsNav span');
+  nav?.classList.add('on');
 }

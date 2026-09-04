@@ -14,8 +14,8 @@ import { describe, expect, it } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { buildLandingBoards, CURATED, chipLabel, type Seed } from '../../../scripts/landing-boards';
+import { countLine } from './boards';
 import boards from './boards.json';
-import { countLine } from './sections/Boards';
 
 const SEED = join(
   import.meta.dir,

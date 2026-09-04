@@ -30,12 +30,11 @@ export function Subjects() {
               Every subject. <em>Your school's way.</em>
             </h1>
             <p className="pt-sub">
-              Mathematics, Science, Social science and English, from class 4 to 12, taught in the
-              order your textbook uses and the words your exam expects. Pick a subject to see what a
-              lesson looks like.
+              Every subject your board sets, taught in the order your textbook uses and the words
+              your exam expects. Pick a subject to see what a lesson looks like.
             </p>
             <div className="sb-tiles">
-              <a className="sb-pig" href="#maths">
+              <a href="#maths">
                 <svg viewBox="0 0 200 150" aria-hidden="true">
                   <path className="pt-ink" d="M50 120 L140 120 L50 52 Z" />
                   <path className="pt-ink pt-thin" d="M50 104 h16 v16" />
@@ -48,7 +47,7 @@ export function Subjects() {
                 <span>Number to calculus, drawn.</span>
                 <span className="sb-go">See a lesson →</span>
               </a>
-              <a className="sb-mint" href="#science">
+              <a href="#science">
                 <svg viewBox="0 0 200 150" aria-hidden="true">
                   <path className="pt-ink" d="M100 20 L152 50 L152 110 L100 140 L48 110 L48 50 Z" />
                   <circle className="pt-ink pt-thin" cx="100" cy="80" r="30" />
@@ -60,7 +59,7 @@ export function Subjects() {
                 <span>Physics, chemistry, biology, seen.</span>
                 <span className="sb-go">See a lesson →</span>
               </a>
-              <a className="sb-marigold" href="#social">
+              <a href="#social">
                 <svg viewBox="0 0 200 150" aria-hidden="true">
                   <path
                     className="pt-ink pt-thin"
@@ -80,7 +79,7 @@ export function Subjects() {
                 <span>History, geography, civics, mapped.</span>
                 <span className="sb-go">See a lesson →</span>
               </a>
-              <a className="sb-lilac" href="#english">
+              <a href="#english">
                 <svg viewBox="0 0 200 150" aria-hidden="true">
                   <path
                     className="pt-ink pt-thin"
@@ -124,13 +123,13 @@ export function Subjects() {
                   <b>
                     <mark>Tel</mark>angana State Board (BSE)
                   </b>
-                  <span>classes 6–10</span>
+                  <span>secondary</span>
                 </div>
                 <div className="sb-opt">
                   <b>
                     <mark>Tel</mark>angana Intermediate (TSBIE)
                   </b>
-                  <span>classes 11–12</span>
+                  <span>senior secondary</span>
                 </div>
                 <div className="sb-own">
                   Not listed? <b>Paste your school's syllabus</b>
@@ -150,24 +149,24 @@ export function Subjects() {
                 </span>
                 <h2>Every proof drawn, every number computed.</h2>
                 <p>
-                  Class 4 shares a chocolate bar into quarters. Class 8 sees why a² + b² = c²
-                  instead of memorising it. Class 12 watches an integral fill the area under a
-                  curve. Same pen, same patience.
+                  A chocolate bar shared into quarters. Why a² + b² = c², instead of memorising it.
+                  An integral filling the area under a curve. Same pen, same patience, whatever your
+                  board has set this year.
                 </p>
                 <div className="sb-span">
                   <div>
-                    <b>Class 4 sees</b>Fractions as pieces of a real thing, dragged and shaded.
+                    <b>Early on</b>Fractions as pieces of a real thing, dragged and shaded.
                   </div>
                   <div>
-                    <b>Class 12 sees</b>Limits, derivatives and integrals, built one step at a time
-                    on the graph.
+                    <b>Later</b>Limits, derivatives and integrals, built one step at a time on the
+                    graph.
                   </div>
                 </div>
                 <div className="pt-say">
                   If you can watch it drawn, <em>you can draw it in the exam.</em>
                 </div>
               </div>
-              <div className="pt-art pt-pig">
+              <div className="pt-art">
                 <svg viewBox="0 0 520 340" aria-hidden="true">
                   <rect className="pt-paper" x="30" y="24" width="460" height="292" rx="22" />
                   <path className="pt-ink pt-thin" d="M70 270 h380 M90 290 v-240" />
@@ -198,7 +197,7 @@ export function Subjects() {
                     ← the area, filled
                   </text>
                 </svg>
-                <Sticker style={{ right: 22, top: 18 }}>class 12</Sticker>
+                <Sticker style={{ right: 22, top: 18 }}>integration</Sticker>
               </div>
             </Reveal>
           </div>
@@ -220,17 +219,17 @@ export function Subjects() {
                 </p>
                 <div className="sb-span">
                   <div>
-                    <b>Class 6 sees</b>Light bouncing off a mirror, angle by angle.
+                    <b>Early on</b>Light bouncing off a mirror, angle by angle.
                   </div>
                   <div>
-                    <b>Class 11 sees</b>Bonds, orbitals and equilibrium, animated on the board.
+                    <b>Later</b>Bonds, orbitals and equilibrium, animated on the board.
                   </div>
                 </div>
                 <div className="pt-say">
                   Predict first. <em>Then watch.</em>
                 </div>
               </div>
-              <div className="pt-art pt-mint">
+              <div className="pt-art">
                 <svg viewBox="0 0 520 340" aria-hidden="true">
                   <rect className="pt-paper" x="30" y="24" width="460" height="292" rx="22" />
                   <g transform="translate(200 170)">
@@ -283,7 +282,7 @@ export function Subjects() {
                   </text>
                 </svg>
                 <Sticker rotate={4} style={{ left: 22, bottom: 18 }}>
-                  class 11
+                  aromatic rings
                 </Sticker>
               </div>
             </Reveal>
@@ -306,18 +305,17 @@ export function Subjects() {
                 </p>
                 <div className="sb-span">
                   <div>
-                    <b>Class 5 sees</b>A river, a plain, a port, and why the city is where it is.
+                    <b>Early on</b>A river, a plain, a port, and why the city is where it is.
                   </div>
                   <div>
-                    <b>Class 10 sees</b>Timelines, resource maps and how a bill becomes law, step by
-                    step.
+                    <b>Later</b>Timelines, resource maps and how a bill becomes law, step by step.
                   </div>
                 </div>
                 <div className="pt-say">
                   The map first, <em>then the story.</em>
                 </div>
               </div>
-              <div className="pt-art pt-marigold">
+              <div className="pt-art">
                 <svg viewBox="0 0 520 340" aria-hidden="true">
                   <rect className="pt-paper" x="30" y="24" width="460" height="292" rx="22" />
                   <path
@@ -360,7 +358,7 @@ export function Subjects() {
                     </text>
                   </g>
                 </svg>
-                <Sticker style={{ right: 22, top: 18 }}>class 7</Sticker>
+                <Sticker style={{ right: 22, top: 18 }}>empires and rivers</Sticker>
               </div>
             </Reveal>
           </div>
@@ -382,18 +380,17 @@ export function Subjects() {
                 </p>
                 <div className="sb-span">
                   <div>
-                    <b>Class 4 sees</b>Nouns and verbs coloured in a sentence you wrote.
+                    <b>Early on</b>Nouns and verbs coloured in a sentence you wrote.
                   </div>
                   <div>
-                    <b>Class 12 sees</b>Argument, tone and structure, marked across your whole
-                    essay.
+                    <b>Later</b>Argument, tone and structure, marked across your whole essay.
                   </div>
                 </div>
                 <div className="pt-say">
                   Your writing, <em>with the pen on it.</em>
                 </div>
               </div>
-              <div className="pt-art pt-lilac">
+              <div className="pt-art">
                 <svg viewBox="0 0 520 340" aria-hidden="true">
                   <rect className="pt-paper" x="30" y="24" width="460" height="292" rx="22" />
                   <g fontFamily="Poppins,sans-serif" fontSize="17" fill="var(--ink)">
@@ -434,7 +431,7 @@ export function Subjects() {
                   </text>
                 </svg>
                 <Sticker rotate={4} style={{ left: 22, bottom: 18 }}>
-                  class 9
+                  your own draft
                 </Sticker>
               </div>
             </Reveal>
@@ -447,9 +444,9 @@ export function Subjects() {
               <PitchAsk
                 page="subjects"
                 heading="Ask Wobo about your subject, your board, your class."
-                placeholder="Do you cover ICSE Class 9 physics?"
+                placeholder="Do you cover ICSE physics?"
                 chips={[
-                  'Which chapter is Class 8 CBSE maths on this week?',
+                  'Which chapter is my CBSE maths class on this week?',
                   'Can you teach Hindi?',
                   'My school uses its own books',
                 ]}
@@ -458,7 +455,7 @@ export function Subjects() {
           </div>
         </section>
 
-        <ClosePanel title="Your subject, tonight." />
+        <ClosePanel title="Your subject, in the first group." />
       </div>
     </SiteShell>
   );

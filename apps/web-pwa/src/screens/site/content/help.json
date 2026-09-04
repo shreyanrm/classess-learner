@@ -13,7 +13,7 @@
           "lead": [
             {
               "t": "strong",
-              "v": "Wobo is a tutor who explains things by drawing them, live, on your own syllabus."
+              "v": "Wobo is a tutor that explains things live, on your own syllabus, in whichever form the idea needs."
             }
           ],
           "blocks": [
@@ -22,7 +22,7 @@
               "text": [
                 {
                   "t": "text",
-                  "v": "Ask Wobo anything and the answer arrives as ink. A pointer at the part of the diagram you asked about. A graph built while Wobo talks you through it. A derivation written out line by line in Wobo's own handwriting."
+                  "v": "Ask Wobo anything and the answer arrives the way it should: a board drawn in ink while Wobo talks, a short film you can pause anywhere, a model you can drag, or your own writing marked up. Then practice, and a memory of what did not stick."
                 }
               ]
             },
@@ -31,7 +31,7 @@
               "text": [
                 {
                   "t": "text",
-                  "v": "Wobo is on every screen in the app. On the home screen Wobo is the conversation. Everywhere else Wobo is the small orb in the corner, watching the screen with you and one tap from drawing on it."
+                  "v": "Wobo is on every screen. On the home screen Wobo is the conversation; everywhere else it is the small orb in the corner, watching the screen with you and one tap from picking the thing up again."
                 }
               ]
             },
@@ -40,7 +40,7 @@
               "text": [
                 {
                   "t": "text",
-                  "v": "Three things make Wobo different from a video or a search box:"
+                  "v": "Four things make Wobo different from a video or a search box:"
                 }
               ]
             },
@@ -60,21 +60,31 @@
                 [
                   {
                     "t": "strong",
-                    "v": "It is drawn for you, now."
+                    "v": "It is made for you, now."
                   },
                   {
                     "t": "text",
-                    "v": " Nothing is pre-recorded. If you ask the same question tomorrow with a different example, you get a different drawing."
+                    "v": " Nothing is pre-recorded. Ask the same question tomorrow and you get a different answer, often in a different form."
                   }
                 ],
                 [
                   {
                     "t": "strong",
-                    "v": "Every number is checked before it is drawn."
+                    "v": "Drawing is one part of it."
                   },
                   {
                     "t": "text",
-                    "v": " The maths is computed and verified by code, not remembered. If a check fails, Wobo redraws it or tells you."
+                    "v": " Wobo also films, simulates, speaks, sets practice, remembers what you missed and writes the Sunday note home."
+                  }
+                ],
+                [
+                  {
+                    "t": "strong",
+                    "v": "Every number is checked before it is shown."
+                  },
+                  {
+                    "t": "text",
+                    "v": " The maths is computed and verified by code, not remembered. If a check fails, Wobo redoes it or tells you."
                   }
                 ]
               ]
@@ -84,13 +94,13 @@
               "text": [
                 {
                   "t": "text",
-                  "v": "Wobo is free to use. A Plus plan gives you more turns and a few extras; the free tier is a real product, not a trailer."
+                  "v": "Wobo is free to use, every day, with an allowance of questions that resets each morning. Pro and Max raise that allowance; the free tier is a real product, not a trailer."
                 }
               ]
             }
           ],
-          "plain": "Wobo is a tutor who explains things by drawing them, live, on your own syllabus. Ask Wobo anything and the answer arrives as ink. A pointer at the part of the diagram you asked about. A graph built while Wobo talks you through it. A derivation written out line by line in Wobo's own handwriting. Wobo is on every screen in the app. On the home screen Wobo is the conversation. Everywhere else Wobo is the small orb in the corner, watching the screen with you and one tap from drawing on it. Three things make Wobo different from a video or a search box: It is your syllabus. You pick your board and class, and Wobo teaches that, chapter by chapter, in its order. It is drawn for you, now. Nothing is pre-recorded. If you ask the same question tomorrow with a different example, you get a different drawing. Every number is checked before it is drawn. The maths is computed and verified by code, not remembered. If a check fails, Wobo redraws it or tells you. Wobo is free to use. A Plus plan gives you more turns and a few extras; the free tier is a real product, not a trailer.",
-          "text": "what is wobo wobo is a tutor who explains things by drawing them, live, on your own syllabus. ask wobo anything and the answer arrives as ink. a pointer at the part of the diagram you asked about. a graph built while wobo talks you through it. a derivation written out line by line in wobo's own handwriting. wobo is on every screen in the app. on the home screen wobo is the conversation. everywhere else wobo is the small orb in the corner, watching the screen with you and one tap from drawing on it. three things make wobo different from a video or a search box: it is your syllabus. you pick your board and class, and wobo teaches that, chapter by chapter, in its order. it is drawn for you, now. nothing is pre-recorded. if you ask the same question tomorrow with a different example, you get a different drawing. every number is checked before it is drawn. the maths is computed and verified by code, not remembered. if a check fails, wobo redraws it or tells you. wobo is free to use. a plus plan gives you more turns and a few extras; the free tier is a real product, not a trailer.",
+          "plain": "Wobo is a tutor that explains things live, on your own syllabus, in whichever form the idea needs. Ask Wobo anything and the answer arrives the way it should: a board drawn in ink while Wobo talks, a short film you can pause anywhere, a model you can drag, or your own writing marked up. Then practice, and a memory of what did not stick. Wobo is on every screen. On the home screen Wobo is the conversation; everywhere else it is the small orb in the corner, watching the screen with you and one tap from picking the thing up again. Four things make Wobo different from a video or a search box: It is your syllabus. You pick your board and class, and Wobo teaches that, chapter by chapter, in its order. It is made for you, now. Nothing is pre-recorded. Ask the same question tomorrow and you get a different answer, often in a different form. Drawing is one part of it. Wobo also films, simulates, speaks, sets practice, remembers what you missed and writes the Sunday note home. Every number is checked before it is shown. The maths is computed and verified by code, not remembered. If a check fails, Wobo redoes it or tells you. Wobo is free to use, every day, with an allowance of questions that resets each morning. Pro and Max raise that allowance; the free tier is a real product, not a trailer.",
+          "text": "what is wobo wobo is a tutor that explains things live, on your own syllabus, in whichever form the idea needs. ask wobo anything and the answer arrives the way it should: a board drawn in ink while wobo talks, a short film you can pause anywhere, a model you can drag, or your own writing marked up. then practice, and a memory of what did not stick. wobo is on every screen. on the home screen wobo is the conversation; everywhere else it is the small orb in the corner, watching the screen with you and one tap from picking the thing up again. four things make wobo different from a video or a search box: it is your syllabus. you pick your board and class, and wobo teaches that, chapter by chapter, in its order. it is made for you, now. nothing is pre-recorded. ask the same question tomorrow and you get a different answer, often in a different form. drawing is one part of it. wobo also films, simulates, speaks, sets practice, remembers what you missed and writes the sunday note home. every number is checked before it is shown. the maths is computed and verified by code, not remembered. if a check fails, wobo redoes it or tells you. wobo is free to use, every day, with an allowance of questions that resets each morning. pro and max raise that allowance; the free tier is a real product, not a trailer.",
           "next": {
             "group": "wobo-basics",
             "slug": "your-first-five-minutes",
@@ -1036,7 +1046,7 @@
           "lead": [
             {
               "t": "strong",
-              "v": "Wobo is free to use. Plus removes the daily limit on turns, and the price is the same for everyone."
+              "v": "Wobo is free to use every day. Pro and Max raise the daily allowance for exam season, and the price is the same for everyone."
             }
           ],
           "blocks": [
@@ -1054,7 +1064,7 @@
               "text": [
                 {
                   "t": "text",
-                  "v": "A real product, not a trial. Your board, your lessons, the board in all three forms, practice, boss battles, your progress and the parent link. What is limited is how many turns you get each day. The counter is on screen and tells you the exact time it resets."
+                  "v": "A real product, not a trial. The whole tutor: your board, your lessons, the drawn board, the films, the models you can drag, practice, boss battles, your progress and the parent link. What is limited is how many turns you get each day. The counter is on screen and tells you the exact time it resets."
                 }
               ]
             },
@@ -1063,7 +1073,7 @@
               "text": [
                 {
                   "t": "strong",
-                  "v": "Plus"
+                  "v": "Pro"
                 }
               ]
             },
@@ -1072,7 +1082,34 @@
               "text": [
                 {
                   "t": "text",
-                  "v": "No daily limit on turns. Monthly or annual, and annual costs less per month."
+                  "v": "Five times the free allowance, and Wobo reads answers aloud in your accent."
+                }
+              ]
+            },
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "strong",
+                  "v": "Max"
+                }
+              ]
+            },
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "Twenty times the free allowance, so nobody counts, and two learners on one plan. For the board year."
+                }
+              ]
+            },
+            {
+              "k": "p",
+              "text": [
+                {
+                  "t": "text",
+                  "v": "No plan unlocks the teacher. Every subject and every form is in Free; what a plan buys is room to ask more in a day."
                 }
               ]
             },
@@ -1090,7 +1127,7 @@
               "text": [
                 {
                   "t": "text",
-                  "v": "One turn is one thing you ask Wobo, and everything Wobo draws and says in reply."
+                  "v": "One turn is one thing you ask Wobo, and everything Wobo draws, plays, says or sets for you in reply."
                 }
               ]
             },
@@ -1144,7 +1181,7 @@
               "text": [
                 {
                   "t": "text",
-                  "v": "Settings, then plan, then cancel. We offer you a pause or a smaller plan first; say no and it is done on the next screen. You keep Plus until the end of the period you paid for, then the account goes back to free with everything you have learnt intact."
+                  "v": "Settings, then plan, then cancel. We offer you a pause or a smaller plan first; say no and it is done on the next screen. You keep your plan until the end of the period you paid for, then the account goes back to free with everything you have learnt intact."
                 }
               ]
             },
@@ -1188,8 +1225,8 @@
               ]
             }
           ],
-          "plain": "Wobo is free to use. Plus removes the daily limit on turns, and the price is the same for everyone. A real product, not a trial. Your board, your lessons, the board in all three forms, practice, boss battles, your progress and the parent link. What is limited is how many turns you get each day. The counter is on screen and tells you the exact time it resets. No daily limit on turns. Monthly or annual, and annual costs less per month. One turn is one thing you ask Wobo, and everything Wobo draws and says in reply. Card, or the payment method your device offers. At checkout you confirm two things in writing: that you accept the terms and the privacy notice, and that you understand the amount, when it renews and how to cancel. You should never be surprised by a charge. We write to you 7 days before any renewal, and 30 days before as well if you are on an annual or family plan, with the amount and the date. Cancel any time before it and you are not charged. Settings, then plan, then cancel. We offer you a pause or a smaller plan first; say no and it is done on the next screen. You keep Plus until the end of the period you paid for, then the account goes back to free with everything you have learnt intact. Every payment gets one by email. For anything that looks wrong, write to [support email] with it. Related: Your privacy and your data.",
-          "text": "plans and billing wobo is free to use. plus removes the daily limit on turns, and the price is the same for everyone. free a real product, not a trial. your board, your lessons, the board in all three forms, practice, boss battles, your progress and the parent link. what is limited is how many turns you get each day. the counter is on screen and tells you the exact time it resets. plus no daily limit on turns. monthly or annual, and annual costs less per month. what \"turns\" means one turn is one thing you ask wobo, and everything wobo draws and says in reply. paying card, or the payment method your device offers. at checkout you confirm two things in writing: that you accept the terms and the privacy notice, and that you understand the amount, when it renews and how to cancel. you should never be surprised by a charge. renewals we write to you 7 days before any renewal, and 30 days before as well if you are on an annual or family plan, with the amount and the date. cancel any time before it and you are not charged. cancelling settings, then plan, then cancel. we offer you a pause or a smaller plan first; say no and it is done on the next screen. you keep plus until the end of the period you paid for, then the account goes back to free with everything you have learnt intact. receipts every payment gets one by email. for anything that looks wrong, write to [support email] with it. related: your privacy and your data."
+          "plain": "Wobo is free to use every day. Pro and Max raise the daily allowance for exam season, and the price is the same for everyone. A real product, not a trial. The whole tutor: your board, your lessons, the drawn board, the films, the models you can drag, practice, boss battles, your progress and the parent link. What is limited is how many turns you get each day. The counter is on screen and tells you the exact time it resets. Five times the free allowance, and Wobo reads answers aloud in your accent. Twenty times the free allowance, so nobody counts, and two learners on one plan. For the board year. No plan unlocks the teacher. Every subject and every form is in Free; what a plan buys is room to ask more in a day. One turn is one thing you ask Wobo, and everything Wobo draws, plays, says or sets for you in reply. Card, or the payment method your device offers. At checkout you confirm two things in writing: that you accept the terms and the privacy notice, and that you understand the amount, when it renews and how to cancel. You should never be surprised by a charge. We write to you 7 days before any renewal, and 30 days before as well if you are on an annual or family plan, with the amount and the date. Cancel any time before it and you are not charged. Settings, then plan, then cancel. We offer you a pause or a smaller plan first; say no and it is done on the next screen. You keep your plan until the end of the period you paid for, then the account goes back to free with everything you have learnt intact. Every payment gets one by email. For anything that looks wrong, write to [support email] with it. Related: Your privacy and your data.",
+          "text": "plans and billing wobo is free to use every day. pro and max raise the daily allowance for exam season, and the price is the same for everyone. free a real product, not a trial. the whole tutor: your board, your lessons, the drawn board, the films, the models you can drag, practice, boss battles, your progress and the parent link. what is limited is how many turns you get each day. the counter is on screen and tells you the exact time it resets. pro five times the free allowance, and wobo reads answers aloud in your accent. max twenty times the free allowance, so nobody counts, and two learners on one plan. for the board year. no plan unlocks the teacher. every subject and every form is in free; what a plan buys is room to ask more in a day. what \"turns\" means one turn is one thing you ask wobo, and everything wobo draws, plays, says or sets for you in reply. paying card, or the payment method your device offers. at checkout you confirm two things in writing: that you accept the terms and the privacy notice, and that you understand the amount, when it renews and how to cancel. you should never be surprised by a charge. renewals we write to you 7 days before any renewal, and 30 days before as well if you are on an annual or family plan, with the amount and the date. cancel any time before it and you are not charged. cancelling settings, then plan, then cancel. we offer you a pause or a smaller plan first; say no and it is done on the next screen. you keep your plan until the end of the period you paid for, then the account goes back to free with everything you have learnt intact. receipts every payment gets one by email. for anything that looks wrong, write to [support email] with it. related: your privacy and your data."
         },
         {
           "slug": "your-privacy-and-your-data",
@@ -3192,7 +3229,7 @@
               "text": [
                 {
                   "t": "text",
-                  "v": "Class 4 to class 12 or 13, whatever your board calls them: class, grade, year or stage. Wobo uses your board's own word."
+                  "v": "Every level your board sets, whatever your board calls them: class, grade, year or stage. Wobo uses your board's own word."
                 }
               ]
             },
@@ -3264,8 +3301,8 @@
               ]
             }
           ],
-          "plain": "Type the name of your board or programme, pick it from the list, then pick your class. That is what Wobo teaches you from then on. The list covers national boards, state boards, open schooling, international programmes, and the common homeschool programmes, with their usual short names and abbreviations. Start typing and it narrows as you go; your country is used as a hint so the likely ones come first. The list shows the country and the levels each one covers, which is usually enough to tell two similar names apart. Pick one and open a subject; if the chapter list is not the one on your desk, change it in settings and nothing is lost. Class 4 to class 12 or 13, whatever your board calls them: class, grade, year or stage. Wobo uses your board's own word. Wobo shows the subjects your board sets for that class. Turn off the ones you do not take. Settings, then your board. Changing board or class keeps everything you have learnt; Wobo maps what you already know onto the new syllabus and tells you what carries across. Perfectly normal, for example a school board plus an entrance syllabus. Add the second one and switch between them from the subject grid. Related: Your board is not in the list.",
-          "text": "choosing your board and class type the name of your board or programme, pick it from the list, then pick your class. that is what wobo teaches you from then on. the list covers national boards, state boards, open schooling, international programmes, and the common homeschool programmes, with their usual short names and abbreviations. start typing and it narrows as you go; your country is used as a hint so the likely ones come first. if more than one looks right the list shows the country and the levels each one covers, which is usually enough to tell two similar names apart. pick one and open a subject; if the chapter list is not the one on your desk, change it in settings and nothing is lost. then your class class 4 to class 12 or 13, whatever your board calls them: class, grade, year or stage. wobo uses your board's own word. then your subjects wobo shows the subjects your board sets for that class. turn off the ones you do not take. changing it later settings, then your board. changing board or class keeps everything you have learnt; wobo maps what you already know onto the new syllabus and tells you what carries across. studying two at once perfectly normal, for example a school board plus an entrance syllabus. add the second one and switch between them from the subject grid. related: your board is not in the list."
+          "plain": "Type the name of your board or programme, pick it from the list, then pick your class. That is what Wobo teaches you from then on. The list covers national boards, state boards, open schooling, international programmes, and the common homeschool programmes, with their usual short names and abbreviations. Start typing and it narrows as you go; your country is used as a hint so the likely ones come first. The list shows the country and the levels each one covers, which is usually enough to tell two similar names apart. Pick one and open a subject; if the chapter list is not the one on your desk, change it in settings and nothing is lost. Every level your board sets, whatever your board calls them: class, grade, year or stage. Wobo uses your board's own word. Wobo shows the subjects your board sets for that class. Turn off the ones you do not take. Settings, then your board. Changing board or class keeps everything you have learnt; Wobo maps what you already know onto the new syllabus and tells you what carries across. Perfectly normal, for example a school board plus an entrance syllabus. Add the second one and switch between them from the subject grid. Related: Your board is not in the list.",
+          "text": "choosing your board and class type the name of your board or programme, pick it from the list, then pick your class. that is what wobo teaches you from then on. the list covers national boards, state boards, open schooling, international programmes, and the common homeschool programmes, with their usual short names and abbreviations. start typing and it narrows as you go; your country is used as a hint so the likely ones come first. if more than one looks right the list shows the country and the levels each one covers, which is usually enough to tell two similar names apart. pick one and open a subject; if the chapter list is not the one on your desk, change it in settings and nothing is lost. then your class every level your board sets, whatever your board calls them: class, grade, year or stage. wobo uses your board's own word. then your subjects wobo shows the subjects your board sets for that class. turn off the ones you do not take. changing it later settings, then your board. changing board or class keeps everything you have learnt; wobo maps what you already know onto the new syllabus and tells you what carries across. studying two at once perfectly normal, for example a school board plus an entrance syllabus. add the second one and switch between them from the subject grid. related: your board is not in the list."
         },
         {
           "slug": "board-not-listed",
@@ -3828,7 +3865,7 @@
           "lead": [
             {
               "t": "strong",
-              "v": "School subjects, from about class 4 to class 12 or 13, on whichever board you study, in English."
+              "v": "Every subject your board sets, on whichever board you study, in English."
             }
           ],
           "blocks": [
@@ -3846,7 +3883,7 @@
               "text": [
                 {
                   "t": "text",
-                  "v": "From class 4 up to class 12 or 13, wherever a board has them. Below class 4 and above school level, we do not pretend. We would rather do school properly than do everything badly."
+                  "v": "Every school level your board has, from the first year it sets a syllabus to the last. Above school level we do not pretend. We would rather do school properly than do everything badly."
                 }
               ]
             },
@@ -3882,7 +3919,7 @@
               "text": [
                 {
                   "t": "text",
-                  "v": "Anything that can be drawn, computed, simulated or argued out on a board: mathematics, physics, chemistry, biology, geography, economics, and the reasoning parts of everything else."
+                  "v": "Anything that can be drawn, filmed, computed, simulated, spoken or argued out: mathematics, physics, chemistry, biology, geography, economics, and the reasoning parts of everything else."
                 }
               ]
             },
@@ -3954,8 +3991,8 @@
               ]
             }
           ],
-          "plain": "School subjects, from about class 4 to class 12 or 13, on whichever board you study, in English. From class 4 up to class 12 or 13, wherever a board has them. Below class 4 and above school level, we do not pretend. We would rather do school properly than do everything badly. Whatever your board sets for your class. In most cases that means mathematics, science or the separate physics, chemistry and biology, social science or its separate subjects, and the language and skill subjects your board defines. Wobo uses your board's own names and its own grouping. Anything that can be drawn, computed, simulated or argued out on a board: mathematics, physics, chemistry, biology, geography, economics, and the reasoning parts of everything else. Wobo is not a marking scheme and does not know your school's internal question papers. For a subject that turns on your teacher's own notes, attach them and Wobo works from those. English first. Say things to Wobo in your own language mid-sentence and Wobo will follow. Your board's names for things are kept in the original alongside the English, so nothing gets lost. Once a topic is done, Wobo sometimes offers a hidden lesson on something genuinely interesting just outside it. Optional, and worth taking. Related: Choosing your board and class.",
-          "text": "what wobo covers school subjects, from about class 4 to class 12 or 13, on whichever board you study, in english. levels from class 4 up to class 12 or 13, wherever a board has them. below class 4 and above school level, we do not pretend. we would rather do school properly than do everything badly. subjects whatever your board sets for your class. in most cases that means mathematics, science or the separate physics, chemistry and biology, social science or its separate subjects, and the language and skill subjects your board defines. wobo uses your board's own names and its own grouping. what wobo is best at anything that can be drawn, computed, simulated or argued out on a board: mathematics, physics, chemistry, biology, geography, economics, and the reasoning parts of everything else. what wobo is honest about wobo is not a marking scheme and does not know your school's internal question papers. for a subject that turns on your teacher's own notes, attach them and wobo works from those. language english first. say things to wobo in your own language mid-sentence and wobo will follow. your board's names for things are kept in the original alongside the english, so nothing gets lost. beyond the syllabus once a topic is done, wobo sometimes offers a hidden lesson on something genuinely interesting just outside it. optional, and worth taking. related: choosing your board and class."
+          "plain": "Every subject your board sets, on whichever board you study, in English. Every school level your board has, from the first year it sets a syllabus to the last. Above school level we do not pretend. We would rather do school properly than do everything badly. Whatever your board sets for your class. In most cases that means mathematics, science or the separate physics, chemistry and biology, social science or its separate subjects, and the language and skill subjects your board defines. Wobo uses your board's own names and its own grouping. Anything that can be drawn, filmed, computed, simulated, spoken or argued out: mathematics, physics, chemistry, biology, geography, economics, and the reasoning parts of everything else. Wobo is not a marking scheme and does not know your school's internal question papers. For a subject that turns on your teacher's own notes, attach them and Wobo works from those. English first. Say things to Wobo in your own language mid-sentence and Wobo will follow. Your board's names for things are kept in the original alongside the English, so nothing gets lost. Once a topic is done, Wobo sometimes offers a hidden lesson on something genuinely interesting just outside it. Optional, and worth taking. Related: Choosing your board and class.",
+          "text": "what wobo covers every subject your board sets, on whichever board you study, in english. levels every school level your board has, from the first year it sets a syllabus to the last. above school level we do not pretend. we would rather do school properly than do everything badly. subjects whatever your board sets for your class. in most cases that means mathematics, science or the separate physics, chemistry and biology, social science or its separate subjects, and the language and skill subjects your board defines. wobo uses your board's own names and its own grouping. what wobo is best at anything that can be drawn, filmed, computed, simulated, spoken or argued out: mathematics, physics, chemistry, biology, geography, economics, and the reasoning parts of everything else. what wobo is honest about wobo is not a marking scheme and does not know your school's internal question papers. for a subject that turns on your teacher's own notes, attach them and wobo works from those. language english first. say things to wobo in your own language mid-sentence and wobo will follow. your board's names for things are kept in the original alongside the english, so nothing gets lost. beyond the syllabus once a topic is done, wobo sometimes offers a hidden lesson on something genuinely interesting just outside it. optional, and worth taking. related: choosing your board and class."
         },
         {
           "slug": "when-your-syllabus-changes",
@@ -4327,7 +4364,7 @@
               "text": [
                 {
                   "t": "text",
-                  "v": "Wobo will not send a class 10 learner back to class 8 because a graph exists. Gates are scoped to where you started."
+                  "v": "Wobo will not send you two years back because a graph exists. Gates are scoped to where you started."
                 }
               ]
             },
@@ -4363,8 +4400,8 @@
               ]
             }
           ],
-          "plain": "If a topic needs something you have not done yet, Wobo says so and offers to cover it first. You can always go ahead anyway. A gate in Wobo is advice, never a wall. There is no locked padlock and no \"complete the previous unit to continue\". One quiet line before you start: what this topic leans on, whether you have it, and a shortcut to the missing piece. Then two doors: cover that first, or carry on. Every topic is joined to the ideas it depends on. Wobo knows which of those you can do on your own, which you can do with help, and which you have not met. The line you see is built from that, not from whether you clicked through a unit. If you do go ahead, Wobo teaches the new thing using only ideas you have actually mastered as the stepping stones. Same destination, different route, built for what you personally know. That is often better than going back. Wobo will not send a class 10 learner back to class 8 because a graph exists. Gates are scoped to where you started. Choose \"carry on\" and Wobo drops it for that topic. Wobo does not ask twice. Related: Your progress.",
-          "text": "prerequisites and gates if a topic needs something you have not done yet, wobo says so and offers to cover it first. you can always go ahead anyway. a gate in wobo is advice, never a wall. there is no locked padlock and no \"complete the previous unit to continue\". what you see one quiet line before you start: what this topic leans on, whether you have it, and a shortcut to the missing piece. then two doors: cover that first, or carry on. where the advice comes from every topic is joined to the ideas it depends on. wobo knows which of those you can do on your own, which you can do with help, and which you have not met. the line you see is built from that, not from whether you clicked through a unit. the bridge if you do go ahead, wobo teaches the new thing using only ideas you have actually mastered as the stepping stones. same destination, different route, built for what you personally know. that is often better than going back. if you joined mid-school wobo will not send a class 10 learner back to class 8 because a graph exists. gates are scoped to where you started. turning the advice down choose \"carry on\" and wobo drops it for that topic. wobo does not ask twice. related: your progress."
+          "plain": "If a topic needs something you have not done yet, Wobo says so and offers to cover it first. You can always go ahead anyway. A gate in Wobo is advice, never a wall. There is no locked padlock and no \"complete the previous unit to continue\". One quiet line before you start: what this topic leans on, whether you have it, and a shortcut to the missing piece. Then two doors: cover that first, or carry on. Every topic is joined to the ideas it depends on. Wobo knows which of those you can do on your own, which you can do with help, and which you have not met. The line you see is built from that, not from whether you clicked through a unit. If you do go ahead, Wobo teaches the new thing using only ideas you have actually mastered as the stepping stones. Same destination, different route, built for what you personally know. That is often better than going back. Wobo will not send you two years back because a graph exists. Gates are scoped to where you started. Choose \"carry on\" and Wobo drops it for that topic. Wobo does not ask twice. Related: Your progress.",
+          "text": "prerequisites and gates if a topic needs something you have not done yet, wobo says so and offers to cover it first. you can always go ahead anyway. a gate in wobo is advice, never a wall. there is no locked padlock and no \"complete the previous unit to continue\". what you see one quiet line before you start: what this topic leans on, whether you have it, and a shortcut to the missing piece. then two doors: cover that first, or carry on. where the advice comes from every topic is joined to the ideas it depends on. wobo knows which of those you can do on your own, which you can do with help, and which you have not met. the line you see is built from that, not from whether you clicked through a unit. the bridge if you do go ahead, wobo teaches the new thing using only ideas you have actually mastered as the stepping stones. same destination, different route, built for what you personally know. that is often better than going back. if you joined mid-school wobo will not send you two years back because a graph exists. gates are scoped to where you started. turning the advice down choose \"carry on\" and wobo drops it for that topic. wobo does not ask twice. related: your progress."
         },
         {
           "slug": "subjects-chapters-topics",

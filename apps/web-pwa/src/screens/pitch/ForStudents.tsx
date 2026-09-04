@@ -162,13 +162,13 @@ export function ForStudents() {
                 Ask the question you'd <em>never ask in class.</em>
               </h1>
               <p className="pt-sub">
-                The basic one. The embarrassing one. The one you should've asked in Class 6. Wobo
+                The basic one. The embarrassing one. The one you should have asked years ago. Wobo
                 answers all of them the same way: drawn out, no face, no sigh, at 10 pm if that's
                 when you're doing this.
               </p>
               <div className="pt-row">
                 <SiteLink className="st-btn st-pig" to={{ name: 'onboarding' }}>
-                  Start learning for free
+                  Get early access
                 </SiteLink>
                 <a className="st-btn st-quiet" href="#try">
                   Try one now
@@ -226,7 +226,7 @@ export function ForStudents() {
                   No face. No sigh. <em>Just the answer, drawn.</em>
                 </div>
               </div>
-              <div className="pt-art pt-pig">
+              <div className="pt-art">
                 <div className="pt-chat">
                   <div className="pt-t">Tuesday, 9:41 pm</div>
                   <div className="pt-me">ok dumb question but what actually is a hypotenuse</div>
@@ -260,7 +260,7 @@ export function ForStudents() {
                   If you can watch it being drawn, <em>you can draw it in the exam.</em>
                 </div>
               </div>
-              <div className="pt-art pt-mint">
+              <div className="pt-art">
                 <svg viewBox="0 0 520 360" aria-hidden="true">
                   <rect className="pt-paper" x="30" y="30" width="460" height="300" rx="22" />
                   <path className="pt-ink pt-draw" d="M170 270 L290 270 L170 180 Z" />
@@ -316,7 +316,7 @@ export function ForStudents() {
                   Wrong isn't a word Wobo uses. <em>"Close" is.</em>
                 </div>
               </div>
-              <div className="pt-art pt-marigold">
+              <div className="pt-art">
                 <Puzzle />
               </div>
             </Reveal>
@@ -340,7 +340,7 @@ export function ForStudents() {
                   Praise you earned <em>hits different.</em>
                 </div>
               </div>
-              <div className="pt-art pt-lilac">
+              <div className="pt-art">
                 <Angle />
               </div>
             </Reveal>
@@ -364,7 +364,7 @@ export function ForStudents() {
                   Consistency beats cramming. <em>Every single time.</em>
                 </div>
               </div>
-              <div className="pt-art pt-rose">
+              <div className="pt-art">
                 <div className="su-streak">
                   <div className="su-n">
                     12<small>days, your way</small>
@@ -403,7 +403,7 @@ export function ForStudents() {
         </section>
 
         <ClosePanel
-          title="Ask it tonight."
+          title="Be first in line."
           quiet={{ label: 'See how it works', href: '/how-it-works' }}
         />
       </div>

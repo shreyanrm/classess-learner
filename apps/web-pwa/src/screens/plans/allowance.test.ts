@@ -49,26 +49,49 @@ describe('readAllowance', () => {
 });
 
 describe('allowanceLine', () => {
-  it('says what is left, and when it comes back', () => {
-    const a = readAllowance(me({ used: 8, limit: 20, remaining: 12 }, '2026-09-04T05:00:00Z'));
-    expect(allowanceLine(a, at)).toBe('12 turns of 20 left today. They come back at 5:00.');
+  it('says how much of today is left, and when it comes back', () => {
+    const a = readAllowance(me({ used: 2, limit: 20, remaining: 18 }, '2026-09-04T05:00:00Z'));
+    expect(allowanceLine(a, at)).toBe(
+      "Most of today's allowance is still there. It comes back at 5:00.",
+    );
   });
 
-  it('counts one turn as one turn', () => {
-    const a = readAllowance(me({ used: 19, limit: 20, remaining: 1 }, null));
-    expect(allowanceLine(a, at)).toBe('1 turn of 20 left today.');
+  it('drops a step as the day is spent', () => {
+    const half = readAllowance(me({ used: 10, limit: 20, remaining: 10 }, null));
+    expect(allowanceLine(half, at)).toBe(
+      "About half of today's allowance is left. It comes back when the day rolls over.",
+    );
+    const nearly = readAllowance(me({ used: 19, limit: 20, remaining: 1 }, null));
+    expect(allowanceLine(nearly, at)).toBe(
+      "Today's allowance is nearly used up. It comes back when the day rolls over.",
+    );
   });
 
-  it('says the day is spent without a number nobody asked for', () => {
+  it('says the day is spent', () => {
     const a = readAllowance(me({ used: 20, limit: 20, remaining: 0 }, null));
     expect(allowanceLine(a, at)).toBe(
-      'No turns left today (20 a day). They come back when the day rolls over.',
+      "Today's allowance is used up. It comes back when the day rolls over.",
     );
   });
 
   it('admits when it cannot see the budget', () => {
     expect(allowanceLine(readAllowance(null), at)).toBe(
-      'Sign in and this shows how many turns are left today, and when they come back.',
+      'Sign in and this shows how much of today is left, and when it comes back.',
     );
+  });
+
+  /** Law v5 (DESIGN.md §0): no raw allowance reaches a reader, on any reading. */
+  it('never states a raw allowance', () => {
+    const readings = [
+      readAllowance(null),
+      readAllowance(me({ used: 0, limit: 40, remaining: 40 }, null)),
+      readAllowance(me({ used: 20, limit: 40, remaining: 20 }, null)),
+      readAllowance(me({ used: 39, limit: 40, remaining: 1 }, null)),
+      readAllowance(me({ used: 40, limit: 40, remaining: 0 }, null)),
+      readAllowance(me({ used: 3, limit: null, remaining: null }, null)),
+    ];
+    for (const reading of readings) {
+      expect(allowanceLine(reading, at)).not.toMatch(/\d+\s*(turns?|questions?)|\bof \d+/);
+    }
   });
 });

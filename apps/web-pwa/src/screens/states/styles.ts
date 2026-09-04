@@ -1,8 +1,10 @@
 /**
  * The stylesheet for the state family — the loader and the six things that can go wrong, in the
- * hand of design/prototypes/states-v2.html on palette v4 (DESIGN.md §2): cream paper, navy ink,
- * Wobo blue for the pen, 12px buttons with no border, 3.5px ink, no shadow on anything that does
- * not float.
+ * hand of design/prototypes/states-v2.html, on LAW v5 (DESIGN.md §0): white paper, navy ink, Wobo
+ * blue for the pen, 12px buttons with no border, 3.5px ink, no shadow on anything that does not
+ * float. Every colour below is a token, so the ground moved from cream to white the moment
+ * tokens.css did — there is not one literal in the sheet, and nothing here washes a scene to say
+ * which state it is: the drawing says that.
  *
  * Why its own sheet and not the landing page's: these scenes are app chrome, not marketing. A 404
  * can be reached from inside a lesson and the daily-limit page can land over the board, so the
@@ -140,6 +142,11 @@ export const STATES_CSS = `
   z-index: 1150;
 }
 .ws-overlay .ws { background: transparent; }
+
+/* LAW v5 (DESIGN.md §0, "Motion that never stutters"): ONE OWNER PER ANIMATED PROPERTY. Nothing
+   in this sheet is scrubbed by JS, so the .ws-btn transition on transform is that property's only
+   owner; every scene animation below is a CSS keyframe and no two of them touch the same element.
+   Add nothing here that a script also drives. */
 
 /* Composed per breakpoint (WOBO-PLAN §18), never scaled down. */
 @media (max-width: 600px) {

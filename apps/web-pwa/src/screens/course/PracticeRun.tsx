@@ -29,8 +29,9 @@ const PAD_KEYS = [
   ['−', '0', '⌫'],
 ] as const;
 
-const HUE = 'var(--wobo-ultramarine)';
-const RETRY = '#B26A00';
+const HUE = 'var(--pig)';
+/** The thing that needs care (DESIGN.md §0): a retry glows rose, never a hardcoded amber. */
+const RETRY = 'var(--rose)';
 
 function Detonation({ item, theirs }: { item: PracticeItem; theirs: number }) {
   const lin = linearize(item.equation);
@@ -594,7 +595,7 @@ export function PracticeRun({
             transition={{ duration: 0.25 }}
           >
             <Stage
-              hue={phase === 'correct' ? '#2E7D32' : HUE}
+              hue={phase === 'correct' ? 'var(--mint)' : HUE}
               tint={0.05}
               minHeight={phase === 'correct' ? 300 : 0}
               style={{
@@ -684,11 +685,13 @@ export function PracticeRun({
                             fontFamily: 'inherit',
                             fontWeight: 550,
                             color: 'var(--wobo-ink-900)',
-                            background:
-                              'linear-gradient(180deg, var(--wobo-card) 0%, #F2F3FB 100%)',
-                            border: '1px solid #DDE0F0',
-                            borderBottom: '3px solid #C9CEE8',
-                            borderRadius: 4,
+                            // LAW v5 / DESIGN.md §2: a key is a tonal surface with a soft
+                            // shadow under it, never a bevel drawn out of three hairlines in
+                            // colours that only exist by day.
+                            background: 'var(--paper-2)',
+                            border: 0,
+                            boxShadow: 'var(--lift)',
+                            borderRadius: 12,
                             cursor: 'pointer',
                           }}
                         >

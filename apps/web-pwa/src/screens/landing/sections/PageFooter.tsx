@@ -1,55 +1,40 @@
 'use client';
 
 /**
- * The footer: the wordmark, the wake line, four columns, and the small print.
+ * The footer: the wordmark, the one-line tagline, and four columns of real addresses.
  *
- * The addresses are real routes wherever the route exists (`/plans`, `/gift`, `/help`, `/contact`,
- * `/about`, and the legal set through its short aliases), and in-page anchors where the thing being
- * linked to is a chapter of this page. `/security` is Wave 7b's page (docs/SITE.md §3), written at
- * the address it will live at rather than as a dead anchor — the same call the legal set got before
- * it existed either.
+ * Every href here is a route that exists — the legal set at its full slugs, the help centre,
+ * contact, the security page. A footer is where a reader goes to check whether a company is real,
+ * so a dead link in it costs more than a dead link anywhere else on the page.
  */
 
-import { Wordmark } from '../art';
 import { LandingLink } from '../link';
 import { FOOTER } from '../page-copy';
 
 export function PageFooter() {
   return (
     <footer>
-      <div className="wrap">
-        <div className="grid">
-          <div>
-            <a className="wordmark" href="#hero" aria-label="Wobo">
-              <Wordmark />
-            </a>
-            <p
-              style={{
-                color: 'var(--ink-3)',
-                fontSize: 14,
-                marginTop: 12,
-                maxWidth: '30ch',
-              }}
-            >
-              {FOOTER.tagline}
-            </p>
+      <div className="wrap grid">
+        <div>
+          <div className="wm">
+            {/* The prototype's own 110px box: the height comes from the stylesheet, and this
+                letterboxes the mark inside a column that is wider than it. */}
+            <svg viewBox="0 0 1160 340" style={{ width: 110 }} aria-hidden="true">
+              <use href="#wm" />
+            </svg>
           </div>
-          {FOOTER.columns.map((column) => (
-            <div key={column.heading}>
-              <h4>{column.heading}</h4>
-              {column.links.map((link) => (
-                <LandingLink key={link.label} href={link.href}>
-                  {link.label}
-                </LandingLink>
-              ))}
-            </div>
-          ))}
+          <p style={{ marginTop: 12, maxWidth: '30ch' }}>{FOOTER.tagline}</p>
         </div>
-        <div className="small">
-          {FOOTER.small.map((line) => (
-            <span key={line}>{line}</span>
-          ))}
-        </div>
+        {FOOTER.columns.map((column) => (
+          <div key={column.heading}>
+            <b>{column.heading}</b>
+            {column.links.map((link) => (
+              <LandingLink key={`${link.href}-${link.label}`} href={link.href}>
+                {link.label}
+              </LandingLink>
+            ))}
+          </div>
+        ))}
       </div>
     </footer>
   );

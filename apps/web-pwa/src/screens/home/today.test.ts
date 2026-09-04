@@ -225,7 +225,7 @@ describe('the run of days actually marked', () => {
 
 describe('the home’s own words', () => {
   it('asks one question, and the card opens it as a sentence', () => {
-    expect(HOME_QUESTION).toBe('what are we figuring out tonight?');
+    expect(HOME_QUESTION).toBe('what are we figuring out this evening?');
     expect(asHeading(HOME_QUESTION)).toBe('What are we figuring out tonight?');
     expect(asHeading('')).toBe('');
   });

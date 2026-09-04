@@ -58,6 +58,17 @@ const PORT: Record<string, string> = {
   '.pr-set .pr-dot': '.set .dot',
 };
 
+/**
+ * LAW v5 (DESIGN.md §0) supersedes app-v1.html on COLOUR alone. Board 04 was drawn on cream, where
+ * a wash behind the question read as paper; on the white ground a 560px tint is a section marking
+ * itself, which the law forbids, and mint's one job is confirmation. Each entry is a declaration
+ * the prototype has and this sheet deliberately replaces — the shape, the spacing and everything
+ * else stay the prototype's, and anything not listed here is still held to it exactly.
+ */
+const V5_DEPARTURES: Record<string, Record<string, string>> = {
+  '.pr-item': { 'background:var(--mint-w)': 'background:var(--paper-2)' },
+};
+
 describe('every ported practice rule is the prototype’s rule', () => {
   for (const [ours, theirs] of Object.entries(PORT)) {
     it(`${ours} ← ${theirs}`, () => {
@@ -65,9 +76,19 @@ describe('every ported practice rule is the prototype’s rule', () => {
       expect(source).toBeDefined();
       const ported = mine.get(ours);
       expect(ported).toBeDefined();
-      for (const decl of source ?? []) expect(ported).toContain(decl);
+      const swaps = V5_DEPARTURES[ours] ?? {};
+      for (const decl of source ?? []) expect(ported).toContain(swaps[decl] ?? decl);
     });
   }
+
+  it('law v5: the item card is a tonal surface, and no rule washes a section in a pigment', () => {
+    expect(mine.get('.pr-item')).toContain('background:var(--paper-2)');
+    expect(mine.get('.pr-item')).not.toContain('background:var(--mint-w)');
+    // the pigments that survive are doing a job: pig marks the set the learner is on, mint is the
+    // tick beside one that is finished.
+    expect(mine.get('.pr-set button.pr-on')).toContain('background:var(--pig-w)');
+    expect(mine.get('.pr-set .pr-ok')).toContain('background:var(--mint)');
+  });
 
   it('the phone block stacks the column, tightens the card, hides the head, shrinks the hand', () => {
     expect(mine.get('.pr-prac')).toContain('grid-template-columns:1fr');

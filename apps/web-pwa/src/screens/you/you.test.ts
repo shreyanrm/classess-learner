@@ -62,8 +62,15 @@ const PORT: Record<string, [Map<string, string[]>, string]> = {
   '.wy-mock .wy-lock': [parents, '.mock .lock'],
   '.wy-mock .wy-lock svg': [parents, '.mock .lock svg'],
   '.wy-art': [parents, '.art'],
-  '.wy-art.wy-lilac': [parents, '.art.lilac'],
 };
+
+/*
+ * LAW v5 (DESIGN.md §0) reached this page in the prototype itself: site-parents.html now carries
+ * the rule in its own words — "a wash tints a pill, a tick or a selected row — never a card, a
+ * tile, a panel or a section" — drops `.art.lilac` entirely and paints `.art` as a tonal surface.
+ * So there is no departure to record here: the sheet is still the prototype, declaration for
+ * declaration, and `.wy-art.wy-lilac` is gone because its source is.
+ */
 
 /** Element resets, the two lines the screen needs that the prototype drew as chrome, and the rail
  * kept in view on a page taller than the artboard. */
@@ -78,6 +85,12 @@ describe('you.css is board 05, rule for rule', () => {
   it('ports every rule declaration for declaration', () => {
     for (const [mine, [source, theirs]] of Object.entries(PORT)) {
       expect(sheet.get(mine), mine).toEqual(source.get(theirs));
+    }
+  });
+  it('law v5: the report panel is a tonal surface, and no rule washes anything in lilac', () => {
+    expect(sheet.get('.wy-art')).toContain('background:var(--paper-2)');
+    for (const [selector, decls] of sheet) {
+      for (const d of decls) expect(`${selector}{${d}}`).not.toContain('lilac');
     }
   });
   it('has no rule the prototype does not, beyond element resets', () => {

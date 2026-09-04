@@ -8,27 +8,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* LAW v5 (DESIGN.md §0) — white paper, colour with a job. The ground is #FFFFFF; a section
-     never gets a tint to say it is a section. Character for character the token block at the top
-     of landing-v8.html, plus the washes and lilac these site pages already name. */
-  --paper:#FFFFFF; --paper-2:#F6F6F8; --paper-3:#ECECF0; --line:#E4E4EA;
-  --ink:#14142B; --ink-2:#55556B; --ink-3:#8A8A9E;
-  --pig:#2B45FF; --pig-soft:#EDF0FF; --marigold:#FFB629; --rose:#FF6B57; --mint:#12B981; --violet:#7C5CFF; --lilac:#B7A6FF;
-  --pig-w:#EDF0FF; --violet-w:#EFEBFF; --rose-w:#FFEDEB; --marigold-w:#FFF6E5; --mint-w:#E3F7F0; --lilac-w:#F6F4FF;
-  --body:#14142B; --body-hi:#3A3A5C; --visor:#FFFFFF; --visor-lo:#EDEDF2; --eye:#2B45FF;
+  --paper:#FAF7F0; --paper-2:#F1EDE3; --paper-3:#E7E1D3; --ink:#14142B; --ink-2:#4E4E66; --ink-3:#8A8A9E;
+  --pig:#2B45FF; --violet:#7C5CFF; --rose:#FF6B57; --marigold:#FFB629; --mint:#22C48B; --lilac:#B7A6FF;
+  --pig-w:#E6EAFF; --rose-w:#FFE7E2; --marigold-w:#FFF1D6; --mint-w:#DDF6EC; --lilac-w:#EFEBFF;
+  --body:#14142B; --body-hi:#3A3A5C; --visor:#FAF7F0; --visor-lo:#E7E1D3; --eye:#2B45FF;
   --sans:'Poppins',system-ui,-apple-system,sans-serif; --hand:'Caveat',cursive;
-  --s1:8px; --s2:16px; --s3:24px; --s4:40px; --s5:72px; --s6:128px;
-  --gutter:clamp(20px, 5vw, 48px); --band:clamp(72px, 9vw, 132px); --colgap:clamp(32px, 5vw, 80px);
-  --shadow:0 24px 60px rgba(20,20,43,.10); --lift:0 10px 28px rgba(20,20,43,.07);
+  --s1:8px; --s2:16px; --s3:24px; --s4:40px; --s5:64px; --s6:120px;
 }
 [data-theme="dark"]{
-  /* night, designed on its own and never inverted */
-  --paper:#0E0E16; --paper-2:#17171F; --paper-3:#1F1F29; --line:#26262F;
-  --ink:#F4F4F7; --ink-2:#B4B4C2; --ink-3:#7E7E90;
-  --pig:#7C8CFF; --pig-soft:#1A1E3A; --marigold:#FFC85A; --rose:#FF8A78; --mint:#3DD9A4; --violet:#A996FF; --lilac:#C9BDFF;
-  --pig-w:#1A1E3A; --violet-w:#2C293E; --rose-w:#38272C; --marigold-w:#383027; --mint-w:#1C3232; --lilac-w:#302E3E;
-  --body:#F4F4F7; --body-hi:#FFFFFF; --visor:#0E0E16; --visor-lo:#1F1F29; --eye:#7C8CFF;
-  --shadow:0 24px 60px rgba(0,0,0,.5); --lift:0 10px 28px rgba(0,0,0,.35);
+  --paper:#0F1226; --paper-2:#181C3A; --paper-3:#22264A; --ink:#F3F0E8; --ink-2:#B8B6C6; --ink-3:#7C7B92;
+  --pig:#7C8CFF; --violet:#A996FF; --rose:#FF8A78; --marigold:#FFC85A; --mint:#4FE3BD; --lilac:#C9BDFF;
+  --pig-w:#1E2650; --rose-w:#3E2431; --marigold-w:#3E3320; --mint-w:#16362E; --lilac-w:#2A2650;
+  --body:#F3F0E8; --body-hi:#FFFFFF; --visor:#0F1226; --visor-lo:#1E2650; --eye:#7C8CFF;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -44,7 +35,7 @@ p{margin:0}
 .btn:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid var(--marigold);outline-offset:2px}
 header{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--paper) 78%,transparent)}
 header .wrap{display:flex;align-items:center;gap:var(--s3);height:72px}
-header .wm svg{height:26px;width:auto;fill:var(--ink);display:block}
+header .wm svg{height:22px;width:auto;color:var(--ink);display:block}
 header nav{margin-left:auto;display:flex;gap:4px;background:var(--paper-2);padding:4px;border-radius:999px}
 header nav a{padding:10px 16px;border-radius:999px;font:500 14px/1 var(--sans);color:var(--ink-2)}
 header nav a.on{background:var(--ink);color:var(--paper)}
@@ -62,7 +53,7 @@ header .cta{display:flex;gap:8px}
 .on .draw{stroke-dashoffset:0}
 
 /* hero */
-.hero{padding:var(--s4) 0 var(--s5)}
+.hero{padding:clamp(32px,4vw,56px) 0 clamp(56px,7vw,92px)}
 .hero .wrap{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4);align-items:center;min-height:68vh}
 .hero h1{font:700 clamp(40px,5.4vw,66px)/1.0 var(--sans);letter-spacing:-.035em;margin-top:var(--s2)}
 .hero h1 em{font-style:normal;color:var(--pig)}
@@ -85,7 +76,7 @@ header .cta{display:flex;gap:8px}
 @media (prefers-reduced-motion:reduce){.film .lasso{animation:none;stroke-dashoffset:0}.film .q{animation:none;opacity:1}.blink{animation:none}.draw{stroke-dashoffset:0}}
 
 /* chapters */
-section{padding:var(--s5) 0}
+section{padding:clamp(56px,7vw,92px) 0}
 .chapter{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5);align-items:center}
 .chapter.flip .art{order:-1}
 .chapter .num{font-family:var(--hand);font-weight:700;font-size:28px;color:var(--pig)}
@@ -96,8 +87,8 @@ section{padding:var(--s5) 0}
 .chapter p{color:var(--ink-2);font-size:18px;margin-top:var(--s2);max-width:46ch}
 .chapter .say{margin-top:var(--s3);font-family:var(--hand);font-weight:600;font-size:28px;line-height:1.15;color:var(--ink)}
 .chapter .say em{font-style:normal;color:var(--rose)}
-.art{border-radius:28px;padding:var(--s3);background:var(--paper-2);position:relative;min-height:380px;display:grid;place-items:center}
-/* law v5: a wash tints a pill, a tick or a selected row — never a card, a tile, a panel or a section. Surfaces are paper-2. */
+.art{border-radius:28px;padding:var(--s3);position:relative;min-height:380px;display:grid;place-items:center}
+.art.pig{background:var(--pig-w)}.art.mint{background:var(--mint-w)}.art.marigold{background:var(--marigold-w)}.art.rose{background:var(--rose-w)}.art.lilac{background:var(--lilac-w)}
 .art > svg{width:100%;height:auto;overflow:visible}
 .sticker{position:absolute;background:var(--marigold);color:#14142B;font-family:var(--hand);font-weight:700;font-size:22px;padding:6px 14px;border-radius:12px;transform:rotate(-6deg);box-shadow:0 10px 20px rgba(20,20,43,.12)}
 @media (max-width:900px){.chapter{grid-template-columns:1fr;gap:var(--s3)}.chapter.flip .art{order:0}.art{min-height:0}}
@@ -163,7 +154,7 @@ footer{background:var(--ink);color:rgba(250,247,240,.6);padding:var(--s4) 0 var(
 footer .wrap{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:var(--s3)}
 footer b{display:block;color:var(--paper);font-weight:600;margin-bottom:10px}
 footer a{display:block;padding:4px 0}
-footer .wm svg{height:24px;fill:var(--paper)}
+footer .wm svg{height:22px;color:var(--paper)}
 @media (max-width:900px){footer .wrap{grid-template-columns:1fr 1fr}}
 </style>
 </head>
@@ -172,21 +163,21 @@ footer .wm svg{height:24px;fill:var(--paper)}
 <radialGradient id="hg" cx="36%" cy="30%" r="80%"><stop offset="0" style="stop-color:var(--body-hi)"/><stop offset="1" style="stop-color:var(--body)"/></radialGradient>
 <linearGradient id="vg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--visor)"/><stop offset="1" style="stop-color:var(--visor-lo)"/></linearGradient>
 <symbol id="head" viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="url(#hg)"/><rect x="18" y="41" width="84" height="38" rx="19" fill="url(#vg)"/><g class="blink"><circle cx="43" cy="61" r="9" fill="var(--eye)"/><circle cx="77" cy="61" r="9" fill="var(--eye)"/><circle cx="40" cy="58" r="3" fill="var(--paper)" opacity=".85"/><circle cx="74" cy="58" r="3" fill="var(--paper)" opacity=".85"/></g></symbol>
-<symbol id="wm" viewBox="0 0 1160 340"><text x="0" y="300" font-family="Poppins,sans-serif" font-weight="700" font-size="330" letter-spacing="-12">wobo</text></symbol>
+<symbol id="wm" viewBox="183.18 572.03 1133.63 312.64"><defs><g/></defs><g fill="currentColor" ><g transform="translate(173.553291, 879.374904)"><g><path d="M 80.328125 5.296875 C 63.648438 5.296875 50.5 1.769531 40.875 -5.28125 C 31.257812 -12.34375 24.207031 -21.5625 19.71875 -32.9375 C 15.226562 -44.320312 12.421875 -56.75 11.296875 -70.21875 C 10.179688 -83.6875 9.625 -96.832031 9.625 -109.65625 L 9.625 -234.234375 L 113.03125 -234.234375 L 113.984375 -133.703125 C 113.984375 -127.296875 115.265625 -122.164062 117.828125 -118.3125 C 120.398438 -114.46875 124.25 -113.664062 129.375 -115.90625 C 130.976562 -116.550781 132.5 -117.429688 133.9375 -118.546875 C 135.382812 -119.671875 136.429688 -121.679688 137.078125 -124.578125 L 137.078125 -234.234375 L 240.96875 -234.234375 L 241.921875 -133.703125 C 241.921875 -127.296875 243.285156 -122.164062 246.015625 -118.3125 C 248.742188 -114.46875 252.671875 -113.664062 257.796875 -115.90625 C 259.398438 -116.550781 261.003906 -117.59375 262.609375 -119.03125 C 264.210938 -120.476562 265.175781 -122.804688 265.5 -126.015625 L 263.09375 -234.234375 L 380.453125 -234.234375 L 372.75 -0.484375 L 287.140625 -0.484375 L 283.296875 -48.09375 C 279.765625 -40.082031 274.867188 -31.90625 268.609375 -23.5625 C 262.359375 -15.226562 254.34375 -8.332031 244.5625 -2.875 C 234.789062 2.570312 222.691406 5.296875 208.265625 5.296875 C 191.265625 5.296875 177.953125 1.683594 168.328125 -5.53125 C 158.710938 -12.75 151.660156 -21.96875 147.171875 -33.1875 C 141.078125 -23.25 132.660156 -14.347656 121.921875 -6.484375 C 111.179688 1.367188 97.316406 5.296875 80.328125 5.296875 Z M 80.328125 5.296875 "/></g></g></g><g fill="currentColor" ><g transform="translate(549.669146, 879.374904)"><g><path d="M 132.75 2.890625 C 109.976562 2.890625 89.296875 -0.957031 70.703125 -8.65625 C 52.109375 -16.351562 37.28125 -29.097656 26.21875 -46.890625 C 15.15625 -64.691406 9.625 -88.820312 9.625 -119.28125 C 9.625 -149.414062 15.15625 -173.460938 26.21875 -191.421875 C 37.28125 -209.378906 52.109375 -222.445312 70.703125 -230.625 C 89.296875 -238.800781 109.976562 -242.890625 132.75 -242.890625 C 155.832031 -242.890625 176.671875 -238 195.265625 -228.21875 C 213.867188 -218.4375 228.617188 -204.40625 239.515625 -186.125 C 250.421875 -167.851562 255.875 -145.570312 255.875 -119.28125 C 255.875 -91.707031 250.421875 -68.859375 239.515625 -50.734375 C 228.617188 -32.617188 213.867188 -19.148438 195.265625 -10.328125 C 176.671875 -1.515625 155.832031 2.890625 132.75 2.890625 Z M 110.625 -98.125 C 110.625 -89.78125 112.785156 -83.925781 117.109375 -80.5625 C 121.441406 -77.195312 126.65625 -75.515625 132.75 -75.515625 C 139.15625 -75.515625 144.523438 -77.4375 148.859375 -81.28125 C 153.191406 -85.132812 155.359375 -90.75 155.359375 -98.125 C 155.359375 -104.851562 153.191406 -110.0625 148.859375 -113.75 C 144.523438 -117.4375 139.15625 -119.28125 132.75 -119.28125 C 126.65625 -119.28125 121.441406 -117.753906 117.109375 -114.703125 C 112.785156 -111.660156 110.625 -106.132812 110.625 -98.125 Z M 110.625 -98.125 "/></g></g></g><g fill="currentColor" ><g transform="translate(801.21461, 879.374904)"><g><path d="M 153.90625 0 C 142.363281 0 131.378906 -2.960938 120.953125 -8.890625 C 110.535156 -14.828125 102.125 -22.125 95.71875 -30.78125 L 93.3125 -0.484375 L 12.984375 -0.484375 L 9.625 -132.75 L 13.953125 -307.34375 L 101 -307.34375 L 103.40625 -221.25 C 110.457031 -227.019531 118.710938 -231.664062 128.171875 -235.1875 C 137.628906 -238.71875 148.613281 -240.484375 161.125 -240.484375 C 191.582031 -240.484375 215.546875 -231.425781 233.015625 -213.3125 C 250.492188 -195.195312 259.234375 -164.171875 259.234375 -120.234375 C 259.234375 -90.421875 254.664062 -66.773438 245.53125 -49.296875 C 236.394531 -31.828125 223.96875 -19.242188 208.25 -11.546875 C 192.539062 -3.847656 174.425781 0 153.90625 0 Z M 117.84375 -98.59375 C 117.84375 -91.21875 119.925781 -85.765625 124.09375 -82.234375 C 128.257812 -78.710938 133.390625 -76.953125 139.484375 -76.953125 C 145.578125 -76.953125 150.707031 -78.554688 154.875 -81.765625 C 159.039062 -84.972656 161.125 -90.582031 161.125 -98.59375 C 161.125 -106.613281 159.039062 -112.222656 154.875 -115.421875 C 150.707031 -118.628906 145.578125 -120.234375 139.484375 -120.234375 C 133.390625 -120.234375 128.257812 -118.390625 124.09375 -114.703125 C 119.925781 -111.023438 117.84375 -105.65625 117.84375 -98.59375 Z M 117.84375 -98.59375 "/></g></g></g><g fill="currentColor" ><g transform="translate(1060.936512, 879.374904)"><g><path d="M 132.75 2.890625 C 109.976562 2.890625 89.296875 -0.957031 70.703125 -8.65625 C 52.109375 -16.351562 37.28125 -29.097656 26.21875 -46.890625 C 15.15625 -64.691406 9.625 -88.820312 9.625 -119.28125 C 9.625 -149.414062 15.15625 -173.460938 26.21875 -191.421875 C 37.28125 -209.378906 52.109375 -222.445312 70.703125 -230.625 C 89.296875 -238.800781 109.976562 -242.890625 132.75 -242.890625 C 155.832031 -242.890625 176.671875 -238 195.265625 -228.21875 C 213.867188 -218.4375 228.617188 -204.40625 239.515625 -186.125 C 250.421875 -167.851562 255.875 -145.570312 255.875 -119.28125 C 255.875 -91.707031 250.421875 -68.859375 239.515625 -50.734375 C 228.617188 -32.617188 213.867188 -19.148438 195.265625 -10.328125 C 176.671875 -1.515625 155.832031 2.890625 132.75 2.890625 Z M 110.625 -98.125 C 110.625 -89.78125 112.785156 -83.925781 117.109375 -80.5625 C 121.441406 -77.195312 126.65625 -75.515625 132.75 -75.515625 C 139.15625 -75.515625 144.523438 -77.4375 148.859375 -81.28125 C 153.191406 -85.132812 155.359375 -90.75 155.359375 -98.125 C 155.359375 -104.851562 153.191406 -110.0625 148.859375 -113.75 C 144.523438 -117.4375 139.15625 -119.28125 132.75 -119.28125 C 126.65625 -119.28125 121.441406 -117.753906 117.109375 -114.703125 C 112.785156 -111.660156 110.625 -106.132812 110.625 -98.125 Z M 110.625 -98.125 "/></g></g></g></symbol>
 </defs></svg>
 
 <header><div class="wrap">
   <a class="wm" href="#"><svg viewBox="0 0 1160 340"><use href="#wm"/></svg></a>
   <nav><a href="#">Meet Wobo</a><a href="#">How it works</a><a href="#">For parents</a><a class="on" href="#">For students</a><a href="#">Subjects</a><a href="#">Plans</a></nav>
-  <div class="cta"><a class="btn quiet" href="#">Sign in</a><a class="btn pig" href="#">Get early access</a></div>
+  <div class="cta"><a class="btn quiet" href="#">Sign in</a><a class="btn pig" href="#">Get started</a></div>
 </div></header>
 
 <section class="hero"><div class="wrap">
   <div>
     <span class="label">For students</span>
     <h1>Ask the question you'd <em>never ask in class.</em></h1>
-    <p class="sub">The basic one. The embarrassing one. The one you should have asked years ago. Wobo answers all of them the same way: drawn out, no face, no sigh, at 10 pm if that's when you're doing this.</p>
-    <div class="row"><a class="btn pig" href="#">Get early access</a><a class="btn quiet" href="#try">Try one now</a><span class="note">Free every day. No card. No trial that ends.</span></div>
+    <p class="sub">The basic one. The embarrassing one. The one you should've asked in Class 6. Wobo answers all of them the same way: drawn out, no face, no sigh, at 10 pm if that's when you're doing this.</p>
+    <div class="row"><a class="btn pig" href="#">Start learning for free</a><a class="btn quiet" href="#try">Try one now</a><span class="note">Free every day. No card. No trial that ends.</span></div>
   </div>
   <div class="film">
     <div class="frame"><svg viewBox="0 0 480 300" aria-label="A paused lesson with a loop drawn around the confusing part">
@@ -321,14 +312,14 @@ footer .wm svg{height:24px;fill:var(--paper)}
 </div></section>
 
 <div class="close"><div class="wrap">
-  <h2>Be first in line.</h2>
-  <span class="hand">Be in the first group, free, with the whole tutor from day one.</span>
-  <div class="row"><a class="btn" href="#">Get early access</a><a class="btn q" href="#">See how it works</a></div>
+  <h2>Ask it this evening.</h2>
+  <span class="hand">Free to use every day, not just the first.</span>
+  <div class="row"><a class="btn" href="#">Start learning for free</a><a class="btn q" href="#">See how it works</a></div>
 </div></div>
 <footer><div class="wrap">
   <div><div class="wm"><svg viewBox="0 0 1160 340" style="width:120px"><use href="#wm"/></svg></div><p style="margin-top:10px;max-width:28ch">A tutor that draws, never judges, and is always there.</p></div>
   <div><b>Wobo</b><a href="#">Meet Wobo</a><a href="#">How it works</a><a href="#">Subjects</a><a href="#">Plans</a><a href="#">Gift Wobo</a></div>
-  <div><b>For</b><a href="#">Parents</a><a href="#" style="color:var(--paper)">Students</a><a href="#">Schools</a></div>
+  <div><b>For</b><a href="#">Parents</a><a href="#" style="color:var(--paper)">Students</a></div>
   <div><b>Help</b><a href="#">Help centre</a><a href="#">Contact</a><a href="#">Questions</a></div>
   <div><b>Company</b><a href="#">About</a><a href="#">Security and trust</a><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Children's privacy</a><a href="#">Cookies</a><a href="#">Accessibility</a></div>
 </div></footer>

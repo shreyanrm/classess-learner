@@ -48,7 +48,8 @@ export interface ThreadStop {
   route: Route;
 }
 
-const MOLTEN = '#FF5A1F';
+/** The bonus quest's colour — marigold, the earned moment (DESIGN.md §0), never a raw hex. */
+const MOLTEN = 'var(--marigold)';
 const DAILY_KEY = 'wobo-daily-quest-v1';
 const todayStr = (): string => new Date().toISOString().slice(0, 10);
 

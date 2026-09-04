@@ -175,7 +175,7 @@ describe('the about page finds every field it lays out', () => {
     ['Mission', 'Pull line'],
     ['How Wobo teaches', 'Section heading'],
     ['How Wobo teaches', 'Body'],
-    ['How Wobo teaches', 'Four points'],
+    ['How Wobo teaches', 'Five points'],
     ['How Wobo teaches', 'Closing line'],
     ['What we cover', 'Section heading'],
     ['What we cover', 'Body'],
@@ -206,15 +206,15 @@ describe('the about page finds every field it lays out', () => {
     }
   });
 
-  it('has the four numbered points as one list of four', () => {
-    const blocks = aboutField('How Wobo teaches', 'Four points') ?? [];
+  it('has the numbered points as one list of five', () => {
+    const blocks = aboutField('How Wobo teaches', 'Five points') ?? [];
     const list = blocks.find((block) => block.k === 'ol');
     expect(list?.k).toBe('ol');
-    expect(list?.k === 'ol' && list.items).toHaveLength(4);
+    expect(list?.k === 'ol' && list.items).toHaveLength(5);
   });
 
   it('reads a single-line field as a single line', () => {
-    expect(aboutLine('Hero', 'Headline')).toBe('A tutor who draws.');
+    expect(aboutLine('Hero', 'Headline')).toBe('A tutor that draws, films and listens.');
     expect(aboutLine('Hero', 'Eyebrow')).toBe('About Wobo');
   });
 

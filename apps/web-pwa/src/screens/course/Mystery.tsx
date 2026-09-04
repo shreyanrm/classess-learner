@@ -50,7 +50,7 @@ function DaySky() {
           cx={x}
           cy={y}
           r={r}
-          fill="rgba(31,53,224,0.45)"
+          fill="color-mix(in srgb, var(--pig) 45%, transparent)"
           animate={{ opacity: [0.3, 0.9, 0.3] }}
           transition={{
             duration: 2.8 + (i % 4) * 0.9,
@@ -63,7 +63,7 @@ function DaySky() {
       <motion.path
         d={path}
         fill="none"
-        stroke="rgba(31,53,224,0.3)"
+        stroke="color-mix(in srgb, var(--pig) 30%, transparent)"
         strokeWidth={1}
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
@@ -107,9 +107,10 @@ export function MysteryTease({
       <Stage
         minHeight={300}
         style={{
-          background:
-            'radial-gradient(70% 60% at 30% 20%, rgba(49,72,255,0.12), transparent 65%), linear-gradient(165deg, var(--wobo-card) 0%, #F3F4FC 55%, #EDEFFA 100%)',
-          border: '1px solid var(--wobo-card-border)',
+          // LAW v5 (DESIGN.md §0): the day sky used to be a pale-blue gradient with a hairline
+          // round it — a tinted panel on cream that turned to a bright slab on night. The ground
+          // is a tonal surface in both themes now, and the sky is what is DRAWN on it.
+          background: 'var(--paper-2)',
           justifyContent: 'flex-end',
           padding: '0 0 26px',
         }}
@@ -182,8 +183,8 @@ function ThrowToy() {
     <div
       ref={toyRef}
       style={{
-        background: 'rgba(31,53,224,0.05)',
-        borderRadius: 3,
+        background: 'var(--paper-2)',
+        borderRadius: 16,
         padding: '18px 20px 10px',
       }}
     >

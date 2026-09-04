@@ -186,11 +186,11 @@ describe('the words', () => {
       }),
     );
     expect(
-      sundayNote(s, 'Aanya')
+      sundayNote(s, 'the learner')
         .map((x) => x.text)
         .join(''),
     ).toBe(
-      'Three lessons, fourteen problems, and Aanya asked for help twice after a miss, which is exactly how learning looks.',
+      'Three lessons, fourteen problems, and the learner asked for help twice after a miss, which is exactly how learning looks.',
     );
   });
 

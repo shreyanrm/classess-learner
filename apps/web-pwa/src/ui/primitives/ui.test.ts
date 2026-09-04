@@ -2,6 +2,9 @@
  * The kit is a port of design/prototypes/app-v1.html (and the site pages' sticker), rule for
  * rule. This holds every `wk-` rule to its source: the same declarations, the same values, the
  * same order where order decides — and no line, corner or colour of its own.
+ *
+ * The last block is law v5's motion rule (DESIGN.md §0): one owner per animated property, and the
+ * magnetic control that moves its INNER span rather than itself.
  */
 
 import { describe, expect, it } from 'bun:test';
@@ -146,6 +149,19 @@ const PORT: Record<string, string> = {
   '.wk-talk span': '.talk span',
 };
 
+/**
+ * LAW v5 (DESIGN.md §0) supersedes app-v1.html on COLOUR alone, and the site prototypes already
+ * say the rule in their own words: "a wash tints a pill, a tick or a selected row — never a card,
+ * a tile, a panel or a section. Surfaces are paper-2." One kit rule was on the wrong side of it —
+ * the rail's allowance card, a marigold slab in the corner of every app screen — and its track was
+ * an ink alpha that vanishes on night. Each entry is one declaration the prototype has and the kit
+ * deliberately replaces; everything not listed is still held to the prototype exactly.
+ */
+const V5: Record<string, Record<string, string>> = {
+  '.wk-allow': { 'background:var(--marigold-w)': 'background:var(--paper-2)' },
+  '.wk-allow .wk-bar': { 'background:rgba(20,20,43,.08)': 'background:var(--paper-3)' },
+};
+
 /** The prototype's `.hand` base is folded into the one rule that builds on it. */
 function source_(theirs: string): string[] | undefined {
   const own = proto.get(theirs);
@@ -161,10 +177,12 @@ describe('every kit rule is the prototype’s rule', () => {
       const ported = kit.get(mine);
       expect(ported).toBeDefined();
       // everything the prototype declares, the kit declares (a 12px line lifted to the floor)
-      for (const d of source ?? []) expect(ported).toContain(LIFTED[d] ?? d);
-      // and the kit adds nothing but an element reset or a floor
+      const v5 = V5[mine] ?? {};
+      for (const d of source ?? []) expect(ported).toContain(v5[d] ?? LIFTED[d] ?? d);
+      // and the kit adds nothing but an element reset, a floor, or a law v5 swap
+      const swapped = new Set(Object.values(v5));
       for (const d of ported ?? []) {
-        if (RESETS.has(d) || FLOOR.has(d)) continue;
+        if (RESETS.has(d) || FLOOR.has(d) || swapped.has(d)) continue;
         expect(source).toContain(d);
       }
     });
@@ -192,6 +210,13 @@ describe('every kit rule is the prototype’s rule', () => {
     const bar = proto.get('.rail .allow .bar i') ?? [];
     expect(bar).toContain('width:62%');
     expect(kit.get('.wk-allow .wk-bar i')).toEqual(bar.filter((d) => d !== 'width:62%'));
+  });
+
+  it('law v5: the rail’s allowance card is a tonal surface, and only its fill is marigold', () => {
+    expect(kit.get('.wk-allow')).toContain('background:var(--paper-2)');
+    expect(kit.get('.wk-allow')).not.toContain('background:var(--marigold-w)');
+    expect(kit.get('.wk-allow .wk-bar')).toContain('background:var(--paper-3)');
+    expect(kit.get('.wk-allow .wk-bar i')).toContain('background:var(--marigold)');
   });
 
   it('the streak’s week and note carry the inline spacing the prototype set on them', () => {
@@ -311,5 +336,62 @@ describe('the kit keeps the law (DESIGN.md §2, §3)', () => {
 
   it('uses the two faces only, through the tokens', () => {
     expect(KIT).not.toMatch(/font-family\s*:\s*['"]?(?!var\()/);
+  });
+});
+
+describe('the kit keeps law v5’s motion rule (DESIGN.md §0)', () => {
+  /** Every `transition` shorthand in the kit, as the property it names. */
+  const transitions = [...KIT.matchAll(/transition:\s*([a-z-]+)/g)].map((m) => m[1] as string);
+
+  it('declares a transition on something, so the rule below is not vacuous', () => {
+    expect(transitions.length).toBeGreaterThan(0);
+  });
+
+  it('never puts a CSS transition on transform or opacity — the two the scroll engine scrubs', () => {
+    // Cause 1 of the jitter: two owners for one property. The browser eases toward a value GSAP
+    // has already moved past, every frame, and the element stutters.
+    for (const property of transitions) expect(property).not.toBe('transform');
+    for (const property of transitions) expect(property).not.toBe('opacity');
+    // `all` is both of them, and everything else besides.
+    for (const property of transitions) expect(property).not.toBe('all');
+    expect(KIT).not.toMatch(/transition-property:\s*(transform|opacity|all)/);
+  });
+
+  it('writes the rule down where the next person will read it', () => {
+    expect(KIT).toContain('ONE OWNER PER ANIMATED PROPERTY');
+    expect(KIT).toContain('never scrub a LAYOUT property');
+  });
+
+  it('.wk-mag moves an inner span, never the box', () => {
+    const box = kit.get('.wk-mag') ?? [];
+    const inner = kit.get('.wk-mag > span') ?? [];
+    expect(box.length).toBeGreaterThan(0);
+    // the box itself is never transformed and never transitions: it must not move out from under
+    // the pointer, or the pointer leaves, the transform resets, and it comes back — the loop.
+    for (const d of box)
+      expect(d.startsWith('transform') || d.startsWith('transition')).toBe(false);
+    expect(inner).toContain('will-change:transform');
+    for (const d of inner) expect(d.startsWith('transition')).toBe(false);
+  });
+
+  it('carries the prototype’s own account of why', () => {
+    expect(KIT).toContain('The INNER span moves, never the box');
+    expect(KIT).toContain('Moving a child leaves the hit area exactly where it was');
+  });
+
+  it('the behaviour writes the span’s transform and nothing else’s', () => {
+    const js = readFileSync(join(import.meta.dir, 'magnetic.ts'), 'utf8');
+    expect(js).toContain("el.querySelector('span')");
+    expect(js).toContain('inner.style.transform');
+    expect(js).not.toMatch(/\bel\.style\.transform/);
+    // it stands down where a finger cannot hover, and where the learner asked for less motion
+    expect(js).toContain("'(pointer: fine)'");
+    expect(js).toContain("'(prefers-reduced-motion: reduce)'");
+    expect(js).toContain('data-motion');
+  });
+
+  it('rests the magnet under reduced motion, in the stylesheet too', () => {
+    expect(KIT).toContain('@media (prefers-reduced-motion:reduce){.wk-mag > span{transform:none');
+    expect(KIT).toContain('[data-motion="reduce"] .wk-mag > span{transform:none');
   });
 });

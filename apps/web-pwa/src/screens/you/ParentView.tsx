@@ -95,7 +95,7 @@ export function ParentView() {
   return (
     <AppShell active="you" className="wy-shell" onNavigate={go}>
       <TopBar crumb={crumb} />
-      <div className="wy-art wy-lilac" style={{ maxWidth: 640 }}>
+      <div className="wy-art" style={{ maxWidth: 640 }}>
         <div className="wy-mock">
           <div className="wy-top">
             <WoboHead size={32} />

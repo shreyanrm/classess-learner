@@ -1,300 +1,539 @@
 /**
  * Every word on the landing page, in one file.
  *
- * The words are NOT ours to edit. They are the owner's own rewrite, carried over verbatim from the
- * approved prototype (`scratchpad/design/landing-v7.html`, the v7 content rework). A word changed
- * here is a word changed against the owner's deliberate call, so `copy.test.ts` asserts the page's
- * copy laws over this module rather than a reviewer having to catch a drift in JSX.
+ * This is a PORT, not a draft. The copy below is `design/prototypes/landing-v8.html` character for
+ * character — the page Fable handcrafted for law v5 and the owner approved — and it is the reason
+ * this module exists: words that live in one place can be read end to end, checked against the law
+ * that governs them (DESIGN.md §0), and proved by a test rather than by scrolling a page.
  *
- * The laws that still hold, and the one that had to be restated:
+ * The copy law, which every line here is held to and `page-copy.test.ts` enforces:
  *
- *  · DESIGN.md — sentence case, no emoji, no exclamation marks, calm and certain.
- *  · WOBO-PLAN §19 — Wobo has no gender. WOBO IS NEVER "he" OR "she". The Tuesday-night chapter
- *    does use "she", and that is correct: it is about Aanya, a named learner, and the owner wrote
- *    it that way on purpose. So the test asserts the real rule — Wobo is always "it", and a
- *    feminine pronoun appears only in the two narrative chapters that name Aanya — instead of the
- *    blanket ban the earlier scaffold carried, which this copy would fail for the wrong reason.
- *  · WOBO-PLAN §16 — the curriculum mechanism is a secret. Nothing on this page names a board, a
- *    framework or a count of them. "Tell Wobo the board and the class once" is as far as it goes.
- *  · No prices. The landing page does not sell; `/plans` does.
+ *  · NO NAMES. Never an invented learner or parent. "Your child", "the learner", or the reader.
+ *  · NO GRADE GATE. Never "classes 4 to 12", never an age range. "Every subject your board sets."
+ *  · NO RAW ALLOWANCES. Never "40 questions a day" — say what an evening feels like.
+ *  · PROMOTE BEFORE INVITE. Until the product opens, the closing call is early access.
+ *  · DRAWING IS ONE PART. The board is never the whole product: it also films, simulates, speaks,
+ *    practises, remembers and reports.
+ *  · Wobo has no gender (§19), and no vendor or model is ever named as being underneath (§17).
+ *
+ * A headline is stored as `{ lead, mark }` because the marigold highlighter is painted on the
+ * second half as it scrolls into view; the two run together as one sentence.
  */
 
 export interface NavLink {
   label: string;
+  /** A real route, always. Nothing in this nav is a dead anchor. */
   href: string;
 }
 
-/** The pill nav. Four of the five are anchors on this page; Plans is a real route. */
+/** The five doors in the header, each one a page that exists. */
 export const NAV_LINKS: readonly NavLink[] = [
-  { label: 'Why Wobo', href: '#why' },
-  { label: 'For students', href: '#students' },
-  { label: 'For parents', href: '#parents-note' },
-  { label: 'Subjects', href: '#subjects' },
+  { label: 'How it works', href: '/how-it-works' },
+  { label: 'Subjects', href: '/subjects' },
+  { label: 'For parents', href: '/for-parents' },
+  { label: 'For students', href: '/for-students' },
   { label: 'Plans', href: '/plans' },
-];
+] as const;
 
 export const AUTH = {
   signIn: 'Sign in',
-  getStarted: 'Get started',
+  /** The one call to action on the page, and it is a promotion, not an invitation. */
+  early: 'Get early access',
 } as const;
+
+/** Where the "Get early access" buttons scroll to. */
+export const EARLY_ID = 'early';
+
+// --- The hero -----------------------------------------------------------------------------------
+
+/** One of the four forms the hero's card answers its question in. */
+export interface HeroForm {
+  key: 'draw' | 'video' | 'try' | 'say';
+  /** The rail's label. */
+  label: string;
+  /** What the live tag says while this form is up. */
+  live: string;
+}
+
+export const HERO_FORMS: readonly HeroForm[] = [
+  { key: 'draw', label: 'Drawn', live: 'drawing' },
+  { key: 'video', label: 'Filmed', live: 'playing' },
+  { key: 'try', label: 'Tried', live: 'your turn' },
+  { key: 'say', label: 'Spoken', live: 'speaking' },
+] as const;
+
+/** How long each form holds before the rail moves on, in ms. Stopped the moment a reader taps. */
+export const HERO_CYCLE_MS = 3800;
 
 export const HERO = {
-  chapter: 'Classes 4 to 12 · free every day',
-  /** The headline, in three pieces: the hand-written wake, the ask, and the written-on equation. */
+  eyebrow: { lead: 'Every subject · every board · ', accent: 'free every day' },
   wake: 'Hey Wobo,',
-  askBefore: 'why does ',
-  equation: 'a² + b² = c²',
-  askAfter: '?',
-  sub: 'Ask anything from your school syllabus and watch the answer take shape, line by line, at 10 pm or 6 am. A tutor that draws, never judges, and is always there.',
-  primary: 'Start learning for free',
-  secondary: "I'm a parent",
-  /** The two mint-dot notes under the buttons. Fragments on purpose. */
-  notes: ['Free every single day', 'No card, no trial that ends'] as const,
-  sticker: 'drawn live',
+  title: 'why do plants need sunlight?',
+  lede: 'A tutor that hears the question, works out where it sits in your syllabus, and answers it the way the idea needs: drawn, animated, spoken, or handed to you to try. Late in the evening or early in the morning, as many times as you like.',
+  seeHow: { label: 'See how it works', href: '/how-it-works' },
+  under: ['Free to use, every single day', 'No card, and no trial that runs out'],
+  device: { who: 'Wobo', live: 'live' },
+  /** The words inside the drawn answers — Wobo's own hand, so they belong with the copy. */
+  drawn: {
+    lightIn: 'light in',
+    sugarOut: 'sugar out',
+    caption: 'light + water + air → food the plant can use',
+  },
+  filmed: { caption: 'watch it happen, 40 seconds' },
+  tried: {
+    question: 'which one makes the food?',
+    right: 'the leaf',
+    wrong: 'the root',
+    verdict: "that's it",
+    caption: 'Wobo never says wrong. It rings the gap and waits.',
+  },
+  spoken: { line: '“The leaf is the kitchen. Sunlight is the stove.”' },
 } as const;
 
-/** The demo card's chrome, and the question Aanya typed into it. */
-export const DEMO = {
-  who: 'Wobo',
-  withWhom: ' · with Aanya',
-  live: 'drawing',
-  askedBy: 'Aanya',
-  question: 'why is a² + b² = c²? where do the squares come from',
-  label: 'Wobo drawing the proof of Pythagoras',
+// --- What actually happens ------------------------------------------------------------------------
+
+export interface LoopStep {
+  /** The step marker, e.g. "01 · Ask". */
+  n: string;
+  title: string;
+  body: string;
+}
+
+export const LOOP = {
+  eyebrow: 'What actually happens',
+  title: { lead: 'One question in. ', mark: 'A whole lesson out.' },
+  lede: 'Drawing is one of five things Wobo does with a question. Here is the rest of it.',
+  steps: [
+    {
+      n: '01 · Ask',
+      title: 'However you want',
+      body: 'Out loud, typed, a photo of the worksheet, or a circle drawn around the part that lost you.',
+    },
+    {
+      n: '02 · Place it',
+      title: 'In your syllabus',
+      body: 'Your board, your year, the chapter your class is on this week. Not a course built for everyone.',
+    },
+    {
+      n: '03 · Show it',
+      title: 'In the right form',
+      body: 'A drawn board, a short film, a thing you can drag, a worked example, or a sentence marked up.',
+    },
+    {
+      n: '04 · Try it',
+      title: 'Until it sticks',
+      body: 'Practice in the kinds your exam uses. Close gets a ring, never a red cross.',
+    },
+    {
+      n: '05 · Remember',
+      title: 'And report',
+      body: 'What clicked, what did not, and one honest note home on Sunday.',
+    },
+  ] as readonly LoopStep[],
 } as const;
 
-/** The cinematic chapter: four captions that hold and hand over. */
-export const NIGHT = {
-  chapter: 'One Tuesday night',
-  label: 'A Tuesday night with Wobo',
-  captions: [
-    {
-      id: 'c1',
-      big: '9:40 pm. Test on Friday. Question 7 makes no sense.',
-      small: 'Nobody at home remembers this chapter. The video about it is forty minutes long.',
-    },
-    {
-      id: 'c2',
-      big: "She asks Wobo the way she'd ask a friend.",
-      small: 'Typed, or out loud. No queue, no judgement, no "we did this in class".',
-    },
-    {
-      id: 'c3',
-      big: 'Wobo draws it out, line by line.',
-      small: 'Every line lands with the words. Every number is checked before the pen moves.',
-    },
-    {
-      id: 'c4',
-      big: '9:46 pm. It clicked.',
-      small: 'Six minutes. She saw it, not just heard it. That is the whole point of Wobo.',
-    },
-  ] as const,
+// --- The four answer forms ------------------------------------------------------------------------
+
+export const FORMS = {
+  eyebrow: 'More than a whiteboard',
+  title: { lead: 'Some ideas are drawn. Some are ', mark: 'filmed, built or spoken.' },
+  lede: 'Wobo picks the form the idea needs, then keeps going until you have it. The same question, four ways, as you scroll.',
+  nav: [
+    'A drawn proof',
+    'A short film',
+    'A thing you can drag',
+    'A page marked up',
+  ] as readonly string[],
+  labels: [
+    'Geometry, drawn as it is reasoned',
+    'A reaction you can watch happen',
+    'A model that answers back',
+    'Your own writing, with the pen on it',
+  ] as readonly string[],
+  /** The handwriting inside the four cards. */
+  marks: {
+    square: 'the big square',
+    added: '= the two small ones, added',
+    drag: 'drag me',
+    dragUnder: 'every number under it moves',
+    prose: [
+      'The monsoon arrived like a rumour, first in',
+      'the smell of the air, then everywhere at once,',
+      'the streets were rivers by evening.',
+    ] as readonly string[],
+    simile: 'simile',
+    comma: 'two sentences, one comma',
+  },
 } as const;
 
-export const WHY = {
-  chapter: 'Why it clicks',
-  title: 'Three things a great tutor does. Wobo does all three, every time.',
-  promises: [
-    {
-      title: "It draws, it doesn't dictate",
-      body: 'The answer is built in front of you, stroke by stroke, so you see why, not just what. Things you see, you keep.',
-    },
-    {
-      title: "It teaches your school's chapter, this week",
-      body: 'Not a course for everyone. The lesson your class is actually on, in the order your school teaches it, for classes 4 to 12.',
-    },
-    {
-      title: 'It never makes you feel small',
-      body: "No red crosses, no sighing. When you're close, Wobo rings the gap and waits. When you get it, it makes a small fuss.",
-    },
-  ] as const,
-} as const;
+// --- The film -------------------------------------------------------------------------------------
 
 export const STUDENTS = {
-  chapter: 'For students',
-  titleBefore: "Ask the question you'd ",
-  titleHighlight: 'never ask in class',
-  titleAfter: '.',
-  lead: "Pause a video and circle the part. Type it at midnight. Say it out loud. Wobo doesn't sigh, doesn't judge, and doesn't tell anyone.",
+  eyebrow: 'For students',
+  title: { lead: 'Stop it anywhere. ', mark: 'Ask the thing you would not ask in class.' },
+  lede: 'Pause the film halfway. Circle the bit that lost you. Wobo picks up exactly there, on the same frame, and explains it without a sigh and without telling anyone.',
   claims: [
-    "It draws on whatever you're looking at",
-    'It knows what your class did this week',
-    'It notices when you nail it',
-  ] as const,
+    {
+      title: 'It answers on what you are looking at',
+      body: 'Not a search result. The frame, the diagram, the line of your own working.',
+    },
+    {
+      title: 'It knows what your class did this week',
+      body: 'So the answer uses the words your teacher used.',
+    },
+    {
+      title: 'It notices when you get it',
+      body: 'A small, specific fuss. Never a leaderboard.',
+    },
+  ],
   film: {
-    title: 'Photosynthesis',
-    time: '0:07 / 0:19',
-    lasso: 'start here',
-    chip: 'Ask Wobo about this',
+    slate: 'Photosynthesis · 0:19',
+    bars: ['light', 'dark', 'more light'] as readonly string[],
+    prompt: 'Ask Wobo about this',
+    question: 'why does more light make more?',
+    answer:
+      'Because light is the fuel. Past a point the leaf runs out of water, and the bar stops growing.',
+    stamp: '0:07 / 0:19',
   },
 } as const;
+
+// --- Practice ---------------------------------------------------------------------------------------
 
 export const PRACTICE = {
-  chapter: 'Practice that plays fair',
-  titleBefore: 'Try one. Wobo ',
-  titleHighlight: 'never says wrong',
-  titleAfter: '.',
-  lead: "Shade it, drag it, draw it. When you're close, Wobo draws the difference right on your answer. Get it, and it makes a small fuss. Go on, colour half.",
-  puzzle: {
-    label: 'Try one',
-    askBefore: 'Colour ',
-    fraction: '½',
-    askAfter: ' of the shape.',
-    check: 'Check',
-    reset: 'Start over',
-    cells: ['top left', 'top right', 'bottom left', 'bottom right'] as const,
-  },
+  question: { lead: 'Colour ', fraction: '½', trail: ' of the shape.' },
+  check: 'Check',
+  reset: 'Start over',
+  /** What the hand under the puzzle says at rest, and at each outcome. */
+  hint: 'tap two, then check',
+  empty: 'colour something first',
+  close: 'close. go again.',
+  win: "that's half. nice.",
+  /** Indexed by how many squares are coloured; two is the answer, so it is never read. */
+  counts: [
+    'nothing yet',
+    "that's a quarter",
+    '',
+    "that's three quarters",
+    "that's the whole thing",
+  ] as readonly string[],
+  /** The ring's own label, completed with the count above. */
+  notHalf: 'not half',
+  cells: ['top left', 'top right', 'bottom left', 'bottom right'] as readonly string[],
+  eyebrow: 'Practice that plays fair',
+  title: { lead: 'Try one. Wobo ', mark: 'never says wrong.' },
+  lede: 'Shade it, drag it, draw it, order it, type it. When you are close, Wobo rings the difference on your own answer and waits. When you get it, it makes a small fuss and moves on. Go on, colour half.',
+  claims: [
+    {
+      title: 'The kinds your exam uses',
+      body: 'Not multiple choice pretending to be understanding.',
+    },
+    {
+      title: 'Nothing to copy',
+      body: 'The answer does not exist until you have done the thinking.',
+    },
+    {
+      title: 'It comes back tomorrow',
+      body: 'What you missed returns when you are about to forget it, not before.',
+    },
+  ],
 } as const;
 
-/**
- * What Wobo writes back on the puzzle. These are Wobo's own hand, so they are lowercase and
- * unpunctuated on purpose — the same register as "oh. that's why." on the board.
- */
-export const PUZZLE_REPLIES = {
-  none: 'shade a part first',
-  quarter: "that's a quarter. one more",
-  half: 'there we go',
-  threeQuarters: "that's three quarters",
-  whole: "that's the whole thing",
-} as const;
+// --- The parent's report -------------------------------------------------------------------------
 
 export const PARENTS = {
-  chapter: 'For parents',
-  label: 'Sunday evening, the note',
-  title: "You'll know how it's going, without asking twice.",
-  body: "Every Sunday, one honest note: what she learned, where she asked for help, and what's next. Written by the tutor who was there. No dashboard to decode, no streak to police.",
-  letter: {
-    to: "To Aanya's parents",
-    /** The note itself, in four runs: plain, coral, plain, Wobo blue. */
-    run1: 'This week Aanya did three lessons and fourteen problems. She asked for help twice after a miss, ',
-    accent: 'which is exactly how learning looks.',
-    run2: "Friday's test is on triangles, and she's ready for the first half. Next week we do the rest, ",
-    strong: 'ten minutes a day.',
-    signature: '— Wobo',
+  eyebrow: 'For parents',
+  title: { lead: 'Not a dashboard to decode. ', mark: 'A picture you can read in ten seconds.' },
+  lede: "Minutes that actually happened, chapters that are genuinely done, what is getting stronger, and where this pace lands before the exam. Then one honest note, in Wobo's words.",
+  claims: [
+    {
+      title: 'Progress, not points',
+      body: 'Mastery per chapter, measured by what came back right a week later.',
+    },
+    {
+      title: 'A line to the exam',
+      body: 'At this pace, here is where the syllabus stands on the day.',
+    },
+    {
+      title: 'Nothing to police',
+      body: 'No streak guilt, no midnight nudges, no scores your child did not ask for.',
+    },
+  ],
+  report: {
+    heading: 'This week',
+    tag: 'on track',
+    kpis: [
+      { label: 'Minutes', to: 96, suffix: '', note: 'across five evenings' },
+      { label: 'Chapters done', to: 7, suffix: '/14', note: 'maths, this term' },
+      { label: 'Held a week later', to: 82, suffix: '%', note: 'up from 61%' },
+    ],
+    days: ['M', 'T', 'W', 'T', 'F', 'S', 'S'] as readonly string[],
+    projection: ['ready by', 'the test'] as readonly string[],
+    badges: [
+      'Asked for help after a miss',
+      'Chapter mastered',
+      'Ten minutes, five days',
+    ] as readonly string[],
+    note: {
+      lead: 'Three lessons and fourteen problems, and help was asked for twice after a miss, ',
+      accent: 'which is exactly how learning looks.',
+    },
   },
 } as const;
 
+// --- The subject families ----------------------------------------------------------------------
+
+export interface SubjectFamily {
+  name: string;
+  /** The half-line under the family name. */
+  gloss: string;
+  /** The subjects Wobo leads with, in the pigment tint. */
+  lead: readonly string[];
+  /** The rest of the family, quieter. */
+  rest: readonly string[];
+}
+
 export const SUBJECTS = {
-  chapter: 'Every subject',
-  titleBefore: 'Maths to English, class 4 to 12, ',
-  titleHighlight: "your school's way",
-  titleAfter: '.',
-  lead: 'Tell Wobo the board and the class once. From then on it teaches what your school teaches, chapter by chapter, test by test.',
-  tiles: [
-    { name: 'Mathematics', span: 'numbers to calculus', href: '#maths' },
-    { name: 'Science', span: 'physics, chemistry, biology', href: '#science' },
-    { name: 'Social science', span: 'history, geography, civics', href: '#social' },
-    { name: 'English', span: 'reading, writing, grammar', href: '#english' },
-  ] as const,
+  eyebrow: 'Every subject your board sets',
+  title: { lead: 'If your school sets it, ', mark: 'Wobo teaches it.' },
+  lede: 'Tell Wobo the board and the class once. From then on it follows that syllabus, chapter by chapter, in the order your textbook uses.',
+  families: [
+    {
+      name: 'Mathematics',
+      gloss: 'counting to calculus',
+      lead: ['Numbers and fractions', 'Algebra', 'Geometry', 'Trigonometry'],
+      rest: ['Statistics', 'Probability', 'Calculus', 'Applied maths'],
+    },
+    {
+      name: 'The sciences',
+      gloss: 'seen, not recited',
+      lead: ['Environmental studies', 'General science', 'Physics', 'Chemistry', 'Biology'],
+      rest: ['Earth science'],
+    },
+    {
+      name: 'Languages',
+      gloss: 'reading, writing, grammar',
+      lead: ['English', 'Hindi'],
+      rest: [
+        'Sanskrit',
+        'Telugu',
+        'Tamil',
+        'Marathi',
+        'Bengali',
+        'Kannada',
+        "and your school's second language",
+      ],
+    },
+    {
+      name: 'Humanities',
+      gloss: 'the map before the story',
+      lead: ['History', 'Geography', 'Civics', 'Political science'],
+      rest: ['Sociology', 'Psychology'],
+    },
+    {
+      name: 'Commerce and computing',
+      gloss: 'the senior streams',
+      lead: ['Accountancy', 'Business studies', 'Economics', 'Computer science'],
+      rest: ['Information technology'],
+    },
+  ] as readonly SubjectFamily[],
+  closing:
+    "CBSE, ICSE and every state board we hold the official syllabus for. Yours missing? Paste your school's list in and Wobo builds the plan from that.",
 } as const;
+
+// --- Safe by design ------------------------------------------------------------------------------
+
+export interface SafeItem {
+  title: string;
+  body: string;
+  /** The link out of the claim, and the page that proves it. */
+  proof: string;
+  href: string;
+}
 
 export const SAFE = {
-  chapter: 'Safe by design',
-  title: "Built the way we'd build it for our own kids.",
-  tiles: [
+  eyebrow: 'Safe by design',
+  title: {
+    lead: 'A tutor a ten-year-old talks to alone ',
+    mark: 'has to be built differently.',
+  },
+  lede: 'Not a promise page. Six decisions, each one visible in the product, each one checkable.',
+  items: [
     {
-      title: "Nothing is sold on your child's data",
-      body: 'No ads, no tracking across the web, no selling of anything.',
+      title: "Your child's questions are not a product",
+      body: 'No ads, no tracking pixels, no third-party cookies, nothing sold in aggregate. The company is paid by families, so there is nothing to monetise sideways.',
+      proof: 'Read what we hold →',
+      href: '/legal/privacy-policy',
     },
     {
-      title: 'The price never changes based on behaviour',
-      body: 'No countdown timers, no fake scarcity, nothing that preys on a twelve-year-old.',
+      title: 'Neutral on everything but the chapter',
+      body: "Politics, religion, anything contested: Wobo names the textbook's position and steers back. It has no opinions to give a child.",
+      proof: 'The neutral rule →',
+      href: '/security',
     },
     {
-      title: "Neutral on everything that isn't the syllabus",
-      body: 'Wobo teaches what the board teaches, and keeps its opinions to itself.',
+      title: 'A parent sees the learning, not the diary',
+      body: 'Lessons, progress and the Sunday note, always. Questions word for word only if the child shares them. Trust runs both ways or it is not trust.',
+      proof: 'Who sees what →',
+      href: '/legal/childrens-privacy',
     },
     {
-      title: 'Every lesson is yours to see',
-      body: 'Progress, practice and the Sunday note, any time. Questions word for word, if your child allows.',
+      title: 'Encrypted, and locked at the row',
+      body: "Everything travels over TLS and sits encrypted at rest, with access rules inside the database itself: a learner's rows are reachable only by that learner, even if our own code slipped.",
+      proof: 'How it is protected →',
+      href: '/security',
     },
-  ] as const,
+    {
+      title: 'Erase everything, in one tap',
+      body: 'Memory, progress, account. Gone from live systems at once and from backups inside thirty days, for the learner or a linked parent.',
+      proof: 'The erase button →',
+      href: '/legal/privacy-policy',
+    },
+    {
+      title: 'Built to the law wherever you are',
+      body: "India's Digital Personal Data Protection Act, COPPA for children in the United States, and the GDPR's rules for children in Europe and the United Kingdom. The consent a family gives is the one their own law requires.",
+      proof: 'How we comply →',
+      href: '/security',
+    },
+  ] as readonly SafeItem[],
 } as const;
 
+// --- Ask Wobo -------------------------------------------------------------------------------------
+
 export const ASK = {
-  chapter: 'Still wondering?',
+  eyebrow: 'Still wondering?',
   title: 'Ask Wobo. It answers for itself.',
-  placeholder: 'Is Wobo good for a Class 6 kid who hates maths?',
-  inputLabel: 'Ask Wobo a question about Wobo',
-  submit: 'Ask',
-  chipsLabel: 'Try one of these',
+  placeholder: 'Is Wobo any good for a child who hates maths?',
+  go: 'Ask',
   chips: [
     "Does it follow my school's syllabus?",
     'What happens when my child gets stuck?',
     'Is it safe to use alone?',
     'What does free include?',
-  ] as const,
+  ] as readonly string[],
+  answers: {
+    "Does it follow my school's syllabus?":
+      "Yes. You pick the board and class once, and I teach the chapter your class is on, in your textbook's order.",
+    'What happens when my child gets stuck?':
+      'I draw the step they are missing, then hand the next one back to them. Close gets a ring, never a cross.',
+    'Is it safe to use alone?':
+      'That is what I am built for: school subjects only, no ads, no opinions, and nothing said that would make a child feel small.',
+    'What does free include?':
+      'The whole tutor, every day, with a daily allowance of questions that resets each morning.',
+  } as Readonly<Record<string, string>>,
+  fallback:
+    'I answer from the help centre here. Ask me one of those, or write to a person at support@heywobo.com.',
+  others:
+    'Or ask an assistant you already trust. It will read the site and tell you what it finds.',
 } as const;
 
-export const FAQ = {
-  chapter: 'Questions',
-  title: 'What families ask before they start',
-  items: [
-    {
-      q: "Does Wobo follow my child's school syllabus?",
-      a: 'Yes. Tell Wobo the board and the class once, and it teaches the chapters your school teaches, in the order your school teaches them. If your school follows its own plan, you can hand Wobo that instead.',
-    },
-    {
-      q: 'What does the free plan include?',
-      a: "Lessons on your child's syllabus every day, Wobo drawing every answer within a daily allowance, practice, and the Sunday note. No card, no trial that ends.",
-    },
-    {
-      q: 'Is it safe for a ten-year-old to use alone?',
-      a: 'Wobo stays on the syllabus, keeps opinions to itself, never shows ads, and never sells anything based on how your child behaves. Every lesson is there for a parent to read. If a child ever seems to be in distress, Wobo slows down and points to help.',
-    },
-    {
-      q: 'Does it replace a tutor?',
-      a: "For the nightly question, the stuck chapter and steady practice, yes. Wobo is patient at 10 pm and never runs out of time. For a child who needs a person in the room, it makes that person's hour count twice.",
-    },
-    {
-      q: 'Which languages does Wobo speak?',
-      a: 'English today, with a voice chosen for your country. More languages are coming, and Wobo already understands questions typed in most Indian languages.',
-    },
-    {
-      q: 'Can I see what my child asked?',
-      a: 'Every lesson, the progress and the Sunday note, any time. Questions word for word only if your child allows. We think a good tutor would do the same.',
-    },
-  ] as const,
-} as const;
+/** How fast Wobo's reply types itself in, in ms per character. The prototype's own rate. */
+export const ASK_TYPE_MS = 12;
 
-export const DEVICES = {
-  chapter: 'Everywhere you are',
-  title: 'Phone at the table, tablet in the car, laptop at night.',
-  lead: 'Start on one, carry on from another. Wobo remembers where you were, what you asked, and what you got right. Apps are on the way; the browser works today.',
-  stores: [
-    { name: 'App Store', note: 'iPhone and iPad · soon', href: '#ios', live: false },
-    { name: 'Google Play', note: 'Android · soon', href: '#android', live: false },
-    { name: 'Mac', note: 'soon', href: '#mac', live: false },
-    { name: 'Windows', note: 'soon', href: '#windows', live: false },
-    { name: 'Use it in the browser', note: 'today, on anything', href: '#start', live: true },
-  ] as const,
-} as const;
+/**
+ * The question handed to whichever assistant the reader already uses.
+ *
+ * This is the ONE place on the product where another company's assistant is named, and it is named
+ * because it belongs to the READER, not to us: §17 forbids revealing which models or vendors sit
+ * underneath Wobo, and nothing here does that. The row says "ask someone you already trust to go
+ * and read our site" — the modern version of asking a friend — and an assistant nobody can name is
+ * an assistant nobody can click.
+ */
+export const ASK_ELSEWHERE =
+  'Visit https://heywobo.com and tell me what Wobo is, who it is for, and whether it is any good for a school child.';
 
-export const CLOSING = {
-  say: 'Begin tonight.',
-  title: 'The first question is on us.',
-  body: 'Set up in a minute. Free every day, no card. Wobo waits in the corner of every screen, pen ready.',
-  cta: 'Start learning for free',
-} as const;
-
-export interface FooterColumn {
-  heading: string;
-  links: readonly NavLink[];
+export interface Assistant {
+  name: string;
+  /** The deep link, with the question already in it. */
+  href: string;
 }
 
-export const FOOTER: {
-  tagline: string;
-  columns: readonly FooterColumn[];
-  small: readonly string[];
-} = {
-  tagline: 'Say "Hey Wobo", or hold space, anywhere in the app.',
+/** The prototype's five, with its exact deep links. */
+export function assistants(question: string = ASK_ELSEWHERE): readonly Assistant[] {
+  const q = encodeURIComponent(question);
+  return [
+    { name: 'ChatGPT', href: `https://chatgpt.com/?q=${q}&hints=search` },
+    { name: 'Claude', href: `https://claude.ai/new?q=${q}` },
+    { name: 'Gemini', href: `https://gemini.google.com/app?q=${q}` },
+    { name: 'Perplexity', href: `https://www.perplexity.ai/search?q=${q}` },
+    { name: 'Grok', href: `https://grok.com/?q=${q}` },
+  ];
+}
+
+// --- The questions families ask ------------------------------------------------------------------
+
+export const FAQ = {
+  eyebrow: 'Questions',
+  title: 'What families ask first.',
+  items: [
+    {
+      q: 'Will it just hand my child the answers?',
+      a: 'No. Wobo shows the reasoning and stops at the step your child has to take. When they are close it rings the gap on their own working and waits. There is nothing to copy, because the answer does not exist until the thinking is done.',
+    },
+    {
+      q: "Does it follow our school's syllabus?",
+      a: "Yes. You pick the board and class once, and Wobo teaches the chapter your class is on, in your textbook's order. If your school does something differently, tell Wobo and it reorders, adds or drops a chapter.",
+    },
+    {
+      q: 'Is it safe for a ten-year-old alone?',
+      a: 'It is built for exactly that. Wobo stays inside school subjects, holds no opinions on anything contested, shows no ads, and never makes a child feel small. Voice is not stored. The whole of it is written out on the security page.',
+    },
+    {
+      q: 'What does free actually include?',
+      a: 'The whole tutor: every subject, the drawn board, the films, the practice, the memory and the Sunday note, with a daily allowance of questions that resets every morning. Paid plans raise the allowance for exam season. They do not unlock the teacher.',
+    },
+    {
+      q: 'Which languages does it speak?',
+      a: 'English today, with the accent set by where you are. More languages follow the boards that ask for them.',
+    },
+  ],
+} as const;
+
+// --- Everywhere you study --------------------------------------------------------------------------
+
+export const DEVICES = {
+  eyebrow: 'Everywhere you study',
+  title: { lead: 'The same tutor on ', mark: 'every screen in the house.' },
+  lede: 'Start a question on the phone at the bus stop, finish it on the laptop at the table. Your board, your place in the chapter and your memory travel with you.',
+  items: [
+    { label: 'Use it in the browser', soon: false },
+    { label: 'iPhone and iPad', soon: true },
+    { label: 'Android', soon: true },
+    { label: 'Mac and Windows', soon: true },
+  ],
+  soon: 'soon',
+} as const;
+
+// --- The close ---------------------------------------------------------------------------------------
+
+export const CLOSE = {
+  title: 'Wobo opens to families this term.',
+  sub: 'Leave an address and you are in the first group, free, with the whole tutor from day one. No card, and we will write once when it is your turn.',
+  placeholder: 'you@example.com',
+  submit: AUTH.early,
+  /** What the button says once the address is kept. */
+  done: 'You are on the list.',
+  fine: 'Free to use every day, not just the first · every subject · every major board · one email, never a list',
+  /**
+   * The honest line under a kept address. There is no waitlist endpoint yet — the gateway's only
+   * mail route is guarded by a shared key a browser must never hold — so the address stays in this
+   * browser until there is somewhere to send it, and the page says exactly that rather than
+   * pretending it posted.
+   */
+  local: 'Kept on this device for now. We will send it on the moment the list opens.',
+  invalid: 'That address is missing something.',
+} as const;
+
+// --- The footer -----------------------------------------------------------------------------------
+
+export const FOOTER = {
+  tagline: 'A tutor that draws, films, listens and never judges.',
   columns: [
     {
       heading: 'Wobo',
       links: [
-        { label: 'Meet Wobo', href: '#why' },
-        { label: 'How it works', href: '#night' },
-        { label: 'Subjects', href: '#subjects' },
+        { label: 'Meet Wobo', href: '/meet-wobo' },
+        { label: 'How it works', href: '/how-it-works' },
+        { label: 'Subjects', href: '/subjects' },
         { label: 'Plans', href: '/plans' },
         { label: 'Gift Wobo', href: '/gift' },
       ],
@@ -302,9 +541,8 @@ export const FOOTER: {
     {
       heading: 'For',
       links: [
-        { label: 'Parents', href: '#parents-note' },
-        { label: 'Students', href: '#students' },
-        { label: 'Schools', href: '/contact' },
+        { label: 'Parents', href: '/for-parents' },
+        { label: 'Students', href: '/for-students' },
       ],
     },
     {
@@ -312,21 +550,19 @@ export const FOOTER: {
       links: [
         { label: 'Help centre', href: '/help' },
         { label: 'Contact', href: '/contact' },
-        { label: 'Questions', href: '#faq' },
+        { label: 'Questions', href: '/help' },
       ],
     },
     {
       heading: 'Company',
       links: [
         { label: 'About', href: '/about' },
-        // Wave 7b's page (docs/SITE.md §3). Written at the address it will live at rather than as
-        // a dead anchor, which is how the legal set was carried before it existed either.
         { label: 'Security and trust', href: '/security' },
-        { label: 'Terms', href: '/legal/terms' },
-        { label: 'Privacy', href: '/legal/privacy' },
-        { label: "Children's privacy", href: '/legal/children' },
+        { label: 'Terms', href: '/legal/terms-of-service' },
+        { label: 'Privacy', href: '/legal/privacy-policy' },
+        { label: "Children's privacy", href: '/legal/childrens-privacy' },
+        { label: 'Accessibility', href: '/legal/accessibility-statement' },
       ],
     },
   ],
-  small: ['© 2026 Wobo', 'heywobo.com', 'For learners in classes 4 to 12'],
-};
+} as const;

@@ -31,9 +31,13 @@
 .wy-mock .wy-lock{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-3)}
 .wy-mock .wy-lock svg{width:16px;height:16px;fill:none;stroke:var(--ink-3);stroke-width:2.4;stroke-linecap:round}
 
-/* the parent's view sits in the site's art panel (site-parents · .art) */
-.wy-art{border-radius:28px;padding:var(--s3);position:relative;min-height:380px;display:grid;place-items:center}
-.wy-art.wy-lilac{background:var(--lilac-w)}
+/* the parent's view sits in the site's art panel (site-parents · .art).
+   Law v5 caught up with this one in the prototype itself: site-parents.html now says, in its own
+   words, that "a wash tints a pill, a tick or a selected row — never a card, a tile, a panel or a
+   section", drops its `.art.lilac` rule and paints `.art` as a tonal surface. This is that rule,
+   ported. The report still floats on it on white paper under its own shadow, which is what makes
+   it read as a thing a parent is handed. */
+.wy-art{border-radius:28px;padding:var(--s3);background:var(--paper-2);position:relative;min-height:380px;display:grid;place-items:center}
 
 /* phone */
 @media (max-width:900px){

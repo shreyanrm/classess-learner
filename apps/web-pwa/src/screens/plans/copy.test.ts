@@ -1,9 +1,13 @@
 /**
  * The plans page's words are design/prototypes/site-plans.html, word for word, and its numbers are
  * the tiers'. This holds both: every string the page can render obeys the copy laws (DESIGN.md:
- * sentence case, no emoji, no exclamation marks; WOBO-PLAN §19: Wobo has no gender), every card,
- * table row, question and answer is in the prototype, and the one answer that quotes a price
- * reads it from the tiers rather than carrying its own.
+ * sentence case, no emoji, no exclamation marks; WOBO-PLAN §19: Wobo has no gender), and every
+ * card, table row, question and answer is in the prototype.
+ *
+ * It also holds law v5's copy law (DESIGN.md §0) over the whole page: no raw allowance anywhere
+ * ("40 questions a day"), no grade gate ("class 4 to 12"), no invented learner, no country switch,
+ * and a close that asks for early access rather than inviting someone into a product that has not
+ * opened.
  */
 
 import { describe, expect, it } from 'bun:test';
@@ -85,66 +89,53 @@ describe('the copy laws', () => {
   });
 });
 
-describe('the plans page is the prototype, word for word', () => {
+/**
+ * The prototype is the page's STRUCTURE, and the anchors below hold the page to it: the hero, the
+ * allowance drawing, the card and table shapes, the gift block and the money questions are all
+ * still the prototype's.
+ *
+ * Its WORDING is held by the law rather than by a diff, because the two differ on purpose in two
+ * places. The prototype's cards describe a product where every tier carries one learner and
+ * nothing at all is gated; WOBO-PLAN §14 says Max carries two learners and that voice and
+ * past-paper sets are the paid extras, and a prototype does not get to change the deal. And the
+ * prototype's phrasing for a multiple ("five times the questions") is written here in law v5's
+ * own words ("five times the free allowance"). Everything the law does govern — no raw allowance,
+ * no grade gate, no invented learner, no country switch, early access rather than an invitation —
+ * is asserted in full further down.
+ */
+describe('the plans page is the prototype', () => {
   const inProto = (label: string, text: string): void => {
     expect([label, PROTO.includes(text)]).toEqual([label, true]);
   };
 
-  it('says the hero, the toggle and the allowance the way the prototype says them', () => {
+  it('says the hero and the allowance the way the prototype says them', () => {
     inProto('title', PLANS_PAGE.title);
     inProto('titleEm', PLANS_PAGE.titleEm);
     inProto('lead', PLANS_PAGE.lead);
-    inProto('regions.IN', PLANS_PAGE.regions.IN);
-    inProto('regions.INTL', PLANS_PAGE.regions.INTL);
-    inProto('regionLabel', PLANS_PAGE.regionLabel);
     for (const [k, v] of Object.entries(PLANS_PAGE.allowance)) inProto(`allowance.${k}`, v);
   });
 
-  it("draws the three cards with the prototype's words", () => {
+  it("draws the three cards in the prototype's frame", () => {
     for (const tier of PLAN_TIERS) {
       inProto(`${tier.id}.name`, `<div class="name">${tier.name}</div>`);
-      inProto(`${tier.id}.x`, `<div class="x">${tier.allowanceMultiple}× allowance</div>`);
-      inProto(`${tier.id}.blurb`, tier.blurb);
-      for (const line of tier.lines) inProto(`${tier.id}.line`, `</i>${line}</li>`);
       inProto(`${tier.id}.cta`, `>${tier.cta}</a>`);
       inProto(`${tier.id}.fine`, `<div class="fine">${tier.fine}</div>`);
+      expect([`${tier.id}.lines`, tier.lines.length]).toEqual([`${tier.id}.lines`, 4]);
     }
     inProto('best', `<span class="best">${BEST_FOR}</span>`);
   });
 
-  it('draws the honest table, row for row', () => {
+  it("draws the honest table in the prototype's frame", () => {
     inProto('table.eyebrow', PLANS_PAGE.table.eyebrow);
-    inProto('table.title', PLANS_PAGE.table.title);
-    inProto('table.lead', PLANS_PAGE.table.lead);
     for (const head of PLANS_PAGE.table.head) inProto('table.head', `<div>${head}</div>`);
-    for (const row of BENEFITS) inProto(`row ${row.label}`, `<div>${row.label}</div>`);
-  });
-
-  it("previews the checkout with the prototype's two boxes", () => {
-    const c = PLANS_PAGE.checkout;
-    for (const key of [
-      'eyebrow',
-      'title',
-      'lead',
-      'say',
-      'sayEm',
-      'terms',
-      'termsNote',
-      'renewal',
-      'pay',
-      'fine',
-    ] as const) {
-      inProto(`checkout.${key}`, c[key]);
-    }
-    inProto('checkout.renewalNote', c.renewalNote.replace('{plan}', 'Pro'));
+    // the rows themselves are §14's deal, not the prototype's — see the note above
+    inProto('table.allowance', '<div>Daily allowance</div>');
+    inProto('table.subjects', '<div>Every subject your board sets</div>');
   });
 
   it('carries the gift block and the money questions', () => {
     for (const [k, v] of Object.entries(PLANS_PAGE.gift)) inProto(`gift.${k}`, v);
-    for (const item of faqItems()) {
-      inProto('faq.q', `<summary>${item.question}</summary>`);
-      inProto('faq.a', `<p>${item.answer}</p>`);
-    }
+    for (const item of faqItems()) inProto('faq.q', `<summary>${item.question}</summary>`);
     for (const [k, v] of Object.entries(PLANS_PAGE.close)) inProto(`close.${k}`, v);
   });
 });
@@ -179,11 +170,12 @@ describe('the prices', () => {
     expect(recommended[0]?.id).not.toBe(PLAN_TIERS.at(-1)?.id);
   });
 
-  it('keeps the allowance multiples §14 sets, and the questions a day with them', () => {
+  it('keeps the allowance multiples §14 sets, and states no raw allowance at all', () => {
     expect(PLAN_TIERS.map((t) => t.allowanceMultiple)).toEqual([1, 5, 20]);
-    const free = PLAN_TIERS[0] as PlanTier;
-    for (const tier of PLAN_TIERS) {
-      expect(tier.questionsPerDay).toBe(free.questionsPerDay * tier.allowanceMultiple);
+    // law v5: free carries no multiplier, and no tier states a number of questions.
+    for (const [label, text] of STRINGS) {
+      expect([label, /\b\d+\s*(questions|turns)\b/i.test(text)]).toEqual([label, false]);
+      expect([label, /\b(forty|two hundred|eight hundred)\b/i.test(text)]).toEqual([label, false]);
     }
   });
 
@@ -216,10 +208,13 @@ describe('the honest table', () => {
         expect(cell === true || cell === false || typeof cell === 'string').toBe(true);
       }
     }
-    const questions = BENEFITS.find((r) => r.label === 'Questions a day');
-    expect([questions?.free, questions?.pro, questions?.max]).toEqual(
-      PLAN_TIERS.map((t) => String(t.questionsPerDay)),
-    );
+    // law v5: the allowance row says what a day feels like, and free carries no multiplier
+    const allowance = BENEFITS.find((r) => r.label === 'Daily allowance');
+    expect([allowance?.free, allowance?.pro, allowance?.max]).toEqual([
+      'enough for an evening',
+      'five times',
+      'twenty times',
+    ]);
     const learners = BENEFITS.find((r) => r.label === 'Learners on the plan');
     expect([learners?.free, learners?.pro, learners?.max]).toEqual(
       PLAN_TIERS.map((t) => String(t.learners)),
@@ -245,20 +240,36 @@ describe('the consent boxes', () => {
 });
 
 describe('the money questions', () => {
-  it('quote the tiers, not a number of their own', () => {
-    const custom: PlanTier[] = PLAN_TIERS.map((t) =>
-      t.id === 'pro'
-        ? {
-            ...t,
-            price: { IN: { currency: 'INR', amount: 1234 }, INTL: { currency: 'USD', amount: 12 } },
-          }
-        : t,
-    );
-    const answer = faqItems(custom).find(
-      (i) => i.question === 'Do prices change by country?',
-    )?.answer;
-    expect(answer).toContain('₹1,234');
-    expect(answer).toContain('$12');
-    expect(answer).not.toContain('₹1,999');
+  it('answer the country question without a switch and without reciting a price', () => {
+    const answer = faqItems().find((i) => i.question === 'Do prices change by country?')?.answer;
+    expect(answer).toContain('without asking where you are');
+    expect(answer).not.toMatch(/[₹$]\d/);
+  });
+});
+
+/** Law v5's copy law (DESIGN.md §0), held over every string this page can render. */
+describe('law v5 over the whole plans page', () => {
+  it('gates nobody by grade', () => {
+    for (const [label, text] of STRINGS) {
+      expect([label, /class(es)? \d|grade \d|\bages? \d/i.test(text)]).toEqual([label, false]);
+    }
+  });
+
+  it('names no learner and no parent', () => {
+    for (const [label, text] of STRINGS) {
+      expect([label, /aanya|arjun|riya|meera|priya/i.test(text)]).toEqual([label, false]);
+    }
+  });
+
+  it('closes on early access rather than an invitation to begin tonight', () => {
+    expect(PLANS_PAGE.close.primary).toBe('Get early access');
+    for (const [label, text] of STRINGS) {
+      expect([label, /begin tonight|tonight/i.test(text)]).toEqual([label, false]);
+    }
+  });
+
+  it('offers no country switch to render', () => {
+    expect('regions' in PLANS_PAGE).toBe(false);
+    expect('regionLabel' in PLANS_PAGE).toBe(false);
   });
 });

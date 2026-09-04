@@ -75,7 +75,10 @@ button.ls-hold{border:0;width:100%;cursor:pointer;font:inherit;text-align:left;t
   .ls-canvas{min-height:300px}
   .ls-stage{position:relative;min-height:300px}
   .ls-say .hand{font-size:20px}
-  /* the touch floor (DESIGN.md §2): the bar's voice buttons, the scrubbed numbers, the why */
+  /* the touch floor (DESIGN.md §2): the bar's voice buttons, the scrubbed numbers, the why, and
+     the Plane/Notes switch in the top bar — at 360px its label is only 42px wide, and the
+     responsive proof measures a chip's box, not its type */
+  .ls-topbar .wk-right button.wk-chip{min-width:44px;justify-content:center}
   .ls-voice button{min-width:44px;min-height:44px}
   .ls-scrub{min-width:44px;min-height:44px;line-height:44px;padding-top:0;padding-bottom:0}
   .ls-why{width:44px;height:44px}

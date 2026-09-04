@@ -54,4 +54,4 @@ export function MicIcon() {
  * The wordmark. Re-exported from the one file that holds the artwork, so a surface can never
  * again ship the product name set in a typeface and pass for the logo.
  */
-export { Wordmark, WORDMARK_RATIO } from './Wordmark';
+export { WORDMARK_RATIO, Wordmark } from './Wordmark';

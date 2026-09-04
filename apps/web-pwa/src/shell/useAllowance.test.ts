@@ -24,7 +24,7 @@ describe('the rail’s allowance card', () => {
 
   it('says it could not read one rather than inventing a number', () => {
     expect(allowanceNote({ known: false, remaining: null, limit: null, resetsAt: null }, now)).toBe(
-      'Sign in and this shows how many turns are left today, and when they come back.',
+      'Sign in and this shows how much of today is left, and when it comes back.',
     );
   });
 });

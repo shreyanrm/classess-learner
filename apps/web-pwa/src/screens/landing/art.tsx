@@ -1,52 +1,29 @@
 'use client';
 
 /**
- * The drawn pieces the page shares: the defs every SVG on it reaches into, Wobo's head as a group
- * that can be nested inside another drawing, and the lesson Wobo draws.
+ * Every drawn thing on the landing page, in one hand.
  *
- * All three are ports. The geometry, the gradients and the timing windows are the approved
- * prototype's (`scratchpad/design/landing-v7.html`), unchanged.
+ * These are PORTS. The geometry, the gradients, the stroke weights and the ids are
+ * `design/prototypes/landing-v8.html`'s, unchanged — the engine finds `#d-leaf`, `#lasso`, `#proj`,
+ * `#bars` and `#ring` by those exact names, so renaming one here silently deletes a piece of
+ * motion. What the JSX adds is only what JSX requires: camel-cased attribute names, and a `<title>`
+ * on every drawing that carries meaning (the decorative ones are `aria-hidden`).
  *
- * On the two Wobos: where a Wobo stands on its own — the hero, the ask panel, the close panel, a
- * tile's corner — the page mounts the REAL rig (`WoboBody` from `@wobo/wobo`), because that Wobo is
- * alive: it blinks, it gets bored, its gaze follows the pointer. Where a Wobo is a few dozen pixels
- * inside another drawing (the phone on the night desk, the three screens in the devices tile, the
- * promise icon, the letter's stamp) or where the scroll engine drives its gaze from the pen's own
- * position on the board (`#demoWobo`, `#boardWobo`), it is `WoboHeadGroup` — the same head, drawn
- * as a plain `<g>` so it can live inside a parent SVG and be written to by the engine.
- *
- * Wobo is the HEAD ONLY on this page (DESIGN.md §4, and the owner's standing call): a round head, a
- * pill visor, two eyes with catchlights, and the pen's nib. Never a body.
+ * Wobo is the HEAD ONLY on this page (DESIGN.md §4): a round head, a pill visor, two eyes with
+ * catchlights. Never a body, never a gender.
  */
 
-import type { Ref } from 'react';
-import { LESSON } from './lesson';
 import { WORDMARK_PATHS, WORDMARK_VIEWBOX } from './wordmark';
 
 /**
- * The document-level defs: the owner's wordmark as a symbol, and the four gradients Wobo's head is
- * shaded with. Rendered once, at the top of the page, in a zero-sized SVG.
+ * The document-level defs: the owner's wordmark, Wobo's head as a reusable symbol, and the two
+ * gradients it is shaded with. Rendered once, at the top of the page, in a zero-sized SVG.
  */
 export function LandingDefs() {
   return (
     <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true">
-      <title>Wobo drawing definitions</title>
       <defs>
-        <symbol id="wm" viewBox={WORDMARK_VIEWBOX}>
-          {/* Keyed by position, not by outline: the mark has two o's, and their outlines are the
-              same path — a content key would collide and React would drop one of them. */}
-          {WORDMARK_PATHS.map((glyph, i) => (
-            <path
-              // biome-ignore lint/suspicious/noArrayIndexKey: four fixed glyphs, in a fixed order
-              key={i}
-              transform={glyph.transform}
-              d={glyph.d}
-            />
-          ))}
-        </symbol>
-        {/* Wobo's head is shaded, never flat: a radial highlight up and to the left, and a visor
-            that darkens toward its lower edge. */}
-        <radialGradient id="hg" cx="36%" cy="30%" r="80%">
+        <radialGradient id="hg" cx="36%" cy="30%" r="78%">
           <stop offset="0" style={{ stopColor: 'var(--body-hi)' }} />
           <stop offset="1" style={{ stopColor: 'var(--body)' }} />
         </radialGradient>
@@ -54,21 +31,33 @@ export function LandingDefs() {
           <stop offset="0" style={{ stopColor: 'var(--visor)' }} />
           <stop offset="1" style={{ stopColor: 'var(--visor-lo)' }} />
         </linearGradient>
-        {/* The close panel is ink-black in both themes, so its Wobo is cream in both. */}
-        <radialGradient id="hg-cream" cx="36%" cy="30%" r="80%">
-          <stop offset="0" style={{ stopColor: '#FFFFFF' }} />
-          <stop offset="1" style={{ stopColor: '#F3F0E8' }} />
-        </radialGradient>
-        <linearGradient id="vg-night" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" style={{ stopColor: '#0F1226' }} />
-          <stop offset="1" style={{ stopColor: '#1E2650' }} />
-        </linearGradient>
+        <symbol id="head" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="url(#hg)" />
+          <rect x="18" y="41" width="84" height="38" rx="19" fill="url(#vg)" />
+          <g className="blink">
+            <circle cx="43" cy="61" r="9" fill="var(--eye)" />
+            <circle cx="77" cy="61" r="9" fill="var(--eye)" />
+            <circle cx="40" cy="58" r="3" fill="var(--paper)" opacity=".9" />
+            <circle cx="74" cy="58" r="3" fill="var(--paper)" opacity=".9" />
+          </g>
+        </symbol>
+        <symbol id="wm" viewBox={WORDMARK_VIEWBOX}>
+          {/* `currentColor`, so the header and the footer tint the mark with their own `color`
+              rather than each hard-coding the ink. Keyed by position, not by outline: the mark has
+              two o's whose outlines are the same path, and a content key would drop one of them. */}
+          <g fill="currentColor">
+            {WORDMARK_PATHS.map((glyph, i) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: four fixed glyphs, in a fixed order
+              <path key={i} transform={glyph.transform} d={glyph.d} />
+            ))}
+          </g>
+        </symbol>
       </defs>
     </svg>
   );
 }
 
-/** The owner's wordmark, stamped. `fill: currentColor` in the stylesheet gives it the ink tone. */
+/** The owner's wordmark. The stylesheet gives it its ink tone. */
 export function Wordmark() {
   return (
     <svg viewBox="0 0 1160 340" aria-hidden="true">
@@ -77,127 +66,593 @@ export function Wordmark() {
   );
 }
 
-/**
- * Wobo's head as a bare `<g>`, in the prototype's 120×120 space. Drop it inside any SVG.
- *
- * `id` names it for the engine (`#demoWobo`, `#boardWobo`), which writes a transform onto the
- * `.eyes` group so Wobo watches its own pen move across the board.
- */
-export function WoboHeadGroup({
-  id,
-  transform,
-  cream = false,
-  headRef,
-}: {
-  id?: string;
-  transform?: string;
-  /** The close panel's tone: a cream head on a night visor, whatever the theme is doing. */
-  cream?: boolean;
-  /** Handed to the engine, which writes the gaze straight onto the `.eyes` group inside. */
-  headRef?: Ref<SVGGElement>;
-}) {
-  const head = cream ? 'url(#hg-cream)' : 'url(#hg)';
-  const visor = cream ? 'url(#vg-night)' : 'url(#vg)';
-  const glint = cream ? '#FFFFFF' : 'var(--paper)';
+/** Wobo's head, at whatever size the surface asks for. */
+export function WoboHead({ size, className }: { size: number | string; className?: string }) {
   return (
-    <g ref={headRef} {...(id ? { id } : {})} {...(transform ? { transform } : {})}>
-      <g className="wobo">
-        <circle cx="60" cy="60" r="52" fill={head} />
-        <rect x="18" y="41" width="84" height="38" rx="19" fill={visor} />
-        <rect x="22" y="45" width="76" height="12" rx="6" fill={glint} opacity=".35" />
-        <g className="eyes">
-          <g className="blink">
-            <circle cx="43" cy="61" r="9" fill="var(--eye)" />
-            <circle cx="77" cy="61" r="9" fill="var(--eye)" />
-            <circle cx="40" cy="58" r="3" fill={glint} opacity=".85" />
-            <circle cx="74" cy="58" r="3" fill={glint} opacity=".85" />
-          </g>
-        </g>
-        <path className="nib" d="M96 96 l10 10 l-4 4 l-10 -10 z" fill="var(--pig)" />
-      </g>
-    </g>
-  );
-}
-
-/** Wobo's head in its own 120×120 SVG, for the places the composition wants a picture, not a rig. */
-export function WoboHeadSvg({
-  className,
-  bob = false,
-  cream = false,
-  id,
-}: {
-  className?: string;
-  /** The slow 4.5s float. Off under reduced motion, by the stylesheet. */
-  bob?: boolean;
-  cream?: boolean;
-  id?: string;
-}) {
-  const head = <WoboHeadGroup {...(id ? { id } : {})} cream={cream} />;
-  return (
-    <svg viewBox="0 0 120 120" className={className} aria-hidden="true">
-      {bob ? <g className="bob">{head}</g> : head}
+    <svg
+      viewBox="0 0 120 120"
+      width={size}
+      height={size}
+      className={className}
+      role="img"
+      aria-label="Wobo"
+    >
+      <title>Wobo</title>
+      <use href="#head" />
     </svg>
   );
 }
 
+// --- The hero card's four answers ---------------------------------------------------------------
+
 /**
- * The proof, drawn. `strokeGroupId` names the group the engine dash-animates; `penId` names the pen
- * that rides the stroke being drawn. Both are the prototype's own ids so the ported engine finds
- * them unchanged.
+ * The drawn answer. Every id here is read by the hero timeline (`engine/motion.ts`): the leaf and
+ * its vein draw themselves, the rays and the first label arrive, the mint arrow carries the sugar
+ * out, and the caption lands last.
  */
-export function LessonDrawing({
-  strokeGroupId,
-  penId,
-  groupRef,
-  penRef,
+export function HeroDrawn({ label }: { label: string }) {
+  return (
+    <svg viewBox="0 0 520 380" role="img" aria-label={label}>
+      <title>{label}</title>
+      <path
+        className="ink draw"
+        id="d-leaf"
+        d="M170 250 C170 170 240 120 320 118 C320 200 258 254 176 254 Z"
+      />
+      <path className="ink thin draw" id="d-vein" d="M176 252 C230 220 280 176 318 122" />
+      <g id="d-rays" opacity="0">
+        <path className="ink pig" d="M120 60 l34 44" />
+        <path className="ink pig" d="M180 46 l20 52" />
+        <path className="ink pig" d="M244 44 l4 54" />
+      </g>
+      <text className="hw pig" id="d-lbl1" x="330" y="90" fontSize="26" opacity="0">
+        light in
+      </text>
+      <path className="ink mint draw" id="d-arrow" d="M300 250 C350 250 360 220 396 214" />
+      <path className="ink mint" id="d-head" d="M386 206 l12 8 l-12 8" opacity="0" />
+      <text className="hw" id="d-lbl2" x="330" y="300" fontSize="24" opacity="0">
+        sugar out
+      </text>
+      <text className="hw dim" id="d-cap" x="60" y="340" fontSize="20" opacity="0">
+        light + water + air → food the plant can use
+      </text>
+    </svg>
+  );
+}
+
+export function HeroFilmed({ label, caption }: { label: string; caption: string }) {
+  return (
+    <svg viewBox="0 0 520 380" role="img" aria-label={label}>
+      <title>{label}</title>
+      <rect x="60" y="50" width="400" height="230" rx="14" fill="var(--paper)" />
+      <circle cx="150" cy="150" r="40" fill="var(--mint)" opacity=".18" />
+      <circle cx="150" cy="150" r="26" fill="var(--mint)" opacity=".35" />
+      <path className="ink" d="M300 200 C300 150 340 120 390 120" />
+      <circle cx="390" cy="120" r="16" fill="var(--marigold)" />
+      <path className="ink thin" d="M120 250 h280" />
+      <rect x="60" y="296" width="400" height="8" rx="4" fill="var(--paper-3)" />
+      <rect x="60" y="296" width="180" height="8" rx="4" fill="var(--marigold)" />
+      <text className="hw dim" x="60" y="340" fontSize="20">
+        {caption}
+      </text>
+    </svg>
+  );
+}
+
+export function HeroTried({
+  label,
+  copy,
 }: {
-  strokeGroupId: 'lessonA' | 'lessonB';
-  penId: 'pen' | 'pen2';
-  /** The group of marks the engine dash-animates. */
-  groupRef?: Ref<SVGGElement>;
-  /** The pen that rides whichever mark is being drawn. */
-  penRef?: Ref<SVGGElement>;
+  label: string;
+  copy: { question: string; right: string; wrong: string; verdict: string; caption: string };
 }) {
   return (
+    <svg viewBox="0 0 520 380" role="img" aria-label={label}>
+      <title>{label}</title>
+      <rect x="110" y="60" width="300" height="180" rx="16" fill="var(--paper)" />
+      <text className="hw" x="140" y="110" fontSize="24">
+        {copy.question}
+      </text>
+      <rect x="140" y="130" width="110" height="44" rx="12" fill="var(--pig)" />
+      <text x="195" y="158" textAnchor="middle" fontFamily="Poppins" fontSize="15" fill="#fff">
+        {copy.right}
+      </text>
+      <rect x="266" y="130" width="110" height="44" rx="12" fill="var(--paper-3)" />
+      <text
+        x="321"
+        y="158"
+        textAnchor="middle"
+        fontFamily="Poppins"
+        fontSize="15"
+        fill="var(--ink-2)"
+      >
+        {copy.wrong}
+      </text>
+      <path className="ink mint" d="M150 200 l14 14 l26 -30" />
+      <text className="hw" x="200" y="214" fontSize="22" fill="var(--mint)">
+        {copy.verdict}
+      </text>
+      <text className="hw dim" x="110" y="300" fontSize="20">
+        {copy.caption}
+      </text>
+    </svg>
+  );
+}
+
+export function HeroSpoken({ label, line }: { label: string; line: string }) {
+  return (
+    <svg viewBox="0 0 520 380" role="img" aria-label={label}>
+      <title>{label}</title>
+      <g transform="translate(150 80)">
+        <use href="#head" width="120" height="120" />
+      </g>
+      <g id="wave" transform="translate(120 240)">
+        {[
+          [0, -18, 36],
+          [16, -28, 56],
+          [32, -12, 24],
+          [48, -34, 68],
+          [64, -20, 40],
+          [80, -10, 20],
+          [96, -26, 52],
+          [112, -14, 28],
+        ].map(([x, y, h]) => (
+          <rect key={x} x={x} y={y} width="7" height={h} rx="3.5" fill="var(--pig)" />
+        ))}
+      </g>
+      <text className="hw" x="80" y="330" fontSize="24">
+        {line}
+      </text>
+    </svg>
+  );
+}
+
+/** The two drawn objects that drift beside the hero card. */
+export function HeroFloats() {
+  return (
     <>
-      <g ref={groupRef} id={strokeGroupId}>
-        {LESSON.map((mark) =>
-          mark.kind === 'path' ? (
-            <path
-              key={`${strokeGroupId}-${mark.s}`}
-              className={mark.tone === 'ink' ? 'ink' : `ink ${mark.tone}`}
-              data-s={mark.s}
-              data-e={mark.e}
-              d={mark.d}
-            />
-          ) : (
-            <text
-              key={`${strokeGroupId}-${mark.s}`}
-              className={mark.tone === 'ink' ? 'hw' : `hw ${mark.tone}`}
-              x={mark.x}
-              y={mark.y}
-              fontSize={mark.size}
-              data-s={mark.s}
-              data-e={mark.e}
-            >
-              {mark.text}
-            </text>
-          ),
-        )}
-      </g>
-      {/* The pen itself: a blue nib and the barrel above it, held at a nine-degree lean. */}
-      <g ref={penRef} id={penId} opacity="0">
-        <path className="penTip" d="M0 0 l-5 -22 l4 -2 l5 22 z" />
-        <rect
-          x="-4"
-          y="-84"
-          width="7"
-          height="62"
-          rx="2"
-          fill="var(--ink)"
-          transform="rotate(-9)"
-        />
-      </g>
+      <div className="float f1" style={{ left: '-4%', top: '-6%', width: 66 }} aria-hidden="true">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="28" fill="var(--marigold)" />
+          <path
+            d="M32 18 v14 l10 6"
+            fill="none"
+            stroke="#14142B"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+        </svg>
+      </div>
+      <div className="float f2" style={{ right: '-3%', top: '-8%', width: 58 }} aria-hidden="true">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <rect x="8" y="8" width="48" height="48" rx="14" fill="var(--pig)" />
+          <path
+            d="M20 32 l8 9 l16 -18"
+            fill="none"
+            stroke="#fff"
+            strokeWidth="5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
     </>
+  );
+}
+
+// --- The loop -------------------------------------------------------------------------------------
+
+/**
+ * The icon tables are arrays of FUNCTIONS, not of elements, and that is not a style choice: an array
+ * of JSX reads to a linter as a list about to be rendered, and a list needs keys. Only one mark is
+ * ever on screen, so a key would be a lie about what this is. A thunk says what it means.
+ */
+
+/** The five step marks, in the order the loop runs. */
+const LOOP_ICONS: readonly (() => React.ReactNode)[] = [
+  () => (
+    <>
+      <rect className="acc" x="15" y="5" width="10" height="18" rx="5" />
+      <path d="M10 19 a10 10 0 0 0 20 0 M20 29 v6" />
+    </>
+  ),
+  () => (
+    <>
+      <path d="M6 10 h28 v20 h-28 z" />
+      <path className="acc" d="M11 17 h14 M11 23 h9" />
+    </>
+  ),
+  () => (
+    <>
+      <path d="M7 33 l4 -1 l19 -19 l-3 -3 l-19 19 z" />
+      <path className="acc" d="M27 10 l3 3" />
+      <path d="M7 6 h10 M12 1 v10" opacity=".5" />
+    </>
+  ),
+  () => (
+    <>
+      <circle cx="20" cy="20" r="14" />
+      <path className="acc" d="M13 20 l5 5 l9 -11" />
+    </>
+  ),
+  () => (
+    <>
+      <rect x="6" y="10" width="28" height="20" rx="4" />
+      <path className="acc" d="M6 13 l14 10 l14 -10" />
+    </>
+  ),
+];
+
+export function LoopIcon({ step }: { step: number }) {
+  return (
+    <svg viewBox="0 0 40 40" aria-hidden="true">
+      {LOOP_ICONS[step]?.()}
+    </svg>
+  );
+}
+
+// --- The four answer forms --------------------------------------------------------------------
+
+export function FormProof({
+  label,
+  marks,
+}: {
+  label: string;
+  marks: { square: string; added: string };
+}) {
+  return (
+    <svg viewBox="0 0 620 380" role="img" aria-label={label}>
+      <title>{label}</title>
+      <path className="ink" d="M150 280 L330 280 L150 150 Z" />
+      <path className="ink thin" d="M150 258 h22 v22" />
+      <path className="ink pig" d="M330 280 L440 148 L308 40 L150 150" />
+      <text className="hw pig" x="352" y="140" fontSize="26">
+        {marks.square}
+      </text>
+      <text className="hw" x="200" y="316" fontSize="24">
+        {marks.added}
+      </text>
+    </svg>
+  );
+}
+
+export function FormFilm({ label }: { label: string }) {
+  return (
+    <svg viewBox="0 0 620 380" role="img" aria-label={label}>
+      <title>{label}</title>
+      <rect x="90" y="50" width="440" height="250" rx="16" fill="var(--paper)" />
+      <circle cx="220" cy="175" r="52" fill="var(--rose)" opacity=".16" />
+      <circle cx="220" cy="175" r="30" fill="var(--rose)" opacity=".3" />
+      <path className="ink pig" d="M300 240 C340 150 420 130 470 130" />
+      <circle cx="470" cy="130" r="14" fill="var(--marigold)" />
+      <rect x="90" y="316" width="440" height="8" rx="4" fill="var(--paper-3)" />
+      <rect x="90" y="316" width="250" height="8" rx="4" fill="var(--marigold)" />
+    </svg>
+  );
+}
+
+export function FormDrag({
+  label,
+  marks,
+}: {
+  label: string;
+  marks: { drag: string; dragUnder: string };
+}) {
+  return (
+    <svg viewBox="0 0 620 380" role="img" aria-label={label}>
+      <title>{label}</title>
+      <path className="ink thin" d="M110 300 h420 M140 330 v-260" />
+      <path className="ink pig" d="M140 280 C230 260 310 150 520 96" />
+      <circle cx="330" cy="182" r="13" fill="var(--rose)" />
+      <path className="ink rose" d="M330 182 v118" strokeDasharray="6 8" />
+      <text className="hw" x="352" y="176" fontSize="24">
+        {marks.drag}
+      </text>
+      <text className="hw dim" x="352" y="212" fontSize="20">
+        {marks.dragUnder}
+      </text>
+    </svg>
+  );
+}
+
+export function FormMarked({
+  label,
+  marks,
+}: {
+  label: string;
+  marks: { prose: readonly string[]; simile: string; comma: string };
+}) {
+  return (
+    <svg viewBox="0 0 620 380" role="img" aria-label={label}>
+      <title>{label}</title>
+      <g fontFamily="Poppins" fontSize="19" fill="var(--ink)">
+        {marks.prose.map((line, i) => (
+          <text key={line} x="110" y={130 + i * 38}>
+            {line}
+          </text>
+        ))}
+      </g>
+      <rect x="308" y="112" width="150" height="24" rx="6" fill="var(--marigold)" opacity=".55" />
+      <text className="hw pig" x="466" y="106" fontSize="22">
+        {marks.simile}
+      </text>
+      <path
+        className="ink rose"
+        d="M240 214 c-8 14 2 26 26 26 s86 -2 106 -8 s12 -28 -12 -30 s-96 -4 -120 12"
+      />
+      <text className="hw rose" x="380" y="252" fontSize="22">
+        {marks.comma}
+      </text>
+    </svg>
+  );
+}
+
+// --- The film ------------------------------------------------------------------------------------
+
+export function FilmFrame({
+  label,
+  slate,
+  bars,
+}: {
+  label: string;
+  slate: string;
+  bars: readonly string[];
+}) {
+  return (
+    <svg viewBox="0 0 520 330" role="img" aria-label={label}>
+      <title>{label}</title>
+      <text className="hw dim" x="40" y="46" fontSize="22">
+        {slate}
+      </text>
+      <path className="ink thin" d="M60 270 h400 M90 290 v-200" />
+      <rect x="150" y="150" width="52" height="120" rx="6" fill="var(--pig)" />
+      <rect x="230" y="196" width="52" height="74" rx="6" fill="var(--mint)" />
+      <rect x="310" y="120" width="52" height="150" rx="6" fill="var(--marigold)" />
+      <text className="hw dim" x="150" y="296" fontSize="18">
+        {bars[0]}
+      </text>
+      <text className="hw dim" x="232" y="296" fontSize="18">
+        {bars[1]}
+      </text>
+      <text className="hw dim" x="310" y="296" fontSize="18">
+        {bars[2]}
+      </text>
+      <path
+        className="ink pig"
+        id="lasso"
+        d="M126 132 c-30 40 -14 118 62 126 s112 -12 108 -68 s-40 -84 -104 -80 s-58 12 -66 22"
+      />
+    </svg>
+  );
+}
+
+/** The paused-transport glyph in the player's bar. */
+export function PauseGlyph() {
+  return (
+    <svg viewBox="0 0 12 12" aria-hidden="true">
+      <rect x="2" y="1" width="3" height="10" rx="1" />
+      <rect x="7" y="1" width="3" height="10" rx="1" />
+    </svg>
+  );
+}
+
+// --- The parent's report ---------------------------------------------------------------------
+
+/** The seven bars, the dashed projection, and the day letters. */
+export function ReportChart({
+  label,
+  days,
+  projection,
+}: {
+  label: string;
+  days: readonly string[];
+  projection: readonly string[];
+}) {
+  const bars = [
+    { x: 16, h: 52, done: true },
+    { x: 66, h: 74, done: true },
+    { x: 116, h: 40, done: true },
+    { x: 166, h: 96, done: true },
+    { x: 216, h: 66, done: true },
+    { x: 266, h: 18, done: false },
+    { x: 316, h: 18, done: false },
+  ];
+  return (
+    <svg viewBox="0 0 460 150" role="img" aria-label={label}>
+      <title>{label}</title>
+      <g id="bars">
+        {bars.map((bar) => (
+          <rect
+            key={bar.x}
+            x={bar.x}
+            y="150"
+            width="34"
+            height="0"
+            rx="6"
+            fill={bar.done ? 'var(--pig)' : 'var(--paper-3)'}
+            data-h={bar.h}
+          />
+        ))}
+      </g>
+      <path
+        id="proj"
+        className="ink mint draw"
+        d="M370 120 C400 96 420 70 452 34"
+        style={{ '--len': 200 } as React.CSSProperties}
+        strokeDasharray="6 7"
+      />
+      <text className="hw" x="352" y="24" fontSize="20" fill="var(--mint)">
+        {projection[0]}
+      </text>
+      <text className="hw" x="352" y="46" fontSize="20" fill="var(--mint)">
+        {projection[1]}
+      </text>
+      <g className="hw dim" fontSize="14">
+        {days.map((day, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: two of the seven letters repeat
+          <text key={i} x={24 + i * 50} y="146">
+            {day}
+          </text>
+        ))}
+      </g>
+    </svg>
+  );
+}
+
+const BADGE_ICONS: readonly (() => React.ReactNode)[] = [
+  () => <path d="M2 8 l4 4 l8 -10" />,
+  () => <path d="M8 1 l2 5 l5 .4 l-4 3.4 l1.3 5 l-4.3 -3 l-4.3 3 l1.3 -5 l-4 -3.4 l5 -.4 z" />,
+  () => (
+    <>
+      <circle cx="8" cy="8" r="6" />
+      <path d="M8 4 v4 l3 2" />
+    </>
+  ),
+];
+
+const BADGE_STROKES = ['var(--mint)', 'var(--marigold)', 'var(--pig)'] as const;
+
+export function BadgeIcon({ index }: { index: number }) {
+  return (
+    <svg viewBox="0 0 16 16" stroke={BADGE_STROKES[index]} aria-hidden="true">
+      {BADGE_ICONS[index]?.()}
+    </svg>
+  );
+}
+
+// --- Safe by design ------------------------------------------------------------------------------
+
+const SAFE_ICONS: readonly (() => React.ReactNode)[] = [
+  () => (
+    <>
+      <rect x="9" y="22" width="34" height="23" rx="6" />
+      <path className="acc" d="M16 22 v-6 a10 10 0 0 1 20 0 v6" />
+    </>
+  ),
+  () => (
+    <>
+      <circle cx="26" cy="26" r="17" />
+      <path className="acc" d="M12 26 h28 M26 9 c-8 9 -8 25 0 34 c8 -9 8 -25 0 -34" />
+    </>
+  ),
+  () => (
+    <>
+      <path d="M8 40 c6 -12 32 -12 38 0" />
+      <circle className="acc" cx="27" cy="18" r="9" />
+      <path d="M40 12 l6 6" />
+    </>
+  ),
+  () => (
+    <>
+      <path d="M26 6 L42 12 C42 30 35 40 26 46 C17 40 10 30 10 12 Z" />
+      <path className="acc" d="M19 25 l5 5 l10 -12" />
+    </>
+  ),
+  () => (
+    <>
+      <path d="M12 14 h28 v28 h-28 z" />
+      <path className="acc" d="M20 26 l5 5 l9 -11" />
+      <path d="M12 14 l-4 -4 M40 14 l4 -4" />
+    </>
+  ),
+  () => (
+    <>
+      <path d="M10 14 h32 v24 h-32 z" />
+      <path className="acc" d="M17 24 h18 M17 30 h11" />
+      <path d="M26 38 v6" />
+    </>
+  ),
+];
+
+export function SafeIcon({ index }: { index: number }) {
+  return (
+    <svg viewBox="0 0 52 52" aria-hidden="true">
+      {SAFE_ICONS[index]?.()}
+    </svg>
+  );
+}
+
+// --- Everywhere you study --------------------------------------------------------------------
+
+export function DevicesArt({ label }: { label: string }) {
+  return (
+    <svg viewBox="0 0 560 360" role="img" aria-label={label}>
+      <title>{label}</title>
+      <rect x="40" y="60" width="300" height="190" rx="14" fill="var(--paper)" />
+      <rect x="24" y="250" width="332" height="12" rx="6" fill="var(--paper-3)" />
+      <path className="ink thin" d="M70 210 h240 M96 226 v-130" />
+      <path className="ink pig" d="M96 196 C160 176 210 120 316 96" />
+      <rect x="368" y="96" width="120" height="164" rx="14" fill="var(--paper)" />
+      <path className="ink thin" d="M386 232 h84 M398 244 v-110" />
+      <path className="ink pig" d="M398 224 C424 210 442 176 476 152" />
+      <rect x="504" y="150" width="44" height="86" rx="10" fill="var(--paper)" />
+      <path className="ink pig" d="M512 222 C520 214 528 200 540 186" />
+      <g transform="translate(300 268)">
+        <use href="#head" width="56" height="56" />
+      </g>
+    </svg>
+  );
+}
+
+// --- The assistants row ---------------------------------------------------------------------
+
+/**
+ * A mark per assistant, in the order `assistants()` lists them, drawn in the same hand as
+ * everything else on the page rather than lifted from anyone's brand kit: one stroke weight,
+ * `currentColor`, on the 18px grid. Indexed rather than named, so this file holds no company's
+ * name — the row's labels live with the rest of the copy.
+ */
+const ASSISTANT_MARKS: readonly (() => React.ReactNode)[] = [
+  () => (
+    <>
+      <circle cx="9" cy="9" r="8" fill="none" stroke="currentColor" strokeWidth="1.6" />
+      <path
+        d="M6 9.5 l2.2 2 L12.4 7"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    </>
+  ),
+  () => (
+    <>
+      <path
+        d="M4 13 L9 4 l5 9"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <path d="M6.4 10.6 h5.2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </>
+  ),
+  () => (
+    <path
+      d="M9 1.5 C9.6 5.6 12.4 8.4 16.5 9 C12.4 9.6 9.6 12.4 9 16.5 C8.4 12.4 5.6 9.6 1.5 9 C5.6 8.4 8.4 5.6 9 1.5 Z"
+      fill="currentColor"
+    />
+  ),
+  () => (
+    <>
+      <circle cx="9" cy="9" r="7.4" fill="none" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M9 2.6 v12.8 M3.2 6 h11.6 M3.2 12 h11.6" stroke="currentColor" strokeWidth="1.2" />
+    </>
+  ),
+  () => (
+    <path
+      d="M3.5 14.5 L14.5 3.5 M8 14.5 L14.5 8"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+    />
+  ),
+];
+
+export function AssistantMark({ index }: { index: number }) {
+  return (
+    <svg viewBox="0 0 18 18" aria-hidden="true">
+      {ASSISTANT_MARKS[index]?.() ?? null}
+    </svg>
   );
 }

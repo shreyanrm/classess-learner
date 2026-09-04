@@ -42,7 +42,7 @@ describe('the parent link seam', () => {
   });
   it('reports a sent invite', async () => {
     const got = await inviteParent(
-      { email: 'p@x.in', learnerName: 'Aanya' },
+      { email: 'p@x.in', learnerName: 'the learner' },
       'https://brain',
       reply(200, { status: 'invited', line: 'Invite sent to p***@x.in.', sent: true }),
     );

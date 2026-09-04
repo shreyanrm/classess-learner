@@ -330,6 +330,10 @@ export function WhatIf({
             />
             <AnimatePresence initial={false}>
               {depthOpen && (
+                // LAW v5 §8 forbids SCRUBBING a layout property — a tween fired per scroll frame.
+                // This is the other thing: one tween on one state change, when the learner taps
+                // "how we got here". Nothing else owns this element's height, and the content under
+                // it has to move, which is the whole point of a disclosure.
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}

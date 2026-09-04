@@ -185,7 +185,8 @@ export function ForgeBuilder({ onForged }: { onForged: (id: string) => void }) {
                                   : '0.5px solid var(--wobo-hairline-on-paper-strong)',
                                 background: on ? rgba(th, 0.12) : 'var(--wobo-paper)',
                                 opacity: can ? 1 : 0.55,
-                                transition: 'all 0.18s ease',
+                                transition:
+                                  'background 0.18s ease, color 0.18s ease, border-color 0.18s ease',
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: 6,
@@ -414,6 +415,6 @@ function segStyle(active: boolean, hue: string, single = false): React.CSSProper
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    transition: 'all 0.18s ease',
+    transition: 'background 0.18s ease, color 0.18s ease, border-color 0.18s ease',
   };
 }

@@ -8,7 +8,7 @@
  * typed, so the table reads the same in a screen reader as it does on screen.
  */
 
-import { type Market, PLAN_TIERS, type PlanTier, priceLabel, tierById } from './prices';
+import { PLAN_TIERS, type PlanTier, tierById } from './prices';
 
 /** A cell: included, not included, the same on every plan, or a figure in words. */
 export type Benefit = boolean | 'same' | string;
@@ -25,13 +25,19 @@ const tier = (id: PlanTier['id']): PlanTier => tierById(id) ?? (PLAN_TIERS[0] as
 /**
  * The honest table: what changes between plans, and what never does. The figures come from the
  * tiers; the rows that never change say so.
+ *
+ * The allowance row says what a day FEELS like rather than how many questions it holds — law v5's
+ * copy law (DESIGN.md §0) bans the raw number, and free carries no multiplier at all — so the two
+ * paid cells are read off `allowanceMultiple` and the free one is the sentence the page opens on.
  */
+export const ALLOWANCE_WORDS: Record<number, string> = { 5: 'five times', 20: 'twenty times' };
+
 export const BENEFITS: readonly BenefitRow[] = [
   {
-    label: 'Questions a day',
-    free: String(tier('free').questionsPerDay),
-    pro: String(tier('pro').questionsPerDay),
-    max: String(tier('max').questionsPerDay),
+    label: 'Daily allowance',
+    free: 'enough for an evening',
+    pro: ALLOWANCE_WORDS[tier('pro').allowanceMultiple] ?? 'more',
+    max: ALLOWANCE_WORDS[tier('max').allowanceMultiple] ?? 'more',
   },
   {
     label: 'Learners on the plan',
@@ -41,7 +47,7 @@ export const BENEFITS: readonly BenefitRow[] = [
   },
   { label: 'Voice replies', free: false, pro: true, max: true },
   { label: 'Past-paper sets', free: false, pro: false, max: true },
-  { label: 'Every subject, class 4 to 12', free: 'same', pro: 'same', max: 'same' },
+  { label: 'Every subject your board sets', free: 'same', pro: 'same', max: 'same' },
   { label: 'The drawn board, practice, the week', free: 'same', pro: 'same', max: 'same' },
   { label: 'The Sunday note and a linked parent', free: 'same', pro: 'same', max: 'same' },
   { label: 'No ads, no selling, no opinions', free: 'same', pro: 'same', max: 'same' },
@@ -51,9 +57,7 @@ export const PLANS_PAGE = {
   eyebrow: 'Plans',
   title: 'Free every day.',
   titleEm: 'More when exams get close.',
-  lead: 'Every learner gets a daily allowance of questions, forever, with no card and no trial that ends. Pro and Max raise the allowance for the weeks that need it. Cancelling takes as many taps as subscribing.',
-  regionLabel: 'Show prices for',
-  regions: { IN: 'India · ₹', INTL: 'Everywhere else · $' } satisfies Record<Market, string>,
+  lead: 'Every learner gets a daily allowance of questions, forever, with no card and no trial that ends. Pro and Max raise it for the weeks that need it. Cancelling takes as many taps as subscribing.',
   allowance: {
     sticker: 'free, every day',
     title: "Today's allowance",
@@ -102,9 +106,9 @@ export const PLANS_PAGE = {
     title: 'The money questions, answered straight.',
   },
   close: {
-    title: 'Start free. Decide later.',
-    hand: 'The first question is on us. So is the fortieth.',
-    primary: 'Start learning for free',
+    title: 'Free every day, from the day it opens.',
+    hand: 'No card now. No card then either.',
+    primary: 'Get early access',
     quiet: 'Gift Wobo',
   },
 } as const;
@@ -114,10 +118,14 @@ export interface FaqItem {
   answer: string;
 }
 
-/** The money questions. The one that quotes prices reads them from the tiers. */
-export function faqItems(tiers: readonly PlanTier[] = PLAN_TIERS): FaqItem[] {
-  const pro = tiers.find((t) => t.id === 'pro') ?? tier('pro');
-  const max = tiers.find((t) => t.id === 'max') ?? tier('max');
+/**
+ * The money questions. The country answer says how the currency is chosen rather than reciting a
+ * price per country: law v5 infers where a reader is from the browser and never offers a switch,
+ * so the honest answer is that the page already shows the right money.
+ *
+ * The parameter stays so a caller can ask the questions of a different set of tiers.
+ */
+export function faqItems(_tiers: readonly PlanTier[] = PLAN_TIERS): FaqItem[] {
   return [
     {
       question: 'What happens when the free allowance runs out for the day?',
@@ -136,10 +144,11 @@ export function faqItems(tiers: readonly PlanTier[] = PLAN_TIERS): FaqItem[] {
     },
     {
       question: 'Do prices change by country?',
-      answer: `Yes, by country, never by person. Everyone in India sees ${priceLabel(pro, 'IN')} and ${priceLabel(max, 'IN')}. Everyone elsewhere sees ${priceLabel(pro, 'INTL')} and ${priceLabel(max, 'INTL')}. We don't vary prices by behaviour, device or history.`,
+      answer:
+        "By country, never by person. The page shows your country's price without asking where you are. We never vary a price by behaviour, device or history.",
     },
     {
-      question: 'Can two children share Pro?',
+      question: 'Can two children share one plan?',
       answer:
         "Pro is for one learner, because the Sunday note and the memory are personal. Max includes two learners, each with their own note. Families with three or more: write to us and we'll sort it.",
     },
@@ -155,7 +164,7 @@ export const CHECKOUT_PAGE = {
   title: 'Checkout opens with launch.',
   lead: 'The prices are set and printed on the plans page, but the payment page is not open yet, so nothing can be charged. When it opens, this is where the amount, the tax, the renewal date and the two consent boxes will sit, together, above the payment control.',
   /** What a visitor can actually do today. */
-  cta: 'Start free',
+  cta: 'Get early access',
   back: 'Back to plans',
   promises: [
     'One price for everyone in a country, on the same purchase route.',

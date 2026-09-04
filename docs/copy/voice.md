@@ -100,7 +100,7 @@ a marketing surface is early access, not "begin tonight".
 
 **Avoid:** users, content, engagement, journey, unlock your potential, supercharge, seamless, revolutionary, AI-powered, leverage, gamified, crush it, level up (as praise), oops, uh-oh, sorry for the inconvenience.
 
-**Never:** a gendered pronoun for Wobo, in any form. A provider name. An exclamation mark. An emoji. An invented learner's name. A class or age range. A raw allowance number. "Unlimited". A country switch. "Begin tonight" while the product is still opening.
+**Never:** a gendered pronoun for Wobo, in any form. A provider name. An exclamation mark. An emoji. An invented learner's name. A class or age range. A raw allowance number. "Unlimited". A country switch. "Start this evening" while the product is still opening.
 
 ## 11. Quick comparisons
 
@@ -122,7 +122,7 @@ The left column quotes copy we do not ship, so it is the one place in this copy 
 | An invented learner's name in an example. | Your child finished the chapter. |
 | A raw allowance count, in digits or in words. | A daily allowance, free, and it resets every morning. |
 | Choose your country. | (Nothing. The time zone already said.) |
-| Begin tonight. | Get early access. |
+| Start this evening. | Get early access. |
 
 ## 12. The last check
 

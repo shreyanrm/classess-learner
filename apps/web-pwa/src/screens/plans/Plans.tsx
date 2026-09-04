@@ -2,14 +2,19 @@
 
 /**
  * `/plans` — free every day; more when exams get close. A port of
- * design/prototypes/site-plans.html: the hero with the India / everywhere toggle and the allowance
- * drawing, the three plan cards, the honest table, the checkout preview with its two consent
- * boxes, the gift block, the money questions and the close.
+ * design/prototypes/site-plans.html: the hero with the allowance drawing, the three plan cards,
+ * the honest table, the checkout preview with its two consent boxes, the gift block, the money
+ * questions and the close.
  *
  * The prices are the owner's (WOBO-PLAN §14) and every one of them is read from `prices.ts` — the
- * cards, the table, the checkout preview and the one answer that quotes them — so a change to a
- * number is one edit and every surface says the same thing in the same breath. The toggle changes
- * the currency shown, never the deal: §14 says the price varies by country and never by person.
+ * cards, the table and the checkout preview — so a change to a number is one edit and every
+ * surface says the same thing in the same breath.
+ *
+ * There is NO country switch here, and there never will be. Law v5's copy law (DESIGN.md §0):
+ * where someone is reading from is not a question worth asking. `readMarket()` answers it from the
+ * browser's own locale and time zone, once per mount, and the page simply shows that currency. A
+ * switch would only have existed because we could not be bothered to work it out; and the deal is
+ * the same in every market regardless (§14 — by country, never by person).
  *
  * What this page deliberately does not do is take a payment. "Choose Pro" and "Choose Max" bring
  * the checkout preview into view with that plan on it; its payment control leads to
@@ -31,11 +36,10 @@ import { ClosePanel } from '../site/ClosePanel';
 import { SiteLink } from '../site/nav';
 import { Reveal } from '../site/Reveal';
 import { SiteShell } from '../site/SiteShell';
-import { allowanceLine, readAllowance } from './allowance';
-import { BENEFITS, type Benefit, faqItems, PLANS_PAGE } from './copy';
+import { allowanceLine, allowanceShare, readAllowance } from './allowance';
+import { ALLOWANCE_WORDS, BENEFITS, type Benefit, faqItems, PLANS_PAGE } from './copy';
 import {
   BEST_FOR,
-  type Market,
   PLAN_TIERS,
   type PlanTier,
   priceLabel,
@@ -46,7 +50,6 @@ import {
 } from './prices';
 
 const FAQ = faqItems();
-const MARKETS: readonly Market[] = ['IN', 'INTL'];
 
 /** A tick, drawn. DESIGN.md forbids emoji, and the line beside it says what is included. */
 function Tick() {
@@ -98,10 +101,7 @@ function Allowance() {
     return () => cancelAnimationFrame(id);
   }, []);
   const allowance = readAllowance(me);
-  const share =
-    allowance.known && allowance.remaining !== null && allowance.limit
-      ? Math.max(0, Math.min(1, allowance.remaining / allowance.limit))
-      : null;
+  const share = allowanceShare(allowance);
   return (
     <Reveal className="pl-allow">
       <Sticker rotate={6}>{PLANS_PAGE.allowance.sticker}</Sticker>
@@ -135,7 +135,9 @@ const CARD_CLASS: Record<PlanTier['id'], string> = {
 export function Plans() {
   const router = useRouter();
   const reduced = useReducedMotion();
-  const [market, setMarket] = useState<Market>(() => readMarket());
+  // Read once per mount, from the browser and nothing else: the reader is never asked where they
+  // are, and there is no control that could change this.
+  const market = useMemo(() => readMarket(), []);
   const [previewId, setPreviewId] = useState<PlanTier['id']>('pro');
   const [terms, setTerms] = useState(false);
   const [renewal, setRenewal] = useState(false);
@@ -163,19 +165,6 @@ export function Plans() {
             {PLANS_PAGE.title} <em>{PLANS_PAGE.titleEm}</em>
           </h1>
           <p className="pl-sub">{PLANS_PAGE.lead}</p>
-          <fieldset className="pl-region" aria-label={PLANS_PAGE.regionLabel}>
-            {MARKETS.map((m) => (
-              <button
-                key={m}
-                type="button"
-                className={m === market ? 'st-on' : undefined}
-                aria-pressed={m === market}
-                onClick={() => setMarket(m)}
-              >
-                {PLANS_PAGE.regions[m]}
-              </button>
-            ))}
-          </fieldset>
           <Allowance />
         </div>
       </section>
@@ -191,7 +180,11 @@ export function Plans() {
                   <span>{priceLabel(tier, market)}</span>
                   <small>{priceUnit(tier)}</small>
                 </div>
-                <div className="pl-x">{tier.allowanceMultiple}× allowance</div>
+                {tier.allowanceMultiple > 1 ? (
+                  <div className="pl-x">
+                    {ALLOWANCE_WORDS[tier.allowanceMultiple] ?? 'more'} the free allowance
+                  </div>
+                ) : null}
                 <p>{tier.blurb}</p>
                 <ul>
                   {tier.lines.map((line) => (

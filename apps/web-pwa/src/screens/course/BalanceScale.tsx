@@ -5,6 +5,11 @@
  * real springy scale. The learner drags weights off the pans; the beam tips honestly (x weighs 5
  * underneath). The principle — whatever you do to one side, do to the other — appears only AFTER
  * the act: pose, struggle, reveal.
+ *
+ * LAW v5 (DESIGN.md §0): every colour on this scale is a token. The pale-blue and dark-grey
+ * gradients this was drawn with were light-theme-only — on night they turned a weight into a
+ * bright slab and the pillar into a hole — and the flat fills are also the hand DESIGN.md §4 asks
+ * for: ink and wash, never a bevel.
  */
 
 import { useRegisterTarget, useWoboBus } from '@wobo/wobo';
@@ -59,7 +64,7 @@ function UnitWeight({
         height: 28,
         border: `1.5px solid ${INK}`,
         borderBottomWidth: 3.5,
-        background: 'linear-gradient(180deg, var(--wobo-card) 0%, #E3E7FB 100%)',
+        background: 'var(--paper-2)',
         borderRadius: 4,
         display: 'grid',
         placeItems: 'center',
@@ -125,8 +130,7 @@ function Pan({
           right: 6,
           top: STRING - 2,
           height: 9,
-          background:
-            'linear-gradient(180deg, #4257F0 0%, var(--wobo-ultramarine) 70%, #16279E 100%)',
+          background: 'var(--pig)',
           border: `1.5px solid ${INK}`,
           borderRadius: '3px 3px 6px 6px',
         }}
@@ -337,9 +341,12 @@ export function BalanceScale({
               >
                 <defs>
                   <linearGradient id="scale-pillar" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#3A3B42" />
-                    <stop offset="50%" stopColor="var(--wobo-ink)" />
-                    <stop offset="100%" stopColor="#2A2B31" />
+                    <stop
+                      offset="0%"
+                      stopColor="color-mix(in srgb, var(--ink) 82%, var(--paper))"
+                    />
+                    <stop offset="50%" stopColor="var(--ink)" />
+                    <stop offset="100%" stopColor="var(--ink)" />
                   </linearGradient>
                 </defs>
                 <path
@@ -361,7 +368,7 @@ export function BalanceScale({
                   top: BEAM_Y - 3,
                   width: HALF * 2,
                   height: 6,
-                  background: 'linear-gradient(180deg, #3A3B42 0%, var(--wobo-ink) 55%)',
+                  background: 'var(--ink)',
                   borderRadius: 3,
                   transformOrigin: 'center',
                 }}
@@ -389,8 +396,8 @@ export function BalanceScale({
                     position: 'relative',
                     width: 42,
                     height: 34,
-                    background: 'linear-gradient(180deg, #2E3038 0%, var(--wobo-ink) 100%)',
-                    color: '#FFFFFF',
+                    background: 'var(--ink)',
+                    color: 'var(--paper)',
                     border: `1.5px solid ${INK}`,
                     borderRadius: 4,
                     display: 'grid',
