@@ -262,9 +262,20 @@ def _domain_refused(status: int | None, detail: str) -> bool:
     return "domain" in lowered and ("verif" in lowered or "not found" in lowered)
 
 
+_USER_AGENT = "wobo-mailer/1.0 (+https://heywobo.com)"
+
+
 def _post(body: bytes, key: str, idem: str | None) -> _Reply:
     """One POST to the provider with retry on 5xx and network faults. A 4xx is final."""
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {key}"}
+    # A User-Agent is not optional here. urllib sends "Python-urllib/3.x" by default, and the
+    # provider's edge answers that signature with a 403 before the request ever reaches their
+    # API — proved live on 2026-09-04: the same body sends fine with a name on it. Without this
+    # line every live send fails, so the name is ours and it never says what is underneath.
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {key}",
+        "User-Agent": _USER_AGENT,
+    }
     if idem:
         headers["Idempotency-Key"] = idem
     last = _Reply(ok=False)

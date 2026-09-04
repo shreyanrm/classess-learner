@@ -503,6 +503,24 @@ def test_nothing_leaves_live_without_a_postal_line_or_an_off_switch(
     assert [r.provider_id for r in mail_log().records()] == ["queued", "queued"]
 
 
+def test_every_live_send_carries_a_name(
+    live: list[float], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The provider's edge refuses urllib's default signature with a 403 before the API sees the
+    request (proved live, 2026-09-04). Every send names itself, and the name says nothing about
+    what is underneath it (§17)."""
+    calls = _scripted(monkeypatch, [b'{"id": "prov-ua"}'])
+    sent = send_email("win", "kid@example.test", {"chapter": "Triangles"}, period="w40",
+                      headers={"List-Unsubscribe": "<https://x.test/s?token=t>",
+                               "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"})
+    assert sent["ok"] is True
+    agent = calls[0].get_header("User-agent") or calls[0].get_header("User-Agent")
+    assert agent and "Python-urllib" not in agent
+    assert "wobo" in agent.lower()
+    for banned in ("resend", "claude", "anthropic", "openai", "gpt", "gemini", "supabase"):
+        assert banned not in agent.lower()
+
+
 def test_a_period_makes_the_send_idempotent() -> None:
     """The same (kind, recipient, period) goes out once, ever — the second call is a no-op."""
     first = send_email(
